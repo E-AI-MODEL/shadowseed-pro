@@ -1,0 +1,21 @@
+{
+  "version": "open-set-models-0.3",
+  "description": "Curated list of free Hugging Face instruct models for the SSL model-detector and SLM-benefit routes. cpu_runner_ok marks models that fit and finish on the public-repo ubuntu-latest runner (CPU, 16 GB RAM) now that the HF backends load the checkpoint's native half precision on CPU (a 3.8B model loads in ~8 GB instead of ~15 GB at float32). gated models require accepting a license on Hugging Face and an HF token secret. Use this list to pick a model_id; the workflows expose the ungated cpu_runner_ok ones as a dropdown and accept any other id as a custom override.",
+  "models": [
+    {"id": "HuggingFaceTB/SmolLM2-135M-Instruct", "params_b": 0.135, "approx_ram_gb": 0.5, "license": "Apache-2.0", "gated": false, "cpu_runner_ok": true, "notes": "Snelst. Kwaliteit twijfelachtig voor gap-detectie."},
+    {"id": "HuggingFaceTB/SmolLM2-360M-Instruct", "params_b": 0.36, "approx_ram_gb": 1.0, "license": "Apache-2.0", "gated": false, "cpu_runner_ok": true, "notes": "Snel startpunt. Te klein voor echte gap-detectie (round 003a citeerde tekst)."},
+    {"id": "Qwen/Qwen2.5-0.5B-Instruct", "params_b": 0.5, "approx_ram_gb": 1.2, "license": "Apache-2.0", "gated": false, "cpu_runner_ok": true, "notes": "Sterk voor de grootte, goede meertaligheid."},
+    {"id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0", "params_b": 1.1, "approx_ram_gb": 2.2, "license": "Apache-2.0", "gated": false, "cpu_runner_ok": true, "notes": "Default van de SLM-benefit route."},
+    {"id": "Qwen/Qwen2.5-1.5B-Instruct", "params_b": 1.5, "approx_ram_gb": 3.0, "license": "Apache-2.0", "gated": false, "cpu_runner_ok": true, "notes": "Goede prijs/kwaliteit op CPU. Gebruikt in round 003b/003c."},
+    {"id": "HuggingFaceTB/SmolLM2-1.7B-Instruct", "params_b": 1.7, "approx_ram_gb": 3.5, "license": "Apache-2.0", "gated": false, "cpu_runner_ok": true, "notes": "Beter redenerend; past nog ruim op standard runner."},
+    {"id": "Qwen/Qwen3-1.7B", "params_b": 1.7, "approx_ram_gb": 3.5, "license": "Apache-2.0", "gated": false, "cpu_runner_ok": true, "notes": "Qwen3-generatie: betere instructie-/redeneerkwaliteit dan Qwen2.5 op gelijke grootte. Ungated, geen token. Optionele thinking-mode."},
+    {"id": "Qwen/Qwen2.5-3B-Instruct", "params_b": 3.0, "approx_ram_gb": 6.0, "license": "Qwen Research (niet-commercieel)", "gated": false, "cpu_runner_ok": true, "notes": "Gratis maar licentie beperkt; traag op CPU."},
+    {"id": "microsoft/Phi-3.5-mini-instruct", "params_b": 3.8, "approx_ram_gb": 8.0, "license": "MIT", "gated": false, "cpu_runner_ok": true, "notes": "Sterkste MIT-optie in deze lijst; aanbevolen voor round 006. Past op de publieke ubuntu-latest runner (16 GB) met de half-precision CPU-load (~8 GB). Traag op CPU."},
+    {"id": "Qwen/Qwen3-4B", "params_b": 4.0, "approx_ram_gb": 8.0, "license": "Apache-2.0", "gated": false, "cpu_runner_ok": true, "notes": "Grootste ungated Apache-2.0 optie hier. Past op de publieke ubuntu-latest runner (16 GB) met de half-precision CPU-load (~8 GB). Traag op CPU. Optionele thinking-mode."},
+    {"id": "google/gemma-2-2b-it", "params_b": 2.0, "approx_ram_gb": 4.0, "license": "Gemma", "gated": true, "cpu_runner_ok": true, "notes": "Vereist HF-token en licentie-acceptatie."},
+    {"id": "meta-llama/Llama-3.2-1B-Instruct", "params_b": 1.0, "approx_ram_gb": 2.0, "license": "Llama 3.2 Community", "gated": true, "cpu_runner_ok": true, "notes": "Vereist HF-token en licentie-acceptatie."},
+    {"id": "meta-llama/Llama-3.2-3B-Instruct", "params_b": 3.0, "approx_ram_gb": 6.0, "license": "Llama 3.2 Community", "gated": true, "cpu_runner_ok": true, "notes": "Vereist HF-token en licentie-acceptatie."},
+    {"id": "mistralai/Mistral-7B-Instruct-v0.3", "params_b": 7.0, "approx_ram_gb": 14.0, "license": "Apache-2.0", "gated": true, "cpu_runner_ok": false, "notes": "Past niet op standard runner; large of GPU + token."},
+    {"id": "meta-llama/Llama-3.1-8B-Instruct", "params_b": 8.0, "approx_ram_gb": 16.0, "license": "Llama 3.1 Community", "gated": true, "cpu_runner_ok": false, "notes": "Large runner of GPU + token; timeout-risico op CPU."}
+  ]
+}

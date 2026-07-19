@@ -1,0 +1,199 @@
+{
+  "summary": {
+    "suite_version": "4.5-benefit-phase-1",
+    "scenario_count": 3,
+    "baseline_mean_gap_coverage": 0.0,
+    "ssl_mean_gap_coverage": 1.0,
+    "coverage_delta": 1.0,
+    "promoted_seed_count": 10,
+    "unsupported_ssl_additions": 0,
+    "unsupported_ssl_addition_rate": 0.0
+  },
+  "results": [
+    {
+      "scenario_id": "BEN_A",
+      "title": "Industriële Revolutie",
+      "domain": "geschiedenis en economie",
+      "baseline_gap_coverage": 0.0,
+      "ssl_gap_coverage": 1.0,
+      "coverage_delta": 1.0,
+      "baseline_covered": [],
+      "ssl_covered": [
+        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+        "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie."
+      ],
+      "promoted_seeds": [
+        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+        "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie."
+      ],
+      "unsupported_ssl_additions": [],
+      "unsupported_ssl_addition_count": 0,
+      "detected_by_turn": [
+        [
+          "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+          "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie."
+        ],
+        [
+          "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+          "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie."
+        ],
+        [
+          "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+          "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie."
+        ]
+      ],
+      "seed_scores": [
+        {
+          "seed": "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+          "score": 2,
+          "matched_ground_truth": "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+          "reason": "atomische structurele match"
+        },
+        {
+          "seed": "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie.",
+          "score": 2,
+          "matched_ground_truth": "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie.",
+          "reason": "atomische structurele match"
+        }
+      ]
+    },
+    {
+      "scenario_id": "BEN_B",
+      "title": "Grensoverschrijdende juridische casus",
+      "domain": "recht en jurisdictie",
+      "baseline_gap_coverage": 0.0,
+      "ssl_gap_coverage": 1.0,
+      "coverage_delta": 1.0,
+      "baseline_covered": [],
+      "ssl_covered": [
+        "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel.",
+        "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
+        "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer.",
+        "Forumkeuzebeding in internationale online koopvoorwaarden."
+      ],
+      "promoted_seeds": [
+        "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel.",
+        "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
+        "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer.",
+        "Forumkeuzebeding in internationale online koopvoorwaarden."
+      ],
+      "unsupported_ssl_additions": [],
+      "unsupported_ssl_addition_count": 0,
+      "detected_by_turn": [
+        [
+          "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel.",
+          "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
+          "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer.",
+          "Forumkeuzebeding in internationale online koopvoorwaarden."
+        ],
+        [
+          "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel.",
+          "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
+          "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer.",
+          "Forumkeuzebeding in internationale online koopvoorwaarden."
+        ],
+        [
+          "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel.",
+          "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
+          "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer.",
+          "Forumkeuzebeding in internationale online koopvoorwaarden."
+        ]
+      ],
+      "seed_scores": [
+        {
+          "seed": "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel.",
+          "score": 2,
+          "matched_ground_truth": "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel.",
+          "reason": "atomische structurele match"
+        },
+        {
+          "seed": "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
+          "score": 2,
+          "matched_ground_truth": "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
+          "reason": "atomische structurele match"
+        },
+        {
+          "seed": "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer.",
+          "score": 2,
+          "matched_ground_truth": "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer.",
+          "reason": "atomische structurele match"
+        },
+        {
+          "seed": "Forumkeuzebeding in internationale online koopvoorwaarden.",
+          "score": 2,
+          "matched_ground_truth": "Forumkeuzebeding in internationale online koopvoorwaarden.",
+          "reason": "atomische structurele match"
+        }
+      ]
+    },
+    {
+      "scenario_id": "BEN_C",
+      "title": "Software Architectuur",
+      "domain": "IT en engineering",
+      "baseline_gap_coverage": 0.0,
+      "ssl_gap_coverage": 1.0,
+      "coverage_delta": 1.0,
+      "baseline_covered": [],
+      "ssl_covered": [
+        "AVG-compliance bij verwerking van medische hartslagdata.",
+        "Authenticatiestrategie voor toegang tot gezondheidsdata.",
+        "Encryptie van medische data in rust en tijdens transport.",
+        "Rate-limiting op API's die gezondheidsdata verwerken."
+      ],
+      "promoted_seeds": [
+        "AVG-compliance bij verwerking van medische hartslagdata.",
+        "Authenticatiestrategie voor toegang tot gezondheidsdata.",
+        "Encryptie van medische data in rust en tijdens transport.",
+        "Rate-limiting op API's die gezondheidsdata verwerken."
+      ],
+      "unsupported_ssl_additions": [],
+      "unsupported_ssl_addition_count": 0,
+      "detected_by_turn": [
+        [
+          "AVG-compliance bij verwerking van medische hartslagdata.",
+          "Authenticatiestrategie voor toegang tot gezondheidsdata.",
+          "Encryptie van medische data in rust en tijdens transport.",
+          "Rate-limiting op API's die gezondheidsdata verwerken."
+        ],
+        [
+          "AVG-compliance bij verwerking van medische hartslagdata.",
+          "Authenticatiestrategie voor toegang tot gezondheidsdata.",
+          "Encryptie van medische data in rust en tijdens transport.",
+          "Rate-limiting op API's die gezondheidsdata verwerken."
+        ],
+        [
+          "AVG-compliance bij verwerking van medische hartslagdata.",
+          "Authenticatiestrategie voor toegang tot gezondheidsdata.",
+          "Encryptie van medische data in rust en tijdens transport.",
+          "Rate-limiting op API's die gezondheidsdata verwerken."
+        ]
+      ],
+      "seed_scores": [
+        {
+          "seed": "AVG-compliance bij verwerking van medische hartslagdata.",
+          "score": 2,
+          "matched_ground_truth": "AVG-compliance bij verwerking van medische hartslagdata.",
+          "reason": "atomische structurele match"
+        },
+        {
+          "seed": "Authenticatiestrategie voor toegang tot gezondheidsdata.",
+          "score": 2,
+          "matched_ground_truth": "Authenticatiestrategie voor toegang tot gezondheidsdata.",
+          "reason": "atomische structurele match"
+        },
+        {
+          "seed": "Encryptie van medische data in rust en tijdens transport.",
+          "score": 2,
+          "matched_ground_truth": "Encryptie van medische data in rust en tijdens transport.",
+          "reason": "atomische structurele match"
+        },
+        {
+          "seed": "Rate-limiting op API's die gezondheidsdata verwerken.",
+          "score": 2,
+          "matched_ground_truth": "Rate-limiting op API's die gezondheidsdata verwerken.",
+          "reason": "atomische structurele match"
+        }
+      ]
+    }
+  ]
+}

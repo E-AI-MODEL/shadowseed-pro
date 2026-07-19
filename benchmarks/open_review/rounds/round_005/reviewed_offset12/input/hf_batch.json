@@ -1,0 +1,198 @@
+{
+  "version": "hf-open-set-batch-0.1",
+  "source": {
+    "id": "ag_news_test",
+    "dataset": "szhuggingface/ag_news",
+    "config": "default",
+    "split": "test",
+    "revision": "main",
+    "license": "apache-2.0",
+    "registry_path": "src/shadowseed/data/open_set_hf_sources.json",
+    "requested_limit": 12,
+    "requested_offset": 12,
+    "returned_count": 12,
+    "authenticated": false
+  },
+  "items": [
+    {
+      "id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Dutch Retailer Beats Apple to Local Download Market AMSTERDAM (Reuters) - Free Record Shop, a Dutch music retail chain, beat Apple Computer Inc. to market on Tuesday with the launch of a new download service in Europe's latest battleground for digital song services.",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 12,
+        "label_name": "Sci/Tech"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_13",
+      "title": "AG News Sci/Tech #13",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Super ant colony hits Australia A giant 100km colony of ants which has been discovered in Melbourne, Australia, could threaten local insect species.",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 13,
+        "label_name": "Sci/Tech"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_14",
+      "title": "AG News Sci/Tech #14",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Socialites unite dolphin groups Dolphin groups, or \"pods\", rely on socialites to keep them from collapsing, scientists claim.",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 14,
+        "label_name": "Sci/Tech"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_15",
+      "title": "AG News Sci/Tech #15",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Teenage T. rex's monster growth Tyrannosaurus rex achieved its massive size due to an enormous growth spurt during its adolescent years.",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 15,
+        "label_name": "Sci/Tech"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Scientists Discover Ganymede has a Lumpy Interior Jet Propulsion Lab -- Scientists have discovered irregular lumps beneath the icy surface of Jupiter's largest moon, Ganymede. These irregular masses may be rock formations, supported by Ganymede's icy shell for billions of years...",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 16,
+        "label_name": "Sci/Tech"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Mars Rovers Relay Images Through Mars Express European Space Agency -- ESAs Mars Express has relayed pictures from one of NASA's Mars rovers for the first time, as part of a set of interplanetary networking demonstrations. The demonstrations pave the way for future Mars missions to draw on joint interplanetary networking capabilities...",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 17,
+        "label_name": "Sci/Tech"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_18",
+      "title": "AG News Sci/Tech #18",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Rocking the Cradle of Life When did life begin? One evidential clue stems from the fossil records in Western Australia, although whether these layered sediments are biological or chemical has spawned a spirited debate. Oxford researcher, Nicola McLoughlin, describes some of the issues in contention.",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 18,
+        "label_name": "Sci/Tech"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_19",
+      "title": "AG News Sci/Tech #19",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Storage, servers bruise HP earnings update Earnings per share rise compared with a year ago, but company misses analysts' expectations by a long shot.",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 19,
+        "label_name": "Sci/Tech"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_20",
+      "title": "AG News Sci/Tech #20",
+      "domain": "nieuws - Sci/Tech",
+      "text": "IBM to hire even more new workers By the end of the year, the computing giant plans to have its biggest headcount since 1991.",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 20,
+        "label_name": "Sci/Tech"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Some People Not Eligible to Get in on Google IPO Google has billed its IPO as a way for everyday people to get in on the process, denying Wall Street the usual stranglehold it's had on IPOs. Public bidding, a minimum of just five shares, an open process with 28 underwriters - all this pointed to a new level of public participation. But this isn't the case.",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 23,
+        "label_name": "Sci/Tech"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Rivals Try to Turn Tables on Charles Schwab By MICHAEL LIEDTKE SAN FRANCISCO (AP) -- With its low prices and iconoclastic attitude, discount stock broker Charles Schwab Corp. (SCH) represented an annoying stone in Wall Street's wing-tipped shoes for decades...",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 24,
+        "label_name": "Sci/Tech"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_25",
+      "title": "AG News Sci/Tech #25",
+      "domain": "nieuws - Sci/Tech",
+      "text": "News: Sluggish movement on power grid cyber security Industry cyber security standards fail to reach some of the most vulnerable components of the power grid.\\",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 25,
+        "label_name": "Sci/Tech"
+      }
+    }
+  ]
+}

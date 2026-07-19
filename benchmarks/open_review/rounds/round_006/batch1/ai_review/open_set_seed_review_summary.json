@@ -1,0 +1,2962 @@
+{
+  "summary": {
+    "evidence_layer": "open_set_seed_quality",
+    "packet_count": 58,
+    "completed_packet_count": 58,
+    "pending_packet_count": 0,
+    "invalid_packet_count": 0,
+    "accepted_packet_count": 29,
+    "rejected_packet_count": 29,
+    "packet_acceptance_rate": 0.5,
+    "unique_seed_count": 58,
+    "completed_seed_count": 58,
+    "accepted_seed_count": 29,
+    "rejected_seed_count": 29,
+    "mixed_seed_count": 0,
+    "pending_seed_count": 0,
+    "invalid_seed_count": 0,
+    "agreement_eligible_seed_count": 0,
+    "unanimous_seed_count": 0,
+    "seed_acceptance_rate": 0.5,
+    "seed_rejection_rate": 0.5,
+    "unanimous_verdict_rate": 0.0,
+    "pairwise_decision_agreement_rate": 0.0,
+    "criteria": [
+      "atomicity",
+      "relevance",
+      "testability",
+      "non_triviality",
+      "follow_up_utility"
+    ],
+    "criterion_pass_rates": {
+      "atomicity": 1.0,
+      "relevance": 0.8620689655172413,
+      "testability": 0.6896551724137931,
+      "non_triviality": 0.5,
+      "follow_up_utility": 0.5
+    },
+    "reject_reason_counts": {
+      "trivial": 4,
+      "too_vague": 11,
+      "not_relevant": 4,
+      "duplicate": 3,
+      "style_not_gap": 4,
+      "not_testable": 3
+    },
+    "reviewer_ids": [
+      "reviewer_ai_claude"
+    ],
+    "domain_seed_counts": {
+      "nieuws - Business": 4,
+      "nieuws - Sci/Tech": 54
+    },
+    "status": "review_complete",
+    "artifacts": {
+      "summary": "benchmarks/open_review/rounds/round_006/batch1/ai_review/open_set_seed_review_summary.json",
+      "disagreements": "benchmarks/open_review/rounds/round_006/batch1/ai_review/open_set_disagreements.json",
+      "report": "benchmarks/open_review/rounds/round_006/batch1/ai_review/open_set_review_report.md"
+    }
+  },
+  "results": [
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "seed_id": "ai_r006_AG_NEWS_TEST_0_1",
+      "seed_text": "Specifieke resultaten of uitkomsten van de talks.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "seed_id": "ai_r006_AG_NEWS_TEST_0_2",
+      "seed_text": "De exacte bemiddelingsmethode of tussenpersoon.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "trivial",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "trivial": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "seed_id": "ai_r006_AG_NEWS_TEST_0_3",
+      "seed_text": "Specifieke belangen of eisen van de werknemers.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "seed_id": "ai_r006_AG_NEWS_TEST_0_4",
+      "seed_text": "De reactie of standpunt van Federal Mogul na de gesprekken.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_1_1",
+      "seed_text": "Specifieke datum voor de eerste lancering.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_1_2",
+      "seed_text": "Details over de technologie van de rocket.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_1_3",
+      "seed_text": "De naam van de tweede private team.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_1_4",
+      "seed_text": "Specifieke criteria voor het winnen van de Ansari X Prize.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_1_5",
+      "seed_text": "De locatie waar de lancering zal plaatsvinden.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_2_1",
+      "seed_text": "Specifieke soorten peptides die in de studie worden onderzocht.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_2_2",
+      "seed_text": "Omvang van het gehonoreerde grant.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_2_3",
+      "seed_text": "De specifieke gebruikssituatie of toepassing van betere peptides.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_2_4",
+      "seed_text": "De exacte universiteit waar de chemie researcher aan het begin van het bedrijf werkte.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_2_5",
+      "seed_text": "De geplande duur of termijn van de peptide-productie method.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_3_1",
+      "seed_text": "Specifieke geografische locaties waar de wildfires voorspeld worden.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_3_2",
+      "seed_text": "Precisiesnelheden of nauwkeurigheidspercentages van de Prediction Unit.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_3_3",
+      "seed_text": "De specifieke methodologie of techniek die door de Prediction Unit wordt gebruikt.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_3_4",
+      "seed_text": "Historische nauwkeurigheid van voorspellingen van de Prediction Unit voor wildfires.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "duplicate",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "duplicate": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_3_5",
+      "seed_text": "Impact of Prediction Unit's forecasts on wildfire prevention or response strategies.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_4_1",
+      "seed_text": "Specifieke technische maatregelen om emissies van dairy cow manure te verminderen.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_4_2",
+      "seed_text": "De impact van de nieuwe regelgeving op de algehele luchtkwaliteit in Southern California.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_4_3",
+      "seed_text": "De reactie van de landbouwsector op de adoptie van deze regels.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_4_4",
+      "seed_text": "De specifieke tijdlijn of deadline voor de implementatie van de nieuwe regels.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_4_5",
+      "seed_text": "De verwachte effectiviteit van de regelgeving op de vermindering van smog.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "duplicate",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "duplicate": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_5_1",
+      "seed_text": "Het specifieke doel van de \"Music Manifesto\" campagne van de DfES.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_5_2",
+      "seed_text": "De exacte details van de samenwerking tussen de DfES en de muziekindustrie.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_5_3",
+      "seed_text": "Specifieke beleidsmaatregelen of acties die door EMI zijn onderhandeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_5_4",
+      "seed_text": "De impact van deze indoctrinatie op de scholieren in de Britse scholen.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_testable": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_5_5",
+      "seed_text": "Eventuele reacties of acties van andere belanghebbenden of organisaties na het schrijven van het open brief.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_testable": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_6_1",
+      "seed_text": "De specifieke strategieën die door Sophos zijn gebruikt om de virussen te identificeren.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_6_2",
+      "seed_text": "Details over de juridische consequenties van Jaschan's veroordeling.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_6_3",
+      "seed_text": "De specifieke technische details van hoe Jaschan de Netsky en Sasser worms heeft geprogrammeerd.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "trivial",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "trivial": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_6_4",
+      "seed_text": "De impact van de arrestatie op de algehele trend van virusinfecties in de daaropvolgende periode.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_7_1",
+      "seed_text": "De specifieke manier waarop de bloom filter wordt gebruikt voor de PGP.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_7_2",
+      "seed_text": "De procedure voor het invoegen van PGP keyfingerprints in de FOAF.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_7_3",
+      "seed_text": "De manier waarop de client het whitelist vult vanuit de sociale netwerk.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_7_4",
+      "seed_text": "De encryptiebehoeften van de bron FOAF file voor veiligheid.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_7_5",
+      "seed_text": "De relatie tussen de directe vrienden en de bloom filter van hun PGP.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_9_1",
+      "seed_text": "Het exacte aantal geredde kredietkaarten buiten de 36,000 die worden vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_9_2",
+      "seed_text": "De specifieke soorten misdrijven waarmee de card fraud unit is betrokken.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_9_3",
+      "seed_text": "Het exacte aantal gevallen waarin de card fraud unit heeft bijgedragen aan de arrestatie van verdachten.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_9_4",
+      "seed_text": "De exacte kosten die zijn bespaard door de inzet van de card fraud unit.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_9_5",
+      "seed_text": "De periode waarin de card fraud unit haar prestaties heeft gemeten.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_10_1",
+      "seed_text": "Specifieke technische specificaties van de nieuwe high-speed wireless format.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_10_2",
+      "seed_text": "De exacte groep technologiebedrijven die de voorstellen doen.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_10_3",
+      "seed_text": "De timing en details van het voorstelpresentatie.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_10_4",
+      "seed_text": "Potentiële impact en vooruitzichten van de nieuwe high-speed wireless standard.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_10_5",
+      "seed_text": "Andere technologiebedrijven of belanghebbenden die mogelijk betrokken zijn bij het voorstel.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "duplicate",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "duplicate": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_11_1",
+      "seed_text": "Specifieke functies van de nieuwe program voor real-time motion graphics.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_11_2",
+      "seed_text": "De prijs van de discount video-editing software bundle.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_11_3",
+      "seed_text": "De beschikbaarheid van de software in verschillende regio's.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "trivial",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "trivial": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_11_4",
+      "seed_text": "Specifieke updates of verbeteringen ten opzichte van eerdere versies van Final Cut Pro.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "trivial",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "trivial": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_11_5",
+      "seed_text": "Reviews of feedback van gebruikers na de lancering van de software.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_testable": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_12_1",
+      "seed_text": "Specifieke functies van de nieuwe download service.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_12_2",
+      "seed_text": "De reactie van Apple Computer Inc. op de lancering.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_12_3",
+      "seed_text": "De impact van de nieuwe download service op de Europese muziekmarkt.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_12_4",
+      "seed_text": "Details over de concurrentie tussen Free Record Shop en andere spelers.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_r006_AG_NEWS_TEST_12_5",
+      "seed_text": "De timing en locatie van de lancering buiten Nederland.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer), round 006 batch 1"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    }
+  ]
+}

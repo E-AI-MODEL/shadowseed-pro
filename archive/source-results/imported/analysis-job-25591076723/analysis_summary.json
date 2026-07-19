@@ -1,0 +1,414 @@
+{
+  "gap": {
+    "suite_version": "4.5",
+    "scenario_count": 3,
+    "mean_scenario_score": 2.0,
+    "atomische_hits": 10,
+    "promoted_hits": 10,
+    "scoring_scale": {
+      "0": "geen relevante gap gevonden",
+      "1": "richting klopt, maar output is te vaag of te breed",
+      "2": "atomische en structureel juiste gap gevonden"
+    }
+  },
+  "false_positive": {
+    "suite_version": "4.5-negative-controls",
+    "scenario_count": 3,
+    "candidate_false_positives": 0,
+    "promoted_false_positives": 0,
+    "candidate_false_positive_rate": 0.0,
+    "promoted_false_positive_rate": 0.0,
+    "adversarial_candidate_count": 9,
+    "baseline_trace_only_promotions": 9,
+    "baseline_trace_without_contradiction_promotions": 0,
+    "gate_promoted_false_positives": 0,
+    "gate_blocked_false_positives": 9,
+    "gate_block_rate_on_adversarial_candidates": 1.0,
+    "gate_vs_trace_only_delta": 9,
+    "gate_vs_trace_without_contradiction_delta": 0,
+    "passed": true
+  },
+  "benefit": {
+    "suite_version": "4.5-benefit-phase-1",
+    "scenario_count": 3,
+    "baseline_mean_gap_coverage": 0.0,
+    "ssl_mean_gap_coverage": 1.0,
+    "coverage_delta": 1.0,
+    "promoted_seed_count": 10,
+    "unsupported_ssl_additions": 0,
+    "unsupported_ssl_addition_rate": 0.0
+  },
+  "model_benefit": {
+    "suite_version": "4.5-model-benefit-phase-2",
+    "backend": "fixture",
+    "scenario_count": 3,
+    "baseline_mean_gap_coverage": 0.0,
+    "ssl_mean_gap_coverage": 0.9166666666666666,
+    "coverage_delta": 0.9166666666666666,
+    "mean_answer_length_delta_words": 26.666666666666668,
+    "coverage_delta_per_100_added_words": 3.4374999999999996,
+    "promoted_seed_count": 9,
+    "unsupported_ssl_additions": 0,
+    "unsupported_ssl_addition_rate": 0.0,
+    "interpretation": "Phase 2 compares the same backend in baseline and SSL-guided revision modes. The fixture backend is a CI smoke test; hf-transformers is the real local model mode. Blind review items are included so human judges can score quality without knowing which answer used SSL."
+  },
+  "blind": {
+    "public_suite_version": "blind-0.1-public",
+    "labels_version": "blind-0.1-smoke-labels",
+    "scenario_count": 5,
+    "mean_baseline_gap_coverage": 0.0,
+    "mean_ssl_gap_coverage": 0.8,
+    "mean_coverage_delta": 0.8,
+    "total_unsupported_additions": 0,
+    "total_false_positive_count": 6,
+    "mean_net_benefit": 0.8
+  },
+  "adversarial_gate": null,
+  "retrieval": null,
+  "retrieval_model": null,
+  "probe_utility": null,
+  "ssot": null,
+  "vectorstore": null,
+  "turn_matrix": [
+    {
+      "turns": 1,
+      "file": "ssl45_gap_suite_turns_1.json",
+      "summary": {
+        "suite_version": "4.5",
+        "scenario_count": 3,
+        "mean_scenario_score": 2.0,
+        "atomische_hits": 10,
+        "promoted_hits": 0,
+        "scoring_scale": {
+          "0": "geen relevante gap gevonden",
+          "1": "richting klopt, maar output is te vaag of te breed",
+          "2": "atomische en structureel juiste gap gevonden"
+        }
+      }
+    },
+    {
+      "turns": 2,
+      "file": "ssl45_gap_suite_turns_2.json",
+      "summary": {
+        "suite_version": "4.5",
+        "scenario_count": 3,
+        "mean_scenario_score": 2.0,
+        "atomische_hits": 10,
+        "promoted_hits": 0,
+        "scoring_scale": {
+          "0": "geen relevante gap gevonden",
+          "1": "richting klopt, maar output is te vaag of te breed",
+          "2": "atomische en structureel juiste gap gevonden"
+        }
+      }
+    },
+    {
+      "turns": 3,
+      "file": "ssl45_gap_suite_turns_3.json",
+      "summary": {
+        "suite_version": "4.5",
+        "scenario_count": 3,
+        "mean_scenario_score": 2.0,
+        "atomische_hits": 10,
+        "promoted_hits": 10,
+        "scoring_scale": {
+          "0": "geen relevante gap gevonden",
+          "1": "richting klopt, maar output is te vaag of te breed",
+          "2": "atomische en structureel juiste gap gevonden"
+        }
+      }
+    },
+    {
+      "turns": 5,
+      "file": "ssl45_gap_suite_turns_5.json",
+      "summary": {
+        "suite_version": "4.5",
+        "scenario_count": 3,
+        "mean_scenario_score": 2.0,
+        "atomische_hits": 10,
+        "promoted_hits": 10,
+        "scoring_scale": {
+          "0": "geen relevante gap gevonden",
+          "1": "richting klopt, maar output is te vaag of te breed",
+          "2": "atomische en structureel juiste gap gevonden"
+        }
+      }
+    },
+    {
+      "turns": 8,
+      "file": "ssl45_gap_suite_turns_8.json",
+      "summary": {
+        "suite_version": "4.5",
+        "scenario_count": 3,
+        "mean_scenario_score": 2.0,
+        "atomische_hits": 10,
+        "promoted_hits": 10,
+        "scoring_scale": {
+          "0": "geen relevante gap gevonden",
+          "1": "richting klopt, maar output is te vaag of te breed",
+          "2": "atomische en structureel juiste gap gevonden"
+        }
+      }
+    }
+  ],
+  "manifest": {
+    "source_workflow": "Checks en benchmark-resultaten",
+    "source_run_id": "25591076723",
+    "repository": "E-AI-MODEL/shadowseed",
+    "published_via": [
+      "analysis-job"
+    ],
+    "copied_files": [
+      {
+        "artifact": "02-gap-finder-results",
+        "source_path": "02-gap-finder-results/ssl45_gap_suite.json",
+        "results_path": "results/ssl45_gap_suite.json",
+        "bytes": 104887,
+        "original_artifact_path": "artifacts/02-gap-finder-results/ssl45_gap_suite.json"
+      },
+      {
+        "artifact": "03-false-positive-results",
+        "source_path": "03-false-positive-results/ssl45_false_positive_suite.json",
+        "results_path": "results/ssl45_false_positive_suite.json",
+        "bytes": 6742,
+        "original_artifact_path": "artifacts/03-false-positive-results/ssl45_false_positive_suite.json"
+      },
+      {
+        "artifact": "04-answer-benefit-results",
+        "source_path": "04-answer-benefit-results/ssl45_benefit_suite.json",
+        "results_path": "results/ssl45_benefit_suite.json",
+        "bytes": 8797,
+        "original_artifact_path": "artifacts/04-answer-benefit-results/ssl45_benefit_suite.json"
+      },
+      {
+        "artifact": "05-model-smoke-results",
+        "source_path": "05-model-smoke-results/ssl45_model_benefit_suite.json",
+        "results_path": "results/ssl45_model_benefit_suite.json",
+        "bytes": 16572,
+        "original_artifact_path": "artifacts/05-model-smoke-results/ssl45_model_benefit_suite.json"
+      },
+      {
+        "artifact": "06-blind-benchmark-results",
+        "source_path": "06-blind-benchmark-results/blind_benchmark.json",
+        "results_path": "results/blind_benchmark.json",
+        "bytes": 61105,
+        "original_artifact_path": "artifacts/06-blind-benchmark-results/blind_benchmark.json"
+      },
+      {
+        "artifact": "08-absencebench-smoke-results",
+        "source_path": "08-absencebench-smoke-results/absencebench_smoke.json",
+        "results_path": "results/absencebench_smoke.json",
+        "bytes": 7836,
+        "original_artifact_path": "artifacts/08-absencebench-smoke-results/absencebench_smoke.json"
+      },
+      {
+        "artifact": "09-repeat-test-turns-1",
+        "source_path": "09-repeat-test-turns-1/ssl45_gap_suite_turns_1.json",
+        "results_path": "results/ssl45_gap_suite_turns_1.json",
+        "bytes": 69513,
+        "original_artifact_path": "artifacts/09-repeat-test-turns-1/ssl45_gap_suite_turns_1.json"
+      },
+      {
+        "artifact": "09-repeat-test-turns-2",
+        "source_path": "09-repeat-test-turns-2/ssl45_gap_suite_turns_2.json",
+        "results_path": "results/ssl45_gap_suite_turns_2.json",
+        "bytes": 73565,
+        "original_artifact_path": "artifacts/09-repeat-test-turns-2/ssl45_gap_suite_turns_2.json"
+      },
+      {
+        "artifact": "09-repeat-test-turns-3",
+        "source_path": "09-repeat-test-turns-3/ssl45_gap_suite_turns_3.json",
+        "results_path": "results/ssl45_gap_suite_turns_3.json",
+        "bytes": 104887,
+        "original_artifact_path": "artifacts/09-repeat-test-turns-3/ssl45_gap_suite_turns_3.json"
+      },
+      {
+        "artifact": "09-repeat-test-turns-5",
+        "source_path": "09-repeat-test-turns-5/ssl45_gap_suite_turns_5.json",
+        "results_path": "results/ssl45_gap_suite_turns_5.json",
+        "bytes": 112571,
+        "original_artifact_path": "artifacts/09-repeat-test-turns-5/ssl45_gap_suite_turns_5.json"
+      },
+      {
+        "artifact": "09-repeat-test-turns-8",
+        "source_path": "09-repeat-test-turns-8/ssl45_gap_suite_turns_8.json",
+        "results_path": "results/ssl45_gap_suite_turns_8.json",
+        "bytes": 124097,
+        "original_artifact_path": "artifacts/09-repeat-test-turns-8/ssl45_gap_suite_turns_8.json"
+      }
+    ]
+  },
+  "publish_mode": "workflow snapshot",
+  "semantic": {
+    "promoted_seed_mentions": 29,
+    "by_domain": {
+      "geschiedenis en economie": [
+        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+        "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie.",
+        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+        "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie.",
+        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+        "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie."
+      ],
+      "recht en jurisdictie": [
+        "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel.",
+        "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
+        "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer.",
+        "Forumkeuzebeding in internationale online koopvoorwaarden.",
+        "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel.",
+        "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
+        "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer.",
+        "Forumkeuzebeding in internationale online koopvoorwaarden.",
+        "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel.",
+        "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer.",
+        "Forumkeuzebeding in internationale online koopvoorwaarden."
+      ],
+      "IT en engineering": [
+        "AVG-compliance bij verwerking van medische hartslagdata.",
+        "Authenticatiestrategie voor toegang tot gezondheidsdata.",
+        "Encryptie van medische data in rust en tijdens transport.",
+        "Rate-limiting op API's die gezondheidsdata verwerken.",
+        "AVG-compliance bij verwerking van medische hartslagdata.",
+        "Authenticatiestrategie voor toegang tot gezondheidsdata.",
+        "Encryptie van medische data in rust en tijdens transport.",
+        "Rate-limiting op API's die gezondheidsdata verwerken.",
+        "AVG-compliance bij verwerking van medische hartslagdata.",
+        "Authenticatiestrategie voor toegang tot gezondheidsdata.",
+        "Encryptie van medische data in rust en tijdens transport.",
+        "Rate-limiting op API's die gezondheidsdata verwerken."
+      ]
+    },
+    "by_scenario": {
+      "A": [
+        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+        "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie."
+      ],
+      "B": [
+        "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel.",
+        "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
+        "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer.",
+        "Forumkeuzebeding in internationale online koopvoorwaarden."
+      ],
+      "C": [
+        "AVG-compliance bij verwerking van medische hartslagdata.",
+        "Authenticatiestrategie voor toegang tot gezondheidsdata.",
+        "Encryptie van medische data in rust en tijdens transport.",
+        "Rate-limiting op API's die gezondheidsdata verwerken."
+      ],
+      "BEN_A": [
+        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+        "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie."
+      ],
+      "BEN_B": [
+        "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel.",
+        "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
+        "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer.",
+        "Forumkeuzebeding in internationale online koopvoorwaarden."
+      ],
+      "BEN_C": [
+        "AVG-compliance bij verwerking van medische hartslagdata.",
+        "Authenticatiestrategie voor toegang tot gezondheidsdata.",
+        "Encryptie van medische data in rust en tijdens transport.",
+        "Rate-limiting op API's die gezondheidsdata verwerken."
+      ],
+      "MODEL_A": [
+        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+        "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie."
+      ],
+      "MODEL_B": [
+        "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel.",
+        "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer.",
+        "Forumkeuzebeding in internationale online koopvoorwaarden."
+      ],
+      "MODEL_C": [
+        "AVG-compliance bij verwerking van medische hartslagdata.",
+        "Authenticatiestrategie voor toegang tot gezondheidsdata.",
+        "Encryptie van medische data in rust en tijdens transport.",
+        "Rate-limiting op API's die gezondheidsdata verwerken."
+      ]
+    },
+    "top_terms": [
+      [
+        "medische",
+        6
+      ],
+      [
+        "gezondheidsdata",
+        6
+      ],
+      [
+        "koloniaal",
+        3
+      ],
+      [
+        "kapitaal",
+        3
+      ],
+      [
+        "financieringsbron",
+        3
+      ],
+      [
+        "britse",
+        3
+      ],
+      [
+        "fabrieksinvesteringen",
+        3
+      ],
+      [
+        "goedkope",
+        3
+      ],
+      [
+        "koloniale",
+        3
+      ],
+      [
+        "grondstoffen",
+        3
+      ],
+      [
+        "voorwaarde",
+        3
+      ],
+      [
+        "schaalvergroting",
+        3
+      ]
+    ]
+  },
+  "conclusion": {
+    "verdict": "positive_fixture_smoke",
+    "headline": "De fixture-run bevestigt dat de model-benefit harness werkt.",
+    "body": "De fixture-backend laat zien dat de meetketen werkt: baseline coverage stijgt na SSL-guided rewrite zonder unsupported additions. Dit is een technische smoke-test, geen echte SLM-claim.",
+    "backend": "fixture",
+    "is_real_model": false,
+    "metrics": {
+      "gap_mean_scenario_score": 2.0,
+      "gap_promoted_hits": 10,
+      "promoted_false_positive_rate": 0.0,
+      "adversarial_current_gate_false_promotion_rate": 0.0,
+      "adversarial_trace_only_false_promotion_rate": 0.0,
+      "adversarial_gate_vs_trace_only_delta": 0.0,
+      "benefit_coverage_delta": 1.0,
+      "model_benefit_coverage_delta": 0.9166666666666666,
+      "model_unsupported_ssl_addition_rate": 0.0,
+      "blind_coverage_delta": 0.8,
+      "blind_false_positive_count": 6,
+      "mean_answer_length_delta_words": 26.666666666666668
+    },
+    "supporting_observations": [
+      "De positieve Gap-Test Suite wordt volledig geraakt.",
+      "De false-positive controls blijven schoon op promoted false positives.",
+      "De benefit-suite laat hogere gap coverage zien na SSL-toevoegingen.",
+      "De blinde smoke-test is aanwezig, maar vraagt nog controle op coverage en false positives.",
+      "De SSL-antwoorden zijn langer; daarom moet coverage-winst samen met lengtecorrectie en unsupported additions worden gelezen."
+    ],
+    "claim_boundary": "Deze conclusie geldt alleen voor de huidige suite, het gebruikte model en de vastgelegde prompts. Voor een algemene claim zijn meer scenario's, meerdere modellen, sterkere adversarial evaluatie en blind review nodig."
+  },
+  "charts": [
+    "coverage.svg",
+    "false_positive.svg"
+  ]
+}

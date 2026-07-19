@@ -1,0 +1,147 @@
+name: Research · Vectorstore smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      backend:
+        description: "Vectorstore backend"
+        required: true
+        default: "memory"
+        type: choice
+        options:
+          - memory
+          - faiss
+          - chroma
+
+permissions:
+  contents: write
+
+jobs:
+  vectorstore-smoke:
+    name: Weightless vectorstore smoke (${{ inputs.backend }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          if [ "${{ inputs.backend }}" = "faiss" ]; then
+            pip install -e ".[test,vector-faiss]"
+          elif [ "${{ inputs.backend }}" = "chroma" ]; then
+            pip install -e ".[test,vector-chroma]"
+          else
+            pip install -e ".[test]"
+          fi
+
+      - name: Run vectorstore smoke
+        run: |
+          python -m pytest tests/test_vectorstore_memory.py tests/test_optional_vector_backends.py -q
+          python -m shadowseed.cli run-vectorstore-smoke --backend "${{ inputs.backend }}"
+
+      - name: Upload vectorstore smoke result
+        uses: actions/upload-artifact@v4
+        with:
+          name: ssl45-vectorstore-smoke-results-${{ inputs.backend }}
+          path: results/vectorstore_smoke.json
+          if-no-files-found: error
+
+      - name: Build vectorstore wiki page
+        env:
+          SHA: ${{ github.sha }}
+          BACKEND: ${{ inputs.backend }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          payload = json.loads(Path('results/vectorstore_smoke.json').read_text(encoding='utf-8'))
+          summary = payload['summary']
+          backend = summary.get('backend') or os.environ.get('BACKEND')
+          lines = [
+              '# Weightless Vectorstore Smoke Run',
+              '',
+              'Deze pagina beschrijft de optionele vectorstore-smoke voor gewichtloze shadow seeds in de embeddingruimte.',
+              '',
+              '## Conclusie',
+              '',
+              'De smoke-run is geslaagd.' if summary.get('passed') else 'De smoke-run is niet geslaagd.',
+              '',
+              '## Backend',
+              '',
+              f'`{backend}`',
+              '',
+              '## Kerncijfers',
+              '',
+              '| Metric | Waarde |',
+              '|---|---:|',
+              f"| Backend | {backend} |",
+              f"| Seed ID | {summary.get('seed_id')} |",
+              f"| Vector IDs | {len(summary.get('vector_ids', []))} |",
+              f"| Feedback events | {summary.get('feedback_events')} |",
+              f"| Created weight | {summary.get('created_weight')} |",
+              f"| Created status | {summary.get('created_status')} |",
+              f"| Uncertain matches | {summary.get('uncertain_matches')} |",
+              f"| Promoted status | {summary.get('promoted_status')} |",
+              f"| Promoted weight | {summary.get('promoted_weight')} |",
+              f"| Contradicted status | {summary.get('contradicted_status')} |",
+              f"| Contradicted weight | {summary.get('contradicted_weight')} |",
+              '',
+              '## Wat hiermee is aangetoond',
+              '',
+              '- Een seed wordt met embedding opgeslagen in de gekozen vectorstore-backend.',
+              '- De seed start gewichtloos met `weight = 0.0`.',
+              '- Een nieuwe prompt kan in de buurt van een open seed vallen.',
+              '- Externe feedback verhoogt niet direct willekeurig gewicht, maar loopt via de Validation Gate.',
+              '- Tegenspraak verlaagt weight en zet de seed terug richting `NEW`.',
+              '',
+              '## Grens van de claim',
+              '',
+              'Deze run test de gekozen backend achter dezelfde `VectorStore` interface. De vectorstore is een zoekindex, niet de bron van waarheid. `SSLManager.seeds` blijft leidend voor trace, weight, status en promotie.',
+              '',
+              '## Commit',
+              '',
+              f"`{os.environ.get('SHA', '')}`",
+              '',
+          ]
+          Path('Vectorstore-Smoke.md').write_text('\n'.join(lines), encoding='utf-8')
+          PY
+
+      - name: Publish vectorstore smoke to GitHub Wiki
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          BACKEND: ${{ inputs.backend }}
+        run: |
+          set -e
+          WIKI_URL="https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.wiki.git"
+          if ! git clone "$WIKI_URL" wiki; then
+            echo "Wiki repo not available. Enable Wiki in repo settings and create the first page once."
+            exit 0
+          fi
+          cp Vectorstore-Smoke.md wiki/Vectorstore-Smoke.md
+          cp results/vectorstore_smoke.json "wiki/Vectorstore-Smoke-Raw-${BACKEND}.json"
+          cp results/vectorstore_smoke.json wiki/Vectorstore-Smoke-Raw.json
+          if [ ! -f wiki/Home.md ]; then
+            printf '# Shadow Seed Learning 4.5\n\n- [Vectorstore Smoke](Vectorstore-Smoke)\n' > wiki/Home.md
+          elif ! grep -q "Vectorstore-Smoke" wiki/Home.md; then
+            printf '\n- [Vectorstore Smoke](Vectorstore-Smoke)\n' >> wiki/Home.md
+          fi
+          cd wiki
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Home.md Vectorstore-Smoke.md Vectorstore-Smoke-Raw.json "Vectorstore-Smoke-Raw-${BACKEND}.json"
+          if git diff --cached --quiet; then
+            echo "No wiki changes."
+          else
+            git commit -m "Update vectorstore smoke wiki ${BACKEND} (${SHA})"
+            git push
+          fi

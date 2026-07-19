@@ -1,0 +1,102 @@
+{
+  "_provenance": "Uitbreiding van dialectic_falsification_transfer.json (iteratie 6, laag G): dezelfde brontekst, 24 cases in plaats van 10, zodat de permutatievloer van de activatie-sonde daalt (1/36 bij 9 items naar Monte-Carlo-niveau) en beide klassen plausibel gevuld raken. De 10 originele cases zijn ongewijzigd overgenomen; de 14 nieuwe zijn per ontwerp-intentie gemarkeerd in de note (kandidaat echt-ontbrekend punt, al gedekt door de bron, of strijdig met de bron). De note is ontwerp-intentie, geen label: labels komen op runtime uit de gekozen dialectische backend en kunnen van de intentie afwijken.",
+  "source_text": "Drie casussen. ONDERWIJS: een school ontwerpt een nieuwe module digitale geletterdheid voor de onderbouw van het voortgezet onderwijs, met lesmateriaal, draagvlak bij collega's en aandacht voor leerlingen met weinig ondersteuning thuis. GEZONDHEID: een gemeente wil jongeren stimuleren minder energiedrank te drinken via een campagne op scholen, met ouders en met aandacht voor de marketing van fabrikanten. BELEID: een gemeente maakt een klimaatadaptatieplan tegen wateroverlast, met maatregelen in de openbare ruimte, samenwerking met waterschappen en borging over bestuursperiodes heen.",
+  "cases": [
+    {
+      "seed_text": "Digitale geletterdheid als sociaal-cultureel vormingsproces in plaats van uitsluitend als vaardighedenset.",
+      "note": "round-025 promoted seed (EDU)"
+    },
+    {
+      "seed_text": "Verschillen in ondersteuning thuis als structurele factor in de module-opzet.",
+      "note": "domein-nabij, deelt inhoudswoorden met de bron (EDU)"
+    },
+    {
+      "seed_text": "Neurobiologische effecten van cafeïne op adolescenten als verklarend kader voor motivatie en weerstand.",
+      "note": "round-025 promoted seed (HEALTH); deelt bewust géén inhoudswoorden met de bron"
+    },
+    {
+      "seed_text": "Commerciële marketingstrategieën van energiedrankfabrikanten als tegenkracht in gedragsverandering.",
+      "note": "round-025 promoted seed (HEALTH)"
+    },
+    {
+      "seed_text": "Juridisch-institutionele verankering van verantwoordelijkheden tussen gemeente en waterschappen.",
+      "note": "round-025 promoted seed (POLICY)"
+    },
+    {
+      "seed_text": "Sociale ongelijkheid als lens voor de verdeling van wateroverlastrisico's en adaptatiemaatregelen.",
+      "note": "round-025 promoted seed (POLICY)"
+    },
+    {
+      "seed_text": "Kosten-batenanalyse op lange termijn versus korte termijn investeringen in adaptatiemaatregelen.",
+      "note": "round-025 promoted seed (POLICY); deelt bewust géén inhoudswoorden met de bron"
+    },
+    {
+      "seed_text": "Aandacht voor exoplaneetonderzoek en telescooptijd.",
+      "note": "distractor, off-topic"
+    },
+    {
+      "seed_text": "De invloed van getijdenstromen op zeescheepvaartroutes.",
+      "note": "distractor, off-topic"
+    },
+    {
+      "seed_text": "Middeleeuwse muntslag en numismatiek als hobbyverzameling.",
+      "note": "distractor, off-topic"
+    },
+    {
+      "seed_text": "Privacy en de datasporen die leerlingen online achterlaten als expliciet leerdoel in het curriculum.",
+      "note": "nieuw: kandidaat echt-ontbrekend punt (EDU); niet gedekt door de bron"
+    },
+    {
+      "seed_text": "Bijscholing van docenten in mediadidactiek voordat de lessen starten.",
+      "note": "nieuw: kandidaat echt-ontbrekend punt (EDU); niet gedekt door de bron"
+    },
+    {
+      "seed_text": "Slaapkwaliteit van jongeren als meetbare uitkomstmaat van verminderd cafeïnegebruik.",
+      "note": "nieuw: kandidaat echt-ontbrekend punt (HEALTH); niet gedekt door de bron"
+    },
+    {
+      "seed_text": "Accijnsverhoging en een minimumleeftijd voor verkoop als aanvullende instrumenten naast voorlichting.",
+      "note": "nieuw: kandidaat echt-ontbrekend punt (HEALTH); niet gedekt door de bron"
+    },
+    {
+      "seed_text": "Hittestress als tweede klimaatrisico dat om eigen maatregelen vraagt naast wateroverlast.",
+      "note": "nieuw: kandidaat echt-ontbrekend punt (POLICY); niet gedekt door de bron"
+    },
+    {
+      "seed_text": "Structurele financiering van adaptatie via rioolheffing of grondexploitatie.",
+      "note": "nieuw: kandidaat echt-ontbrekend punt (POLICY); niet gedekt door de bron"
+    },
+    {
+      "seed_text": "Monitoring met meetbare indicatoren om de effectiviteit van de maatregelen over de jaren te volgen.",
+      "note": "nieuw: kandidaat echt-ontbrekend punt (POLICY); niet gedekt door de bron"
+    },
+    {
+      "seed_text": "De module moet rekening houden met leerlingen die thuis weinig ondersteuning krijgen.",
+      "note": "nieuw: al gedekt door de bron (EDU) — parafrase van een bronzin"
+    },
+    {
+      "seed_text": "Draagvlak bij collega's is belangrijk voor de invoering van de nieuwe module.",
+      "note": "nieuw: al gedekt door de bron (EDU) — parafrase van een bronzin"
+    },
+    {
+      "seed_text": "Ouders betrekken bij de campagne tegen energiedrank op scholen.",
+      "note": "nieuw: al gedekt door de bron (HEALTH) — parafrase van een bronzin"
+    },
+    {
+      "seed_text": "Samenwerking met waterschappen is nodig voor het klimaatadaptatieplan.",
+      "note": "nieuw: al gedekt door de bron (POLICY) — parafrase van een bronzin"
+    },
+    {
+      "seed_text": "Borging van het adaptatieplan over bestuursperiodes heen verdient aandacht.",
+      "note": "nieuw: al gedekt door de bron (POLICY) — parafrase van een bronzin"
+    },
+    {
+      "seed_text": "Energiedrank vormt voor jongeren geen enkel gezondheidsrisico en verdient geen beleidsaandacht.",
+      "note": "nieuw: strijdig met de bron (HEALTH)"
+    },
+    {
+      "seed_text": "Klimaatadaptatie is uitsluitend een taak van het Rijk waarin gemeenten geen rol hebben.",
+      "note": "nieuw: strijdig met de bron (POLICY)"
+    }
+  ]
+}

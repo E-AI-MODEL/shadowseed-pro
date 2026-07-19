@@ -1,0 +1,107 @@
+{
+  "_provenance": {
+    "purpose": "Round 033: vooraf geregistreerde replicatie van het round-032-signaalkandidaat (lagen 2 en 5, leespunt neuron, Qwen2.5-0.5B). Nieuwe brontekst en nieuwe cases, zelfde ontwerpmix als v2: 7 kandidaat-gaps, 5 bron-parafrases, 2 strijdige stellingen, 5 domein-nabije stellingen, 5 domein-verre distractors.",
+    "design_note": "De notes zijn ontwerp-intenties, geen labels: labels komen op runtime van gpt-4.1 (dialectische falsificatie), de sonde meet daarna of het gesondeerde model dat oordeel intern codeert.",
+    "created": "2026-07-14",
+    "round": "033"
+  },
+  "source_text": "Drie casussen. WONEN: een woningcorporatie verduurzaamt een flatwijk uit de jaren zeventig, met gevelisolatie, zonnepanelen op de daken, een bewonersavond per portiek en afspraken over de huurverhoging na de renovatie. ZORG: een zorgregio wil het personeelstekort in de ouderenzorg verkleinen via werving van zij-instromers, behoud van huidige medewerkers en slimmer roosteren. CULTUUR: een gemeente start een leesoffensief voor jongeren met een vernieuwde jeugdcollectie in de bibliotheek, leesclubs op middelbare scholen en een campagne op sociale media.",
+  "cases": [
+    {
+      "seed_text": "Hittewerende maatregelen die de woningen ook in warme zomers koel houden als onderdeel van dezelfde renovatie.",
+      "note": "kandidaat-gap (WONEN): zomercomfort ontbreekt in de bron; geherformuleerd zonder splitter-triggers (amendement vóór de run, zie README)"
+    },
+    {
+      "seed_text": "Gezondheidswinst door de aanpak van vocht en schimmel als meetbaar nevendoel van de isolatie.",
+      "note": "kandidaat-gap (WONEN): gezondheidsdimensie ontbreekt"
+    },
+    {
+      "seed_text": "Tijdelijke herhuisvesting en bouwoverlast als risico voor het draagvlak onder bewoners.",
+      "note": "kandidaat-gap (WONEN): uitvoeringsrisico ontbreekt"
+    },
+    {
+      "seed_text": "Structurele ontlasting van mantelzorgers als hefboom om de zorgvraag zelf te verkleinen.",
+      "note": "kandidaat-gap (ZORG): vraagzijde ontbreekt, bron is aanbodgericht"
+    },
+    {
+      "seed_text": "Een uitstroomanalyse van waarom medewerkers nu vertrekken als basis voor het behoudbeleid.",
+      "note": "kandidaat-gap (ZORG): diagnose onder 'behoud' ontbreekt"
+    },
+    {
+      "seed_text": "Laaggeletterdheid van ouders betrekken zodat lezen ook thuis ondersteund wordt.",
+      "note": "kandidaat-gap (CULTUUR): thuisomgeving ontbreekt"
+    },
+    {
+      "seed_text": "Meetbare doelen en monitoring van leesvaardigheid om het leesoffensief tussentijds bij te sturen.",
+      "note": "kandidaat-gap (CULTUUR): monitoring ontbreekt (parallel met round-030-overlever)"
+    },
+    {
+      "seed_text": "De gevels worden geïsoleerd en er komen zonnepanelen op de daken.",
+      "note": "bron-parafrase (WONEN): al gedekt"
+    },
+    {
+      "seed_text": "Er zijn afspraken gemaakt over de huurverhoging na de renovatie.",
+      "note": "bron-parafrase (WONEN): al gedekt"
+    },
+    {
+      "seed_text": "Het werven van zij-instromers is onderdeel van de aanpak van het personeelstekort.",
+      "note": "bron-parafrase (ZORG): al gedekt"
+    },
+    {
+      "seed_text": "De bibliotheek vernieuwt haar jeugdcollectie.",
+      "note": "bron-parafrase (CULTUUR): al gedekt"
+    },
+    {
+      "seed_text": "Er komen leesclubs op middelbare scholen.",
+      "note": "bron-parafrase (CULTUUR): al gedekt"
+    },
+    {
+      "seed_text": "Verduurzaming van de flatwijk is uitsluitend de verantwoordelijkheid van de bewoners zelf.",
+      "note": "strijdig (WONEN): bron legt initiatief bij de corporatie"
+    },
+    {
+      "seed_text": "Het personeelstekort in de ouderenzorg lost zichzelf op zonder gericht beleid.",
+      "note": "strijdig (ZORG): bron beschrijft juist gericht beleid"
+    },
+    {
+      "seed_text": "Circulair materiaalgebruik bij de renovatie om de milieu-impact van de bouw te beperken.",
+      "note": "domein-nabij (WONEN): plausibel, niet in de bron"
+    },
+    {
+      "seed_text": "Inzet van zorgtechnologie op afstand om de werkdruk per medewerker te verlagen.",
+      "note": "domein-nabij (ZORG): plausibel, niet in de bron; geherformuleerd zonder splitter-triggers (amendement vóór de run, zie README)"
+    },
+    {
+      "seed_text": "Regionale samenwerking met opleiders voor voldoende stageplekken in de ouderenzorg.",
+      "note": "domein-nabij (ZORG): plausibel, niet in de bron"
+    },
+    {
+      "seed_text": "Samenwerking met boekhandels en auteurs voor schrijversbezoeken op scholen.",
+      "note": "domein-nabij (CULTUUR): plausibel, niet in de bron"
+    },
+    {
+      "seed_text": "Meertalige communicatie bij de bewonersavonden zodat alle portiekbewoners kunnen meepraten.",
+      "note": "domein-nabij (WONEN): plausibel, niet in de bron"
+    },
+    {
+      "seed_text": "Middeleeuwse kloosterbibliotheken als studieobject voor manuscriptconservering.",
+      "note": "distractor (domein-ver)"
+    },
+    {
+      "seed_text": "De migratieroutes van trekvogels boven de Waddenzee in het najaar.",
+      "note": "distractor (domein-ver)"
+    },
+    {
+      "seed_text": "Kwantumcomputing als doorbraaktechnologie voor moderne cryptografie.",
+      "note": "distractor (domein-ver)"
+    },
+    {
+      "seed_text": "De invloed van vulkanische activiteit op de IJslandse gletsjers.",
+      "note": "distractor (domein-ver)"
+    },
+    {
+      "seed_text": "Sponsoring van professionele wielerploegen als marketinginstrument voor banken.",
+      "note": "distractor (domein-ver)"
+    }
+  ]
+}

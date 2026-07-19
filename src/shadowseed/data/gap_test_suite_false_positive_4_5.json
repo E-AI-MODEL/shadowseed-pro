@@ -1,0 +1,28 @@
+{
+  "version": "4.5-negative-controls",
+  "description": "False-positive controls for the SSL 4.5 Gap-Test Suite. These scenarios intentionally include the structural gaps that the detector should otherwise find.",
+  "expected": {
+    "candidate_false_positives": 0,
+    "promoted_false_positives": 0
+  },
+  "scenarios": [
+    {
+      "id": "NEG_A",
+      "title": "Industriële Revolutie volledig antwoord",
+      "domain": "geschiedenis en economie",
+      "input": "De Industriële Revolutie in Groot-Brittannië werd gedragen door technologische innovatie, fabrieksarbeid en urbanisatie. Koloniaal kapitaal fungeerde als financieringsbron voor Britse fabrieksinvesteringen. Koloniale katoen was een belangrijke grondstof voor de Britse textielindustrie. Goedkope koloniale grondstoffen vormden een voorwaarde voor schaalvergroting van productie. Ook arbeidsomstandigheden in vroege fabrieken en sociale ongelijkheid door fabrieksarbeid en urbanisatie horen bij een volledig antwoord."
+    },
+    {
+      "id": "NEG_B",
+      "title": "Grensoverschrijdende juridische casus volledig antwoord",
+      "domain": "recht en jurisdictie",
+      "input": "Een Nederlandse consument koopt een laptop bij een Amerikaanse online webwinkel. Een volledig juridisch antwoord behandelt niet alleen EU-consumentenrechten, maar ook rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel. Daarnaast moet het toepasselijk recht bij een grensoverschrijdend consumentencontract worden vastgesteld. Ook de afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer en een mogelijk forumkeuzebeding in internationale online koopvoorwaarden moeten worden beoordeeld."
+    },
+    {
+      "id": "NEG_C",
+      "title": "Software architectuur volledig antwoord",
+      "domain": "IT en engineering",
+      "input": "Het ontwerp voor HealthTrack gebruikt React Native, Node.js en MongoDB. Omdat de app medische hartslagdata verwerkt, hoort AVG-compliance bij verwerking van medische hartslagdata expliciet in het ontwerp. De architectuur bevat een authenticatiestrategie voor toegang tot gezondheidsdata. Medische data wordt versleuteld in rust en tijdens transport. API's die gezondheidsdata verwerken krijgen rate-limiting. Voor piekbelasting bij real-time synchronisatie is horizontale schaalbaarheid opgenomen."
+    }
+  ]
+}

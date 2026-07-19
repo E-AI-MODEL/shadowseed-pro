@@ -1,0 +1,585 @@
+{
+  "summary": {
+    "evidence_layer": "open_set_seed_quality",
+    "artifact_contract_version": "open-review-0.2",
+    "corpus_version": "hf-open-set-batch-0.1",
+    "item_count": 12,
+    "raw_candidate_count": 60,
+    "normalized_candidate_count": 60,
+    "accepted_count": 54,
+    "rejected_count": 6,
+    "acceptance_rate": 0.9,
+    "domain_item_counts": {
+      "nieuws - Business": 1,
+      "nieuws - Sci/Tech": 11
+    },
+    "domain_accept_counts": {
+      "nieuws - Business": 4,
+      "nieuws - Sci/Tech": 50
+    },
+    "candidate_source_counts": {
+      "open_set_model_detector": 12
+    },
+    "detector": "model",
+    "model_backend": "hf-transformers:Qwen/Qwen2.5-3B-Instruct",
+    "candidate_adapter": "ssl45_open_set_candidate_adapter_v0.1",
+    "fixed_scenario_priors_used": false,
+    "expected_gaps_used": false,
+    "ground_truth_seeds_used": false,
+    "regression_gap_detector_used": false,
+    "candidate_quality_requires_human_review": true,
+    "seed_verdict_rule": "A seed counts as accepted or rejected only after every generated reviewer row for that seed is completed and valid.",
+    "reviewer_ids": [
+      "reviewer_a",
+      "reviewer_b"
+    ],
+    "reviewer_count": 2,
+    "review_packet_count": 108,
+    "review_criteria": [
+      "atomicity",
+      "relevance",
+      "testability",
+      "non_triviality",
+      "follow_up_utility"
+    ],
+    "reject_codes": [
+      "too_broad",
+      "too_vague",
+      "trivial",
+      "not_relevant",
+      "not_testable",
+      "duplicate",
+      "style_not_gap"
+    ],
+    "status": "review_pending",
+    "next_step": "Fill review packets and run summarize-open-set-seed-review.",
+    "artifacts": {
+      "seed_output": "results/open_review/open_set_seed_output.json",
+      "review_packets": "results/open_review/open_set_review_packets.json"
+    }
+  },
+  "results": [
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De aansprakelijkheid voor de pensioenen van T N ligt bij de stricken parent firm Federal Mogul.",
+        "De verantwoordelijkheid voor de arbeidsvoorwaarden van T N ligt bij de stricken parent firm Federal Mogul.",
+        "De vertrouwenbrekerij tussen T N en Federal Mogul kan effectief zijn op de pensioenen van T N werknemers.",
+        "De mogelijke veranderingen in de arbeidsvoorwaarden van T N werknemers zijn niet duidelijk gemaakt door de gesprekken.",
+        "De werknemers van T N hebben geen controle over de beslissingen die over hun pensioenen worden genomen door Federal Mogul. 1. De aansprakelijkheid voor de pensioenen van T N werknemers ligt bij de stricken parent firm Federal Mogul."
+      ],
+      "normalized_candidates": [
+        "De aansprakelijkheid voor de pensioenen van T N ligt bij de stricken parent firm Federal Mogul.",
+        "De verantwoordelijkheid voor de arbeidsvoorwaarden van T N ligt bij de stricken parent firm Federal Mogul.",
+        "De vertrouwenbrekerij tussen T N en Federal Mogul kan effectief zijn op de pensioenen van T N werknemers.",
+        "De mogelijke veranderingen in de arbeidsvoorwaarden van T N werknemers zijn niet duidelijk gemaakt door de gesprekken.",
+        "De werknemers van T N hebben geen controle over de beslissingen die over hun pensioenen worden genomen door Federal Mogul. 1. De aansprakelijkheid voor de pensioenen van T N werknemers ligt bij de stricken parent firm Federal Mogul."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De aansprakelijkheid voor de pensioenen van T N ligt bij de stricken parent firm Federal Mogul."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De verantwoordelijkheid voor de arbeidsvoorwaarden van T N ligt bij de stricken parent firm Federal Mogul."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De vertrouwenbrekerij tussen T N en Federal Mogul kan effectief zijn op de pensioenen van T N werknemers."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De mogelijke veranderingen in de arbeidsvoorwaarden van T N werknemers zijn niet duidelijk gemaakt door de gesprekken."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "De werknemers van T N hebben geen controle over de beslissingen die over hun pensioenen worden genomen door Federal Mogul. 1. De aansprakelijkheid voor de pensioenen van T N werknemers ligt bij de stricken parent firm Federal Mogul.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De #36;10 miljoen Ansari X Prize wordt niet genoemd.",
+        "Het aantal teams in de competitie wordt niet geciteerd.",
+        "De specifieke datum voor de eerste lancering wordt niet aangegeven.",
+        "De naam van de tweede team is niet genoemd.",
+        "De specifieke manier waarop de teams zich aanmelden voor de X Prize wordt niet beschreven."
+      ],
+      "normalized_candidates": [
+        "De #36;10 miljoen Ansari X Prize wordt niet genoemd.",
+        "Het aantal teams in de competitie wordt niet geciteerd.",
+        "De specifieke datum voor de eerste lancering wordt niet aangegeven.",
+        "De naam van de tweede team is niet genoemd.",
+        "De specifieke manier waarop de teams zich aanmelden voor de X Prize wordt niet beschreven."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De #36;10 miljoen Ansari X Prize wordt niet genoemd."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Het aantal teams in de competitie wordt niet geciteerd."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De specifieke datum voor de eerste lancering wordt niet aangegeven."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De naam van de tweede team is niet genoemd."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De specifieke manier waarop de teams zich aanmelden voor de X Prize wordt niet beschreven."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Peptide-productie wordt niet gecombineerd met de ontwikkeling van een methode.",
+        "De betrokken wetenschapper is niet genoemd.",
+        "De aard van de grant niet vermeld.",
+        "Het proces van peptide-productie niet beschreven.",
+        "De effecten van de nieuwe peptide-productie niet aangegeven. 1. Peptide-productie wordt niet gecombineerd met de ontwikkeling van een methode."
+      ],
+      "normalized_candidates": [
+        "Peptide-productie wordt niet gecombineerd met de ontwikkeling van een methode.",
+        "De betrokken wetenschapper is niet genoemd.",
+        "De aard van de grant niet vermeld.",
+        "Het proces van peptide-productie niet beschreven.",
+        "De effecten van de nieuwe peptide-productie niet aangegeven. 1. Peptide-productie wordt niet gecombineerd met de ontwikkeling van een methode."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Peptide-productie wordt niet gecombineerd met de ontwikkeling van een methode."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De betrokken wetenschapper is niet genoemd."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De aard van de grant niet vermeld."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Het proces van peptide-productie niet beschreven."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "De effecten van de nieuwe peptide-productie niet aangegeven. 1. Peptide-productie wordt niet gecombineerd met de ontwikkeling van een methode.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De Prediction Unit heeft geen toezicht op brandweeropdrachten.",
+        "De Prediction Unit weet niet precies waar branden zich bevinden.",
+        "De Prediction Unit heeft geen informatie over brandweerreserves.",
+        "De Prediction Unit kan geen branden voorkomen.",
+        "De Prediction Unit heeft geen contact met brandweerpersoneel. 1. De Prediction Unit heeft geen strategieën voor brandherstel na branden."
+      ],
+      "normalized_candidates": [
+        "De Prediction Unit heeft geen toezicht op brandweeropdrachten.",
+        "De Prediction Unit weet niet precies waar branden zich bevinden.",
+        "De Prediction Unit heeft geen informatie over brandweerreserves.",
+        "De Prediction Unit kan geen branden voorkomen.",
+        "De Prediction Unit heeft geen contact met brandweerpersoneel. 1. De Prediction Unit heeft geen strategieën voor brandherstel na branden."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De Prediction Unit heeft geen toezicht op brandweeropdrachten."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De Prediction Unit weet niet precies waar branden zich bevinden."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De Prediction Unit heeft geen informatie over brandweerreserves."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De Prediction Unit kan geen branden voorkomen."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "De Prediction Unit heeft geen contact met brandweerpersoneel. 1. De Prediction Unit heeft geen strategieën voor brandherstel na branden.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Bovenspanen worden niet geclassificeerd als bron van luchtvervuiling.",
+        "Regelgeving betreffende bovenspanen wordt niet aangeboden door andere staten.",
+        "Impact van bovenspanen op luchtkwaliteit wordt niet genoemd in de tekst.",
+        "Methode om bovenspanen te verminderen wordt niet beschreven in de tekst.",
+        "Kosten van implementatie van bovenspanenregelingen worden niet vermeld in de tekst."
+      ],
+      "normalized_candidates": [
+        "Bovenspanen worden niet geclassificeerd als bron van luchtvervuiling.",
+        "Regelgeving betreffende bovenspanen wordt niet aangeboden door andere staten.",
+        "Impact van bovenspanen op luchtkwaliteit wordt niet genoemd in de tekst.",
+        "Methode om bovenspanen te verminderen wordt niet beschreven in de tekst.",
+        "Kosten van implementatie van bovenspanenregelingen worden niet vermeld in de tekst."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Bovenspanen worden niet geclassificeerd als bron van luchtvervuiling."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Regelgeving betreffende bovenspanen wordt niet aangeboden door andere staten."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Impact van bovenspanen op luchtkwaliteit wordt niet genoemd in de tekst."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Methode om bovenspanen te verminderen wordt niet beschreven in de tekst."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Kosten van implementatie van bovenspanenregelingen worden niet vermeld in de tekst."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De DfES heeft geen maatregelen genomen om de illegale downloadverdediging te voorkomen.",
+        "De DfES heeft geen communicatieplannen voor het onderwijs in muziek geschreven.",
+        "De DfES heeft geen regels ingesteld voor het gebruik van digitale muziekproducten in de school.",
+        "De DfES heeft geen feedbackopnames verzameld over de impact van de \"Music Manifesto\".",
+        "De DfES heeft geen plannen voor een alternatieve muziekmanifesto zonder illegaliteit. 1. De DfES heeft geen strategie voor het ondersteunen van legitieme muziekverkoopmethoden."
+      ],
+      "normalized_candidates": [
+        "De DfES heeft geen maatregelen genomen om de illegale downloadverdediging te voorkomen.",
+        "De DfES heeft geen communicatieplannen voor het onderwijs in muziek geschreven.",
+        "De DfES heeft geen regels ingesteld voor het gebruik van digitale muziekproducten in de school.",
+        "De DfES heeft geen feedbackopnames verzameld over de impact van de \"Music Manifesto\".",
+        "De DfES heeft geen plannen voor een alternatieve muziekmanifesto zonder illegaliteit. 1. De DfES heeft geen strategie voor het ondersteunen van legitieme muziekverkoopmethoden."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De DfES heeft geen maatregelen genomen om de illegale downloadverdediging te voorkomen."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De DfES heeft geen communicatieplannen voor het onderwijs in muziek geschreven."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De DfES heeft geen regels ingesteld voor het gebruik van digitale muziekproducten in de school."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De DfES heeft geen feedbackopnames verzameld over de impact van de \"Music Manifesto\"."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "De DfES heeft geen plannen voor een alternatieve muziekmanifesto zonder illegaliteit. 1. De DfES heeft geen strategie voor het ondersteunen van legitieme muziekverkoopmethoden.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Netwerkwormen zijn niet exclusief bijzondere vaardigheden vereist om te ontwikkelen.",
+        "De impact van een virusontwikkelaar op de virusinfecties kan niet alleen worden bepaald door de hoeveelheid verschillende varianten.",
+        "Er zijn andere virusontwikkelaars die net zo belangrijk zijn als Sven Jaschan, maar deze niet genoemd.",
+        "Het aantal virusvarianten die in een periode kunnen ontstaan, wordt niet aangegeven.",
+        "De technische details van de virusontwikkeling en hun effecten op de netwerken worden niet uitgebreid beschreven."
+      ],
+      "normalized_candidates": [
+        "Netwerkwormen zijn niet exclusief bijzondere vaardigheden vereist om te ontwikkelen.",
+        "De impact van een virusontwikkelaar op de virusinfecties kan niet alleen worden bepaald door de hoeveelheid verschillende varianten.",
+        "Er zijn andere virusontwikkelaars die net zo belangrijk zijn als Sven Jaschan, maar deze niet genoemd.",
+        "Het aantal virusvarianten die in een periode kunnen ontstaan, wordt niet aangegeven.",
+        "De technische details van de virusontwikkeling en hun effecten op de netwerken worden niet uitgebreid beschreven."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Netwerkwormen zijn niet exclusief bijzondere vaardigheden vereist om te ontwikkelen."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De impact van een virusontwikkelaar op de virusinfecties kan niet alleen worden bepaald door de hoeveelheid verschillende varianten."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Er zijn andere virusontwikkelaars die net zo belangrijk zijn als Sven Jaschan, maar deze niet genoemd."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Het aantal virusvarianten die in een periode kunnen ontstaan, wordt niet aangegeven."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De technische details van de virusontwikkeling en hun effecten op de netwerken worden niet uitgebreid beschreven."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De bloombestek moet worden gegenereerd voordat het in de FOAF-bestand wordt opgenomen.",
+        "Een bloombestek kan niet worden gebruikt voor het bevestigen van de authenticiteit van een PGP-fingerprint.",
+        "Er wordt niet vermeld hoe de whitelist van identiteiten wordt gevuld.",
+        "Er wordt niet vermeld hoe de encryptie van de FOAF-bestanden wordt uitgevoerd.",
+        "Er wordt niet vermeld hoe de bloombestek wordt gecreëerd en gebruikt voor het bevestigen van de authenticiteit van de PGP-fingerprints. 1. De bloombestek moet worden gegenereerd voordat het in de FOAF-bestand wordt opgenomen."
+      ],
+      "normalized_candidates": [
+        "De bloombestek moet worden gegenereerd voordat het in de FOAF-bestand wordt opgenomen.",
+        "Een bloombestek kan niet worden gebruikt voor het bevestigen van de authenticiteit van een PGP-fingerprint.",
+        "Er wordt niet vermeld hoe de whitelist van identiteiten wordt gevuld.",
+        "Er wordt niet vermeld hoe de encryptie van de FOAF-bestanden wordt uitgevoerd.",
+        "Er wordt niet vermeld hoe de bloombestek wordt gecreëerd en gebruikt voor het bevestigen van de authenticiteit van de PGP-fingerprints. 1. De bloombestek moet worden gegenereerd voordat het in de FOAF-bestand wordt opgenomen."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De bloombestek moet worden gegenereerd voordat het in de FOAF-bestand wordt opgenomen."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Een bloombestek kan niet worden gebruikt voor het bevestigen van de authenticiteit van een PGP-fingerprint."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Er wordt niet vermeld hoe de whitelist van identiteiten wordt gevuld."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Er wordt niet vermeld hoe de encryptie van de FOAF-bestanden wordt uitgevoerd."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "Er wordt niet vermeld hoe de bloombestek wordt gecreëerd en gebruikt voor het bevestigen van de authenticiteit van de PGP-fingerprints. 1. De bloombestek moet worden gegenereerd voordat het in de FOAF-bestand wordt opgenomen.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Het aantal vermeende gereden cards is niet vastgesteld.",
+        "De aantallen arrestaties zijn niet verdeeld per type card fraud.",
+        "De kosten die bespaard zijn door de card fraud unit zijn niet genoemd.",
+        "De tijdspanne van de arrestaties is niet vastgesteld.",
+        "De aantallen cards die verloren zijn gegaan zijn niet vastgesteld. 1. Het aantal vermeende gereden cards is niet vastgesteld."
+      ],
+      "normalized_candidates": [
+        "Het aantal vermeende gereden cards is niet vastgesteld.",
+        "De aantallen arrestaties zijn niet verdeeld per type card fraud.",
+        "De kosten die bespaard zijn door de card fraud unit zijn niet genoemd.",
+        "De tijdspanne van de arrestaties is niet vastgesteld.",
+        "De aantallen cards die verloren zijn gegaan zijn niet vastgesteld. 1. Het aantal vermeende gereden cards is niet vastgesteld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Het aantal vermeende gereden cards is niet vastgesteld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De aantallen arrestaties zijn niet verdeeld per type card fraud."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De kosten die bespaard zijn door de card fraud unit zijn niet genoemd."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De tijdspanne van de arrestaties is niet vastgesteld."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "De aantallen cards die verloren zijn gegaan zijn niet vastgesteld. 1. Het aantal vermeende gereden cards is niet vastgesteld.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De nieuwe high-speed wireless format wordt niet beschreven.",
+        "De technologieën die de nieuwgeplande standaard ondersteunen worden niet genoemd.",
+        "De specifieke details over hoe de nieuwe standaard vergroot kan worden zijn niet vermeld.",
+        "De reactie van de concurrentie op de nieuwe standaard is niet gedeeld.",
+        "De toekomstige impact van de nieuwe standaard op de markt is niet besproken."
+      ],
+      "normalized_candidates": [
+        "De nieuwe high-speed wireless format wordt niet beschreven.",
+        "De technologieën die de nieuwgeplande standaard ondersteunen worden niet genoemd.",
+        "De specifieke details over hoe de nieuwe standaard vergroot kan worden zijn niet vermeld.",
+        "De reactie van de concurrentie op de nieuwe standaard is niet gedeeld.",
+        "De toekomstige impact van de nieuwe standaard op de markt is niet besproken."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De nieuwe high-speed wireless format wordt niet beschreven."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De technologieën die de nieuwgeplande standaard ondersteunen worden niet genoemd."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De specifieke details over hoe de nieuwe standaard vergroot kan worden zijn niet vermeld."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De reactie van de concurrentie op de nieuwe standaard is niet gedeeld."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De toekomstige impact van de nieuwe standaard op de markt is niet besproken."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De beschikbare softwarepakketten zijn niet genoemd.",
+        "De prijs van de video-editingsoftwarepakket is niet aangegeven.",
+        "De technische vereisten voor het gebruik van de softwarepakketten worden niet gedeeld.",
+        "De mogelijkheden voor integratie van de softwarepakketten met andere applicaties zijn niet besproken.",
+        "De beperkingen betreffende het gebruik van de softwarepakketten in educatieve doeleinden zijn niet aangegeven."
+      ],
+      "normalized_candidates": [
+        "De beschikbare softwarepakketten zijn niet genoemd.",
+        "De prijs van de video-editingsoftwarepakket is niet aangegeven.",
+        "De technische vereisten voor het gebruik van de softwarepakketten worden niet gedeeld.",
+        "De mogelijkheden voor integratie van de softwarepakketten met andere applicaties zijn niet besproken.",
+        "De beperkingen betreffende het gebruik van de softwarepakketten in educatieve doeleinden zijn niet aangegeven."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De beschikbare softwarepakketten zijn niet genoemd."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De prijs van de video-editingsoftwarepakket is niet aangegeven."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De technische vereisten voor het gebruik van de softwarepakketten worden niet gedeeld."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De mogelijkheden voor integratie van de softwarepakketten met andere applicaties zijn niet besproken."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De beperkingen betreffende het gebruik van de softwarepakketten in educatieve doeleinden zijn niet aangegeven."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Ontbreken van een concurrentieanalyse tussen Free Record Shop en Apple.",
+        "Ontbreken van de prijsverdeling van de nieuwe downloadservice.",
+        "Ontbreken van de reactie van Apple op de nieuwe service.",
+        "Ontbreken van de reactie van andere music retailers op de nieuwe service.",
+        "Ontbreken van de technische details van de nieuwe downloadservice."
+      ],
+      "normalized_candidates": [
+        "Ontbreken van een concurrentieanalyse tussen Free Record Shop en Apple.",
+        "Ontbreken van de prijsverdeling van de nieuwe downloadservice.",
+        "Ontbreken van de reactie van Apple op de nieuwe service.",
+        "Ontbreken van de reactie van andere music retailers op de nieuwe service.",
+        "Ontbreken van de technische details van de nieuwe downloadservice."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Ontbreken van een concurrentieanalyse tussen Free Record Shop en Apple."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Ontbreken van de prijsverdeling van de nieuwe downloadservice."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Ontbreken van de reactie van Apple op de nieuwe service."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Ontbreken van de reactie van andere music retailers op de nieuwe service."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Ontbreken van de technische details van de nieuwe downloadservice."
+        }
+      ],
+      "rejected": []
+    }
+  ]
+}

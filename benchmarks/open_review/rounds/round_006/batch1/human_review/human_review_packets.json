@@ -1,0 +1,1115 @@
+{
+  "evidence_layer": "open_set_seed_quality",
+  "review_note": "BLIND human second pass. Fill review_fields (5 booleans), review_status accepted/rejected, and reject_reason on reject. Do NOT open ../ai_review/ while reviewing. Reject codes: too_broad, too_vague, trivial, not_relevant, not_testable, duplicate, style_not_gap. | Filled from maintainer human review (binary accept/reject; '?' doubts abstained).",
+  "criteria": [
+    "atomicity",
+    "relevance",
+    "testability",
+    "non_triviality",
+    "follow_up_utility"
+  ],
+  "packets": [
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Calif. Aims to Limit Farm-Related Smog (AP) AP - Southern California's smog-fighting agency went after emissions of the bovine variety Friday, adopting the nation's first rules to reduce air pollution from dairy cow manure.",
+      "seed_id": "ai_r006_AG_NEWS_TEST_4_4",
+      "seed_text": "De specifieke tijdlijn of deadline voor de implementatie van de nieuwe regels.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "source_excerpt": "Fears for T N pension after talks Unions representing workers at Turner Newall say they are 'disappointed' after talks with stricken parent firm Federal Mogul.",
+      "seed_id": "ai_r006_AG_NEWS_TEST_0_2",
+      "seed_text": "De exacte bemiddelingsmethode of tussenpersoon.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Group to Propose New High-Speed Wireless Format LOS ANGELES (Reuters) - A group of technology companies including Texas Instruments Inc. &lt;TXN.N&gt;, STMicroelectronics &lt;STM.PA&gt; and Broadcom Corp. &lt;BRCM.O&gt;, on Thursday said th",
+      "seed_id": "ai_r006_AG_NEWS_TEST_10_1",
+      "seed_text": "Specifieke technische specificaties van de nieuwe high-speed wireless format.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Loosing the War on Terrorism \\\\\"Sven Jaschan, self-confessed author of the Netsky and Sasser viruses, is\\responsible for 70 percent of virus infections in 2004, according to a six-month\\virus roundup published Wednesday by antivirus company",
+      "seed_id": "ai_r006_AG_NEWS_TEST_6_1",
+      "seed_text": "De specifieke strategieën die door Sophos zijn gebruikt om de virussen te identificeren.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Apple Launches Graphics Software, Video Bundle LOS ANGELES (Reuters) - Apple Computer Inc.&lt;AAPL.O&gt; on Tuesday began shipping a new program designed to let users create real-time motion graphics and unveiled a discount video-editing so",
+      "seed_id": "ai_r006_AG_NEWS_TEST_11_3",
+      "seed_text": "De beschikbaarheid van de software in verschillende regio's.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": "abstain (?)"
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Group to Propose New High-Speed Wireless Format LOS ANGELES (Reuters) - A group of technology companies including Texas Instruments Inc. &lt;TXN.N&gt;, STMicroelectronics &lt;STM.PA&gt; and Broadcom Corp. &lt;BRCM.O&gt;, on Thursday said th",
+      "seed_id": "ai_r006_AG_NEWS_TEST_10_3",
+      "seed_text": "De timing en details van het voorstelpresentatie.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "FOAFKey: FOAF, PGP, Key Distribution, and Bloom Filters \\\\FOAF/LOAF and bloom filters have a lot of interesting properties for social\\network and whitelist distribution.\\\\I think we can go one level higher though and include GPG/OpenPGP key",
+      "seed_id": "ai_r006_AG_NEWS_TEST_7_4",
+      "seed_text": "De encryptiebehoeften van de bron FOAF file voor veiligheid.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Open Letter Against British Copyright Indoctrination in Schools The British Department for Education and Skills (DfES) recently launched a \"Music Manifesto\" campaign, with the ostensible intention of educating the next generation of British",
+      "seed_id": "ai_r006_AG_NEWS_TEST_5_5",
+      "seed_text": "Eventuele reacties of acties van andere belanghebbenden of organisaties na het schrijven van het open brief.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Dutch Retailer Beats Apple to Local Download Market AMSTERDAM (Reuters) - Free Record Shop, a Dutch music retail chain, beat Apple Computer Inc. to market on Tuesday with the launch of a new download service in Europe's latest battleground ",
+      "seed_id": "ai_r006_AG_NEWS_TEST_12_3",
+      "seed_text": "De impact van de nieuwe download service op de Europese muziekmarkt.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Loosing the War on Terrorism \\\\\"Sven Jaschan, self-confessed author of the Netsky and Sasser viruses, is\\responsible for 70 percent of virus infections in 2004, according to a six-month\\virus roundup published Wednesday by antivirus company",
+      "seed_id": "ai_r006_AG_NEWS_TEST_6_4",
+      "seed_text": "De impact van de arrestatie op de algehele trend van virusinfecties in de daaropvolgende periode.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "FOAFKey: FOAF, PGP, Key Distribution, and Bloom Filters \\\\FOAF/LOAF and bloom filters have a lot of interesting properties for social\\network and whitelist distribution.\\\\I think we can go one level higher though and include GPG/OpenPGP key",
+      "seed_id": "ai_r006_AG_NEWS_TEST_7_5",
+      "seed_text": "De relatie tussen de directe vrienden en de bloom filter van hun PGP.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Open Letter Against British Copyright Indoctrination in Schools The British Department for Education and Skills (DfES) recently launched a \"Music Manifesto\" campaign, with the ostensible intention of educating the next generation of British",
+      "seed_id": "ai_r006_AG_NEWS_TEST_5_4",
+      "seed_text": "De impact van deze indoctrinatie op de scholieren in de Britse scholen.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "source_excerpt": "Fears for T N pension after talks Unions representing workers at Turner Newall say they are 'disappointed' after talks with stricken parent firm Federal Mogul.",
+      "seed_id": "ai_r006_AG_NEWS_TEST_0_4",
+      "seed_text": "De reactie of standpunt van Federal Mogul na de gesprekken.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Card fraud unit nets 36,000 cards In its first two years, the UK's dedicated card fraud unit, has recovered 36,000 stolen cards and 171 arrests - and estimates it saved 65m.",
+      "seed_id": "ai_r006_AG_NEWS_TEST_9_2",
+      "seed_text": "De specifieke soorten misdrijven waarmee de card fraud unit is betrokken.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Card fraud unit nets 36,000 cards In its first two years, the UK's dedicated card fraud unit, has recovered 36,000 stolen cards and 171 arrests - and estimates it saved 65m.",
+      "seed_id": "ai_r006_AG_NEWS_TEST_9_3",
+      "seed_text": "Het exacte aantal gevallen waarin de card fraud unit heeft bijgedragen aan de arrestatie van verdachten.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "The Race is On: Second Private Team Sets Launch Date for Human Spaceflight (SPACE.com) SPACE.com - TORONTO, Canada -- A second\\team of rocketeers competing for the #36;10 million Ansari X Prize, a contest for\\privately funded suborbital spa",
+      "seed_id": "ai_r006_AG_NEWS_TEST_1_4",
+      "seed_text": "Specifieke criteria voor het winnen van de Ansari X Prize.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Group to Propose New High-Speed Wireless Format LOS ANGELES (Reuters) - A group of technology companies including Texas Instruments Inc. &lt;TXN.N&gt;, STMicroelectronics &lt;STM.PA&gt; and Broadcom Corp. &lt;BRCM.O&gt;, on Thursday said th",
+      "seed_id": "ai_r006_AG_NEWS_TEST_10_4",
+      "seed_text": "Potentiële impact en vooruitzichten van de nieuwe high-speed wireless standard.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Group to Propose New High-Speed Wireless Format LOS ANGELES (Reuters) - A group of technology companies including Texas Instruments Inc. &lt;TXN.N&gt;, STMicroelectronics &lt;STM.PA&gt; and Broadcom Corp. &lt;BRCM.O&gt;, on Thursday said th",
+      "seed_id": "ai_r006_AG_NEWS_TEST_10_5",
+      "seed_text": "Andere technologiebedrijven of belanghebbenden die mogelijk betrokken zijn bij het voorstel.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "The Race is On: Second Private Team Sets Launch Date for Human Spaceflight (SPACE.com) SPACE.com - TORONTO, Canada -- A second\\team of rocketeers competing for the #36;10 million Ansari X Prize, a contest for\\privately funded suborbital spa",
+      "seed_id": "ai_r006_AG_NEWS_TEST_1_1",
+      "seed_text": "Specifieke datum voor de eerste lancering.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Card fraud unit nets 36,000 cards In its first two years, the UK's dedicated card fraud unit, has recovered 36,000 stolen cards and 171 arrests - and estimates it saved 65m.",
+      "seed_id": "ai_r006_AG_NEWS_TEST_9_5",
+      "seed_text": "De periode waarin de card fraud unit haar prestaties heeft gemeten.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Calif. Aims to Limit Farm-Related Smog (AP) AP - Southern California's smog-fighting agency went after emissions of the bovine variety Friday, adopting the nation's first rules to reduce air pollution from dairy cow manure.",
+      "seed_id": "ai_r006_AG_NEWS_TEST_4_1",
+      "seed_text": "Specifieke technische maatregelen om emissies van dairy cow manure te verminderen.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Card fraud unit nets 36,000 cards In its first two years, the UK's dedicated card fraud unit, has recovered 36,000 stolen cards and 171 arrests - and estimates it saved 65m.",
+      "seed_id": "ai_r006_AG_NEWS_TEST_9_1",
+      "seed_text": "Het exacte aantal geredde kredietkaarten buiten de 36,000 die worden vermeld.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Open Letter Against British Copyright Indoctrination in Schools The British Department for Education and Skills (DfES) recently launched a \"Music Manifesto\" campaign, with the ostensible intention of educating the next generation of British",
+      "seed_id": "ai_r006_AG_NEWS_TEST_5_1",
+      "seed_text": "Het specifieke doel van de \"Music Manifesto\" campagne van de DfES.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Apple Launches Graphics Software, Video Bundle LOS ANGELES (Reuters) - Apple Computer Inc.&lt;AAPL.O&gt; on Tuesday began shipping a new program designed to let users create real-time motion graphics and unveiled a discount video-editing so",
+      "seed_id": "ai_r006_AG_NEWS_TEST_11_2",
+      "seed_text": "De prijs van de discount video-editing software bundle.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Prediction Unit Helps Forecast Wildfires (AP) AP - It's barely dawn when Mike Fitzpatrick starts his shift with a blur of colorful maps, figures and endless charts, but already he knows what the day will bring. Lightning will strike in plac",
+      "seed_id": "ai_r006_AG_NEWS_TEST_3_4",
+      "seed_text": "Historische nauwkeurigheid van voorspellingen van de Prediction Unit voor wildfires.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "source_excerpt": "Fears for T N pension after talks Unions representing workers at Turner Newall say they are 'disappointed' after talks with stricken parent firm Federal Mogul.",
+      "seed_id": "ai_r006_AG_NEWS_TEST_0_1",
+      "seed_text": "Specifieke resultaten of uitkomsten van de talks.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "FOAFKey: FOAF, PGP, Key Distribution, and Bloom Filters \\\\FOAF/LOAF and bloom filters have a lot of interesting properties for social\\network and whitelist distribution.\\\\I think we can go one level higher though and include GPG/OpenPGP key",
+      "seed_id": "ai_r006_AG_NEWS_TEST_7_3",
+      "seed_text": "De manier waarop de client het whitelist vult vanuit de sociale netwerk.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "FOAFKey: FOAF, PGP, Key Distribution, and Bloom Filters \\\\FOAF/LOAF and bloom filters have a lot of interesting properties for social\\network and whitelist distribution.\\\\I think we can go one level higher though and include GPG/OpenPGP key",
+      "seed_id": "ai_r006_AG_NEWS_TEST_7_1",
+      "seed_text": "De specifieke manier waarop de bloom filter wordt gebruikt voor de PGP.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Apple Launches Graphics Software, Video Bundle LOS ANGELES (Reuters) - Apple Computer Inc.&lt;AAPL.O&gt; on Tuesday began shipping a new program designed to let users create real-time motion graphics and unveiled a discount video-editing so",
+      "seed_id": "ai_r006_AG_NEWS_TEST_11_5",
+      "seed_text": "Reviews of feedback van gebruikers na de lancering van de software.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Group to Propose New High-Speed Wireless Format LOS ANGELES (Reuters) - A group of technology companies including Texas Instruments Inc. &lt;TXN.N&gt;, STMicroelectronics &lt;STM.PA&gt; and Broadcom Corp. &lt;BRCM.O&gt;, on Thursday said th",
+      "seed_id": "ai_r006_AG_NEWS_TEST_10_2",
+      "seed_text": "De exacte groep technologiebedrijven die de voorstellen doen.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Prediction Unit Helps Forecast Wildfires (AP) AP - It's barely dawn when Mike Fitzpatrick starts his shift with a blur of colorful maps, figures and endless charts, but already he knows what the day will bring. Lightning will strike in plac",
+      "seed_id": "ai_r006_AG_NEWS_TEST_3_1",
+      "seed_text": "Specifieke geografische locaties waar de wildfires voorspeld worden.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Dutch Retailer Beats Apple to Local Download Market AMSTERDAM (Reuters) - Free Record Shop, a Dutch music retail chain, beat Apple Computer Inc. to market on Tuesday with the launch of a new download service in Europe's latest battleground ",
+      "seed_id": "ai_r006_AG_NEWS_TEST_12_1",
+      "seed_text": "Specifieke functies van de nieuwe download service.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Ky. Company Wins Grant to Study Peptides (AP) AP - A company founded by a chemistry researcher at the University of Louisville won a grant to develop a method of producing better peptides, which are short chains of amino acids, the building",
+      "seed_id": "ai_r006_AG_NEWS_TEST_2_4",
+      "seed_text": "De exacte universiteit waar de chemie researcher aan het begin van het bedrijf werkte.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Dutch Retailer Beats Apple to Local Download Market AMSTERDAM (Reuters) - Free Record Shop, a Dutch music retail chain, beat Apple Computer Inc. to market on Tuesday with the launch of a new download service in Europe's latest battleground ",
+      "seed_id": "ai_r006_AG_NEWS_TEST_12_5",
+      "seed_text": "De timing en locatie van de lancering buiten Nederland.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": "abstain (?)"
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Open Letter Against British Copyright Indoctrination in Schools The British Department for Education and Skills (DfES) recently launched a \"Music Manifesto\" campaign, with the ostensible intention of educating the next generation of British",
+      "seed_id": "ai_r006_AG_NEWS_TEST_5_3",
+      "seed_text": "Specifieke beleidsmaatregelen of acties die door EMI zijn onderhandeld.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Open Letter Against British Copyright Indoctrination in Schools The British Department for Education and Skills (DfES) recently launched a \"Music Manifesto\" campaign, with the ostensible intention of educating the next generation of British",
+      "seed_id": "ai_r006_AG_NEWS_TEST_5_2",
+      "seed_text": "De exacte details van de samenwerking tussen de DfES en de muziekindustrie.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Calif. Aims to Limit Farm-Related Smog (AP) AP - Southern California's smog-fighting agency went after emissions of the bovine variety Friday, adopting the nation's first rules to reduce air pollution from dairy cow manure.",
+      "seed_id": "ai_r006_AG_NEWS_TEST_4_3",
+      "seed_text": "De reactie van de landbouwsector op de adoptie van deze regels.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Dutch Retailer Beats Apple to Local Download Market AMSTERDAM (Reuters) - Free Record Shop, a Dutch music retail chain, beat Apple Computer Inc. to market on Tuesday with the launch of a new download service in Europe's latest battleground ",
+      "seed_id": "ai_r006_AG_NEWS_TEST_12_2",
+      "seed_text": "De reactie van Apple Computer Inc. op de lancering.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Ky. Company Wins Grant to Study Peptides (AP) AP - A company founded by a chemistry researcher at the University of Louisville won a grant to develop a method of producing better peptides, which are short chains of amino acids, the building",
+      "seed_id": "ai_r006_AG_NEWS_TEST_2_1",
+      "seed_text": "Specifieke soorten peptides die in de studie worden onderzocht.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Ky. Company Wins Grant to Study Peptides (AP) AP - A company founded by a chemistry researcher at the University of Louisville won a grant to develop a method of producing better peptides, which are short chains of amino acids, the building",
+      "seed_id": "ai_r006_AG_NEWS_TEST_2_2",
+      "seed_text": "Omvang van het gehonoreerde grant.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Prediction Unit Helps Forecast Wildfires (AP) AP - It's barely dawn when Mike Fitzpatrick starts his shift with a blur of colorful maps, figures and endless charts, but already he knows what the day will bring. Lightning will strike in plac",
+      "seed_id": "ai_r006_AG_NEWS_TEST_3_3",
+      "seed_text": "De specifieke methodologie of techniek die door de Prediction Unit wordt gebruikt.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "source_excerpt": "Fears for T N pension after talks Unions representing workers at Turner Newall say they are 'disappointed' after talks with stricken parent firm Federal Mogul.",
+      "seed_id": "ai_r006_AG_NEWS_TEST_0_3",
+      "seed_text": "Specifieke belangen of eisen van de werknemers.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "The Race is On: Second Private Team Sets Launch Date for Human Spaceflight (SPACE.com) SPACE.com - TORONTO, Canada -- A second\\team of rocketeers competing for the #36;10 million Ansari X Prize, a contest for\\privately funded suborbital spa",
+      "seed_id": "ai_r006_AG_NEWS_TEST_1_3",
+      "seed_text": "De naam van de tweede private team.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Dutch Retailer Beats Apple to Local Download Market AMSTERDAM (Reuters) - Free Record Shop, a Dutch music retail chain, beat Apple Computer Inc. to market on Tuesday with the launch of a new download service in Europe's latest battleground ",
+      "seed_id": "ai_r006_AG_NEWS_TEST_12_4",
+      "seed_text": "Details over de concurrentie tussen Free Record Shop en andere spelers.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "The Race is On: Second Private Team Sets Launch Date for Human Spaceflight (SPACE.com) SPACE.com - TORONTO, Canada -- A second\\team of rocketeers competing for the #36;10 million Ansari X Prize, a contest for\\privately funded suborbital spa",
+      "seed_id": "ai_r006_AG_NEWS_TEST_1_5",
+      "seed_text": "De locatie waar de lancering zal plaatsvinden.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Loosing the War on Terrorism \\\\\"Sven Jaschan, self-confessed author of the Netsky and Sasser viruses, is\\responsible for 70 percent of virus infections in 2004, according to a six-month\\virus roundup published Wednesday by antivirus company",
+      "seed_id": "ai_r006_AG_NEWS_TEST_6_3",
+      "seed_text": "De specifieke technische details van hoe Jaschan de Netsky en Sasser worms heeft geprogrammeerd.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Ky. Company Wins Grant to Study Peptides (AP) AP - A company founded by a chemistry researcher at the University of Louisville won a grant to develop a method of producing better peptides, which are short chains of amino acids, the building",
+      "seed_id": "ai_r006_AG_NEWS_TEST_2_5",
+      "seed_text": "De geplande duur of termijn van de peptide-productie method.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": "abstain (?)"
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Ky. Company Wins Grant to Study Peptides (AP) AP - A company founded by a chemistry researcher at the University of Louisville won a grant to develop a method of producing better peptides, which are short chains of amino acids, the building",
+      "seed_id": "ai_r006_AG_NEWS_TEST_2_3",
+      "seed_text": "De specifieke gebruikssituatie of toepassing van betere peptides.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Loosing the War on Terrorism \\\\\"Sven Jaschan, self-confessed author of the Netsky and Sasser viruses, is\\responsible for 70 percent of virus infections in 2004, according to a six-month\\virus roundup published Wednesday by antivirus company",
+      "seed_id": "ai_r006_AG_NEWS_TEST_6_2",
+      "seed_text": "Details over de juridische consequenties van Jaschan's veroordeling.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "The Race is On: Second Private Team Sets Launch Date for Human Spaceflight (SPACE.com) SPACE.com - TORONTO, Canada -- A second\\team of rocketeers competing for the #36;10 million Ansari X Prize, a contest for\\privately funded suborbital spa",
+      "seed_id": "ai_r006_AG_NEWS_TEST_1_2",
+      "seed_text": "Details over de technologie van de rocket.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Prediction Unit Helps Forecast Wildfires (AP) AP - It's barely dawn when Mike Fitzpatrick starts his shift with a blur of colorful maps, figures and endless charts, but already he knows what the day will bring. Lightning will strike in plac",
+      "seed_id": "ai_r006_AG_NEWS_TEST_3_2",
+      "seed_text": "Precisiesnelheden of nauwkeurigheidspercentages van de Prediction Unit.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Apple Launches Graphics Software, Video Bundle LOS ANGELES (Reuters) - Apple Computer Inc.&lt;AAPL.O&gt; on Tuesday began shipping a new program designed to let users create real-time motion graphics and unveiled a discount video-editing so",
+      "seed_id": "ai_r006_AG_NEWS_TEST_11_1",
+      "seed_text": "Specifieke functies van de nieuwe program voor real-time motion graphics.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Prediction Unit Helps Forecast Wildfires (AP) AP - It's barely dawn when Mike Fitzpatrick starts his shift with a blur of colorful maps, figures and endless charts, but already he knows what the day will bring. Lightning will strike in plac",
+      "seed_id": "ai_r006_AG_NEWS_TEST_3_5",
+      "seed_text": "Impact of Prediction Unit's forecasts on wildfire prevention or response strategies.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Calif. Aims to Limit Farm-Related Smog (AP) AP - Southern California's smog-fighting agency went after emissions of the bovine variety Friday, adopting the nation's first rules to reduce air pollution from dairy cow manure.",
+      "seed_id": "ai_r006_AG_NEWS_TEST_4_5",
+      "seed_text": "De verwachte effectiviteit van de regelgeving op de vermindering van smog.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Apple Launches Graphics Software, Video Bundle LOS ANGELES (Reuters) - Apple Computer Inc.&lt;AAPL.O&gt; on Tuesday began shipping a new program designed to let users create real-time motion graphics and unveiled a discount video-editing so",
+      "seed_id": "ai_r006_AG_NEWS_TEST_11_4",
+      "seed_text": "Specifieke updates of verbeteringen ten opzichte van eerdere versies van Final Cut Pro.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Calif. Aims to Limit Farm-Related Smog (AP) AP - Southern California's smog-fighting agency went after emissions of the bovine variety Friday, adopting the nation's first rules to reduce air pollution from dairy cow manure.",
+      "seed_id": "ai_r006_AG_NEWS_TEST_4_2",
+      "seed_text": "De impact van de nieuwe regelgeving op de algehele luchtkwaliteit in Southern California.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "FOAFKey: FOAF, PGP, Key Distribution, and Bloom Filters \\\\FOAF/LOAF and bloom filters have a lot of interesting properties for social\\network and whitelist distribution.\\\\I think we can go one level higher though and include GPG/OpenPGP key",
+      "seed_id": "ai_r006_AG_NEWS_TEST_7_2",
+      "seed_text": "De procedure voor het invoegen van PGP keyfingerprints in de FOAF.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": "abstain (?)"
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Card fraud unit nets 36,000 cards In its first two years, the UK's dedicated card fraud unit, has recovered 36,000 stolen cards and 171 arrests - and estimates it saved 65m.",
+      "seed_id": "ai_r006_AG_NEWS_TEST_9_4",
+      "seed_text": "De exacte kosten die zijn bespaard door de inzet van de card fraud unit.",
+      "reviewer_id": "reviewer_human_1",
+      "review_fields": {
+        "atomicity": false,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": ""
+    }
+  ]
+}

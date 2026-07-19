@@ -1,0 +1,8 @@
+item_id,winner,content_completeness_A,content_completeness_B,question_relevance_A,question_relevance_B,specificity_sharpness_A,specificity_sharpness_B,no_noise_A,no_noise_B,usefulness_A,usefulness_B,seed_effect_after_choice,noise_or_hallucinated_relevance,exclude_from_winrate,motivation
+CONV_EDU-t04-01,A,5,4,5,5,5,4,5,5,5,4,promoted seed helpt een beetje,,,A wint op structuur en praktische toepasbaarheid; B heeft breder perspectief maar minder concrete handvatten.
+CONV_EDU-t05-02,A,5,4,5,5,5,4,5,5,5,4,promoted seed helpt een beetje,,,A is concreter over aanpassingen en ondersteuning; B heeft breder belang maar blijft algemener.
+CONV_EDU-t06-03,A,5,4,5,5,5,4,5,5,5,4,promoted seed helpt duidelijk,,,A analyseert dieper (te instrumenteel vs. sociaal-cultureel) en gebruikt seed structurerend.
+CONV_HEALTH-t05-04,A,5,4,5,5,5,4,5,5,5,4,promoted seeds helpen duidelijk,,,"A benut beide seeds (neurobiologie, marketing) voor verdieping; B is compleet maar minder onderbouwd."
+CONV_HEALTH-t06-05,A,5,4,5,5,5,4,5,5,5,4,promoted seed helpt duidelijk,,,A scherper op commerciële tegenkracht en evaluatie; B dekt zelfde thema's maar minder concreet.
+CONV_POLICY-t05-06,B,4,5,5,5,4,5,5,5,4,5,promoted seeds helpen duidelijk,,,B heeft flexibiliteit en sociale rechtvaardigheid; A mist deze cruciale dimensies.
+CONV_POLICY-t06-07,A,5,4,5,5,5,4,5,5,5,4,promoted seed helpt duidelijk,,,A expliciteert sociale ongelijkheid en kortetermijndenken; B mist deze verdieping.

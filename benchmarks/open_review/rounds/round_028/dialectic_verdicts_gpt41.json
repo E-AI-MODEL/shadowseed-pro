@@ -1,0 +1,55 @@
+{
+  "artifact": "dialectic_falsification",
+  "backend": "openai:gpt-4.1",
+  "_provenance": "Verdicten zijn gpt-4.1's werkelijke output uit Actions-run 28701485594 (workflow activation-probe-real-verdict.yml, artifact id 8080328870), verbatim getranscribeerd uit de job-log. Hier gecommit zodat de meting vanuit een gewone checkout auditeerbaar en herrekenbaar is.",
+  "doctrine": "dialectiek neemt invloed weg (Gate-contradictie) of bevestigt bounded (probe-feedback); zij promoveert nooit.",
+  "source_text": "Drie casussen. ONDERWIJS: een school ontwerpt een nieuwe module digitale geletterdheid voor de onderbouw van het voortgezet onderwijs, met lesmateriaal, draagvlak bij collega's en aandacht voor leerlingen met weinig ondersteuning thuis. GEZONDHEID: een gemeente wil jongeren stimuleren minder energiedrank te drinken via een campagne op scholen, met ouders en met aandacht voor de marketing van fabrikanten. BELEID: een gemeente maakt een klimaatadaptatieplan tegen wateroverlast, met maatregelen in de openbare ruimte, samenwerking met waterschappen en borging over bestuursperiodes heen.",
+  "records": [
+    {
+      "seed_text": "Digitale geletterdheid als sociaal-cultureel vormingsproces in plaats van uitsluitend als vaardighedenset.",
+      "verdict": "ONBESLIST"
+    },
+    {
+      "seed_text": "Verschillen in ondersteuning thuis als structurele factor in de module-opzet.",
+      "verdict": "WEERLEGD"
+    },
+    {
+      "seed_text": "Neurobiologische effecten van cafeïne op adolescenten als verklarend kader voor motivatie en weerstand.",
+      "verdict": "WEERLEGD"
+    },
+    {
+      "seed_text": "Commerciële marketingstrategieën van energiedrankfabrikanten als tegenkracht in gedragsverandering.",
+      "verdict": "WEERLEGD"
+    },
+    {
+      "seed_text": "Juridisch-institutionele verankering van verantwoordelijkheden tussen gemeente en waterschappen.",
+      "verdict": "WEERLEGD"
+    },
+    {
+      "seed_text": "Sociale ongelijkheid als lens voor de verdeling van wateroverlastrisico's en adaptatiemaatregelen.",
+      "verdict": "HOUDT_STAND"
+    },
+    {
+      "seed_text": "Kosten-batenanalyse op lange termijn versus korte termijn investeringen in adaptatiemaatregelen.",
+      "verdict": "HOUDT_STAND"
+    },
+    {
+      "seed_text": "Aandacht voor exoplaneetonderzoek en telescooptijd.",
+      "verdict": "WEERLEGD"
+    },
+    {
+      "seed_text": "De invloed van getijdenstromen op zeescheepvaartroutes.",
+      "verdict": "WEERLEGD"
+    },
+    {
+      "seed_text": "Middeleeuwse muntslag en numismatiek als hobbyverzameling.",
+      "verdict": "WEERLEGD"
+    }
+  ],
+  "summary": {
+    "cases": 10,
+    "weerlegd": 7,
+    "houdt_stand": 2,
+    "onbeslist": 1
+  }
+}

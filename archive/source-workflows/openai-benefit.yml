@@ -1,0 +1,376 @@
+name: Research · SSL Benefit (OpenAI)
+
+# Runs the SSL payoff experiments against a strong hosted OpenAI model. The
+# point is to remove the model-weakness confound: a CPU-bound local SLM derails
+# on the SSL revision step, so a capable hosted model tells us whether the
+# METHOD helps, not whether the small model coped.
+#
+# Requires a repository secret named OPENAI_API_KEY. Never paste the key into
+# source or workflow inputs — it is injected from secrets at run time only.
+
+on:
+  workflow_dispatch:
+    inputs:
+      experiment:
+        description: "Which payoff experiment to run"
+        required: true
+        default: "model-benefit"
+        type: choice
+        options:
+          - model-benefit         # round 008: does acting on a seed help?
+          - ssl-vs-rag            # gap 3: retrieve toward the gap vs the question
+          - adversarial-payoff    # round 014: does acting on a BAD seed harm?
+          - wild-payoff           # P0/W1: real detected seeds through the payoff
+          - generative-payoff     # P0/W5: generative 'kunnen staan' frames
+          - ssl-session           # W9/W10: multi-turn through the REAL SSL pipeline
+      model_id:
+        description: "OpenAI chat model id"
+        required: true
+        default: "gpt-4o-mini"
+        type: choice
+        options:
+          - gpt-4o-mini
+          - gpt-4o
+          - gpt-4.1-mini
+          - gpt-4.1
+      turns:
+        description: "Detector turns per scenario (model-benefit only)"
+        required: true
+        default: "3"
+      max_new_tokens:
+        description: "Max new tokens per generation"
+        required: true
+        default: "400"
+      embedding_backend:
+        description: "Retriever for ssl-vs-rag (gap 3). openai = real embeddings (removes the toy-retriever caveat)"
+        required: true
+        default: "openai"
+        type: choice
+        options:
+          - openai
+          - lexical
+
+      # ssl-session controls
+      dedup_threshold:
+        description: "ssl-session only: per-run dedup threshold (blank = default 0.85; W9c uses ~0.6)"
+        required: false
+        default: ""
+      min_occurrences:
+        description: "ssl-session only: per-run recurrence bar for the Gate (blank = default 3)"
+        required: false
+        default: ""
+      promotion_threshold:
+        description: "ssl-session only: per-run promotion threshold (blank = default 0.5)"
+        required: false
+        default: ""
+      recurrence_mode:
+        description: "ssl-session only: pairwise (strict 0.85) or cluster (W9e/W10 semantic recurrence)"
+        required: false
+        default: "pairwise"
+        type: choice
+        options:
+          - pairwise
+          - cluster
+      cluster_threshold:
+        description: "ssl-session only: cluster recurrence threshold (blank = default)"
+        required: false
+        default: ""
+      surface_threshold:
+        description: "ssl-session only: relevance threshold for later surfacing (blank = default 0.30)"
+        required: false
+        default: ""
+      surface_top_k:
+        description: "ssl-session only: max surfaced promoted seeds per turn (blank = default 2; -1 = no cap)"
+        required: false
+        default: ""
+      auto_calibrate:
+        description: "ssl-session only: auto-calibrate recurrence bar per topic"
+        required: false
+        default: false
+        type: boolean
+      input_path:
+        description: "ssl-session only: input dataset (blank = default fixture set; W10 transfer = src/shadowseed/data/ssl_session_transfer_suite.json)"
+        required: false
+        default: ""
+
+      # blind A/B review-pack controls
+      review_prefix:
+        description: "ssl-session only: neutral filename prefix for generated blind A/B artifacts"
+        required: false
+        default: "ssl_session_blind_ab"
+      review_title:
+        description: "ssl-session only: title for the generated review form"
+        required: false
+        default: "SSL session blind A/B review"
+
+permissions:
+  contents: read
+
+jobs:
+  openai-benefit:
+    name: SSL Benefit via OpenAI (${{ inputs.experiment }} / ${{ inputs.model_id }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install shadowseed with the openai extra
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test,openai]"
+
+      - name: Fail fast if the API key secret is missing
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "${OPENAI_API_KEY}" ]; then
+            echo "::error::OPENAI_API_KEY secret is not set. Add it under" \
+              "Settings → Secrets and variables → Actions → New repository secret."
+            exit 1
+          fi
+          echo "OPENAI_API_KEY is present (value not printed)."
+
+      - name: Run model-benefit suite via OpenAI
+        if: ${{ inputs.experiment == 'model-benefit' }}
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          mkdir -p results
+          python -m shadowseed.cli run-model-benefit-suite \
+            --backend openai \
+            --model-id "${{ inputs.model_id }}" \
+            --turns "${{ inputs.turns }}" \
+            --max-new-tokens "${{ inputs.max_new_tokens }}" \
+            --semantic-embedding-backend openai \
+            --output results/ssl45_model_benefit_suite.json
+
+      - name: Run SSL-vs-RAG head-to-head via OpenAI
+        if: ${{ inputs.experiment == 'ssl-vs-rag' }}
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          mkdir -p results
+          python -m shadowseed.cli run-ssl-vs-rag \
+            --model-backend openai \
+            --model-id "${{ inputs.model_id }}" \
+            --max-new-tokens "${{ inputs.max_new_tokens }}" \
+            --embedding-backend "${{ inputs.embedding_backend }}" \
+            --output results/ssl_vs_rag_benchmark.json
+
+      - name: Run adversarial payoff suite via OpenAI
+        if: ${{ inputs.experiment == 'adversarial-payoff' }}
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          mkdir -p results
+          python -m shadowseed.cli run-adversarial-payoff \
+            --backend openai \
+            --model-id "${{ inputs.model_id }}" \
+            --max-new-tokens "${{ inputs.max_new_tokens }}" \
+            --output results/adversarial_payoff_suite.json
+
+      - name: Run wild payoff suite via OpenAI
+        if: ${{ inputs.experiment == 'wild-payoff' }}
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          mkdir -p results
+          python -m shadowseed.cli run-wild-payoff \
+            --backend openai \
+            --model-id "${{ inputs.model_id }}" \
+            --max-new-tokens "${{ inputs.max_new_tokens }}" \
+            --semantic-embedding-backend openai \
+            --output results/wild_payoff_suite.json
+
+      - name: Run generative payoff suite via OpenAI
+        if: ${{ inputs.experiment == 'generative-payoff' }}
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          mkdir -p results
+          python -m shadowseed.cli run-generative-payoff \
+            --backend openai \
+            --model-id "${{ inputs.model_id }}" \
+            --max-new-tokens "${{ inputs.max_new_tokens }}" \
+            --semantic-embedding-backend openai \
+            --output results/generative_payoff_suite.json
+
+      - name: Run SSL session (real pipeline) via OpenAI
+        if: ${{ inputs.experiment == 'ssl-session' }}
+        # Dispatch inputs are passed via env (NOT interpolated into the script) and
+        # appended as quoted argv elements, so a free-form value cannot inject shell
+        # in this secret-bearing step.
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          MODEL_ID: ${{ inputs.model_id }}
+          MAX_NEW_TOKENS: ${{ inputs.max_new_tokens }}
+          DEDUP_THRESHOLD: ${{ inputs.dedup_threshold }}
+          MIN_OCCURRENCES: ${{ inputs.min_occurrences }}
+          PROMOTION_THRESHOLD: ${{ inputs.promotion_threshold }}
+          RECURRENCE_MODE: ${{ inputs.recurrence_mode }}
+          CLUSTER_THRESHOLD: ${{ inputs.cluster_threshold }}
+          SURFACE_THRESHOLD: ${{ inputs.surface_threshold }}
+          SURFACE_TOP_K: ${{ inputs.surface_top_k }}
+          AUTO_CALIBRATE: ${{ inputs.auto_calibrate }}
+          INPUT_PATH: ${{ inputs.input_path }}
+        run: |
+          mkdir -p results
+          args=(run-ssl-session
+            --backend openai
+            --model-id "$MODEL_ID"
+            --max-new-tokens "$MAX_NEW_TOKENS"
+            --embedding-backend openai
+            --output results/ssl_session_suite.json)
+          [ -n "$DEDUP_THRESHOLD" ] && args+=(--dedup-threshold "$DEDUP_THRESHOLD")
+          [ -n "$MIN_OCCURRENCES" ] && args+=(--min-occurrences "$MIN_OCCURRENCES")
+          [ -n "$PROMOTION_THRESHOLD" ] && args+=(--promotion-threshold "$PROMOTION_THRESHOLD")
+          [ -n "$RECURRENCE_MODE" ] && args+=(--recurrence-mode "$RECURRENCE_MODE")
+          [ -n "$CLUSTER_THRESHOLD" ] && args+=(--cluster-threshold "$CLUSTER_THRESHOLD")
+          [ -n "$SURFACE_THRESHOLD" ] && args+=(--surface-threshold "$SURFACE_THRESHOLD")
+          [ -n "$SURFACE_TOP_K" ] && args+=(--surface-top-k "$SURFACE_TOP_K")
+          [ "$AUTO_CALIBRATE" = "true" ] && args+=(--auto-calibrate)
+          [ -n "$INPUT_PATH" ] && args+=(--input "$INPUT_PATH")
+          python -m shadowseed.cli "${args[@]}"
+
+      - name: Generate blind A/B review pack
+        if: ${{ inputs.experiment == 'ssl-session' }}
+        env:
+          REVIEW_PREFIX: ${{ inputs.review_prefix }}
+          REVIEW_TITLE: ${{ inputs.review_title }}
+        run: |
+          python scripts/make_blind_ab_review.py \
+            --input results/ssl_session_suite.json \
+            --output-dir results/blind_ab_review \
+            --seed 45 \
+            --prefix "$REVIEW_PREFIX" \
+            --title "$REVIEW_TITLE"
+
+      - name: Add blind A/B review summary
+        if: ${{ inputs.experiment == 'ssl-session' }}
+        env:
+          REVIEW_PREFIX: ${{ inputs.review_prefix }}
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          import os
+          from pathlib import Path
+
+          prefix = (os.environ.get("REVIEW_PREFIX") or "ssl_session_blind_ab").strip() or "ssl_session_blind_ab"
+          summary_path = Path("results/blind_ab_review") / f"{prefix}_summary.json"
+          summary = json.loads(summary_path.read_text(encoding="utf-8"))
+          source = summary.get("source_summary", {})
+          by_conv = summary.get("items_by_conversation", {})
+          by_domain = summary.get("items_by_domain", {})
+          dist = summary.get("ssl_answer_distribution", {})
+          truncation = summary.get("truncation", {})
+          integrity = summary.get("integrity", {})
+
+          print("## Blind A/B review pack")
+          print("")
+          print(f"Prefix: `{prefix}`")
+          print(f"Items: `{summary.get('blind_review_item_count', 0)}`")
+          print(f"Schema: `{summary.get('schema_version')}`")
+          print("")
+          print("### Source summary")
+          for key in [
+              "artifact",
+              "backend",
+              "detector",
+              "conversation_count",
+              "cross_turn_payoff_events",
+              "promoted_seed_count",
+          ]:
+              if key in source:
+                  print(f"- {key}: `{source[key]}`")
+          print("")
+          print("### Items by conversation")
+          for conv, count in sorted(by_conv.items()):
+              print(f"- `{conv}`: `{count}`")
+          print("")
+          print("### Items by domain")
+          for domain, count in sorted(by_domain.items()):
+              print(f"- `{domain}`: `{count}`")
+          print("")
+          print("### SSL answer distribution")
+          print(f"- A: `{dist.get('A', 0)}`")
+          print(f"- B: `{dist.get('B', 0)}`")
+          print("")
+          print("### Truncation")
+          print(f"- likely truncated items: `{truncation.get('items_with_likely_truncated_answer', 0)}`")
+          print("")
+          print("### Integrity")
+          print(f"- source_artifact_sha256: `{summary.get('source_artifact_sha256', '')}`")
+          print(f"- answer_key_sha256: `{integrity.get('answer_key_sha256', '')}`")
+          print(f"- answer_key_is_canonical: `{integrity.get('answer_key_is_canonical', False)}`")
+          print("")
+          print("Artifacts:")
+          print(f"- `{prefix}_review_form.md`")
+          print(f"- `{prefix}_review_items.json`")
+          print(f"- `{prefix}_scoring_template.csv`")
+          print(f"- `{prefix}_answer_key.json` (do not show to reviewer before scoring)")
+          PY
+
+      - name: Analyze results
+        if: ${{ inputs.experiment == 'model-benefit' }}
+        run: python -m shadowseed.cli analyze-results || true
+
+      - name: Print result summary to log
+        run: |
+          python - <<'PY'
+          import json
+          import glob
+
+          # Print the summary + blind review pairs to the job log so the result
+          # is readable via the Actions API even when artifact egress is blocked.
+          for path in sorted(glob.glob("results/*.json")):
+              print(f"\n===== {path} =====")
+              data = json.loads(open(path, encoding="utf-8").read())
+              summary = data.get("summary", {})
+              print("--- summary ---")
+              print(json.dumps(summary, indent=2, ensure_ascii=False))
+              for item in data.get("results", []):
+                  sid = item.get("scenario_id") or item.get("id")
+                  print(f"\n--- result: {sid} ---")
+                  print(json.dumps(item, indent=2, ensure_ascii=False))
+              # ssl_session uses "conversations"; print the cross-turn payoff turns
+              for conv in data.get("conversations", []):
+                  for tr in conv.get("turns", []):
+                      if tr.get("is_cross_turn_payoff"):
+                          print(f"\n--- cross-turn: {conv['conversation_id']} t{tr['turn']} ---")
+                          print("Q: " + tr["question"])
+                          print("SURFACED (born earlier): " + " | ".join(tr["surfaced_cross_turn_seeds"]))
+                          print("[BASELINE]\n" + tr["baseline_answer"])
+                          print("[SSL]\n" + tr["ssl_answer"])
+          PY
+
+      - name: Normalize artifact name
+        env:
+          MODEL_ID: ${{ inputs.model_id }}
+        run: |
+          python - <<'PY' >> "$GITHUB_ENV"
+          import os
+          import re
+
+          model_id = os.environ["MODEL_ID"]
+          safe_model_id = re.sub(r'[":<>|*?\r\n\\/]', "-", model_id).strip(".- ")
+          print(f"SAFE_MODEL_ID={safe_model_id or 'model'}")
+          PY
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ssl-openai-${{ inputs.experiment }}-${{ env.SAFE_MODEL_ID }}
+          path: |
+            results/ssl45_model_benefit_suite.json
+            results/ssl_vs_rag_benchmark.json
+            results/adversarial_payoff_suite.json
+            results/wild_payoff_suite.json
+            results/generative_payoff_suite.json
+            results/ssl_session_suite.json
+            results/blind_ab_review/*
+          if-no-files-found: warn

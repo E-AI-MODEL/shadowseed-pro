@@ -1,0 +1,26 @@
+{
+  "version": "probe-utility-benchmark-0.1",
+  "items": [
+    {
+      "id": "PROBE_HIST_001",
+      "domain": "geschiedenis en economie",
+      "source_text": "De Industriële Revolutie wordt uitgelegd via stoommachines, urbanisatie en technologische innovatie. Internationale financieringsstructuren en koloniale afhankelijkheden blijven impliciet.",
+      "promoted_seed": "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+      "baseline_probe": "Kunt u dit verder toelichten?"
+    },
+    {
+      "id": "PROBE_LAW_001",
+      "domain": "recht en jurisdictie",
+      "source_text": "Een Nederlandse consument koopt software bij een Amerikaanse aanbieder. De tekst noemt consumentenrechten, maar werkt procedurele internationale vragen niet uit.",
+      "promoted_seed": "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse aanbieder.",
+      "baseline_probe": "Zijn er nog aandachtspunten?"
+    },
+    {
+      "id": "PROBE_IT_001",
+      "domain": "IT en engineering",
+      "source_text": "Een health app synchroniseert medische gegevens realtime met een cloudbackend. Privacy en gegevensbescherming worden nauwelijks besproken.",
+      "promoted_seed": "AVG-compliance bij verwerking van medische hartslagdata.",
+      "baseline_probe": "Wilt u meer details toevoegen?"
+    }
+  ]
+}

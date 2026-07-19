@@ -1,0 +1,2795 @@
+{
+  "summary": {
+    "evidence_layer": "open_set_seed_quality",
+    "packet_count": 54,
+    "completed_packet_count": 54,
+    "pending_packet_count": 0,
+    "invalid_packet_count": 0,
+    "accepted_packet_count": 10,
+    "rejected_packet_count": 44,
+    "packet_acceptance_rate": 0.18518518518518517,
+    "unique_seed_count": 54,
+    "completed_seed_count": 54,
+    "accepted_seed_count": 10,
+    "rejected_seed_count": 44,
+    "mixed_seed_count": 0,
+    "pending_seed_count": 0,
+    "invalid_seed_count": 0,
+    "agreement_eligible_seed_count": 0,
+    "unanimous_seed_count": 0,
+    "seed_acceptance_rate": 0.18518518518518517,
+    "seed_rejection_rate": 0.8148148148148148,
+    "unanimous_verdict_rate": 0.0,
+    "pairwise_decision_agreement_rate": 0.0,
+    "criteria": [
+      "atomicity",
+      "relevance",
+      "testability",
+      "non_triviality",
+      "follow_up_utility"
+    ],
+    "criterion_pass_rates": {
+      "atomicity": 0.8148148148148148,
+      "relevance": 0.9074074074074074,
+      "testability": 0.2962962962962963,
+      "non_triviality": 0.18518518518518517,
+      "follow_up_utility": 0.18518518518518517
+    },
+    "reject_reason_counts": {
+      "too_vague": 25,
+      "too_broad": 10,
+      "not_relevant": 5,
+      "not_testable": 3,
+      "duplicate": 1
+    },
+    "reviewer_ids": [
+      "reviewer_ai_claude"
+    ],
+    "domain_seed_counts": {
+      "nieuws - Business": 5,
+      "nieuws - Sci/Tech": 49
+    },
+    "status": "review_complete",
+    "artifacts": {
+      "summary": "benchmarks/open_review/rounds/round_005/ai_review/offset0_seed_review_summary.json",
+      "disagreements": "benchmarks/open_review/rounds/round_005/ai_review/offset0_disagreements.json",
+      "report": "benchmarks/open_review/rounds/round_005/ai_review/offset0_review_report.md"
+    }
+  },
+  "results": [
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "seed_id": "ai_AG_NEWS_TEST_0_1",
+      "seed_text": "Of de Federal Mogul onderzoek heeft gedaan naar de toekomstige financiële situatie van T N, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "seed_id": "ai_AG_NEWS_TEST_0_2",
+      "seed_text": "Of de Federal Mogul heeft besproken wat ze doen om de toekomstige pensionen van T N werknemers te waarborgen, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "seed_id": "ai_AG_NEWS_TEST_0_3",
+      "seed_text": "Of de Federal Mogul heeft een plan of strategie geformuleerd voor de toekomstige financiële situatie van T N, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_broad",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_broad": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "seed_id": "ai_AG_NEWS_TEST_0_4",
+      "seed_text": "Of de Federal Mogul heeft besloten om de werknemers van T N te informeren over de mogelijke toekomstige financiële situatie, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_broad",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_broad": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "seed_id": "ai_AG_NEWS_TEST_0_5",
+      "seed_text": "Of de Federal Mogul heeft een afspraak gemaakt met de werknemers van T N over de toekomstige financiële situatie, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_broad",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_broad": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_1_1",
+      "seed_text": "Of de tweede team een officiële lanceringdatum heeft aangegeven, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_1_2",
+      "seed_text": "Of de tweede team een naam heeft genoemd, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_1_3",
+      "seed_text": "Of de tweede team een organisatie heeft genoemd, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_1_4",
+      "seed_text": "Of de tweede team een locatie heeft genoemd, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_1_5",
+      "seed_text": "Of de tweede team een sponsor heeft genoemd, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_2_1",
+      "seed_text": "Of de Ky. Company onderzoek heeft gedaan, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_2_2",
+      "seed_text": "Of de peptides door de Ky. Company worden gebruikt, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_2_3",
+      "seed_text": "Of de peptides door de Ky. Company worden verkocht, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_2_4",
+      "seed_text": "Of de peptides door de Ky. Company worden ingevoerd in de markt, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_2_5",
+      "seed_text": "Of de peptides door de Ky. Company worden geproduceerd, wordt niet vermeld. 1. Of de peptides door de Ky. Company worden gebruikt, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_testable": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_3_1",
+      "seed_text": "Of de Prediction Unit ondersteuning biedt voor bepaalde regio's, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_3_2",
+      "seed_text": "Of de Prediction Unit zich beperkt tot bepaalde regio's, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_3_3",
+      "seed_text": "Of de Prediction Unit een bepaalde periode in dienst is, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_3_4",
+      "seed_text": "Of de Prediction Unit een bepaalde periode niet in dienst is, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "duplicate",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "duplicate": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_3_5",
+      "seed_text": "Of de Prediction Unit een bepaalde periode niet in dienst is, wordt niet vermeld. (dubbel) 1. Of de Prediction Unit een bepaalde periode in dienst is, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_testable": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_4_1",
+      "seed_text": "Of de bovengenoemde regels effectief zijn, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_4_2",
+      "seed_text": "Of er sprake is van een toezichthouder die deze regels uitwerkt, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_4_3",
+      "seed_text": "Of er sprake is van een financiële belasting die aan deze regels wordt toegeschreven, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_4_4",
+      "seed_text": "Of er sprake is van een periode waarin deze regels werden ingevoerd, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_4_5",
+      "seed_text": "Of er sprake is van een land waar deze regels worden toegepast, wordt niet vermeld. 1. Of de bovengenoemde regels effectief zijn, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_5_1",
+      "seed_text": "Of de DfES en de music-industrie onderhandeld hebben om de inhoud van het manifest, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_broad",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_broad": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_5_2",
+      "seed_text": "Of de DfES en de music-industrie een contract hebben getekend, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_5_3",
+      "seed_text": "Of de DfES en de music-industrie een strategie hebben ontwikkeld om de leerlingen te instrueren over het illegale downloaden van muziek, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_broad",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_broad": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_5_4",
+      "seed_text": "Of de DfES en de music-industrie een plan hebben gehad om de leerlingen te informeren over de wetten betreffende muziekverkrijging, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_broad",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_broad": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_5_5",
+      "seed_text": "Of de DfES en de music-industrie een communicatiedomein hebben gesloten om de leerlingen te instrueren over het illegale downloaden van muziek, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_broad",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_broad": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_6_1",
+      "seed_text": "Of de 18-jarige Jaschan heeft geprogrammeerd, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_6_2",
+      "seed_text": "Of er nog varianten van Netsky en Sasser bestaan, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_6_3",
+      "seed_text": "Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_6_4",
+      "seed_text": "Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_6_5",
+      "seed_text": "Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 1. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 2. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 3. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 4. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 5. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 6. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 7. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 8. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 9. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 10. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 11. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 12. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 13. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 14. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_testable": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_7_1",
+      "seed_text": "Of de PGP key fingerprints worden gebruikt om de whitelist te beheren, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_7_2",
+      "seed_text": "Of de whitelist beheerd wordt door de social network, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_7_3",
+      "seed_text": "Of de whitelist beheerd wordt door de client, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_7_4",
+      "seed_text": "Of de whitelist beheerd wordt door de source FOAF file, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_7_5",
+      "seed_text": "Of de whitelist beheerd wordt door de directe vrienden, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_9_1",
+      "seed_text": "Of het aantal arrestaties 171 of het bedrag dat besparingen werden gemaakt van 65 miljoen wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_9_2",
+      "seed_text": "Of de arrestaties werden gedaan door de card fraud unit of door een andere organisatie, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_9_3",
+      "seed_text": "Of de arrestaties plaatsvonden in de eerste twee jaren of later, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_broad",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_broad": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_9_4",
+      "seed_text": "Of de arrestaties gerapporteerd werden aan de politie of direct door de card fraud unit, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_broad",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_broad": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_9_5",
+      "seed_text": "Of de arrestaties gerapporteerd werden aan de media of direct door de card fraud unit, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_broad",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_broad": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_10_1",
+      "seed_text": "Of de nieuwe high-speed wireless format wordt aangegeven, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_10_2",
+      "seed_text": "De technologie die de nieuwe standaard zal gebruiken, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_10_3",
+      "seed_text": "Of de nieuwe standaard ook in gebruik wordt genomen, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_10_4",
+      "seed_text": "Of de nieuwe standaard ook in gebruik wordt genomen, wordt niet vermeld. 1. Of de nieuwe high-speed wireless format wordt aangegeven, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_11_1",
+      "seed_text": "Of Apple Computer Inc. een marktadviseur heeft gehad, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_11_2",
+      "seed_text": "Of Apple Computer Inc. een strategisch adviesaanbod heeft ontvangen, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_11_3",
+      "seed_text": "Of Apple Computer Inc. een concurrentieanalyse heeft uitgevoerd, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_11_4",
+      "seed_text": "Of Apple Computer Inc. een marketingdoelgroep heeft bestudeerd, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ai_AG_NEWS_TEST_11_5",
+      "seed_text": "Of Apple Computer Inc. een kosten-benefits-analyse heeft uitgevoerd voor deze producten, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review (single reviewer)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    }
+  ]
+}

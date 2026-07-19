@@ -1,0 +1,54 @@
+{
+  "version": "4.5",
+  "scoring": {
+    "0": "geen relevante gap gevonden",
+    "1": "richting klopt, maar output is te vaag of te breed",
+    "2": "atomische en structureel juiste gap gevonden"
+  },
+  "scenarios": [
+    {
+      "id": "A",
+      "title": "Industriële Revolutie",
+      "domain": "geschiedenis en economie",
+      "input": "De Industriële Revolutie in het 18e-eeuwse Groot-Brittannië werd gekenmerkt door een ongekende versnelling van technologische innovatie. De verbeteringen van James Watt aan de stoommachine maakten het mogelijk om fabrieken los te koppelen van waterbronnen, wat leidde tot de opkomst van grote industriële centra zoals Manchester. De textielindustrie explodeerde door uitvindingen zoals de 'spinning jenny', wat resulteerde in massale urbanisatie en de vorming van een nieuwe arbeidersklasse. Deze periode legde de basis voor de moderne kapitalistische economie door productie op schaal mogelijk te maken.",
+      "ground_truth_seeds": [
+        {"id": "A1", "text": "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen."},
+        {"id": "A2", "text": "Winsten uit trans-Atlantische slavenhandel als investeringskapitaal voor industrialisatie."},
+        {"id": "A3", "text": "Koloniale katoen als grondstof voor de Britse textielindustrie."},
+        {"id": "A4", "text": "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie."}
+      ],
+      "minimal_pass": "minstens één van A1-A4 scherp detecteren",
+      "full_pass": "A1 of A2 detecteren en de financiële relatie expliciet maken"
+    },
+    {
+      "id": "B",
+      "title": "Grensoverschrijdende juridische casus",
+      "domain": "recht en jurisdictie",
+      "input": "Een Nederlandse consument heeft een high-end laptop gekocht bij een online retailer die gevestigd is in de Verenigde Staten. Bij levering blijkt het product defect. De consument wil een volledige terugbetaling eisen op basis van de EU-richtlijnen voor consumentenbescherming, die strikte regels stellen aan de garantieperiode en het recht op retour bij defecte goederen binnen de Europese Unie. De focus ligt hierbij op de materiële rechten van de koper om een werkend product te ontvangen.",
+      "ground_truth_seeds": [
+        {"id": "B1", "text": "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel."},
+        {"id": "B2", "text": "Toepasselijk recht bij een grensoverschrijdend consumentencontract."},
+        {"id": "B3", "text": "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer."},
+        {"id": "B4", "text": "Forumkeuzebeding in internationale online koopvoorwaarden."}
+      ],
+      "minimal_pass": "B1 of B2 scherp detecteren",
+      "full_pass": "rechtsbevoegdheid en toepasselijk recht als aparte seeds herkennen"
+    },
+    {
+      "id": "C",
+      "title": "Software Architectuur",
+      "domain": "IT en engineering",
+      "input": "Het voorgestelde ontwerp voor de 'HealthTrack' app bestaat uit een React Native frontend en een Node.js backend. Data wordt opgeslagen in een MongoDB cluster voor maximale flexibiliteit in datastructuur. De kernfunctionaliteiten omvatten een gebruikersdashboard, real-time hartslag-synchronisatie via Bluetooth en een notificatiesysteem voor gezondheidswaarschuwingen. De UI volgt de Material Design-richtlijnen om de toegankelijkheid voor ouderen te waarborgen.",
+      "ground_truth_seeds": [
+        {"id": "C1", "text": "AVG-compliance bij verwerking van medische hartslagdata."},
+        {"id": "C2", "text": "Authenticatiestrategie voor toegang tot gezondheidsdata."},
+        {"id": "C3", "text": "Rate-limiting op API's die gezondheidsdata verwerken."},
+        {"id": "C4", "text": "DDoS-bescherming voor publieke endpoints van de app."},
+        {"id": "C5", "text": "Horizontale schaalbaarheid bij piekbelasting van real-time synchronisatie."},
+        {"id": "C6", "text": "Encryptie van medische data in rust en tijdens transport."}
+      ],
+      "minimal_pass": "minstens één seed scherp koppelen aan medische data",
+      "full_pass": "privacy/security en schaalbaarheid als aparte seeds detecteren"
+    }
+  ]
+}

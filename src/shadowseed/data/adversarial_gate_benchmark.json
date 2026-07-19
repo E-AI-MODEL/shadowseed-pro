@@ -1,0 +1,182 @@
+{
+  "version": "adversarial-gate-0.2",
+  "description": "Adversarial Gate benchmark for SSL 4.6. Mixes lure candidates (expected_label not_gap) with positive-control candidates (expected_label gap, evidence_available set per case) so the Gate is measured on precision and recall, not only on refusal. Bare-string candidates are legacy not_gap entries with no external evidence.",
+  "scenarios": [
+    {
+      "id": "ADV_A",
+      "title": "Volledig antwoord over de Industriële Revolutie",
+      "domain": "geschiedenis en economie",
+      "scenario_type": "complete-answer",
+      "expected_label": "not_gap",
+      "input": "De Industriële Revolutie in Groot-Brittannië werd gedragen door technologische innovatie, fabrieksarbeid en urbanisatie. Koloniaal kapitaal fungeerde als financieringsbron voor Britse fabrieksinvesteringen. Koloniale katoen was een belangrijke grondstof voor de Britse textielindustrie. Goedkope koloniale grondstoffen vormden een voorwaarde voor schaalvergroting van productie. Ook arbeidsomstandigheden in vroege fabrieken en sociale ongelijkheid door fabrieksarbeid en urbanisatie horen bij een volledig antwoord.",
+      "adversarial_candidates": [
+        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+        "Koloniale katoen als grondstof voor de Britse textielindustrie."
+      ]
+    },
+    {
+      "id": "ADV_B",
+      "title": "Volledig antwoord op grensoverschrijdende koop",
+      "domain": "recht en jurisdictie",
+      "scenario_type": "complete-answer",
+      "expected_label": "not_gap",
+      "input": "Een Nederlandse consument koopt een laptop bij een Amerikaanse online webwinkel. Een volledig juridisch antwoord behandelt niet alleen EU-consumentenrechten, maar ook rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel. Daarnaast moet het toepasselijk recht bij een grensoverschrijdend consumentencontract worden vastgesteld. Ook de afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer moet worden beoordeeld.",
+      "adversarial_candidates": [
+        "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel.",
+        "Toepasselijk recht bij een grensoverschrijdend consumentencontract."
+      ]
+    },
+    {
+      "id": "ADV_C",
+      "title": "Volledig antwoord op healthtech-architectuur",
+      "domain": "IT en engineering",
+      "scenario_type": "complete-answer",
+      "expected_label": "not_gap",
+      "input": "Het ontwerp voor HealthTrack gebruikt React Native, Node.js en MongoDB. Omdat de app medische hartslagdata verwerkt, hoort AVG-compliance bij verwerking van medische hartslagdata expliciet in het ontwerp. De architectuur bevat een authenticatiestrategie voor toegang tot gezondheidsdata. Medische data wordt versleuteld in rust en tijdens transport. API's die gezondheidsdata verwerken krijgen rate-limiting.",
+      "adversarial_candidates": [
+        "AVG-compliance bij verwerking van medische hartslagdata.",
+        "Authenticatiestrategie voor toegang tot gezondheidsdata."
+      ]
+    },
+    {
+      "id": "ADV_D",
+      "title": "Stijlzwakte is geen epistemische gap",
+      "domain": "beleid en onderwijs",
+      "scenario_type": "style-not-gap",
+      "expected_label": "not_gap",
+      "input": "Het schoolbestuur wil AI-hulpmiddelen invoeren voor lesvoorbereiding en formatieve feedback. Het antwoord is inhoudelijk wat droog geformuleerd, maar noemt al werkdruk voor docenten, kansengelijkheid tussen leerlinggroepen en privacybescherming bij leerlinggegevens.",
+      "adversarial_candidates": [
+        "Een meer inspirerende schrijfstijl voor het beleidsvoorstel.",
+        "Meer retorische voorbeelden om de tekst overtuigender te maken."
+      ]
+    },
+    {
+      "id": "ADV_E",
+      "title": "Verleidelijke maar irrelevante uitbreiding",
+      "domain": "zorg en ethiek",
+      "scenario_type": "tempting-irrelevant",
+      "expected_label": "not_gap",
+      "input": "Een ziekenhuis wil een AI-tool inzetten voor triage-ondersteuning. Het antwoord bespreekt informed consent, privacybescherming, menselijke eindverantwoordelijkheid en auditability. Het noemt geen exotische infrastructuurkeuzes, omdat die voor deze ethische beoordeling niet relevant zijn.",
+      "adversarial_candidates": [
+        "Verplichte blockchainopslag voor alle medische triagedata.",
+        "NFT-gebaseerde toestemming voor patiëntgegevens."
+      ]
+    },
+    {
+      "id": "ADV_F",
+      "title": "Bijna-volledig antwoord met legitieme gap",
+      "domain": "energie en infrastructuur",
+      "scenario_type": "mixed-positive-and-lure",
+      "expected_label": "mixed",
+      "input": "Het beleidsplan voor de uitrol van warmtenetten beschrijft technische ontwerpkeuzes, kosten per huishouden, en draagvlak onder woningcorporaties als afnemer. Verder gaat de tekst over het tijdpad van de uitrol en de communicatiestrategie richting bewoners.",
+      "adversarial_candidates": [
+        {
+          "text": "Kosten per huishouden voor aansluiting op het warmtenet.",
+          "expected_label": "not_gap",
+          "evidence_available": false,
+          "candidate_type": "near-duplicate-already-covered"
+        },
+        {
+          "text": "Rol van woningcorporaties als afnemer van het warmtenet.",
+          "expected_label": "not_gap",
+          "evidence_available": false,
+          "candidate_type": "near-duplicate-already-covered"
+        },
+        {
+          "text": "Juridische status van bestaande gasaansluitingen bij gedwongen transitie.",
+          "expected_label": "gap",
+          "evidence_available": true,
+          "candidate_type": "positive-control-with-evidence"
+        }
+      ]
+    },
+    {
+      "id": "ADV_G",
+      "title": "Near-duplicate paraphrase van bestaande inhoud",
+      "domain": "software security",
+      "scenario_type": "near-duplicate",
+      "expected_label": "not_gap",
+      "input": "Het beveiligingsplan beschrijft versleuteling van medische data tijdens transport en in rust, multi-factor authenticatie voor zorgmedewerkers, en rate-limiting op de hartslag-API. Geen exotische opslagkeuzes.",
+      "adversarial_candidates": [
+        {
+          "text": "Encryptie van medische data tijdens transport.",
+          "expected_label": "not_gap",
+          "evidence_available": false,
+          "candidate_type": "near-duplicate-paraphrase"
+        },
+        {
+          "text": "Versleuteling van medische data in rust.",
+          "expected_label": "not_gap",
+          "evidence_available": false,
+          "candidate_type": "near-duplicate-paraphrase"
+        }
+      ]
+    },
+    {
+      "id": "ADV_H",
+      "title": "Plausibele gap uit verkeerd domein",
+      "domain": "educatie en beleid",
+      "scenario_type": "multi-domain-lure",
+      "expected_label": "not_gap",
+      "input": "Het beleidsvoorstel gaat over de inzet van AI-tutors in de onderbouw. Het antwoord behandelt didactische uitgangspunten, kansengelijkheid, privacybescherming bij leerlinggegevens en draagvlak onder docenten.",
+      "adversarial_candidates": [
+        {
+          "text": "Ondernemingsrecht voor AI-startups die educatieve software leveren.",
+          "expected_label": "not_gap",
+          "evidence_available": false,
+          "candidate_type": "wrong-domain"
+        },
+        {
+          "text": "Btw-tarieven op educatieve software-licenties.",
+          "expected_label": "not_gap",
+          "evidence_available": false,
+          "candidate_type": "wrong-domain"
+        }
+      ]
+    },
+    {
+      "id": "ADV_I",
+      "title": "Legitieme gap met externe evidence beschikbaar",
+      "domain": "zorg en regelgeving",
+      "scenario_type": "positive-control-with-evidence",
+      "expected_label": "gap",
+      "input": "Het ontwerp voor de telemonitoring-app beschrijft synchronisatie van hartslagdata met een cloudbackend, push-notificaties en latentie-eisen. Verder gaat de tekst over de UI-flow, kleurkeuze en de gebruiker-onboarding.",
+      "adversarial_candidates": [
+        {
+          "text": "Wettelijke bewaartermijn voor medische telemonitoringdata.",
+          "expected_label": "gap",
+          "evidence_available": true,
+          "candidate_type": "positive-control-with-evidence"
+        },
+        {
+          "text": "Meldplicht bij datalekken voor verwerkers van medische data.",
+          "expected_label": "gap",
+          "evidence_available": true,
+          "candidate_type": "positive-control-with-evidence"
+        }
+      ]
+    },
+    {
+      "id": "ADV_J",
+      "title": "Legitieme gap zonder externe evidence",
+      "domain": "zorg en regelgeving",
+      "scenario_type": "positive-control-without-evidence",
+      "expected_label": "gap",
+      "input": "Het ontwerp voor de bloeddrukmeter-app beschrijft koppeling met een cloudbackend, dashboard-weergaven en push-notificaties bij hoge waarden. Verder gaat de tekst over UX-keuzes en typografie.",
+      "adversarial_candidates": [
+        {
+          "text": "Toestemmingsstroom voor gebruikers onder de zestien jaar.",
+          "expected_label": "gap",
+          "evidence_available": false,
+          "candidate_type": "positive-control-without-evidence"
+        },
+        {
+          "text": "Ouderlijke controle op doorzending van bloeddrukdata.",
+          "expected_label": "gap",
+          "evidence_available": false,
+          "candidate_type": "positive-control-without-evidence"
+        }
+      ]
+    }
+  ]
+}

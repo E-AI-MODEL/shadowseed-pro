@@ -1,0 +1,1724 @@
+{
+  "summary": {
+    "evidence_layer": "open_set_seed_quality",
+    "artifact_contract_version": "open-review-0.2",
+    "corpus_version": "hf-open-set-batch-0.1",
+    "source": {
+      "id": "ag_news_test",
+      "dataset": "szhuggingface/ag_news",
+      "config": "default",
+      "split": "test",
+      "revision": "main",
+      "license": "apache-2.0",
+      "registry_path": "src/shadowseed/data/open_set_hf_sources.json",
+      "requested_limit": 12,
+      "requested_offset": 12,
+      "returned_count": 12,
+      "authenticated": false
+    },
+    "item_count": 12,
+    "seed_count": 41,
+    "reviewer_ids": [
+      "reviewer_a",
+      "reviewer_b"
+    ],
+    "reviewer_count": 2,
+    "packet_count": 82,
+    "criteria": [
+      "atomicity",
+      "relevance",
+      "testability",
+      "non_triviality",
+      "follow_up_utility"
+    ],
+    "reject_codes": [
+      "too_broad",
+      "too_vague",
+      "trivial",
+      "not_relevant",
+      "not_testable",
+      "duplicate",
+      "style_not_gap"
+    ],
+    "candidate_source_counts": {
+      "open_set_model_detector": 12
+    },
+    "candidate_adapter": "ssl45_open_set_candidate_adapter_v0.1",
+    "fixed_scenario_priors_used": false,
+    "expected_gaps_used": false,
+    "ground_truth_seeds_used": false,
+    "regression_gap_detector_used": false,
+    "candidate_quality_requires_human_review": true,
+    "seed_verdict_rule": "A seed counts as accepted or rejected only after every generated reviewer row for that seed is completed and valid.",
+    "instructions": "One packet row is generated per reviewer per seed. Do not edit a single row sequentially for multiple reviewers. A seed only counts as accepted or rejected after every generated reviewer row is completed and valid. Score each seed on atomicity, relevance, testability, non-triviality and follow-up utility.",
+    "status": "review_completed",
+    "expected_summary_artifacts": [
+      "open_set_seed_review_summary.json",
+      "open_set_disagreements.json",
+      "open_set_review_report.md"
+    ],
+    "completed_packet_count": 82,
+    "pending_packet_count": 0,
+    "invalid_packet_count": 0,
+    "accepted_packet_count": 24,
+    "rejected_packet_count": 58,
+    "packet_acceptance_rate": 0.2926829268292683,
+    "criterion_pass_rates": {
+      "atomicity": 0.6585365853658537,
+      "relevance": 0.975609756097561,
+      "testability": 0.6585365853658537,
+      "non_triviality": 0.2926829268292683,
+      "follow_up_utility": 0.2926829268292683
+    },
+    "reject_reason_counts": {
+      "duplicate": 6,
+      "not_relevant": 2,
+      "not_testable": 18,
+      "style_not_gap": 20,
+      "too_vague": 10,
+      "trivial": 2
+    }
+  },
+  "packets": [
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Dutch Retailer Beats Apple to Local Download Market AMSTERDAM (Reuters) - Free Record Shop, a Dutch music retail chain, beat Apple Computer Inc. to market on Tuesday with the launch of a new download service in Europe's latest battleground for digital song services.",
+      "seed_id": "ss_001",
+      "seed_text": "Of Free Record Shop een music retail chain is, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "A: Free Record Shop wordt expliciet een music retail chain genoemd."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Dutch Retailer Beats Apple to Local Download Market AMSTERDAM (Reuters) - Free Record Shop, a Dutch music retail chain, beat Apple Computer Inc. to market on Tuesday with the launch of a new download service in Europe's latest battleground for digital song services.",
+      "seed_id": "ss_001",
+      "seed_text": "Of Free Record Shop een music retail chain is, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "B: Free Record Shop wordt expliciet een music retail chain genoemd."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Dutch Retailer Beats Apple to Local Download Market AMSTERDAM (Reuters) - Free Record Shop, a Dutch music retail chain, beat Apple Computer Inc. to market on Tuesday with the launch of a new download service in Europe's latest battleground for digital song services.",
+      "seed_id": "ss_002",
+      "seed_text": "Of Apple Computer Inc. een competitor is van Free Record Shop, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "A: De bron plaatst Apple en Free Record Shop al in dezelfde downloadmarktframing; dit is geen sterke lacune."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Dutch Retailer Beats Apple to Local Download Market AMSTERDAM (Reuters) - Free Record Shop, a Dutch music retail chain, beat Apple Computer Inc. to market on Tuesday with the launch of a new download service in Europe's latest battleground for digital song services.",
+      "seed_id": "ss_002",
+      "seed_text": "Of Apple Computer Inc. een competitor is van Free Record Shop, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "B: De bron plaatst Apple en Free Record Shop al in dezelfde downloadmarktframing; dit is geen sterke lacune."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Dutch Retailer Beats Apple to Local Download Market AMSTERDAM (Reuters) - Free Record Shop, a Dutch music retail chain, beat Apple Computer Inc. to market on Tuesday with the launch of a new download service in Europe's latest battleground for digital song services.",
+      "seed_id": "ss_003",
+      "seed_text": "Of Free Record Shop een Nederlandse firma is, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "A: De titel/framing noemt de retailer Nederlands; geen echte ontbrekende seed."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Dutch Retailer Beats Apple to Local Download Market AMSTERDAM (Reuters) - Free Record Shop, a Dutch music retail chain, beat Apple Computer Inc. to market on Tuesday with the launch of a new download service in Europe's latest battleground for digital song services.",
+      "seed_id": "ss_003",
+      "seed_text": "Of Free Record Shop een Nederlandse firma is, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "B: De titel/framing noemt de retailer Nederlands; geen echte ontbrekende seed."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Dutch Retailer Beats Apple to Local Download Market AMSTERDAM (Reuters) - Free Record Shop, a Dutch music retail chain, beat Apple Computer Inc. to market on Tuesday with the launch of a new download service in Europe's latest battleground for digital song services.",
+      "seed_id": "ss_004",
+      "seed_text": "Of Apple Computer Inc. een Amerikaanse firma is, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "A: Apple's herkomst/nationaliteit wordt niet in de excerpt vermeld en is atomair toetsbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Dutch Retailer Beats Apple to Local Download Market AMSTERDAM (Reuters) - Free Record Shop, a Dutch music retail chain, beat Apple Computer Inc. to market on Tuesday with the launch of a new download service in Europe's latest battleground for digital song services.",
+      "seed_id": "ss_004",
+      "seed_text": "Of Apple Computer Inc. een Amerikaanse firma is, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "B: Apple's herkomst/nationaliteit wordt niet in de excerpt vermeld en is atomair toetsbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Dutch Retailer Beats Apple to Local Download Market AMSTERDAM (Reuters) - Free Record Shop, a Dutch music retail chain, beat Apple Computer Inc. to market on Tuesday with the launch of a new download service in Europe's latest battleground for digital song services.",
+      "seed_id": "ss_005",
+      "seed_text": "Of Free Record Shop een downloadservice biedt, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "A: De bron noemt expliciet de lancering van een nieuwe downloadservice."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Dutch Retailer Beats Apple to Local Download Market AMSTERDAM (Reuters) - Free Record Shop, a Dutch music retail chain, beat Apple Computer Inc. to market on Tuesday with the launch of a new download service in Europe's latest battleground for digital song services.",
+      "seed_id": "ss_005",
+      "seed_text": "Of Free Record Shop een downloadservice biedt, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "B: De bron noemt expliciet de lancering van een nieuwe downloadservice."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "title": "AG News Sci/Tech #14",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Socialites unite dolphin groups Dolphin groups, or \"pods\", rely on socialites to keep them from collapsing, scientists claim.",
+      "seed_id": "ss_001",
+      "seed_text": "Of socialites activeren specifieke sociale vaardigheden, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "too_vague",
+      "reviewer_notes": "A: Specifieke sociale vaardigheden is te vaag en slecht toetsbaar vanuit de excerpt."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "title": "AG News Sci/Tech #14",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Socialites unite dolphin groups Dolphin groups, or \"pods\", rely on socialites to keep them from collapsing, scientists claim.",
+      "seed_id": "ss_001",
+      "seed_text": "Of socialites activeren specifieke sociale vaardigheden, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "too_vague",
+      "reviewer_notes": "B: Specifieke sociale vaardigheden is te vaag en slecht toetsbaar vanuit de excerpt."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "title": "AG News Sci/Tech #14",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Socialites unite dolphin groups Dolphin groups, or \"pods\", rely on socialites to keep them from collapsing, scientists claim.",
+      "seed_id": "ss_002",
+      "seed_text": "Of de effecten van socialiteacties op de structuur van de dolphin-pod worden niet aangegeven.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "A: De precieze effecten van socialite-acties op podstructuur worden niet uitgewerkt."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "title": "AG News Sci/Tech #14",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Socialites unite dolphin groups Dolphin groups, or \"pods\", rely on socialites to keep them from collapsing, scientists claim.",
+      "seed_id": "ss_002",
+      "seed_text": "Of de effecten van socialiteacties op de structuur van de dolphin-pod worden niet aangegeven.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "B: De precieze effecten van socialite-acties op podstructuur worden niet uitgewerkt."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "title": "AG News Sci/Tech #14",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Socialites unite dolphin groups Dolphin groups, or \"pods\", rely on socialites to keep them from collapsing, scientists claim.",
+      "seed_id": "ss_003",
+      "seed_text": "Of er specifieke soorten socialiteacties worden beschreven, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "A: Soorten socialite-acties worden niet beschreven en zijn relevant voor follow-up."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "title": "AG News Sci/Tech #14",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Socialites unite dolphin groups Dolphin groups, or \"pods\", rely on socialites to keep them from collapsing, scientists claim.",
+      "seed_id": "ss_003",
+      "seed_text": "Of er specifieke soorten socialiteacties worden beschreven, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "B: Soorten socialite-acties worden niet beschreven en zijn relevant voor follow-up."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "title": "AG News Sci/Tech #14",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Socialites unite dolphin groups Dolphin groups, or \"pods\", rely on socialites to keep them from collapsing, scientists claim.",
+      "seed_id": "ss_004",
+      "seed_text": "Of er specifieke soorten dolphin-pods worden genoemd, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "A: Soorten dolphin-pods worden niet genoemd en de vraag is atomair toetsbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "title": "AG News Sci/Tech #14",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Socialites unite dolphin groups Dolphin groups, or \"pods\", rely on socialites to keep them from collapsing, scientists claim.",
+      "seed_id": "ss_004",
+      "seed_text": "Of er specifieke soorten dolphin-pods worden genoemd, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "B: Soorten dolphin-pods worden niet genoemd en de vraag is atomair toetsbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_15",
+      "title": "AG News Sci/Tech #15",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Teenage T. rex's monster growth Tyrannosaurus rex achieved its massive size due to an enormous growth spurt during its adolescent years.",
+      "seed_id": "ss_001",
+      "seed_text": "Of Teenage T. rex's monster growth werd veroorzaakt door een andere fase dan adolescentie, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "A: De bron schrijft de groei juist toe aan adolescentie; de seed zoekt een alternatief zonder duidelijke gapwaarde."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_15",
+      "title": "AG News Sci/Tech #15",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Teenage T. rex's monster growth Tyrannosaurus rex achieved its massive size due to an enormous growth spurt during its adolescent years.",
+      "seed_id": "ss_001",
+      "seed_text": "Of Teenage T. rex's monster growth werd veroorzaakt door een andere fase dan adolescentie, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "B: De bron schrijft de groei juist toe aan adolescentie; de seed zoekt een alternatief zonder duidelijke gapwaarde."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_15",
+      "title": "AG News Sci/Tech #15",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Teenage T. rex's monster growth Tyrannosaurus rex achieved its massive size due to an enormous growth spurt during its adolescent years.",
+      "seed_id": "ss_002",
+      "seed_text": "Of de precieze duur of periode van de groeiperiode wordt niet aangegeven.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "A: De precieze duur/periode van de groeispurt ontbreekt."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_15",
+      "title": "AG News Sci/Tech #15",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Teenage T. rex's monster growth Tyrannosaurus rex achieved its massive size due to an enormous growth spurt during its adolescent years.",
+      "seed_id": "ss_002",
+      "seed_text": "Of de precieze duur of periode van de groeiperiode wordt niet aangegeven.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "B: De precieze duur/periode van de groeispurt ontbreekt."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_15",
+      "title": "AG News Sci/Tech #15",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Teenage T. rex's monster growth Tyrannosaurus rex achieved its massive size due to an enormous growth spurt during its adolescent years.",
+      "seed_id": "ss_003",
+      "seed_text": "Of de mate of intensiteit van de groeiperiode wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "A: De exacte mate of intensiteit van de groeiperiode wordt niet gekwantificeerd."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_15",
+      "title": "AG News Sci/Tech #15",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Teenage T. rex's monster growth Tyrannosaurus rex achieved its massive size due to an enormous growth spurt during its adolescent years.",
+      "seed_id": "ss_003",
+      "seed_text": "Of de mate of intensiteit van de groeiperiode wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "B: De exacte mate of intensiteit van de groeiperiode wordt niet gekwantificeerd."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Scientists Discover Ganymede has a Lumpy Interior Jet Propulsion Lab -- Scientists have discovered irregular lumps beneath the icy surface of Jupiter's largest moon, Ganymede. These irregular masses may be rock formations, supported by Ganymede's icy shell for billions of years...",
+      "seed_id": "ss_001",
+      "seed_text": "Of de lumps onder de ijskust van Ganymede bestaan, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "A: De bron zegt expliciet dat onregelmatige lumps zijn ontdekt."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Scientists Discover Ganymede has a Lumpy Interior Jet Propulsion Lab -- Scientists have discovered irregular lumps beneath the icy surface of Jupiter's largest moon, Ganymede. These irregular masses may be rock formations, supported by Ganymede's icy shell for billions of years...",
+      "seed_id": "ss_001",
+      "seed_text": "Of de lumps onder de ijskust van Ganymede bestaan, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "B: De bron zegt expliciet dat onregelmatige lumps zijn ontdekt."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Scientists Discover Ganymede has a Lumpy Interior Jet Propulsion Lab -- Scientists have discovered irregular lumps beneath the icy surface of Jupiter's largest moon, Ganymede. These irregular masses may be rock formations, supported by Ganymede's icy shell for billions of years...",
+      "seed_id": "ss_002",
+      "seed_text": "Of de lumps onder de ijskust van Ganymede een natuurlijke of een.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "A: De seed is afgekapt en daardoor niet toetsbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Scientists Discover Ganymede has a Lumpy Interior Jet Propulsion Lab -- Scientists have discovered irregular lumps beneath the icy surface of Jupiter's largest moon, Ganymede. These irregular masses may be rock formations, supported by Ganymede's icy shell for billions of years...",
+      "seed_id": "ss_002",
+      "seed_text": "Of de lumps onder de ijskust van Ganymede een natuurlijke of een.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "B: De seed is afgekapt en daardoor niet toetsbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Scientists Discover Ganymede has a Lumpy Interior Jet Propulsion Lab -- Scientists have discovered irregular lumps beneath the icy surface of Jupiter's largest moon, Ganymede. These irregular masses may be rock formations, supported by Ganymede's icy shell for billions of years...",
+      "seed_id": "ss_003",
+      "seed_text": "Of de lumps onder de ijskust van Ganymede een effect op de oppervlakte.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "A: De seed is afgekapt en mist het object van de claim."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Scientists Discover Ganymede has a Lumpy Interior Jet Propulsion Lab -- Scientists have discovered irregular lumps beneath the icy surface of Jupiter's largest moon, Ganymede. These irregular masses may be rock formations, supported by Ganymede's icy shell for billions of years...",
+      "seed_id": "ss_003",
+      "seed_text": "Of de lumps onder de ijskust van Ganymede een effect op de oppervlakte.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "B: De seed is afgekapt en mist het object van de claim."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Scientists Discover Ganymede has a Lumpy Interior Jet Propulsion Lab -- Scientists have discovered irregular lumps beneath the icy surface of Jupiter's largest moon, Ganymede. These irregular masses may be rock formations, supported by Ganymede's icy shell for billions of years...",
+      "seed_id": "ss_004",
+      "seed_text": "Of de lumps onder de ijskust van Ganymede een impact hebben op de.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "A: De seed eindigt voortijdig en is niet valideerbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Scientists Discover Ganymede has a Lumpy Interior Jet Propulsion Lab -- Scientists have discovered irregular lumps beneath the icy surface of Jupiter's largest moon, Ganymede. These irregular masses may be rock formations, supported by Ganymede's icy shell for billions of years...",
+      "seed_id": "ss_004",
+      "seed_text": "Of de lumps onder de ijskust van Ganymede een impact hebben op de.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "B: De seed eindigt voortijdig en is niet valideerbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Scientists Discover Ganymede has a Lumpy Interior Jet Propulsion Lab -- Scientists have discovered irregular lumps beneath the icy surface of Jupiter's largest moon, Ganymede. These irregular masses may be rock formations, supported by Ganymede's icy shell for billions of years...",
+      "seed_id": "ss_005",
+      "seed_text": "Of de lumps onder de ijskust van Ganymede een invloed hebben op de.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "A: De seed is incompleet en daardoor geen bruikbare reviewseed."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Scientists Discover Ganymede has a Lumpy Interior Jet Propulsion Lab -- Scientists have discovered irregular lumps beneath the icy surface of Jupiter's largest moon, Ganymede. These irregular masses may be rock formations, supported by Ganymede's icy shell for billions of years...",
+      "seed_id": "ss_005",
+      "seed_text": "Of de lumps onder de ijskust van Ganymede een invloed hebben op de.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "B: De seed is incompleet en daardoor geen bruikbare reviewseed."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Mars Rovers Relay Images Through Mars Express European Space Agency -- ESAs Mars Express has relayed pictures from one of NASA's Mars rovers for the first time, as part of a set of interplanetary networking demonstrations. The demonstrations pave the way for future Mars missions to draw on joint interplanetary networking capabilities...",
+      "seed_id": "ss_001",
+      "seed_text": "Of de Mars Express ondersteuning biedt aan de rover, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "A: Mars Express ondersteunt de rovercommunicatie al door beelden te relayeren."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Mars Rovers Relay Images Through Mars Express European Space Agency -- ESAs Mars Express has relayed pictures from one of NASA's Mars rovers for the first time, as part of a set of interplanetary networking demonstrations. The demonstrations pave the way for future Mars missions to draw on joint interplanetary networking capabilities...",
+      "seed_id": "ss_001",
+      "seed_text": "Of de Mars Express ondersteuning biedt aan de rover, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "B: Mars Express ondersteunt de rovercommunicatie al door beelden te relayeren."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Mars Rovers Relay Images Through Mars Express European Space Agency -- ESAs Mars Express has relayed pictures from one of NASA's Mars rovers for the first time, as part of a set of interplanetary networking demonstrations. The demonstrations pave the way for future Mars missions to draw on joint interplanetary networking capabilities...",
+      "seed_id": "ss_002",
+      "seed_text": "Of de Mars Express de foto's verzamelt, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "A: Of Mars Express de foto's zelf verzamelt wordt niet vermeld."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Mars Rovers Relay Images Through Mars Express European Space Agency -- ESAs Mars Express has relayed pictures from one of NASA's Mars rovers for the first time, as part of a set of interplanetary networking demonstrations. The demonstrations pave the way for future Mars missions to draw on joint interplanetary networking capabilities...",
+      "seed_id": "ss_002",
+      "seed_text": "Of de Mars Express de foto's verzamelt, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "B: Of Mars Express de foto's zelf verzamelt wordt niet vermeld."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Mars Rovers Relay Images Through Mars Express European Space Agency -- ESAs Mars Express has relayed pictures from one of NASA's Mars rovers for the first time, as part of a set of interplanetary networking demonstrations. The demonstrations pave the way for future Mars missions to draw on joint interplanetary networking capabilities...",
+      "seed_id": "ss_003",
+      "seed_text": "Of de Mars Express de foto's verwerkt, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "A: Of Mars Express de foto's verwerkt wordt niet vermeld."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Mars Rovers Relay Images Through Mars Express European Space Agency -- ESAs Mars Express has relayed pictures from one of NASA's Mars rovers for the first time, as part of a set of interplanetary networking demonstrations. The demonstrations pave the way for future Mars missions to draw on joint interplanetary networking capabilities...",
+      "seed_id": "ss_003",
+      "seed_text": "Of de Mars Express de foto's verwerkt, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "B: Of Mars Express de foto's verwerkt wordt niet vermeld."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Mars Rovers Relay Images Through Mars Express European Space Agency -- ESAs Mars Express has relayed pictures from one of NASA's Mars rovers for the first time, as part of a set of interplanetary networking demonstrations. The demonstrations pave the way for future Mars missions to draw on joint interplanetary networking capabilities...",
+      "seed_id": "ss_004",
+      "seed_text": "Of de Mars Express de foto's naar de rover stuurt, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": "A: Foto's naar de rover sturen is de verkeerde richting en zwak relevant."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Mars Rovers Relay Images Through Mars Express European Space Agency -- ESAs Mars Express has relayed pictures from one of NASA's Mars rovers for the first time, as part of a set of interplanetary networking demonstrations. The demonstrations pave the way for future Mars missions to draw on joint interplanetary networking capabilities...",
+      "seed_id": "ss_004",
+      "seed_text": "Of de Mars Express de foto's naar de rover stuurt, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": "B: Foto's naar de rover sturen is de verkeerde richting en zwak relevant."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Mars Rovers Relay Images Through Mars Express European Space Agency -- ESAs Mars Express has relayed pictures from one of NASA's Mars rovers for the first time, as part of a set of interplanetary networking demonstrations. The demonstrations pave the way for future Mars missions to draw on joint interplanetary networking capabilities...",
+      "seed_id": "ss_005",
+      "seed_text": "Of de Mars Express de foto's naar de opnamecentrum stuurt, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "A: Of Mars Express de foto's naar een opname-/ontvangstcentrum stuurt wordt niet vermeld."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Mars Rovers Relay Images Through Mars Express European Space Agency -- ESAs Mars Express has relayed pictures from one of NASA's Mars rovers for the first time, as part of a set of interplanetary networking demonstrations. The demonstrations pave the way for future Mars missions to draw on joint interplanetary networking capabilities...",
+      "seed_id": "ss_005",
+      "seed_text": "Of de Mars Express de foto's naar de opnamecentrum stuurt, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "B: Of Mars Express de foto's naar een opname-/ontvangstcentrum stuurt wordt niet vermeld."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "title": "AG News Sci/Tech #19",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Storage, servers bruise HP earnings update Earnings per share rise compared with a year ago, but company misses analysts' expectations by a long shot.",
+      "seed_id": "ss_001",
+      "seed_text": "Of HP heeft hijft op servers bruise, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "too_vague",
+      "reviewer_notes": "A: De tekst is grammaticaal kapot en niet toetsbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "title": "AG News Sci/Tech #19",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Storage, servers bruise HP earnings update Earnings per share rise compared with a year ago, but company misses analysts' expectations by a long shot.",
+      "seed_id": "ss_001",
+      "seed_text": "Of HP heeft hijft op servers bruise, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "too_vague",
+      "reviewer_notes": "B: De tekst is grammaticaal kapot en niet toetsbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "title": "AG News Sci/Tech #19",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Storage, servers bruise HP earnings update Earnings per share rise compared with a year ago, but company misses analysts' expectations by a long shot.",
+      "seed_id": "ss_002",
+      "seed_text": "Of HP heeft hijft op storage, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "too_vague",
+      "reviewer_notes": "A: De seed is malformed en noemt geen duidelijke ontbrekende claim."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "title": "AG News Sci/Tech #19",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Storage, servers bruise HP earnings update Earnings per share rise compared with a year ago, but company misses analysts' expectations by a long shot.",
+      "seed_id": "ss_002",
+      "seed_text": "Of HP heeft hijft op storage, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "too_vague",
+      "reviewer_notes": "B: De seed is malformed en noemt geen duidelijke ontbrekende claim."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "title": "AG News Sci/Tech #19",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Storage, servers bruise HP earnings update Earnings per share rise compared with a year ago, but company misses analysts' expectations by a long shot.",
+      "seed_id": "ss_003",
+      "seed_text": "Of HP heeft hijft op earnings update, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "too_vague",
+      "reviewer_notes": "A: De formulering is kapot en inhoudelijk onbruikbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "title": "AG News Sci/Tech #19",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Storage, servers bruise HP earnings update Earnings per share rise compared with a year ago, but company misses analysts' expectations by a long shot.",
+      "seed_id": "ss_003",
+      "seed_text": "Of HP heeft hijft op earnings update, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "too_vague",
+      "reviewer_notes": "B: De formulering is kapot en inhoudelijk onbruikbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "title": "AG News Sci/Tech #19",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Storage, servers bruise HP earnings update Earnings per share rise compared with a year ago, but company misses analysts' expectations by a long shot.",
+      "seed_id": "ss_004",
+      "seed_text": "Of HP heeft hijft op earnings per share, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "too_vague",
+      "reviewer_notes": "A: De seed is grammaticaal niet valide en heeft geen duidelijke follow-upwaarde."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "title": "AG News Sci/Tech #19",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Storage, servers bruise HP earnings update Earnings per share rise compared with a year ago, but company misses analysts' expectations by a long shot.",
+      "seed_id": "ss_004",
+      "seed_text": "Of HP heeft hijft op earnings per share, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "too_vague",
+      "reviewer_notes": "B: De seed is grammaticaal niet valide en heeft geen duidelijke follow-upwaarde."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "title": "AG News Sci/Tech #20",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "IBM to hire even more new workers By the end of the year, the computing giant plans to have its biggest headcount since 1991.",
+      "seed_id": "ss_001",
+      "seed_text": "Hoeveel nieuwe werknemers IBM gaat huren, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "A: Het exacte aantal nieuwe werknemers wordt niet vermeld."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "title": "AG News Sci/Tech #20",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "IBM to hire even more new workers By the end of the year, the computing giant plans to have its biggest headcount since 1991.",
+      "seed_id": "ss_001",
+      "seed_text": "Hoeveel nieuwe werknemers IBM gaat huren, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "B: Het exacte aantal nieuwe werknemers wordt niet vermeld."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "title": "AG News Sci/Tech #20",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "IBM to hire even more new workers By the end of the year, the computing giant plans to have its biggest headcount since 1991.",
+      "seed_id": "ss_002",
+      "seed_text": "Wanneer het einde van het jaar wordt bereikt, wordt niet aangegeven.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "trivial",
+      "reviewer_notes": "A: Het einde van het jaar als tijdsaanduiding is te triviaal voor een nuttige seed."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "title": "AG News Sci/Tech #20",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "IBM to hire even more new workers By the end of the year, the computing giant plans to have its biggest headcount since 1991.",
+      "seed_id": "ss_002",
+      "seed_text": "Wanneer het einde van het jaar wordt bereikt, wordt niet aangegeven.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "trivial",
+      "reviewer_notes": "B: Het einde van het jaar als tijdsaanduiding is te triviaal voor een nuttige seed."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "title": "AG News Sci/Tech #20",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "IBM to hire even more new workers By the end of the year, the computing giant plans to have its biggest headcount since 1991.",
+      "seed_id": "ss_003",
+      "seed_text": "Wat de grootste hoofdcijfers sinds 1991 zijn, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "A: De concrete headcount/omvang van het grootste personeelsbestand sinds 1991 ontbreekt."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "title": "AG News Sci/Tech #20",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "IBM to hire even more new workers By the end of the year, the computing giant plans to have its biggest headcount since 1991.",
+      "seed_id": "ss_003",
+      "seed_text": "Wat de grootste hoofdcijfers sinds 1991 zijn, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "B: De concrete headcount/omvang van het grootste personeelsbestand sinds 1991 ontbreekt."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "title": "AG News Sci/Tech #20",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "IBM to hire even more new workers By the end of the year, the computing giant plans to have its biggest headcount since 1991.",
+      "seed_id": "ss_004",
+      "seed_text": "Of er al eerder een grotere hoofdcijfer was, wordt niet aangegeven.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "A: De bron impliceert al dat 1991 het vergelijkingspunt is; deze seed voegt weinig toetsbare waarde toe."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "title": "AG News Sci/Tech #20",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "IBM to hire even more new workers By the end of the year, the computing giant plans to have its biggest headcount since 1991.",
+      "seed_id": "ss_004",
+      "seed_text": "Of er al eerder een grotere hoofdcijfer was, wordt niet aangegeven.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "B: De bron impliceert al dat 1991 het vergelijkingspunt is; deze seed voegt weinig toetsbare waarde toe."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Some People Not Eligible to Get in on Google IPO Google has billed its IPO as a way for everyday people to get in on the process, denying Wall Street the usual stranglehold it's had on IPOs. Public bidding, a minimum of just five shares, an open process with 28 underwriters - all this pointed to a new level of public participation. But this isn't the case.",
+      "seed_id": "ss_001",
+      "seed_text": "Of Google heeft een lijst met mensen die niet mogen proberen in te.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "A: De seed is afgekapt en niet valideerbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Some People Not Eligible to Get in on Google IPO Google has billed its IPO as a way for everyday people to get in on the process, denying Wall Street the usual stranglehold it's had on IPOs. Public bidding, a minimum of just five shares, an open process with 28 underwriters - all this pointed to a new level of public participation. But this isn't the case.",
+      "seed_id": "ss_001",
+      "seed_text": "Of Google heeft een lijst met mensen die niet mogen proberen in te.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "B: De seed is afgekapt en niet valideerbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Some People Not Eligible to Get in on Google IPO Google has billed its IPO as a way for everyday people to get in on the process, denying Wall Street the usual stranglehold it's had on IPOs. Public bidding, a minimum of just five shares, an open process with 28 underwriters - all this pointed to a new level of public participation. But this isn't the case.",
+      "seed_id": "ss_002",
+      "seed_text": "Of Google een criteria heeft om te bepalen wie mogen proberen in te.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "A: De seed is afgekapt, ondanks een relevant onderwerp."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Some People Not Eligible to Get in on Google IPO Google has billed its IPO as a way for everyday people to get in on the process, denying Wall Street the usual stranglehold it's had on IPOs. Public bidding, a minimum of just five shares, an open process with 28 underwriters - all this pointed to a new level of public participation. But this isn't the case.",
+      "seed_id": "ss_002",
+      "seed_text": "Of Google een criteria heeft om te bepalen wie mogen proberen in te.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "B: De seed is afgekapt, ondanks een relevant onderwerp."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Some People Not Eligible to Get in on Google IPO Google has billed its IPO as a way for everyday people to get in on the process, denying Wall Street the usual stranglehold it's had on IPOs. Public bidding, a minimum of just five shares, an open process with 28 underwriters - all this pointed to a new level of public participation. But this isn't the case.",
+      "seed_id": "ss_003",
+      "seed_text": "Of Google een procedure heeft om te bepalen wie mogen proberen in te.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "A: De procedurevraag is incompleet en niet als volledige seed bruikbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Some People Not Eligible to Get in on Google IPO Google has billed its IPO as a way for everyday people to get in on the process, denying Wall Street the usual stranglehold it's had on IPOs. Public bidding, a minimum of just five shares, an open process with 28 underwriters - all this pointed to a new level of public participation. But this isn't the case.",
+      "seed_id": "ss_003",
+      "seed_text": "Of Google een procedure heeft om te bepalen wie mogen proberen in te.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "B: De procedurevraag is incompleet en niet als volledige seed bruikbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Some People Not Eligible to Get in on Google IPO Google has billed its IPO as a way for everyday people to get in on the process, denying Wall Street the usual stranglehold it's had on IPOs. Public bidding, a minimum of just five shares, an open process with 28 underwriters - all this pointed to a new level of public participation. But this isn't the case.",
+      "seed_id": "ss_004",
+      "seed_text": "Of Google een beperking heeft opgelegd aan de prijs die mensen mogen.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "A: De prijslimietseed is afgekapt en daardoor niet toetsbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Some People Not Eligible to Get in on Google IPO Google has billed its IPO as a way for everyday people to get in on the process, denying Wall Street the usual stranglehold it's had on IPOs. Public bidding, a minimum of just five shares, an open process with 28 underwriters - all this pointed to a new level of public participation. But this isn't the case.",
+      "seed_id": "ss_004",
+      "seed_text": "Of Google een beperking heeft opgelegd aan de prijs die mensen mogen.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "B: De prijslimietseed is afgekapt en daardoor niet toetsbaar."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Some People Not Eligible to Get in on Google IPO Google has billed its IPO as a way for everyday people to get in on the process, denying Wall Street the usual stranglehold it's had on IPOs. Public bidding, a minimum of just five shares, an open process with 28 underwriters - all this pointed to a new level of public participation. But this isn't the case.",
+      "seed_id": "ss_005",
+      "seed_text": "Of Google een beperking heeft opgelegd aan het aantal aandelen dat.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "A: De aandelenaantalseed is afgekapt en daardoor niet valide."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Some People Not Eligible to Get in on Google IPO Google has billed its IPO as a way for everyday people to get in on the process, denying Wall Street the usual stranglehold it's had on IPOs. Public bidding, a minimum of just five shares, an open process with 28 underwriters - all this pointed to a new level of public participation. But this isn't the case.",
+      "seed_id": "ss_005",
+      "seed_text": "Of Google een beperking heeft opgelegd aan het aantal aandelen dat.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": false,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "not_testable",
+      "reviewer_notes": "B: De aandelenaantalseed is afgekapt en daardoor niet valide."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Rivals Try to Turn Tables on Charles Schwab By MICHAEL LIEDTKE SAN FRANCISCO (AP) -- With its low prices and iconoclastic attitude, discount stock broker Charles Schwab Corp. (SCH) represented an annoying stone in Wall Street's wing-tipped shoes for decades...",
+      "seed_id": "ss_001",
+      "seed_text": "Of Charles Schwab heeft een competitor, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "A: De titel noemt rivals; competitor/rival is geen echte ontbrekende informatie."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Rivals Try to Turn Tables on Charles Schwab By MICHAEL LIEDTKE SAN FRANCISCO (AP) -- With its low prices and iconoclastic attitude, discount stock broker Charles Schwab Corp. (SCH) represented an annoying stone in Wall Street's wing-tipped shoes for decades...",
+      "seed_id": "ss_001",
+      "seed_text": "Of Charles Schwab heeft een competitor, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "B: De titel noemt rivals; competitor/rival is geen echte ontbrekende informatie."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Rivals Try to Turn Tables on Charles Schwab By MICHAEL LIEDTKE SAN FRANCISCO (AP) -- With its low prices and iconoclastic attitude, discount stock broker Charles Schwab Corp. (SCH) represented an annoying stone in Wall Street's wing-tipped shoes for decades...",
+      "seed_id": "ss_002",
+      "seed_text": "Of Charles Schwab een competitor heeft, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "duplicate",
+      "reviewer_notes": "A: Duplicaat van de competitor-seed en bovendien al in de bronframing aanwezig."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Rivals Try to Turn Tables on Charles Schwab By MICHAEL LIEDTKE SAN FRANCISCO (AP) -- With its low prices and iconoclastic attitude, discount stock broker Charles Schwab Corp. (SCH) represented an annoying stone in Wall Street's wing-tipped shoes for decades...",
+      "seed_id": "ss_002",
+      "seed_text": "Of Charles Schwab een competitor heeft, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "duplicate",
+      "reviewer_notes": "B: Duplicaat van de competitor-seed en bovendien al in de bronframing aanwezig."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Rivals Try to Turn Tables on Charles Schwab By MICHAEL LIEDTKE SAN FRANCISCO (AP) -- With its low prices and iconoclastic attitude, discount stock broker Charles Schwab Corp. (SCH) represented an annoying stone in Wall Street's wing-tipped shoes for decades...",
+      "seed_id": "ss_003",
+      "seed_text": "Of Charles Schwab een rival is, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "A: Rivaliteit staat al in de titel/framing."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Rivals Try to Turn Tables on Charles Schwab By MICHAEL LIEDTKE SAN FRANCISCO (AP) -- With its low prices and iconoclastic attitude, discount stock broker Charles Schwab Corp. (SCH) represented an annoying stone in Wall Street's wing-tipped shoes for decades...",
+      "seed_id": "ss_003",
+      "seed_text": "Of Charles Schwab een rival is, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "B: Rivaliteit staat al in de titel/framing."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Rivals Try to Turn Tables on Charles Schwab By MICHAEL LIEDTKE SAN FRANCISCO (AP) -- With its low prices and iconoclastic attitude, discount stock broker Charles Schwab Corp. (SCH) represented an annoying stone in Wall Street's wing-tipped shoes for decades...",
+      "seed_id": "ss_004",
+      "seed_text": "Of Charles Schwab wordt beschreven als een competitor, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "duplicate",
+      "reviewer_notes": "A: Parafrase/duplicaat van dezelfde competitor/rival-claim."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Rivals Try to Turn Tables on Charles Schwab By MICHAEL LIEDTKE SAN FRANCISCO (AP) -- With its low prices and iconoclastic attitude, discount stock broker Charles Schwab Corp. (SCH) represented an annoying stone in Wall Street's wing-tipped shoes for decades...",
+      "seed_id": "ss_004",
+      "seed_text": "Of Charles Schwab wordt beschreven als een competitor, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "duplicate",
+      "reviewer_notes": "B: Parafrase/duplicaat van dezelfde competitor/rival-claim."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Rivals Try to Turn Tables on Charles Schwab By MICHAEL LIEDTKE SAN FRANCISCO (AP) -- With its low prices and iconoclastic attitude, discount stock broker Charles Schwab Corp. (SCH) represented an annoying stone in Wall Street's wing-tipped shoes for decades...",
+      "seed_id": "ss_005",
+      "seed_text": "Of Charles Schwab wordt beschreven als een rival, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "duplicate",
+      "reviewer_notes": "A: Parafrase/duplicaat en geen nieuwe atomische lacune."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "Rivals Try to Turn Tables on Charles Schwab By MICHAEL LIEDTKE SAN FRANCISCO (AP) -- With its low prices and iconoclastic attitude, discount stock broker Charles Schwab Corp. (SCH) represented an annoying stone in Wall Street's wing-tipped shoes for decades...",
+      "seed_id": "ss_005",
+      "seed_text": "Of Charles Schwab wordt beschreven als een rival, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "completed",
+      "reject_reason": "duplicate",
+      "reviewer_notes": "B: Parafrase/duplicaat en geen nieuwe atomische lacune."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_25",
+      "title": "AG News Sci/Tech #25",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "News: Sluggish movement on power grid cyber security Industry cyber security standards fail to reach some of the most vulnerable components of the power grid.\\",
+      "seed_id": "ss_001",
+      "seed_text": "Of er een plan is om de cyber-beveiligingstandaarden te verbeteren, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "A: Een verbeterplan voor cyberbeveiligingsstandaarden wordt niet vermeld en is relevant."
+    },
+    {
+      "item_id": "AG_NEWS_TEST_25",
+      "title": "AG News Sci/Tech #25",
+      "domain": "nieuws - Sci/Tech",
+      "source_excerpt": "News: Sluggish movement on power grid cyber security Industry cyber security standards fail to reach some of the most vulnerable components of the power grid.\\",
+      "seed_id": "ss_001",
+      "seed_text": "Of er een plan is om de cyber-beveiligingstandaarden te verbeteren, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "completed",
+      "reject_reason": null,
+      "reviewer_notes": "B: Een verbeterplan voor cyberbeveiligingsstandaarden wordt niet vermeld en is relevant."
+    }
+  ]
+}

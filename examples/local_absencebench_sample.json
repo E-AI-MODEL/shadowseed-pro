@@ -1,0 +1,22 @@
+{
+  "scenarios": [
+    {
+      "id": "sample-001",
+      "original_context": "The text mentions A, B, and C.",
+      "modified_context": "The text mentions A and C.",
+      "omitted_context": [
+        "B"
+      ],
+      "detected": true
+    },
+    {
+      "id": "sample-002",
+      "original_context": "The text mentions cause, effect, and evidence.",
+      "modified_context": "The text mentions cause and effect.",
+      "omitted_context": [
+        "evidence"
+      ],
+      "detected": false
+    }
+  ]
+}

@@ -1,0 +1,2885 @@
+{
+  "summary": {
+    "evidence_layer": "open_set_seed_quality",
+    "packet_count": 56,
+    "completed_packet_count": 56,
+    "pending_packet_count": 0,
+    "invalid_packet_count": 0,
+    "accepted_packet_count": 15,
+    "rejected_packet_count": 41,
+    "packet_acceptance_rate": 0.26785714285714285,
+    "unique_seed_count": 56,
+    "completed_seed_count": 56,
+    "accepted_seed_count": 15,
+    "rejected_seed_count": 41,
+    "mixed_seed_count": 0,
+    "pending_seed_count": 0,
+    "invalid_seed_count": 0,
+    "agreement_eligible_seed_count": 0,
+    "unanimous_seed_count": 0,
+    "seed_acceptance_rate": 0.26785714285714285,
+    "seed_rejection_rate": 0.7321428571428571,
+    "unanimous_verdict_rate": 0.0,
+    "pairwise_decision_agreement_rate": 0.0,
+    "criteria": [
+      "atomicity",
+      "relevance",
+      "testability",
+      "non_triviality",
+      "follow_up_utility"
+    ],
+    "criterion_pass_rates": {
+      "atomicity": 1.0,
+      "relevance": 0.35714285714285715,
+      "testability": 0.42857142857142855,
+      "non_triviality": 0.26785714285714285,
+      "follow_up_utility": 0.26785714285714285
+    },
+    "reject_reason_counts": {
+      "style_not_gap": 28,
+      "too_vague": 4,
+      "not_relevant": 8,
+      "trivial": 1
+    },
+    "reviewer_ids": [
+      "reviewer_ai_claude"
+    ],
+    "domain_seed_counts": {
+      "wetenschap - arXiv abstract": 56
+    },
+    "status": "review_complete",
+    "artifacts": {
+      "summary": "benchmarks/open_review/rounds/round_007/batchB/ai_review/open_set_seed_review_summary.json",
+      "disagreements": "benchmarks/open_review/rounds/round_007/batchB/ai_review/open_set_disagreements.json",
+      "report": "benchmarks/open_review/rounds/round_007/batchB/ai_review/open_set_review_report.md"
+    }
+  },
+  "results": [
+    {
+      "item_id": "ARXIV_ABSTRACTS_20",
+      "title": "Molecular Synchronization Waves in Arrays of Allosterically Regulated Enzymes",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_001",
+      "seed_text": "De dynamische processen van de enzymcyclus bij hoge enzymconcentraties.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_20",
+      "title": "Molecular Synchronization Waves in Arrays of Allosterically Regulated Enzymes",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_002",
+      "seed_text": "De rol van Hopf- en wisselbifurcaties in de vorming van spatiotemporale patronen.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_20",
+      "title": "Molecular Synchronization Waves in Arrays of Allosterically Regulated Enzymes",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_003",
+      "seed_text": "De ontwikkeling van complexe synchronisatiepatronen in stochastische simulaties.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_20",
+      "title": "Molecular Synchronization Waves in Arrays of Allosterically Regulated Enzymes",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_004",
+      "seed_text": "De impact van de mean-fieldapproximatie op het begrijpen van de gevormde patronen.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_20",
+      "title": "Molecular Synchronization Waves in Arrays of Allosterically Regulated Enzymes",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_005",
+      "seed_text": "De relatie tussen individuele en collectieve moleculaire synchronisatie in de reaktie.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_21",
+      "title": "Stochastic Lie group integrators",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_001",
+      "seed_text": "De precisie van de Castell--Gaines methoden ten opzichte van de stochastische Taylor schalen.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_21",
+      "title": "Stochastic Lie group integrators",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_002",
+      "seed_text": "De implementatie van de Munthe-Kaas methoden als onderliggende oorzaak voor de stochastische Lie group integratoren.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_21",
+      "title": "Stochastic Lie group integrators",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_003",
+      "seed_text": "De afstemming van de stochastische Lie group integratoren op de dynamica van een bevroren rigide object.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_21",
+      "title": "Stochastic Lie group integrators",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_004",
+      "seed_text": "De effectiviteit van de stochastische Lie group integratoren bij het simuleren van een autonoom onderwatervoertuig.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_21",
+      "title": "Stochastic Lie group integrators",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_005",
+      "seed_text": "De integratie van twee onafhankelijke stochastische laagnoiseprocessen in de dynamica van de simulaties.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_22",
+      "title": "ALMA as the ideal probe of the solar chromosphere",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke dynamische processen in de chromosfeer die millimeteremissie beïnvloeden.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_22",
+      "title": "ALMA as the ideal probe of the solar chromosphere",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_002",
+      "seed_text": "De exacte wavelheggen (0.8-5.0 mm) waarop dynamische signaturen worden gezien.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_22",
+      "title": "ALMA as the ideal probe of the solar chromosphere",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_003",
+      "seed_text": "De eigenschappen van high resolution mm wavelheggenobservaties die het verschil kunnen maken tussen warm en koud gas.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_22",
+      "title": "ALMA as the ideal probe of the solar chromosphere",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_004",
+      "seed_text": "De specifieke resultaten van de BIMA array observaties op 3.5 mm wavelheggen.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_22",
+      "title": "ALMA as the ideal probe of the solar chromosphere",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_005",
+      "seed_text": "De noodzaak van hogere spatial resolutie voor een onderscheidende analyse van atmosferische features.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_23",
+      "title": "Formation of quasi-solitons in transverse confined ferromagnetic film media",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_001",
+      "seed_text": "De effectieve dipolar pinning van dynamische magnetisatie bij de laterale stripekanten.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_23",
+      "title": "Formation of quasi-solitons in transverse confined ferromagnetic film media",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_002",
+      "seed_text": "De transversale instabiliteit en interactie met de zijwanden van de golflichaasstructuur.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_23",
+      "title": "Formation of quasi-solitons in transverse confined ferromagnetic film media",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_003",
+      "seed_text": "De invloed van de confinement op de vorm en gedraging van de gevormde spin-wave packetten.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_23",
+      "title": "Formation of quasi-solitons in transverse confined ferromagnetic film media",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_004",
+      "seed_text": "De dynamische magnetisatieamplitude nabij de laterale stripekanten in de lineaire regel.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_23",
+      "title": "Formation of quasi-solitons in transverse confined ferromagnetic film media",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_005",
+      "seed_text": "De observatie van een nieuw stabiele spin-wave packet dat langs een golflichaasstructuur gaat.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_24",
+      "title": "Spectroscopic Properties of Polarons in Strongly Correlated Systems by Exact Diagrammatic Monte Carlo Method",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_001",
+      "seed_text": "Methode voor berekening van Matsubara Green function in imaginaire tijd.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_24",
+      "title": "Spectroscopic Properties of Polarons in Strongly Correlated Systems by Exact Diagrammatic Monte Carlo Method",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_002",
+      "seed_text": "Analytische continuatie naar real frequenteytijd.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_24",
+      "title": "Spectroscopic Properties of Polarons in Strongly Correlated Systems by Exact Diagrammatic Monte Carlo Method",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_003",
+      "seed_text": "Numerieke resultaten voor de Lehmann spectral function.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_24",
+      "title": "Spectroscopic Properties of Polarons in Strongly Correlated Systems by Exact Diagrammatic Monte Carlo Method",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_004",
+      "seed_text": "Grondstaten eigenschappen van Frohlich polaron.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_24",
+      "title": "Spectroscopic Properties of Polarons in Strongly Correlated Systems by Exact Diagrammatic Monte Carlo Method",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_005",
+      "seed_text": "Optische conductiviteit van interactie met phononen in t-J model.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_25",
+      "title": "Placeholder Substructures II: Meta-Fractals, Made of Box-Kites, Fill Infinite-Dimensional Skies",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke bit-manipulatie regels voor fractal transformatie.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_25",
+      "title": "Placeholder Substructures II: Meta-Fractals, Made of Box-Kites, Fill Infinite-Dimensional Skies",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_002",
+      "seed_text": "De relatie tussen het strut constant (S) en het genereren van meta-fractals.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_25",
+      "title": "Placeholder Substructures II: Meta-Fractals, Made of Box-Kites, Fill Infinite-Dimensional Skies",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_003",
+      "seed_text": "De rol van N-dimensional hypercomplex numbers bij het vormgeven van scale-free networks.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_25",
+      "title": "Placeholder Substructures II: Meta-Fractals, Made of Box-Kites, Fill Infinite-Dimensional Skies",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_004",
+      "seed_text": "De transformatie van één fractal genus naar andere binnen Wolfram's Class 4 complexiteit.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_25",
+      "title": "Placeholder Substructures II: Meta-Fractals, Made of Box-Kites, Fill Infinite-Dimensional Skies",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_005",
+      "seed_text": "De relatie tussen het Cayley-Dickson Process (CDP) en de representatie van singularites.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_26",
+      "title": "Filling-Factor-Dependent Magnetophonon Resonance in Graphene",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_001",
+      "seed_text": "De resonantiecondities van de inter-Landau-level transitions.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_26",
+      "title": "Filling-Factor-Dependent Magnetophonon Resonance in Graphene",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_002",
+      "seed_text": "De afhankelijkheid van de luchtingsfactor bij de detectie van cirkelvormige lichaammodi.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_26",
+      "title": "Filling-Factor-Dependent Magnetophonon Resonance in Graphene",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_003",
+      "seed_text": "De directe meting van de sterkte van de elektron-golf-interactie.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_26",
+      "title": "Filling-Factor-Dependent Magnetophonon Resonance in Graphene",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_004",
+      "seed_text": "De omvang van de resonantie van de in-plane optische golven in de Gamma-punt.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_26",
+      "title": "Filling-Factor-Dependent Magnetophonon Resonance in Graphene",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_005",
+      "seed_text": "De invloed van de magnetische veldsterkte B_0 op de resonantie.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_27",
+      "title": "Pfaffians, hafnians and products of real linear functionals",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_001",
+      "seed_text": "De exacte vorm van de verbeterde ondergrens van R\\'ev\\'esz en Sarantopoulos.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_27",
+      "title": "Pfaffians, hafnians and products of real linear functionals",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_002",
+      "seed_text": "De specifieke toepassing van de hafnian inequality in de probleemstelling.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_27",
+      "title": "Pfaffians, hafnians and products of real linear functionals",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_003",
+      "seed_text": "De definitie van de `real linear polarization constant' probleem.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "trivial",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "trivial": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_27",
+      "title": "Pfaffians, hafnians and products of real linear functionals",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_004",
+      "seed_text": "De exacte determinanten- en permanente eigenschappen van de positieve semi-definente matrices die worden benaderd.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_28",
+      "title": "Understanding the Flavor Symmetry Breaking and Nucleon Flavor-Spin Structure within Chiral Quark Model",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_001",
+      "seed_text": "Transition probabilities van de emissie van Goldstone bosonen uit een quark.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_28",
+      "title": "Understanding the Flavor Symmetry Breaking and Nucleon Flavor-Spin Structure within Chiral Quark Model",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_002",
+      "seed_text": "Interpretatie van de flavor-spinstructuur van nucleonen door flavor symmetriebreking.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_28",
+      "title": "Understanding the Flavor Symmetry Breaking and Nucleon Flavor-Spin Structure within Chiral Quark Model",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_003",
+      "seed_text": "Intrinsieke golffuncties van constituerende quarks uitgedrukt in $\\XQM$.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_28",
+      "title": "Understanding the Flavor Symmetry Breaking and Nucleon Flavor-Spin Structure within Chiral Quark Model",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_004",
+      "seed_text": "Toepassing van een vereenvoudigde Hamiltonianopstelling op $\\XQM$ voor het bepalen van quarkintrinsieke golffuncties.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_28",
+      "title": "Understanding the Flavor Symmetry Breaking and Nucleon Flavor-Spin Structure within Chiral Quark Model",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_005",
+      "seed_text": "Relatie tussen Goldstone boson emissie en nucleon flavor-spinstructuur in $\\XQM$.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_29",
+      "title": "Tuning correlation effects with electron-phonon interactions",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke effecten van de phononenergieafstemming op de korrelatieeffecten in de spectralfunctie.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_29",
+      "title": "Tuning correlation effects with electron-phonon interactions",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_002",
+      "seed_text": "De relatie tussen de vorm van de spectralfunctie en de optische conductiviteit in dit regime.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_29",
+      "title": "Tuning correlation effects with electron-phonon interactions",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_003",
+      "seed_text": "De aanwezigheid van een dubbele kondo-peelingstructuur in de resistiviteit.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_30",
+      "title": "Crystal channeling of LHC forward protons with preserved distribution in phase space",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_001",
+      "seed_text": "Precisie van de crystaltransmissie voor protonenangles.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_30",
+      "title": "Crystal channeling of LHC forward protons with preserved distribution in phase space",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_002",
+      "seed_text": "Preserved divergentie van diffractief gespreide protonen in crystal.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_30",
+      "title": "Crystal channeling of LHC forward protons with preserved distribution in phase space",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_003",
+      "seed_text": "Steerbaarheid van de bent crystal voor analyse.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_30",
+      "title": "Crystal channeling of LHC forward protons with preserved distribution in phase space",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_004",
+      "seed_text": "Accuratie van protonenangles in microrad in crystaltransmissie.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 1,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 0,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_31",
+      "title": "Probing non-standard neutrino interactions with supernova neutrinos",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_001",
+      "seed_text": "Effekten van NSI-strength op resonante conversies in de neutrino-spectrum.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "accepted",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_31",
+      "title": "Probing non-standard neutrino interactions with supernova neutrinos",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_002",
+      "seed_text": "Detectabiliteit van NSI-effecten door shockwaves door de SN-envelope.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_31",
+      "title": "Probing non-standard neutrino interactions with supernova neutrinos",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_003",
+      "seed_text": "Variaties in de elektronfractie en hun invloed op NSI-detectie.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_31",
+      "title": "Probing non-standard neutrino interactions with supernova neutrinos",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_004",
+      "seed_text": "Effecten van aarde-materiële effecten op NSI-modulatie in $\\bar\\nu_e$ spectrum.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_31",
+      "title": "Probing non-standard neutrino interactions with supernova neutrinos",
+      "domain": "wetenschap - arXiv abstract",
+      "seed_id": "ss_005",
+      "seed_text": "Potentieel detecteerbaar neutronizatie $\\nu_e$ burst als gevolg van NSI.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_ai_claude",
+          "review_status": "rejected",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 1,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 1,
+        "testability": 1,
+        "non_triviality": 1,
+        "follow_up_utility": 1
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 1
+      },
+      "completed_reviewer_count": 1,
+      "reviewer_count": 1,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": null
+    }
+  ]
+}

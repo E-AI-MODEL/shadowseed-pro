@@ -1,0 +1,34 @@
+{
+  "source_file_count": 506,
+  "source_bytes": 6724785,
+  "category_counts": {
+    "project_file": 5,
+    "workflow": 22,
+    "documentation": 82,
+    "benchmark_asset": 17,
+    "regression_fixture": 160,
+    "data_or_example": 3,
+    "executable_script": 11,
+    "configuration_or_data": 1,
+    "result_artifact": 33,
+    "runtime_or_benchmark_code": 110,
+    "template": 2,
+    "test_code": 60
+  },
+  "disposition_counts": {
+    "retained_and_reviewed": 35,
+    "archived_historical": 45,
+    "translated_and_archived": 4,
+    "replaced_and_archived": 1,
+    "retained_regression_fixture": 160,
+    "renamed_and_archived": 1,
+    "archived_and_replaced": 56,
+    "archived_source_audit": 1,
+    "archived_result": 33,
+    "retained_or_refactored": 110,
+    "retained_and_updated": 60
+  },
+  "unmapped": [],
+  "test_module_count": 61,
+  "test_function_count": 366
+}

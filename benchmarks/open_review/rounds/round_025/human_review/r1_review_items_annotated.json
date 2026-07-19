@@ -1,0 +1,419 @@
+[
+  {
+    "schema_version": "ssl-session-blind-ab.v2",
+    "item_id": "CONV_EDU-t04-01",
+    "conversation_id": "CONV_EDU",
+    "domain": "onderwijs",
+    "turn": 4,
+    "question": "Hoe betrek ik leerlingen die thuis weinig digitale ondersteuning hebben?",
+    "answer_A": "Leerlingen die thuis weinig digitale ondersteuning hebben, lopen het risico achter te raken bij digitale geletterdheid. Om hen actief te betrekken, is het belangrijk om de school als veilige oefenplek te positioneren en praktische barrières weg te nemen.\n\n**1. Toegang en oefentijd op school**  \nZorg dat alle leerlingen op school voldoende toegang hebben tot apparaten en internet. Plan regelmatig lesmomenten waarin iedereen met digitale middelen werkt, zodat thuis oefenen geen voorwaarde is voor succes. Overweeg extra inlooptijden, bijvoorbeeld tijdens een studieles of pauze, waar leerlingen zelfstandig of met begeleiding kunnen oefenen.\n\n**2. Stapsgewijze en visuele instructie**  \nBied duidelijke, stapsgewijze uitleg met veel visuele ondersteuning. Gebruik bijvoorbeeld screenshots, korte instructievideo’s of demonstraties op het digibord. Herhaal belangrijke stappen en laat leerlingen handelingen naspelen. Dit verlaagt de drempel voor wie minder ervaring heeft.\n\n**3. Peer support en samenwerking**  \nLaat leerlingen samenwerken in duo’s of kleine groepjes, waarbij je bewust koppelt op basis van ervaring. Stimuleer een cultuur waarin het normaal is om elkaar te helpen. Peer support verlaagt de angst om fouten te maken en zorgt dat leerlingen met minder thuisondersteuning toch kunnen leren van klasgenoten.\n\n**4. Differentiatie en persoonlijke aandacht**  \nHoud rekening met verschillen in tempo en voorkennis. Geef extra uitleg of korte individuele instructie aan wie dat nodig heeft. Wees alert op signalen van onzekerheid of frustratie en bied laagdrempelige hulp aan, bijvoorbeeld door een hulplijstje of buddy-systeem.\n\n**5. Praktische opdrachten en succeservaringen**  \nKies voor opdrachten die aansluiten bij de leefwereld van leerlingen en snel succes opleveren, zoals het veilig instellen van een wachtwoord of het herkennen van een phishingmail. Positieve ervaringen vergroten het zelfvertrouwen en de motivatie om verder te leren.\n\n**Afronding:**  \nDoor op school voldoende oefenkansen, duidelijke uitleg, samenwerking en persoonlijke aandacht te bieden, kun je ook leerlingen zonder digitale thuisondersteuning actief betrekken. Zo zorg je dat iedereen de kans krijgt om digitale vaardigheden te ontwikkelen, ongeacht de thuissituatie.",
+    "answer_B": "Leerlingen die thuis weinig digitale ondersteuning hebben, lopen het risico om achter te raken bij digitale geletterdheid. Om hen actief te betrekken, is het belangrijk om de school als oefenplek en veilige leeromgeving te benutten. Zorg dat alle leerlingen tijdens de les toegang hebben tot de benodigde apparaten en internet, zodat niemand afhankelijk is van thuissituatie of eigen middelen. Plan voldoende tijd in voor het oefenen van basisvaardigheden, en geef leerlingen de ruimte om vragen te stellen zonder oordeel.\n\nWerk met duidelijke, stapsgewijze instructies en visuele ondersteuning, zodat leerlingen zelfstandig kunnen oefenen en niet vastlopen als ze thuis geen hulp kunnen vragen. Bied extra begeleide oefenmomenten aan, bijvoorbeeld tijdens een inloopuur of na de les, waar leerlingen rustig kunnen werken en direct hulp kunnen krijgen. Stimuleer samenwerking door leerlingen in heterogene groepjes te laten werken, zodat ze elkaar kunnen ondersteunen en van elkaars ervaringen leren.\n\nMaak digitale geletterdheid ook tot een sociaal-cultureel proces: bespreek in de klas hoe iedereen opgroeit met verschillende digitale ervaringen en dat dit normaal is. Laat leerlingen hun eigen digitale leefwereld delen, bijvoorbeeld door te vertellen hoe zij thuis omgaan met media of technologie. Zo ontstaat begrip en herkenning, en voelen leerlingen zich minder alleen als ze ergens moeite mee hebben.\n\nTot slot: wees alert op signalen van onzekerheid of terughoudendheid. Moedig leerlingen aan om kleine successen te vieren en geef positieve feedback op inzet en groei, niet alleen op resultaat. Zo bouw je aan zelfvertrouwen en motivatie, ook bij leerlingen die thuis weinig digitale steun ervaren.\n\nDoor schooltijd, begeleiding en sociale verbinding centraal te stellen, geef je álle leerlingen de kans om digitale geletterdheid te ontwikkelen, ongeacht hun thuissituatie. Dat maakt digitale vaardigheden niet alleen een kwestie van techniek, maar ook van samen leren en groeien.",
+    "answer_diagnostics": {
+      "A": {
+        "word_count": 314,
+        "char_count": 2265,
+        "ends_with_sentence_punctuation": true,
+        "likely_truncated": false
+      },
+      "B": {
+        "word_count": 292,
+        "char_count": 1989,
+        "ends_with_sentence_punctuation": true,
+        "likely_truncated": false
+      }
+    },
+    "post_choice_seed_context": {
+      "surfaced_cross_turn_seeds": [
+        "Digitale geletterdheid als sociaal-cultureel vormingsproces in plaats van uitsluitend als vaardighedenset."
+      ],
+      "promoted_seeds_this_turn": []
+    },
+    "review": {
+      "winner": "A",
+      "scores": {
+        "content_completeness": {
+          "A": 5,
+          "B": 4
+        },
+        "question_relevance": {
+          "A": 5,
+          "B": 5
+        },
+        "specificity_sharpness": {
+          "A": 5,
+          "B": 4
+        },
+        "no_noise_or_hallucinated_relevance": {
+          "A": 5,
+          "B": 5
+        },
+        "usefulness": {
+          "A": 5,
+          "B": 4
+        }
+      },
+      "motivation": "A is concreter en directer uitvoerbaar: toegang, oefentijd, visuele instructie, peer support, differentiatie en succeservaringen zijn helder uitgewerkt. B voegt een waardevol sociaal-cultureel perspectief toe, maar blijft iets algemener.",
+      "seed_effect_after_choice": "promoted seed helpt een beetje",
+      "noise_or_hallucinated_relevance": "Geen duidelijke ruis. Het sociaal-culturele punt in B is relevant, maar niet doorslaggevend voor deze praktische vraag.",
+      "exclude_from_winrate": false
+    }
+  },
+  {
+    "schema_version": "ssl-session-blind-ab.v2",
+    "item_id": "CONV_EDU-t05-02",
+    "conversation_id": "CONV_EDU",
+    "domain": "onderwijs",
+    "turn": 5,
+    "question": "Hoe zorg ik dat collega's de module ook echt gaan gebruiken?",
+    "answer_A": "Om te zorgen dat collega’s de module digitale geletterdheid daadwerkelijk gaan gebruiken, is draagvlak en praktische toepasbaarheid cruciaal. Begin met het betrekken van collega’s in een vroeg stadium: vraag om input bij het formuleren van leerdoelen en het kiezen van werkvormen. Hierdoor voelen zij zich mede-eigenaar van de module en herkennen ze hun eigen praktijk in het materiaal.\n\nMaak de module overzichtelijk en gebruiksvriendelijk. Lever kant-en-klare lessen, duidelijke handleidingen en praktische materialen aan, zodat collega’s zonder veel voorbereiding aan de slag kunnen. Voeg bijvoorbeeld lesplannen, werkbladen en voorbeeldopdrachten toe, en geef aan welke onderdelen flexibel zijn aan te passen aan hun eigen stijl of vakgebied.\n\nOrganiseer een korte introductiebijeenkomst of workshop waarin je de module presenteert, de opzet uitlegt en ruimte biedt voor vragen. Laat collega’s zelf ervaren hoe een les werkt, bijvoorbeeld door een opdracht samen uit te voeren. Dit verlaagt de drempel om ermee te starten en maakt de meerwaarde direct zichtbaar.\n\nZorg voor ondersteuning tijdens de implementatie. Bied aan om bij de eerste lessen aanwezig te zijn, help bij technische vragen, en maak een aanspreekpunt of kleine werkgroep voor digitale geletterdheid binnen de school. Deel ervaringen en successen, bijvoorbeeld via een nieuwsbrief of tijdens teamoverleggen, zodat collega’s van elkaar leren en gemotiveerd blijven.\n\nTot slot: houd de module actueel en vraag regelmatig om feedback. Pas de inhoud aan op basis van ervaringen uit de praktijk en veranderende behoeften. Door samen te blijven ontwikkelen, blijft de module relevant en voelen collega’s zich betrokken.\n\nKortom, door collega’s te betrekken, praktische ondersteuning te bieden en samen te blijven ontwikkelen, vergroot je de kans dat de module digitale geletterdheid breed en duurzaam wordt ingezet binnen de school.",
+    "answer_B": "Wil je dat collega’s de module digitale geletterdheid daadwerkelijk gaan gebruiken, dan is draagvlak en praktische toepasbaarheid cruciaal. Begin met het betrekken van collega’s bij de ontwikkeling: vraag om input, laat ze meedenken over leerdoelen en werkvormen, en organiseer een korte gezamenlijke brainstorm of pilotles. Zo voelen ze zich mede-eigenaar en zien ze sneller het nut en de aansluiting bij hun eigen vak.\n\nZorg dat de module overzichtelijk en direct bruikbaar is. Lever kant-en-klare lesmaterialen, duidelijke instructies en praktische voorbeelden aan, zodat collega’s zonder veel voorbereiding aan de slag kunnen. Maak het eenvoudig om onderdelen te integreren in bestaande lessen of projecten, bijvoorbeeld door aan te geven welke opdrachten aansluiten bij vakken als Nederlands, maatschappijleer of mentorlessen.\n\nBied ondersteuning en ruimte voor uitwisseling. Organiseer een korte training of intervisiemoment waarin collega’s ervaringen delen, vragen stellen en tips uitwisselen. Benoem een aanspreekpunt (bijvoorbeeld een ICT-coördinator of enthousiaste collega) waar ze terechtkunnen voor hulp of advies. Dit verlaagt de drempel om te starten en door te zetten.\n\nBenadruk het bredere belang van digitale geletterdheid: niet alleen als set vaardigheden, maar als onderdeel van de sociaal-culturele vorming van leerlingen. Laat zien hoe de module bijdraagt aan kritisch denken, verantwoord online gedrag en burgerschap. Koppel dit aan actuele voorbeelden of situaties uit de schoolpraktijk, zodat collega’s het belang herkennen en zich betrokken voelen.\n\nTot slot: vier successen en deel positieve ervaringen. Laat collega’s zien wat de module oplevert, bijvoorbeeld door leerlingproducten te tonen of korte feedbackrondes te organiseren. Waardering en zichtbare resultaten motiveren om de module structureel te blijven gebruiken.\n\nKortom, door collega’s te betrekken, praktische materialen te bieden, ondersteuning te organiseren en het bredere belang te benadrukken, vergroot je de kans dat de module digitale geletterdheid echt wordt omarmd en gebruikt binnen de school.",
+    "answer_diagnostics": {
+      "A": {
+        "word_count": 286,
+        "char_count": 1897,
+        "ends_with_sentence_punctuation": true,
+        "likely_truncated": false
+      },
+      "B": {
+        "word_count": 303,
+        "char_count": 2095,
+        "ends_with_sentence_punctuation": true,
+        "likely_truncated": false
+      }
+    },
+    "post_choice_seed_context": {
+      "surfaced_cross_turn_seeds": [
+        "Digitale geletterdheid als sociaal-cultureel vormingsproces in plaats van uitsluitend als vaardighedenset."
+      ],
+      "promoted_seeds_this_turn": []
+    },
+    "review": {
+      "winner": "B",
+      "scores": {
+        "content_completeness": {
+          "A": 4,
+          "B": 5
+        },
+        "question_relevance": {
+          "A": 5,
+          "B": 5
+        },
+        "specificity_sharpness": {
+          "A": 4,
+          "B": 5
+        },
+        "no_noise_or_hallucinated_relevance": {
+          "A": 5,
+          "B": 5
+        },
+        "usefulness": {
+          "A": 4,
+          "B": 5
+        }
+      },
+      "motivation": "B geeft net meer houvast: pilotles, aansluiting bij vakken, training/intervisie, aanspreekpunt en zichtbare successen. A is degelijk, maar blijft meer algemeen over implementatie en draagvlak.",
+      "seed_effect_after_choice": "promoted seed helpt een beetje",
+      "noise_or_hallucinated_relevance": "Geen duidelijke ruis. Het bredere vormingsperspectief ondersteunt de overtuigingskracht richting collega’s.",
+      "exclude_from_winrate": false
+    }
+  },
+  {
+    "schema_version": "ssl-session-blind-ab.v2",
+    "item_id": "CONV_EDU-t06-03",
+    "conversation_id": "CONV_EDU",
+    "domain": "onderwijs",
+    "turn": 6,
+    "question": "Wat gaat er bij dit soort curriculumvernieuwingen het vaakst mis?",
+    "answer_A": "Bij curriculumvernieuwingen rond digitale geletterdheid gaan een aantal zaken vaak mis. Een van de grootste valkuilen is dat de vernieuwing te instrumenteel wordt ingestoken: de nadruk ligt dan vooral op het aanleren van losse vaardigheden (zoals ‘hoe maak ik een sterk wachtwoord?’ of ‘hoe gebruik ik een zoekmachine?’), terwijl de bredere context en het kritisch-reflectieve aspect onderbelicht blijven. Hierdoor leren leerlingen wát ze moeten doen, maar niet waarom, of hoe digitale technologie hun leven en samenleving beïnvloedt.\n\nDaarnaast ontbreekt het vaak aan draagvlak en betrokkenheid van het hele team. Als de module wordt gezien als ‘iets van de ICT-coördinator’ of een losstaand project, blijft de impact beperkt. Collega’s voelen zich niet verantwoordelijk of missen het vertrouwen om de lessen te geven, waardoor de vernieuwing niet breed wordt gedragen.\n\nEen ander veelvoorkomend probleem is het onderschatten van verschillen in voorkennis en thuissituatie. Leerlingen die thuis weinig digitale ondersteuning krijgen, raken snel achterop als de school geen vangnet biedt. Zonder voldoende oefentijd, begeleiding en differentiatie ontstaat er een kloof tussen leerlingen, wat de ongelijkheid vergroot.\n\nOok wordt de samenhang met andere vakken en het dagelijks leven van leerlingen soms vergeten. Digitale geletterdheid wordt dan een geïsoleerd vakje, terwijl het juist vraagt om integratie met andere leergebieden en aansluiting bij de leefwereld van jongeren. Hierdoor blijft de relevantie beperkt en wordt het geleerde minder goed toegepast.\n\nTot slot schort het vaak aan structurele evaluatie en bijstelling. Vernieuwingen worden geïntroduceerd zonder voldoende monitoring of ruimte voor feedback, waardoor knelpunten niet tijdig worden gesignaleerd en de kwaliteit stagneert.\n\nSamenvattend: curriculumvernieuwingen rond digitale geletterdheid mislukken vaak door een te enge focus op vaardigheden, gebrek aan draagvlak, onvoldoende aandacht voor verschillen tussen leerlingen, gebrekkige integratie met andere vakken en het dagelijks leven, en te weinig structurele evaluatie. Succesvolle vernieuwing vraagt om een brede, samenhangende aanpak waarin digitale geletterdheid wordt gezien als een sociaal-cultureel vormingsproces, gedragen door het hele team en ingebed in de schoolpraktijk.",
+    "answer_B": "Bij curriculumvernieuwingen zoals een module digitale geletterdheid gaan er vaak een aantal dingen mis die de effectiviteit en het draagvlak ondermijnen:\n\n**1. Gebrek aan draagvlak en betrokkenheid**  \nEen veelvoorkomend probleem is dat de vernieuwing ‘van bovenaf’ wordt opgelegd zonder voldoende input van docenten. Collega’s voelen zich dan niet eigenaar, herkennen hun praktijk niet in het materiaal en zien de meerwaarde niet. Dit leidt tot minimale implementatie of zelfs weerstand.\n\n**2. Onduidelijke doelen en verwachtingen**  \nAls leerdoelen vaag blijven (“leerlingen worden digitaal vaardig”) of niet goed aansluiten bij het niveau van de leerlingen, weten docenten niet wat er precies verwacht wordt. Dit maakt het lastig om lessen doelgericht vorm te geven en te beoordelen of leerlingen daadwerkelijk vooruitgang boeken.\n\n**3. Te weinig praktische ondersteuning**  \nNieuwe modules stranden vaak omdat docenten onvoldoende tijd, middelen of begeleiding krijgen. Als het materiaal niet direct bruikbaar is, ontbreekt het aan duidelijke handleidingen of technische ondersteuning, haken collega’s snel af. Ook ontbreekt soms een aanspreekpunt voor vragen of problemen.\n\n**4. Onvoldoende aansluiting bij bestaande vakken en routines**  \nCurriculumvernieuwingen worden soms als ‘extra’ gezien, los van het bestaande programma. Als digitale geletterdheid niet geïntegreerd wordt in andere vakken of schoolbrede routines, blijft het een losstaand project dat makkelijk wegvalt bij drukte.\n\n**5. Te weinig aandacht voor differentiatie en context**  \nEen one-size-fits-all aanpak werkt zelden. Als er geen rekening wordt gehouden met verschillen in voorkennis, motivatie of thuissituatie van leerlingen, profiteren vooral de sterkste leerlingen. De rest haakt af of raakt gefrustreerd.\n\n**6. Gebrekkige evaluatie en bijstelling**  \nTot slot wordt er vaak te weinig gemonitord of geëvalueerd. Zonder structurele feedbackrondes en ruimte voor bijstelling blijft het curriculum statisch, terwijl behoeften en contexten veranderen.\n\n**Afronding:**  \nKortom, curriculumvernieuwingen mislukken vaak door gebrek aan draagvlak, onduidelijke doelen, onvoldoende praktische ondersteuning, slechte aansluiting bij de praktijk, te weinig differentiatie en gebrekkige evaluatie. Succesvolle vernieuwing vraagt om eigenaarschap, heldere doelen, praktische bruikbaarheid en voortdurende afstemming op de praktijk.",
+    "answer_diagnostics": {
+      "A": {
+        "word_count": 321,
+        "char_count": 2309,
+        "ends_with_sentence_punctuation": true,
+        "likely_truncated": false
+      },
+      "B": {
+        "word_count": 320,
+        "char_count": 2401,
+        "ends_with_sentence_punctuation": true,
+        "likely_truncated": false
+      }
+    },
+    "post_choice_seed_context": {
+      "surfaced_cross_turn_seeds": [
+        "Digitale geletterdheid als sociaal-cultureel vormingsproces in plaats van uitsluitend als vaardighedenset."
+      ],
+      "promoted_seeds_this_turn": []
+    },
+    "review": {
+      "winner": "A",
+      "scores": {
+        "content_completeness": {
+          "A": 5,
+          "B": 5
+        },
+        "question_relevance": {
+          "A": 5,
+          "B": 5
+        },
+        "specificity_sharpness": {
+          "A": 5,
+          "B": 4
+        },
+        "no_noise_or_hallucinated_relevance": {
+          "A": 5,
+          "B": 5
+        },
+        "usefulness": {
+          "A": 5,
+          "B": 4
+        }
+      },
+      "motivation": "A is scherper toegespitst op digitale geletterdheid. De valkuil van een te instrumentele aanpak maakt het antwoord sterker dan de meer generieke veranderkundige lijst van B. B is wel volledig en bruikbaar.",
+      "seed_effect_after_choice": "promoted seed helpt duidelijk",
+      "noise_or_hallucinated_relevance": "Geen duidelijke ruis. Het sociaal-culturele perspectief maakt A inhoudelijk scherper zonder de vraag te vernauwen.",
+      "exclude_from_winrate": false
+    }
+  },
+  {
+    "schema_version": "ssl-session-blind-ab.v2",
+    "item_id": "CONV_HEALTH-t05-04",
+    "conversation_id": "CONV_HEALTH",
+    "domain": "publieke gezondheid",
+    "turn": 5,
+    "question": "Welke rol spelen scholen en ouders hierin?",
+    "answer_A": "Scholen en ouders spelen een sleutelrol in het terugdringen van energiedrankgebruik onder jongeren, omdat zij zowel de dagelijkse omgeving als de normen en waarden van jongeren sterk beïnvloeden.\n\n**Scholen**  \nScholen zijn bij uitstek plekken waar jongeren samenkomen en waar gezond gedrag gestimuleerd kan worden. Ze kunnen energiedrankgebruik ontmoedigen door duidelijke regels te stellen, zoals een verbod op verkoop en consumptie van energiedrank op het schoolterrein. Daarnaast kunnen scholen educatie bieden over de directe gevolgen van energiedrank, bijvoorbeeld via lessen over slaap, concentratie en de neurobiologische effecten van cafeïne op het puberbrein. Door het gesprek aan te gaan en alternatieven aan te bieden (zoals gratis water of fruit), maken scholen het makkelijker voor jongeren om gezondere keuzes te maken. Ook kunnen ze signalen van overmatig gebruik vroegtijdig opvangen en bespreken.\n\n**Ouders**  \nOuders zijn belangrijke rolmodellen en beïnvloeden het gedrag van hun kinderen, vaak meer dan ze zelf denken. Door thuis het gesprek aan te gaan over energiedrank, zonder te moraliseren, kunnen ouders jongeren bewust maken van de gevolgen en samen zoeken naar alternatieven bij vermoeidheid of stress. Het helpt als ouders zelf het goede voorbeeld geven en energiedrank niet als ‘normaal’ presenteren. Daarnaast kunnen zij afspraken maken over het kopen en drinken van energiedrank, en alert zijn op signalen van overmatig gebruik, zoals slaapproblemen of prikkelbaarheid.\n\n**Samenwerking en tegenkracht**  \nDe invloed van scholen en ouders is extra belangrijk omdat jongeren via sociale media en marketing van energiedrankfabrikanten voortdurend worden blootgesteld aan verleidelijke boodschappen. Door samen een eenduidig en positief geluid te laten horen, kunnen scholen en ouders een tegenwicht bieden aan deze commerciële druk. Gezamenlijke acties, zoals ouderavonden, informatiemateriaal en schoolbrede campagnes, versterken de boodschap en zorgen voor een consistente norm.\n\n**Slotalinea**  \nKortom, scholen en ouders vormen samen de basis voor een gezonde leefomgeving en kunnen door duidelijke regels, goede voorlichting en een open gesprek jongeren helpen om minder energiedrank te drinken. Door hun krachten te bundelen en het goede voorbeeld te geven, vergroten zij de kans op blijvende gedragsverandering.",
+    "answer_B": "Scholen en ouders spelen een cruciale, complementaire rol in het terugdringen van energiedrankgebruik onder jongeren. Zij vormen samen de belangrijkste sociale en fysieke omgeving waarin jongeren dagelijks keuzes maken en gewoonten ontwikkelen.\n\n**Scholen als voorbeeld en facilitator**  \nScholen zijn bij uitstek plekken waar jongeren samenkomen en waar gezond gedrag gestimuleerd kan worden. Door energiedrank te verbieden of de verkoop te beperken in de kantine, geven scholen een duidelijk signaal af. Daarnaast kunnen scholen structureel aandacht besteden aan het onderwerp via lessen over gezondheid, workshops of projecten waarin jongeren zelf onderzoek doen naar de effecten van energiedrank. Docenten en mentoren kunnen signalen van overmatig gebruik oppikken en het gesprek aangaan, zeker als ze getraind zijn in motiverende gespreksvoering. Ook kunnen scholen gezonde alternatieven aantrekkelijk maken, bijvoorbeeld door gratis water aan te bieden of fruit beschikbaar te stellen tijdens pauzes en evenementen.\n\n**Ouders als rolmodel en gesprekspartner**  \nOuders beïnvloeden het gedrag van jongeren vooral door voorbeeldgedrag en door het gesprek aan te gaan. Jongeren nemen vaak onbewust gewoonten over van thuis. Als ouders zelf weinig energiedrank drinken en gezonde keuzes maken, werkt dat door. Het is belangrijk dat ouders niet alleen verbieden, maar vooral luisteren en samen met hun kind bespreken waarom energiedrank aantrekkelijk is en welke alternatieven er zijn. Ouders kunnen grenzen stellen, bijvoorbeeld door geen energiedrank in huis te halen, maar vooral ook begrip tonen voor de druk die jongeren soms ervaren. Door open te communiceren en samen oplossingen te zoeken, voelen jongeren zich serieus genomen en zijn ze eerder bereid hun gedrag aan te passen.\n\n**Samenwerking en afstemming**  \nDe grootste impact ontstaat als scholen en ouders samenwerken en elkaar versterken. Dit kan door ouders te informeren over de risico’s van energiedrank en hen tips te geven voor het gesprek thuis, bijvoorbeeld via ouderavonden, nieuwsbrieven of informatiefolders. Ook kunnen scholen signalen van zorg delen met ouders, zodat er tijdig gezamenlijk kan worden opgetreden. Een eenduidige boodschap vanuit zowel school als thuis voorkomt verwarring en vergroot de kans op gedragsverandering.\n\n**Slotalinea**  \nKortom, scholen en ouders zijn onmisbaar in het terugdringen van energiedrankgebruik onder jongeren. Door samen een gezonde norm te stellen, het gesprek aan te gaan en alternatieven te bieden, creëren zij een omgeving waarin jongeren makkelijker gezonde keuzes maken.",
+    "answer_diagnostics": {
+      "A": {
+        "word_count": 329,
+        "char_count": 2347,
+        "ends_with_sentence_punctuation": true,
+        "likely_truncated": false
+      },
+      "B": {
+        "word_count": 370,
+        "char_count": 2594,
+        "ends_with_sentence_punctuation": true,
+        "likely_truncated": false
+      }
+    },
+    "post_choice_seed_context": {
+      "surfaced_cross_turn_seeds": [
+        "Neurobiologische effecten van cafeïne op adolescenten als verklarend kader voor motivatie en weerstand.",
+        "Commerciële marketingstrategieën van energiedrankfabrikanten als tegenkracht in gedragsverandering."
+      ],
+      "promoted_seeds_this_turn": []
+    },
+    "review": {
+      "winner": "A",
+      "scores": {
+        "content_completeness": {
+          "A": 5,
+          "B": 5
+        },
+        "question_relevance": {
+          "A": 5,
+          "B": 5
+        },
+        "specificity_sharpness": {
+          "A": 5,
+          "B": 4
+        },
+        "no_noise_or_hallucinated_relevance": {
+          "A": 5,
+          "B": 4
+        },
+        "usefulness": {
+          "A": 5,
+          "B": 4
+        }
+      },
+      "motivation": "A benoemt de rollen van school, ouders en samenwerking helder en koppelt die aan concrete maatregelen, signalen, alternatieven en commerciële druk. B is goed, maar de verwijzing naar motiverende gespreksvoering voelt wat zwaarder en minder nodig voor de vraag.",
+      "seed_effect_after_choice": "promoted seed helpt duidelijk",
+      "noise_or_hallucinated_relevance": "Geen harde hallucination. Bij B is motiverende gespreksvoering iets minder passend als standaardadvies voor scholen.",
+      "exclude_from_winrate": false
+    }
+  },
+  {
+    "schema_version": "ssl-session-blind-ab.v2",
+    "item_id": "CONV_HEALTH-t06-05",
+    "conversation_id": "CONV_HEALTH",
+    "domain": "publieke gezondheid",
+    "turn": 6,
+    "question": "Wat gaat er bij dit soort leefstijlcampagnes meestal mis?",
+    "answer_A": "Bij leefstijlcampagnes gericht op jongeren gaat het vaak mis op een paar terugkerende punten. Ten eerste sluiten de boodschappen niet goed aan bij de leefwereld van de doelgroep. Campagnes zijn vaak te algemeen, te belerend of te veel gericht op lange termijn gezondheidsrisico’s, terwijl jongeren vooral gevoelig zijn voor directe voordelen en sociale status. Hierdoor voelen ze zich niet aangesproken of haken zelfs af.\n\nDaarnaast bereiken campagnes vooral jongeren die al relatief gezond leven. Jongeren die daadwerkelijk veel energiedrank drinken, worden vaak gemist omdat de campagnekanalen, toon en rolmodellen niet aansluiten bij hun interesses of subculturen. Hierdoor blijft de impact beperkt tot de groep die het minst risico loopt.\n\nEen ander veelvoorkomend probleem is dat campagnes te weinig rekening houden met de enorme invloed van commerciële marketing. Energiedrankfabrikanten zetten krachtige, aantrekkelijke campagnes in via influencers, sportevenementen en gamingsponsoring, waardoor hun producten als stoer, energiek en sociaal worden gepositioneerd. Leefstijlcampagnes kunnen hier zelden tegenop, zeker als ze weinig creatief of inspirerend zijn.\n\nOok ontbreekt het vaak aan structurele samenwerking met ouders, scholen en lokale partners. Zonder een gezamenlijke, consistente aanpak blijft de boodschap versnipperd en is het voor jongeren makkelijk om ongezond gedrag vol te houden. Bovendien worden alternatieven voor energiedrank vaak niet aantrekkelijk of makkelijk beschikbaar gemaakt, waardoor jongeren weinig handelingsperspectief ervaren.\n\nTot slot wordt het effect van campagnes onvoldoende gemeten of gebruikt om bij te sturen. Er wordt vooral gekeken naar bereik of bekendheid, maar niet naar daadwerkelijke gedragsverandering of de ervaringen van jongeren zelf. Hierdoor blijven ineffectieve strategieën te lang in stand.\n\nSamenvattend: leefstijlcampagnes missen vaak hun doel door een gebrek aan aansluiting bij de doelgroep, te weinig focus op risicogroepen, onderschatting van commerciële tegenkrachten, onvoldoende samenwerking en een gebrekkige evaluatie. Alleen door deze valkuilen te vermijden, kan een campagne echt verschil maken.",
+    "answer_B": "Bij leefstijlcampagnes gericht op jongeren, zoals het terugdringen van energiedrankgebruik, gaan er vaak een aantal dingen mis waardoor het gewenste effect uitblijft.\n\n**1. Te algemene of moraliserende boodschap**  \nVeel campagnes blijven hangen in algemene waarschuwingen (“het is ongezond”) of een belerende toon. Jongeren voelen zich hierdoor niet aangesproken of zelfs afgehaakt, zeker als de boodschap niet aansluit bij hun belevingswereld of dagelijkse realiteit.\n\n**2. Bereik van de verkeerde doelgroep**  \nCampagnes bereiken vaak vooral jongeren die al gezond leven of weinig energiedrank drinken. De jongeren die het meeste risico lopen, zoals jongeren met veel prestatiedruk, vermoeidheid of een ongezonde leefstijl, worden onvoldoende bereikt omdat de campagne niet op hun kanalen, plekken of subculturen aansluit.\n\n**3. Gebrek aan zichtbare alternatieven**  \nEr wordt vaak wel verteld wat jongeren níet moeten doen, maar te weinig aandacht besteed aan wat ze wél kunnen kiezen. Zonder aantrekkelijke, toegankelijke alternatieven (zoals gratis water, gezonde snacks of powernaps) blijft gedragsverandering lastig.\n\n**4. Onvoldoende betrokkenheid van de omgeving**  \nScholen, ouders en peergroepen worden soms te weinig betrokken of krijgen geen duidelijke rol. Hierdoor ontbreekt een ondersteunende omgeving die gezond gedrag stimuleert en volhoudt. Ook ontbreekt het vaak aan samenwerking tussen verschillende partijen, waardoor de boodschap versnipperd raakt.\n\n**5. Geen structurele aanpak of opvolging**  \nVeel campagnes zijn kortdurend en missen opvolging of structurele inbedding. Hierdoor is het effect tijdelijk en vallen jongeren snel terug in oud gedrag. Ook wordt er vaak onvoldoende gemeten of geëvalueerd, waardoor niet duidelijk is wat wel en niet werkt.\n\n**Slotalinea**  \nKortom, leefstijlcampagnes missen vaak hun doel door een te algemene boodschap, het bereiken van de verkeerde doelgroep, gebrek aan alternatieven, onvoldoende betrokkenheid van de omgeving en een gebrek aan structurele opvolging. Een succesvolle campagne vraagt om een gerichte, positieve en samenhangende aanpak die jongeren écht raakt en ondersteunt in hun dagelijkse keuzes.",
+    "answer_diagnostics": {
+      "A": {
+        "word_count": 296,
+        "char_count": 2173,
+        "ends_with_sentence_punctuation": true,
+        "likely_truncated": false
+      },
+      "B": {
+        "word_count": 297,
+        "char_count": 2174,
+        "ends_with_sentence_punctuation": true,
+        "likely_truncated": false
+      }
+    },
+    "post_choice_seed_context": {
+      "surfaced_cross_turn_seeds": [
+        "Commerciële marketingstrategieën van energiedrankfabrikanten als tegenkracht in gedragsverandering.",
+        "Neurobiologische effecten van cafeïne op adolescenten als verklarend kader voor motivatie en weerstand."
+      ],
+      "promoted_seeds_this_turn": []
+    },
+    "review": {
+      "winner": "A",
+      "scores": {
+        "content_completeness": {
+          "A": 5,
+          "B": 4
+        },
+        "question_relevance": {
+          "A": 5,
+          "B": 5
+        },
+        "specificity_sharpness": {
+          "A": 5,
+          "B": 4
+        },
+        "no_noise_or_hallucinated_relevance": {
+          "A": 5,
+          "B": 5
+        },
+        "usefulness": {
+          "A": 5,
+          "B": 4
+        }
+      },
+      "motivation": "A is sterker omdat het naast toon, doelgroepbereik, alternatieven en evaluatie ook de commerciële tegenkracht scherp benoemt. B is bruikbaar, maar mist dat bepalende punt en blijft daardoor iets vlakker.",
+      "seed_effect_after_choice": "promoted seed helpt duidelijk",
+      "noise_or_hallucinated_relevance": "Geen duidelijke ruis. De marketingseed is goed verbonden met de campagnevraag; de neurobiologische seed speelt hier nauwelijks mee.",
+      "exclude_from_winrate": false
+    }
+  },
+  {
+    "schema_version": "ssl-session-blind-ab.v2",
+    "item_id": "CONV_POLICY-t05-06",
+    "conversation_id": "CONV_POLICY",
+    "domain": "beleid",
+    "turn": 5,
+    "question": "Hoe houden we het plan houdbaar bij wisselende gemeentebesturen?",
+    "answer_A": "Om het klimaatadaptatieplan houdbaar te houden bij wisselende gemeentebesturen, is het essentieel om het plan stevig te verankeren in beleid, organisatie en samenleving. Begin met het opnemen van klimaatadaptatie als vast onderdeel in de gemeentelijke visie, het coalitieakkoord en de meerjarenbegroting. Koppel de doelen aan wettelijke verplichtingen (zoals de Omgevingswet en het Deltaplan Ruimtelijke Adaptatie) en aan andere gemeentelijke opgaven, zoals woningbouw, groenbeheer en gezondheid. Zo wordt klimaatadaptatie geen los project, maar een integraal en onmisbaar onderdeel van het gemeentelijk beleid.\n\nZorg daarnaast voor breed draagvlak binnen de organisatie. Betrek verschillende afdelingen (ruimtelijke ordening, beheer, communicatie, financiën) en leg verantwoordelijkheden vast in functieprofielen en werkprocessen. Stel een vaste projectgroep of regisseur aan die de voortgang bewaakt, kennis borgt en nieuwe bestuurders snel kan bijpraten. Maak gebruik van duidelijke indicatoren en monitoring, zodat de voortgang en effecten van het plan inzichtelijk zijn en eenvoudig kunnen worden gerapporteerd aan bestuur en raad.\n\nInvesteer ook in samenwerking met externe partners, zoals waterschappen, woningcorporaties en bewonersorganisaties. Door afspraken vast te leggen in convenanten of meerjarige samenwerkingsovereenkomsten, wordt continuïteit geborgd, ook als het gemeentebestuur wisselt. Externe partners kunnen bovendien als ‘ambassadeurs’ optreden richting nieuwe bestuurders.\n\nTot slot: blijf het belang van klimaatadaptatie zichtbaar maken, zowel intern als extern. Deel successen, laat zien wat maatregelen opleveren en koppel het thema aan actuele maatschappelijke opgaven. Door klimaatadaptatie te positioneren als een gezamenlijke, toekomstgerichte investering, wordt het minder afhankelijk van politieke kleur of samenstelling.\n\n**Slotalinea:**  \nDoor klimaatadaptatie stevig te verankeren in beleid, organisatie en samenwerking, en het belang ervan continu zichtbaar te maken, blijft het plan ook bij wisselende gemeentebesturen op koers. Zo bouwt de gemeente stap voor stap aan een robuuste, toekomstbestendige aanpak die politieke veranderingen kan doorstaan.",
+    "answer_B": "Om het klimaatadaptatieplan houdbaar te houden bij wisselende gemeentebesturen, is het essentieel om het plan stevig te verankeren in beleid, organisatie en samenleving. Begin met het opnemen van klimaatadaptatie in de formele beleidskaders, zoals de omgevingsvisie, het gemeentelijk waterplan en de meerjarenbegroting. Door klimaatadaptatie als wettelijke of beleidsmatige taak te benoemen, wordt het minder afhankelijk van politieke kleur of prioriteiten van een nieuw bestuur.\n\nZorg daarnaast voor duidelijke institutionele afspraken over verantwoordelijkheden en samenwerking, zowel binnen de gemeente als met externe partners zoals waterschappen en woningcorporaties. Leg deze afspraken vast in convenanten of samenwerkingsovereenkomsten, zodat continuïteit gewaarborgd blijft, ook als personen of partijen wisselen.\n\nMaak het plan flexibel en adaptief: stel heldere, meetbare doelen op de lange termijn, maar geef ruimte om maatregelen periodiek te evalueren en bij te stellen op basis van nieuwe inzichten, ervaringen of veranderende omstandigheden. Dit voorkomt dat het plan veroudert of vastloopt bij politieke veranderingen.\n\nBetrek bewoners, bedrijven en maatschappelijke organisaties actief bij de uitvoering en monitoring van het plan. Door breed draagvlak en eigenaarschap te creëren, wordt het lastiger voor een nieuw bestuur om het plan zomaar terzijde te schuiven. Transparante communicatie over voortgang, resultaten en maatschappelijke baten helpt om het belang van het plan zichtbaar te houden.\n\nLet tot slot op sociale rechtvaardigheid: zorg dat maatregelen en investeringen eerlijk verdeeld worden over wijken en doelgroepen, zodat niemand structureel achterblijft of onevenredig wordt belast. Dit vergroot het maatschappelijk draagvlak en maakt het plan robuuster tegen politieke discussies over verdeling van middelen.\n\nKortom, door klimaatadaptatie stevig te verankeren in beleid, organisatie en samenleving, en te zorgen voor flexibiliteit en rechtvaardigheid, blijft het plan ook bij wisselende besturen relevant en uitvoerbaar. Zo bouwt de gemeente stap voor stap aan een toekomstbestendige aanpak die politieke veranderingen kan doorstaan.",
+    "answer_diagnostics": {
+      "A": {
+        "word_count": 281,
+        "char_count": 2190,
+        "ends_with_sentence_punctuation": true,
+        "likely_truncated": false
+      },
+      "B": {
+        "word_count": 291,
+        "char_count": 2168,
+        "ends_with_sentence_punctuation": true,
+        "likely_truncated": false
+      }
+    },
+    "post_choice_seed_context": {
+      "surfaced_cross_turn_seeds": [
+        "Juridisch-institutionele verankering van verantwoordelijkheden tussen gemeente.",
+        "Sociale ongelijkheid als lens voor de verdeling van wateroverlastrisico’s en adaptatiemaatregelen."
+      ],
+      "promoted_seeds_this_turn": []
+    },
+    "review": {
+      "winner": "A",
+      "scores": {
+        "content_completeness": {
+          "A": 5,
+          "B": 5
+        },
+        "question_relevance": {
+          "A": 5,
+          "B": 5
+        },
+        "specificity_sharpness": {
+          "A": 5,
+          "B": 4
+        },
+        "no_noise_or_hallucinated_relevance": {
+          "A": 5,
+          "B": 5
+        },
+        "usefulness": {
+          "A": 5,
+          "B": 4
+        }
+      },
+      "motivation": "A geeft het meest bestuurlijk en organisatorisch houvast: begroting, beleidskaders, werkprocessen, rollen, monitoring, projectgroep en externe afspraken. B is inhoudelijk sterk, maar sociale rechtvaardigheid is hier meer ondersteunend dan centraal.",
+      "seed_effect_after_choice": "promoted seed helpt een beetje",
+      "noise_or_hallucinated_relevance": "Geen duidelijke ruis. De rechtvaardigheidslijn in B is relevant voor draagvlak, maar minder direct voor bestuurlijke continuïteit.",
+      "exclude_from_winrate": false
+    }
+  },
+  {
+    "schema_version": "ssl-session-blind-ab.v2",
+    "item_id": "CONV_POLICY-t06-07",
+    "conversation_id": "CONV_POLICY",
+    "domain": "beleid",
+    "turn": 6,
+    "question": "Wat gaat er bij dit soort adaptatieplannen het vaakst mis?",
+    "answer_A": "Bij klimaatadaptatieplannen tegen wateroverlast gaan er in de praktijk vaak een aantal dingen mis die de effectiviteit en het draagvlak ondermijnen.\n\n**1. Onvoldoende structurele verankering**  \nVeel plannen blijven hangen in losse projecten of pilots, zonder dat klimaatadaptatie stevig wordt ingebed in beleid, begroting en werkprocessen. Hierdoor verdwijnt het onderwerp snel van de agenda bij bestuurlijke wisselingen of andere prioriteiten, en ontbreekt continuïteit in uitvoering en financiering.\n\n**2. Te weinig lokale betrokkenheid**  \nBewoners en lokale partijen worden soms pas laat of oppervlakkig betrokken, waardoor maatregelen niet aansluiten bij de werkelijke knelpunten of behoeften. Dit leidt tot weerstand, beperkte participatie en gemiste kansen voor cofinanciering en lokaal eigenaarschap.\n\n**3. Onderschatting van beheer en onderhoud**  \nDe focus ligt vaak op de aanleg van maatregelen, terwijl structureel beheer en onderhoud onvoldoende worden geregeld of begroot. Hierdoor verliezen wadi’s, groenvoorzieningen of infiltratievoorzieningen snel hun werking, met terugkerende wateroverlast als gevolg.\n\n**4. Korte termijn denken en versnipperde investeringen**  \nEr wordt regelmatig gekozen voor snelle, zichtbare oplossingen of alleen voor maatregelen die direct rendement opleveren. Hierdoor blijven structurele, langetermijninvesteringen – zoals het aanpassen van de openbare ruimte of het combineren van opgaven – achterwege. Dit beperkt het uiteindelijke effect en leidt tot hogere kosten op termijn.\n\n**5. Sociale ongelijkheid en ongelijke verdeling van lasten en baten**  \nMaatregelen komen niet altijd terecht bij de meest kwetsbare wijken of groepen, terwijl zij vaak het grootste risico lopen op wateroverlast en het minst in staat zijn zelf te investeren. Zonder gerichte aandacht voor deze ongelijkheid kunnen adaptatieplannen bestaande verschillen versterken en het draagvlak ondermijnen.\n\n**6. Onvoldoende monitoring en bijsturing**  \nVaak ontbreken heldere doelen, indicatoren en een goed systeem voor monitoring. Hierdoor is het lastig om voortgang en effect te meten, bij te sturen waar nodig en verantwoording af te leggen aan bestuur en samenleving.\n\n**Slotalinea:**  \nKortom, adaptatieplannen mislukken het vaakst door gebrek aan structurele inbedding, onvoldoende lokale betrokkenheid, onderschatting van beheer, kortetermijndenken, sociale ongelijkheid en zwakke monitoring. Door deze valkuilen expliciet te adresseren, vergroot de gemeente de kans op een effectief, gedragen en toekomstbestendig klimaatadaptatiebeleid.",
+    "answer_B": "Bij klimaatadaptatieplannen tegen wateroverlast gaan er in de praktijk vaak een aantal dingen mis, meestal op het gebied van uitvoering, draagvlak en samenhang.\n\n**1. Onvoldoende uitvoering en opvolging**  \nVeel plannen blijven steken in de planfase. Er wordt veel tijd besteed aan analyses en visies, maar de daadwerkelijke uitvoering van maatregelen loopt vertraging op door gebrek aan capaciteit, middelen of duidelijke verantwoordelijkheden. Ook ontbreekt het soms aan een concreet uitvoeringsprogramma met heldere prioriteiten, tijdslijnen en monitoring. Hierdoor blijft het bij goede bedoelingen zonder zichtbare resultaten.\n\n**2. Te weinig betrokkenheid van bewoners en partners**  \nEen veelvoorkomend knelpunt is dat bewoners, bedrijven en andere partners onvoldoende worden meegenomen in het proces. Plannen worden ‘van bovenaf’ gemaakt, waardoor draagvlak en lokale kennis ontbreken. Dit leidt tot weerstand, beperkte participatie en soms zelfs mislukte projecten. Ook samenwerking met waterschappen, woningcorporaties en andere partijen wordt niet altijd structureel geborgd, waardoor kansen voor cofinanciering en synergie verloren gaan.\n\n**3. Versnippering en gebrek aan integratie**  \nKlimaatadaptatie wordt soms als losstaand project opgepakt, zonder koppeling aan andere gemeentelijke opgaven zoals woningbouw, groenbeheer of mobiliteit. Hierdoor ontstaan versnipperde maatregelen die minder effectief zijn en kansen missen om kosten en baten te combineren. Ook ontbreekt het soms aan afstemming tussen verschillende afdelingen binnen de gemeente, wat leidt tot dubbel werk of tegenstrijdige keuzes.\n\n**4. Onderschatting van beheer en onderhoud**  \nNa de aanleg van maatregelen wordt het belang van goed beheer en onderhoud vaak onderschat. Zonder structurele afspraken en budgetten voor onderhoud verliezen wadi’s, groenvoorzieningen of infiltratievoorzieningen snel hun werking, waardoor de investering zijn effect verliest.\n\n**5. Onvoldoende monitoring en bijsturing**  \nHet ontbreekt regelmatig aan duidelijke indicatoren en een goed systeem voor monitoring en evaluatie. Daardoor is het lastig om te leren van ervaringen, bij te sturen waar nodig en de voortgang inzichtelijk te maken voor bestuur en samenleving.\n\n**Slotalinea:**  \nKortom, de grootste valkuilen bij klimaatadaptatieplannen zijn gebrek aan uitvoering, onvoldoende betrokkenheid, versnippering, onderschatting van beheer en te weinig monitoring. Door deze punten vanaf het begin goed te organiseren en integraal te benaderen, vergroot je de kans op een succesvol en toekomstbestendig adaptatieplan.",
+    "answer_diagnostics": {
+      "A": {
+        "word_count": 334,
+        "char_count": 2563,
+        "ends_with_sentence_punctuation": true,
+        "likely_truncated": false
+      },
+      "B": {
+        "word_count": 342,
+        "char_count": 2585,
+        "ends_with_sentence_punctuation": true,
+        "likely_truncated": false
+      }
+    },
+    "post_choice_seed_context": {
+      "surfaced_cross_turn_seeds": [
+        "Kosten-batenanalyse op lange termijn versus korte termijn investeringen in adaptatiemaatregelen.",
+        "Sociale ongelijkheid als lens voor de verdeling van wateroverlastrisico’s en adaptatiemaatregelen."
+      ],
+      "promoted_seeds_this_turn": []
+    },
+    "review": {
+      "winner": "A",
+      "scores": {
+        "content_completeness": {
+          "A": 5,
+          "B": 5
+        },
+        "question_relevance": {
+          "A": 5,
+          "B": 5
+        },
+        "specificity_sharpness": {
+          "A": 5,
+          "B": 4
+        },
+        "no_noise_or_hallucinated_relevance": {
+          "A": 5,
+          "B": 5
+        },
+        "usefulness": {
+          "A": 5,
+          "B": 4
+        }
+      },
+      "motivation": "A is net vollediger en scherper door beheer, monitoring, lokale betrokkenheid, korte-termijndenken en ongelijke verdeling van lasten en baten samen te behandelen. B benoemt uitvoering en versnippering goed, maar mist de sociale verdeling.",
+      "seed_effect_after_choice": "promoted seed helpt duidelijk",
+      "noise_or_hallucinated_relevance": "Geen duidelijke ruis. De seeds over lange termijn en sociale ongelijkheid maken A sterker en blijven passend bij adaptatieplannen.",
+      "exclude_from_winrate": false
+    }
+  }
+]

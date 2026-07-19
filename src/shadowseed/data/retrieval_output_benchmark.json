@@ -1,0 +1,87 @@
+{
+  "version": "1.0",
+  "description": "Benchmark that connects retrieval quality to answer quality for SSL + SSOT.",
+  "scenarios": [
+    {
+      "id": "rob_001",
+      "domain": "legal",
+      "question": "Welke juridische punten moet je noemen bij een Nederlandse consument die bij een Amerikaanse webwinkel koopt?",
+      "expected_additions": [
+        "rechtsbevoegdheid bij een grensoverschrijdend consumentencontract",
+        "toepasselijk recht bij internationale online koop",
+        "afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer"
+      ],
+      "queries": [
+        "rechtsbevoegdheid Nederlandse consument Amerikaanse webwinkel",
+        "toepasselijk recht internationale online koop",
+        "EU-consumentenrecht afdwingbaarheid niet-EU retailer"
+      ]
+    },
+    {
+      "id": "rob_002",
+      "domain": "history",
+      "question": "Waarom verklaart technologie alleen de industriële revolutie niet?",
+      "expected_additions": [
+        "koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen",
+        "arbeidsmigratie richting stedelijke fabrieken door enclosure",
+        "kapitaal arbeid en markten naast technologische innovatie"
+      ],
+      "queries": [
+        "koloniaal kapitaal Britse fabrieksinvesteringen",
+        "enclosure arbeidsmigratie stedelijke fabrieken",
+        "technologische innovatie kapitaal arbeid markten industriële revolutie"
+      ]
+    },
+    {
+      "id": "rob_003",
+      "domain": "software",
+      "question": "Welke ontwerpkeuzes horen bij een robuuste API?",
+      "expected_additions": [
+        "idempotente API-operatie zonder dubbele bijwerkingen",
+        "rate limiting tegen overbelasting",
+        "observability met logs metrics en traces",
+        "schema versioning voor oudere clients"
+      ],
+      "queries": [
+        "idempotente API-operatie dubbele bijwerkingen",
+        "rate limiting service overbelasting",
+        "observability logs metrics traces gedistribueerd systeem",
+        "schema versioning oudere clients API response"
+      ]
+    },
+    {
+      "id": "rob_004",
+      "domain": "education",
+      "question": "Welke punten zijn belangrijk bij goed formatief onderwijs?",
+      "expected_additions": [
+        "formatieve toetsing gebruikt feedback tijdens het leerproces",
+        "rubric maakt beoordelingscriteria expliciet",
+        "retrieval practice versterkt leren door actief ophalen",
+        "differentiatie past instructie verwerking of ondersteuning aan"
+      ],
+      "queries": [
+        "formatieve toetsing feedback leerproces",
+        "rubric beoordelingscriteria expliciet leerlingen kwaliteit",
+        "retrieval practice actief uit geheugen ophalen",
+        "differentiatie instructie verwerking ondersteuning leerlingen"
+      ]
+    },
+    {
+      "id": "rob_005",
+      "domain": "biology",
+      "question": "Welke celprocessen moet je onderscheiden bij energie en transport in cellen?",
+      "expected_additions": [
+        "fotosynthese zet lichtenergie om in chemische energie",
+        "cellulaire respiratie breekt glucose af om ATP te produceren",
+        "osmose verplaatst water door een semipermeabel membraan",
+        "enzymactiviteit wordt beïnvloed door temperatuur pH en substraatconcentratie"
+      ],
+      "queries": [
+        "fotosynthese lichtenergie chemische energie glucose",
+        "cellulaire respiratie glucose ATP cellulaire processen",
+        "osmose water semipermeabel membraan",
+        "enzymactiviteit temperatuur pH substraatconcentratie"
+      ]
+    }
+  ]
+}

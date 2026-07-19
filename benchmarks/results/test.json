@@ -1,0 +1,29 @@
+{
+  "benchmark_name": "AbsenceBench",
+  "run_type": "benchmark_preparation",
+  "execution_status": "execution_gap",
+  "ssl_input_basis": [
+    "README.md",
+    "docs/architecture/lifecycle-and-gate.md",
+    "docs/research/status.md"
+  ],
+  "host_platform": "Hugging Face dataset and GitHub runner route",
+  "dataset_status": "present",
+  "runner_status": "structure_present",
+  "score": null,
+  "score_type": "F1 or benchmark output from the upstream runner",
+  "interpretation": "Readiness result without a live benchmark score. The repository supports the route but does not fabricate a run while verification is incomplete.",
+  "limitations": [
+    "current live host verification",
+    "end-to-end runner execution from this repository or a controlled adapter",
+    "provider and model selection for the baseline",
+    "provider and model selection for the SSL condition",
+    "mapping from upstream score output to the Shadowseed result schema",
+    "The dataset, paper, and runner source are publicly present.",
+    "Runner structure is present but has not been verified live.",
+    "Benchmark preparation remains the default status.",
+    "An execution gap remains open."
+  ],
+  "execution_gap": true,
+  "timestamp": "2026-07-19T04:33:34.180825+00:00"
+}

@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ShadowSeedBenchmarkResult",
+  "type": "object",
+  "required": [
+    "benchmark_name",
+    "run_type",
+    "execution_status",
+    "ssl_input_basis",
+    "host_platform",
+    "dataset_status",
+    "runner_status",
+    "score",
+    "score_type",
+    "interpretation",
+    "limitations",
+    "execution_gap",
+    "timestamp"
+  ],
+  "properties": {
+    "benchmark_name": {
+      "type": "string"
+    },
+    "run_type": {
+      "type": "string",
+      "enum": [
+        "benchmark_scan",
+        "benchmark_preparation",
+        "live_benchmark"
+      ]
+    },
+    "execution_status": {
+      "type": "string",
+      "enum": [
+        "benchmark_scan",
+        "benchmark_preparation",
+        "execution_gap",
+        "live_benchmark"
+      ]
+    },
+    "ssl_input_basis": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "host_platform": {
+      "type": "string"
+    },
+    "dataset_status": {
+      "type": "string"
+    },
+    "runner_status": {
+      "type": "string"
+    },
+    "score": {
+      "type": [
+        "number",
+        "integer",
+        "null"
+      ]
+    },
+    "score_type": {
+      "type": "string"
+    },
+    "interpretation": {
+      "type": "string"
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "execution_gap": {
+      "type": "boolean"
+    },
+    "timestamp": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

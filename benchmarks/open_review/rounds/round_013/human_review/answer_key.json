@@ -1,0 +1,85 @@
+{
+  "answer_key": [
+    {
+      "review_id": "review_MODEL_A",
+      "scenario_id": "MODEL_A",
+      "option_a_source": "ssl",
+      "option_b_source": "baseline",
+      "ai_better_answer": "A",
+      "ssl_semantic_coverage_delta": 1.0
+    },
+    {
+      "review_id": "review_MODEL_B",
+      "scenario_id": "MODEL_B",
+      "option_a_source": "baseline",
+      "option_b_source": "ssl",
+      "ai_better_answer": "B",
+      "ssl_semantic_coverage_delta": 0.0
+    },
+    {
+      "review_id": "review_MODEL_C",
+      "scenario_id": "MODEL_C",
+      "option_a_source": "ssl",
+      "option_b_source": "baseline",
+      "ai_better_answer": "A",
+      "ssl_semantic_coverage_delta": 1.0
+    },
+    {
+      "review_id": "review_MODEL_D",
+      "scenario_id": "MODEL_D",
+      "option_a_source": "baseline",
+      "option_b_source": "ssl",
+      "ai_better_answer": "B",
+      "ssl_semantic_coverage_delta": 1.0
+    },
+    {
+      "review_id": "review_MODEL_E",
+      "scenario_id": "MODEL_E",
+      "option_a_source": "ssl",
+      "option_b_source": "baseline",
+      "ai_better_answer": "A",
+      "ssl_semantic_coverage_delta": 0.5
+    },
+    {
+      "review_id": "review_MODEL_F",
+      "scenario_id": "MODEL_F",
+      "option_a_source": "baseline",
+      "option_b_source": "ssl",
+      "ai_better_answer": "B",
+      "ssl_semantic_coverage_delta": 0.25
+    },
+    {
+      "review_id": "review_MODEL_G",
+      "scenario_id": "MODEL_G",
+      "option_a_source": "ssl",
+      "option_b_source": "baseline",
+      "ai_better_answer": "A",
+      "ssl_semantic_coverage_delta": 1.0
+    },
+    {
+      "review_id": "review_MODEL_H",
+      "scenario_id": "MODEL_H",
+      "option_a_source": "baseline",
+      "option_b_source": "ssl",
+      "ai_better_answer": "B",
+      "ssl_semantic_coverage_delta": 0.25
+    },
+    {
+      "review_id": "review_MODEL_I",
+      "scenario_id": "MODEL_I",
+      "option_a_source": "ssl",
+      "option_b_source": "baseline",
+      "ai_better_answer": "A",
+      "ssl_semantic_coverage_delta": 0.75
+    },
+    {
+      "review_id": "review_DNH_UNITS",
+      "scenario_id": "DNH_UNITS",
+      "option_a_source": "baseline",
+      "option_b_source": "ssl",
+      "ai_better_answer": "tie",
+      "ssl_semantic_coverage_delta": 0.0
+    }
+  ],
+  "legend": "ai_better_answer is the assistant's blind verdict (reviewer_ai_claude) for later human-vs-AI agreement; do not show to the human reviewer before they score."
+}

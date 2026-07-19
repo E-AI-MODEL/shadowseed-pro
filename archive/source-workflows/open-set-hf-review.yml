@@ -1,0 +1,299 @@
+name: Research · Open-set HF review
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_id:
+        description: "Bron-id uit src/shadowseed/data/open_set_hf_sources.json"
+        required: true
+        default: "ag_news_test"
+        type: string
+      limit:
+        description: "Aantal items in de batch"
+        required: true
+        default: "12"
+        type: string
+      offset:
+        description: "Start-offset in de dataset; gebruik per nieuwe ronde een nieuwe offset om dezelfde batch niet te herhalen"
+        required: true
+        default: "0"
+        type: string
+      detector:
+        description: "Candidate generator: adapter_v1 (regex baseline), adapter_v2 (text-grounded baseline), model (v0.3 taalmodel-detector)"
+        required: true
+        default: "adapter_v1"
+        type: choice
+        options:
+          - adapter_v1
+          - adapter_v2
+          - model
+      model_backend:
+        description: "Alleen relevant als detector=model. fixture = CI-deterministisch. hf-transformers = lokaal HF-model. ollama = lokaal Ollama-model via HTTP."
+        required: true
+        default: "fixture"
+        type: choice
+        options:
+          - fixture
+          - hf-transformers
+          - ollama
+      model_id:
+        description: "HF model uit de gecureerde lijst (ungated, CPU-ok). Alleen gebruikt bij detector=model en model_backend=hf-transformers."
+        required: false
+        default: "Qwen/Qwen2.5-1.5B-Instruct"
+        type: choice
+        options:
+          - HuggingFaceTB/SmolLM2-135M-Instruct
+          - HuggingFaceTB/SmolLM2-360M-Instruct
+          - Qwen/Qwen2.5-0.5B-Instruct
+          - TinyLlama/TinyLlama-1.1B-Chat-v1.0
+          - Qwen/Qwen2.5-1.5B-Instruct
+          - HuggingFaceTB/SmolLM2-1.7B-Instruct
+          - Qwen/Qwen3-1.7B
+          - Qwen/Qwen2.5-3B-Instruct
+          - microsoft/Phi-3.5-mini-instruct
+          - Qwen/Qwen3-4B
+      ollama_model_id:
+        description: "Ollama modelnaam. Alleen gebruikt bij detector=model en model_backend=ollama."
+        required: false
+        default: "qwen2.5:0.5b-instruct"
+        type: choice
+        options:
+          - qwen2.5:0.5b-instruct
+          - qwen2.5:1.5b-instruct
+          - tinyllama
+          - llama3.2:1b
+          - llama3.2:3b
+          - gemma2:2b
+          - phi3.5
+      model_id_custom:
+        description: "Override voor de gekozen backend. HF-id bij hf-transformers, Ollama-modelnaam bij ollama. Leeg laten om de keuzelijst te gebruiken."
+        required: false
+        default: ""
+        type: string
+      max_new_tokens:
+        description: "Maximale tokens die de v0.3 model-backend per item genereert."
+        required: true
+        default: "400"
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  open-set-review:
+    name: "Open-set HF intake en review-packets"
+    runs-on: ubuntu-latest
+    env:
+      HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Resolve model id
+        env:
+          DETECTOR: ${{ inputs.detector }}
+          MODEL_BACKEND: ${{ inputs.model_backend }}
+          MODEL_ID_CHOICE: ${{ inputs.model_id }}
+          OLLAMA_MODEL_ID_CHOICE: ${{ inputs.ollama_model_id }}
+          MODEL_ID_CUSTOM: ${{ inputs.model_id_custom }}
+        run: |
+          # Only detector=model uses a model id. Keeping this empty for adapter
+          # runs prevents README/artifact metadata from implying a model run.
+          RAW=""
+          if [ "$DETECTOR" = "model" ]; then
+            if [ "$MODEL_BACKEND" = "hf-transformers" ]; then
+              RAW="$MODEL_ID_CHOICE"
+            elif [ "$MODEL_BACKEND" = "ollama" ]; then
+              RAW="$OLLAMA_MODEL_ID_CHOICE"
+            fi
+            if [ -n "$MODEL_ID_CUSTOM" ]; then
+              RAW="$MODEL_ID_CUSTOM"
+            fi
+          fi
+          RESOLVED="$(echo "$RAW" | xargs)"
+          echo "MODEL_ID=$RESOLVED" >> "$GITHUB_ENV"
+          echo "Resolved model_id: '${RESOLVED:-n.v.t.}'"
+
+      - name: Valideer detector + model_backend combinatie
+        run: |
+          if [ "${{ inputs.detector }}" = "model" ] && [ "${{ inputs.model_backend }}" != "fixture" ] && [ -z "$MODEL_ID" ]; then
+            echo "::error::detector=model met model_backend=${{ inputs.model_backend }} vereist een model_id."
+            exit 1
+          fi
+
+      - name: Installeer pakket
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+
+      - name: Installeer models extra (alleen voor HF-transformers taalmodel-detector)
+        if: ${{ inputs.detector == 'model' && inputs.model_backend == 'hf-transformers' }}
+        run: |
+          pip install -e ".[models]"
+
+      - name: Installeer Ollama (alleen voor Ollama taalmodel-detector)
+        if: ${{ inputs.detector == 'model' && inputs.model_backend == 'ollama' }}
+        run: curl -fsSL https://ollama.com/install.sh | sh
+
+      - name: Start Ollama server
+        if: ${{ inputs.detector == 'model' && inputs.model_backend == 'ollama' }}
+        run: |
+          if curl -fsS http://localhost:11434/api/version >/dev/null 2>&1; then
+            echo "Ollama is already up" | tee ollama.log
+            exit 0
+          fi
+          ollama serve > ollama.log 2>&1 &
+          # wait for the HTTP API to come up
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:11434/api/version >/dev/null 2>&1; then
+              echo "Ollama is up"; break
+            fi
+            sleep 2
+          done
+
+      - name: Pull Ollama model
+        if: ${{ inputs.detector == 'model' && inputs.model_backend == 'ollama' }}
+        run: ollama pull "$MODEL_ID"
+
+      - name: Haal HF open-set batch op
+        run: |
+          python -m shadowseed.cli fetch-open-set-hf-batch \
+            --source-id "${{ inputs.source_id }}" \
+            --limit "${{ inputs.limit }}" \
+            --offset "${{ inputs.offset }}" \
+            --output benchmarks/open_review/input/hf_batch.json
+
+      - name: Bouw open-set review-packets
+        env:
+          OLLAMA_HOST: http://localhost:11434
+        run: |
+          python -m shadowseed.cli run-open-set-seed-review \
+            --input benchmarks/open_review/input/hf_batch.json \
+            --output results/open_review/open_set_seed_output.json \
+            --review-packets results/open_review/open_set_review_packets.json \
+            --detector "${{ inputs.detector }}" \
+            --model-backend "${{ inputs.model_backend }}" \
+            --max-new-tokens "${{ inputs.max_new_tokens }}" \
+            --model-id "$MODEL_ID"
+
+      - name: Genereer open-set summary op pending packets
+        run: |
+          python -m shadowseed.cli summarize-open-set-seed-review \
+            --input results/open_review/open_set_review_packets.json \
+            --output results/open_review/open_set_seed_review_summary.json \
+            --disagreements-output results/open_review/open_set_disagreements.json \
+            --report-output results/open_review/open_set_review_report.md
+
+      - name: Schrijf korte run-uitleg
+        env:
+          INPUT_SOURCE_ID: ${{ inputs.source_id }}
+          INPUT_LIMIT: ${{ inputs.limit }}
+          INPUT_OFFSET: ${{ inputs.offset }}
+          INPUT_DETECTOR: ${{ inputs.detector }}
+          INPUT_MODEL_BACKEND: ${{ inputs.model_backend }}
+          INPUT_MODEL_ID: ${{ env.MODEL_ID }}
+        run: |
+          cat > results/open_review/README.md <<MD
+          # Open-set HF review batch
+
+          Deze artifactset komt uit een handmatige workflow met Hugging Face intake.
+
+          Run-parameters:
+
+          - source_id: \`$INPUT_SOURCE_ID\`
+          - limit: \`$INPUT_LIMIT\`
+          - offset: \`$INPUT_OFFSET\`
+          - detector: \`$INPUT_DETECTOR\`
+          - model_backend: \`$INPUT_MODEL_BACKEND\`
+          - model_id: \`${INPUT_MODEL_ID:-n.v.t.}\`
+
+          Inhoud:
+
+          - \`open_set_seed_output.json\`: de seed-output per item
+          - \`open_set_review_packets.json\`: review-packets voor menselijke beoordeling
+          - \`open_set_seed_review_summary.json\`: geaggregeerde summary (pending tot review klaar)
+          - \`open_set_disagreements.json\`: seeds met gemengde reviewverdicts
+          - \`open_set_review_report.md\`: leesbaar Markdown-rapport
+
+          Interpretatie:
+
+          - dit is een aparte evidencelaag (evidence_layer: open_set_seed_quality)
+          - dit is geen standaard regressierun
+          - status is \`review_in_progress\` totdat menselijke reviewers packets hebben ingevuld
+          - lees deze laag niet als vervanging van de fixture-regressies
+          - herhaal voor een nieuwe open-set ronde niet automatisch dezelfde \`offset\`; anders test je dezelfde HF-items opnieuw
+          - alleen \`detector=model\` met een echte taalmodel-backend (\`hf-transformers\` of \`ollama\`) voldoet aan de 4.6 een-zinsclaim;
+            adapter_v1, adapter_v2 en de fixture model-backend zijn baseline-infrastructuur, geen Laag-C bewijs
+          MD
+
+      - name: Normalize artifact name
+        env:
+          MODEL_ID: ${{ env.MODEL_ID }}
+        run: |
+          python - <<'PY' >> "$GITHUB_ENV"
+          import os
+          import re
+
+          model_id = os.environ.get("MODEL_ID", "").strip()
+          safe_model_id = re.sub(r'[":<>|*?\r\n\\/]', "-", model_id).strip(".- ")
+          print(f"SAFE_MODEL_ID={safe_model_id or 'no-model'}")
+          PY
+
+      - name: Upload open-set review artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: open-set-hf-review-batch-${{ inputs.detector }}-${{ inputs.model_backend }}-${{ env.SAFE_MODEL_ID }}
+          path: |
+            benchmarks/open_review/input/hf_batch.json
+            results/open_review/open_set_seed_output.json
+            results/open_review/open_set_review_packets.json
+            results/open_review/open_set_seed_review_summary.json
+            results/open_review/open_set_disagreements.json
+            results/open_review/open_set_review_report.md
+            results/open_review/README.md
+          if-no-files-found: error
+
+      - name: Commit open-set summary naar repo
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add \
+            results/open_review/open_set_seed_review_summary.json \
+            results/open_review/open_set_disagreements.json \
+            results/open_review/open_set_review_report.md \
+            results/open_review/README.md
+          if git diff --cached --quiet; then
+            echo "Geen wijzigingen om te committen."
+            exit 0
+          fi
+          git commit -m "chore: update open-set review summary [skip ci]"
+          # Push with rebase-and-retry: main can advance between checkout and
+          # push (concurrent merges or another workflow run). Without this the
+          # push is rejected as non-fast-forward and the whole job fails even
+          # though the artifact above already succeeded.
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:main; then
+              echo "Push geslaagd op poging $attempt."
+              exit 0
+            fi
+            echo "Push geweigerd op poging $attempt; rebase op origin/main."
+            git fetch origin main || true
+            # --autostash: het werkstation bevat na de run ook niet-gecommitte
+            # bestanden (o.a. de input-batch en raw outputs die alleen als
+            # artifact meegaan). Zonder autostash weigert rebase met "You have
+            # unstaged changes" zodra twee runs parallel draaien — precies de
+            # race waarvoor deze retry-lus bestaat (run 27438927839).
+            if ! git rebase --autostash origin/main; then
+              echo "::error::Rebase op origin/main mislukte (conflict op resultaatbestanden). Artifact is wel geupload."
+              git rebase --abort || true
+              exit 1
+            fi
+            sleep $((attempt * 3))
+          done
+          echo "::error::Push na 5 pogingen nog steeds geweigerd. Artifact is wel geupload."
+          exit 1

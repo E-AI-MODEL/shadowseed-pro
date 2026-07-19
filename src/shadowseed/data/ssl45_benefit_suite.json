@@ -1,0 +1,49 @@
+{
+  "version": "4.5-benefit-phase-1",
+  "description": "Phase 1 benefit suite: compare a baseline answer with an SSL-guided revision on gap coverage and added unsupported claims.",
+  "scoring": {
+    "baseline_gap_coverage": "fraction of expected structural gaps already present in the baseline answer",
+    "ssl_gap_coverage": "fraction of expected structural gaps present after SSL-guided revision",
+    "coverage_delta": "ssl_gap_coverage - baseline_gap_coverage",
+    "unsupported_ssl_additions": "promoted SSL additions that do not match expected gaps"
+  },
+  "scenarios": [
+    {
+      "id": "BEN_A",
+      "title": "Industriële Revolutie",
+      "domain": "geschiedenis en economie",
+      "question": "Leg uit waarom de Industriële Revolutie in Groot-Brittannië kon ontstaan.",
+      "baseline_answer": "De Industriële Revolutie in het 18e-eeuwse Groot-Brittannië werd gekenmerkt door een ongekende versnelling van technologische innovatie. De verbeteringen van James Watt aan de stoommachine maakten het mogelijk om fabrieken los te koppelen van waterbronnen, wat leidde tot de opkomst van grote industriële centra zoals Manchester. De textielindustrie explodeerde door uitvindingen zoals de spinning jenny, wat resulteerde in massale urbanisatie en de vorming van een nieuwe arbeidersklasse. Deze periode legde de basis voor de moderne kapitalistische economie door productie op schaal mogelijk te maken.",
+      "expected_ssl_additions": [
+        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+        "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie."
+      ]
+    },
+    {
+      "id": "BEN_B",
+      "title": "Grensoverschrijdende juridische casus",
+      "domain": "recht en jurisdictie",
+      "question": "Beoordeel de juridische positie van een Nederlandse consument die een defecte laptop koopt bij een Amerikaanse webwinkel.",
+      "baseline_answer": "Een Nederlandse consument heeft een high-end laptop gekocht bij een online retailer die gevestigd is in de Verenigde Staten. Bij levering blijkt het product defect. De consument wil een volledige terugbetaling eisen op basis van de EU-richtlijnen voor consumentenbescherming, die strikte regels stellen aan de garantieperiode en het recht op retour bij defecte goederen binnen de Europese Unie. De focus ligt hierbij op de materiële rechten van de koper om een werkend product te ontvangen.",
+      "expected_ssl_additions": [
+        "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel.",
+        "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
+        "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer.",
+        "Forumkeuzebeding in internationale online koopvoorwaarden."
+      ]
+    },
+    {
+      "id": "BEN_C",
+      "title": "Software Architectuur",
+      "domain": "IT en engineering",
+      "question": "Beoordeel het ontwerp voor de HealthTrack app.",
+      "baseline_answer": "Het voorgestelde ontwerp voor de HealthTrack app bestaat uit een React Native frontend en een Node.js backend. Data wordt opgeslagen in een MongoDB cluster voor maximale flexibiliteit in datastructuur. De kernfunctionaliteiten omvatten een gebruikersdashboard, real-time hartslag-synchronisatie via Bluetooth en een notificatiesysteem voor gezondheidswaarschuwingen. De UI volgt de Material Design-richtlijnen om de toegankelijkheid voor ouderen te waarborgen.",
+      "expected_ssl_additions": [
+        "AVG-compliance bij verwerking van medische hartslagdata.",
+        "Authenticatiestrategie voor toegang tot gezondheidsdata.",
+        "Encryptie van medische data in rust en tijdens transport.",
+        "Rate-limiting op API's die gezondheidsdata verwerken."
+      ]
+    }
+  ]
+}

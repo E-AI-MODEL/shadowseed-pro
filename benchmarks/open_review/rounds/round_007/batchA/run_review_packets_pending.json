@@ -1,0 +1,2223 @@
+{
+  "summary": {
+    "evidence_layer": "open_set_seed_quality",
+    "artifact_contract_version": "open-review-0.2",
+    "corpus_version": "hf-open-set-batch-0.1",
+    "source": {
+      "id": "ag_news_test",
+      "dataset": "szhuggingface/ag_news",
+      "config": "default",
+      "split": "test",
+      "revision": "main",
+      "license": "apache-2.0",
+      "registry_path": "src/shadowseed/data/open_set_hf_sources.json",
+      "requested_limit": 12,
+      "requested_offset": 30,
+      "returned_count": 12,
+      "authenticated": false
+    },
+    "item_count": 12,
+    "seed_count": 54,
+    "reviewer_ids": [
+      "reviewer_a",
+      "reviewer_b"
+    ],
+    "reviewer_count": 2,
+    "packet_count": 108,
+    "criteria": [
+      "atomicity",
+      "relevance",
+      "testability",
+      "non_triviality",
+      "follow_up_utility"
+    ],
+    "reject_codes": [
+      "too_broad",
+      "too_vague",
+      "trivial",
+      "not_relevant",
+      "not_testable",
+      "duplicate",
+      "style_not_gap"
+    ],
+    "candidate_source_counts": {
+      "open_set_model_detector": 12
+    },
+    "candidate_adapter": "ssl45_open_set_candidate_adapter_v0.1",
+    "fixed_scenario_priors_used": false,
+    "expected_gaps_used": false,
+    "ground_truth_seeds_used": false,
+    "regression_gap_detector_used": false,
+    "candidate_quality_requires_human_review": true,
+    "seed_verdict_rule": "A seed counts as accepted or rejected only after every generated reviewer row for that seed is completed and valid.",
+    "instructions": "One packet row is generated per reviewer per seed. Do not edit a single row sequentially for multiple reviewers. A seed only counts as accepted or rejected after every generated reviewer row is completed and valid. Score each seed on atomicity, relevance, testability, non-triviality and follow-up utility.",
+    "status": "review_pending",
+    "expected_summary_artifacts": [
+      "open_set_seed_review_summary.json",
+      "open_set_disagreements.json",
+      "open_set_review_report.md"
+    ]
+  },
+  "packets": [
+    {
+      "item_id": "AG_NEWS_TEST_30",
+      "title": "AG News Sports #30",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "They've caught his eye In quot;helping themselves, quot; Ricky Bryant, Chas Gessner, Michael Jennings, and David Patten did nothing Friday night to make Bill Belichick's decision on what to do with his receivers any easier.",
+      "seed_id": "ss_001",
+      "seed_text": "Bill Belichick's beslissing over de receivers.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_30",
+      "title": "AG News Sports #30",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "They've caught his eye In quot;helping themselves, quot; Ricky Bryant, Chas Gessner, Michael Jennings, and David Patten did nothing Friday night to make Bill Belichick's decision on what to do with his receivers any easier.",
+      "seed_id": "ss_001",
+      "seed_text": "Bill Belichick's beslissing over de receivers.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_30",
+      "title": "AG News Sports #30",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "They've caught his eye In quot;helping themselves, quot; Ricky Bryant, Chas Gessner, Michael Jennings, and David Patten did nothing Friday night to make Bill Belichick's decision on what to do with his receivers any easier.",
+      "seed_id": "ss_002",
+      "seed_text": "De impact van de acties op Belichick's beslissing.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_30",
+      "title": "AG News Sports #30",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "They've caught his eye In quot;helping themselves, quot; Ricky Bryant, Chas Gessner, Michael Jennings, and David Patten did nothing Friday night to make Bill Belichick's decision on what to do with his receivers any easier.",
+      "seed_id": "ss_002",
+      "seed_text": "De impact van de acties op Belichick's beslissing.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_30",
+      "title": "AG News Sports #30",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "They've caught his eye In quot;helping themselves, quot; Ricky Bryant, Chas Gessner, Michael Jennings, and David Patten did nothing Friday night to make Bill Belichick's decision on what to do with his receivers any easier.",
+      "seed_id": "ss_003",
+      "seed_text": "De context of omstandigheden van de gebeurtenissen van vrijdagavond.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_30",
+      "title": "AG News Sports #30",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "They've caught his eye In quot;helping themselves, quot; Ricky Bryant, Chas Gessner, Michael Jennings, and David Patten did nothing Friday night to make Bill Belichick's decision on what to do with his receivers any easier.",
+      "seed_id": "ss_003",
+      "seed_text": "De context of omstandigheden van de gebeurtenissen van vrijdagavond.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_31",
+      "title": "AG News Sports #31",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Indians Mount Charge The Cleveland Indians pulled within one game of the AL Central lead by beating the Minnesota Twins, 7-1, Saturday night with home runs by Travis Hafner and Victor Martinez.",
+      "seed_id": "ss_001",
+      "seed_text": "De exacte stand van de AL Central lead na de wedstrijd.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_31",
+      "title": "AG News Sports #31",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Indians Mount Charge The Cleveland Indians pulled within one game of the AL Central lead by beating the Minnesota Twins, 7-1, Saturday night with home runs by Travis Hafner and Victor Martinez.",
+      "seed_id": "ss_001",
+      "seed_text": "De exacte stand van de AL Central lead na de wedstrijd.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_31",
+      "title": "AG News Sports #31",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Indians Mount Charge The Cleveland Indians pulled within one game of the AL Central lead by beating the Minnesota Twins, 7-1, Saturday night with home runs by Travis Hafner and Victor Martinez.",
+      "seed_id": "ss_002",
+      "seed_text": "De naam van de tegenstander die werd gespeeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_31",
+      "title": "AG News Sports #31",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Indians Mount Charge The Cleveland Indians pulled within one game of the AL Central lead by beating the Minnesota Twins, 7-1, Saturday night with home runs by Travis Hafner and Victor Martinez.",
+      "seed_id": "ss_002",
+      "seed_text": "De naam van de tegenstander die werd gespeeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_31",
+      "title": "AG News Sports #31",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Indians Mount Charge The Cleveland Indians pulled within one game of the AL Central lead by beating the Minnesota Twins, 7-1, Saturday night with home runs by Travis Hafner and Victor Martinez.",
+      "seed_id": "ss_003",
+      "seed_text": "De specifieke spelers die home runs scoorden.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_31",
+      "title": "AG News Sports #31",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Indians Mount Charge The Cleveland Indians pulled within one game of the AL Central lead by beating the Minnesota Twins, 7-1, Saturday night with home runs by Travis Hafner and Victor Martinez.",
+      "seed_id": "ss_003",
+      "seed_text": "De specifieke spelers die home runs scoorden.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_31",
+      "title": "AG News Sports #31",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Indians Mount Charge The Cleveland Indians pulled within one game of the AL Central lead by beating the Minnesota Twins, 7-1, Saturday night with home runs by Travis Hafner and Victor Martinez.",
+      "seed_id": "ss_004",
+      "seed_text": "De totale aantal punten gescoord tijdens de wedstrijd.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_31",
+      "title": "AG News Sports #31",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Indians Mount Charge The Cleveland Indians pulled within one game of the AL Central lead by beating the Minnesota Twins, 7-1, Saturday night with home runs by Travis Hafner and Victor Martinez.",
+      "seed_id": "ss_004",
+      "seed_text": "De totale aantal punten gescoord tijdens de wedstrijd.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_31",
+      "title": "AG News Sports #31",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Indians Mount Charge The Cleveland Indians pulled within one game of the AL Central lead by beating the Minnesota Twins, 7-1, Saturday night with home runs by Travis Hafner and Victor Martinez.",
+      "seed_id": "ss_005",
+      "seed_text": "De datum en tijd waarop de wedstrijd werd gespeeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_31",
+      "title": "AG News Sports #31",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Indians Mount Charge The Cleveland Indians pulled within one game of the AL Central lead by beating the Minnesota Twins, 7-1, Saturday night with home runs by Travis Hafner and Victor Martinez.",
+      "seed_id": "ss_005",
+      "seed_text": "De datum en tijd waarop de wedstrijd werd gespeeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_32",
+      "title": "AG News World #32",
+      "domain": "nieuws - World",
+      "source_excerpt": "Sister of man who died in Vancouver police custody slams chief (Canadian Press) Canadian Press - VANCOUVER (CP) - The sister of a man who died after a violent confrontation with police has demanded the city's chief constable resign for defending the officer involved.",
+      "seed_id": "ss_001",
+      "seed_text": "Verklaring van de sister voor de acties van de chief constable.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_32",
+      "title": "AG News World #32",
+      "domain": "nieuws - World",
+      "source_excerpt": "Sister of man who died in Vancouver police custody slams chief (Canadian Press) Canadian Press - VANCOUVER (CP) - The sister of a man who died after a violent confrontation with police has demanded the city's chief constable resign for defending the officer involved.",
+      "seed_id": "ss_001",
+      "seed_text": "Verklaring van de sister voor de acties van de chief constable.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_32",
+      "title": "AG News World #32",
+      "domain": "nieuws - World",
+      "source_excerpt": "Sister of man who died in Vancouver police custody slams chief (Canadian Press) Canadian Press - VANCOUVER (CP) - The sister of a man who died after a violent confrontation with police has demanded the city's chief constable resign for defending the officer involved.",
+      "seed_id": "ss_002",
+      "seed_text": "De specifieke bevelen die tot de confrontatie leidden.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_32",
+      "title": "AG News World #32",
+      "domain": "nieuws - World",
+      "source_excerpt": "Sister of man who died in Vancouver police custody slams chief (Canadian Press) Canadian Press - VANCOUVER (CP) - The sister of a man who died after a violent confrontation with police has demanded the city's chief constable resign for defending the officer involved.",
+      "seed_id": "ss_002",
+      "seed_text": "De specifieke bevelen die tot de confrontatie leidden.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_32",
+      "title": "AG News World #32",
+      "domain": "nieuws - World",
+      "source_excerpt": "Sister of man who died in Vancouver police custody slams chief (Canadian Press) Canadian Press - VANCOUVER (CP) - The sister of a man who died after a violent confrontation with police has demanded the city's chief constable resign for defending the officer involved.",
+      "seed_id": "ss_003",
+      "seed_text": "De reden voor de resignation van de chief constable.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_32",
+      "title": "AG News World #32",
+      "domain": "nieuws - World",
+      "source_excerpt": "Sister of man who died in Vancouver police custody slams chief (Canadian Press) Canadian Press - VANCOUVER (CP) - The sister of a man who died after a violent confrontation with police has demanded the city's chief constable resign for defending the officer involved.",
+      "seed_id": "ss_003",
+      "seed_text": "De reden voor de resignation van de chief constable.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_32",
+      "title": "AG News World #32",
+      "domain": "nieuws - World",
+      "source_excerpt": "Sister of man who died in Vancouver police custody slams chief (Canadian Press) Canadian Press - VANCOUVER (CP) - The sister of a man who died after a violent confrontation with police has demanded the city's chief constable resign for defending the officer involved.",
+      "seed_id": "ss_004",
+      "seed_text": "De perspectief van de police op de incident.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_32",
+      "title": "AG News World #32",
+      "domain": "nieuws - World",
+      "source_excerpt": "Sister of man who died in Vancouver police custody slams chief (Canadian Press) Canadian Press - VANCOUVER (CP) - The sister of a man who died after a violent confrontation with police has demanded the city's chief constable resign for defending the officer involved.",
+      "seed_id": "ss_004",
+      "seed_text": "De perspectief van de police op de incident.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_32",
+      "title": "AG News World #32",
+      "domain": "nieuws - World",
+      "source_excerpt": "Sister of man who died in Vancouver police custody slams chief (Canadian Press) Canadian Press - VANCOUVER (CP) - The sister of a man who died after a violent confrontation with police has demanded the city's chief constable resign for defending the officer involved.",
+      "seed_id": "ss_005",
+      "seed_text": "De juridische implicaties van de confrontatie.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_32",
+      "title": "AG News World #32",
+      "domain": "nieuws - World",
+      "source_excerpt": "Sister of man who died in Vancouver police custody slams chief (Canadian Press) Canadian Press - VANCOUVER (CP) - The sister of a man who died after a violent confrontation with police has demanded the city's chief constable resign for defending the officer involved.",
+      "seed_id": "ss_005",
+      "seed_text": "De juridische implicaties van de confrontatie.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_33",
+      "title": "AG News World #33",
+      "domain": "nieuws - World",
+      "source_excerpt": "Man Sought #36;50M From McGreevey, Aides Say (AP) AP - The man who claims Gov. James E. McGreevey sexually harassed him was pushing for a cash settlement of up to #36;50 million before the governor decided to announce that he was gay and had an extramarital affair, sources told The Associated Press.",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke details van het geschil over de cashsetteling.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_33",
+      "title": "AG News World #33",
+      "domain": "nieuws - World",
+      "source_excerpt": "Man Sought #36;50M From McGreevey, Aides Say (AP) AP - The man who claims Gov. James E. McGreevey sexually harassed him was pushing for a cash settlement of up to #36;50 million before the governor decided to announce that he was gay and had an extramarital affair, sources told The Associated Press.",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke details van het geschil over de cashsetteling.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_33",
+      "title": "AG News World #33",
+      "domain": "nieuws - World",
+      "source_excerpt": "Man Sought #36;50M From McGreevey, Aides Say (AP) AP - The man who claims Gov. James E. McGreevey sexually harassed him was pushing for a cash settlement of up to #36;50 million before the governor decided to announce that he was gay and had an extramarital affair, sources told The Associated Press.",
+      "seed_id": "ss_002",
+      "seed_text": "De exacte omvang van de gevraagde compensatie.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_33",
+      "title": "AG News World #33",
+      "domain": "nieuws - World",
+      "source_excerpt": "Man Sought #36;50M From McGreevey, Aides Say (AP) AP - The man who claims Gov. James E. McGreevey sexually harassed him was pushing for a cash settlement of up to #36;50 million before the governor decided to announce that he was gay and had an extramarital affair, sources told The Associated Press.",
+      "seed_id": "ss_002",
+      "seed_text": "De exacte omvang van de gevraagde compensatie.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_33",
+      "title": "AG News World #33",
+      "domain": "nieuws - World",
+      "source_excerpt": "Man Sought #36;50M From McGreevey, Aides Say (AP) AP - The man who claims Gov. James E. McGreevey sexually harassed him was pushing for a cash settlement of up to #36;50 million before the governor decided to announce that he was gay and had an extramarital affair, sources told The Associated Press.",
+      "seed_id": "ss_003",
+      "seed_text": "De reden voor het verlangen naar een cashsetteling.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_33",
+      "title": "AG News World #33",
+      "domain": "nieuws - World",
+      "source_excerpt": "Man Sought #36;50M From McGreevey, Aides Say (AP) AP - The man who claims Gov. James E. McGreevey sexually harassed him was pushing for a cash settlement of up to #36;50 million before the governor decided to announce that he was gay and had an extramarital affair, sources told The Associated Press.",
+      "seed_id": "ss_003",
+      "seed_text": "De reden voor het verlangen naar een cashsetteling.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_33",
+      "title": "AG News World #33",
+      "domain": "nieuws - World",
+      "source_excerpt": "Man Sought #36;50M From McGreevey, Aides Say (AP) AP - The man who claims Gov. James E. McGreevey sexually harassed him was pushing for a cash settlement of up to #36;50 million before the governor decided to announce that he was gay and had an extramarital affair, sources told The Associated Press.",
+      "seed_id": "ss_004",
+      "seed_text": "De tijdrelatie tussen het verlangen naar de cashsetteling en de geloofwaardigheid van het geschil.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_33",
+      "title": "AG News World #33",
+      "domain": "nieuws - World",
+      "source_excerpt": "Man Sought #36;50M From McGreevey, Aides Say (AP) AP - The man who claims Gov. James E. McGreevey sexually harassed him was pushing for a cash settlement of up to #36;50 million before the governor decided to announce that he was gay and had an extramarital affair, sources told The Associated Press.",
+      "seed_id": "ss_004",
+      "seed_text": "De tijdrelatie tussen het verlangen naar de cashsetteling en de geloofwaardigheid van het geschil.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_33",
+      "title": "AG News World #33",
+      "domain": "nieuws - World",
+      "source_excerpt": "Man Sought #36;50M From McGreevey, Aides Say (AP) AP - The man who claims Gov. James E. McGreevey sexually harassed him was pushing for a cash settlement of up to #36;50 million before the governor decided to announce that he was gay and had an extramarital affair, sources told The Associated Press.",
+      "seed_id": "ss_005",
+      "seed_text": "De impact van de aanvankelijke geheimhouding op het geschil.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_33",
+      "title": "AG News World #33",
+      "domain": "nieuws - World",
+      "source_excerpt": "Man Sought #36;50M From McGreevey, Aides Say (AP) AP - The man who claims Gov. James E. McGreevey sexually harassed him was pushing for a cash settlement of up to #36;50 million before the governor decided to announce that he was gay and had an extramarital affair, sources told The Associated Press.",
+      "seed_id": "ss_005",
+      "seed_text": "De impact van de aanvankelijke geheimhouding op het geschil.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_34",
+      "title": "AG News World #34",
+      "domain": "nieuws - World",
+      "source_excerpt": "Explosions Echo Throughout Najaf NAJAF, Iraq - Explosions and gunfire rattled through the city of Najaf as U.S. troops in armored vehicles and tanks rolled back into the streets here Sunday, a day after the collapse of talks - and with them a temporary cease-fire - intended to end the fighting in this holy city...",
+      "seed_id": "ss_001",
+      "seed_text": "De reden voor de terugkeer van U.S. troepen in Najaf.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_34",
+      "title": "AG News World #34",
+      "domain": "nieuws - World",
+      "source_excerpt": "Explosions Echo Throughout Najaf NAJAF, Iraq - Explosions and gunfire rattled through the city of Najaf as U.S. troops in armored vehicles and tanks rolled back into the streets here Sunday, a day after the collapse of talks - and with them a temporary cease-fire - intended to end the fighting in this holy city...",
+      "seed_id": "ss_001",
+      "seed_text": "De reden voor de terugkeer van U.S. troepen in Najaf.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_34",
+      "title": "AG News World #34",
+      "domain": "nieuws - World",
+      "source_excerpt": "Explosions Echo Throughout Najaf NAJAF, Iraq - Explosions and gunfire rattled through the city of Najaf as U.S. troops in armored vehicles and tanks rolled back into the streets here Sunday, a day after the collapse of talks - and with them a temporary cease-fire - intended to end the fighting in this holy city...",
+      "seed_id": "ss_002",
+      "seed_text": "De details van de collapsie van de onderhandelingen.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_34",
+      "title": "AG News World #34",
+      "domain": "nieuws - World",
+      "source_excerpt": "Explosions Echo Throughout Najaf NAJAF, Iraq - Explosions and gunfire rattled through the city of Najaf as U.S. troops in armored vehicles and tanks rolled back into the streets here Sunday, a day after the collapse of talks - and with them a temporary cease-fire - intended to end the fighting in this holy city...",
+      "seed_id": "ss_002",
+      "seed_text": "De details van de collapsie van de onderhandelingen.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_34",
+      "title": "AG News World #34",
+      "domain": "nieuws - World",
+      "source_excerpt": "Explosions Echo Throughout Najaf NAJAF, Iraq - Explosions and gunfire rattled through the city of Najaf as U.S. troops in armored vehicles and tanks rolled back into the streets here Sunday, a day after the collapse of talks - and with them a temporary cease-fire - intended to end the fighting in this holy city...",
+      "seed_id": "ss_003",
+      "seed_text": "De impact van de explosies op de lokale bevolking.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_34",
+      "title": "AG News World #34",
+      "domain": "nieuws - World",
+      "source_excerpt": "Explosions Echo Throughout Najaf NAJAF, Iraq - Explosions and gunfire rattled through the city of Najaf as U.S. troops in armored vehicles and tanks rolled back into the streets here Sunday, a day after the collapse of talks - and with them a temporary cease-fire - intended to end the fighting in this holy city...",
+      "seed_id": "ss_003",
+      "seed_text": "De impact van de explosies op de lokale bevolking.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_34",
+      "title": "AG News World #34",
+      "domain": "nieuws - World",
+      "source_excerpt": "Explosions Echo Throughout Najaf NAJAF, Iraq - Explosions and gunfire rattled through the city of Najaf as U.S. troops in armored vehicles and tanks rolled back into the streets here Sunday, a day after the collapse of talks - and with them a temporary cease-fire - intended to end the fighting in this holy city...",
+      "seed_id": "ss_004",
+      "seed_text": "De reactie van andere internationale actoren op de gebeurtenissen.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_34",
+      "title": "AG News World #34",
+      "domain": "nieuws - World",
+      "source_excerpt": "Explosions Echo Throughout Najaf NAJAF, Iraq - Explosions and gunfire rattled through the city of Najaf as U.S. troops in armored vehicles and tanks rolled back into the streets here Sunday, a day after the collapse of talks - and with them a temporary cease-fire - intended to end the fighting in this holy city...",
+      "seed_id": "ss_004",
+      "seed_text": "De reactie van andere internationale actoren op de gebeurtenissen.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_34",
+      "title": "AG News World #34",
+      "domain": "nieuws - World",
+      "source_excerpt": "Explosions Echo Throughout Najaf NAJAF, Iraq - Explosions and gunfire rattled through the city of Najaf as U.S. troops in armored vehicles and tanks rolled back into the streets here Sunday, a day after the collapse of talks - and with them a temporary cease-fire - intended to end the fighting in this holy city...",
+      "seed_id": "ss_005",
+      "seed_text": "De voortgang van de onderhandelingen na de explosies.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_34",
+      "title": "AG News World #34",
+      "domain": "nieuws - World",
+      "source_excerpt": "Explosions Echo Throughout Najaf NAJAF, Iraq - Explosions and gunfire rattled through the city of Najaf as U.S. troops in armored vehicles and tanks rolled back into the streets here Sunday, a day after the collapse of talks - and with them a temporary cease-fire - intended to end the fighting in this holy city...",
+      "seed_id": "ss_005",
+      "seed_text": "De voortgang van de onderhandelingen na de explosies.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_35",
+      "title": "AG News World #35",
+      "domain": "nieuws - World",
+      "source_excerpt": "Frail Pope Celebrates Mass at Lourdes LOURDES, France - A frail Pope John Paul II, breathing heavily and gasping at times, celebrated an open-air Mass on Sunday for several hundred thousand pilgrims, many in wheelchairs, at a shrine to the Virgin Mary that is associated with miraculous cures. At one point he said \"help me\" in Polish while struggling through his homily in French...",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke gezondheidsproblemen van de pilgrims.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_35",
+      "title": "AG News World #35",
+      "domain": "nieuws - World",
+      "source_excerpt": "Frail Pope Celebrates Mass at Lourdes LOURDES, France - A frail Pope John Paul II, breathing heavily and gasping at times, celebrated an open-air Mass on Sunday for several hundred thousand pilgrims, many in wheelchairs, at a shrine to the Virgin Mary that is associated with miraculous cures. At one point he said \"help me\" in Polish while struggling through his homily in French...",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke gezondheidsproblemen van de pilgrims.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_35",
+      "title": "AG News World #35",
+      "domain": "nieuws - World",
+      "source_excerpt": "Frail Pope Celebrates Mass at Lourdes LOURDES, France - A frail Pope John Paul II, breathing heavily and gasping at times, celebrated an open-air Mass on Sunday for several hundred thousand pilgrims, many in wheelchairs, at a shrine to the Virgin Mary that is associated with miraculous cures. At one point he said \"help me\" in Polish while struggling through his homily in French...",
+      "seed_id": "ss_002",
+      "seed_text": "De omvang van de pilgrimageerbevolking.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_35",
+      "title": "AG News World #35",
+      "domain": "nieuws - World",
+      "source_excerpt": "Frail Pope Celebrates Mass at Lourdes LOURDES, France - A frail Pope John Paul II, breathing heavily and gasping at times, celebrated an open-air Mass on Sunday for several hundred thousand pilgrims, many in wheelchairs, at a shrine to the Virgin Mary that is associated with miraculous cures. At one point he said \"help me\" in Polish while struggling through his homily in French...",
+      "seed_id": "ss_002",
+      "seed_text": "De omvang van de pilgrimageerbevolking.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_35",
+      "title": "AG News World #35",
+      "domain": "nieuws - World",
+      "source_excerpt": "Frail Pope Celebrates Mass at Lourdes LOURDES, France - A frail Pope John Paul II, breathing heavily and gasping at times, celebrated an open-air Mass on Sunday for several hundred thousand pilgrims, many in wheelchairs, at a shrine to the Virgin Mary that is associated with miraculous cures. At one point he said \"help me\" in Polish while struggling through his homily in French...",
+      "seed_id": "ss_003",
+      "seed_text": "De omvang van de openbare bijeenkomst.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_35",
+      "title": "AG News World #35",
+      "domain": "nieuws - World",
+      "source_excerpt": "Frail Pope Celebrates Mass at Lourdes LOURDES, France - A frail Pope John Paul II, breathing heavily and gasping at times, celebrated an open-air Mass on Sunday for several hundred thousand pilgrims, many in wheelchairs, at a shrine to the Virgin Mary that is associated with miraculous cures. At one point he said \"help me\" in Polish while struggling through his homily in French...",
+      "seed_id": "ss_003",
+      "seed_text": "De omvang van de openbare bijeenkomst.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_35",
+      "title": "AG News World #35",
+      "domain": "nieuws - World",
+      "source_excerpt": "Frail Pope Celebrates Mass at Lourdes LOURDES, France - A frail Pope John Paul II, breathing heavily and gasping at times, celebrated an open-air Mass on Sunday for several hundred thousand pilgrims, many in wheelchairs, at a shrine to the Virgin Mary that is associated with miraculous cures. At one point he said \"help me\" in Polish while struggling through his homily in French...",
+      "seed_id": "ss_004",
+      "seed_text": "De specifieke verzoeken of gebaren van de Pope tijdens de homilie.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_35",
+      "title": "AG News World #35",
+      "domain": "nieuws - World",
+      "source_excerpt": "Frail Pope Celebrates Mass at Lourdes LOURDES, France - A frail Pope John Paul II, breathing heavily and gasping at times, celebrated an open-air Mass on Sunday for several hundred thousand pilgrims, many in wheelchairs, at a shrine to the Virgin Mary that is associated with miraculous cures. At one point he said \"help me\" in Polish while struggling through his homily in French...",
+      "seed_id": "ss_004",
+      "seed_text": "De specifieke verzoeken of gebaren van de Pope tijdens de homilie.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_35",
+      "title": "AG News World #35",
+      "domain": "nieuws - World",
+      "source_excerpt": "Frail Pope Celebrates Mass at Lourdes LOURDES, France - A frail Pope John Paul II, breathing heavily and gasping at times, celebrated an open-air Mass on Sunday for several hundred thousand pilgrims, many in wheelchairs, at a shrine to the Virgin Mary that is associated with miraculous cures. At one point he said \"help me\" in Polish while struggling through his homily in French...",
+      "seed_id": "ss_005",
+      "seed_text": "De historische betekenis van Lourdes voor de pilgrimage.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_35",
+      "title": "AG News World #35",
+      "domain": "nieuws - World",
+      "source_excerpt": "Frail Pope Celebrates Mass at Lourdes LOURDES, France - A frail Pope John Paul II, breathing heavily and gasping at times, celebrated an open-air Mass on Sunday for several hundred thousand pilgrims, many in wheelchairs, at a shrine to the Virgin Mary that is associated with miraculous cures. At one point he said \"help me\" in Polish while struggling through his homily in French...",
+      "seed_id": "ss_005",
+      "seed_text": "De historische betekenis van Lourdes voor de pilgrimage.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_36",
+      "title": "AG News World #36",
+      "domain": "nieuws - World",
+      "source_excerpt": "Venezuela Prepares for Chavez Recall Vote Supporters and rivals warn of possible fraud; government says Chavez's defeat could produce turmoil in world oil market.",
+      "seed_id": "ss_001",
+      "seed_text": "De mogelijke fraudpreventiemaatregelen voor de recall-stemmen.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_36",
+      "title": "AG News World #36",
+      "domain": "nieuws - World",
+      "source_excerpt": "Venezuela Prepares for Chavez Recall Vote Supporters and rivals warn of possible fraud; government says Chavez's defeat could produce turmoil in world oil market.",
+      "seed_id": "ss_001",
+      "seed_text": "De mogelijke fraudpreventiemaatregelen voor de recall-stemmen.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_36",
+      "title": "AG News World #36",
+      "domain": "nieuws - World",
+      "source_excerpt": "Venezuela Prepares for Chavez Recall Vote Supporters and rivals warn of possible fraud; government says Chavez's defeat could produce turmoil in world oil market.",
+      "seed_id": "ss_002",
+      "seed_text": "De stemmenbevragingprocedure voor de recall.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_36",
+      "title": "AG News World #36",
+      "domain": "nieuws - World",
+      "source_excerpt": "Venezuela Prepares for Chavez Recall Vote Supporters and rivals warn of possible fraud; government says Chavez's defeat could produce turmoil in world oil market.",
+      "seed_id": "ss_002",
+      "seed_text": "De stemmenbevragingprocedure voor de recall.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_36",
+      "title": "AG News World #36",
+      "domain": "nieuws - World",
+      "source_excerpt": "Venezuela Prepares for Chavez Recall Vote Supporters and rivals warn of possible fraud; government says Chavez's defeat could produce turmoil in world oil market.",
+      "seed_id": "ss_003",
+      "seed_text": "De reacties van oppositiepartijen op de voorbereidingen.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_36",
+      "title": "AG News World #36",
+      "domain": "nieuws - World",
+      "source_excerpt": "Venezuela Prepares for Chavez Recall Vote Supporters and rivals warn of possible fraud; government says Chavez's defeat could produce turmoil in world oil market.",
+      "seed_id": "ss_003",
+      "seed_text": "De reacties van oppositiepartijen op de voorbereidingen.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_36",
+      "title": "AG News World #36",
+      "domain": "nieuws - World",
+      "source_excerpt": "Venezuela Prepares for Chavez Recall Vote Supporters and rivals warn of possible fraud; government says Chavez's defeat could produce turmoil in world oil market.",
+      "seed_id": "ss_004",
+      "seed_text": "De impact van de stemmen op de stabiliteit van de Venezolaanse economie.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_36",
+      "title": "AG News World #36",
+      "domain": "nieuws - World",
+      "source_excerpt": "Venezuela Prepares for Chavez Recall Vote Supporters and rivals warn of possible fraud; government says Chavez's defeat could produce turmoil in world oil market.",
+      "seed_id": "ss_004",
+      "seed_text": "De impact van de stemmen op de stabiliteit van de Venezolaanse economie.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_37",
+      "title": "AG News World #37",
+      "domain": "nieuws - World",
+      "source_excerpt": "1994 Law Designed to Preserve Guard Jobs (AP) AP - A 1994 law strengthened job protections for National Guard and Reserve troops called to active duty. Here are major provisions of the Uniformed Services Employment and Reemployment Rights Act (USERRA).",
+      "seed_id": "ss_001",
+      "seed_text": "Re-integratieproces voor militaire dienstuitvoerenden.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_37",
+      "title": "AG News World #37",
+      "domain": "nieuws - World",
+      "source_excerpt": "1994 Law Designed to Preserve Guard Jobs (AP) AP - A 1994 law strengthened job protections for National Guard and Reserve troops called to active duty. Here are major provisions of the Uniformed Services Employment and Reemployment Rights Act (USERRA).",
+      "seed_id": "ss_001",
+      "seed_text": "Re-integratieproces voor militaire dienstuitvoerenden.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_37",
+      "title": "AG News World #37",
+      "domain": "nieuws - World",
+      "source_excerpt": "1994 Law Designed to Preserve Guard Jobs (AP) AP - A 1994 law strengthened job protections for National Guard and Reserve troops called to active duty. Here are major provisions of the Uniformed Services Employment and Reemployment Rights Act (USERRA).",
+      "seed_id": "ss_002",
+      "seed_text": "Specifieke beschermingsniveaus voor verschillende diensttijden.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_37",
+      "title": "AG News World #37",
+      "domain": "nieuws - World",
+      "source_excerpt": "1994 Law Designed to Preserve Guard Jobs (AP) AP - A 1994 law strengthened job protections for National Guard and Reserve troops called to active duty. Here are major provisions of the Uniformed Services Employment and Reemployment Rights Act (USERRA).",
+      "seed_id": "ss_002",
+      "seed_text": "Specifieke beschermingsniveaus voor verschillende diensttijden.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_37",
+      "title": "AG News World #37",
+      "domain": "nieuws - World",
+      "source_excerpt": "1994 Law Designed to Preserve Guard Jobs (AP) AP - A 1994 law strengthened job protections for National Guard and Reserve troops called to active duty. Here are major provisions of the Uniformed Services Employment and Reemployment Rights Act (USERRA).",
+      "seed_id": "ss_003",
+      "seed_text": "Procedure voor het claimen van re-integratie-uitkeringen.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_37",
+      "title": "AG News World #37",
+      "domain": "nieuws - World",
+      "source_excerpt": "1994 Law Designed to Preserve Guard Jobs (AP) AP - A 1994 law strengthened job protections for National Guard and Reserve troops called to active duty. Here are major provisions of the Uniformed Services Employment and Reemployment Rights Act (USERRA).",
+      "seed_id": "ss_003",
+      "seed_text": "Procedure voor het claimen van re-integratie-uitkeringen.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_37",
+      "title": "AG News World #37",
+      "domain": "nieuws - World",
+      "source_excerpt": "1994 Law Designed to Preserve Guard Jobs (AP) AP - A 1994 law strengthened job protections for National Guard and Reserve troops called to active duty. Here are major provisions of the Uniformed Services Employment and Reemployment Rights Act (USERRA).",
+      "seed_id": "ss_004",
+      "seed_text": "Onderzoek naar de effectiviteit van de 1994 law.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_37",
+      "title": "AG News World #37",
+      "domain": "nieuws - World",
+      "source_excerpt": "1994 Law Designed to Preserve Guard Jobs (AP) AP - A 1994 law strengthened job protections for National Guard and Reserve troops called to active duty. Here are major provisions of the Uniformed Services Employment and Reemployment Rights Act (USERRA).",
+      "seed_id": "ss_004",
+      "seed_text": "Onderzoek naar de effectiviteit van de 1994 law.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_38",
+      "title": "AG News World #38",
+      "domain": "nieuws - World",
+      "source_excerpt": "Iran Warns Its Missiles Can Hit Anywhere in Israel TEHRAN (Reuters) - A senior Iranian military official said Sunday Israel and the United States would not dare attack Iran since it could strike back anywhere in Israel with its latest missiles, news agencies reported.",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke soorten missielussen die Iran heeft.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_38",
+      "title": "AG News World #38",
+      "domain": "nieuws - World",
+      "source_excerpt": "Iran Warns Its Missiles Can Hit Anywhere in Israel TEHRAN (Reuters) - A senior Iranian military official said Sunday Israel and the United States would not dare attack Iran since it could strike back anywhere in Israel with its latest missiles, news agencies reported.",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke soorten missielussen die Iran heeft.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_38",
+      "title": "AG News World #38",
+      "domain": "nieuws - World",
+      "source_excerpt": "Iran Warns Its Missiles Can Hit Anywhere in Israel TEHRAN (Reuters) - A senior Iranian military official said Sunday Israel and the United States would not dare attack Iran since it could strike back anywhere in Israel with its latest missiles, news agencies reported.",
+      "seed_id": "ss_002",
+      "seed_text": "De beschikbare afstanden van de Iranische missielussen.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_38",
+      "title": "AG News World #38",
+      "domain": "nieuws - World",
+      "source_excerpt": "Iran Warns Its Missiles Can Hit Anywhere in Israel TEHRAN (Reuters) - A senior Iranian military official said Sunday Israel and the United States would not dare attack Iran since it could strike back anywhere in Israel with its latest missiles, news agencies reported.",
+      "seed_id": "ss_002",
+      "seed_text": "De beschikbare afstanden van de Iranische missielussen.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_38",
+      "title": "AG News World #38",
+      "domain": "nieuws - World",
+      "source_excerpt": "Iran Warns Its Missiles Can Hit Anywhere in Israel TEHRAN (Reuters) - A senior Iranian military official said Sunday Israel and the United States would not dare attack Iran since it could strike back anywhere in Israel with its latest missiles, news agencies reported.",
+      "seed_id": "ss_003",
+      "seed_text": "De mogelijke impact van de missielussen op Israëlische infrastructuur.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_38",
+      "title": "AG News World #38",
+      "domain": "nieuws - World",
+      "source_excerpt": "Iran Warns Its Missiles Can Hit Anywhere in Israel TEHRAN (Reuters) - A senior Iranian military official said Sunday Israel and the United States would not dare attack Iran since it could strike back anywhere in Israel with its latest missiles, news agencies reported.",
+      "seed_id": "ss_003",
+      "seed_text": "De mogelijke impact van de missielussen op Israëlische infrastructuur.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_38",
+      "title": "AG News World #38",
+      "domain": "nieuws - World",
+      "source_excerpt": "Iran Warns Its Missiles Can Hit Anywhere in Israel TEHRAN (Reuters) - A senior Iranian military official said Sunday Israel and the United States would not dare attack Iran since it could strike back anywhere in Israel with its latest missiles, news agencies reported.",
+      "seed_id": "ss_004",
+      "seed_text": "De strategische planning van Iran met betrekking tot de missielussen.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_38",
+      "title": "AG News World #38",
+      "domain": "nieuws - World",
+      "source_excerpt": "Iran Warns Its Missiles Can Hit Anywhere in Israel TEHRAN (Reuters) - A senior Iranian military official said Sunday Israel and the United States would not dare attack Iran since it could strike back anywhere in Israel with its latest missiles, news agencies reported.",
+      "seed_id": "ss_004",
+      "seed_text": "De strategische planning van Iran met betrekking tot de missielussen.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_39",
+      "title": "AG News World #39",
+      "domain": "nieuws - World",
+      "source_excerpt": "Afghan Army Dispatched to Calm Violence KABUL, Afghanistan - Government troops intervened in Afghanistan's latest outbreak of deadly fighting between warlords, flying from the capital to the far west on U.S. and NATO airplanes to retake an air base contested in the violence, officials said Sunday...",
+      "seed_id": "ss_001",
+      "seed_text": "De reden voor de interventie van de Afghanische strijdkrachten.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_39",
+      "title": "AG News World #39",
+      "domain": "nieuws - World",
+      "source_excerpt": "Afghan Army Dispatched to Calm Violence KABUL, Afghanistan - Government troops intervened in Afghanistan's latest outbreak of deadly fighting between warlords, flying from the capital to the far west on U.S. and NATO airplanes to retake an air base contested in the violence, officials said Sunday...",
+      "seed_id": "ss_001",
+      "seed_text": "De reden voor de interventie van de Afghanische strijdkrachten.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_39",
+      "title": "AG News World #39",
+      "domain": "nieuws - World",
+      "source_excerpt": "Afghan Army Dispatched to Calm Violence KABUL, Afghanistan - Government troops intervened in Afghanistan's latest outbreak of deadly fighting between warlords, flying from the capital to the far west on U.S. and NATO airplanes to retake an air base contested in the violence, officials said Sunday...",
+      "seed_id": "ss_002",
+      "seed_text": "De specifieke locatie waar de strijdkrachten landden.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_39",
+      "title": "AG News World #39",
+      "domain": "nieuws - World",
+      "source_excerpt": "Afghan Army Dispatched to Calm Violence KABUL, Afghanistan - Government troops intervened in Afghanistan's latest outbreak of deadly fighting between warlords, flying from the capital to the far west on U.S. and NATO airplanes to retake an air base contested in the violence, officials said Sunday...",
+      "seed_id": "ss_002",
+      "seed_text": "De specifieke locatie waar de strijdkrachten landden.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_39",
+      "title": "AG News World #39",
+      "domain": "nieuws - World",
+      "source_excerpt": "Afghan Army Dispatched to Calm Violence KABUL, Afghanistan - Government troops intervened in Afghanistan's latest outbreak of deadly fighting between warlords, flying from the capital to the far west on U.S. and NATO airplanes to retake an air base contested in the violence, officials said Sunday...",
+      "seed_id": "ss_003",
+      "seed_text": "De soort luchtvaartuigen die door de U.S. en NATO werden gebruikt.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_39",
+      "title": "AG News World #39",
+      "domain": "nieuws - World",
+      "source_excerpt": "Afghan Army Dispatched to Calm Violence KABUL, Afghanistan - Government troops intervened in Afghanistan's latest outbreak of deadly fighting between warlords, flying from the capital to the far west on U.S. and NATO airplanes to retake an air base contested in the violence, officials said Sunday...",
+      "seed_id": "ss_003",
+      "seed_text": "De soort luchtvaartuigen die door de U.S. en NATO werden gebruikt.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_39",
+      "title": "AG News World #39",
+      "domain": "nieuws - World",
+      "source_excerpt": "Afghan Army Dispatched to Calm Violence KABUL, Afghanistan - Government troops intervened in Afghanistan's latest outbreak of deadly fighting between warlords, flying from the capital to the far west on U.S. and NATO airplanes to retake an air base contested in the violence, officials said Sunday...",
+      "seed_id": "ss_004",
+      "seed_text": "De doelstelling van de terugkeer naar de contesteerde luchthaven.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_39",
+      "title": "AG News World #39",
+      "domain": "nieuws - World",
+      "source_excerpt": "Afghan Army Dispatched to Calm Violence KABUL, Afghanistan - Government troops intervened in Afghanistan's latest outbreak of deadly fighting between warlords, flying from the capital to the far west on U.S. and NATO airplanes to retake an air base contested in the violence, officials said Sunday...",
+      "seed_id": "ss_004",
+      "seed_text": "De doelstelling van de terugkeer naar de contesteerde luchthaven.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_39",
+      "title": "AG News World #39",
+      "domain": "nieuws - World",
+      "source_excerpt": "Afghan Army Dispatched to Calm Violence KABUL, Afghanistan - Government troops intervened in Afghanistan's latest outbreak of deadly fighting between warlords, flying from the capital to the far west on U.S. and NATO airplanes to retake an air base contested in the violence, officials said Sunday...",
+      "seed_id": "ss_005",
+      "seed_text": "De datum of tijd van de officiële verklaring.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_39",
+      "title": "AG News World #39",
+      "domain": "nieuws - World",
+      "source_excerpt": "Afghan Army Dispatched to Calm Violence KABUL, Afghanistan - Government troops intervened in Afghanistan's latest outbreak of deadly fighting between warlords, flying from the capital to the far west on U.S. and NATO airplanes to retake an air base contested in the violence, officials said Sunday...",
+      "seed_id": "ss_005",
+      "seed_text": "De datum of tijd van de officiële verklaring.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_40",
+      "title": "AG News Sports #40",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Johnson Helps D-Backs End Nine-Game Slide (AP) AP - Randy Johnson took a four-hitter into the ninth inning to help the Arizona Diamondbacks end a nine-game losing streak Sunday, beating Steve Trachsel and the New York Mets 2-0.",
+      "seed_id": "ss_001",
+      "seed_text": "De reden voor Johnson's vierhitter in de negende inning.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_40",
+      "title": "AG News Sports #40",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Johnson Helps D-Backs End Nine-Game Slide (AP) AP - Randy Johnson took a four-hitter into the ninth inning to help the Arizona Diamondbacks end a nine-game losing streak Sunday, beating Steve Trachsel and the New York Mets 2-0.",
+      "seed_id": "ss_001",
+      "seed_text": "De reden voor Johnson's vierhitter in de negende inning.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_40",
+      "title": "AG News Sports #40",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Johnson Helps D-Backs End Nine-Game Slide (AP) AP - Randy Johnson took a four-hitter into the ninth inning to help the Arizona Diamondbacks end a nine-game losing streak Sunday, beating Steve Trachsel and the New York Mets 2-0.",
+      "seed_id": "ss_002",
+      "seed_text": "De impact van Johnson's performance op de negen-game losing streak.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_40",
+      "title": "AG News Sports #40",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Johnson Helps D-Backs End Nine-Game Slide (AP) AP - Randy Johnson took a four-hitter into the ninth inning to help the Arizona Diamondbacks end a nine-game losing streak Sunday, beating Steve Trachsel and the New York Mets 2-0.",
+      "seed_id": "ss_002",
+      "seed_text": "De impact van Johnson's performance op de negen-game losing streak.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_40",
+      "title": "AG News Sports #40",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Johnson Helps D-Backs End Nine-Game Slide (AP) AP - Randy Johnson took a four-hitter into the ninth inning to help the Arizona Diamondbacks end a nine-game losing streak Sunday, beating Steve Trachsel and the New York Mets 2-0.",
+      "seed_id": "ss_003",
+      "seed_text": "De reactie van Steve Trachsel op Johnson's vierhitter.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_40",
+      "title": "AG News Sports #40",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Johnson Helps D-Backs End Nine-Game Slide (AP) AP - Randy Johnson took a four-hitter into the ninth inning to help the Arizona Diamondbacks end a nine-game losing streak Sunday, beating Steve Trachsel and the New York Mets 2-0.",
+      "seed_id": "ss_003",
+      "seed_text": "De reactie van Steve Trachsel op Johnson's vierhitter.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_40",
+      "title": "AG News Sports #40",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Johnson Helps D-Backs End Nine-Game Slide (AP) AP - Randy Johnson took a four-hitter into the ninth inning to help the Arizona Diamondbacks end a nine-game losing streak Sunday, beating Steve Trachsel and the New York Mets 2-0.",
+      "seed_id": "ss_004",
+      "seed_text": "De strategische aanpak van de Arizona Diamondbacks tijdens de negende inning.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_40",
+      "title": "AG News Sports #40",
+      "domain": "nieuws - Sports",
+      "source_excerpt": "Johnson Helps D-Backs End Nine-Game Slide (AP) AP - Randy Johnson took a four-hitter into the ninth inning to help the Arizona Diamondbacks end a nine-game losing streak Sunday, beating Steve Trachsel and the New York Mets 2-0.",
+      "seed_id": "ss_004",
+      "seed_text": "De strategische aanpak van de Arizona Diamondbacks tijdens de negende inning.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_41",
+      "title": "AG News Business #41",
+      "domain": "nieuws - Business",
+      "source_excerpt": "Retailers Vie for Back-To-School Buyers (Reuters) Reuters - Apparel retailers are hoping their\\back-to-school fashions will make the grade among\\style-conscious teens and young adults this fall, but it could\\be a tough sell, with students and parents keeping a tighter\\hold on their wallets.",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke stijlkeuzes die retailers aanbieden om de interesse van teenagers en jonge volwassenen te wekken.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_41",
+      "title": "AG News Business #41",
+      "domain": "nieuws - Business",
+      "source_excerpt": "Retailers Vie for Back-To-School Buyers (Reuters) Reuters - Apparel retailers are hoping their\\back-to-school fashions will make the grade among\\style-conscious teens and young adults this fall, but it could\\be a tough sell, with students and parents keeping a tighter\\hold on their wallets.",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke stijlkeuzes die retailers aanbieden om de interesse van teenagers en jonge volwassenen te wekken.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_41",
+      "title": "AG News Business #41",
+      "domain": "nieuws - Business",
+      "source_excerpt": "Retailers Vie for Back-To-School Buyers (Reuters) Reuters - Apparel retailers are hoping their\\back-to-school fashions will make the grade among\\style-conscious teens and young adults this fall, but it could\\be a tough sell, with students and parents keeping a tighter\\hold on their wallets.",
+      "seed_id": "ss_002",
+      "seed_text": "De mate van budgettering door studenten en ouders voor back-to-school aankopen.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_41",
+      "title": "AG News Business #41",
+      "domain": "nieuws - Business",
+      "source_excerpt": "Retailers Vie for Back-To-School Buyers (Reuters) Reuters - Apparel retailers are hoping their\\back-to-school fashions will make the grade among\\style-conscious teens and young adults this fall, but it could\\be a tough sell, with students and parents keeping a tighter\\hold on their wallets.",
+      "seed_id": "ss_002",
+      "seed_text": "De mate van budgettering door studenten en ouders voor back-to-school aankopen.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_41",
+      "title": "AG News Business #41",
+      "domain": "nieuws - Business",
+      "source_excerpt": "Retailers Vie for Back-To-School Buyers (Reuters) Reuters - Apparel retailers are hoping their\\back-to-school fashions will make the grade among\\style-conscious teens and young adults this fall, but it could\\be a tough sell, with students and parents keeping a tighter\\hold on their wallets.",
+      "seed_id": "ss_003",
+      "seed_text": "De effectiviteit van de back-to-school mode van retailers bij het aantrekken van de doelmarkt.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_41",
+      "title": "AG News Business #41",
+      "domain": "nieuws - Business",
+      "source_excerpt": "Retailers Vie for Back-To-School Buyers (Reuters) Reuters - Apparel retailers are hoping their\\back-to-school fashions will make the grade among\\style-conscious teens and young adults this fall, but it could\\be a tough sell, with students and parents keeping a tighter\\hold on their wallets.",
+      "seed_id": "ss_003",
+      "seed_text": "De effectiviteit van de back-to-school mode van retailers bij het aantrekken van de doelmarkt.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_41",
+      "title": "AG News Business #41",
+      "domain": "nieuws - Business",
+      "source_excerpt": "Retailers Vie for Back-To-School Buyers (Reuters) Reuters - Apparel retailers are hoping their\\back-to-school fashions will make the grade among\\style-conscious teens and young adults this fall, but it could\\be a tough sell, with students and parents keeping a tighter\\hold on their wallets.",
+      "seed_id": "ss_004",
+      "seed_text": "De economische omstandigheden die de aankoopbeslissingen van studenten en jonge volwassenen beïnvloeden.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_41",
+      "title": "AG News Business #41",
+      "domain": "nieuws - Business",
+      "source_excerpt": "Retailers Vie for Back-To-School Buyers (Reuters) Reuters - Apparel retailers are hoping their\\back-to-school fashions will make the grade among\\style-conscious teens and young adults this fall, but it could\\be a tough sell, with students and parents keeping a tighter\\hold on their wallets.",
+      "seed_id": "ss_004",
+      "seed_text": "De economische omstandigheden die de aankoopbeslissingen van studenten en jonge volwassenen beïnvloeden.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_41",
+      "title": "AG News Business #41",
+      "domain": "nieuws - Business",
+      "source_excerpt": "Retailers Vie for Back-To-School Buyers (Reuters) Reuters - Apparel retailers are hoping their\\back-to-school fashions will make the grade among\\style-conscious teens and young adults this fall, but it could\\be a tough sell, with students and parents keeping a tighter\\hold on their wallets.",
+      "seed_id": "ss_005",
+      "seed_text": "De concurrentie tussen retailers in het aanbieden van back-to-school aanbiedingen.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "AG_NEWS_TEST_41",
+      "title": "AG News Business #41",
+      "domain": "nieuws - Business",
+      "source_excerpt": "Retailers Vie for Back-To-School Buyers (Reuters) Reuters - Apparel retailers are hoping their\\back-to-school fashions will make the grade among\\style-conscious teens and young adults this fall, but it could\\be a tough sell, with students and parents keeping a tighter\\hold on their wallets.",
+      "seed_id": "ss_005",
+      "seed_text": "De concurrentie tussen retailers in het aanbieden van back-to-school aanbiedingen.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+name: Research - Open-set HF review
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_id:
+        description: Source ID from src/shadowseed/data/open_set_hf_sources.json
+        required: true
+        default: ag_news_test
+        type: string
+      limit:
+        description: Number of items
+        required: true
+        default: "12"
+        type: string
+      offset:
+        description: Dataset start offset
+        required: true
+        default: "0"
+        type: string
+      detector:
+        description: Candidate generator
+        required: true
+        default: adapter_v1
+        type: choice
+        options:
+          - adapter_v1
+          - adapter_v2
+          - model
+      model_backend:
+        description: Model backend used when detector=model
+        required: true
+        default: fixture
+        type: choice
+        options:
+          - fixture
+          - hf-transformers
+      model_id:
+        description: Curated ungated model
+        required: false
+        default: Qwen/Qwen2.5-1.5B-Instruct
+        type: choice
+        options:
+          - HuggingFaceTB/SmolLM2-135M-Instruct
+          - HuggingFaceTB/SmolLM2-360M-Instruct
+          - Qwen/Qwen2.5-0.5B-Instruct
+          - TinyLlama/TinyLlama-1.1B-Chat-v1.0
+          - Qwen/Qwen2.5-1.5B-Instruct
+          - HuggingFaceTB/SmolLM2-1.7B-Instruct
+          - Qwen/Qwen3-1.7B
+          - Qwen/Qwen2.5-3B-Instruct
+          - microsoft/Phi-3.5-mini-instruct
+          - Qwen/Qwen3-4B
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          if [ "${{ inputs.detector }}" = "model" ] && [ "${{ inputs.model_backend }}" = "hf-transformers" ]; then
+            pip install -e ".[models]"
+          else
+            pip install -e .
+          fi
+      - name: Fetch input batch
+        run: |
+          shadowseed fetch-open-set-hf-batch \
+            --source-id "${{ inputs.source_id }}" \
+            --limit "${{ inputs.limit }}" \
+            --offset "${{ inputs.offset }}" \
+            --output benchmarks/open_review/input/hf_batch.json
+      - name: Build review packets
+        run: |
+          shadowseed run-open-set-seed-review \
+            --input benchmarks/open_review/input/hf_batch.json \
+            --output results/open_review/open_set_seed_output.json \
+            --review-packets results/open_review/open_set_review_packets.json \
+            --detector "${{ inputs.detector }}" \
+            --model-backend "${{ inputs.model_backend }}" \
+            --model-id "${{ inputs.model_id }}"
+      - name: Upload review artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: open-set-hf-review
+          path: |
+            benchmarks/open_review/input/hf_batch.json
+            results/open_review/

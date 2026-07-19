@@ -1,0 +1,62 @@
+{
+  "version": "generative-payoff-0.1",
+  "description": "W5: the decisive test of SSL's actual vision claim ('wat had hier KUNNEN staan', generative frames) rather than omission. Per item a question and a STANDARD treatment text; the generative detector (v0.4-gen) proposes non-obvious reframing angles on that text; we then test whether weaving a detected frame produces an answer richer than the model's unaided answer, AND whether the model raises the frame itself (baseline coverage). Topics are author-chosen (reframe-friendly domains); the FRAMES come from the detector, not the author. Signal, not proof.",
+  "items": [
+    {
+      "id": "GEN_IR",
+      "title": "Industriële Revolutie",
+      "domain": "geschiedenis en economie",
+      "question": "Leg uit waarom de Industriële Revolutie juist in Groot-Brittannië kon ontstaan.",
+      "text": "De Industriële Revolutie ontstond in Groot-Brittannië door technologische innovatie zoals de stoommachine van James Watt en de spinning jenny, ruime voorraden steenkool en ijzererts, een agrarische revolutie die arbeid vrijmaakte, en een stabiel politiek klimaat met goed ontwikkelde handel en transport."
+    },
+    {
+      "id": "GEN_AI_WORK",
+      "title": "AI en werk",
+      "domain": "technologie en samenleving",
+      "question": "Wat betekent de opkomst van AI voor de arbeidsmarkt?",
+      "text": "AI automatiseert steeds meer taken, van tekst schrijven tot data-analyse. Sommige banen verdwijnen, andere veranderen, en er ontstaan nieuwe functies rond het bouwen en begeleiden van AI. Omscholing en een leven lang leren worden belangrijker."
+    },
+    {
+      "id": "GEN_OBESITY",
+      "title": "Obesitas",
+      "domain": "publieke gezondheid",
+      "question": "Waarom is obesitas de afgelopen decennia sterk toegenomen?",
+      "text": "Obesitas neemt toe doordat mensen meer calorieen binnenkrijgen dan ze verbruiken: meer bewerkt voedsel en suikerrijke dranken, grotere porties, en minder lichaamsbeweging door zittend werk en schermen. Persoonlijke leefstijlkeuzes spelen een centrale rol."
+    },
+    {
+      "id": "GEN_SOCIAL_MEDIA",
+      "title": "Sociale media en jongeren",
+      "domain": "technologie en samenleving",
+      "question": "Wat is het effect van sociale media op het welzijn van tieners?",
+      "text": "Veel onderzoek koppelt intensief sociale-mediagebruik aan meer angst, somberheid en slaaptekort bij tieners, deels door schermtijd, vergelijking met anderen en cyberpesten. Ouders en scholen adviseren grenzen aan schermtijd."
+    },
+    {
+      "id": "GEN_HOUSING",
+      "title": "Woningprijzen",
+      "domain": "economie en beleid",
+      "question": "Waarom zijn koopwoningen in veel steden zo duur geworden?",
+      "text": "Woningen zijn duur door een tekort aan aanbod, lage rente die lenen goedkoop maakte, bevolkingsgroei en verstedelijking, en trage vergunning- en bouwprocessen. Vraag overtreft het aanbod, dus prijzen stijgen."
+    },
+    {
+      "id": "GEN_CLIMATE",
+      "title": "Klimaataanpak",
+      "domain": "klimaat en beleid",
+      "question": "Hoe kunnen we klimaatverandering het beste aanpakken?",
+      "text": "Klimaatverandering pak je aan door over te stappen op hernieuwbare energie, energie te besparen, duurzamer te reizen en te eten, en nieuwe technologie zoals warmtepompen en CO2-opslag in te zetten. Individuele keuzes en innovatie staan centraal."
+    },
+    {
+      "id": "GEN_CRIME",
+      "title": "Criminaliteit terugdringen",
+      "domain": "beleid en samenleving",
+      "question": "Hoe kan een stad criminaliteit het beste terugdringen?",
+      "text": "Steden dringen criminaliteit terug met meer en gerichtere politie-inzet, cameratoezicht, snellere vervolging en strengere straffen die afschrikken. Zichtbaarheid en handhaving staan centraal in de aanpak."
+    },
+    {
+      "id": "GEN_VACCINE",
+      "title": "Vaccintwijfel",
+      "domain": "publieke gezondheid",
+      "question": "Waarom twijfelen sommige mensen aan vaccinatie?",
+      "text": "Vaccintwijfel komt voort uit verkeerde informatie op sociale media, angst voor bijwerkingen en onbekendheid met hoe vaccins werken. Betere voorlichting en het weerleggen van mythes worden gezien als de oplossing."
+    }
+  ]
+}

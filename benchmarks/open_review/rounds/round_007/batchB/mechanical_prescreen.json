@@ -1,0 +1,474 @@
+{
+  "artifact": "mechanical_prescreen",
+  "disclaimer": "Deterministische prescreen, GEEN menselijke review. Telt NIET als reviewer_a/reviewer_b en niet als open_set_seed_quality (Laag C) evidence, en geeft GEEN accept/reject-verdict. Bedoeld om aandacht te richten en de v0.3e-prompt te toetsen aan haar eigen regels.",
+  "round": "round_007_batchB",
+  "detector": "model",
+  "model_backend": "hf-transformers:microsoft/Phi-3.5-mini-instruct",
+  "yield": {
+    "item_count": 12,
+    "items_with_candidates": 12,
+    "items_empty": 0,
+    "empty_rate": 0.0,
+    "mean_candidates_per_item": 5.0
+  },
+  "mechanical_codes": [
+    "claim_vs_gap",
+    "truncated",
+    "parse_leak",
+    "language_leak",
+    "entity_bleed",
+    "citation_fragment",
+    "fewshot_leak",
+    "not_atomic",
+    "near_duplicate"
+  ],
+  "not_mechanically_checkable": [
+    "false_gap",
+    "mistranslation",
+    "grammar"
+  ],
+  "seed_count": 60,
+  "flagged_count": 3,
+  "clean_count": 57,
+  "clean_rate": 0.95,
+  "near_duplicate_rate": 0.0,
+  "failure_code_counts": {
+    "claim_vs_gap": 0,
+    "truncated": 0,
+    "parse_leak": 0,
+    "language_leak": 0,
+    "entity_bleed": 0,
+    "citation_fragment": 0,
+    "fewshot_leak": 0,
+    "not_atomic": 3,
+    "near_duplicate": 0
+  },
+  "verdicts": [
+    {
+      "item_id": "ARXIV_ABSTRACTS_20",
+      "position": 1,
+      "seed": "De dynamische processen van de enzymcyclus bij hoge enzymconcentraties.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_20",
+      "position": 2,
+      "seed": "De rol van Hopf- en wisselbifurcaties in de vorming van spatiotemporale patronen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_20",
+      "position": 3,
+      "seed": "De ontwikkeling van complexe synchronisatiepatronen in stochastische simulaties.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_20",
+      "position": 4,
+      "seed": "De impact van de mean-fieldapproximatie op het begrijpen van de gevormde patronen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_20",
+      "position": 5,
+      "seed": "De relatie tussen individuele en collectieve moleculaire synchronisatie in de reaktie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_21",
+      "position": 1,
+      "seed": "De precisie van de Castell--Gaines methoden ten opzichte van de stochastische Taylor schalen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_21",
+      "position": 2,
+      "seed": "De implementatie van de Munthe-Kaas methoden als onderliggende oorzaak voor de stochastische Lie group integratoren.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_21",
+      "position": 3,
+      "seed": "De afstemming van de stochastische Lie group integratoren op de dynamica van een bevroren rigide object.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_21",
+      "position": 4,
+      "seed": "De effectiviteit van de stochastische Lie group integratoren bij het simuleren van een autonoom onderwatervoertuig.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_21",
+      "position": 5,
+      "seed": "De integratie van twee onafhankelijke stochastische laagnoiseprocessen in de dynamica van de simulaties.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_22",
+      "position": 1,
+      "seed": "De specifieke dynamische processen in de chromosfeer die millimeteremissie beïnvloeden.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_22",
+      "position": 2,
+      "seed": "De exacte wavelheggen (0.8-5.0 mm) waarop dynamische signaturen worden gezien.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_22",
+      "position": 3,
+      "seed": "De eigenschappen van high resolution mm wavelheggenobservaties die het verschil kunnen maken tussen warm en koud gas.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_22",
+      "position": 4,
+      "seed": "De specifieke resultaten van de BIMA array observaties op 3.5 mm wavelheggen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_22",
+      "position": 5,
+      "seed": "De noodzaak van hogere spatial resolutie voor een onderscheidende analyse van atmosferische features.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_23",
+      "position": 1,
+      "seed": "De effectieve dipolar pinning van dynamische magnetisatie bij de laterale stripekanten.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_23",
+      "position": 2,
+      "seed": "De transversale instabiliteit en interactie met de zijwanden van de golflichaasstructuur.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_23",
+      "position": 3,
+      "seed": "De invloed van de confinement op de vorm en gedraging van de gevormde spin-wave packetten.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_23",
+      "position": 4,
+      "seed": "De dynamische magnetisatieamplitude nabij de laterale stripekanten in de lineaire regel.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_23",
+      "position": 5,
+      "seed": "De observatie van een nieuw stabiele spin-wave packet dat langs een golflichaasstructuur gaat.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_24",
+      "position": 1,
+      "seed": "Methode voor berekening van Matsubara Green function in imaginaire tijd.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_24",
+      "position": 2,
+      "seed": "Analytische continuatie naar real frequenteytijd.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_24",
+      "position": 3,
+      "seed": "Numerieke resultaten voor de Lehmann spectral function.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_24",
+      "position": 4,
+      "seed": "Grondstaten eigenschappen van Frohlich polaron.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_24",
+      "position": 5,
+      "seed": "Optische conductiviteit van interactie met phononen in t-J model.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_25",
+      "position": 1,
+      "seed": "De specifieke bit-manipulatie regels voor fractal transformatie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_25",
+      "position": 2,
+      "seed": "De relatie tussen het strut constant (S) en het genereren van meta-fractals.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_25",
+      "position": 3,
+      "seed": "De rol van N-dimensional hypercomplex numbers bij het vormgeven van scale-free networks.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_25",
+      "position": 4,
+      "seed": "De transformatie van één fractal genus naar andere binnen Wolfram's Class 4 complexiteit.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_25",
+      "position": 5,
+      "seed": "De relatie tussen het Cayley-Dickson Process (CDP) en de representatie van singularites.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_26",
+      "position": 1,
+      "seed": "De resonantiecondities van de inter-Landau-level transitions.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_26",
+      "position": 2,
+      "seed": "De afhankelijkheid van de luchtingsfactor bij de detectie van cirkelvormige lichaammodi.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_26",
+      "position": 3,
+      "seed": "De directe meting van de sterkte van de elektron-golf-interactie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_26",
+      "position": 4,
+      "seed": "De omvang van de resonantie van de in-plane optische golven in de Gamma-punt.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_26",
+      "position": 5,
+      "seed": "De invloed van de magnetische veldsterkte B_0 op de resonantie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_27",
+      "position": 1,
+      "seed": "De exacte vorm van de verbeterde ondergrens van R\\'ev\\'esz en Sarantopoulos.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_27",
+      "position": 2,
+      "seed": "De specifieke toepassing van de hafnian inequality in de probleemstelling.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_27",
+      "position": 3,
+      "seed": "De definitie van de `real linear polarization constant' probleem.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_27",
+      "position": 4,
+      "seed": "De relatie tussen pfaffianen, hafnianen en Lieb's inequalies.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_27",
+      "position": 5,
+      "seed": "De exacte determinanten- en permanente eigenschappen van de positieve semi-definente matrices die worden benaderd.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_28",
+      "position": 1,
+      "seed": "Transition probabilities van de emissie van Goldstone bosonen uit een quark.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_28",
+      "position": 2,
+      "seed": "Interpretatie van de flavor-spinstructuur van nucleonen door flavor symmetriebreking.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_28",
+      "position": 3,
+      "seed": "Intrinsieke golffuncties van constituerende quarks uitgedrukt in $\\XQM$.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_28",
+      "position": 4,
+      "seed": "Toepassing van een vereenvoudigde Hamiltonianopstelling op $\\XQM$ voor het bepalen van quarkintrinsieke golffuncties.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_28",
+      "position": 5,
+      "seed": "Relatie tussen Goldstone boson emissie en nucleon flavor-spinstructuur in $\\XQM$.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_29",
+      "position": 1,
+      "seed": "De specifieke effecten van de phononenergieafstemming op de korrelatieeffecten in de spectralfunctie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_29",
+      "position": 2,
+      "seed": "De observabele manifestaties van de crossover van band naar Mott-gedrag in de spectralfunctie voor phononen met frequenties iets groter dan de bandbreedte.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_29",
+      "position": 3,
+      "seed": "De relatie tussen de vorm van de spectralfunctie en de optische conductiviteit in dit regime.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_29",
+      "position": 4,
+      "seed": "De aanwezigheid van een dubbele kondo-peelingstructuur in de resistiviteit.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_29",
+      "position": 5,
+      "seed": "De vergelijking van itinerant elektronen, instantaneus elektron-phonon gedreven korrelaties en statische distorsies op vergelijkbare energie-schalen.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_30",
+      "position": 1,
+      "seed": "Precisie van de crystaltransmissie voor protonenangles.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_30",
+      "position": 2,
+      "seed": "Efficiëntieverbeteringsgrens voor crystaladaptatie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_30",
+      "position": 3,
+      "seed": "Preserved divergentie van diffractief gespreide protonen in crystal.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_30",
+      "position": 4,
+      "seed": "Steerbaarheid van de bent crystal voor analyse.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_30",
+      "position": 5,
+      "seed": "Accuratie van protonenangles in microrad in crystaltransmissie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_31",
+      "position": 1,
+      "seed": "Effekten van NSI-strength op resonante conversies in de neutrino-spectrum.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_31",
+      "position": 2,
+      "seed": "Detectabiliteit van NSI-effecten door shockwaves door de SN-envelope.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_31",
+      "position": 3,
+      "seed": "Variaties in de elektronfractie en hun invloed op NSI-detectie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_31",
+      "position": 4,
+      "seed": "Effecten van aarde-materiële effecten op NSI-modulatie in $\\bar\\nu_e$ spectrum.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_31",
+      "position": 5,
+      "seed": "Potentieel detecteerbaar neutronizatie $\\nu_e$ burst als gevolg van NSI.",
+      "codes": [],
+      "clean": true
+    }
+  ]
+}

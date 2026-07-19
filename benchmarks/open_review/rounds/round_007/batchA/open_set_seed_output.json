@@ -1,0 +1,599 @@
+{
+  "summary": {
+    "evidence_layer": "open_set_seed_quality",
+    "artifact_contract_version": "open-review-0.2",
+    "corpus_version": "hf-open-set-batch-0.1",
+    "source": {
+      "id": "ag_news_test",
+      "dataset": "szhuggingface/ag_news",
+      "config": "default",
+      "split": "test",
+      "revision": "main",
+      "license": "apache-2.0",
+      "registry_path": "src/shadowseed/data/open_set_hf_sources.json",
+      "requested_limit": 12,
+      "requested_offset": 30,
+      "returned_count": 12,
+      "authenticated": false
+    },
+    "item_count": 12,
+    "raw_candidate_count": 60,
+    "normalized_candidate_count": 60,
+    "accepted_count": 54,
+    "rejected_count": 6,
+    "acceptance_rate": 0.9,
+    "domain_item_counts": {
+      "nieuws - Sports": 3,
+      "nieuws - World": 8,
+      "nieuws - Business": 1
+    },
+    "domain_accept_counts": {
+      "nieuws - Sports": 12,
+      "nieuws - World": 37,
+      "nieuws - Business": 5
+    },
+    "candidate_source_counts": {
+      "open_set_model_detector": 12
+    },
+    "detector": "model",
+    "model_backend": "hf-transformers:microsoft/Phi-3.5-mini-instruct",
+    "candidate_adapter": "ssl45_open_set_candidate_adapter_v0.1",
+    "fixed_scenario_priors_used": false,
+    "expected_gaps_used": false,
+    "ground_truth_seeds_used": false,
+    "regression_gap_detector_used": false,
+    "candidate_quality_requires_human_review": true,
+    "seed_verdict_rule": "A seed counts as accepted or rejected only after every generated reviewer row for that seed is completed and valid.",
+    "reviewer_ids": [
+      "reviewer_a",
+      "reviewer_b"
+    ],
+    "reviewer_count": 2,
+    "review_packet_count": 108,
+    "review_criteria": [
+      "atomicity",
+      "relevance",
+      "testability",
+      "non_triviality",
+      "follow_up_utility"
+    ],
+    "reject_codes": [
+      "too_broad",
+      "too_vague",
+      "trivial",
+      "not_relevant",
+      "not_testable",
+      "duplicate",
+      "style_not_gap"
+    ],
+    "status": "review_pending",
+    "next_step": "Fill review packets and run summarize-open-set-seed-review.",
+    "artifacts": {
+      "seed_output": "results/open_review/open_set_seed_output.json",
+      "review_packets": "results/open_review/open_set_review_packets.json"
+    }
+  },
+  "results": [
+    {
+      "item_id": "AG_NEWS_TEST_30",
+      "title": "AG News Sports #30",
+      "domain": "nieuws - Sports",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De specifieke acties die Ricky Bryant, Chas Gessner, Michael Jennings, en David Patten ondernomen.",
+        "Bill Belichick's beslissing over de receivers.",
+        "De impact van de acties op Belichick's beslissing.",
+        "De context of omstandigheden van de gebeurtenissen van vrijdagavond.",
+        "De gevolgen of resultaten van de acties van de vier individuen."
+      ],
+      "normalized_candidates": [
+        "De specifieke acties die Ricky Bryant, Chas Gessner, Michael Jennings, en David Patten ondernomen.",
+        "Bill Belichick's beslissing over de receivers.",
+        "De impact van de acties op Belichick's beslissing.",
+        "De context of omstandigheden van de gebeurtenissen van vrijdagavond.",
+        "De gevolgen of resultaten van de acties van de vier individuen."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Bill Belichick's beslissing over de receivers."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De impact van de acties op Belichick's beslissing."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De context of omstandigheden van de gebeurtenissen van vrijdagavond."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "De specifieke acties die Ricky Bryant, Chas Gessner, Michael Jennings, en David Patten ondernomen.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "De gevolgen of resultaten van de acties van de vier individuen.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_31",
+      "title": "AG News Sports #31",
+      "domain": "nieuws - Sports",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De exacte stand van de AL Central lead na de wedstrijd.",
+        "De naam van de tegenstander die werd gespeeld.",
+        "De specifieke spelers die home runs scoorden.",
+        "De totale aantal punten gescoord tijdens de wedstrijd.",
+        "De datum en tijd waarop de wedstrijd werd gespeeld."
+      ],
+      "normalized_candidates": [
+        "De exacte stand van de AL Central lead na de wedstrijd.",
+        "De naam van de tegenstander die werd gespeeld.",
+        "De specifieke spelers die home runs scoorden.",
+        "De totale aantal punten gescoord tijdens de wedstrijd.",
+        "De datum en tijd waarop de wedstrijd werd gespeeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De exacte stand van de AL Central lead na de wedstrijd."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De naam van de tegenstander die werd gespeeld."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De specifieke spelers die home runs scoorden."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De totale aantal punten gescoord tijdens de wedstrijd."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De datum en tijd waarop de wedstrijd werd gespeeld."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_32",
+      "title": "AG News World #32",
+      "domain": "nieuws - World",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Verklaring van de sister voor de acties van de chief constable.",
+        "De specifieke bevelen die tot de confrontatie leidden.",
+        "De reden voor de resignation van de chief constable.",
+        "De perspectief van de police op de incident.",
+        "De juridische implicaties van de confrontatie."
+      ],
+      "normalized_candidates": [
+        "Verklaring van de sister voor de acties van de chief constable.",
+        "De specifieke bevelen die tot de confrontatie leidden.",
+        "De reden voor de resignation van de chief constable.",
+        "De perspectief van de police op de incident.",
+        "De juridische implicaties van de confrontatie."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Verklaring van de sister voor de acties van de chief constable."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De specifieke bevelen die tot de confrontatie leidden."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De reden voor de resignation van de chief constable."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De perspectief van de police op de incident."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De juridische implicaties van de confrontatie."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_33",
+      "title": "AG News World #33",
+      "domain": "nieuws - World",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De specifieke details van het geschil over de cashsetteling.",
+        "De exacte omvang van de gevraagde compensatie.",
+        "De reden voor het verlangen naar een cashsetteling.",
+        "De tijdrelatie tussen het verlangen naar de cashsetteling en de geloofwaardigheid van het geschil.",
+        "De impact van de aanvankelijke geheimhouding op het geschil."
+      ],
+      "normalized_candidates": [
+        "De specifieke details van het geschil over de cashsetteling.",
+        "De exacte omvang van de gevraagde compensatie.",
+        "De reden voor het verlangen naar een cashsetteling.",
+        "De tijdrelatie tussen het verlangen naar de cashsetteling en de geloofwaardigheid van het geschil.",
+        "De impact van de aanvankelijke geheimhouding op het geschil."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De specifieke details van het geschil over de cashsetteling."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De exacte omvang van de gevraagde compensatie."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De reden voor het verlangen naar een cashsetteling."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De tijdrelatie tussen het verlangen naar de cashsetteling en de geloofwaardigheid van het geschil."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De impact van de aanvankelijke geheimhouding op het geschil."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_34",
+      "title": "AG News World #34",
+      "domain": "nieuws - World",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De reden voor de terugkeer van U.S. troepen in Najaf.",
+        "De details van de collapsie van de onderhandelingen.",
+        "De impact van de explosies op de lokale bevolking.",
+        "De reactie van andere internationale actoren op de gebeurtenissen.",
+        "De voortgang van de onderhandelingen na de explosies."
+      ],
+      "normalized_candidates": [
+        "De reden voor de terugkeer van U.S. troepen in Najaf.",
+        "De details van de collapsie van de onderhandelingen.",
+        "De impact van de explosies op de lokale bevolking.",
+        "De reactie van andere internationale actoren op de gebeurtenissen.",
+        "De voortgang van de onderhandelingen na de explosies."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De reden voor de terugkeer van U.S. troepen in Najaf."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De details van de collapsie van de onderhandelingen."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De impact van de explosies op de lokale bevolking."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De reactie van andere internationale actoren op de gebeurtenissen."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De voortgang van de onderhandelingen na de explosies."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_35",
+      "title": "AG News World #35",
+      "domain": "nieuws - World",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De specifieke gezondheidsproblemen van de pilgrims.",
+        "De omvang van de pilgrimageerbevolking.",
+        "De omvang van de openbare bijeenkomst.",
+        "De specifieke verzoeken of gebaren van de Pope tijdens de homilie.",
+        "De historische betekenis van Lourdes voor de pilgrimage."
+      ],
+      "normalized_candidates": [
+        "De specifieke gezondheidsproblemen van de pilgrims.",
+        "De omvang van de pilgrimageerbevolking.",
+        "De omvang van de openbare bijeenkomst.",
+        "De specifieke verzoeken of gebaren van de Pope tijdens de homilie.",
+        "De historische betekenis van Lourdes voor de pilgrimage."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De specifieke gezondheidsproblemen van de pilgrims."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De omvang van de pilgrimageerbevolking."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De omvang van de openbare bijeenkomst."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De specifieke verzoeken of gebaren van de Pope tijdens de homilie."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De historische betekenis van Lourdes voor de pilgrimage."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_36",
+      "title": "AG News World #36",
+      "domain": "nieuws - World",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De mogelijke fraudpreventiemaatregelen voor de recall-stemmen.",
+        "De gevolgen van Chavez's nederlaag voor de wereldwijde oliehandel.",
+        "De stemmenbevragingprocedure voor de recall.",
+        "De reacties van oppositiepartijen op de voorbereidingen.",
+        "De impact van de stemmen op de stabiliteit van de Venezolaanse economie."
+      ],
+      "normalized_candidates": [
+        "De mogelijke fraudpreventiemaatregelen voor de recall-stemmen.",
+        "De gevolgen van Chavez's nederlaag voor de wereldwijde oliehandel.",
+        "De stemmenbevragingprocedure voor de recall.",
+        "De reacties van oppositiepartijen op de voorbereidingen.",
+        "De impact van de stemmen op de stabiliteit van de Venezolaanse economie."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De mogelijke fraudpreventiemaatregelen voor de recall-stemmen."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De stemmenbevragingprocedure voor de recall."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De reacties van oppositiepartijen op de voorbereidingen."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De impact van de stemmen op de stabiliteit van de Venezolaanse economie."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "De gevolgen van Chavez's nederlaag voor de wereldwijde oliehandel.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_37",
+      "title": "AG News World #37",
+      "domain": "nieuws - World",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Re-integratieproces voor militaire dienstuitvoerenden.",
+        "Juridische gevolgen voor werkgevers die niet voldoen aan USERRA.",
+        "Specifieke beschermingsniveaus voor verschillende diensttijden.",
+        "Procedure voor het claimen van re-integratie-uitkeringen.",
+        "Onderzoek naar de effectiviteit van de 1994 law."
+      ],
+      "normalized_candidates": [
+        "Re-integratieproces voor militaire dienstuitvoerenden.",
+        "Juridische gevolgen voor werkgevers die niet voldoen aan USERRA.",
+        "Specifieke beschermingsniveaus voor verschillende diensttijden.",
+        "Procedure voor het claimen van re-integratie-uitkeringen.",
+        "Onderzoek naar de effectiviteit van de 1994 law."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Re-integratieproces voor militaire dienstuitvoerenden."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Specifieke beschermingsniveaus voor verschillende diensttijden."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Procedure voor het claimen van re-integratie-uitkeringen."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Onderzoek naar de effectiviteit van de 1994 law."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "Juridische gevolgen voor werkgevers die niet voldoen aan USERRA.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_38",
+      "title": "AG News World #38",
+      "domain": "nieuws - World",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De specifieke soorten missielussen die Iran heeft.",
+        "De beschikbare afstanden van de Iranische missielussen.",
+        "De mogelijke impact van de missielussen op Israëlische infrastructuur.",
+        "De strategische planning van Iran met betrekking tot de missielussen.",
+        "Reakties of voorbereidingen van Israël en de Verenigde Staten op de Iranische missielussen."
+      ],
+      "normalized_candidates": [
+        "De specifieke soorten missielussen die Iran heeft.",
+        "De beschikbare afstanden van de Iranische missielussen.",
+        "De mogelijke impact van de missielussen op Israëlische infrastructuur.",
+        "De strategische planning van Iran met betrekking tot de missielussen.",
+        "Reakties of voorbereidingen van Israël en de Verenigde Staten op de Iranische missielussen."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De specifieke soorten missielussen die Iran heeft."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De beschikbare afstanden van de Iranische missielussen."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De mogelijke impact van de missielussen op Israëlische infrastructuur."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De strategische planning van Iran met betrekking tot de missielussen."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "Reakties of voorbereidingen van Israël en de Verenigde Staten op de Iranische missielussen.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_39",
+      "title": "AG News World #39",
+      "domain": "nieuws - World",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De reden voor de interventie van de Afghanische strijdkrachten.",
+        "De specifieke locatie waar de strijdkrachten landden.",
+        "De soort luchtvaartuigen die door de U.S. en NATO werden gebruikt.",
+        "De doelstelling van de terugkeer naar de contesteerde luchthaven.",
+        "De datum of tijd van de officiële verklaring."
+      ],
+      "normalized_candidates": [
+        "De reden voor de interventie van de Afghanische strijdkrachten.",
+        "De specifieke locatie waar de strijdkrachten landden.",
+        "De soort luchtvaartuigen die door de U.S. en NATO werden gebruikt.",
+        "De doelstelling van de terugkeer naar de contesteerde luchthaven.",
+        "De datum of tijd van de officiële verklaring."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De reden voor de interventie van de Afghanische strijdkrachten."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De specifieke locatie waar de strijdkrachten landden."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De soort luchtvaartuigen die door de U.S. en NATO werden gebruikt."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De doelstelling van de terugkeer naar de contesteerde luchthaven."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De datum of tijd van de officiële verklaring."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_40",
+      "title": "AG News Sports #40",
+      "domain": "nieuws - Sports",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De reden voor Johnson's vierhitter in de negende inning.",
+        "De impact van Johnson's performance op de negen-game losing streak.",
+        "De reactie van Steve Trachsel op Johnson's vierhitter.",
+        "De gevolgen van de 2-0 overwinning voor de New York Mets.",
+        "De strategische aanpak van de Arizona Diamondbacks tijdens de negende inning."
+      ],
+      "normalized_candidates": [
+        "De reden voor Johnson's vierhitter in de negende inning.",
+        "De impact van Johnson's performance op de negen-game losing streak.",
+        "De reactie van Steve Trachsel op Johnson's vierhitter.",
+        "De gevolgen van de 2-0 overwinning voor de New York Mets.",
+        "De strategische aanpak van de Arizona Diamondbacks tijdens de negende inning."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De reden voor Johnson's vierhitter in de negende inning."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De impact van Johnson's performance op de negen-game losing streak."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De reactie van Steve Trachsel op Johnson's vierhitter."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De strategische aanpak van de Arizona Diamondbacks tijdens de negende inning."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "De gevolgen van de 2-0 overwinning voor de New York Mets.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_41",
+      "title": "AG News Business #41",
+      "domain": "nieuws - Business",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De specifieke stijlkeuzes die retailers aanbieden om de interesse van teenagers en jonge volwassenen te wekken.",
+        "De mate van budgettering door studenten en ouders voor back-to-school aankopen.",
+        "De effectiviteit van de back-to-school mode van retailers bij het aantrekken van de doelmarkt.",
+        "De economische omstandigheden die de aankoopbeslissingen van studenten en jonge volwassenen beïnvloeden.",
+        "De concurrentie tussen retailers in het aanbieden van back-to-school aanbiedingen."
+      ],
+      "normalized_candidates": [
+        "De specifieke stijlkeuzes die retailers aanbieden om de interesse van teenagers en jonge volwassenen te wekken.",
+        "De mate van budgettering door studenten en ouders voor back-to-school aankopen.",
+        "De effectiviteit van de back-to-school mode van retailers bij het aantrekken van de doelmarkt.",
+        "De economische omstandigheden die de aankoopbeslissingen van studenten en jonge volwassenen beïnvloeden.",
+        "De concurrentie tussen retailers in het aanbieden van back-to-school aanbiedingen."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De specifieke stijlkeuzes die retailers aanbieden om de interesse van teenagers en jonge volwassenen te wekken."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De mate van budgettering door studenten en ouders voor back-to-school aankopen."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De effectiviteit van de back-to-school mode van retailers bij het aantrekken van de doelmarkt."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De economische omstandigheden die de aankoopbeslissingen van studenten en jonge volwassenen beïnvloeden."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De concurrentie tussen retailers in het aanbieden van back-to-school aanbiedingen."
+        }
+      ],
+      "rejected": []
+    }
+  ]
+}

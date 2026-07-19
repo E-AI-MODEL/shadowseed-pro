@@ -1,0 +1,30 @@
+name: Research · Paper · evidence smoke
+
+on:
+  workflow_dispatch:
+
+jobs:
+  paper-evidence:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+
+      - name: Run paper evidence smoke
+        run: |
+          python -m shadowseed.benchmark.paper_evidence_smoke
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: paper-evidence-smoke
+          path: results/paper_evidence_smoke.json

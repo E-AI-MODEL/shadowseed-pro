@@ -1,0 +1,292 @@
+[
+  {
+    "n": 1,
+    "item_id": "AG_NEWS_TEST_0",
+    "seed_text": "De exacte bemiddelingsmethode of tussenpersoon."
+  },
+  {
+    "n": 2,
+    "item_id": "AG_NEWS_TEST_0",
+    "seed_text": "De reactie of standpunt van Federal Mogul na de gesprekken."
+  },
+  {
+    "n": 3,
+    "item_id": "AG_NEWS_TEST_0",
+    "seed_text": "Specifieke resultaten of uitkomsten van de talks."
+  },
+  {
+    "n": 4,
+    "item_id": "AG_NEWS_TEST_0",
+    "seed_text": "Specifieke belangen of eisen van de werknemers."
+  },
+  {
+    "n": 5,
+    "item_id": "AG_NEWS_TEST_1",
+    "seed_text": "Specifieke criteria voor het winnen van de Ansari X Prize."
+  },
+  {
+    "n": 6,
+    "item_id": "AG_NEWS_TEST_1",
+    "seed_text": "Specifieke datum voor de eerste lancering."
+  },
+  {
+    "n": 7,
+    "item_id": "AG_NEWS_TEST_1",
+    "seed_text": "De naam van de tweede private team."
+  },
+  {
+    "n": 8,
+    "item_id": "AG_NEWS_TEST_1",
+    "seed_text": "De locatie waar de lancering zal plaatsvinden."
+  },
+  {
+    "n": 9,
+    "item_id": "AG_NEWS_TEST_1",
+    "seed_text": "Details over de technologie van de rocket."
+  },
+  {
+    "n": 10,
+    "item_id": "AG_NEWS_TEST_2",
+    "seed_text": "De exacte universiteit waar de chemie researcher aan het begin van het bedrijf werkte."
+  },
+  {
+    "n": 11,
+    "item_id": "AG_NEWS_TEST_2",
+    "seed_text": "Specifieke soorten peptides die in de studie worden onderzocht."
+  },
+  {
+    "n": 12,
+    "item_id": "AG_NEWS_TEST_2",
+    "seed_text": "Omvang van het gehonoreerde grant."
+  },
+  {
+    "n": 13,
+    "item_id": "AG_NEWS_TEST_2",
+    "seed_text": "De geplande duur of termijn van de peptide-productie method."
+  },
+  {
+    "n": 14,
+    "item_id": "AG_NEWS_TEST_2",
+    "seed_text": "De specifieke gebruikssituatie of toepassing van betere peptides."
+  },
+  {
+    "n": 15,
+    "item_id": "AG_NEWS_TEST_3",
+    "seed_text": "Historische nauwkeurigheid van voorspellingen van de Prediction Unit voor wildfires."
+  },
+  {
+    "n": 16,
+    "item_id": "AG_NEWS_TEST_3",
+    "seed_text": "Specifieke geografische locaties waar de wildfires voorspeld worden."
+  },
+  {
+    "n": 17,
+    "item_id": "AG_NEWS_TEST_3",
+    "seed_text": "De specifieke methodologie of techniek die door de Prediction Unit wordt gebruikt."
+  },
+  {
+    "n": 18,
+    "item_id": "AG_NEWS_TEST_3",
+    "seed_text": "Precisiesnelheden of nauwkeurigheidspercentages van de Prediction Unit."
+  },
+  {
+    "n": 19,
+    "item_id": "AG_NEWS_TEST_3",
+    "seed_text": "Impact of Prediction Unit's forecasts on wildfire prevention or response strategies."
+  },
+  {
+    "n": 20,
+    "item_id": "AG_NEWS_TEST_4",
+    "seed_text": "De specifieke tijdlijn of deadline voor de implementatie van de nieuwe regels."
+  },
+  {
+    "n": 21,
+    "item_id": "AG_NEWS_TEST_4",
+    "seed_text": "Specifieke technische maatregelen om emissies van dairy cow manure te verminderen."
+  },
+  {
+    "n": 22,
+    "item_id": "AG_NEWS_TEST_4",
+    "seed_text": "De reactie van de landbouwsector op de adoptie van deze regels."
+  },
+  {
+    "n": 23,
+    "item_id": "AG_NEWS_TEST_4",
+    "seed_text": "De verwachte effectiviteit van de regelgeving op de vermindering van smog."
+  },
+  {
+    "n": 24,
+    "item_id": "AG_NEWS_TEST_4",
+    "seed_text": "De impact van de nieuwe regelgeving op de algehele luchtkwaliteit in Southern California."
+  },
+  {
+    "n": 25,
+    "item_id": "AG_NEWS_TEST_5",
+    "seed_text": "Eventuele reacties of acties van andere belanghebbenden of organisaties na het schrijven van het open brief."
+  },
+  {
+    "n": 26,
+    "item_id": "AG_NEWS_TEST_5",
+    "seed_text": "De impact van deze indoctrinatie op de scholieren in de Britse scholen."
+  },
+  {
+    "n": 27,
+    "item_id": "AG_NEWS_TEST_5",
+    "seed_text": "Het specifieke doel van de \"Music Manifesto\" campagne van de DfES."
+  },
+  {
+    "n": 28,
+    "item_id": "AG_NEWS_TEST_5",
+    "seed_text": "Specifieke beleidsmaatregelen of acties die door EMI zijn onderhandeld."
+  },
+  {
+    "n": 29,
+    "item_id": "AG_NEWS_TEST_5",
+    "seed_text": "De exacte details van de samenwerking tussen de DfES en de muziekindustrie."
+  },
+  {
+    "n": 30,
+    "item_id": "AG_NEWS_TEST_6",
+    "seed_text": "De specifieke strategieën die door Sophos zijn gebruikt om de virussen te identificeren."
+  },
+  {
+    "n": 31,
+    "item_id": "AG_NEWS_TEST_6",
+    "seed_text": "De impact van de arrestatie op de algehele trend van virusinfecties in de daaropvolgende periode."
+  },
+  {
+    "n": 32,
+    "item_id": "AG_NEWS_TEST_6",
+    "seed_text": "De specifieke technische details van hoe Jaschan de Netsky en Sasser worms heeft geprogrammeerd."
+  },
+  {
+    "n": 33,
+    "item_id": "AG_NEWS_TEST_6",
+    "seed_text": "Details over de juridische consequenties van Jaschan's veroordeling."
+  },
+  {
+    "n": 34,
+    "item_id": "AG_NEWS_TEST_7",
+    "seed_text": "De encryptiebehoeften van de bron FOAF file voor veiligheid."
+  },
+  {
+    "n": 35,
+    "item_id": "AG_NEWS_TEST_7",
+    "seed_text": "De relatie tussen de directe vrienden en de bloom filter van hun PGP."
+  },
+  {
+    "n": 36,
+    "item_id": "AG_NEWS_TEST_7",
+    "seed_text": "De manier waarop de client het whitelist vult vanuit de sociale netwerk."
+  },
+  {
+    "n": 37,
+    "item_id": "AG_NEWS_TEST_7",
+    "seed_text": "De specifieke manier waarop de bloom filter wordt gebruikt voor de PGP."
+  },
+  {
+    "n": 38,
+    "item_id": "AG_NEWS_TEST_7",
+    "seed_text": "De procedure voor het invoegen van PGP keyfingerprints in de FOAF."
+  },
+  {
+    "n": 39,
+    "item_id": "AG_NEWS_TEST_9",
+    "seed_text": "De specifieke soorten misdrijven waarmee de card fraud unit is betrokken."
+  },
+  {
+    "n": 40,
+    "item_id": "AG_NEWS_TEST_9",
+    "seed_text": "Het exacte aantal gevallen waarin de card fraud unit heeft bijgedragen aan de arrestatie van verdachten."
+  },
+  {
+    "n": 41,
+    "item_id": "AG_NEWS_TEST_9",
+    "seed_text": "De periode waarin de card fraud unit haar prestaties heeft gemeten."
+  },
+  {
+    "n": 42,
+    "item_id": "AG_NEWS_TEST_9",
+    "seed_text": "Het exacte aantal geredde kredietkaarten buiten de 36,000 die worden vermeld."
+  },
+  {
+    "n": 43,
+    "item_id": "AG_NEWS_TEST_9",
+    "seed_text": "De exacte kosten die zijn bespaard door de inzet van de card fraud unit."
+  },
+  {
+    "n": 44,
+    "item_id": "AG_NEWS_TEST_10",
+    "seed_text": "Specifieke technische specificaties van de nieuwe high-speed wireless format."
+  },
+  {
+    "n": 45,
+    "item_id": "AG_NEWS_TEST_10",
+    "seed_text": "De timing en details van het voorstelpresentatie."
+  },
+  {
+    "n": 46,
+    "item_id": "AG_NEWS_TEST_10",
+    "seed_text": "Potentiële impact en vooruitzichten van de nieuwe high-speed wireless standard."
+  },
+  {
+    "n": 47,
+    "item_id": "AG_NEWS_TEST_10",
+    "seed_text": "Andere technologiebedrijven of belanghebbenden die mogelijk betrokken zijn bij het voorstel."
+  },
+  {
+    "n": 48,
+    "item_id": "AG_NEWS_TEST_10",
+    "seed_text": "De exacte groep technologiebedrijven die de voorstellen doen."
+  },
+  {
+    "n": 49,
+    "item_id": "AG_NEWS_TEST_11",
+    "seed_text": "De beschikbaarheid van de software in verschillende regio's."
+  },
+  {
+    "n": 50,
+    "item_id": "AG_NEWS_TEST_11",
+    "seed_text": "De prijs van de discount video-editing software bundle."
+  },
+  {
+    "n": 51,
+    "item_id": "AG_NEWS_TEST_11",
+    "seed_text": "Reviews of feedback van gebruikers na de lancering van de software."
+  },
+  {
+    "n": 52,
+    "item_id": "AG_NEWS_TEST_11",
+    "seed_text": "Specifieke functies van de nieuwe program voor real-time motion graphics."
+  },
+  {
+    "n": 53,
+    "item_id": "AG_NEWS_TEST_11",
+    "seed_text": "Specifieke updates of verbeteringen ten opzichte van eerdere versies van Final Cut Pro."
+  },
+  {
+    "n": 54,
+    "item_id": "AG_NEWS_TEST_12",
+    "seed_text": "De impact van de nieuwe download service op de Europese muziekmarkt."
+  },
+  {
+    "n": 55,
+    "item_id": "AG_NEWS_TEST_12",
+    "seed_text": "Specifieke functies van de nieuwe download service."
+  },
+  {
+    "n": 56,
+    "item_id": "AG_NEWS_TEST_12",
+    "seed_text": "De timing en locatie van de lancering buiten Nederland."
+  },
+  {
+    "n": 57,
+    "item_id": "AG_NEWS_TEST_12",
+    "seed_text": "De reactie van Apple Computer Inc. op de lancering."
+  },
+  {
+    "n": 58,
+    "item_id": "AG_NEWS_TEST_12",
+    "seed_text": "Details over de concurrentie tussen Free Record Shop en andere spelers."
+  }
+]
