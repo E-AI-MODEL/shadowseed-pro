@@ -1,0 +1,62 @@
+path,test_count,top_level_helpers,assessment
+tests/test_absencebench_runner.py,2,,test-only logic
+tests/test_activation_probe.py,30,,test-only logic
+tests/test_adversarial_gate_benchmark.py,6,,test-only logic
+tests/test_adversarial_payoff_suite.py,2,,test-only logic
+tests/test_agent_safety_contract.py,10,make_seed; promotion_gate,test fixture/helper only
+tests/test_answer_pair_winrate.py,5,,test-only logic
+tests/test_artifact_snapshot.py,3,,test-only logic
+tests/test_atomic_seed_rules.py,6,,test-only logic
+tests/test_atomic_seed_validation.py,2,,test-only logic
+tests/test_bad_seed_dies_out.py,2,,test-only logic
+tests/test_benchmark_results.py,3,,test-only logic
+tests/test_benefit_suite.py,1,,test-only logic
+tests/test_blind_benchmark.py,4,,test-only logic
+tests/test_blind_control_packets.py,4,,test-only logic
+tests/test_cli_parser.py,3,,test-only logic
+tests/test_cli_route_integration.py,3,,test-only logic
+tests/test_cli_smoke.py,7,,test-only logic
+tests/test_dialectic_falsification.py,9,,test-only logic
+tests/test_embedding_backends.py,6,,test-only logic
+tests/test_execution_logic.py,2,,test-only logic
+tests/test_false_positive_suite.py,1,,test-only logic
+tests/test_generative_payoff_suite.py,2,,test-only logic
+tests/test_generative_seed_variant.py,5,,test-only logic
+tests/test_hash_utils.py,3,,test-only logic
+tests/test_host_verification.py,2,,test-only logic
+tests/test_lifecycle_ttl.py,7,,test-only logic
+tests/test_make_blind_ab_review.py,6,,test-only logic
+tests/test_manager_alignment.py,5,,test-only logic
+tests/test_manager_smoke.py,8,fake_embedding,test fixture/helper only
+tests/test_model_benefit_suite.py,1,,test-only logic
+tests/test_model_optional.py,1,,test-only logic
+tests/test_ollama_backend.py,8,,test-only logic
+tests/test_open_review_artifact_coherence.py,2,,test-only logic
+tests/test_open_set_candidate_adapter_v2.py,9,,test-only logic
+tests/test_open_set_hf.py,3,,test-only logic
+tests/test_open_set_model_detector.py,21,,test-only logic
+tests/test_open_set_models.py,6,,test-only logic
+tests/test_open_set_prescreen.py,23,,test-only logic
+tests/test_open_set_review_summary.py,3,,test-only logic
+tests/test_open_set_seed_review.py,11,,test-only logic
+tests/test_open_set_workflow_integration.py,9,,test-only logic
+tests/test_openai_backend.py,13,,test-only logic
+tests/test_optional_vector_backends.py,3,,test-only logic
+tests/test_probe_feedback_behavior_suite.py,10,,test-only logic
+tests/test_probe_utility_suite.py,1,,test-only logic
+tests/test_recurrence_clustering.py,7,sessmod,test fixture/helper only
+tests/test_result_analyzer.py,2,,test-only logic
+tests/test_rubric_sensitivity.py,5,,test-only logic
+tests/test_seed_normalization.py,12,,test-only logic
+tests/test_seed_retrieval_probe.py,5,,test-only logic
+tests/test_semantic_coverage.py,5,,test-only logic
+tests/test_shadow_chat.py,10,session,test fixture/helper only
+tests/test_ssl45_formulas.py,6,fake_embedding,test fixture/helper only
+tests/test_ssl_session_suite.py,12,,test-only logic
+tests/test_ssl_vs_rag_benchmark.py,3,,test-only logic
+tests/test_ssot_falsification.py,3,make_manager_and_ssot; prepare_open_seed,test fixture/helper only
+tests/test_ssot_manager.py,2,,test-only logic
+tests/test_surfacing.py,4,,test-only logic
+tests/test_vectorstore_hardening.py,10,faiss_store; chroma_env,test fixture/helper only
+tests/test_vectorstore_memory.py,4,,test-only logic
+tests/test_wild_payoff_suite.py,3,,test-only logic

@@ -1,0 +1,1072 @@
+{
+  "summary": {
+    "evidence_layer": "open_set_seed_quality",
+    "artifact_contract_version": "open-review-0.2",
+    "corpus_version": "hf-open-set-batch-0.1",
+    "source": {
+      "id": "ag_news_test",
+      "dataset": "szhuggingface/ag_news",
+      "config": "default",
+      "split": "test",
+      "revision": "main",
+      "license": "apache-2.0",
+      "registry_path": "src/shadowseed/data/open_set_hf_sources.json",
+      "requested_limit": 12,
+      "requested_offset": 0,
+      "returned_count": 12,
+      "authenticated": false
+    },
+    "item_count": 23,
+    "raw_candidate_count": 59,
+    "normalized_candidate_count": 114,
+    "accepted_count": 40,
+    "rejected_count": 19,
+    "acceptance_rate": 0.6779661016949152,
+    "domain_item_counts": {
+      "nieuws - Business": 1,
+      "nieuws - Sci/Tech": 11
+    },
+    "domain_accept_counts": {
+      "nieuws - Business": 1,
+      "nieuws - Sci/Tech": 39
+    },
+    "candidate_source_counts": {
+      "open_set_model_detector": 12
+    },
+    "detector": "model",
+    "model_backend": "hf-transformers:Qwen/Qwen2.5-3B-Instruct",
+    "candidate_adapter": "ssl45_open_set_candidate_adapter_v0.1",
+    "fixed_scenario_priors_used": false,
+    "expected_gaps_used": false,
+    "ground_truth_seeds_used": false,
+    "regression_gap_detector_used": false,
+    "candidate_quality_requires_human_review": true,
+    "seed_verdict_rule": "A seed counts as accepted or rejected only after every generated reviewer row for that seed is completed and valid.",
+    "reviewer_ids": [
+      "reviewer_a",
+      "reviewer_b"
+    ],
+    "reviewer_count": 2,
+    "review_packet_count": 80,
+    "review_criteria": [
+      "atomicity",
+      "relevance",
+      "testability",
+      "non_triviality",
+      "follow_up_utility"
+    ],
+    "reject_codes": [
+      "too_broad",
+      "too_vague",
+      "trivial",
+      "not_relevant",
+      "not_testable",
+      "duplicate",
+      "style_not_gap"
+    ],
+    "status": "review_pending",
+    "next_step": "Fill review packets and run summarize-open-set-seed-review.",
+    "artifacts": {
+      "seed_output": "results/open_review/open_set_seed_output.json",
+      "review_packets": "results/open_review/open_set_review_packets.json"
+    },
+    "provenance": "merged batches: ag_news_test offset 0 + offset 12 (limit 12 each), Qwen2.5-3B-Instruct v0.3e; item AG_NEWS_TEST_12 overlapped and was deduplicated (identical candidates)"
+  },
+  "results": [
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of de Federal Mogul onderzoek heeft gedaan naar de toekomstige financiële situatie van T N, wordt niet vermeld.",
+        "Of de Federal Mogul heeft besproken wat ze doen om de toekomstige pensionen van T N werknemers te waarborgen, wordt niet vermeld.",
+        "Of de Federal Mogul heeft een plan of strategie geformuleerd voor de toekomstige financiële situatie van T N, wordt niet vermeld.",
+        "Of de Federal Mogul heeft besloten om de werknemers van T N te informeren over de mogelijke toekomstige financiële situatie, wordt niet vermeld.",
+        "Of de Federal Mogul heeft een afspraak gemaakt met de werknemers van T N over de toekomstige financiële situatie, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of de Federal Mogul onderzoek heeft gedaan naar de toekomstige financiële situatie van T N, wordt niet vermeld.",
+        "Of de Federal Mogul heeft besproken wat ze doen om de toekomstige pensionen van T N werknemers te waarborgen, wordt niet vermeld.",
+        "Of de Federal Mogul heeft een plan of strategie geformuleerd voor de toekomstige financiële situatie van T N, wordt niet vermeld.",
+        "Of de Federal Mogul heeft besloten om de werknemers van T N te informeren over de mogelijke toekomstige financiële situatie, wordt niet vermeld.",
+        "Of de Federal Mogul heeft een afspraak gemaakt met de werknemers van T N over de toekomstige financiële situatie, wordt niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of de Federal Mogul onderzoek heeft gedaan naar de toekomstige financiële situatie van T N, wordt niet vermeld."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "Of de Federal Mogul heeft besproken wat ze doen om de toekomstige pensionen van T N werknemers te waarborgen, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of de Federal Mogul heeft een plan of strategie geformuleerd voor de toekomstige financiële situatie van T N, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of de Federal Mogul heeft besloten om de werknemers van T N te informeren over de mogelijke toekomstige financiële situatie, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of de Federal Mogul heeft een afspraak gemaakt met de werknemers van T N over de toekomstige financiële situatie, wordt niet vermeld.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of de tweede team een officiële lanceringdatum heeft aangegeven, wordt niet vermeld.",
+        "Of de tweede team een naam heeft genoemd, wordt niet vermeld.",
+        "Of de tweede team een organisatie heeft genoemd, wordt niet vermeld.",
+        "Of de tweede team een locatie heeft genoemd, wordt niet vermeld.",
+        "Of de tweede team een sponsor heeft genoemd, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of de tweede team een officiële lanceringdatum heeft aangegeven, wordt niet vermeld.",
+        "Of de tweede team een naam heeft genoemd, wordt niet vermeld.",
+        "Of de tweede team een organisatie heeft genoemd, wordt niet vermeld.",
+        "Of de tweede team een locatie heeft genoemd, wordt niet vermeld.",
+        "Of de tweede team een sponsor heeft genoemd, wordt niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of de tweede team een officiële lanceringdatum heeft aangegeven, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Of de tweede team een naam heeft genoemd, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Of de tweede team een organisatie heeft genoemd, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Of de tweede team een locatie heeft genoemd, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Of de tweede team een sponsor heeft genoemd, wordt niet vermeld."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of de Ky. Company onderzoek heeft gedaan, wordt niet vermeld.",
+        "Of de peptides door de Ky. Company worden gebruikt, wordt niet vermeld.",
+        "Of de peptides door de Ky. Company worden verkocht, wordt niet vermeld.",
+        "Of de peptides door de Ky. Company worden ingevoerd in de markt, wordt niet vermeld.",
+        "Of de peptides door de Ky. Company worden geproduceerd, wordt niet vermeld. 1. Of de peptides door de Ky. Company worden gebruikt, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of de Ky. Company onderzoek heeft gedaan, wordt niet vermeld.",
+        "Of de peptides door de Ky. Company worden gebruikt, wordt niet vermeld.",
+        "Of de peptides door de Ky. Company worden verkocht, wordt niet vermeld.",
+        "Of de peptides door de Ky. Company worden ingevoerd in de markt, wordt niet vermeld.",
+        "Of de peptides door de Ky. Company worden geproduceerd, wordt niet vermeld. 1. Of de peptides door de Ky. Company worden gebruikt, wordt niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of de Ky. Company onderzoek heeft gedaan, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Of de peptides door de Ky. Company worden gebruikt, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Of de peptides door de Ky. Company worden verkocht, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Of de peptides door de Ky. Company worden ingevoerd in de markt, wordt niet vermeld."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "Of de peptides door de Ky. Company worden geproduceerd, wordt niet vermeld. 1. Of de peptides door de Ky. Company worden gebruikt, wordt niet vermeld.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of de Prediction Unit ondersteuning biedt voor bepaalde regio's, wordt niet vermeld.",
+        "Of de Prediction Unit zich beperkt tot bepaalde regio's, wordt niet vermeld.",
+        "Of de Prediction Unit een bepaalde periode in dienst is, wordt niet vermeld.",
+        "Of de Prediction Unit een bepaalde periode niet in dienst is, wordt niet vermeld.",
+        "Of de Prediction Unit een bepaalde periode niet in dienst is, wordt niet vermeld. (dubbel) 1. Of de Prediction Unit een bepaalde periode in dienst is, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of de Prediction Unit ondersteuning biedt voor bepaalde regio's, wordt niet vermeld.",
+        "Of de Prediction Unit zich beperkt tot bepaalde regio's, wordt niet vermeld.",
+        "Of de Prediction Unit een bepaalde periode in dienst is, wordt niet vermeld.",
+        "Of de Prediction Unit een bepaalde periode niet in dienst is, wordt niet vermeld.",
+        "Of de Prediction Unit een bepaalde periode niet in dienst is, wordt niet vermeld. (dubbel) 1. Of de Prediction Unit een bepaalde periode in dienst is, wordt niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of de Prediction Unit ondersteuning biedt voor bepaalde regio's, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Of de Prediction Unit zich beperkt tot bepaalde regio's, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Of de Prediction Unit een bepaalde periode in dienst is, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Of de Prediction Unit een bepaalde periode niet in dienst is, wordt niet vermeld."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "Of de Prediction Unit een bepaalde periode niet in dienst is, wordt niet vermeld. (dubbel) 1. Of de Prediction Unit een bepaalde periode in dienst is, wordt niet vermeld.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of de bovengenoemde regels effectief zijn, wordt niet vermeld.",
+        "Of er sprake is van een toezichthouder die deze regels uitwerkt, wordt niet vermeld.",
+        "Of er sprake is van een financiële belasting die aan deze regels wordt toegeschreven, wordt niet vermeld.",
+        "Of er sprake is van een periode waarin deze regels werden ingevoerd, wordt niet vermeld.",
+        "Of er sprake is van een land waar deze regels worden toegepast, wordt niet vermeld. 1. Of de bovengenoemde regels effectief zijn, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of de bovengenoemde regels effectief zijn, wordt niet vermeld.",
+        "Of er sprake is van een toezichthouder die deze regels uitwerkt, wordt niet vermeld.",
+        "Of er sprake is van een financiële belasting die aan deze regels wordt toegeschreven, wordt niet vermeld.",
+        "Of er sprake is van een periode waarin deze regels werden ingevoerd, wordt niet vermeld.",
+        "Of er sprake is van een land waar deze regels worden toegepast, wordt niet vermeld. 1. Of de bovengenoemde regels effectief zijn, wordt niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of de bovengenoemde regels effectief zijn, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Of er sprake is van een toezichthouder die deze regels uitwerkt, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Of er sprake is van een financiële belasting die aan deze regels wordt toegeschreven, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Of er sprake is van een periode waarin deze regels werden ingevoerd, wordt niet vermeld."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "Of er sprake is van een land waar deze regels worden toegepast, wordt niet vermeld. 1. Of de bovengenoemde regels effectief zijn, wordt niet vermeld.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of de DfES en de music-industrie onderhandeld hebben om de inhoud van het manifest, wordt niet vermeld.",
+        "Of de DfES en de music-industrie een contract hebben getekend, wordt niet vermeld.",
+        "Of de DfES en de music-industrie een strategie hebben ontwikkeld om de leerlingen te instrueren over het illegale downloaden van muziek, wordt niet vermeld.",
+        "Of de DfES en de music-industrie een plan hebben gehad om de leerlingen te informeren over de wetten betreffende muziekverkrijging, wordt niet vermeld.",
+        "Of de DfES en de music-industrie een communicatiedomein hebben gesloten om de leerlingen te instrueren over het illegale downloaden van muziek, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of de DfES en de music-industrie onderhandeld hebben om de inhoud van het manifest, wordt niet vermeld.",
+        "Of de DfES en de music-industrie een contract hebben getekend, wordt niet vermeld.",
+        "Of de DfES en de music-industrie een strategie hebben ontwikkeld om de leerlingen te instrueren over het illegale downloaden van muziek, wordt niet vermeld.",
+        "Of de DfES en de music-industrie een plan hebben gehad om de leerlingen te informeren over de wetten betreffende muziekverkrijging, wordt niet vermeld.",
+        "Of de DfES en de music-industrie een communicatiedomein hebben gesloten om de leerlingen te instrueren over het illegale downloaden van muziek, wordt niet vermeld."
+      ],
+      "accepted": [],
+      "rejected": [
+        {
+          "text": "Of de DfES en de music-industrie onderhandeld hebben om de inhoud van het manifest, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of de DfES en de music-industrie een contract hebben getekend, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of de DfES en de music-industrie een strategie hebben ontwikkeld om de leerlingen te instrueren over het illegale downloaden van muziek, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of de DfES en de music-industrie een plan hebben gehad om de leerlingen te informeren over de wetten betreffende muziekverkrijging, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of de DfES en de music-industrie een communicatiedomein hebben gesloten om de leerlingen te instrueren over het illegale downloaden van muziek, wordt niet vermeld.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of de 18-jarige Jaschan heeft geprogrammeerd, wordt niet vermeld.",
+        "Of er nog varianten van Netsky en Sasser bestaan, wordt niet vermeld.",
+        "Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld.",
+        "Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld.",
+        "Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 1. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 2. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 3. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 4. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 5. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 6. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 7. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 8. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 9. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 10. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 11. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 12. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 13. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 14. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of de 18-jarige Jaschan heeft geprogrammeerd, wordt niet vermeld.",
+        "Of er nog varianten van Netsky en Sasser bestaan, wordt niet vermeld.",
+        "Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld.",
+        "Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld.",
+        "Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 1. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 2. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 3. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 4. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 5. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 6. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 7. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 8. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 9. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 10. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 11. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 12. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 13. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 14. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of de 18-jarige Jaschan heeft geprogrammeerd, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "Of er nog varianten van Netsky en Sasser bestaan, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 1. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 2. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 3. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 4. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 5. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 6. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 7. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 8. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 9. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 10. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 11. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 12. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 13. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 14. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of de PGP key fingerprints worden gebruikt om de whitelist te beheren, wordt niet vermeld.",
+        "Of de whitelist beheerd wordt door de social network, wordt niet vermeld.",
+        "Of de whitelist beheerd wordt door de client, wordt niet vermeld.",
+        "Of de whitelist beheerd wordt door de source FOAF file, wordt niet vermeld.",
+        "Of de whitelist beheerd wordt door de directe vrienden, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of de PGP key fingerprints worden gebruikt om de whitelist te beheren, wordt niet vermeld.",
+        "Of de whitelist beheerd wordt door de social network, wordt niet vermeld.",
+        "Of de whitelist beheerd wordt door de client, wordt niet vermeld.",
+        "Of de whitelist beheerd wordt door de source FOAF file, wordt niet vermeld.",
+        "Of de whitelist beheerd wordt door de directe vrienden, wordt niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of de PGP key fingerprints worden gebruikt om de whitelist te beheren, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Of de whitelist beheerd wordt door de social network, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Of de whitelist beheerd wordt door de client, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Of de whitelist beheerd wordt door de source FOAF file, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Of de whitelist beheerd wordt door de directe vrienden, wordt niet vermeld."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of het aantal arrestaties 171 of het bedrag dat besparingen werden gemaakt van 65 miljoen wordt niet vermeld.",
+        "Of de arrestaties werden gedaan door de card fraud unit of door een andere organisatie, wordt niet vermeld.",
+        "Of de arrestaties plaatsvonden in de eerste twee jaren of later, wordt niet vermeld.",
+        "Of de arrestaties gerapporteerd werden aan de politie of direct door de card fraud unit, wordt niet vermeld.",
+        "Of de arrestaties gerapporteerd werden aan de media of direct door de card fraud unit, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of het aantal arrestaties 171 of het bedrag dat besparingen werden gemaakt van 65 miljoen wordt niet vermeld.",
+        "Of de arrestaties werden gedaan door de card fraud unit of door een andere organisatie, wordt niet vermeld.",
+        "Of de arrestaties plaatsvonden in de eerste twee jaren of later, wordt niet vermeld.",
+        "Of de arrestaties gerapporteerd werden aan de politie of direct door de card fraud unit, wordt niet vermeld.",
+        "Of de arrestaties gerapporteerd werden aan de media of direct door de card fraud unit, wordt niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of het aantal arrestaties 171 of het bedrag dat besparingen werden gemaakt van 65 miljoen wordt niet vermeld."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "Of de arrestaties werden gedaan door de card fraud unit of door een andere organisatie, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of de arrestaties plaatsvonden in de eerste twee jaren of later, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of de arrestaties gerapporteerd werden aan de politie of direct door de card fraud unit, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of de arrestaties gerapporteerd werden aan de media of direct door de card fraud unit, wordt niet vermeld.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of de nieuwe high-speed wireless format wordt aangegeven, wordt niet vermeld.",
+        "De technologie die de nieuwe standaard zal gebruiken, wordt niet vermeld.",
+        "Of de nieuwe standaard ook in gebruik wordt genomen, wordt niet vermeld.",
+        "Of de nieuwe standaard ook in gebruik wordt genomen, wordt niet vermeld. 1. Of de nieuwe high-speed wireless format wordt aangegeven, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of de nieuwe high-speed wireless format wordt aangegeven, wordt niet vermeld.",
+        "De technologie die de nieuwe standaard zal gebruiken, wordt niet vermeld.",
+        "Of de nieuwe standaard ook in gebruik wordt genomen, wordt niet vermeld.",
+        "Of de nieuwe standaard ook in gebruik wordt genomen, wordt niet vermeld. 1. Of de nieuwe high-speed wireless format wordt aangegeven, wordt niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of de nieuwe high-speed wireless format wordt aangegeven, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De technologie die de nieuwe standaard zal gebruiken, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Of de nieuwe standaard ook in gebruik wordt genomen, wordt niet vermeld."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "Of de nieuwe standaard ook in gebruik wordt genomen, wordt niet vermeld. 1. Of de nieuwe high-speed wireless format wordt aangegeven, wordt niet vermeld.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of Apple Computer Inc. een marktadviseur heeft gehad, wordt niet vermeld.",
+        "Of Apple Computer Inc. een strategisch adviesaanbod heeft ontvangen, wordt niet vermeld.",
+        "Of Apple Computer Inc. een concurrentieanalyse heeft uitgevoerd, wordt niet vermeld.",
+        "Of Apple Computer Inc. een marketingdoelgroep heeft bestudeerd, wordt niet vermeld.",
+        "Of Apple Computer Inc. een kosten-benefits-analyse heeft uitgevoerd voor deze producten, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of Apple Computer Inc. een marktadviseur heeft gehad, wordt niet vermeld.",
+        "Of Apple Computer Inc. een strategisch adviesaanbod heeft ontvangen, wordt niet vermeld.",
+        "Of Apple Computer Inc. een concurrentieanalyse heeft uitgevoerd, wordt niet vermeld.",
+        "Of Apple Computer Inc. een marketingdoelgroep heeft bestudeerd, wordt niet vermeld.",
+        "Of Apple Computer Inc. een kosten-benefits-analyse heeft uitgevoerd voor deze producten, wordt niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of Apple Computer Inc. een marktadviseur heeft gehad, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Of Apple Computer Inc. een strategisch adviesaanbod heeft ontvangen, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Of Apple Computer Inc. een concurrentieanalyse heeft uitgevoerd, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Of Apple Computer Inc. een marketingdoelgroep heeft bestudeerd, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Of Apple Computer Inc. een kosten-benefits-analyse heeft uitgevoerd voor deze producten, wordt niet vermeld."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of Free Record Shop een music retail chain is, wordt niet vermeld.",
+        "Of Apple Computer Inc. een competitor is van Free Record Shop, wordt niet vermeld.",
+        "Of Free Record Shop een Nederlandse firma is, wordt niet vermeld.",
+        "Of Apple Computer Inc. een Amerikaanse firma is, wordt niet vermeld.",
+        "Of Free Record Shop een downloadservice biedt, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of Free Record Shop een music retail chain is, wordt niet vermeld.",
+        "Of Apple Computer Inc. een competitor is van Free Record Shop, wordt niet vermeld.",
+        "Of Free Record Shop een Nederlandse firma is, wordt niet vermeld.",
+        "Of Apple Computer Inc. een Amerikaanse firma is, wordt niet vermeld.",
+        "Of Free Record Shop een downloadservice biedt, wordt niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of Free Record Shop een music retail chain is, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Of Apple Computer Inc. een competitor is van Free Record Shop, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Of Free Record Shop een Nederlandse firma is, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Of Apple Computer Inc. een Amerikaanse firma is, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Of Free Record Shop een downloadservice biedt, wordt niet vermeld."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_13",
+      "title": "AG News Sci/Tech #13",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of de super-colonie van esophagele antrennissen in Melbourne, Australië, een bedreiging vormt voor lokale insectensoorten, wordt niet vermeld.",
+        "Of er specifieke maatregelen zijn genomen om de potentiële schade van de super-colonie te voorkomen, wordt niet aangegeven.",
+        "Of er sprake is van een toezichthouder of bestuursinstantie die de situatie beheert, wordt niet vermeld.",
+        "Of er een plan is om de super-colonie te beperken of te elimineren, wordt niet vermeld.",
+        "Of er sprake is van een studie of onderzoek dat de impact van de super-colonie op lokale insectensoorten heeft onderzocht, wordt niet vermeld. 1. Of de super-colonie van esophagele antrennissen in Melbourne, Australië, een bedreiging vormt voor lokale insectensoorten, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of de super-colonie van esophagele antrennissen in Melbourne, Australië, een bedreiging vormt voor lokale insectensoorten, wordt niet vermeld.",
+        "Of er specifieke maatregelen zijn genomen om de potentiële schade van de super-colonie te voorkomen, wordt niet aangegeven.",
+        "Of er sprake is van een toezichthouder of bestuursinstantie die de situatie beheert, wordt niet vermeld.",
+        "Of er een plan is om de super-colonie te beperken of te elimineren, wordt niet vermeld.",
+        "Of er sprake is van een studie of onderzoek dat de impact van de super-colonie op lokale insectensoorten heeft onderzocht, wordt niet vermeld. 1. Of de super-colonie van esophagele antrennissen in Melbourne, Australië, een bedreiging vormt voor lokale insectensoorten, wordt niet vermeld."
+      ],
+      "accepted": [],
+      "rejected": [
+        {
+          "text": "Of de super-colonie van esophagele antrennissen in Melbourne, Australië, een bedreiging vormt voor lokale insectensoorten, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of er specifieke maatregelen zijn genomen om de potentiële schade van de super-colonie te voorkomen, wordt niet aangegeven.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of er sprake is van een toezichthouder of bestuursinstantie die de situatie beheert, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of er een plan is om de super-colonie te beperken of te elimineren, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of er sprake is van een studie of onderzoek dat de impact van de super-colonie op lokale insectensoorten heeft onderzocht, wordt niet vermeld. 1. Of de super-colonie van esophagele antrennissen in Melbourne, Australië, een bedreiging vormt voor lokale insectensoorten, wordt niet vermeld.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "title": "AG News Sci/Tech #14",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of socialites activeren specifieke sociale vaardigheden, wordt niet vermeld.",
+        "Of de effecten van socialiteacties op de structuur van de dolphin-pod worden niet aangegeven.",
+        "Of er specifieke soorten socialiteacties worden beschreven, wordt niet vermeld.",
+        "Of er een verband wordt getoond tussen de activiteit van socialites en de stabiliteit van de dolphin-pod, wordt niet vermeld.",
+        "Of er specifieke soorten dolphin-pods worden genoemd, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of socialites activeren specifieke sociale vaardigheden, wordt niet vermeld.",
+        "Of de effecten van socialiteacties op de structuur van de dolphin-pod worden niet aangegeven.",
+        "Of er specifieke soorten socialiteacties worden beschreven, wordt niet vermeld.",
+        "Of er een verband wordt getoond tussen de activiteit van socialites en de stabiliteit van de dolphin-pod, wordt niet vermeld.",
+        "Of er specifieke soorten dolphin-pods worden genoemd, wordt niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of socialites activeren specifieke sociale vaardigheden, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Of de effecten van socialiteacties op de structuur van de dolphin-pod worden niet aangegeven."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Of er specifieke soorten socialiteacties worden beschreven, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Of er specifieke soorten dolphin-pods worden genoemd, wordt niet vermeld."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "Of er een verband wordt getoond tussen de activiteit van socialites en de stabiliteit van de dolphin-pod, wordt niet vermeld.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_15",
+      "title": "AG News Sci/Tech #15",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of Teenage T. rex's monster growth werd veroorzaakt door een andere fase dan adolescentie, wordt niet vermeld.",
+        "Of de precieze duur of periode van de groeiperiode wordt niet aangegeven.",
+        "Of de mate of intensiteit van de groeiperiode wordt niet vermeld.",
+        "Of de specifieke mechanismen die leidden tot de groei, zoals voedselvoorziening of hormonen, worden niet genoemd.",
+        "Of de effecten van deze groeiperiode op de longen, tanden of andere organen, worden niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of Teenage T. rex's monster growth werd veroorzaakt door een andere fase dan adolescentie, wordt niet vermeld.",
+        "Of de precieze duur of periode van de groeiperiode wordt niet aangegeven.",
+        "Of de mate of intensiteit van de groeiperiode wordt niet vermeld.",
+        "Of de specifieke mechanismen die leidden tot de groei, zoals voedselvoorziening of hormonen, worden niet genoemd.",
+        "Of de effecten van deze groeiperiode op de longen, tanden of andere organen, worden niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of Teenage T. rex's monster growth werd veroorzaakt door een andere fase dan adolescentie, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Of de precieze duur of periode van de groeiperiode wordt niet aangegeven."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Of de mate of intensiteit van de groeiperiode wordt niet vermeld."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "Of de specifieke mechanismen die leidden tot de groei, zoals voedselvoorziening of hormonen, worden niet genoemd.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of de effecten van deze groeiperiode op de longen, tanden of andere organen, worden niet vermeld.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of de lumps onder de ijskust van Ganymede bestaan, wordt niet vermeld.",
+        "Of de lumps onder de ijskust van Ganymede een natuurlijke of een",
+        "Of de lumps onder de ijskust van Ganymede een effect op de oppervlakte",
+        "Of de lumps onder de ijskust van Ganymede een impact hebben op de",
+        "Of de lumps onder de ijskust van Ganymede een invloed hebben op de"
+      ],
+      "normalized_candidates": [
+        "Of de lumps onder de ijskust van Ganymede bestaan, wordt niet vermeld.",
+        "Of de lumps onder de ijskust van Ganymede een natuurlijke of een.",
+        "Of de lumps onder de ijskust van Ganymede een effect op de oppervlakte.",
+        "Of de lumps onder de ijskust van Ganymede een impact hebben op de.",
+        "Of de lumps onder de ijskust van Ganymede een invloed hebben op de."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of de lumps onder de ijskust van Ganymede bestaan, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Of de lumps onder de ijskust van Ganymede een natuurlijke of een."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Of de lumps onder de ijskust van Ganymede een effect op de oppervlakte."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Of de lumps onder de ijskust van Ganymede een impact hebben op de."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Of de lumps onder de ijskust van Ganymede een invloed hebben op de."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of de Mars Express ondersteuning biedt aan de rover, wordt niet vermeld.",
+        "Of de Mars Express de foto's verzamelt, wordt niet vermeld.",
+        "Of de Mars Express de foto's verwerkt, wordt niet vermeld.",
+        "Of de Mars Express de foto's naar de rover stuurt, wordt niet vermeld.",
+        "Of de Mars Express de foto's naar de opnamecentrum stuurt, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of de Mars Express ondersteuning biedt aan de rover, wordt niet vermeld.",
+        "Of de Mars Express de foto's verzamelt, wordt niet vermeld.",
+        "Of de Mars Express de foto's verwerkt, wordt niet vermeld.",
+        "Of de Mars Express de foto's naar de rover stuurt, wordt niet vermeld.",
+        "Of de Mars Express de foto's naar de opnamecentrum stuurt, wordt niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of de Mars Express ondersteuning biedt aan de rover, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Of de Mars Express de foto's verzamelt, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Of de Mars Express de foto's verwerkt, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Of de Mars Express de foto's naar de rover stuurt, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Of de Mars Express de foto's naar de opnamecentrum stuurt, wordt niet vermeld."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_18",
+      "title": "AG News Sci/Tech #18",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of de sedimenten biologisch of chemisch zijn, wordt niet vermeld.",
+        "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet vermeld.",
+        "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet aangegeven.",
+        "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet genoemd.",
+        "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet besproken. 1. Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of de sedimenten biologisch of chemisch zijn, wordt niet vermeld.",
+        "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet vermeld.",
+        "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet aangegeven.",
+        "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet genoemd.",
+        "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet besproken. 1. Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet vermeld."
+      ],
+      "accepted": [],
+      "rejected": [
+        {
+          "text": "Of de sedimenten biologisch of chemisch zijn, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet aangegeven.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet genoemd.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet besproken. 1. Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet vermeld.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "title": "AG News Sci/Tech #19",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of HP heeft hijft op servers bruise, wordt niet vermeld.",
+        "Of HP heeft hijft op storage, wordt niet vermeld.",
+        "Of HP heeft hijft op earnings update, wordt niet vermeld.",
+        "Of HP heeft hijft op earnings per share, wordt niet vermeld.",
+        "Of HP heeft hijft op analysts' expectations, wordt niet vermeld. 1. Of HP heeft hijft op servers bruise, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of HP heeft hijft op servers bruise, wordt niet vermeld.",
+        "Of HP heeft hijft op storage, wordt niet vermeld.",
+        "Of HP heeft hijft op earnings update, wordt niet vermeld.",
+        "Of HP heeft hijft op earnings per share, wordt niet vermeld.",
+        "Of HP heeft hijft op analysts' expectations, wordt niet vermeld. 1. Of HP heeft hijft op servers bruise, wordt niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of HP heeft hijft op servers bruise, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Of HP heeft hijft op storage, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Of HP heeft hijft op earnings update, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Of HP heeft hijft op earnings per share, wordt niet vermeld."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "Of HP heeft hijft op analysts' expectations, wordt niet vermeld. 1. Of HP heeft hijft op servers bruise, wordt niet vermeld.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "title": "AG News Sci/Tech #20",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Hoeveel nieuwe werknemers IBM gaat huren, wordt niet vermeld.",
+        "Wanneer het einde van het jaar wordt bereikt, wordt niet aangegeven.",
+        "Wat de grootste hoofdcijfers sinds 1991 zijn, wordt niet vermeld.",
+        "Of er al eerder een grotere hoofdcijfer was, wordt niet aangegeven.",
+        "Hoeveel werknemers IBM had sinds 1991, wordt niet vermeld. 1. Hoeveel nieuwe werknemers IBM gaat huren, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Hoeveel nieuwe werknemers IBM gaat huren, wordt niet vermeld.",
+        "Wanneer het einde van het jaar wordt bereikt, wordt niet aangegeven.",
+        "Wat de grootste hoofdcijfers sinds 1991 zijn, wordt niet vermeld.",
+        "Of er al eerder een grotere hoofdcijfer was, wordt niet aangegeven.",
+        "Hoeveel werknemers IBM had sinds 1991, wordt niet vermeld. 1. Hoeveel nieuwe werknemers IBM gaat huren, wordt niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Hoeveel nieuwe werknemers IBM gaat huren, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Wanneer het einde van het jaar wordt bereikt, wordt niet aangegeven."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Wat de grootste hoofdcijfers sinds 1991 zijn, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Of er al eerder een grotere hoofdcijfer was, wordt niet aangegeven."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "Hoeveel werknemers IBM had sinds 1991, wordt niet vermeld. 1. Hoeveel nieuwe werknemers IBM gaat huren, wordt niet vermeld.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of Google heeft een lijst met mensen die niet mogen proberen in te",
+        "Of Google een criteria heeft om te bepalen wie mogen proberen in te",
+        "Of Google een procedure heeft om te bepalen wie mogen proberen in te",
+        "Of Google een beperking heeft opgelegd aan de prijs die mensen mogen",
+        "Of Google een beperking heeft opgelegd aan het aantal aandelen dat"
+      ],
+      "normalized_candidates": [
+        "Of Google heeft een lijst met mensen die niet mogen proberen in te.",
+        "Of Google een criteria heeft om te bepalen wie mogen proberen in te.",
+        "Of Google een procedure heeft om te bepalen wie mogen proberen in te.",
+        "Of Google een beperking heeft opgelegd aan de prijs die mensen mogen.",
+        "Of Google een beperking heeft opgelegd aan het aantal aandelen dat."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of Google heeft een lijst met mensen die niet mogen proberen in te."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Of Google een criteria heeft om te bepalen wie mogen proberen in te."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Of Google een procedure heeft om te bepalen wie mogen proberen in te."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Of Google een beperking heeft opgelegd aan de prijs die mensen mogen."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Of Google een beperking heeft opgelegd aan het aantal aandelen dat."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of Charles Schwab heeft een competitor, wordt niet vermeld.",
+        "Of Charles Schwab een competitor heeft, wordt niet vermeld.",
+        "Of Charles Schwab een rival is, wordt niet vermeld.",
+        "Of Charles Schwab wordt beschreven als een competitor, wordt niet vermeld.",
+        "Of Charles Schwab wordt beschreven als een rival, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of Charles Schwab heeft een competitor, wordt niet vermeld.",
+        "Of Charles Schwab een competitor heeft, wordt niet vermeld.",
+        "Of Charles Schwab een rival is, wordt niet vermeld.",
+        "Of Charles Schwab wordt beschreven als een competitor, wordt niet vermeld.",
+        "Of Charles Schwab wordt beschreven als een rival, wordt niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of Charles Schwab heeft een competitor, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Of Charles Schwab een competitor heeft, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Of Charles Schwab een rival is, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Of Charles Schwab wordt beschreven als een competitor, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Of Charles Schwab wordt beschreven als een rival, wordt niet vermeld."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_25",
+      "title": "AG News Sci/Tech #25",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Of de industrie- of standaardcyber-beveiliging onderzoekt wel of de meest kwetsbare componenten van de elektriciteitsnetwerk worden beschermd, wordt niet vermeld.",
+        "Of er een plan is om de cyber-beveiligingstandaarden te verbeteren, wordt niet vermeld.",
+        "Of er een duidelijke verantwoordelijkheidsstructuur bestaat voor het onderhouden van de beveiliging van de meest kwetsbare componenten, wordt niet vermeld.",
+        "Of er een procedure is om de beveiligingsrisico's van de meest kwetsbare componenten te evalueren, wordt niet vermeld.",
+        "Of er een budget is aangewezen voor het onderhouden van de beveiliging van de meest kwetsbare componenten, wordt niet vermeld. 1. Of de industrie- of standaardcyber-beveiliging onderzoekt wel of de meest kwetsbare componenten van de elektriciteitsnetwerk worden beschermd, wordt niet vermeld."
+      ],
+      "normalized_candidates": [
+        "Of de industrie- of standaardcyber-beveiliging onderzoekt wel of de meest kwetsbare componenten van de elektriciteitsnetwerk worden beschermd, wordt niet vermeld.",
+        "Of er een plan is om de cyber-beveiligingstandaarden te verbeteren, wordt niet vermeld.",
+        "Of er een duidelijke verantwoordelijkheidsstructuur bestaat voor het onderhouden van de beveiliging van de meest kwetsbare componenten, wordt niet vermeld.",
+        "Of er een procedure is om de beveiligingsrisico's van de meest kwetsbare componenten te evalueren, wordt niet vermeld.",
+        "Of er een budget is aangewezen voor het onderhouden van de beveiliging van de meest kwetsbare componenten, wordt niet vermeld. 1. Of de industrie- of standaardcyber-beveiliging onderzoekt wel of de meest kwetsbare componenten van de elektriciteitsnetwerk worden beschermd, wordt niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Of er een plan is om de cyber-beveiligingstandaarden te verbeteren, wordt niet vermeld."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "Of de industrie- of standaardcyber-beveiliging onderzoekt wel of de meest kwetsbare componenten van de elektriciteitsnetwerk worden beschermd, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of er een duidelijke verantwoordelijkheidsstructuur bestaat voor het onderhouden van de beveiliging van de meest kwetsbare componenten, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of er een procedure is om de beveiligingsrisico's van de meest kwetsbare componenten te evalueren, wordt niet vermeld.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Of er een budget is aangewezen voor het onderhouden van de beveiliging van de meest kwetsbare componenten, wordt niet vermeld. 1. Of de industrie- of standaardcyber-beveiliging onderzoekt wel of de meest kwetsbare componenten van de elektriciteitsnetwerk worden beschermd, wordt niet vermeld.",
+          "reason": "not_atomic"
+        }
+      ]
+    }
+  ]
+}

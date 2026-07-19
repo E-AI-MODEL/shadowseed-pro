@@ -1,0 +1,472 @@
+{
+  "artifact": "mechanical_prescreen",
+  "disclaimer": "Deterministische prescreen, GEEN menselijke review. Telt NIET als reviewer_a/reviewer_b en niet als open_set_seed_quality (Laag C) evidence, en geeft GEEN accept/reject-verdict. Bedoeld om aandacht te richten en de v0.3e-prompt te toetsen aan haar eigen regels.",
+  "round": "round_006_batch1",
+  "detector": "model",
+  "model_backend": "hf-transformers:microsoft/Phi-3.5-mini-instruct",
+  "yield": {
+    "item_count": 12,
+    "items_with_candidates": 12,
+    "items_empty": 0,
+    "empty_rate": 0.0,
+    "mean_candidates_per_item": 5.0
+  },
+  "mechanical_codes": [
+    "claim_vs_gap",
+    "truncated",
+    "parse_leak",
+    "language_leak",
+    "entity_bleed",
+    "citation_fragment",
+    "fewshot_leak",
+    "not_atomic",
+    "near_duplicate"
+  ],
+  "not_mechanically_checkable": [
+    "false_gap",
+    "mistranslation",
+    "grammar"
+  ],
+  "seed_count": 60,
+  "flagged_count": 2,
+  "clean_count": 58,
+  "clean_rate": 0.967,
+  "near_duplicate_rate": 0.0,
+  "failure_code_counts": {
+    "claim_vs_gap": 0,
+    "truncated": 0,
+    "parse_leak": 0,
+    "language_leak": 0,
+    "entity_bleed": 0,
+    "citation_fragment": 0,
+    "fewshot_leak": 0,
+    "not_atomic": 2,
+    "near_duplicate": 0
+  },
+  "verdicts": [
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "position": 1,
+      "seed": "Specifieke resultaten of uitkomsten van de talks.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "position": 2,
+      "seed": "De exacte bemiddelingsmethode of tussenpersoon.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "position": 3,
+      "seed": "Specifieke belangen of eisen van de werknemers.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "position": 4,
+      "seed": "De reactie of standpunt van Federal Mogul na de gesprekken.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "position": 5,
+      "seed": "De mogelijke impact of gevolgen voor T N pension.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "position": 1,
+      "seed": "Specifieke datum voor de eerste lancering.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "position": 2,
+      "seed": "Details over de technologie van de rocket.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "position": 3,
+      "seed": "De naam van de tweede private team.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "position": 4,
+      "seed": "Specifieke criteria voor het winnen van de Ansari X Prize.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "position": 5,
+      "seed": "De locatie waar de lancering zal plaatsvinden.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "position": 1,
+      "seed": "Specifieke soorten peptides die in de studie worden onderzocht.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "position": 2,
+      "seed": "Omvang van het gehonoreerde grant.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "position": 3,
+      "seed": "De specifieke gebruikssituatie of toepassing van betere peptides.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "position": 4,
+      "seed": "De exacte universiteit waar de chemie researcher aan het begin van het bedrijf werkte.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "position": 5,
+      "seed": "De geplande duur of termijn van de peptide-productie method.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "position": 1,
+      "seed": "Specifieke geografische locaties waar de wildfires voorspeld worden.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "position": 2,
+      "seed": "Precisiesnelheden of nauwkeurigheidspercentages van de Prediction Unit.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "position": 3,
+      "seed": "De specifieke methodologie of techniek die door de Prediction Unit wordt gebruikt.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "position": 4,
+      "seed": "Historische nauwkeurigheid van voorspellingen van de Prediction Unit voor wildfires.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "position": 5,
+      "seed": "Impact of Prediction Unit's forecasts on wildfire prevention or response strategies.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "position": 1,
+      "seed": "Specifieke technische maatregelen om emissies van dairy cow manure te verminderen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "position": 2,
+      "seed": "De impact van de nieuwe regelgeving op de algehele luchtkwaliteit in Southern California.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "position": 3,
+      "seed": "De reactie van de landbouwsector op de adoptie van deze regels.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "position": 4,
+      "seed": "De specifieke tijdlijn of deadline voor de implementatie van de nieuwe regels.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "position": 5,
+      "seed": "De verwachte effectiviteit van de regelgeving op de vermindering van smog.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "position": 1,
+      "seed": "Het specifieke doel van de \"Music Manifesto\" campagne van de DfES.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "position": 2,
+      "seed": "De exacte details van de samenwerking tussen de DfES en de muziekindustrie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "position": 3,
+      "seed": "Specifieke beleidsmaatregelen of acties die door EMI zijn onderhandeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "position": 4,
+      "seed": "De impact van deze indoctrinatie op de scholieren in de Britse scholen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "position": 5,
+      "seed": "Eventuele reacties of acties van andere belanghebbenden of organisaties na het schrijven van het open brief.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "position": 1,
+      "seed": "De specifieke strategieën die door Sophos zijn gebruikt om de virussen te identificeren.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "position": 2,
+      "seed": "De exacte percentages van andere veroorzakende factoren voor virusinfecties in 2004.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "position": 3,
+      "seed": "Details over de juridische consequenties van Jaschan's veroordeling.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "position": 4,
+      "seed": "De specifieke technische details van hoe Jaschan de Netsky en Sasser worms heeft geprogrammeerd.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "position": 5,
+      "seed": "De impact van de arrestatie op de algehele trend van virusinfecties in de daaropvolgende periode.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "position": 1,
+      "seed": "De specifieke manier waarop de bloom filter wordt gebruikt voor de PGP.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "position": 2,
+      "seed": "De procedure voor het invoegen van PGP keyfingerprints in de FOAF.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "position": 3,
+      "seed": "De manier waarop de client het whitelist vult vanuit de sociale netwerk.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "position": 4,
+      "seed": "De encryptiebehoeften van de bron FOAF file voor veiligheid.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "position": 5,
+      "seed": "De relatie tussen de directe vrienden en de bloom filter van hun PGP.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "position": 1,
+      "seed": "Het exacte aantal geredde kredietkaarten buiten de 36,000 die worden vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "position": 2,
+      "seed": "De specifieke soorten misdrijven waarmee de card fraud unit is betrokken.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "position": 3,
+      "seed": "Het exacte aantal gevallen waarin de card fraud unit heeft bijgedragen aan de arrestatie van verdachten.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "position": 4,
+      "seed": "De exacte kosten die zijn bespaard door de inzet van de card fraud unit.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "position": 5,
+      "seed": "De periode waarin de card fraud unit haar prestaties heeft gemeten.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "position": 1,
+      "seed": "Specifieke technische specificaties van de nieuwe high-speed wireless format.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "position": 2,
+      "seed": "De exacte groep technologiebedrijven die de voorstellen doen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "position": 3,
+      "seed": "De timing en details van het voorstelpresentatie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "position": 4,
+      "seed": "Potentiële impact en vooruitzichten van de nieuwe high-speed wireless standard.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "position": 5,
+      "seed": "Andere technologiebedrijven of belanghebbenden die mogelijk betrokken zijn bij het voorstel.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "position": 1,
+      "seed": "Specifieke functies van de nieuwe program voor real-time motion graphics.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "position": 2,
+      "seed": "De prijs van de discount video-editing software bundle.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "position": 3,
+      "seed": "De beschikbaarheid van de software in verschillende regio's.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "position": 4,
+      "seed": "Specifieke updates of verbeteringen ten opzichte van eerdere versies van Final Cut Pro.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "position": 5,
+      "seed": "Reviews of feedback van gebruikers na de lancering van de software.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "position": 1,
+      "seed": "Specifieke functies van de nieuwe download service.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "position": 2,
+      "seed": "De reactie van Apple Computer Inc. op de lancering.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "position": 3,
+      "seed": "De impact van de nieuwe download service op de Europese muziekmarkt.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "position": 4,
+      "seed": "Details over de concurrentie tussen Free Record Shop en andere spelers.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "position": 5,
+      "seed": "De timing en locatie van de lancering buiten Nederland.",
+      "codes": [],
+      "clean": true
+    }
+  ]
+}

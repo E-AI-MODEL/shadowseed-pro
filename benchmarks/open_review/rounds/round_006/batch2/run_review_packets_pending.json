@@ -1,0 +1,1983 @@
+{
+  "summary": {
+    "evidence_layer": "open_set_seed_quality",
+    "artifact_contract_version": "open-review-0.2",
+    "corpus_version": "hf-open-set-batch-0.1",
+    "source": {
+      "id": "arxiv_abstracts",
+      "dataset": "gfissore/arxiv-abstracts-2021",
+      "config": "default",
+      "split": "train",
+      "revision": "main",
+      "license": "cc0-1.0",
+      "registry_path": "src/shadowseed/data/open_set_hf_sources.json",
+      "requested_limit": 12,
+      "requested_offset": 0,
+      "returned_count": 12,
+      "authenticated": false
+    },
+    "item_count": 12,
+    "seed_count": 48,
+    "reviewer_ids": [
+      "reviewer_a",
+      "reviewer_b"
+    ],
+    "reviewer_count": 2,
+    "packet_count": 96,
+    "criteria": [
+      "atomicity",
+      "relevance",
+      "testability",
+      "non_triviality",
+      "follow_up_utility"
+    ],
+    "reject_codes": [
+      "too_broad",
+      "too_vague",
+      "trivial",
+      "not_relevant",
+      "not_testable",
+      "duplicate",
+      "style_not_gap"
+    ],
+    "candidate_source_counts": {
+      "open_set_model_detector": 12
+    },
+    "candidate_adapter": "ssl45_open_set_candidate_adapter_v0.1",
+    "fixed_scenario_priors_used": false,
+    "expected_gaps_used": false,
+    "ground_truth_seeds_used": false,
+    "regression_gap_detector_used": false,
+    "candidate_quality_requires_human_review": true,
+    "seed_verdict_rule": "A seed counts as accepted or rejected only after every generated reviewer row for that seed is completed and valid.",
+    "instructions": "One packet row is generated per reviewer per seed. Do not edit a single row sequentially for multiple reviewers. A seed only counts as accepted or rejected after every generated reviewer row is completed and valid. Score each seed on atomicity, relevance, testability, non-triviality and follow-up utility.",
+    "status": "review_pending",
+    "expected_summary_artifacts": [
+      "open_set_seed_review_summary.json",
+      "open_set_disagreements.json",
+      "open_set_review_report.md"
+    ]
+  },
+  "packets": [
+    {
+      "item_id": "ARXIV_ABSTRACTS_0",
+      "title": "Calculation of prompt diphoton production cross sections at Tevatron and LHC energies",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A fully differential calculation in perturbative quantum chromodynamics is presented for the production of massive photon pairs at hadron colliders. All next-to-leading order perturbative contributions from quark-antiquark, gluon-(anti)quark, and gluon-gluon subprocesses are included, as well as all-orders resummation of initial-state gluon radiation valid at next-to-next-to-leading logarithmic ac...",
+      "seed_id": "ss_001",
+      "seed_text": "Specifieke fase-ruimte waarin de berekening het meest betrouwbaar is.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_0",
+      "title": "Calculation of prompt diphoton production cross sections at Tevatron and LHC energies",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A fully differential calculation in perturbative quantum chromodynamics is presented for the production of massive photon pairs at hadron colliders. All next-to-leading order perturbative contributions from quark-antiquark, gluon-(anti)quark, and gluon-gluon subprocesses are included, as well as all-orders resummation of initial-state gluon radiation valid at next-to-next-to-leading logarithmic ac...",
+      "seed_id": "ss_001",
+      "seed_text": "Specifieke fase-ruimte waarin de berekening het meest betrouwbaar is.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_0",
+      "title": "Calculation of prompt diphoton production cross sections at Tevatron and LHC energies",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A fully differential calculation in perturbative quantum chromodynamics is presented for the production of massive photon pairs at hadron colliders. All next-to-leading order perturbative contributions from quark-antiquark, gluon-(anti)quark, and gluon-gluon subprocesses are included, as well as all-orders resummation of initial-state gluon radiation valid at next-to-next-to-leading logarithmic ac...",
+      "seed_id": "ss_002",
+      "seed_text": "Precisiesniveau van initial-state gluon radiation resomming.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_0",
+      "title": "Calculation of prompt diphoton production cross sections at Tevatron and LHC energies",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A fully differential calculation in perturbative quantum chromodynamics is presented for the production of massive photon pairs at hadron colliders. All next-to-leading order perturbative contributions from quark-antiquark, gluon-(anti)quark, and gluon-gluon subprocesses are included, as well as all-orders resummation of initial-state gluon radiation valid at next-to-next-to-leading logarithmic ac...",
+      "seed_id": "ss_002",
+      "seed_text": "Precisiesniveau van initial-state gluon radiation resomming.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_0",
+      "title": "Calculation of prompt diphoton production cross sections at Tevatron and LHC energies",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A fully differential calculation in perturbative quantum chromodynamics is presented for the production of massive photon pairs at hadron colliders. All next-to-leading order perturbative contributions from quark-antiquark, gluon-(anti)quark, and gluon-gluon subprocesses are included, as well as all-orders resummation of initial-state gluon radiation valid at next-to-next-to-leading logarithmic ac...",
+      "seed_id": "ss_003",
+      "seed_text": "Specifieke diphoton paarverdelingen die zijn voorspeld voor LHC.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_0",
+      "title": "Calculation of prompt diphoton production cross sections at Tevatron and LHC energies",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A fully differential calculation in perturbative quantum chromodynamics is presented for the production of massive photon pairs at hadron colliders. All next-to-leading order perturbative contributions from quark-antiquark, gluon-(anti)quark, and gluon-gluon subprocesses are included, as well as all-orders resummation of initial-state gluon radiation valid at next-to-next-to-leading logarithmic ac...",
+      "seed_id": "ss_003",
+      "seed_text": "Specifieke diphoton paarverdelingen die zijn voorspeld voor LHC.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_0",
+      "title": "Calculation of prompt diphoton production cross sections at Tevatron and LHC energies",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A fully differential calculation in perturbative quantum chromodynamics is presented for the production of massive photon pairs at hadron colliders. All next-to-leading order perturbative contributions from quark-antiquark, gluon-(anti)quark, and gluon-gluon subprocesses are included, as well as all-orders resummation of initial-state gluon radiation valid at next-to-next-to-leading logarithmic ac...",
+      "seed_id": "ss_004",
+      "seed_text": "Contrast tussen Higgs boson decayen en QCD processen in LHC.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_0",
+      "title": "Calculation of prompt diphoton production cross sections at Tevatron and LHC energies",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A fully differential calculation in perturbative quantum chromodynamics is presented for the production of massive photon pairs at hadron colliders. All next-to-leading order perturbative contributions from quark-antiquark, gluon-(anti)quark, and gluon-gluon subprocesses are included, as well as all-orders resummation of initial-state gluon radiation valid at next-to-next-to-leading logarithmic ac...",
+      "seed_id": "ss_004",
+      "seed_text": "Contrast tussen Higgs boson decayen en QCD processen in LHC.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_0",
+      "title": "Calculation of prompt diphoton production cross sections at Tevatron and LHC energies",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A fully differential calculation in perturbative quantum chromodynamics is presented for the production of massive photon pairs at hadron colliders. All next-to-leading order perturbative contributions from quark-antiquark, gluon-(anti)quark, and gluon-gluon subprocesses are included, as well as all-orders resummation of initial-state gluon radiation valid at next-to-next-to-leading logarithmic ac...",
+      "seed_id": "ss_005",
+      "seed_text": "Methoden voor selectie van evenementen voor verbeterde signalgevoeligheid.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_0",
+      "title": "Calculation of prompt diphoton production cross sections at Tevatron and LHC energies",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A fully differential calculation in perturbative quantum chromodynamics is presented for the production of massive photon pairs at hadron colliders. All next-to-leading order perturbative contributions from quark-antiquark, gluon-(anti)quark, and gluon-gluon subprocesses are included, as well as all-orders resummation of initial-state gluon radiation valid at next-to-next-to-leading logarithmic ac...",
+      "seed_id": "ss_005",
+      "seed_text": "Methoden voor selectie van evenementen voor verbeterde signalgevoeligheid.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_1",
+      "title": "Sparsity-certifying Graph Decompositions",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We describe a new algorithm, the $(k,\\ell)$-pebble game with colors, and use it obtain a characterization of the family of $(k,\\ell)$-sparse graphs and algorithmic solutions to a family of problems concerning tree decompositions of graphs. Special instances of sparse graphs appear in rigidity theory and have received increased attention in recent years. In particular, our colored pebbles generaliz...",
+      "seed_id": "ss_001",
+      "seed_text": "Specifieke eigenschappen van de $(k,\\ell)$-sparse grafen die worden gecharacteriseerd.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_1",
+      "title": "Sparsity-certifying Graph Decompositions",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We describe a new algorithm, the $(k,\\ell)$-pebble game with colors, and use it obtain a characterization of the family of $(k,\\ell)$-sparse graphs and algorithmic solutions to a family of problems concerning tree decompositions of graphs. Special instances of sparse graphs appear in rigidity theory and have received increased attention in recent years. In particular, our colored pebbles generaliz...",
+      "seed_id": "ss_001",
+      "seed_text": "Specifieke eigenschappen van de $(k,\\ell)$-sparse grafen die worden gecharacteriseerd.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_1",
+      "title": "Sparsity-certifying Graph Decompositions",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We describe a new algorithm, the $(k,\\ell)$-pebble game with colors, and use it obtain a characterization of the family of $(k,\\ell)$-sparse graphs and algorithmic solutions to a family of problems concerning tree decompositions of graphs. Special instances of sparse graphs appear in rigidity theory and have received increased attention in recent years. In particular, our colored pebbles generaliz...",
+      "seed_id": "ss_002",
+      "seed_text": "Details van de algoritmen voor tree decompositions van grafen gebaseerd op het $(k,\\ell)$-pebble game.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_1",
+      "title": "Sparsity-certifying Graph Decompositions",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We describe a new algorithm, the $(k,\\ell)$-pebble game with colors, and use it obtain a characterization of the family of $(k,\\ell)$-sparse graphs and algorithmic solutions to a family of problems concerning tree decompositions of graphs. Special instances of sparse graphs appear in rigidity theory and have received increased attention in recent years. In particular, our colored pebbles generaliz...",
+      "seed_id": "ss_002",
+      "seed_text": "Details van de algoritmen voor tree decompositions van grafen gebaseerd op het $(k,\\ell)$-pebble game.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_1",
+      "title": "Sparsity-certifying Graph Decompositions",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We describe a new algorithm, the $(k,\\ell)$-pebble game with colors, and use it obtain a characterization of the family of $(k,\\ell)$-sparse graphs and algorithmic solutions to a family of problems concerning tree decompositions of graphs. Special instances of sparse graphs appear in rigidity theory and have received increased attention in recent years. In particular, our colored pebbles generaliz...",
+      "seed_id": "ss_003",
+      "seed_text": "Specifieke toepassingen van de $(k,\\ell)$-sparse grafen in rigiditeitstheorie.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_1",
+      "title": "Sparsity-certifying Graph Decompositions",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We describe a new algorithm, the $(k,\\ell)$-pebble game with colors, and use it obtain a characterization of the family of $(k,\\ell)$-sparse graphs and algorithmic solutions to a family of problems concerning tree decompositions of graphs. Special instances of sparse graphs appear in rigidity theory and have received increased attention in recent years. In particular, our colored pebbles generaliz...",
+      "seed_id": "ss_003",
+      "seed_text": "Specifieke toepassingen van de $(k,\\ell)$-sparse grafen in rigiditeitstheorie.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_1",
+      "title": "Sparsity-certifying Graph Decompositions",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We describe a new algorithm, the $(k,\\ell)$-pebble game with colors, and use it obtain a characterization of the family of $(k,\\ell)$-sparse graphs and algorithmic solutions to a family of problems concerning tree decompositions of graphs. Special instances of sparse graphs appear in rigidity theory and have received increased attention in recent years. In particular, our colored pebbles generaliz...",
+      "seed_id": "ss_004",
+      "seed_text": "Het exacte aantal pebbles dat kan worden gebruikt in het $(k,\\ell)$-pebble game met kleuren.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_1",
+      "title": "Sparsity-certifying Graph Decompositions",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We describe a new algorithm, the $(k,\\ell)$-pebble game with colors, and use it obtain a characterization of the family of $(k,\\ell)$-sparse graphs and algorithmic solutions to a family of problems concerning tree decompositions of graphs. Special instances of sparse graphs appear in rigidity theory and have received increased attention in recent years. In particular, our colored pebbles generaliz...",
+      "seed_id": "ss_004",
+      "seed_text": "Het exacte aantal pebbles dat kan worden gebruikt in het $(k,\\ell)$-pebble game met kleuren.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_2",
+      "title": "The evolution of the Earth-Moon system based on the dark matter field fluid model",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The evolution of Earth-Moon system is described by the dark matter field fluid model proposed in the Meeting of Division of Particle and Field 2004, American Physical Society. The current behavior of the Earth-Moon system agrees with this model very well and the general pattern of the evolution of the Moon-Earth system described by this model agrees with geological and fossil evidence. The closest...",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke rol van tidal friction in de evolutie van het aardoppervlak wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_2",
+      "title": "The evolution of the Earth-Moon system based on the dark matter field fluid model",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The evolution of Earth-Moon system is described by the dark matter field fluid model proposed in the Meeting of Division of Particle and Field 2004, American Physical Society. The current behavior of the Earth-Moon system agrees with this model very well and the general pattern of the evolution of the Moon-Earth system described by this model agrees with geological and fossil evidence. The closest...",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke rol van tidal friction in de evolutie van het aardoppervlak wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_2",
+      "title": "The evolution of the Earth-Moon system based on the dark matter field fluid model",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The evolution of Earth-Moon system is described by the dark matter field fluid model proposed in the Meeting of Division of Particle and Field 2004, American Physical Society. The current behavior of the Earth-Moon system agrees with this model very well and the general pattern of the evolution of the Moon-Earth system described by this model agrees with geological and fossil evidence. The closest...",
+      "seed_id": "ss_002",
+      "seed_text": "De exacte relatie tussen de dark matter field fluid constant en de geologische processen van de aarde.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_2",
+      "title": "The evolution of the Earth-Moon system based on the dark matter field fluid model",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The evolution of Earth-Moon system is described by the dark matter field fluid model proposed in the Meeting of Division of Particle and Field 2004, American Physical Society. The current behavior of the Earth-Moon system agrees with this model very well and the general pattern of the evolution of the Moon-Earth system described by this model agrees with geological and fossil evidence. The closest...",
+      "seed_id": "ss_002",
+      "seed_text": "De exacte relatie tussen de dark matter field fluid constant en de geologische processen van de aarde.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_2",
+      "title": "The evolution of the Earth-Moon system based on the dark matter field fluid model",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The evolution of Earth-Moon system is described by the dark matter field fluid model proposed in the Meeting of Division of Particle and Field 2004, American Physical Society. The current behavior of the Earth-Moon system agrees with this model very well and the general pattern of the evolution of the Moon-Earth system described by this model agrees with geological and fossil evidence. The closest...",
+      "seed_id": "ss_003",
+      "seed_text": "De implicaties van de modelvoorstelling voor de bewegingspatronen van andere hemellichamen.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_2",
+      "title": "The evolution of the Earth-Moon system based on the dark matter field fluid model",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The evolution of Earth-Moon system is described by the dark matter field fluid model proposed in the Meeting of Division of Particle and Field 2004, American Physical Society. The current behavior of the Earth-Moon system agrees with this model very well and the general pattern of the evolution of the Moon-Earth system described by this model agrees with geological and fossil evidence. The closest...",
+      "seed_id": "ss_003",
+      "seed_text": "De implicaties van de modelvoorstelling voor de bewegingspatronen van andere hemellichamen.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_5",
+      "title": "Bosonic characters of atomic Cooper pairs across resonance",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We study the two-particle wave function of paired atoms in a Fermi gas with tunable interaction strengths controlled by Feshbach resonance. The Cooper pair wave function is examined for its bosonic characters, which is quantified by the correction of Bose enhancement factor associated with the creation and annihilation composite particle operators. An example is given for a three-dimensional unifo...",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke manier waarop de Feshbach resonance de interactiviteitstransformatie beheert, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_5",
+      "title": "Bosonic characters of atomic Cooper pairs across resonance",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We study the two-particle wave function of paired atoms in a Fermi gas with tunable interaction strengths controlled by Feshbach resonance. The Cooper pair wave function is examined for its bosonic characters, which is quantified by the correction of Bose enhancement factor associated with the creation and annihilation composite particle operators. An example is given for a three-dimensional unifo...",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke manier waarop de Feshbach resonance de interactiviteitstransformatie beheert, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_6",
+      "title": "Polymer Quantum Mechanics and its Continuum Limit",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A rather non-standard quantum representation of the canonical commutation relations of quantum mechanics systems, known as the polymer representation has gained some attention in recent years, due to its possible relation with Planck scale physics. In particular, this approach has been followed in a symmetric sector of loop quantum gravity known as loop quantum cosmology. Here we explore different...",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke relatie tussen polymer representation en Planck scale physics wordt niet gedetailleerd.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_6",
+      "title": "Polymer Quantum Mechanics and its Continuum Limit",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A rather non-standard quantum representation of the canonical commutation relations of quantum mechanics systems, known as the polymer representation has gained some attention in recent years, due to its possible relation with Planck scale physics. In particular, this approach has been followed in a symmetric sector of loop quantum gravity known as loop quantum cosmology. Here we explore different...",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke relatie tussen polymer representation en Planck scale physics wordt niet gedetailleerd.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_6",
+      "title": "Polymer Quantum Mechanics and its Continuum Limit",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A rather non-standard quantum representation of the canonical commutation relations of quantum mechanics systems, known as the polymer representation has gained some attention in recent years, due to its possible relation with Planck scale physics. In particular, this approach has been followed in a symmetric sector of loop quantum gravity known as loop quantum cosmology. Here we explore different...",
+      "seed_id": "ss_002",
+      "seed_text": "De exacte methodologie voor het overgaan van de polymer quantum mechanics naar de continuümlimiet wordt niet beschreven.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_6",
+      "title": "Polymer Quantum Mechanics and its Continuum Limit",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A rather non-standard quantum representation of the canonical commutation relations of quantum mechanics systems, known as the polymer representation has gained some attention in recent years, due to its possible relation with Planck scale physics. In particular, this approach has been followed in a symmetric sector of loop quantum gravity known as loop quantum cosmology. Here we explore different...",
+      "seed_id": "ss_002",
+      "seed_text": "De exacte methodologie voor het overgaan van de polymer quantum mechanics naar de continuümlimiet wordt niet beschreven.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_6",
+      "title": "Polymer Quantum Mechanics and its Continuum Limit",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A rather non-standard quantum representation of the canonical commutation relations of quantum mechanics systems, known as the polymer representation has gained some attention in recent years, due to its possible relation with Planck scale physics. In particular, this approach has been followed in a symmetric sector of loop quantum gravity known as loop quantum cosmology. Here we explore different...",
+      "seed_id": "ss_003",
+      "seed_text": "De implicaties van de polymer representation voor de loop quantum gravity, specifiek loop quantum cosmology, worden niet uitgebreid.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_6",
+      "title": "Polymer Quantum Mechanics and its Continuum Limit",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A rather non-standard quantum representation of the canonical commutation relations of quantum mechanics systems, known as the polymer representation has gained some attention in recent years, due to its possible relation with Planck scale physics. In particular, this approach has been followed in a symmetric sector of loop quantum gravity known as loop quantum cosmology. Here we explore different...",
+      "seed_id": "ss_003",
+      "seed_text": "De implicaties van de polymer representation voor de loop quantum gravity, specifiek loop quantum cosmology, worden niet uitgebreid.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_7",
+      "title": "Numerical solution of shock and ramp compression for general material properties",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A general formulation was developed to represent material models for applications in dynamic loading. Numerical methods were devised to calculate response to shock and ramp compression, and ramp decompression, generalizing previous solutions for scalar equations of state. The numerical methods were found to be flexible and robust, and matched analytic results to a high accuracy. The basic ramp and...",
+      "seed_id": "ss_001",
+      "seed_text": "Specifieke materialmodellen die in de formulatie zijn opgenomen.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_7",
+      "title": "Numerical solution of shock and ramp compression for general material properties",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A general formulation was developed to represent material models for applications in dynamic loading. Numerical methods were devised to calculate response to shock and ramp compression, and ramp decompression, generalizing previous solutions for scalar equations of state. The numerical methods were found to be flexible and robust, and matched analytic results to a high accuracy. The basic ramp and...",
+      "seed_id": "ss_001",
+      "seed_text": "Specifieke materialmodellen die in de formulatie zijn opgenomen.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_7",
+      "title": "Numerical solution of shock and ramp compression for general material properties",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A general formulation was developed to represent material models for applications in dynamic loading. Numerical methods were devised to calculate response to shock and ramp compression, and ramp decompression, generalizing previous solutions for scalar equations of state. The numerical methods were found to be flexible and robust, and matched analytic results to a high accuracy. The basic ramp and...",
+      "seed_id": "ss_002",
+      "seed_text": "Precisiesnede van de numerieke methoden voor shock en ramp compressie.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_7",
+      "title": "Numerical solution of shock and ramp compression for general material properties",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A general formulation was developed to represent material models for applications in dynamic loading. Numerical methods were devised to calculate response to shock and ramp compression, and ramp decompression, generalizing previous solutions for scalar equations of state. The numerical methods were found to be flexible and robust, and matched analytic results to a high accuracy. The basic ramp and...",
+      "seed_id": "ss_002",
+      "seed_text": "Precisiesnede van de numerieke methoden voor shock en ramp compressie.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_7",
+      "title": "Numerical solution of shock and ramp compression for general material properties",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A general formulation was developed to represent material models for applications in dynamic loading. Numerical methods were devised to calculate response to shock and ramp compression, and ramp decompression, generalizing previous solutions for scalar equations of state. The numerical methods were found to be flexible and robust, and matched analytic results to a high accuracy. The basic ramp and...",
+      "seed_id": "ss_003",
+      "seed_text": "Analyse van de robuustheid en flexibiliteit van de numerieke methoden.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_7",
+      "title": "Numerical solution of shock and ramp compression for general material properties",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A general formulation was developed to represent material models for applications in dynamic loading. Numerical methods were devised to calculate response to shock and ramp compression, and ramp decompression, generalizing previous solutions for scalar equations of state. The numerical methods were found to be flexible and robust, and matched analytic results to a high accuracy. The basic ramp and...",
+      "seed_id": "ss_003",
+      "seed_text": "Analyse van de robuustheid en flexibiliteit van de numerieke methoden.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_7",
+      "title": "Numerical solution of shock and ramp compression for general material properties",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A general formulation was developed to represent material models for applications in dynamic loading. Numerical methods were devised to calculate response to shock and ramp compression, and ramp decompression, generalizing previous solutions for scalar equations of state. The numerical methods were found to be flexible and robust, and matched analytic results to a high accuracy. The basic ramp and...",
+      "seed_id": "ss_004",
+      "seed_text": "Details over hoe de basis ramp en shock methoden worden gekoppeld voor composite deformatie.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_7",
+      "title": "Numerical solution of shock and ramp compression for general material properties",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A general formulation was developed to represent material models for applications in dynamic loading. Numerical methods were devised to calculate response to shock and ramp compression, and ramp decompression, generalizing previous solutions for scalar equations of state. The numerical methods were found to be flexible and robust, and matched analytic results to a high accuracy. The basic ramp and...",
+      "seed_id": "ss_004",
+      "seed_text": "Details over hoe de basis ramp en shock methoden worden gekoppeld voor composite deformatie.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_7",
+      "title": "Numerical solution of shock and ramp compression for general material properties",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A general formulation was developed to represent material models for applications in dynamic loading. Numerical methods were devised to calculate response to shock and ramp compression, and ramp decompression, generalizing previous solutions for scalar equations of state. The numerical methods were found to be flexible and robust, and matched analytic results to a high accuracy. The basic ramp and...",
+      "seed_id": "ss_005",
+      "seed_text": "Specifieke effecten van plastic werk op temperaturen in quasi-isentropische en shock-release experimenten.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_7",
+      "title": "Numerical solution of shock and ramp compression for general material properties",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "A general formulation was developed to represent material models for applications in dynamic loading. Numerical methods were devised to calculate response to shock and ramp compression, and ramp decompression, generalizing previous solutions for scalar equations of state. The numerical methods were found to be flexible and robust, and matched analytic results to a high accuracy. The basic ramp and...",
+      "seed_id": "ss_005",
+      "seed_text": "Specifieke effecten van plastic werk op temperaturen in quasi-isentropische en shock-release experimenten.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_8",
+      "title": "The Spitzer c2d Survey of Large, Nearby, Insterstellar Clouds. IX. The Serpens YSO Population As Observed With IRAC and MIPS",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We discuss the results from the combined IRAC and MIPS c2d Spitzer Legacy observations of the Serpens star-forming region. In particular we present a set of criteria for isolating bona fide young stellar objects, YSO's, from the extensive background contamination by extra-galactic objects. We then discuss the properties of the resulting high confidence set of YSO's. We find 235 such objects in the...",
+      "seed_id": "ss_001",
+      "seed_text": "De exacte methode voor het isoleren van bona fide YSO's uit de achtergrondcontaminaatie.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_8",
+      "title": "The Spitzer c2d Survey of Large, Nearby, Insterstellar Clouds. IX. The Serpens YSO Population As Observed With IRAC and MIPS",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We discuss the results from the combined IRAC and MIPS c2d Spitzer Legacy observations of the Serpens star-forming region. In particular we present a set of criteria for isolating bona fide young stellar objects, YSO's, from the extensive background contamination by extra-galactic objects. We then discuss the properties of the resulting high confidence set of YSO's. We find 235 such objects in the...",
+      "seed_id": "ss_001",
+      "seed_text": "De exacte methode voor het isoleren van bona fide YSO's uit de achtergrondcontaminaatie.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_8",
+      "title": "The Spitzer c2d Survey of Large, Nearby, Insterstellar Clouds. IX. The Serpens YSO Population As Observed With IRAC and MIPS",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We discuss the results from the combined IRAC and MIPS c2d Spitzer Legacy observations of the Serpens star-forming region. In particular we present a set of criteria for isolating bona fide young stellar objects, YSO's, from the extensive background contamination by extra-galactic objects. We then discuss the properties of the resulting high confidence set of YSO's. We find 235 such objects in the...",
+      "seed_id": "ss_002",
+      "seed_text": "De specifieke criteria gebruikt voor het bepalen van de hoge betrouwbaarheid van de YSO's.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_8",
+      "title": "The Spitzer c2d Survey of Large, Nearby, Insterstellar Clouds. IX. The Serpens YSO Population As Observed With IRAC and MIPS",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We discuss the results from the combined IRAC and MIPS c2d Spitzer Legacy observations of the Serpens star-forming region. In particular we present a set of criteria for isolating bona fide young stellar objects, YSO's, from the extensive background contamination by extra-galactic objects. We then discuss the properties of the resulting high confidence set of YSO's. We find 235 such objects in the...",
+      "seed_id": "ss_002",
+      "seed_text": "De specifieke criteria gebruikt voor het bepalen van de hoge betrouwbaarheid van de YSO's.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_8",
+      "title": "The Spitzer c2d Survey of Large, Nearby, Insterstellar Clouds. IX. The Serpens YSO Population As Observed With IRAC and MIPS",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We discuss the results from the combined IRAC and MIPS c2d Spitzer Legacy observations of the Serpens star-forming region. In particular we present a set of criteria for isolating bona fide young stellar objects, YSO's, from the extensive background contamination by extra-galactic objects. We then discuss the properties of the resulting high confidence set of YSO's. We find 235 such objects in the...",
+      "seed_id": "ss_003",
+      "seed_text": "De exacte omvang van het gebied dat werd bestudeerd met IRAC en MIPS.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_8",
+      "title": "The Spitzer c2d Survey of Large, Nearby, Insterstellar Clouds. IX. The Serpens YSO Population As Observed With IRAC and MIPS",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We discuss the results from the combined IRAC and MIPS c2d Spitzer Legacy observations of the Serpens star-forming region. In particular we present a set of criteria for isolating bona fide young stellar objects, YSO's, from the extensive background contamination by extra-galactic objects. We then discuss the properties of the resulting high confidence set of YSO's. We find 235 such objects in the...",
+      "seed_id": "ss_003",
+      "seed_text": "De exacte omvang van het gebied dat werd bestudeerd met IRAC en MIPS.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_8",
+      "title": "The Spitzer c2d Survey of Large, Nearby, Insterstellar Clouds. IX. The Serpens YSO Population As Observed With IRAC and MIPS",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We discuss the results from the combined IRAC and MIPS c2d Spitzer Legacy observations of the Serpens star-forming region. In particular we present a set of criteria for isolating bona fide young stellar objects, YSO's, from the extensive background contamination by extra-galactic objects. We then discuss the properties of the resulting high confidence set of YSO's. We find 235 such objects in the...",
+      "seed_id": "ss_004",
+      "seed_text": "De specifieke methoden gebruikt om de lagere betrouwbaarheid YSO's te identificeren.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_8",
+      "title": "The Spitzer c2d Survey of Large, Nearby, Insterstellar Clouds. IX. The Serpens YSO Population As Observed With IRAC and MIPS",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We discuss the results from the combined IRAC and MIPS c2d Spitzer Legacy observations of the Serpens star-forming region. In particular we present a set of criteria for isolating bona fide young stellar objects, YSO's, from the extensive background contamination by extra-galactic objects. We then discuss the properties of the resulting high confidence set of YSO's. We find 235 such objects in the...",
+      "seed_id": "ss_004",
+      "seed_text": "De specifieke methoden gebruikt om de lagere betrouwbaarheid YSO's te identificeren.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_8",
+      "title": "The Spitzer c2d Survey of Large, Nearby, Insterstellar Clouds. IX. The Serpens YSO Population As Observed With IRAC and MIPS",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We discuss the results from the combined IRAC and MIPS c2d Spitzer Legacy observations of the Serpens star-forming region. In particular we present a set of criteria for isolating bona fide young stellar objects, YSO's, from the extensive background contamination by extra-galactic objects. We then discuss the properties of the resulting high confidence set of YSO's. We find 235 such objects in the...",
+      "seed_id": "ss_005",
+      "seed_text": "De exacte details van de color-color diagrammen en de modelresultaten voor star/disk/envelope systemen.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_8",
+      "title": "The Spitzer c2d Survey of Large, Nearby, Insterstellar Clouds. IX. The Serpens YSO Population As Observed With IRAC and MIPS",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We discuss the results from the combined IRAC and MIPS c2d Spitzer Legacy observations of the Serpens star-forming region. In particular we present a set of criteria for isolating bona fide young stellar objects, YSO's, from the extensive background contamination by extra-galactic objects. We then discuss the properties of the resulting high confidence set of YSO's. We find 235 such objects in the...",
+      "seed_id": "ss_005",
+      "seed_text": "De exacte details van de color-color diagrammen en de modelresultaten voor star/disk/envelope systemen.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_9",
+      "title": "Partial cubes: structures, characterizations, and constructions",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Partial cubes are isometric subgraphs of hypercubes. Structures on a graph defined by means of semicubes, and Djokovi\\'{c}'s and Winkler's relations play an important role in the theory of partial cubes. These structures are employed in the paper to characterize bipartite graphs and partial cubes of arbitrary dimension. New characterizations are established and new proofs of some known results are...",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke dimensie van de hypercubes waar de partial cubes deel van uitmaken, wordt niet vermeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_9",
+      "title": "Partial cubes: structures, characterizations, and constructions",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Partial cubes are isometric subgraphs of hypercubes. Structures on a graph defined by means of semicubes, and Djokovi\\'{c}'s and Winkler's relations play an important role in the theory of partial cubes. These structures are employed in the paper to characterize bipartite graphs and partial cubes of arbitrary dimension. New characterizations are established and new proofs of some known results are...",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke dimensie van de hypercubes waar de partial cubes deel van uitmaken, wordt niet vermeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_9",
+      "title": "Partial cubes: structures, characterizations, and constructions",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Partial cubes are isometric subgraphs of hypercubes. Structures on a graph defined by means of semicubes, and Djokovi\\'{c}'s and Winkler's relations play an important role in the theory of partial cubes. These structures are employed in the paper to characterize bipartite graphs and partial cubes of arbitrary dimension. New characterizations are established and new proofs of some known results are...",
+      "seed_id": "ss_002",
+      "seed_text": "De exacte manier waarop semicubes de structuren op de graf definiëren, wordt niet beschreven.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_9",
+      "title": "Partial cubes: structures, characterizations, and constructions",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Partial cubes are isometric subgraphs of hypercubes. Structures on a graph defined by means of semicubes, and Djokovi\\'{c}'s and Winkler's relations play an important role in the theory of partial cubes. These structures are employed in the paper to characterize bipartite graphs and partial cubes of arbitrary dimension. New characterizations are established and new proofs of some known results are...",
+      "seed_id": "ss_002",
+      "seed_text": "De exacte manier waarop semicubes de structuren op de graf definiëren, wordt niet beschreven.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_10",
+      "title": "Computing genus 2 Hilbert-Siegel modular forms over $\\Q(\\sqrt{5})$ via the Jacquet-Langlands correspondence",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "In this paper we present an algorithm for computing Hecke eigensystems of Hilbert-Siegel cusp forms over real quadratic fields of narrow class number one. We give some illustrative examples using the quadratic field $\\Q(\\sqrt{5})$. In those examples, we identify Hilbert-Siegel eigenforms that are possible lifts from Hilbert eigenforms.",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke eigenschappen van de real quadratic field $\\Q(\\sqrt{5})$.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_10",
+      "title": "Computing genus 2 Hilbert-Siegel modular forms over $\\Q(\\sqrt{5})$ via the Jacquet-Langlands correspondence",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "In this paper we present an algorithm for computing Hecke eigensystems of Hilbert-Siegel cusp forms over real quadratic fields of narrow class number one. We give some illustrative examples using the quadratic field $\\Q(\\sqrt{5})$. In those examples, we identify Hilbert-Siegel eigenforms that are possible lifts from Hilbert eigenforms.",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke eigenschappen van de real quadratic field $\\Q(\\sqrt{5})$.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_10",
+      "title": "Computing genus 2 Hilbert-Siegel modular forms over $\\Q(\\sqrt{5})$ via the Jacquet-Langlands correspondence",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "In this paper we present an algorithm for computing Hecke eigensystems of Hilbert-Siegel cusp forms over real quadratic fields of narrow class number one. We give some illustrative examples using the quadratic field $\\Q(\\sqrt{5})$. In those examples, we identify Hilbert-Siegel eigenforms that are possible lifts from Hilbert eigenforms.",
+      "seed_id": "ss_002",
+      "seed_text": "De exacte methodologie van het algoritme voor het berekenen van Hecke eigensystemen.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_10",
+      "title": "Computing genus 2 Hilbert-Siegel modular forms over $\\Q(\\sqrt{5})$ via the Jacquet-Langlands correspondence",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "In this paper we present an algorithm for computing Hecke eigensystems of Hilbert-Siegel cusp forms over real quadratic fields of narrow class number one. We give some illustrative examples using the quadratic field $\\Q(\\sqrt{5})$. In those examples, we identify Hilbert-Siegel eigenforms that are possible lifts from Hilbert eigenforms.",
+      "seed_id": "ss_002",
+      "seed_text": "De exacte methodologie van het algoritme voor het berekenen van Hecke eigensystemen.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_10",
+      "title": "Computing genus 2 Hilbert-Siegel modular forms over $\\Q(\\sqrt{5})$ via the Jacquet-Langlands correspondence",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "In this paper we present an algorithm for computing Hecke eigensystems of Hilbert-Siegel cusp forms over real quadratic fields of narrow class number one. We give some illustrative examples using the quadratic field $\\Q(\\sqrt{5})$. In those examples, we identify Hilbert-Siegel eigenforms that are possible lifts from Hilbert eigenforms.",
+      "seed_id": "ss_003",
+      "seed_text": "De definitie van Hilbert-Siegel cusp forms in de context van de tekst.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_10",
+      "title": "Computing genus 2 Hilbert-Siegel modular forms over $\\Q(\\sqrt{5})$ via the Jacquet-Langlands correspondence",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "In this paper we present an algorithm for computing Hecke eigensystems of Hilbert-Siegel cusp forms over real quadratic fields of narrow class number one. We give some illustrative examples using the quadratic field $\\Q(\\sqrt{5})$. In those examples, we identify Hilbert-Siegel eigenforms that are possible lifts from Hilbert eigenforms.",
+      "seed_id": "ss_003",
+      "seed_text": "De definitie van Hilbert-Siegel cusp forms in de context van de tekst.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_10",
+      "title": "Computing genus 2 Hilbert-Siegel modular forms over $\\Q(\\sqrt{5})$ via the Jacquet-Langlands correspondence",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "In this paper we present an algorithm for computing Hecke eigensystems of Hilbert-Siegel cusp forms over real quadratic fields of narrow class number one. We give some illustrative examples using the quadratic field $\\Q(\\sqrt{5})$. In those examples, we identify Hilbert-Siegel eigenforms that are possible lifts from Hilbert eigenforms.",
+      "seed_id": "ss_004",
+      "seed_text": "De manier waarop de identiteit van Hilbert eigenforms met Hilbert-Siegel eigenforms wordt geïdentificeerd.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_10",
+      "title": "Computing genus 2 Hilbert-Siegel modular forms over $\\Q(\\sqrt{5})$ via the Jacquet-Langlands correspondence",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "In this paper we present an algorithm for computing Hecke eigensystems of Hilbert-Siegel cusp forms over real quadratic fields of narrow class number one. We give some illustrative examples using the quadratic field $\\Q(\\sqrt{5})$. In those examples, we identify Hilbert-Siegel eigenforms that are possible lifts from Hilbert eigenforms.",
+      "seed_id": "ss_004",
+      "seed_text": "De manier waarop de identiteit van Hilbert eigenforms met Hilbert-Siegel eigenforms wordt geïdentificeerd.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_10",
+      "title": "Computing genus 2 Hilbert-Siegel modular forms over $\\Q(\\sqrt{5})$ via the Jacquet-Langlands correspondence",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "In this paper we present an algorithm for computing Hecke eigensystems of Hilbert-Siegel cusp forms over real quadratic fields of narrow class number one. We give some illustrative examples using the quadratic field $\\Q(\\sqrt{5})$. In those examples, we identify Hilbert-Siegel eigenforms that are possible lifts from Hilbert eigenforms.",
+      "seed_id": "ss_005",
+      "seed_text": "Het aantal of de aard van de illustratieve voorbeelden gebruikt in het voorbeeld.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_10",
+      "title": "Computing genus 2 Hilbert-Siegel modular forms over $\\Q(\\sqrt{5})$ via the Jacquet-Langlands correspondence",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "In this paper we present an algorithm for computing Hecke eigensystems of Hilbert-Siegel cusp forms over real quadratic fields of narrow class number one. We give some illustrative examples using the quadratic field $\\Q(\\sqrt{5})$. In those examples, we identify Hilbert-Siegel eigenforms that are possible lifts from Hilbert eigenforms.",
+      "seed_id": "ss_005",
+      "seed_text": "Het aantal of de aard van de illustratieve voorbeelden gebruikt in het voorbeeld.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_11",
+      "title": "Distribution of integral Fourier Coefficients of a Modular Form of Half Integral Weight Modulo Primes",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Recently, Bruinier and Ono classified cusp forms $f(z) := \\sum_{n=0}^{\\infty} a_f(n)q ^n \\in S_{\\lambda+1/2}(\\Gamma_0(N),\\chi)\\cap \\mathbb{Z}[[q]]$ that does not satisfy a certain distribution property for modulo odd primes $p$. In this paper, using Rankin-Cohen Bracket, we extend this result to modular forms of half integral weight for primes $p \\geq 5$. As applications of our main theorem we der...",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke distributioneigenschap die cusp forms niet voor modulo odd primes $p$.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_11",
+      "title": "Distribution of integral Fourier Coefficients of a Modular Form of Half Integral Weight Modulo Primes",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Recently, Bruinier and Ono classified cusp forms $f(z) := \\sum_{n=0}^{\\infty} a_f(n)q ^n \\in S_{\\lambda+1/2}(\\Gamma_0(N),\\chi)\\cap \\mathbb{Z}[[q]]$ that does not satisfy a certain distribution property for modulo odd primes $p$. In this paper, using Rankin-Cohen Bracket, we extend this result to modular forms of half integral weight for primes $p \\geq 5$. As applications of our main theorem we der...",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke distributioneigenschap die cusp forms niet voor modulo odd primes $p$.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_11",
+      "title": "Distribution of integral Fourier Coefficients of a Modular Form of Half Integral Weight Modulo Primes",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Recently, Bruinier and Ono classified cusp forms $f(z) := \\sum_{n=0}^{\\infty} a_f(n)q ^n \\in S_{\\lambda+1/2}(\\Gamma_0(N),\\chi)\\cap \\mathbb{Z}[[q]]$ that does not satisfy a certain distribution property for modulo odd primes $p$. In this paper, using Rankin-Cohen Bracket, we extend this result to modular forms of half integral weight for primes $p \\geq 5$. As applications of our main theorem we der...",
+      "seed_id": "ss_002",
+      "seed_text": "De exacte eigenschappen van modular forms van half integral weight die in de.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_11",
+      "title": "Distribution of integral Fourier Coefficients of a Modular Form of Half Integral Weight Modulo Primes",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Recently, Bruinier and Ono classified cusp forms $f(z) := \\sum_{n=0}^{\\infty} a_f(n)q ^n \\in S_{\\lambda+1/2}(\\Gamma_0(N),\\chi)\\cap \\mathbb{Z}[[q]]$ that does not satisfy a certain distribution property for modulo odd primes $p$. In this paper, using Rankin-Cohen Bracket, we extend this result to modular forms of half integral weight for primes $p \\geq 5$. As applications of our main theorem we der...",
+      "seed_id": "ss_002",
+      "seed_text": "De exacte eigenschappen van modular forms van half integral weight die in de.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_11",
+      "title": "Distribution of integral Fourier Coefficients of a Modular Form of Half Integral Weight Modulo Primes",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Recently, Bruinier and Ono classified cusp forms $f(z) := \\sum_{n=0}^{\\infty} a_f(n)q ^n \\in S_{\\lambda+1/2}(\\Gamma_0(N),\\chi)\\cap \\mathbb{Z}[[q]]$ that does not satisfy a certain distribution property for modulo odd primes $p$. In this paper, using Rankin-Cohen Bracket, we extend this result to modular forms of half integral weight for primes $p \\geq 5$. As applications of our main theorem we der...",
+      "seed_id": "ss_003",
+      "seed_text": "De methodologische details over het gebruik van de Rankin-Cohen Bracket in.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_11",
+      "title": "Distribution of integral Fourier Coefficients of a Modular Form of Half Integral Weight Modulo Primes",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Recently, Bruinier and Ono classified cusp forms $f(z) := \\sum_{n=0}^{\\infty} a_f(n)q ^n \\in S_{\\lambda+1/2}(\\Gamma_0(N),\\chi)\\cap \\mathbb{Z}[[q]]$ that does not satisfy a certain distribution property for modulo odd primes $p$. In this paper, using Rankin-Cohen Bracket, we extend this result to modular forms of half integral weight for primes $p \\geq 5$. As applications of our main theorem we der...",
+      "seed_id": "ss_003",
+      "seed_text": "De methodologische details over het gebruik van de Rankin-Cohen Bracket in.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_11",
+      "title": "Distribution of integral Fourier Coefficients of a Modular Form of Half Integral Weight Modulo Primes",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Recently, Bruinier and Ono classified cusp forms $f(z) := \\sum_{n=0}^{\\infty} a_f(n)q ^n \\in S_{\\lambda+1/2}(\\Gamma_0(N),\\chi)\\cap \\mathbb{Z}[[q]]$ that does not satisfy a certain distribution property for modulo odd primes $p$. In this paper, using Rankin-Cohen Bracket, we extend this result to modular forms of half integral weight for primes $p \\geq 5$. As applications of our main theorem we der...",
+      "seed_id": "ss_004",
+      "seed_text": "De precieze eigenschappen van traces van singular moduli en Hurwitz class number.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_11",
+      "title": "Distribution of integral Fourier Coefficients of a Modular Form of Half Integral Weight Modulo Primes",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Recently, Bruinier and Ono classified cusp forms $f(z) := \\sum_{n=0}^{\\infty} a_f(n)q ^n \\in S_{\\lambda+1/2}(\\Gamma_0(N),\\chi)\\cap \\mathbb{Z}[[q]]$ that does not satisfy a certain distribution property for modulo odd primes $p$. In this paper, using Rankin-Cohen Bracket, we extend this result to modular forms of half integral weight for primes $p \\geq 5$. As applications of our main theorem we der...",
+      "seed_id": "ss_004",
+      "seed_text": "De precieze eigenschappen van traces van singular moduli en Hurwitz class number.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_11",
+      "title": "Distribution of integral Fourier Coefficients of a Modular Form of Half Integral Weight Modulo Primes",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Recently, Bruinier and Ono classified cusp forms $f(z) := \\sum_{n=0}^{\\infty} a_f(n)q ^n \\in S_{\\lambda+1/2}(\\Gamma_0(N),\\chi)\\cap \\mathbb{Z}[[q]]$ that does not satisfy a certain distribution property for modulo odd primes $p$. In this paper, using Rankin-Cohen Bracket, we extend this result to modular forms of half integral weight for primes $p \\geq 5$. As applications of our main theorem we der...",
+      "seed_id": "ss_005",
+      "seed_text": "De analoge aspecten van Newman's conjecture voor overpartitions die in het onderzoek.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_11",
+      "title": "Distribution of integral Fourier Coefficients of a Modular Form of Half Integral Weight Modulo Primes",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Recently, Bruinier and Ono classified cusp forms $f(z) := \\sum_{n=0}^{\\infty} a_f(n)q ^n \\in S_{\\lambda+1/2}(\\Gamma_0(N),\\chi)\\cap \\mathbb{Z}[[q]]$ that does not satisfy a certain distribution property for modulo odd primes $p$. In this paper, using Rankin-Cohen Bracket, we extend this result to modular forms of half integral weight for primes $p \\geq 5$. As applications of our main theorem we der...",
+      "seed_id": "ss_005",
+      "seed_text": "De analoge aspecten van Newman's conjecture voor overpartitions die in het onderzoek.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_12",
+      "title": "$p$-adic Limit of Weakly Holomorphic Modular Forms of Half Integral Weight",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Serre obtained the p-adic limit of the integral Fourier coefficient of modular forms on $SL_2(\\mathbb{Z})$ for $p=2,3,5,7$. In this paper, we extend the result of Serre to weakly holomorphic modular forms of half integral weight on $\\Gamma_{0}(4N)$ for $N=1,2,4$. A proof is based on linear relations among Fourier coefficients of modular forms of half integral weight. As applications we obtain cong...",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke half integral weegingen waarvoor de resultaten worden uitgebreid.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_12",
+      "title": "$p$-adic Limit of Weakly Holomorphic Modular Forms of Half Integral Weight",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Serre obtained the p-adic limit of the integral Fourier coefficient of modular forms on $SL_2(\\mathbb{Z})$ for $p=2,3,5,7$. In this paper, we extend the result of Serre to weakly holomorphic modular forms of half integral weight on $\\Gamma_{0}(4N)$ for $N=1,2,4$. A proof is based on linear relations among Fourier coefficients of modular forms of half integral weight. As applications we obtain cong...",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke half integral weegingen waarvoor de resultaten worden uitgebreid.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_12",
+      "title": "$p$-adic Limit of Weakly Holomorphic Modular Forms of Half Integral Weight",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Serre obtained the p-adic limit of the integral Fourier coefficient of modular forms on $SL_2(\\mathbb{Z})$ for $p=2,3,5,7$. In this paper, we extend the result of Serre to weakly holomorphic modular forms of half integral weight on $\\Gamma_{0}(4N)$ for $N=1,2,4$. A proof is based on linear relations among Fourier coefficients of modular forms of half integral weight. As applications we obtain cong...",
+      "seed_id": "ss_002",
+      "seed_text": "De exacte linear relaties tussen Fourier coefficients die worden gebruikt in de bewijsvoering.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_12",
+      "title": "$p$-adic Limit of Weakly Holomorphic Modular Forms of Half Integral Weight",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Serre obtained the p-adic limit of the integral Fourier coefficient of modular forms on $SL_2(\\mathbb{Z})$ for $p=2,3,5,7$. In this paper, we extend the result of Serre to weakly holomorphic modular forms of half integral weight on $\\Gamma_{0}(4N)$ for $N=1,2,4$. A proof is based on linear relations among Fourier coefficients of modular forms of half integral weight. As applications we obtain cong...",
+      "seed_id": "ss_002",
+      "seed_text": "De exacte linear relaties tussen Fourier coefficients die worden gebruikt in de bewijsvoering.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_12",
+      "title": "$p$-adic Limit of Weakly Holomorphic Modular Forms of Half Integral Weight",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Serre obtained the p-adic limit of the integral Fourier coefficient of modular forms on $SL_2(\\mathbb{Z})$ for $p=2,3,5,7$. In this paper, we extend the result of Serre to weakly holomorphic modular forms of half integral weight on $\\Gamma_{0}(4N)$ for $N=1,2,4$. A proof is based on linear relations among Fourier coefficients of modular forms of half integral weight. As applications we obtain cong...",
+      "seed_id": "ss_003",
+      "seed_text": "De specifieke congruenties van Borcherds exponenten die worden verkregen.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_12",
+      "title": "$p$-adic Limit of Weakly Holomorphic Modular Forms of Half Integral Weight",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Serre obtained the p-adic limit of the integral Fourier coefficient of modular forms on $SL_2(\\mathbb{Z})$ for $p=2,3,5,7$. In this paper, we extend the result of Serre to weakly holomorphic modular forms of half integral weight on $\\Gamma_{0}(4N)$ for $N=1,2,4$. A proof is based on linear relations among Fourier coefficients of modular forms of half integral weight. As applications we obtain cong...",
+      "seed_id": "ss_003",
+      "seed_text": "De specifieke congruenties van Borcherds exponenten die worden verkregen.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_12",
+      "title": "$p$-adic Limit of Weakly Holomorphic Modular Forms of Half Integral Weight",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Serre obtained the p-adic limit of the integral Fourier coefficient of modular forms on $SL_2(\\mathbb{Z})$ for $p=2,3,5,7$. In this paper, we extend the result of Serre to weakly holomorphic modular forms of half integral weight on $\\Gamma_{0}(4N)$ for $N=1,2,4$. A proof is based on linear relations among Fourier coefficients of modular forms of half integral weight. As applications we obtain cong...",
+      "seed_id": "ss_004",
+      "seed_text": "De precieze congruenties van quotiënten van Eisentein series die worden verkregen.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_12",
+      "title": "$p$-adic Limit of Weakly Holomorphic Modular Forms of Half Integral Weight",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Serre obtained the p-adic limit of the integral Fourier coefficient of modular forms on $SL_2(\\mathbb{Z})$ for $p=2,3,5,7$. In this paper, we extend the result of Serre to weakly holomorphic modular forms of half integral weight on $\\Gamma_{0}(4N)$ for $N=1,2,4$. A proof is based on linear relations among Fourier coefficients of modular forms of half integral weight. As applications we obtain cong...",
+      "seed_id": "ss_004",
+      "seed_text": "De precieze congruenties van quotiënten van Eisentein series die worden verkregen.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_12",
+      "title": "$p$-adic Limit of Weakly Holomorphic Modular Forms of Half Integral Weight",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Serre obtained the p-adic limit of the integral Fourier coefficient of modular forms on $SL_2(\\mathbb{Z})$ for $p=2,3,5,7$. In this paper, we extend the result of Serre to weakly holomorphic modular forms of half integral weight on $\\Gamma_{0}(4N)$ for $N=1,2,4$. A proof is based on linear relations among Fourier coefficients of modular forms of half integral weight. As applications we obtain cong...",
+      "seed_id": "ss_005",
+      "seed_text": "De specifieke punten waar de congruenties van $L$-functies worden verkregen.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_12",
+      "title": "$p$-adic Limit of Weakly Holomorphic Modular Forms of Half Integral Weight",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Serre obtained the p-adic limit of the integral Fourier coefficient of modular forms on $SL_2(\\mathbb{Z})$ for $p=2,3,5,7$. In this paper, we extend the result of Serre to weakly holomorphic modular forms of half integral weight on $\\Gamma_{0}(4N)$ for $N=1,2,4$. A proof is based on linear relations among Fourier coefficients of modular forms of half integral weight. As applications we obtain cong...",
+      "seed_id": "ss_005",
+      "seed_text": "De specifieke punten waar de congruenties van $L$-functies worden verkregen.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_14",
+      "title": "Fermionic superstring loop amplitudes in the pure spinor formalism",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The pure spinor formulation of the ten-dimensional superstring leads to manifestly supersymmetric loop amplitudes, expressed as integrals in pure spinor superspace. This paper explores different methods to evaluate these integrals and then uses them to calculate the kinematic factors of the one-loop and two-loop massless four-point amplitudes involving two and four Ramond states.",
+      "seed_id": "ss_001",
+      "seed_text": "Methoden om de integralen in pure spinor superspace te evalueren.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_14",
+      "title": "Fermionic superstring loop amplitudes in the pure spinor formalism",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The pure spinor formulation of the ten-dimensional superstring leads to manifestly supersymmetric loop amplitudes, expressed as integrals in pure spinor superspace. This paper explores different methods to evaluate these integrals and then uses them to calculate the kinematic factors of the one-loop and two-loop massless four-point amplitudes involving two and four Ramond states.",
+      "seed_id": "ss_001",
+      "seed_text": "Methoden om de integralen in pure spinor superspace te evalueren.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_14",
+      "title": "Fermionic superstring loop amplitudes in the pure spinor formalism",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The pure spinor formulation of the ten-dimensional superstring leads to manifestly supersymmetric loop amplitudes, expressed as integrals in pure spinor superspace. This paper explores different methods to evaluate these integrals and then uses them to calculate the kinematic factors of the one-loop and two-loop massless four-point amplitudes involving two and four Ramond states.",
+      "seed_id": "ss_002",
+      "seed_text": "Procedure voor het berekenen van de kinematische factoren van de one-loop amplitudes.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_14",
+      "title": "Fermionic superstring loop amplitudes in the pure spinor formalism",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The pure spinor formulation of the ten-dimensional superstring leads to manifestly supersymmetric loop amplitudes, expressed as integrals in pure spinor superspace. This paper explores different methods to evaluate these integrals and then uses them to calculate the kinematic factors of the one-loop and two-loop massless four-point amplitudes involving two and four Ramond states.",
+      "seed_id": "ss_002",
+      "seed_text": "Procedure voor het berekenen van de kinematische factoren van de one-loop amplitudes.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_14",
+      "title": "Fermionic superstring loop amplitudes in the pure spinor formalism",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The pure spinor formulation of the ten-dimensional superstring leads to manifestly supersymmetric loop amplitudes, expressed as integrals in pure spinor superspace. This paper explores different methods to evaluate these integrals and then uses them to calculate the kinematic factors of the one-loop and two-loop massless four-point amplitudes involving two and four Ramond states.",
+      "seed_id": "ss_003",
+      "seed_text": "Procedure voor het berekenen van de kinematische factoren van de twee-loop amplitudes.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_14",
+      "title": "Fermionic superstring loop amplitudes in the pure spinor formalism",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The pure spinor formulation of the ten-dimensional superstring leads to manifestly supersymmetric loop amplitudes, expressed as integrals in pure spinor superspace. This paper explores different methods to evaluate these integrals and then uses them to calculate the kinematic factors of the one-loop and two-loop massless four-point amplitudes involving two and four Ramond states.",
+      "seed_id": "ss_003",
+      "seed_text": "Procedure voor het berekenen van de kinematische factoren van de twee-loop amplitudes.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_14",
+      "title": "Fermionic superstring loop amplitudes in the pure spinor formalism",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The pure spinor formulation of the ten-dimensional superstring leads to manifestly supersymmetric loop amplitudes, expressed as integrals in pure spinor superspace. This paper explores different methods to evaluate these integrals and then uses them to calculate the kinematic factors of the one-loop and two-loop massless four-point amplitudes involving two and four Ramond states.",
+      "seed_id": "ss_004",
+      "seed_text": "De rol van de Ramond-staten in de vier-puntamplitudesberekening.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_14",
+      "title": "Fermionic superstring loop amplitudes in the pure spinor formalism",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The pure spinor formulation of the ten-dimensional superstring leads to manifestly supersymmetric loop amplitudes, expressed as integrals in pure spinor superspace. This paper explores different methods to evaluate these integrals and then uses them to calculate the kinematic factors of the one-loop and two-loop massless four-point amplitudes involving two and four Ramond states.",
+      "seed_id": "ss_004",
+      "seed_text": "De rol van de Ramond-staten in de vier-puntamplitudesberekening.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_14",
+      "title": "Fermionic superstring loop amplitudes in the pure spinor formalism",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The pure spinor formulation of the ten-dimensional superstring leads to manifestly supersymmetric loop amplitudes, expressed as integrals in pure spinor superspace. This paper explores different methods to evaluate these integrals and then uses them to calculate the kinematic factors of the one-loop and two-loop massless four-point amplitudes involving two and four Ramond states.",
+      "seed_id": "ss_005",
+      "seed_text": "Manifeste supersymmetrie in de one-loop en twee-loop amplitudes.",
+      "reviewer_id": "reviewer_a",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_14",
+      "title": "Fermionic superstring loop amplitudes in the pure spinor formalism",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The pure spinor formulation of the ten-dimensional superstring leads to manifestly supersymmetric loop amplitudes, expressed as integrals in pure spinor superspace. This paper explores different methods to evaluate these integrals and then uses them to calculate the kinematic factors of the one-loop and two-loop massless four-point amplitudes involving two and four Ramond states.",
+      "seed_id": "ss_005",
+      "seed_text": "Manifeste supersymmetrie in de one-loop en twee-loop amplitudes.",
+      "reviewer_id": "reviewer_b",
+      "reviewer_slot": 2,
+      "review_fields": {
+        "atomicity": null,
+        "relevance": null,
+        "testability": null,
+        "non_triviality": null,
+        "follow_up_utility": null
+      },
+      "review_status": "pending",
+      "reject_reason": null,
+      "reviewer_notes": ""
+    }
+  ]
+}

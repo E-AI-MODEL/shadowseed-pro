@@ -1,0 +1,967 @@
+{
+  "artifact": "mechanical_prescreen",
+  "disclaimer": "Deterministische prescreen, GEEN menselijke review. Telt NIET als reviewer_a/reviewer_b en niet als open_set_seed_quality (Laag C) evidence, en geeft GEEN accept/reject-verdict. Bedoeld om aandacht te richten en de v0.3e-prompt te toetsen aan haar eigen regels.",
+  "round": "round_005",
+  "detector": "model",
+  "model_backend": "hf-transformers:Qwen/Qwen2.5-3B-Instruct",
+  "yield": {
+    "item_count": 23,
+    "items_with_candidates": 23,
+    "items_empty": 0,
+    "empty_rate": 0.0,
+    "mean_candidates_per_item": 4.957
+  },
+  "mechanical_codes": [
+    "claim_vs_gap",
+    "truncated",
+    "parse_leak",
+    "language_leak",
+    "entity_bleed",
+    "citation_fragment",
+    "fewshot_leak",
+    "not_atomic",
+    "near_duplicate"
+  ],
+  "not_mechanically_checkable": [
+    "false_gap",
+    "mistranslation",
+    "grammar"
+  ],
+  "seed_count": 114,
+  "flagged_count": 51,
+  "clean_count": 63,
+  "clean_rate": 0.553,
+  "near_duplicate_rate": 0.114,
+  "failure_code_counts": {
+    "claim_vs_gap": 0,
+    "truncated": 9,
+    "parse_leak": 10,
+    "language_leak": 0,
+    "entity_bleed": 0,
+    "citation_fragment": 0,
+    "fewshot_leak": 0,
+    "not_atomic": 38,
+    "near_duplicate": 13
+  },
+  "verdicts": [
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "position": 1,
+      "seed": "Of de Federal Mogul onderzoek heeft gedaan naar de toekomstige financiële situatie van T N, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "position": 2,
+      "seed": "Of de Federal Mogul heeft besproken wat ze doen om de toekomstige pensionen van T N werknemers te waarborgen, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "position": 3,
+      "seed": "Of de Federal Mogul heeft een plan of strategie geformuleerd voor de toekomstige financiële situatie van T N, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "position": 4,
+      "seed": "Of de Federal Mogul heeft besloten om de werknemers van T N te informeren over de mogelijke toekomstige financiële situatie, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "position": 5,
+      "seed": "Of de Federal Mogul heeft een afspraak gemaakt met de werknemers van T N over de toekomstige financiële situatie, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "position": 1,
+      "seed": "Of de tweede team een officiële lanceringdatum heeft aangegeven, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "position": 2,
+      "seed": "Of de tweede team een naam heeft genoemd, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "position": 3,
+      "seed": "Of de tweede team een organisatie heeft genoemd, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "position": 4,
+      "seed": "Of de tweede team een locatie heeft genoemd, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "position": 5,
+      "seed": "Of de tweede team een sponsor heeft genoemd, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "position": 1,
+      "seed": "Of de Ky. Company onderzoek heeft gedaan, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "position": 2,
+      "seed": "Of de peptides door de Ky. Company worden gebruikt, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "position": 3,
+      "seed": "Of de peptides door de Ky. Company worden verkocht, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "position": 4,
+      "seed": "Of de peptides door de Ky. Company worden ingevoerd in de markt, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "position": 5,
+      "seed": "Of de peptides door de Ky. Company worden geproduceerd, wordt niet vermeld. 1. Of de peptides door de Ky. Company worden gebruikt, wordt niet vermeld.",
+      "codes": [
+        "parse_leak",
+        "not_atomic",
+        "near_duplicate"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "position": 1,
+      "seed": "Of de Prediction Unit ondersteuning biedt voor bepaalde regio's, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "position": 2,
+      "seed": "Of de Prediction Unit zich beperkt tot bepaalde regio's, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "position": 3,
+      "seed": "Of de Prediction Unit een bepaalde periode in dienst is, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "position": 4,
+      "seed": "Of de Prediction Unit een bepaalde periode niet in dienst is, wordt niet vermeld.",
+      "codes": [
+        "near_duplicate"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "position": 5,
+      "seed": "Of de Prediction Unit een bepaalde periode niet in dienst is, wordt niet vermeld. (dubbel) 1. Of de Prediction Unit een bepaalde periode in dienst is, wordt niet vermeld.",
+      "codes": [
+        "parse_leak",
+        "not_atomic",
+        "near_duplicate"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "position": 1,
+      "seed": "Of de bovengenoemde regels effectief zijn, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "position": 2,
+      "seed": "Of er sprake is van een toezichthouder die deze regels uitwerkt, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "position": 3,
+      "seed": "Of er sprake is van een financiële belasting die aan deze regels wordt toegeschreven, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "position": 4,
+      "seed": "Of er sprake is van een periode waarin deze regels werden ingevoerd, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "position": 5,
+      "seed": "Of er sprake is van een land waar deze regels worden toegepast, wordt niet vermeld. 1. Of de bovengenoemde regels effectief zijn, wordt niet vermeld.",
+      "codes": [
+        "parse_leak",
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "position": 1,
+      "seed": "Of de DfES en de music-industrie onderhandeld hebben om de inhoud van het manifest, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "position": 2,
+      "seed": "Of de DfES en de music-industrie een contract hebben getekend, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "position": 3,
+      "seed": "Of de DfES en de music-industrie een strategie hebben ontwikkeld om de leerlingen te instrueren over het illegale downloaden van muziek, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "position": 4,
+      "seed": "Of de DfES en de music-industrie een plan hebben gehad om de leerlingen te informeren over de wetten betreffende muziekverkrijging, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "position": 5,
+      "seed": "Of de DfES en de music-industrie een communicatiedomein hebben gesloten om de leerlingen te instrueren over het illegale downloaden van muziek, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "position": 1,
+      "seed": "Of de 18-jarige Jaschan heeft geprogrammeerd, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "position": 2,
+      "seed": "Of er nog varianten van Netsky en Sasser bestaan, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "position": 3,
+      "seed": "Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "position": 4,
+      "seed": "Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "position": 5,
+      "seed": "Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 1. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 2. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 3. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 4. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 5. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 6. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 7. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 8. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 9. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 10. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 11. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 12. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 13. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 14. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld.",
+      "codes": [
+        "parse_leak",
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "position": 1,
+      "seed": "Of de PGP key fingerprints worden gebruikt om de whitelist te beheren, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "position": 2,
+      "seed": "Of de whitelist beheerd wordt door de social network, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "position": 3,
+      "seed": "Of de whitelist beheerd wordt door de client, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "position": 4,
+      "seed": "Of de whitelist beheerd wordt door de source FOAF file, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "position": 5,
+      "seed": "Of de whitelist beheerd wordt door de directe vrienden, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "position": 1,
+      "seed": "Of het aantal arrestaties 171 of het bedrag dat besparingen werden gemaakt van 65 miljoen wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "position": 2,
+      "seed": "Of de arrestaties werden gedaan door de card fraud unit of door een andere organisatie, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "position": 3,
+      "seed": "Of de arrestaties plaatsvonden in de eerste twee jaren of later, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "position": 4,
+      "seed": "Of de arrestaties gerapporteerd werden aan de politie of direct door de card fraud unit, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "position": 5,
+      "seed": "Of de arrestaties gerapporteerd werden aan de media of direct door de card fraud unit, wordt niet vermeld.",
+      "codes": [
+        "not_atomic",
+        "near_duplicate"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "position": 1,
+      "seed": "Of de nieuwe high-speed wireless format wordt aangegeven, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "position": 2,
+      "seed": "De technologie die de nieuwe standaard zal gebruiken, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "position": 3,
+      "seed": "Of de nieuwe standaard ook in gebruik wordt genomen, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "position": 4,
+      "seed": "Of de nieuwe standaard ook in gebruik wordt genomen, wordt niet vermeld. 1. Of de nieuwe high-speed wireless format wordt aangegeven, wordt niet vermeld.",
+      "codes": [
+        "parse_leak",
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "position": 1,
+      "seed": "Of Apple Computer Inc. een marktadviseur heeft gehad, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "position": 2,
+      "seed": "Of Apple Computer Inc. een strategisch adviesaanbod heeft ontvangen, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "position": 3,
+      "seed": "Of Apple Computer Inc. een concurrentieanalyse heeft uitgevoerd, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "position": 4,
+      "seed": "Of Apple Computer Inc. een marketingdoelgroep heeft bestudeerd, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "position": 5,
+      "seed": "Of Apple Computer Inc. een kosten-benefits-analyse heeft uitgevoerd voor deze producten, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "position": 1,
+      "seed": "Of Free Record Shop een music retail chain is, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "position": 2,
+      "seed": "Of Apple Computer Inc. een competitor is van Free Record Shop, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "position": 3,
+      "seed": "Of Free Record Shop een Nederlandse firma is, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "position": 4,
+      "seed": "Of Apple Computer Inc. een Amerikaanse firma is, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "position": 5,
+      "seed": "Of Free Record Shop een downloadservice biedt, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_13",
+      "position": 1,
+      "seed": "Of de super-colonie van esophagele antrennissen in Melbourne, Australië, een bedreiging vormt voor lokale insectensoorten, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_13",
+      "position": 2,
+      "seed": "Of er specifieke maatregelen zijn genomen om de potentiële schade van de super-colonie te voorkomen, wordt niet aangegeven.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_13",
+      "position": 3,
+      "seed": "Of er sprake is van een toezichthouder of bestuursinstantie die de situatie beheert, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_13",
+      "position": 4,
+      "seed": "Of er een plan is om de super-colonie te beperken of te elimineren, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_13",
+      "position": 5,
+      "seed": "Of er sprake is van een studie of onderzoek dat de impact van de super-colonie op lokale insectensoorten heeft onderzocht, wordt niet vermeld. 1. Of de super-colonie van esophagele antrennissen in Melbourne, Australië, een bedreiging vormt voor lokale insectensoorten, wordt niet vermeld.",
+      "codes": [
+        "parse_leak",
+        "not_atomic",
+        "near_duplicate"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "position": 1,
+      "seed": "Of socialites activeren specifieke sociale vaardigheden, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "position": 2,
+      "seed": "Of de effecten van socialiteacties op de structuur van de dolphin-pod worden niet aangegeven.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "position": 3,
+      "seed": "Of er specifieke soorten socialiteacties worden beschreven, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "position": 4,
+      "seed": "Of er een verband wordt getoond tussen de activiteit van socialites en de stabiliteit van de dolphin-pod, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "position": 5,
+      "seed": "Of er specifieke soorten dolphin-pods worden genoemd, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_15",
+      "position": 1,
+      "seed": "Of Teenage T. rex's monster growth werd veroorzaakt door een andere fase dan adolescentie, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_15",
+      "position": 2,
+      "seed": "Of de precieze duur of periode van de groeiperiode wordt niet aangegeven.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_15",
+      "position": 3,
+      "seed": "Of de mate of intensiteit van de groeiperiode wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_15",
+      "position": 4,
+      "seed": "Of de specifieke mechanismen die leidden tot de groei, zoals voedselvoorziening of hormonen, worden niet genoemd.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_15",
+      "position": 5,
+      "seed": "Of de effecten van deze groeiperiode op de longen, tanden of andere organen, worden niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "position": 1,
+      "seed": "Of de lumps onder de ijskust van Ganymede bestaan, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "position": 2,
+      "seed": "Of de lumps onder de ijskust van Ganymede een natuurlijke of een.",
+      "codes": [
+        "truncated"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "position": 3,
+      "seed": "Of de lumps onder de ijskust van Ganymede een effect op de oppervlakte.",
+      "codes": [
+        "truncated"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "position": 4,
+      "seed": "Of de lumps onder de ijskust van Ganymede een impact hebben op de.",
+      "codes": [
+        "truncated"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "position": 5,
+      "seed": "Of de lumps onder de ijskust van Ganymede een invloed hebben op de.",
+      "codes": [
+        "truncated"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "position": 1,
+      "seed": "Of de Mars Express ondersteuning biedt aan de rover, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "position": 2,
+      "seed": "Of de Mars Express de foto's verzamelt, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "position": 3,
+      "seed": "Of de Mars Express de foto's verwerkt, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "position": 4,
+      "seed": "Of de Mars Express de foto's naar de rover stuurt, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "position": 5,
+      "seed": "Of de Mars Express de foto's naar de opnamecentrum stuurt, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_18",
+      "position": 1,
+      "seed": "Of de sedimenten biologisch of chemisch zijn, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_18",
+      "position": 2,
+      "seed": "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_18",
+      "position": 3,
+      "seed": "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet aangegeven.",
+      "codes": [
+        "not_atomic",
+        "near_duplicate"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_18",
+      "position": 4,
+      "seed": "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet genoemd.",
+      "codes": [
+        "not_atomic",
+        "near_duplicate"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_18",
+      "position": 5,
+      "seed": "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet besproken. 1. Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet vermeld.",
+      "codes": [
+        "parse_leak",
+        "not_atomic",
+        "near_duplicate"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "position": 1,
+      "seed": "Of HP heeft hijft op servers bruise, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "position": 2,
+      "seed": "Of HP heeft hijft op storage, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "position": 3,
+      "seed": "Of HP heeft hijft op earnings update, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "position": 4,
+      "seed": "Of HP heeft hijft op earnings per share, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "position": 5,
+      "seed": "Of HP heeft hijft op analysts' expectations, wordt niet vermeld. 1. Of HP heeft hijft op servers bruise, wordt niet vermeld.",
+      "codes": [
+        "parse_leak",
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "position": 1,
+      "seed": "Hoeveel nieuwe werknemers IBM gaat huren, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "position": 2,
+      "seed": "Wanneer het einde van het jaar wordt bereikt, wordt niet aangegeven.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "position": 3,
+      "seed": "Wat de grootste hoofdcijfers sinds 1991 zijn, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "position": 4,
+      "seed": "Of er al eerder een grotere hoofdcijfer was, wordt niet aangegeven.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "position": 5,
+      "seed": "Hoeveel werknemers IBM had sinds 1991, wordt niet vermeld. 1. Hoeveel nieuwe werknemers IBM gaat huren, wordt niet vermeld.",
+      "codes": [
+        "parse_leak",
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "position": 1,
+      "seed": "Of Google heeft een lijst met mensen die niet mogen proberen in te.",
+      "codes": [
+        "truncated"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "position": 2,
+      "seed": "Of Google een criteria heeft om te bepalen wie mogen proberen in te.",
+      "codes": [
+        "truncated"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "position": 3,
+      "seed": "Of Google een procedure heeft om te bepalen wie mogen proberen in te.",
+      "codes": [
+        "truncated",
+        "near_duplicate"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "position": 4,
+      "seed": "Of Google een beperking heeft opgelegd aan de prijs die mensen mogen.",
+      "codes": [
+        "truncated"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "position": 5,
+      "seed": "Of Google een beperking heeft opgelegd aan het aantal aandelen dat.",
+      "codes": [
+        "truncated"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "position": 1,
+      "seed": "Of Charles Schwab heeft een competitor, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "position": 2,
+      "seed": "Of Charles Schwab een competitor heeft, wordt niet vermeld.",
+      "codes": [
+        "near_duplicate"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "position": 3,
+      "seed": "Of Charles Schwab een rival is, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "position": 4,
+      "seed": "Of Charles Schwab wordt beschreven als een competitor, wordt niet vermeld.",
+      "codes": [
+        "near_duplicate"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "position": 5,
+      "seed": "Of Charles Schwab wordt beschreven als een rival, wordt niet vermeld.",
+      "codes": [
+        "near_duplicate"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_25",
+      "position": 1,
+      "seed": "Of de industrie- of standaardcyber-beveiliging onderzoekt wel of de meest kwetsbare componenten van de elektriciteitsnetwerk worden beschermd, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_25",
+      "position": 2,
+      "seed": "Of er een plan is om de cyber-beveiligingstandaarden te verbeteren, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_25",
+      "position": 3,
+      "seed": "Of er een duidelijke verantwoordelijkheidsstructuur bestaat voor het onderhouden van de beveiliging van de meest kwetsbare componenten, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_25",
+      "position": 4,
+      "seed": "Of er een procedure is om de beveiligingsrisico's van de meest kwetsbare componenten te evalueren, wordt niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_25",
+      "position": 5,
+      "seed": "Of er een budget is aangewezen voor het onderhouden van de beveiliging van de meest kwetsbare componenten, wordt niet vermeld. 1. Of de industrie- of standaardcyber-beveiliging onderzoekt wel of de meest kwetsbare componenten van de elektriciteitsnetwerk worden beschermd, wordt niet vermeld.",
+      "codes": [
+        "parse_leak",
+        "not_atomic",
+        "near_duplicate"
+      ],
+      "clean": false
+    }
+  ]
+}

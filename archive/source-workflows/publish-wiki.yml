@@ -1,0 +1,47 @@
+name: Publish · Wiki
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "docs/wiki/**"
+      - ".github/workflows/publish-wiki.yml"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: write
+
+jobs:
+  publish-wiki:
+    name: "Docs-only: werk vaste Wiki-pagina's bij"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publiceer alleen docs/wiki naar GitHub Wiki
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -e
+          WIKI_URL="https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.wiki.git"
+          if ! git clone "$WIKI_URL" wiki; then
+            echo "Wiki repo not available. Enable Wiki in repo settings and create the first page once."
+            exit 0
+          fi
+          cp docs/wiki/*.md wiki/
+          cd wiki
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add *.md
+          if git diff --cached --quiet; then
+            echo "No wiki changes."
+          else
+            git commit -m "Update static SSL wiki pages (${SHA})"
+            git push
+          fi

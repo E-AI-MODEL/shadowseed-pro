@@ -1,0 +1,175 @@
+name: Research · SLM model benefit
+
+on:
+  workflow_dispatch:
+    inputs:
+      model_id:
+        description: "Model uit de gecureerde lijst (ungated, CPU-ok). Zie 'shadowseed list-open-set-models'."
+        required: false
+        default: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+        type: choice
+        options:
+          - HuggingFaceTB/SmolLM2-360M-Instruct
+          - Qwen/Qwen2.5-0.5B-Instruct
+          - TinyLlama/TinyLlama-1.1B-Chat-v1.0
+          - Qwen/Qwen2.5-1.5B-Instruct
+          - HuggingFaceTB/SmolLM2-1.7B-Instruct
+          - Qwen/Qwen3-1.7B
+          - Qwen/Qwen2.5-3B-Instruct
+          - microsoft/Phi-3.5-mini-instruct
+          - Qwen/Qwen3-4B
+      model_id_custom:
+        description: "Override: een ander HF model-id (bv. gated). Leeg laten om de keuze hierboven te gebruiken."
+        required: false
+        default: ""
+        type: string
+      turns:
+        description: "Number of SSL detection turns"
+        required: true
+        default: "3"
+      max_new_tokens:
+        description: "Max new tokens per generation"
+        required: true
+        default: "220"
+
+permissions:
+  contents: write
+
+jobs:
+  slm-model-benefit:
+    name: SLM model benefit
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      # Mirror the working open-set-hf-review workflow: anonymous Hugging Face
+      # Hub requests can fail with connection/rate errors on Actions runners
+      # ("couldn't connect to huggingface.co"), which sank run 27490316841 at
+      # tokenizer download. A token makes the download reliable; a longer
+      # timeout absorbs transient slowness.
+      HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
+      HF_HUB_DOWNLOAD_TIMEOUT: "60"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Resolve model id
+        env:
+          MODEL_ID_CHOICE: ${{ inputs.model_id }}
+          MODEL_ID_CUSTOM: ${{ inputs.model_id_custom }}
+        run: |
+          RAW="${MODEL_ID_CUSTOM:-$MODEL_ID_CHOICE}"
+          RESOLVED="$(echo "$RAW" | xargs)"
+          if [ -z "$RESOLVED" ]; then
+            echo "::error::Geen model_id opgegeven."
+            exit 1
+          fi
+          echo "MODEL_ID=$RESOLVED" >> "$GITHUB_ENV"
+          echo "Resolved model_id: '$RESOLVED'"
+
+      - name: Cache Hugging Face models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-${{ runner.os }}-${{ env.MODEL_ID }}
+          restore-keys: |
+            hf-${{ runner.os }}-
+
+      - name: Install model deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[models]"
+
+      - name: Run real SLM model benefit suite
+        run: |
+          python -m shadowseed.cli run-model-benefit-suite \
+            --backend hf-transformers \
+            --model-id "$MODEL_ID" \
+            --turns "${{ inputs.turns }}" \
+            --max-new-tokens "${{ inputs.max_new_tokens }}" \
+            --output results/ssl45_model_benefit_suite.json
+
+      - name: Generate companion benchmark outputs
+        run: |
+          python -m shadowseed.cli run-gap-suite
+          python -m shadowseed.cli run-false-positive-suite
+          python -m shadowseed.cli run-benefit-suite
+
+      - name: Analyze SLM results
+        run: |
+          python -m shadowseed.cli analyze-results
+
+      - name: Upload SLM model benefit result
+        uses: actions/upload-artifact@v4
+        with:
+          name: ssl45-slm-model-benefit-results
+          path: results/ssl45_model_benefit_suite.json
+          if-no-files-found: error
+
+      - name: Upload SLM analysis report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ssl45-slm-analysis-report
+          path: results/analysis
+          if-no-files-found: error
+
+      - name: Publish SLM results to GitHub Wiki
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          MODEL_ID: ${{ env.MODEL_ID }}
+          TURNS: ${{ inputs.turns }}
+          MAX_NEW_TOKENS: ${{ inputs.max_new_tokens }}
+        run: |
+          set -e
+          WIKI_URL="https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.wiki.git"
+          if ! git clone "$WIKI_URL" wiki; then
+            echo "Wiki repo not available. Enable Wiki in repo settings and create the first page once."
+            exit 0
+          fi
+          cp results/analysis/analysis_report.md wiki/SLM-Model-Benefit-Analysis.md
+          cp results/analysis/analysis_summary.json wiki/SLM-Model-Benefit-Analysis-Summary.json
+          cp results/analysis/coverage.svg wiki/slm_coverage.svg
+          cp results/analysis/false_positive.svg wiki/slm_false_positive.svg
+          cp results/ssl45_model_benefit_suite.json wiki/SLM-Model-Benefit-Raw.json
+          {
+            echo "# SLM Model Benefit Run"
+            echo
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| Model | ${MODEL_ID} |"
+            echo "| Turns | ${TURNS} |"
+            echo "| Max new tokens | ${MAX_NEW_TOKENS} |"
+            echo "| Commit | ${SHA} |"
+            echo
+            echo "## Pages"
+            echo
+            echo "- [SLM Model Benefit Analysis](SLM-Model-Benefit-Analysis)"
+            echo "- [SLM Model Benefit Summary JSON](https://raw.githubusercontent.com/wiki/E-AI-MODEL/shadowseed/SLM-Model-Benefit-Analysis-Summary.json)"
+            echo "- [Raw model benefit JSON](https://raw.githubusercontent.com/wiki/E-AI-MODEL/shadowseed/SLM-Model-Benefit-Raw.json)"
+            echo
+            echo "## Charts"
+            echo
+            echo "![SLM coverage](slm_coverage.svg)"
+            echo
+            echo "![SLM false positives](slm_false_positive.svg)"
+          } > wiki/SLM-Model-Benefit.md
+          if [ ! -f wiki/Home.md ]; then
+            printf '# Shadow Seed Learning 4.5\n\n- [SSL 4.5 Analysis](SSL-45-Analysis)\n- [SLM Model Benefit](SLM-Model-Benefit)\n' > wiki/Home.md
+          elif ! grep -q "SLM-Model-Benefit" wiki/Home.md; then
+            printf '\n- [SLM Model Benefit](SLM-Model-Benefit)\n' >> wiki/Home.md
+          fi
+          cd wiki
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Home.md SLM-Model-Benefit.md SLM-Model-Benefit-Analysis.md SLM-Model-Benefit-Analysis-Summary.json SLM-Model-Benefit-Raw.json slm_coverage.svg slm_false_positive.svg
+          if git diff --cached --quiet; then
+            echo "No wiki changes."
+          else
+            git commit -m "Update SLM model benefit wiki (${SHA})"
+            git push
+          fi

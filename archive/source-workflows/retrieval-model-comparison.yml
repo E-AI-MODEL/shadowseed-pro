@@ -1,0 +1,156 @@
+name: Research · Retrieval model comparison
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  retrieval-model:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test,vector]"
+
+      - name: Run combined benchmark
+        run: |
+          mkdir -p results/retrieval_model
+          for backend in memory faiss chroma; do
+            python -m shadowseed.cli run-retrieval-model-benchmark \
+              --vector-backend ${backend} \
+              --model-backend fixture \
+              --output results/retrieval_model/${backend}.json
+          done
+
+      - name: Build interpreted comparison
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          base = Path('results/retrieval_model')
+          rows = []
+          raw = {}
+
+          for b in ['memory', 'faiss', 'chroma']:
+              data = json.loads((base / f'{b}.json').read_text(encoding='utf-8'))
+              raw[b] = data
+              s = data['summary']
+              rows.append({
+                  'backend': b,
+                  'baseline': s['baseline_mean_gap_coverage'],
+                  'retrieval': s['retrieval_mean_gap_coverage'],
+                  'delta': s['coverage_delta'],
+                  'length_delta': s['mean_answer_length_delta_words'],
+                  'delta_per_100_words': s['coverage_delta_per_100_added_words'],
+              })
+
+          best = max(rows, key=lambda r: (r['delta'], r['retrieval'], -r['length_delta']))
+          all_positive = all(r['delta'] > 0 for r in rows)
+          tied = [r for r in rows if abs(r['delta'] - best['delta']) < 1e-9]
+
+          comparison = {
+              'summary': {
+                  'best_backend': best['backend'],
+                  'best_delta': best['delta'],
+                  'all_positive': all_positive,
+                  'rows': rows,
+              },
+              'raw': raw,
+          }
+          (base / 'retrieval_model_comparison.json').write_text(
+              json.dumps(comparison, indent=2, ensure_ascii=False) + '\n',
+              encoding='utf-8',
+          )
+
+          if all_positive:
+              headline = 'Retrieval + SSOT verhoogt in deze fixture-run de gemeten gap coverage voor alle vectorbackends.'
+          elif best['delta'] > 0:
+              headline = f"Retrieval + SSOT helpt in deze fixture-run vooral bij `{best['backend']}`."
+          else:
+              headline = 'Deze run laat nog geen meetbare outputverbetering door retrieval + SSOT zien.'
+
+          if len(tied) > 1:
+              best_sentence = 'De beste score is gedeeld door: ' + ', '.join(f"`{r['backend']}`" for r in tied) + '.'
+          else:
+              best_sentence = f"De hoogste coverage-delta komt van `{best['backend']}`."
+
+          lines = [
+              '# Retrieval → Model Impact',
+              '',
+              '## Conclusie',
+              '',
+              f'**{headline}**',
+              '',
+              best_sentence,
+              '',
+              'Deze run gebruikt de fixture-modelbackend. Dat is bewust: zo meet de benchmark eerst het effect van retrieval en SSOT zonder ruis van een echt taalmodel. Een echte SLM-run blijft nodig voor een sterkere claim.',
+              '',
+              '## Vergelijking',
+              '',
+              '| Backend | baseline | retrieval | delta | mean length delta | delta per 100 words |',
+              '|---|---:|---:|---:|---:|---:|',
+          ]
+
+          for r in rows:
+              lines.append(
+                  f"| {r['backend']} | {r['baseline']:.2f} | {r['retrieval']:.2f} | {r['delta']:.2f} | {r['length_delta']:.2f} | {r['delta_per_100_words']:.2f} |"
+              )
+
+          lines.extend([
+              '',
+              '## Interpretatie',
+              '',
+              'Deze benchmark koppelt retrievalkwaliteit direct aan antwoordkwaliteit. De vraag is niet alleen of de vectorstore de juiste tekst vindt, maar of de opgehaalde SSOT-context leidt tot hogere gap coverage in het antwoord.',
+              '',
+              'De vectorstore blijft een zoeklaag. Hij kent geen gewicht toe en beslist niet over waarheid. De SSOT levert context; de antwoordkwaliteit wordt apart gemeten met coverage ten opzichte van verwachte elementen.',
+              '',
+              '## Grens van de claim',
+              '',
+              'Deze run bewijst geen algemene verbetering van LLMs of SLMs. Hij bewijst dat in deze gecontroleerde fixture-opzet retrieval + SSOT meetbaar kan worden gekoppeld aan outputkwaliteit. Voor een paper-level claim zijn echte SLM-runs, meer scenario’s en blind review nodig.',
+              '',
+              '## Ruwe output',
+              '',
+              '- [Retrieval Model Comparison Raw](https://raw.githubusercontent.com/wiki/E-AI-MODEL/shadowseed/Retrieval-Model-Comparison-Raw.json)',
+              '',
+          ])
+
+          Path('Retrieval-Model-Comparison.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          PY
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: retrieval-model
+          path: |
+            results/retrieval_model
+            Retrieval-Model-Comparison.md
+
+      - name: Publish wiki
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git clone https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.wiki.git wiki || exit 0
+          cp Retrieval-Model-Comparison.md wiki/.
+          cp results/retrieval_model/retrieval_model_comparison.json wiki/Retrieval-Model-Comparison-Raw.json
+          if [ ! -f wiki/Home.md ]; then
+            printf '# Shadow Seed Learning 4.5\n\n- [Retrieval Model Comparison](Retrieval-Model-Comparison)\n' > wiki/Home.md
+          elif ! grep -q "Retrieval-Model-Comparison" wiki/Home.md; then
+            printf '\n- [Retrieval Model Comparison](Retrieval-Model-Comparison)\n' >> wiki/Home.md
+          fi
+          cd wiki
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add Home.md Retrieval-Model-Comparison.md Retrieval-Model-Comparison-Raw.json
+          git commit -m "Update retrieval model comparison" || true
+          git push || true

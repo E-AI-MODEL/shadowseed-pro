@@ -1,0 +1,233 @@
+name: Publish · Test results to Wiki & Pages
+
+on:
+  workflow_run:
+    workflows: ["Checks en benchmark-resultaten"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  publish:
+    name: "Publicatie: verzamel artifacts en werk Wiki + Pages bij"
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.head_branch == 'main' &&
+        github.event.workflow_run.event == 'push'
+      )
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installeer pakket
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Download artifacts uit laatste standaardrun
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          mkdir -p downloaded-artifacts
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            RUN_ID=$(gh run list --workflow tests.yml --branch main --event push --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          else
+            RUN_ID="$WORKFLOW_RUN_ID"
+          fi
+          if [ -z "$RUN_ID" ] || [ "$RUN_ID" = "null" ]; then
+            echo "No successful trusted tests push run found."
+            exit 1
+          fi
+          echo "Downloading artifacts from tests run $RUN_ID"
+          echo "TEST_RUN_ID=$RUN_ID" >> "$GITHUB_ENV"
+          gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --dir downloaded-artifacts
+
+      - name: Bouw results/latest en manifest
+        run: |
+          set -euo pipefail
+          rm -rf results/latest results/artifacts
+          python -m shadowseed.analysis.artifact_snapshot \
+            --source downloaded-artifacts \
+            --target-dir results/latest \
+            --artifacts-dir results/artifacts \
+            --manifest-path results/latest/manifest.json \
+            --source-workflow "Checks en benchmark-resultaten" \
+            --source-run-id "$TEST_RUN_ID" \
+            --repository "$GITHUB_REPOSITORY" \
+            --published-via wiki \
+            --path-key latest_path \
+            --committed-back-to-main false \
+            --require-files \
+              ssl45_gap_suite.json \
+              ssl45_false_positive_suite.json \
+              ssl45_benefit_suite.json \
+              ssl45_model_benefit_suite.json \
+              blind_benchmark.json \
+              adversarial_gate_benchmark.json \
+              adversarial_gate_casebook.md \
+              ssl45_probe_utility_suite.json \
+              analysis_report.md \
+              analysis_summary.json \
+              coverage.svg \
+              false_positive.svg \
+              manifest.json
+
+          cat > results/latest/README.md <<'MD'
+          # Latest test artifacts
+
+          Deze map is opgebouwd uit de meest recente geslaagde standaardrun `Checks en benchmark-resultaten`.
+
+          Wat je hier ziet:
+
+          - regressie-uitvoer
+          - smoke-uitvoer
+          - kleine benchmarkuitvoer
+          - aanvullende evidencelagen voor adversarial Gate en probe utility
+
+          Gebruik `manifest.json` om te zien uit welk artifact elk bestand komt.
+          De originele artifactstructuur blijft zichtbaar in `results/artifacts/`.
+          Deze snapshot wordt gepubliceerd via Wiki en Pages en niet teruggeschreven naar `main`.
+          MD
+
+      - name: Maak centraal analyserapport
+        run: |
+          set -euo pipefail
+          python -m shadowseed.cli analyze-results \
+            --results-dir results/latest \
+            --output-dir results/latest/analysis
+          cp results/latest/analysis/analysis_summary.json results/latest/summary.json
+          cp results/latest/analysis/analysis_report.md results/latest/analysis_report.md
+          cp results/latest/analysis/coverage.svg results/latest/coverage.svg
+          cp results/latest/analysis/false_positive.svg results/latest/false_positive.svg
+
+      - name: Valideer gepubliceerde snapshot
+        run: |
+          set -euo pipefail
+          required=(
+            results/latest/summary.json
+            results/latest/analysis_report.md
+            results/latest/coverage.svg
+            results/latest/false_positive.svg
+            results/latest/manifest.json
+            results/latest/analysis/analysis_summary.json
+            results/latest/analysis/analysis_report.md
+            results/latest/analysis/coverage.svg
+            results/latest/analysis/false_positive.svg
+          )
+          for path in "${required[@]}"; do
+            if [ ! -f "$path" ]; then
+              echo "Missing required publish output: $path"
+              exit 1
+            fi
+          done
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path("results/latest/manifest.json").read_text(encoding="utf-8"))
+          summary = json.loads(Path("results/latest/summary.json").read_text(encoding="utf-8"))
+
+          copied_files = manifest.get("copied_files") or []
+          if not copied_files:
+              raise SystemExit("Publish manifest has no copied_files entries.")
+          if not manifest.get("source_run_id"):
+              raise SystemExit("Publish manifest is missing source_run_id.")
+          if not isinstance(summary, dict) or not summary:
+              raise SystemExit("Publish summary is empty or invalid JSON.")
+          if summary.get("adversarial_gate") is None:
+              raise SystemExit("Publish summary is missing adversarial_gate metrics.")
+          if summary.get("probe_utility") is None:
+              raise SystemExit("Publish summary is missing probe_utility metrics.")
+          PY
+
+      - name: Upload gepubliceerde snapshot als workflow-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: published-latest-results-snapshot
+          path: results/latest
+          if-no-files-found: error
+
+      - name: Publiceer naar GitHub Wiki
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          WIKI_URL="https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.wiki.git"
+          if ! git clone "$WIKI_URL" wiki; then
+            echo "Wiki repo not available. Enable Wiki in repo settings and create the first page once."
+            exit 0
+          fi
+          cp results/latest/analysis_report.md wiki/SSL-45-Analysis.md
+          cp results/latest/summary.json wiki/SSL-45-Analysis-Summary.json
+          cp results/latest/coverage.svg wiki/coverage.svg
+          cp results/latest/false_positive.svg wiki/false_positive.svg
+          mkdir -p wiki/results/latest wiki/results/artifacts
+          cp -R results/latest/. wiki/results/latest/
+          cp -R results/artifacts/. wiki/results/artifacts/
+          cp docs/wiki/*.md wiki/ || true
+          cat > wiki/Latest-Test-Results.md <<'MD'
+          # Latest Test Results
+
+          Deze pagina wordt automatisch bijgewerkt na een geslaagde standaardrun op `main`.
+
+          ## Wat bekijk je nu?
+
+          Dit is de laatste publieke snapshot van:
+
+          - regressietests
+          - technische en methodologische smoke-tests
+          - kleine benchmarklagen
+          - aanvullende evidencelagen voor adversarial Gate en probe utility
+
+          ## Leesvolgorde
+
+          1. `SSL 4.5 Analysis` voor de korte samenvatting
+          2. `results/latest/summary.json` voor machineleesbare kerncijfers
+          3. `results/latest/manifest.json` om herkomst van bestanden te controleren
+          4. `results/artifacts/` voor de originele artifactstructuur
+
+          ## Belangrijke links
+
+          - [SSL 4.5 Analysis](SSL-45-Analysis)
+          - [SSL 4.5 Analysis Summary JSON](SSL-45-Analysis-Summary)
+          - `results/latest/manifest.json`
+          - `results/latest/`
+          - `results/artifacts/`
+
+          ## Wat dit wel en niet betekent
+
+          Deze pagina laat zien hoe de huidige standaardpublicatie eruitziet.
+          Ze laat niet automatisch zien dat het hele SSL-programma al volledig gevalideerd is.
+          Lees aanvullende evidencelagen dus als extra inhoudelijk signaal, niet als volledige eindclaim.
+          MD
+          cd wiki
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --cached --quiet; then
+            echo "No wiki changes."
+          else
+            git commit -m "Publish latest test results (${SHA})"
+            git push
+          fi

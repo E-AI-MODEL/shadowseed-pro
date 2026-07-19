@@ -1,0 +1,2703 @@
+{
+  "summary": {
+    "evidence_layer": "open_set_seed_quality",
+    "packet_count": 82,
+    "completed_packet_count": 82,
+    "pending_packet_count": 0,
+    "invalid_packet_count": 0,
+    "accepted_packet_count": 24,
+    "rejected_packet_count": 58,
+    "packet_acceptance_rate": 0.2926829268292683,
+    "unique_seed_count": 41,
+    "completed_seed_count": 41,
+    "accepted_seed_count": 12,
+    "rejected_seed_count": 29,
+    "mixed_seed_count": 0,
+    "pending_seed_count": 0,
+    "invalid_seed_count": 0,
+    "agreement_eligible_seed_count": 41,
+    "unanimous_seed_count": 41,
+    "seed_acceptance_rate": 0.2926829268292683,
+    "seed_rejection_rate": 0.7073170731707317,
+    "unanimous_verdict_rate": 1.0,
+    "pairwise_decision_agreement_rate": 1.0,
+    "criteria": [
+      "atomicity",
+      "relevance",
+      "testability",
+      "non_triviality",
+      "follow_up_utility"
+    ],
+    "criterion_pass_rates": {
+      "atomicity": 0.6585365853658537,
+      "relevance": 0.975609756097561,
+      "testability": 0.6585365853658537,
+      "non_triviality": 0.2926829268292683,
+      "follow_up_utility": 0.2926829268292683
+    },
+    "reject_reason_counts": {
+      "duplicate": 6,
+      "not_relevant": 2,
+      "not_testable": 18,
+      "style_not_gap": 20,
+      "too_vague": 10,
+      "trivial": 2
+    },
+    "reviewer_ids": [
+      "reviewer_a",
+      "reviewer_b"
+    ],
+    "domain_seed_counts": {
+      "nieuws - Sci/Tech": 41
+    },
+    "status": "review_completed",
+    "artifacts": {
+      "summary": "results/open_review/open_set_seed_review_summary.json",
+      "disagreements": "results/open_review/open_set_disagreements.json",
+      "report": "results/open_review/open_set_review_report.md"
+    }
+  },
+  "results": [
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_001",
+      "seed_text": "Of Free Record Shop een music retail chain is, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "A: Free Record Shop wordt expliciet een music retail chain genoemd."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "B: Free Record Shop wordt expliciet een music retail chain genoemd."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_002",
+      "seed_text": "Of Apple Computer Inc. een competitor is van Free Record Shop, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "A: De bron plaatst Apple en Free Record Shop al in dezelfde downloadmarktframing; dit is geen sterke lacune."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "B: De bron plaatst Apple en Free Record Shop al in dezelfde downloadmarktframing; dit is geen sterke lacune."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_003",
+      "seed_text": "Of Free Record Shop een Nederlandse firma is, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "A: De titel/framing noemt de retailer Nederlands; geen echte ontbrekende seed."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "B: De titel/framing noemt de retailer Nederlands; geen echte ontbrekende seed."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_004",
+      "seed_text": "Of Apple Computer Inc. een Amerikaanse firma is, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "A: Apple's herkomst/nationaliteit wordt niet in de excerpt vermeld en is atomair toetsbaar."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "B: Apple's herkomst/nationaliteit wordt niet in de excerpt vermeld en is atomair toetsbaar."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_005",
+      "seed_text": "Of Free Record Shop een downloadservice biedt, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "A: De bron noemt expliciet de lancering van een nieuwe downloadservice."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "B: De bron noemt expliciet de lancering van een nieuwe downloadservice."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "title": "AG News Sci/Tech #14",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_001",
+      "seed_text": "Of socialites activeren specifieke sociale vaardigheden, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "A: Specifieke sociale vaardigheden is te vaag en slecht toetsbaar vanuit de excerpt."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "B: Specifieke sociale vaardigheden is te vaag en slecht toetsbaar vanuit de excerpt."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 2,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 2,
+        "relevance": 0,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "title": "AG News Sci/Tech #14",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_002",
+      "seed_text": "Of de effecten van socialiteacties op de structuur van de dolphin-pod worden niet aangegeven.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "A: De precieze effecten van socialite-acties op podstructuur worden niet uitgewerkt."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "B: De precieze effecten van socialite-acties op podstructuur worden niet uitgewerkt."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "title": "AG News Sci/Tech #14",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_003",
+      "seed_text": "Of er specifieke soorten socialiteacties worden beschreven, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "A: Soorten socialite-acties worden niet beschreven en zijn relevant voor follow-up."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "B: Soorten socialite-acties worden niet beschreven en zijn relevant voor follow-up."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "title": "AG News Sci/Tech #14",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_004",
+      "seed_text": "Of er specifieke soorten dolphin-pods worden genoemd, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "A: Soorten dolphin-pods worden niet genoemd en de vraag is atomair toetsbaar."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "B: Soorten dolphin-pods worden niet genoemd en de vraag is atomair toetsbaar."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_15",
+      "title": "AG News Sci/Tech #15",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_001",
+      "seed_text": "Of Teenage T. rex's monster growth werd veroorzaakt door een andere fase dan adolescentie, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "A: De bron schrijft de groei juist toe aan adolescentie; de seed zoekt een alternatief zonder duidelijke gapwaarde."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "B: De bron schrijft de groei juist toe aan adolescentie; de seed zoekt een alternatief zonder duidelijke gapwaarde."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_15",
+      "title": "AG News Sci/Tech #15",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_002",
+      "seed_text": "Of de precieze duur of periode van de groeiperiode wordt niet aangegeven.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "A: De precieze duur/periode van de groeispurt ontbreekt."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "B: De precieze duur/periode van de groeispurt ontbreekt."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_15",
+      "title": "AG News Sci/Tech #15",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_003",
+      "seed_text": "Of de mate of intensiteit van de groeiperiode wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "A: De exacte mate of intensiteit van de groeiperiode wordt niet gekwantificeerd."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "B: De exacte mate of intensiteit van de groeiperiode wordt niet gekwantificeerd."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_001",
+      "seed_text": "Of de lumps onder de ijskust van Ganymede bestaan, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "A: De bron zegt expliciet dat onregelmatige lumps zijn ontdekt."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "B: De bron zegt expliciet dat onregelmatige lumps zijn ontdekt."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_002",
+      "seed_text": "Of de lumps onder de ijskust van Ganymede een natuurlijke of een.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "A: De seed is afgekapt en daardoor niet toetsbaar."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "B: De seed is afgekapt en daardoor niet toetsbaar."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 2,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 2,
+        "relevance": 0,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_testable": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_003",
+      "seed_text": "Of de lumps onder de ijskust van Ganymede een effect op de oppervlakte.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "A: De seed is afgekapt en mist het object van de claim."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "B: De seed is afgekapt en mist het object van de claim."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 2,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 2,
+        "relevance": 0,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_testable": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_004",
+      "seed_text": "Of de lumps onder de ijskust van Ganymede een impact hebben op de.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "A: De seed eindigt voortijdig en is niet valideerbaar."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "B: De seed eindigt voortijdig en is niet valideerbaar."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 2,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 2,
+        "relevance": 0,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_testable": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_005",
+      "seed_text": "Of de lumps onder de ijskust van Ganymede een invloed hebben op de.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "A: De seed is incompleet en daardoor geen bruikbare reviewseed."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "B: De seed is incompleet en daardoor geen bruikbare reviewseed."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 2,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 2,
+        "relevance": 0,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_testable": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_001",
+      "seed_text": "Of de Mars Express ondersteuning biedt aan de rover, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "A: Mars Express ondersteunt de rovercommunicatie al door beelden te relayeren."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "B: Mars Express ondersteunt de rovercommunicatie al door beelden te relayeren."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_002",
+      "seed_text": "Of de Mars Express de foto's verzamelt, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "A: Of Mars Express de foto's zelf verzamelt wordt niet vermeld."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "B: Of Mars Express de foto's zelf verzamelt wordt niet vermeld."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_003",
+      "seed_text": "Of de Mars Express de foto's verwerkt, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "A: Of Mars Express de foto's verwerkt wordt niet vermeld."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "B: Of Mars Express de foto's verwerkt wordt niet vermeld."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_004",
+      "seed_text": "Of de Mars Express de foto's naar de rover stuurt, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "A: Foto's naar de rover sturen is de verkeerde richting en zwak relevant."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": false,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_relevant",
+          "reviewer_notes": "B: Foto's naar de rover sturen is de verkeerde richting en zwak relevant."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 0,
+        "testability": 2,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 2,
+        "testability": 0,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_relevant": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_005",
+      "seed_text": "Of de Mars Express de foto's naar de opnamecentrum stuurt, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "A: Of Mars Express de foto's naar een opname-/ontvangstcentrum stuurt wordt niet vermeld."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "B: Of Mars Express de foto's naar een opname-/ontvangstcentrum stuurt wordt niet vermeld."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "title": "AG News Sci/Tech #19",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_001",
+      "seed_text": "Of HP heeft hijft op servers bruise, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "A: De tekst is grammaticaal kapot en niet toetsbaar."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "B: De tekst is grammaticaal kapot en niet toetsbaar."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 2,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 2,
+        "relevance": 0,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "title": "AG News Sci/Tech #19",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_002",
+      "seed_text": "Of HP heeft hijft op storage, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "A: De seed is malformed en noemt geen duidelijke ontbrekende claim."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "B: De seed is malformed en noemt geen duidelijke ontbrekende claim."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 2,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 2,
+        "relevance": 0,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "title": "AG News Sci/Tech #19",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_003",
+      "seed_text": "Of HP heeft hijft op earnings update, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "A: De formulering is kapot en inhoudelijk onbruikbaar."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "B: De formulering is kapot en inhoudelijk onbruikbaar."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 2,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 2,
+        "relevance": 0,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "title": "AG News Sci/Tech #19",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_004",
+      "seed_text": "Of HP heeft hijft op earnings per share, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "A: De seed is grammaticaal niet valide en heeft geen duidelijke follow-upwaarde."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "too_vague",
+          "reviewer_notes": "B: De seed is grammaticaal niet valide en heeft geen duidelijke follow-upwaarde."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 2,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 2,
+        "relevance": 0,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "too_vague": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "title": "AG News Sci/Tech #20",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_001",
+      "seed_text": "Hoeveel nieuwe werknemers IBM gaat huren, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "A: Het exacte aantal nieuwe werknemers wordt niet vermeld."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "B: Het exacte aantal nieuwe werknemers wordt niet vermeld."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "title": "AG News Sci/Tech #20",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_002",
+      "seed_text": "Wanneer het einde van het jaar wordt bereikt, wordt niet aangegeven.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "trivial",
+          "reviewer_notes": "A: Het einde van het jaar als tijdsaanduiding is te triviaal voor een nuttige seed."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "trivial",
+          "reviewer_notes": "B: Het einde van het jaar als tijdsaanduiding is te triviaal voor een nuttige seed."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "trivial": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "title": "AG News Sci/Tech #20",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_003",
+      "seed_text": "Wat de grootste hoofdcijfers sinds 1991 zijn, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "A: De concrete headcount/omvang van het grootste personeelsbestand sinds 1991 ontbreekt."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "B: De concrete headcount/omvang van het grootste personeelsbestand sinds 1991 ontbreekt."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "title": "AG News Sci/Tech #20",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_004",
+      "seed_text": "Of er al eerder een grotere hoofdcijfer was, wordt niet aangegeven.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "A: De bron impliceert al dat 1991 het vergelijkingspunt is; deze seed voegt weinig toetsbare waarde toe."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "B: De bron impliceert al dat 1991 het vergelijkingspunt is; deze seed voegt weinig toetsbare waarde toe."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_001",
+      "seed_text": "Of Google heeft een lijst met mensen die niet mogen proberen in te.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "A: De seed is afgekapt en niet valideerbaar."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "B: De seed is afgekapt en niet valideerbaar."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 2,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 2,
+        "relevance": 0,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_testable": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_002",
+      "seed_text": "Of Google een criteria heeft om te bepalen wie mogen proberen in te.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "A: De seed is afgekapt, ondanks een relevant onderwerp."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "B: De seed is afgekapt, ondanks een relevant onderwerp."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 2,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 2,
+        "relevance": 0,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_testable": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_003",
+      "seed_text": "Of Google een procedure heeft om te bepalen wie mogen proberen in te.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "A: De procedurevraag is incompleet en niet als volledige seed bruikbaar."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "B: De procedurevraag is incompleet en niet als volledige seed bruikbaar."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 2,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 2,
+        "relevance": 0,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_testable": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_004",
+      "seed_text": "Of Google een beperking heeft opgelegd aan de prijs die mensen mogen.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "A: De prijslimietseed is afgekapt en daardoor niet toetsbaar."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "B: De prijslimietseed is afgekapt en daardoor niet toetsbaar."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 2,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 2,
+        "relevance": 0,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_testable": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_005",
+      "seed_text": "Of Google een beperking heeft opgelegd aan het aantal aandelen dat.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "A: De aandelenaantalseed is afgekapt en daardoor niet valide."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": false,
+            "relevance": true,
+            "testability": false,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "not_testable",
+          "reviewer_notes": "B: De aandelenaantalseed is afgekapt en daardoor niet valide."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 0,
+        "relevance": 2,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 2,
+        "relevance": 0,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "not_testable": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_001",
+      "seed_text": "Of Charles Schwab heeft een competitor, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "A: De titel noemt rivals; competitor/rival is geen echte ontbrekende informatie."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "B: De titel noemt rivals; competitor/rival is geen echte ontbrekende informatie."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_002",
+      "seed_text": "Of Charles Schwab een competitor heeft, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "duplicate",
+          "reviewer_notes": "A: Duplicaat van de competitor-seed en bovendien al in de bronframing aanwezig."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "duplicate",
+          "reviewer_notes": "B: Duplicaat van de competitor-seed en bovendien al in de bronframing aanwezig."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "duplicate": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_003",
+      "seed_text": "Of Charles Schwab een rival is, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "A: Rivaliteit staat al in de titel/framing."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "style_not_gap",
+          "reviewer_notes": "B: Rivaliteit staat al in de titel/framing."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "style_not_gap": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_004",
+      "seed_text": "Of Charles Schwab wordt beschreven als een competitor, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "duplicate",
+          "reviewer_notes": "A: Parafrase/duplicaat van dezelfde competitor/rival-claim."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "duplicate",
+          "reviewer_notes": "B: Parafrase/duplicaat van dezelfde competitor/rival-claim."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "duplicate": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_005",
+      "seed_text": "Of Charles Schwab wordt beschreven als een rival, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "duplicate",
+          "reviewer_notes": "A: Parafrase/duplicaat en geen nieuwe atomische lacune."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "rejected",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": false,
+            "follow_up_utility": false
+          },
+          "reject_reason": "duplicate",
+          "reviewer_notes": "B: Parafrase/duplicaat en geen nieuwe atomische lacune."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {
+        "duplicate": 2
+      },
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "rejected",
+      "pairwise_decision_agreement": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_25",
+      "title": "AG News Sci/Tech #25",
+      "domain": "nieuws - Sci/Tech",
+      "seed_id": "ss_001",
+      "seed_text": "Of er een plan is om de cyber-beveiligingstandaarden te verbeteren, wordt niet vermeld.",
+      "reviewers": [
+        {
+          "reviewer_id": "reviewer_a",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "A: Een verbeterplan voor cyberbeveiligingsstandaarden wordt niet vermeld en is relevant."
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "review_status": "completed",
+          "decision": "accepted",
+          "review_fields": {
+            "atomicity": true,
+            "relevance": true,
+            "testability": true,
+            "non_triviality": true,
+            "follow_up_utility": true
+          },
+          "reject_reason": null,
+          "reviewer_notes": "B: Een verbeterplan voor cyberbeveiligingsstandaarden wordt niet vermeld en is relevant."
+        }
+      ],
+      "criterion_true_counts": {
+        "atomicity": 2,
+        "relevance": 2,
+        "testability": 2,
+        "non_triviality": 2,
+        "follow_up_utility": 2
+      },
+      "criterion_false_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "criterion_pending_counts": {
+        "atomicity": 0,
+        "relevance": 0,
+        "testability": 0,
+        "non_triviality": 0,
+        "follow_up_utility": 0
+      },
+      "reject_reason_counts": {},
+      "completed_reviewer_count": 2,
+      "reviewer_count": 2,
+      "aggregate_verdict": "accepted",
+      "pairwise_decision_agreement": true
+    }
+  ]
+}

@@ -1,0 +1,261 @@
+name: Research · Full validation sweep (A-E + backends)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/full-validation-sweep.yml"
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: write
+
+jobs:
+  core:
+    name: Core tests and SSL suites
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+      - name: Run unit tests
+        run: python -m pytest -q
+      - name: Run SSL suites
+        run: |
+          mkdir -p results
+          python -m shadowseed.cli run-gap-suite
+          python -m shadowseed.cli run-false-positive-suite
+          python -m shadowseed.cli run-benefit-suite
+          python -m shadowseed.cli run-model-benefit-suite --backend fixture
+          python -m shadowseed.cli run-adversarial-gate-benchmark
+          python -m shadowseed.cli run-probe-utility-benchmark
+          python -m shadowseed.cli run-probe-feedback-behavior-suite
+          python -m shadowseed.cli analyze-results
+      - name: Upload core artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-sweep-core
+          path: |
+            results/*.json
+            results/analysis
+          if-no-files-found: error
+
+  vector-ssot:
+    name: Vector and SSOT backends
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        backend: [memory, faiss, chroma]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          if [ "${{ matrix.backend }}" = "faiss" ]; then
+            pip install -e ".[test,vector-faiss]"
+          elif [ "${{ matrix.backend }}" = "chroma" ]; then
+            pip install -e ".[test,vector-chroma]"
+          else
+            pip install -e ".[test]"
+          fi
+      - name: Run backend smoke tests
+        run: |
+          mkdir -p results/full_sweep/${{ matrix.backend }}
+          python -m shadowseed.cli run-vectorstore-smoke \
+            --backend "${{ matrix.backend }}" \
+            --output "results/full_sweep/${{ matrix.backend }}/vectorstore.json"
+          python -m shadowseed.cli run-ssot-smoke \
+            --backend "${{ matrix.backend }}" \
+            --output "results/full_sweep/${{ matrix.backend }}/ssot.json"
+          python -m shadowseed.cli run-retrieval-benchmark \
+            --backend "${{ matrix.backend }}" \
+            --output "results/full_sweep/${{ matrix.backend }}/retrieval.json"
+          python -m shadowseed.cli run-retrieval-model-benchmark \
+            --vector-backend "${{ matrix.backend }}" \
+            --model-backend fixture \
+            --output "results/full_sweep/${{ matrix.backend }}/retrieval_model.json"
+      - name: Upload backend artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-sweep-${{ matrix.backend }}
+          path: results/full_sweep/${{ matrix.backend }}
+          if-no-files-found: error
+
+  publish-summary:
+    name: Publish sweep summary
+    runs-on: ubuntu-latest
+    needs: [core, vector-ssot]
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download sweep artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: sweep_artifacts
+      - name: Build compact summary page
+        env:
+          CORE_RESULT: ${{ needs.core.result }}
+          VECTOR_RESULT: ${{ needs.vector-ssot.result }}
+          SHA: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path('sweep_artifacts')
+
+          def load(path):
+              try:
+                  return json.loads(Path(path).read_text(encoding='utf-8'))
+              except Exception:
+                  return None
+
+          def fmt(value):
+              if isinstance(value, float):
+                  return f'{value:.3f}'
+              if value is None:
+                  return 'n/a'
+              return str(value)
+
+          backend_rows = []
+          for backend in ['memory', 'faiss', 'chroma']:
+              base = root / f'full-sweep-{backend}'
+              vector = load(base / 'vectorstore.json')
+              ssot = load(base / 'ssot.json')
+              retrieval = load(base / 'retrieval.json')
+              retrieval_model = load(base / 'retrieval_model.json')
+              backend_rows.append({
+                  'backend': backend,
+                  'vector_passed': (vector or {}).get('summary', {}).get('passed'),
+                  'ssot_passed': (ssot or {}).get('summary', {}).get('passed'),
+                  'hit': (retrieval or {}).get('metrics', {}).get('hit@k'),
+                  'avg_rank': (retrieval or {}).get('metrics', {}).get('avg_rank'),
+                  'baseline': (retrieval_model or {}).get('summary', {}).get('baseline_mean_gap_coverage'),
+                  'retrieval_cov': (retrieval_model or {}).get('summary', {}).get('retrieval_mean_gap_coverage'),
+                  'delta': (retrieval_model or {}).get('summary', {}).get('coverage_delta'),
+              })
+
+          valid = [row for row in backend_rows if isinstance(row.get('delta'), (int, float))]
+          best = max(valid, key=lambda item: item['delta']) if valid else None
+          core_status = os.environ.get('CORE_RESULT')
+          vector_status = os.environ.get('VECTOR_RESULT')
+          all_green = core_status == 'success' and vector_status == 'success'
+
+          if all_green and best:
+              tldr = f"Groen. Beste backend in deze sweep: `{best['backend']}` met retrieval→model delta `{fmt(best['delta'])}`."
+          elif all_green:
+              tldr = "Groen. Er was nog geen bruikbare backend-delta beschikbaar."
+          else:
+              tldr = "Niet groen. Kijk eerst naar de jobstatussen hieronder en daarna naar de raw artifacts."
+
+          lines = [
+              '# Full Validation Sweep',
+              '',
+              '## TL;DR',
+              '',
+              f'**{tldr}**',
+              '',
+              '| Vraag | Antwoord |',
+              '|---|---|',
+              f"| Werkt de core-suite? | {core_status} |",
+              f"| Werken vector + SSOT backends? | {vector_status} |",
+              f"| Beste backend deze run | {best['backend'] if best else 'n/a'} |",
+              f"| Beste retrieval→model delta | {fmt(best['delta']) if best else 'n/a'} |",
+              '',
+              '## Conclusie',
+              '',
+              '| Onderdeel | Status |',
+              '|---|---|',
+              f"| Core tests and SSL suites | {core_status} |",
+              f"| Vector and SSOT backends | {vector_status} |",
+              '',
+              '## Compacte resultaten',
+              '',
+          ]
+
+          core_files = list(root.glob('full-sweep-core/*.json'))
+          if core_files:
+              lines.extend(['### Core JSON', '', '| Bestand | Belangrijkste summary |', '|---|---|'])
+              for file in sorted(core_files):
+                  data = load(file)
+                  summary = data.get('summary', data) if isinstance(data, dict) else {}
+                  if isinstance(summary, dict):
+                      keys = list(summary.keys())[:6]
+                      text = ', '.join(f'{k}: {fmt(summary.get(k))}' for k in keys)
+                  else:
+                      text = 'n/a'
+                  lines.append(f'| `{file.name}` | {text} |')
+              lines.append('')
+
+          lines.extend([
+              '### Backendvergelijking',
+              '',
+              '| Backend | Vector smoke | SSOT smoke | hit@k | avg rank | baseline coverage | retrieval coverage | delta |',
+              '|---|---:|---:|---:|---:|---:|---:|---:|',
+          ])
+          for row in backend_rows:
+              lines.append(
+                  f"| {row['backend']} | {fmt(row['vector_passed'])} | {fmt(row['ssot_passed'])} | {fmt(row['hit'])} | {fmt(row['avg_rank'])} | {fmt(row['baseline'])} | {fmt(row['retrieval_cov'])} | {fmt(row['delta'])} |"
+              )
+
+          lines.extend(['', '## Interpretatie', ''])
+          if best:
+              lines.append(f"De hoogste retrieval→model coverage-delta in deze sweep komt van `{best['backend']}` met delta `{fmt(best['delta'])}`.")
+          else:
+              lines.append('Er was nog geen bruikbare retrieval→model delta beschikbaar in de artifacts.')
+          lines.extend([
+              '',
+              'Artifacts blijven beschikbaar als zip. Gebruik de `full-sweep-core` en backend-artifacts voor detailanalyse; de standaard publish-route blijft de enige bron voor `results/latest` op Wiki en Pages.',
+              '',
+              '## Waar kijk je bij fouten?',
+              '',
+              '- Rood bij core: begin bij `python -m pytest -q` en de core artifact.',
+              '- Rood bij vector/SSOT: kijk naar de backend-job (`memory`, `faiss` of `chroma`).',
+              '- Lage delta maar groene jobs: geen buildprobleem, maar een inhoudelijk benchmarksignaal.',
+              '',
+              '## Grens van de claim',
+              '',
+              'Deze tabel is een compacte run-samenvatting. Gebruik de raw JSON en de losse Wiki-pagina’s voor detailanalyse.',
+              '',
+              '## Commit',
+              '',
+              f"`{os.environ.get('SHA')}`",
+              '',
+          ])
+
+          Path('Full-Validation-Sweep.md').write_text('\n'.join(lines), encoding='utf-8')
+          PY
+      - name: Upload summary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-sweep-summary
+          path: Full-Validation-Sweep.md
+      - name: Publish summary to Wiki
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          WIKI_URL="https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.wiki.git"
+          git clone "$WIKI_URL" wiki || exit 0
+          cp Full-Validation-Sweep.md wiki/.
+          cd wiki
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Full-Validation-Sweep.md
+          git commit -m "Update full validation sweep report" || true
+          git push || true

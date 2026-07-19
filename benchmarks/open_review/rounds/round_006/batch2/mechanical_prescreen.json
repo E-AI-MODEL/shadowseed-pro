@@ -1,0 +1,498 @@
+{
+  "artifact": "mechanical_prescreen",
+  "disclaimer": "Deterministische prescreen, GEEN menselijke review. Telt NIET als reviewer_a/reviewer_b en niet als open_set_seed_quality (Laag C) evidence, en geeft GEEN accept/reject-verdict. Bedoeld om aandacht te richten en de v0.3e-prompt te toetsen aan haar eigen regels.",
+  "round": "round_006_batch2",
+  "detector": "model",
+  "model_backend": "hf-transformers:microsoft/Phi-3.5-mini-instruct",
+  "yield": {
+    "item_count": 12,
+    "items_with_candidates": 12,
+    "items_empty": 0,
+    "empty_rate": 0.0,
+    "mean_candidates_per_item": 5.0
+  },
+  "mechanical_codes": [
+    "claim_vs_gap",
+    "truncated",
+    "parse_leak",
+    "language_leak",
+    "entity_bleed",
+    "citation_fragment",
+    "fewshot_leak",
+    "not_atomic",
+    "near_duplicate"
+  ],
+  "not_mechanically_checkable": [
+    "false_gap",
+    "mistranslation",
+    "grammar"
+  ],
+  "seed_count": 60,
+  "flagged_count": 15,
+  "clean_count": 45,
+  "clean_rate": 0.75,
+  "near_duplicate_rate": 0.017,
+  "failure_code_counts": {
+    "claim_vs_gap": 0,
+    "truncated": 2,
+    "parse_leak": 0,
+    "language_leak": 0,
+    "entity_bleed": 0,
+    "citation_fragment": 0,
+    "fewshot_leak": 0,
+    "not_atomic": 12,
+    "near_duplicate": 1
+  },
+  "verdicts": [
+    {
+      "item_id": "ARXIV_ABSTRACTS_0",
+      "position": 1,
+      "seed": "Specifieke fase-ruimte waarin de berekening het meest betrouwbaar is.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_0",
+      "position": 2,
+      "seed": "Precisiesniveau van initial-state gluon radiation resomming.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_0",
+      "position": 3,
+      "seed": "Specifieke diphoton paarverdelingen die zijn voorspeld voor LHC.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_0",
+      "position": 4,
+      "seed": "Contrast tussen Higgs boson decayen en QCD processen in LHC.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_0",
+      "position": 5,
+      "seed": "Methoden voor selectie van evenementen voor verbeterde signalgevoeligheid.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_1",
+      "position": 1,
+      "seed": "Specifieke eigenschappen van de $(k,\\ell)$-sparse grafen die worden gecharacteriseerd.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_1",
+      "position": 2,
+      "seed": "Details van de algoritmen voor tree decompositions van grafen gebaseerd op het $(k,\\ell)$-pebble game.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_1",
+      "position": 3,
+      "seed": "Specifieke toepassingen van de $(k,\\ell)$-sparse grafen in rigiditeitstheorie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_1",
+      "position": 4,
+      "seed": "Het exacte aantal pebbles dat kan worden gebruikt in het $(k,\\ell)$-pebble game met kleuren.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_1",
+      "position": 5,
+      "seed": "De specifieke verbeteringen of nieuwe resultaten die door het gebruik van de gekleurde pebbles worden geleverd ten opzichte van de eerdere resultaten van Lee en Streinu.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_2",
+      "position": 1,
+      "seed": "De specifieke rol van tidal friction in de evolutie van het aardoppervlak wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_2",
+      "position": 2,
+      "seed": "De exacte relatie tussen de dark matter field fluid constant en de geologische processen van de aarde.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_2",
+      "position": 3,
+      "seed": "De methodologie of experimenten die de nauwkeurigheid van de modelafstemming met geologisch en fossiel bewijs ondersteunen.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_2",
+      "position": 4,
+      "seed": "De implicaties van de modelvoorstelling voor de bewegingspatronen van andere hemellichamen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_2",
+      "position": 5,
+      "seed": "De rol van andere mogelijke krachten of processen naast de dark matter field fluid in de evolutie van het aardoppervlak.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_5",
+      "position": 1,
+      "seed": "De specifieke manier waarop de Feshbach resonance de interactiviteitstransformatie beheert, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_5",
+      "position": 2,
+      "seed": "De exacte relatie tussen de bosonische eigenschappen en de aanpasbare scattering lengte, boven een bepaalde drempel, wordt niet uitgelegd.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_5",
+      "position": 3,
+      "seed": "De methodologie of berekeningen die de overeenkomstige resultaten in moleculaire condensaten bij $(k_F a)^{-1} \\ge 1$ bevestigen, worden niet beschreven.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_5",
+      "position": 4,
+      "seed": "De implicaties of interpretaties van de meer bosonische karakteristiek van de ODLRO-definieerbare paardefinitie ten opzichte van de BCS-projeeerde definieerbare paardefinitie, worden niet uitgelegd.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_5",
+      "position": 5,
+      "seed": "De onderzoekscontext of de relevante theoretische basis voor het vergelijken van de twee definities van de Cooper pair wave function, worden niet vermeld.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_6",
+      "position": 1,
+      "seed": "De specifieke relatie tussen polymer representation en Planck scale physics wordt niet gedetailleerd.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_6",
+      "position": 2,
+      "seed": "De exacte methodologie voor het overgaan van de polymer quantum mechanics naar de continuümlimiet wordt niet beschreven.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_6",
+      "position": 3,
+      "seed": "De manier waarop de polymer description de schroedinger theorie in specifieke gevallen (zoals de harmonische oscillator) weerspiegelt, wordt niet uitgelegd.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_6",
+      "position": 4,
+      "seed": "De implicaties van de polymer representation voor de loop quantum gravity, specifiek loop quantum cosmology, worden niet uitgebreid.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_6",
+      "position": 5,
+      "seed": "De uitdagingen of beperkingen van het overgaan van de discrete polymer theorie naar de continuümschroedinger theorie worden niet besproken.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_7",
+      "position": 1,
+      "seed": "Specifieke materialmodellen die in de formulatie zijn opgenomen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_7",
+      "position": 2,
+      "seed": "Precisiesnede van de numerieke methoden voor shock en ramp compressie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_7",
+      "position": 3,
+      "seed": "Analyse van de robuustheid en flexibiliteit van de numerieke methoden.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_7",
+      "position": 4,
+      "seed": "Details over hoe de basis ramp en shock methoden worden gekoppeld voor composite deformatie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_7",
+      "position": 5,
+      "seed": "Specifieke effecten van plastic werk op temperaturen in quasi-isentropische en shock-release experimenten.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_8",
+      "position": 1,
+      "seed": "De exacte methode voor het isoleren van bona fide YSO's uit de achtergrondcontaminaatie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_8",
+      "position": 2,
+      "seed": "De specifieke criteria gebruikt voor het bepalen van de hoge betrouwbaarheid van de YSO's.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_8",
+      "position": 3,
+      "seed": "De exacte omvang van het gebied dat werd bestudeerd met IRAC en MIPS.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_8",
+      "position": 4,
+      "seed": "De specifieke methoden gebruikt om de lagere betrouwbaarheid YSO's te identificeren.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_8",
+      "position": 5,
+      "seed": "De exacte details van de color-color diagrammen en de modelresultaten voor star/disk/envelope systemen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_9",
+      "position": 1,
+      "seed": "De specifieke dimensie van de hypercubes waar de partial cubes deel van uitmaken, wordt niet vermeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_9",
+      "position": 2,
+      "seed": "De exacte manier waarop semicubes de structuren op de graf definiëren, wordt niet beschreven.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_9",
+      "position": 3,
+      "seed": "De specifieke rol van Djokovič's en Winkler's relaties in de theorie van partial cubes, wordt niet gedetailleerd.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_9",
+      "position": 4,
+      "seed": "De manier waarop de Cartesian product en pasting, en expansie- en contractionprocessen worden gebruikt om nieuwe partial cubes te construeren, wordt niet uitgelegd.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_9",
+      "position": 5,
+      "seed": "De methoden of resultaten van de nieuwe characterisaties en bewijzen van bestaande resultaten, worden niet gedetailleerd.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_10",
+      "position": 1,
+      "seed": "De specifieke eigenschappen van de real quadratic field $\\Q(\\sqrt{5})$.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_10",
+      "position": 2,
+      "seed": "De exacte methodologie van het algoritme voor het berekenen van Hecke eigensystemen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_10",
+      "position": 3,
+      "seed": "De definitie van Hilbert-Siegel cusp forms in de context van de tekst.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_10",
+      "position": 4,
+      "seed": "De manier waarop de identiteit van Hilbert eigenforms met Hilbert-Siegel eigenforms wordt geïdentificeerd.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_10",
+      "position": 5,
+      "seed": "Het aantal of de aard van de illustratieve voorbeelden gebruikt in het voorbeeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_11",
+      "position": 1,
+      "seed": "De specifieke distributioneigenschap die cusp forms niet voor modulo odd primes $p$.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_11",
+      "position": 2,
+      "seed": "De exacte eigenschappen van modular forms van half integral weight die in de.",
+      "codes": [
+        "truncated"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_11",
+      "position": 3,
+      "seed": "De methodologische details over het gebruik van de Rankin-Cohen Bracket in.",
+      "codes": [
+        "truncated"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_11",
+      "position": 4,
+      "seed": "De precieze eigenschappen van traces van singular moduli en Hurwitz class number.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_11",
+      "position": 5,
+      "seed": "De analoge aspecten van Newman's conjecture voor overpartitions die in het onderzoek.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_12",
+      "position": 1,
+      "seed": "De specifieke half integral weegingen waarvoor de resultaten worden uitgebreid.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_12",
+      "position": 2,
+      "seed": "De exacte linear relaties tussen Fourier coefficients die worden gebruikt in de bewijsvoering.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_12",
+      "position": 3,
+      "seed": "De specifieke congruenties van Borcherds exponenten die worden verkregen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_12",
+      "position": 4,
+      "seed": "De precieze congruenties van quotiënten van Eisentein series die worden verkregen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_12",
+      "position": 5,
+      "seed": "De specifieke punten waar de congruenties van $L$-functies worden verkregen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_14",
+      "position": 1,
+      "seed": "Methoden om de integralen in pure spinor superspace te evalueren.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_14",
+      "position": 2,
+      "seed": "Procedure voor het berekenen van de kinematische factoren van de one-loop amplitudes.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_14",
+      "position": 3,
+      "seed": "Procedure voor het berekenen van de kinematische factoren van de twee-loop amplitudes.",
+      "codes": [
+        "near_duplicate"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_14",
+      "position": 4,
+      "seed": "De rol van de Ramond-staten in de vier-puntamplitudesberekening.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_14",
+      "position": 5,
+      "seed": "Manifeste supersymmetrie in de one-loop en twee-loop amplitudes.",
+      "codes": [],
+      "clean": true
+    }
+  ]
+}

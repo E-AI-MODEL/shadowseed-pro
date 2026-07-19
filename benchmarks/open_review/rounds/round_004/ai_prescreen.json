@@ -1,0 +1,549 @@
+{
+  "artifact": "ai_prescreen",
+  "disclaimer": "Dit is een AI-prescreen door het Claude-assistentmodel, GEEN menselijke review. Het telt NIET als reviewer_a/reviewer_b en niet als open_set_seed_quality evidence. Bedoeld als hulp bij triage en promptverbetering; menselijke reviewers oordelen onafhankelijk.",
+  "round": "round_004",
+  "model_backend": "hf-transformers:Qwen/Qwen2.5-3B-Instruct",
+  "criteria": [
+    "atomicity",
+    "relevance",
+    "testability",
+    "non_triviality",
+    "follow_up_utility"
+  ],
+  "verdict_counts": {
+    "accept": 22,
+    "borderline": 8,
+    "reject": 24
+  },
+  "seed_count": 54,
+  "failure_code_counts": {
+    "style_not_gap": 15,
+    "language_leak": 4,
+    "too_vague": 5,
+    "false_gap": 5,
+    "entity_bleed": 1,
+    "not_relevant": 1,
+    "grammar": 3,
+    "trivial": 1,
+    "mistranslation": 8,
+    "not_testable": 1
+  },
+  "systematic_failure_modes": [
+    "claim_vs_gap: model schrijft beweringen ('X heeft geen Y') i.p.v. afwezigheden ('de tekst noemt Y niet'); kostte TEST_0/3/5 vrijwel volledig.",
+    "mistranslation: brontermen vertaald naar onzin (bovine->bovenspanen, bloom filter->bloombestek, stolen cards->gereden cards).",
+    "false_gap: gap claimt iets ontbreekt dat wel in de bron staat (TEST_1 ss_001 prijs, TEST_9 ss_003 besparing) - plausibel ogend maar fout.",
+    "language_leak: onvertaalde Engelse frasen.",
+    "entity_bleed: niet-gedecodeerde HTML-entity (#36; voor $).",
+    "grammar: ontbrekende finiete werkwoorden."
+  ],
+  "verdicts": [
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "seed_id": "ss_001",
+      "seed_text": "De aansprakelijkheid voor de pensioenen van T N ligt bij de stricken parent firm Federal Mogul.",
+      "ai_verdict": "reject",
+      "reason": "Bewering, geen afwezigheid; Engelse leak 'stricken parent firm'.",
+      "failure_codes": [
+        "style_not_gap",
+        "language_leak"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "seed_id": "ss_002",
+      "seed_text": "De verantwoordelijkheid voor de arbeidsvoorwaarden van T N ligt bij de stricken parent firm Federal Mogul.",
+      "ai_verdict": "reject",
+      "reason": "Bewering, geen afwezigheid; Engelse leak.",
+      "failure_codes": [
+        "style_not_gap",
+        "language_leak"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "seed_id": "ss_003",
+      "seed_text": "De vertrouwenbrekerij tussen T N en Federal Mogul kan effectief zijn op de pensioenen van T N werknemers.",
+      "ai_verdict": "reject",
+      "reason": "Garbled NL ('vertrouwenbrekerij'); speculatieve claim, niet testbaar.",
+      "failure_codes": [
+        "too_vague",
+        "style_not_gap"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "seed_id": "ss_004",
+      "seed_text": "De mogelijke veranderingen in de arbeidsvoorwaarden van T N werknemers zijn niet duidelijk gemaakt door de gesprekken.",
+      "ai_verdict": "accept",
+      "reason": "Echte gap: gesprekken maakten mogelijke wijzigingen niet duidelijk.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "seed_id": "ss_001",
+      "seed_text": "De #36;10 miljoen Ansari X Prize wordt niet genoemd.",
+      "ai_verdict": "reject",
+      "reason": "Feitelijk fout: de prijs WORDT in de bron genoemd; plus entity '#36;'.",
+      "failure_codes": [
+        "false_gap",
+        "entity_bleed"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "seed_id": "ss_002",
+      "seed_text": "Het aantal teams in de competitie wordt niet geciteerd.",
+      "ai_verdict": "accept",
+      "reason": "Totaal aantal teams niet gegeven; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "seed_id": "ss_003",
+      "seed_text": "De specifieke datum voor de eerste lancering wordt niet aangegeven.",
+      "ai_verdict": "accept",
+      "reason": "Concrete lanceerdatum-waarde niet in excerpt; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "seed_id": "ss_004",
+      "seed_text": "De naam van de tweede team is niet genoemd.",
+      "ai_verdict": "accept",
+      "reason": "Naam van het tweede team niet genoemd; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "seed_id": "ss_005",
+      "seed_text": "De specifieke manier waarop de teams zich aanmelden voor de X Prize wordt niet beschreven.",
+      "ai_verdict": "accept",
+      "reason": "Aanmeldprocedure niet beschreven; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "seed_id": "ss_001",
+      "seed_text": "Peptide-productie wordt niet gecombineerd met de ontwikkeling van een methode.",
+      "ai_verdict": "reject",
+      "reason": "Verward t.o.v. bron (grant is juist voor methode-ontwikkeling).",
+      "failure_codes": [
+        "not_relevant"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "seed_id": "ss_002",
+      "seed_text": "De betrokken wetenschapper is niet genoemd.",
+      "ai_verdict": "accept",
+      "reason": "Naam onderzoeker niet genoemd; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "seed_id": "ss_003",
+      "seed_text": "De aard van de grant niet vermeld.",
+      "ai_verdict": "borderline",
+      "reason": "Inhoud valide (aard/omvang grant), maar werkwoord ontbreekt.",
+      "failure_codes": [
+        "grammar"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "seed_id": "ss_004",
+      "seed_text": "Het proces van peptide-productie niet beschreven.",
+      "ai_verdict": "borderline",
+      "reason": "Inhoud valide (productieproces), maar werkwoord ontbreekt.",
+      "failure_codes": [
+        "grammar"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "seed_id": "ss_001",
+      "seed_text": "De Prediction Unit heeft geen toezicht op brandweeropdrachten.",
+      "ai_verdict": "reject",
+      "reason": "Bewering, geen gap; lijkt verzonnen.",
+      "failure_codes": [
+        "style_not_gap"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "seed_id": "ss_002",
+      "seed_text": "De Prediction Unit weet niet precies waar branden zich bevinden.",
+      "ai_verdict": "reject",
+      "reason": "Bewering die de bron tegenspreekt ('places he expects').",
+      "failure_codes": [
+        "style_not_gap",
+        "false_gap"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "seed_id": "ss_003",
+      "seed_text": "De Prediction Unit heeft geen informatie over brandweerreserves.",
+      "ai_verdict": "reject",
+      "reason": "Verzonnen bewering, geen afwezigheid.",
+      "failure_codes": [
+        "style_not_gap"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "seed_id": "ss_004",
+      "seed_text": "De Prediction Unit kan geen branden voorkomen.",
+      "ai_verdict": "reject",
+      "reason": "Triviale/voor de hand liggende bewering.",
+      "failure_codes": [
+        "trivial",
+        "style_not_gap"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "seed_id": "ss_001",
+      "seed_text": "Bovenspanen worden niet geclassificeerd als bron van luchtvervuiling.",
+      "ai_verdict": "reject",
+      "reason": "Onzinwoord 'bovenspanen' (mistransl. 'bovine'); plus feitelijk fout.",
+      "failure_codes": [
+        "mistranslation",
+        "false_gap"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "seed_id": "ss_002",
+      "seed_text": "Regelgeving betreffende bovenspanen wordt niet aangeboden door andere staten.",
+      "ai_verdict": "reject",
+      "reason": "Onzinwoord 'bovenspanen'.",
+      "failure_codes": [
+        "mistranslation"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "seed_id": "ss_003",
+      "seed_text": "Impact van bovenspanen op luchtkwaliteit wordt niet genoemd in de tekst.",
+      "ai_verdict": "reject",
+      "reason": "Onzinwoord 'bovenspanen'.",
+      "failure_codes": [
+        "mistranslation"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "seed_id": "ss_004",
+      "seed_text": "Methode om bovenspanen te verminderen wordt niet beschreven in de tekst.",
+      "ai_verdict": "reject",
+      "reason": "Onzinwoord 'bovenspanen'.",
+      "failure_codes": [
+        "mistranslation"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "seed_id": "ss_005",
+      "seed_text": "Kosten van implementatie van bovenspanenregelingen worden niet vermeld in de tekst.",
+      "ai_verdict": "reject",
+      "reason": "Gap-concept valide (kosten), maar onzinwoord 'bovenspanen'.",
+      "failure_codes": [
+        "mistranslation"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "seed_id": "ss_001",
+      "seed_text": "De DfES heeft geen maatregelen genomen om de illegale downloadverdediging te voorkomen.",
+      "ai_verdict": "reject",
+      "reason": "Garbled 'illegale downloadverdediging'; verzonnen claim.",
+      "failure_codes": [
+        "style_not_gap",
+        "too_vague"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "seed_id": "ss_002",
+      "seed_text": "De DfES heeft geen communicatieplannen voor het onderwijs in muziek geschreven.",
+      "ai_verdict": "reject",
+      "reason": "Verzonnen claim, geen afwezigheid in de tekst.",
+      "failure_codes": [
+        "style_not_gap"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "seed_id": "ss_003",
+      "seed_text": "De DfES heeft geen regels ingesteld voor het gebruik van digitale muziekproducten in de school.",
+      "ai_verdict": "reject",
+      "reason": "Verzonnen claim.",
+      "failure_codes": [
+        "style_not_gap"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "seed_id": "ss_004",
+      "seed_text": "De DfES heeft geen feedbackopnames verzameld over de impact van de \"Music Manifesto\".",
+      "ai_verdict": "reject",
+      "reason": "Verzonnen claim.",
+      "failure_codes": [
+        "style_not_gap"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "seed_id": "ss_001",
+      "seed_text": "Netwerkwormen zijn niet exclusief bijzondere vaardigheden vereist om te ontwikkelen.",
+      "ai_verdict": "reject",
+      "reason": "Garbled grammatica; bewering.",
+      "failure_codes": [
+        "style_not_gap"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "seed_id": "ss_002",
+      "seed_text": "De impact van een virusontwikkelaar op de virusinfecties kan niet alleen worden bepaald door de hoeveelheid verschillende varianten.",
+      "ai_verdict": "reject",
+      "reason": "Garbled; analyse/claim, geen gap.",
+      "failure_codes": [
+        "too_vague",
+        "style_not_gap"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "seed_id": "ss_003",
+      "seed_text": "Er zijn andere virusontwikkelaars die net zo belangrijk zijn als Sven Jaschan, maar deze niet genoemd.",
+      "ai_verdict": "borderline",
+      "reason": "Gap-kern (andere auteurs niet genoemd) maar garbled.",
+      "failure_codes": [
+        "grammar"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "seed_id": "ss_004",
+      "seed_text": "Het aantal virusvarianten die in een periode kunnen ontstaan, wordt niet aangegeven.",
+      "ai_verdict": "accept",
+      "reason": "Aantal varianten niet aangegeven; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "seed_id": "ss_005",
+      "seed_text": "De technische details van de virusontwikkeling en hun effecten op de netwerken worden niet uitgebreid beschreven.",
+      "ai_verdict": "accept",
+      "reason": "Technische details niet beschreven; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "seed_id": "ss_001",
+      "seed_text": "De bloombestek moet worden gegenereerd voordat het in de FOAF-bestand wordt opgenomen.",
+      "ai_verdict": "reject",
+      "reason": "Onzinwoord 'bloombestek' (bloom filter); bewering.",
+      "failure_codes": [
+        "mistranslation",
+        "style_not_gap"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "seed_id": "ss_002",
+      "seed_text": "Een bloombestek kan niet worden gebruikt voor het bevestigen van de authenticiteit van een PGP-fingerprint.",
+      "ai_verdict": "reject",
+      "reason": "Onzinwoord 'bloombestek'; bewering.",
+      "failure_codes": [
+        "mistranslation",
+        "style_not_gap"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "seed_id": "ss_003",
+      "seed_text": "Er wordt niet vermeld hoe de whitelist van identiteiten wordt gevuld.",
+      "ai_verdict": "accept",
+      "reason": "Hoe whitelist gevuld wordt niet vermeld; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "seed_id": "ss_004",
+      "seed_text": "Er wordt niet vermeld hoe de encryptie van de FOAF-bestanden wordt uitgevoerd.",
+      "ai_verdict": "accept",
+      "reason": "Hoe encryptie uitgevoerd wordt niet vermeld; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "seed_id": "ss_001",
+      "seed_text": "Het aantal vermeende gereden cards is niet vastgesteld.",
+      "ai_verdict": "reject",
+      "reason": "Garbled 'gereden cards'; verward t.o.v. bron.",
+      "failure_codes": [
+        "mistranslation",
+        "not_testable"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "seed_id": "ss_002",
+      "seed_text": "De aantallen arrestaties zijn niet verdeeld per type card fraud.",
+      "ai_verdict": "accept",
+      "reason": "Arrestaties niet uitgesplitst per fraudetype; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "seed_id": "ss_003",
+      "seed_text": "De kosten die bespaard zijn door de card fraud unit zijn niet genoemd.",
+      "ai_verdict": "reject",
+      "reason": "Feitelijk fout: besparing (65m) WORDT genoemd.",
+      "failure_codes": [
+        "false_gap"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "seed_id": "ss_004",
+      "seed_text": "De tijdspanne van de arrestaties is niet vastgesteld.",
+      "ai_verdict": "borderline",
+      "reason": "Globale tijdspanne ('first two years') staat er wel; zwak.",
+      "failure_codes": [
+        "false_gap"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "seed_id": "ss_001",
+      "seed_text": "De nieuwe high-speed wireless format wordt niet beschreven.",
+      "ai_verdict": "borderline",
+      "reason": "Gap valide maar Engelse leak 'high-speed wireless format'.",
+      "failure_codes": [
+        "language_leak"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "seed_id": "ss_002",
+      "seed_text": "De technologieën die de nieuwgeplande standaard ondersteunen worden niet genoemd.",
+      "ai_verdict": "accept",
+      "reason": "Ondersteunende technologieën niet genoemd; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "seed_id": "ss_003",
+      "seed_text": "De specifieke details over hoe de nieuwe standaard vergroot kan worden zijn niet vermeld.",
+      "ai_verdict": "borderline",
+      "reason": "Garbled 'vergroot kan worden'; onduidelijk.",
+      "failure_codes": [
+        "too_vague"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "seed_id": "ss_004",
+      "seed_text": "De reactie van de concurrentie op de nieuwe standaard is niet gedeeld.",
+      "ai_verdict": "accept",
+      "reason": "Reactie concurrentie niet gedeeld; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "seed_id": "ss_005",
+      "seed_text": "De toekomstige impact van de nieuwe standaard op de markt is niet besproken.",
+      "ai_verdict": "accept",
+      "reason": "Toekomstige marktimpact niet besproken; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "seed_id": "ss_001",
+      "seed_text": "De beschikbare softwarepakketten zijn niet genoemd.",
+      "ai_verdict": "borderline",
+      "reason": "Zwak: bron noemt wel Final Cut Pro.",
+      "failure_codes": [
+        "too_vague"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "seed_id": "ss_002",
+      "seed_text": "De prijs van de video-editingsoftwarepakket is niet aangegeven.",
+      "ai_verdict": "accept",
+      "reason": "Prijs niet aangegeven; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "seed_id": "ss_003",
+      "seed_text": "De technische vereisten voor het gebruik van de softwarepakketten worden niet gedeeld.",
+      "ai_verdict": "accept",
+      "reason": "Technische vereisten niet gedeeld; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "seed_id": "ss_004",
+      "seed_text": "De mogelijkheden voor integratie van de softwarepakketten met andere applicaties zijn niet besproken.",
+      "ai_verdict": "accept",
+      "reason": "Integratiemogelijkheden niet besproken; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "seed_id": "ss_005",
+      "seed_text": "De beperkingen betreffende het gebruik van de softwarepakketten in educatieve doeleinden zijn niet aangegeven.",
+      "ai_verdict": "accept",
+      "reason": "Beperkingen educatief gebruik niet aangegeven; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "seed_id": "ss_001",
+      "seed_text": "Ontbreken van een concurrentieanalyse tussen Free Record Shop en Apple.",
+      "ai_verdict": "accept",
+      "reason": "Concurrentieanalyse ontbreekt; valide gap, schone NL.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "seed_id": "ss_002",
+      "seed_text": "Ontbreken van de prijsverdeling van de nieuwe downloadservice.",
+      "ai_verdict": "accept",
+      "reason": "Prijsverdeling ontbreekt; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "seed_id": "ss_003",
+      "seed_text": "Ontbreken van de reactie van Apple op de nieuwe service.",
+      "ai_verdict": "accept",
+      "reason": "Reactie Apple ontbreekt; valide gap.",
+      "failure_codes": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "seed_id": "ss_004",
+      "seed_text": "Ontbreken van de reactie van andere music retailers op de nieuwe service.",
+      "ai_verdict": "borderline",
+      "reason": "Valide gap maar Engelse leak 'music retailers'.",
+      "failure_codes": [
+        "language_leak"
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "seed_id": "ss_005",
+      "seed_text": "Ontbreken van de technische details van de nieuwe downloadservice.",
+      "ai_verdict": "accept",
+      "reason": "Technische details ontbreken; valide gap.",
+      "failure_codes": []
+    }
+  ]
+}

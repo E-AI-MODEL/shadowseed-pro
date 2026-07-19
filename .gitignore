@@ -1,0 +1,27 @@
+.pytest_cache/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+build/
+dist/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+runs/
+benchmarks/results/generated/
+benchmarks/private/
+.env
+.env.*
+!.env.example
+.secrets/
+
+# Transient open-set run scratch: written by run-open-set-seed-review and the
+# HF-review workflow, uploaded as Actions artifacts and curated per round under
+# benchmarks/open_review/rounds/. The workflow commits only the summary set, so
+# tracking these two drifts them stale (see Codex finding on PR #128).
+results/open_review/open_set_review_packets.json
+results/open_review/open_set_seed_output.json

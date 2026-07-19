@@ -1,0 +1,79 @@
+name: "Utility · Model-mirror naar branch (sandbox-backup)"
+
+# Backup-route voor omgevingen waar huggingface.co geblokkeerd is maar de
+# GitHub-repo bereikbaar: spiegel een KLEIN echt model (config + tokenizer +
+# safetensors) naar een orphan branch als gewone git-bestanden. Een sandbox
+# haalt die branch op via git en draait bijv.:
+#   shadowseed run-activation-probe --backend hf --model-id <pad-naar-mirror>
+# Bewust begrensd: bestanden > 95 MB worden geweigerd (GitHub-limiet is 100 MB)
+# — kies dan een kleiner model (bijv. EleutherAI/pythia-14m of pythia-31m).
+
+on:
+  workflow_dispatch:
+    inputs:
+      model_id:
+        description: "Klein HF-model om te spiegelen (elke file < 95 MB)"
+        required: true
+        default: "EleutherAI/pythia-14m"
+
+permissions:
+  contents: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      MODEL_ID: ${{ inputs.model_id }}
+      HF_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Download model-snapshot (alleen config/tokenizer/safetensors)
+        run: |
+          pip install --quiet huggingface_hub
+          python - <<'EOF'
+          import os, shutil
+          from pathlib import Path
+          from huggingface_hub import snapshot_download
+
+          model_id = os.environ["MODEL_ID"]
+          src = snapshot_download(
+              model_id,
+              allow_patterns=[
+                  "*.json", "*.txt", "*.model", "model.safetensors",
+                  "tokenizer.model", "merges.txt", "vocab.json",
+              ],
+          )
+          dst = Path("mirror")
+          if dst.exists():
+              shutil.rmtree(dst)
+          shutil.copytree(src, dst, symlinks=False)
+          limit = 95 * 1024 * 1024
+          too_big = [
+              p for p in dst.rglob("*") if p.is_file() and p.stat().st_size > limit
+          ]
+          if too_big:
+              names = ", ".join(f"{p.name} ({p.stat().st_size >> 20} MB)" for p in too_big)
+              raise SystemExit(
+                  f"Bestanden boven de 95 MB-grens: {names}. "
+                  "Kies een kleiner model (bijv. EleutherAI/pythia-14m)."
+              )
+          print("gespiegeld:", sorted(p.name for p in dst.rglob("*") if p.is_file()))
+          EOF
+
+      - name: Push naar orphan branch model-mirror/<model>
+        run: |
+          branch="model-mirror/$(echo "$MODEL_ID" | tr '/' '-' | tr -cd 'A-Za-z0-9._-')"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan "$branch"
+          git rm -rf --cached . > /dev/null
+          git add -f mirror
+          git commit -m "Model-mirror: $MODEL_ID (sandbox-backup; alleen config/tokenizer/safetensors)"
+          git push --force origin "HEAD:refs/heads/$branch"
+          echo "Klaar: branch $branch"

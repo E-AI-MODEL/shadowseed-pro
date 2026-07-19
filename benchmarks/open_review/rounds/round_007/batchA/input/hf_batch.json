@@ -1,0 +1,198 @@
+{
+  "version": "hf-open-set-batch-0.1",
+  "source": {
+    "id": "ag_news_test",
+    "dataset": "szhuggingface/ag_news",
+    "config": "default",
+    "split": "test",
+    "revision": "main",
+    "license": "apache-2.0",
+    "registry_path": "src/shadowseed/data/open_set_hf_sources.json",
+    "requested_limit": 12,
+    "requested_offset": 30,
+    "returned_count": 12,
+    "authenticated": false
+  },
+  "items": [
+    {
+      "id": "AG_NEWS_TEST_30",
+      "title": "AG News Sports #30",
+      "domain": "nieuws - Sports",
+      "text": "They've caught his eye In quot;helping themselves, quot; Ricky Bryant, Chas Gessner, Michael Jennings, and David Patten did nothing Friday night to make Bill Belichick's decision on what to do with his receivers any easier.",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 30,
+        "label_name": "Sports"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_31",
+      "title": "AG News Sports #31",
+      "domain": "nieuws - Sports",
+      "text": "Indians Mount Charge The Cleveland Indians pulled within one game of the AL Central lead by beating the Minnesota Twins, 7-1, Saturday night with home runs by Travis Hafner and Victor Martinez.",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 31,
+        "label_name": "Sports"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_32",
+      "title": "AG News World #32",
+      "domain": "nieuws - World",
+      "text": "Sister of man who died in Vancouver police custody slams chief (Canadian Press) Canadian Press - VANCOUVER (CP) - The sister of a man who died after a violent confrontation with police has demanded the city's chief constable resign for defending the officer involved.",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 32,
+        "label_name": "World"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_33",
+      "title": "AG News World #33",
+      "domain": "nieuws - World",
+      "text": "Man Sought #36;50M From McGreevey, Aides Say (AP) AP - The man who claims Gov. James E. McGreevey sexually harassed him was pushing for a cash settlement of up to #36;50 million before the governor decided to announce that he was gay and had an extramarital affair, sources told The Associated Press.",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 33,
+        "label_name": "World"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_34",
+      "title": "AG News World #34",
+      "domain": "nieuws - World",
+      "text": "Explosions Echo Throughout Najaf NAJAF, Iraq - Explosions and gunfire rattled through the city of Najaf as U.S. troops in armored vehicles and tanks rolled back into the streets here Sunday, a day after the collapse of talks - and with them a temporary cease-fire - intended to end the fighting in this holy city...",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 34,
+        "label_name": "World"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_35",
+      "title": "AG News World #35",
+      "domain": "nieuws - World",
+      "text": "Frail Pope Celebrates Mass at Lourdes LOURDES, France - A frail Pope John Paul II, breathing heavily and gasping at times, celebrated an open-air Mass on Sunday for several hundred thousand pilgrims, many in wheelchairs, at a shrine to the Virgin Mary that is associated with miraculous cures. At one point he said \"help me\" in Polish while struggling through his homily in French...",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 35,
+        "label_name": "World"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_36",
+      "title": "AG News World #36",
+      "domain": "nieuws - World",
+      "text": "Venezuela Prepares for Chavez Recall Vote Supporters and rivals warn of possible fraud; government says Chavez's defeat could produce turmoil in world oil market.",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 36,
+        "label_name": "World"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_37",
+      "title": "AG News World #37",
+      "domain": "nieuws - World",
+      "text": "1994 Law Designed to Preserve Guard Jobs (AP) AP - A 1994 law strengthened job protections for National Guard and Reserve troops called to active duty. Here are major provisions of the Uniformed Services Employment and Reemployment Rights Act (USERRA).",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 37,
+        "label_name": "World"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_38",
+      "title": "AG News World #38",
+      "domain": "nieuws - World",
+      "text": "Iran Warns Its Missiles Can Hit Anywhere in Israel TEHRAN (Reuters) - A senior Iranian military official said Sunday Israel and the United States would not dare attack Iran since it could strike back anywhere in Israel with its latest missiles, news agencies reported.",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 38,
+        "label_name": "World"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_39",
+      "title": "AG News World #39",
+      "domain": "nieuws - World",
+      "text": "Afghan Army Dispatched to Calm Violence KABUL, Afghanistan - Government troops intervened in Afghanistan's latest outbreak of deadly fighting between warlords, flying from the capital to the far west on U.S. and NATO airplanes to retake an air base contested in the violence, officials said Sunday...",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 39,
+        "label_name": "World"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_40",
+      "title": "AG News Sports #40",
+      "domain": "nieuws - Sports",
+      "text": "Johnson Helps D-Backs End Nine-Game Slide (AP) AP - Randy Johnson took a four-hitter into the ninth inning to help the Arizona Diamondbacks end a nine-game losing streak Sunday, beating Steve Trachsel and the New York Mets 2-0.",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 40,
+        "label_name": "Sports"
+      }
+    },
+    {
+      "id": "AG_NEWS_TEST_41",
+      "title": "AG News Business #41",
+      "domain": "nieuws - Business",
+      "text": "Retailers Vie for Back-To-School Buyers (Reuters) Reuters - Apparel retailers are hoping their\\back-to-school fashions will make the grade among\\style-conscious teens and young adults this fall, but it could\\be a tough sell, with students and parents keeping a tighter\\hold on their wallets.",
+      "source_metadata": {
+        "dataset": "szhuggingface/ag_news",
+        "config": "default",
+        "split": "test",
+        "revision": "main",
+        "license": "apache-2.0",
+        "row_idx": 41,
+        "label_name": "Business"
+      }
+    }
+  ]
+}

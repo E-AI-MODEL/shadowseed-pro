@@ -1,0 +1,202 @@
+name: Research · Retrieval model (HF reality check)
+
+on:
+  workflow_dispatch:
+    inputs:
+      vector_backend:
+        description: "Vectorstore backend"
+        required: true
+        default: "faiss"
+        type: choice
+        options:
+          - memory
+          - faiss
+          - chroma
+      slm:
+        description: "Small language model"
+        required: true
+        default: "TinyLlama 1.1B Chat"
+        type: choice
+        options:
+          - TinyLlama 1.1B Chat
+          - Qwen2.5 0.5B Instruct
+          - Qwen2.5 1.5B Instruct
+          - Gemma 2 2B IT
+      max_new_tokens:
+        description: "Max new tokens per generation"
+        required: true
+        default: "220"
+      top_k:
+        description: "Retrieved chunks per query"
+        required: true
+        default: "3"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: write
+
+jobs:
+  retrieval-model-hf:
+    name: Model Reality Check (${{ inputs.slm }}, ${{ inputs.vector_backend }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Resolve model id
+        id: model
+        run: |
+          case "${{ inputs.slm }}" in
+            "TinyLlama 1.1B Chat") MODEL_ID="TinyLlama/TinyLlama-1.1B-Chat-v1.0" ;;
+            "Qwen2.5 0.5B Instruct") MODEL_ID="Qwen/Qwen2.5-0.5B-Instruct" ;;
+            "Qwen2.5 1.5B Instruct") MODEL_ID="Qwen/Qwen2.5-1.5B-Instruct" ;;
+            "Gemma 2 2B IT") MODEL_ID="google/gemma-2-2b-it" ;;
+            *) echo "Unknown SLM: ${{ inputs.slm }}"; exit 1 ;;
+          esac
+          echo "model_id=${MODEL_ID}" >> "$GITHUB_OUTPUT"
+          echo "MODEL_ID=${MODEL_ID}" >> "$GITHUB_ENV"
+
+      - name: Cache Hugging Face models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-${{ runner.os }}-${{ steps.model.outputs.model_id }}
+          restore-keys: |
+            hf-${{ runner.os }}-
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          if [ "${{ inputs.vector_backend }}" = "faiss" ]; then
+            pip install -e ".[test,models,vector-faiss]"
+          elif [ "${{ inputs.vector_backend }}" = "chroma" ]; then
+            pip install -e ".[test,models,vector-chroma]"
+          else
+            pip install -e ".[test,models]"
+          fi
+
+      - name: Run HF retrieval model benchmark
+        run: |
+          mkdir -p results/retrieval_model_hf
+          python -m shadowseed.cli run-retrieval-model-benchmark \
+            --vector-backend "${{ inputs.vector_backend }}" \
+            --model-backend hf-transformers \
+            --model-id "${MODEL_ID}" \
+            --max-new-tokens "${{ inputs.max_new_tokens }}" \
+            --top-k "${{ inputs.top_k }}" \
+            --output results/retrieval_model_hf/hf_${{ inputs.vector_backend }}.json
+
+      - name: Build HF interpretation
+        env:
+          SHA: ${{ github.sha }}
+          VECTOR_BACKEND: ${{ inputs.vector_backend }}
+          SLM_LABEL: ${{ inputs.slm }}
+          MAX_NEW_TOKENS: ${{ inputs.max_new_tokens }}
+          TOP_K: ${{ inputs.top_k }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          backend = os.environ['VECTOR_BACKEND']
+          path = Path(f'results/retrieval_model_hf/hf_{backend}.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          s = data['summary']
+          delta = s['coverage_delta']
+
+          if delta > 0:
+              headline = 'Retrieval + SSOT verhoogt in deze echte HF-run de gemeten gap coverage.'
+          elif delta == 0:
+              headline = 'Retrieval + SSOT geeft in deze echte HF-run geen meetbaar coverageverschil.'
+          else:
+              headline = 'Retrieval + SSOT verlaagt in deze echte HF-run de gemeten gap coverage.'
+
+          lines = [
+              '# Model Reality Check',
+              '',
+              '## Conclusie',
+              '',
+              f'**{headline}**',
+              '',
+              'Deze pagina gebruikt een echte `hf-transformers` modelrun. De baseline krijgt dezelfde vraag zonder broncontext. De retrieval-conditie krijgt relevante SSOT-context.',
+              '',
+              '## Runconfiguratie',
+              '',
+              '| Veld | Waarde |',
+              '|---|---|',
+              f"| SLM keuze | {os.environ['SLM_LABEL']} |",
+              f"| Hugging Face model | {os.environ['MODEL_ID']} |",
+              f"| Vector backend | {backend} |",
+              f"| Max new tokens | {os.environ['MAX_NEW_TOKENS']} |",
+              f"| Top-k | {os.environ['TOP_K']} |",
+              f"| Commit | {os.environ.get('SHA', '')} |",
+              '',
+              '## Kerncijfers',
+              '',
+              '| Metric | Waarde |',
+              '|---|---:|',
+              f"| Baseline mean gap coverage | {s['baseline_mean_gap_coverage']:.3f} |",
+              f"| Retrieval mean gap coverage | {s['retrieval_mean_gap_coverage']:.3f} |",
+              f"| Coverage delta | {s['coverage_delta']:.3f} |",
+              f"| Mean answer length delta words | {s['mean_answer_length_delta_words']:.3f} |",
+              f"| Coverage delta per 100 added words | {s['coverage_delta_per_100_added_words']:.3f} |",
+              '',
+              '## Scenarioresultaten',
+              '',
+              '| Scenario | Domein | Baseline | Retrieval | Delta |',
+              '|---|---|---:|---:|---:|',
+          ]
+
+          for r in data['results']:
+              lines.append(
+                  f"| {r['scenario_id']} | {r['domain']} | {r['baseline_gap_coverage']:.3f} | {r['retrieval_gap_coverage']:.3f} | {r['coverage_delta']:.3f} |"
+              )
+
+          lines.extend([
+              '',
+              '## Grens van de claim',
+              '',
+              'Dit is een echte modelrun, maar nog geen algemene claim. Voor sterker bewijs zijn herhaalde runs, meerdere modellen, meer scenario’s en blind review nodig.',
+              '',
+              '## Ruwe output',
+              '',
+              '- [Retrieval Model HF Raw](https://raw.githubusercontent.com/wiki/E-AI-MODEL/shadowseed/Retrieval-Model-HF-Raw.json)',
+              '',
+          ])
+          Path('Retrieval-Model-HF.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          PY
+
+      - name: Upload HF retrieval model artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-reality-check-${{ inputs.vector_backend }}
+          path: |
+            results/retrieval_model_hf
+            Retrieval-Model-HF.md
+          if-no-files-found: error
+
+      - name: Publish HF result to Wiki
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          VECTOR_BACKEND: ${{ inputs.vector_backend }}
+        run: |
+          WIKI_URL="https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.wiki.git"
+          git clone "$WIKI_URL" wiki || exit 0
+          cp Retrieval-Model-HF.md wiki/.
+          cp "results/retrieval_model_hf/hf_${VECTOR_BACKEND}.json" wiki/Retrieval-Model-HF-Raw.json
+          cp "results/retrieval_model_hf/hf_${VECTOR_BACKEND}.json" "wiki/Retrieval-Model-HF-Raw-${VECTOR_BACKEND}.json"
+          cd wiki
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Retrieval-Model-HF.md Retrieval-Model-HF-Raw.json "Retrieval-Model-HF-Raw-${VECTOR_BACKEND}.json"
+          git commit -m "Update model reality check result" || true
+          git push || true

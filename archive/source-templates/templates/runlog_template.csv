@@ -1,0 +1,2 @@
+run_id,phase,scenario_id,model,prompt_name,detected_seed,ground_truth_match,score,reviewer,notes
+2026-05-02_phase0_A_001,0,A,modelnaam,detection_pass_atomic,,,,reviewer_01,

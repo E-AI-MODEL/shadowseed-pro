@@ -1,0 +1,23 @@
+{
+  "benchmark_name": "AbsenceBench",
+  "run_type": "benchmark_preparation",
+  "execution_status": "execution_gap",
+  "ssl_input_basis": [
+    "README.md",
+    "docs/architecture/lifecycle-and-gate.md",
+    "docs/research/status.md"
+  ],
+  "host_platform": "Hugging Face dataset and GitHub repository",
+  "dataset_status": "present",
+  "runner_status": "structure_present",
+  "score": null,
+  "score_type": "F1 or upstream benchmark output",
+  "interpretation": "The repository has a reviewable execution route but does not claim a live run.",
+  "limitations": [
+    "live host verification incomplete",
+    "provider and model not fixed",
+    "upstream output mapping not tested end to end"
+  ],
+  "execution_gap": true,
+  "timestamp": "2026-07-19T00:00:00+00:00"
+}

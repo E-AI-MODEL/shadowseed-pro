@@ -1,0 +1,1065 @@
+{
+  "summary": {
+    "evidence_layer": "open_set_seed_quality",
+    "artifact_contract_version": "open-review-0.2",
+    "corpus_version": "hf-open-set-batch-0.1",
+    "source": {
+      "id": "ag_news_test",
+      "dataset": "szhuggingface/ag_news",
+      "config": "default",
+      "split": "test",
+      "revision": "main",
+      "license": "apache-2.0",
+      "registry_path": "src/shadowseed/data/open_set_hf_sources.json",
+      "requested_limit": 12,
+      "requested_offset": 0,
+      "returned_count": 12,
+      "authenticated": false
+    },
+    "item_count": 23,
+    "raw_candidate_count": 115,
+    "normalized_candidate_count": 115,
+    "accepted_count": 115,
+    "rejected_count": 0,
+    "acceptance_rate": 1.0,
+    "domain_item_counts": {
+      "nieuws - Business": 1,
+      "nieuws - Sci/Tech": 22
+    },
+    "domain_accept_counts": {
+      "nieuws - Business": 5,
+      "nieuws - Sci/Tech": 110
+    },
+    "candidate_source_counts": {
+      "open_set_candidate_adapter": 23
+    },
+    "detector": "adapter_v1",
+    "model_backend": null,
+    "candidate_adapter": "ssl45_open_set_candidate_adapter_v0.1",
+    "fixed_scenario_priors_used": false,
+    "expected_gaps_used": false,
+    "ground_truth_seeds_used": false,
+    "regression_gap_detector_used": false,
+    "candidate_quality_requires_human_review": true,
+    "seed_verdict_rule": "A seed counts as accepted or rejected only after every generated reviewer row for that seed is completed and valid.",
+    "reviewer_ids": [
+      "reviewer_a",
+      "reviewer_b"
+    ],
+    "reviewer_count": 2,
+    "review_packet_count": 230,
+    "review_criteria": [
+      "atomicity",
+      "relevance",
+      "testability",
+      "non_triviality",
+      "follow_up_utility"
+    ],
+    "reject_codes": [
+      "too_broad",
+      "too_vague",
+      "trivial",
+      "not_relevant",
+      "not_testable",
+      "duplicate",
+      "style_not_gap"
+    ],
+    "status": "review_pending",
+    "next_step": "Fill review packets and run summarize-open-set-seed-review.",
+    "artifacts": {
+      "seed_output": "benchmarks/open_review/rounds/round_005/baseline_seed_output.json",
+      "review_packets": "/tmp/comb_baseline_packets.json"
+    }
+  },
+  "results": [
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Fears in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdlijn van de beschreven gebeurtenis.",
+        "Direct geraakte groep in het item.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van Fears in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdlijn van de beschreven gebeurtenis.",
+        "Direct geraakte groep in het item.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Fears in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdlijn van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Direct geraakte groep in het item."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Race in de gebeurtenis.",
+        "Bron van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Herkomst van de genoemde cijfers."
+      ],
+      "normalized_candidates": [
+        "Rol van Race in de gebeurtenis.",
+        "Bron van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Herkomst van de genoemde cijfers."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Race in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Bron van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdstip van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Herkomst van de genoemde cijfers."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Wins in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Reden voor de beschreven beslissing."
+      ],
+      "normalized_candidates": [
+        "Rol van Wins in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Reden voor de beschreven beslissing."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Wins in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdstip van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Reden voor de beschreven beslissing."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Prediction in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van Prediction in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Prediction in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdstip van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Calif in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdlijn van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van Calif in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdlijn van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Calif in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdlijn van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Open in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van Open in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Open in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdstip van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Loosing in de gebeurtenis.",
+        "Bron van de centrale bewering.",
+        "Tijdlijn van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Herkomst van de genoemde cijfers."
+      ],
+      "normalized_candidates": [
+        "Rol van Loosing in de gebeurtenis.",
+        "Bron van de centrale bewering.",
+        "Tijdlijn van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Herkomst van de genoemde cijfers."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Loosing in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Bron van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdlijn van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Herkomst van de genoemde cijfers."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van FOAFKey in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van FOAFKey in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van FOAFKey in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdstip van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Card in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van Card in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Card in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdstip van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Group in de gebeurtenis.",
+        "Bron van de centrale bewering.",
+        "Tijdlijn van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van Group in de gebeurtenis.",
+        "Bron van de centrale bewering.",
+        "Tijdlijn van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Group in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Bron van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdlijn van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Apple in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdlijn van de beschreven gebeurtenis.",
+        "Direct geraakte groep in het item.",
+        "Reden voor de beschreven beslissing."
+      ],
+      "normalized_candidates": [
+        "Rol van Apple in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdlijn van de beschreven gebeurtenis.",
+        "Direct geraakte groep in het item.",
+        "Reden voor de beschreven beslissing."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Apple in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdlijn van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Direct geraakte groep in het item."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Reden voor de beschreven beslissing."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Dutch in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdlijn van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van Dutch in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdlijn van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Dutch in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdlijn van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_13",
+      "title": "AG News Sci/Tech #13",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Super in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van Super in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Super in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdstip van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_14",
+      "title": "AG News Sci/Tech #14",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Socialites in de gebeurtenis.",
+        "Bron van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van Socialites in de gebeurtenis.",
+        "Bron van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Socialites in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Bron van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdstip van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_15",
+      "title": "AG News Sci/Tech #15",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Teenage in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdlijn van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van Teenage in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdlijn van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Teenage in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdlijn van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_16",
+      "title": "AG News Sci/Tech #16",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Scientists in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van Scientists in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Scientists in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdstip van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_17",
+      "title": "AG News Sci/Tech #17",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Mars in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van Mars in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Mars in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdstip van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_18",
+      "title": "AG News Sci/Tech #18",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Rocking in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van Rocking in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Rocking in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdstip van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_19",
+      "title": "AG News Sci/Tech #19",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Storage in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van Storage in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Storage in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdstip van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_20",
+      "title": "AG News Sci/Tech #20",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van IBM in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Direct geraakte groep in het item.",
+        "Reden voor de beschreven beslissing."
+      ],
+      "normalized_candidates": [
+        "Rol van IBM in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Direct geraakte groep in het item.",
+        "Reden voor de beschreven beslissing."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van IBM in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdstip van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Direct geraakte groep in het item."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Reden voor de beschreven beslissing."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_23",
+      "title": "AG News Sci/Tech #23",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Some in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van Some in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Some in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdstip van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_24",
+      "title": "AG News Sci/Tech #24",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Rivals in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van Rivals in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Rivals in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdstip van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_25",
+      "title": "AG News Sci/Tech #25",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_candidate_adapter",
+      "raw_candidates": [
+        "Rol van Sluggish in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "normalized_candidates": [
+        "Rol van Sluggish in de gebeurtenis.",
+        "Onderbouwing van de centrale bewering.",
+        "Tijdstip van de beschreven gebeurtenis.",
+        "Betrokken partij buiten de hoofdactor.",
+        "Onzekerheid rond de centrale bewering."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Rol van Sluggish in de gebeurtenis."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Onderbouwing van de centrale bewering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Tijdstip van de beschreven gebeurtenis."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Betrokken partij buiten de hoofdactor."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Onzekerheid rond de centrale bewering."
+        }
+      ],
+      "rejected": []
+    }
+  ]
+}

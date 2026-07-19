@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Shadow Seed Learning: de AI die opmerkt wat jij vergeet te vragen. In acht stappen, met interactief bewijs.">
+<title>Shadow Seed Learning — het verhaal</title>
+</head>
+<body>
+<style>
+:root{
+  --bg:#f6f5f0; --bg2:#eeede4; --card:#fbfaf5; --ink:#20261f; --ink2:#565c50;
+  --muted:#878c7f; --line:#d9d7ca; --accent:#2f6b4f; --accent-ink:#f6f5f0;
+  --gold:#9a7420; --rust:#b2542a;
+  --c1:#1f7a4d; --c2:#96982a; --c3:#4e7fc0; --c4:#c05a2e;
+  --chart-surface:#f6f5f0; --shadow:0 1px 2px rgba(32,38,31,.06),0 8px 28px rgba(32,38,31,.07);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#131714; --bg2:#191e1a; --card:#1b211c; --ink:#e6e4d8; --ink2:#aab0a2;
+    --muted:#787d71; --line:#2c332d; --accent:#6fbd93; --accent-ink:#131714;
+    --gold:#d0a04a; --rust:#d0805c;
+    --c1:#3f9a6c; --c2:#93962f; --c3:#5f87d9; --c4:#cc6e38;
+    --chart-surface:#171c19; --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 32px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131714; --bg2:#191e1a; --card:#1b211c; --ink:#e6e4d8; --ink2:#aab0a2;
+  --muted:#787d71; --line:#2c332d; --accent:#6fbd93; --accent-ink:#131714;
+  --gold:#d0a04a; --rust:#d0805c;
+  --c1:#3f9a6c; --c2:#93962f; --c3:#5f87d9; --c4:#cc6e38;
+  --chart-surface:#171c19; --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 32px rgba(0,0,0,.35);
+}
+:root[data-theme="light"]{
+  --bg:#f6f5f0; --bg2:#eeede4; --card:#fbfaf5; --ink:#20261f; --ink2:#565c50;
+  --muted:#878c7f; --line:#d9d7ca; --accent:#2f6b4f; --accent-ink:#f6f5f0;
+  --gold:#9a7420; --rust:#b2542a;
+  --c1:#1f7a4d; --c2:#96982a; --c3:#4e7fc0; --c4:#c05a2e;
+  --chart-surface:#f6f5f0; --shadow:0 1px 2px rgba(32,38,31,.06),0 8px 28px rgba(32,38,31,.07);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  font-size:17.5px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.mono{font-family:ui-monospace,'Cascadia Mono',Menlo,Consolas,monospace}
+.sans{font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+a{color:var(--accent)}
+main{max-width:920px;margin:0 auto;padding:0 20px 90px}
+section{scroll-margin-top:58px}
+h1,h2,h3{text-wrap:balance;line-height:1.15}
+h2{font-size:clamp(25px,4vw,32px);margin:76px 0 6px}
+h3{font-size:19px;margin:34px 0 8px}
+p,li{max-width:64ch}
+.eyebrow{font-family:ui-monospace,'Cascadia Mono',Menlo,Consolas,monospace;
+  font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 4px}
+.doctrine{font-size:clamp(21px,3.2vw,28px);margin:32px 0;padding:16px 24px;
+  border-left:3px solid var(--gold);background:var(--bg2);border-radius:0 10px 10px 0;font-style:italic}
+blockquote{margin:24px 0;padding:4px 20px;border-left:3px solid var(--accent);color:var(--ink2);font-style:italic}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:14px}
+@media(min-width:720px){.grid.c2{grid-template-columns:1fr 1fr}.grid.c3{grid-template-columns:1fr 1fr 1fr}}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:system-ui,sans-serif;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.num{font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font-family:system-ui,sans-serif;font-size:12px;font-weight:600;
+  padding:2px 10px;border-radius:99px;border:1px solid var(--line);background:var(--bg2);white-space:nowrap}
+.pill.groen{background:color-mix(in srgb,var(--c1) 16%,var(--bg));border-color:color-mix(in srgb,var(--c1) 45%,var(--line))}
+.pill.goud{background:color-mix(in srgb,var(--gold) 18%,var(--bg));border-color:color-mix(in srgb,var(--gold) 50%,var(--line))}
+.pill.grijs{color:var(--ink2)}
+button{font-family:system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;
+  border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 14px}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+/* topbar */
+.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.topbar .in{max-width:920px;margin:0 auto;padding:8px 20px;display:flex;gap:4px;align-items:center;overflow-x:auto}
+.topbar a{font-family:system-ui,sans-serif;font-size:12.5px;font-weight:600;color:var(--ink2);
+  text-decoration:none;padding:6px 10px;border-radius:8px;white-space:nowrap}
+.topbar a:hover{background:var(--bg2);color:var(--ink)}
+.topbar .spacer{flex:1}
+#themabtn{flex:0 0 auto;font-size:12.5px;padding:6px 12px;border-radius:99px}
+/* tech uitklap */
+details.tech{border:1px dashed var(--line);border-radius:11px;background:var(--bg2);padding:12px 18px;margin:18px 0}
+details.tech>summary{cursor:pointer;font-weight:600;font-family:system-ui,sans-serif;font-size:14px;color:var(--ink2)}
+details.tech[open]>summary{margin-bottom:8px}
+details.tech p,details.tech li{font-size:15px;color:var(--ink2)}
+details{border:1px solid var(--line);border-radius:11px;background:var(--card);padding:12px 18px;margin:10px 0}
+summary{cursor:pointer;font-weight:600;font-family:system-ui,sans-serif;font-size:15px}
+/* hero */
+header.hero{padding:44px 0 8px;text-align:left}
+.hero h1{font-size:clamp(32px,6vw,52px);margin:6px 0 10px}
+.hero .sub{font-size:19px;color:var(--ink2);max-width:60ch}
+/* seed-sim */
+.sim .top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.seedline{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.seeddot{width:46px;height:46px;border-radius:50%;flex:0 0 auto;
+  background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--accent) 65%,var(--bg)),color-mix(in srgb,var(--ink) 30%,var(--bg)));
+  box-shadow:0 0 0 0 color-mix(in srgb,var(--gold) 60%,transparent);transition:box-shadow .5s}
+.seeddot.promoted{box-shadow:0 0 0 6px color-mix(in srgb,var(--gold) 35%,transparent)}
+.seeddot.expired{filter:grayscale(1);opacity:.4}
+.meter{margin:10px 0 2px}
+.meter label{font-family:system-ui,sans-serif;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink2);display:flex;justify-content:space-between}
+.bar{height:10px;border-radius:6px;background:var(--bg2);border:1px solid var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:6px;transition:width .3s}
+.bar.trace i{background:var(--accent)}
+.bar.weight i{background:var(--gold)}
+.simbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.audit{margin-top:14px;background:var(--bg2);border:1px solid var(--line);border-radius:9px;
+  padding:10px 14px;max-height:132px;overflow-y:auto;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.7;color:var(--ink2)}
+.audit b{color:var(--ink)}
+/* nav dots */
+nav.dots{position:fixed;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:5}
+nav.dots a{width:9px;height:9px;border-radius:50%;background:var(--line);display:block;transition:transform .2s,background .2s}
+nav.dots a.on{background:var(--accent);transform:scale(1.5)}
+@media(max-width:900px){nav.dots{display:none}}
+/* stat tiles */
+.tiles{display:grid;gap:14px;margin:26px 0}
+@media(min-width:720px){.tiles{grid-template-columns:repeat(3,1fr)}}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow)}
+.tile .big{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:34px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1.1}
+.tile .big.goud{color:var(--gold)}
+.tile small{color:var(--ink2);display:block;margin-top:4px;font-family:system-ui,sans-serif;font-size:13px;line-height:1.45}
+/* stepper */
+.stepper{display:flex;gap:6px;flex-wrap:wrap;margin:18px 0 14px}
+.stepper button{border-radius:99px;font-size:13px;padding:7px 13px}
+.stepper button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.steppane{min-height:130px}
+.pathviz{display:flex;align-items:center;margin:8px 0 18px;flex-wrap:wrap}
+.pathviz .node{font-family:system-ui,sans-serif;font-size:12px;font-weight:600;padding:6px 11px;border-radius:99px;
+  border:1.5px solid var(--line);color:var(--ink2);background:var(--bg2)}
+.pathviz .node.on{border-color:var(--gold);color:var(--ink);background:color-mix(in srgb,var(--gold) 16%,var(--bg))}
+.pathviz .arrow{color:var(--muted);padding:0 6px;font-family:system-ui,sans-serif}
+/* architecture diagram */
+.arch{display:flex;flex-direction:column;gap:0;align-items:stretch}
+.archrow{display:flex;gap:10px;flex-wrap:wrap}
+.archrow>button{flex:1;min-width:140px;text-align:left;padding:14px 16px;border-radius:12px;border-width:1.5px}
+.archrow>button b{display:block;font-size:15px}
+.archrow>button small{font-family:system-ui,sans-serif;font-size:12px;color:var(--ink2);font-weight:400}
+.archrow>button[aria-selected="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--card))}
+.archrow>button.ssl[aria-selected="true"]{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 12%,var(--card))}
+.archpane{margin-top:12px;min-height:96px}
+.archlink{align-self:center;color:var(--muted);font-family:system-ui,sans-serif;font-size:18px;padding:2px 0}
+/* before/after */
+.ba .kies{display:inline-flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;margin:2px 0 14px}
+.ba .kies button{border:none;border-radius:0;background:transparent;padding:8px 16px}
+.ba .kies button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.ba .antwoord{font-size:15.5px;line-height:1.65}
+.ba mark{background:color-mix(in srgb,var(--gold) 26%,var(--bg));color:var(--ink);border-radius:4px;padding:0 3px}
+/* charts */
+.chartcard{padding:18px 20px 14px}
+.chartcard h4{margin:0 0 2px;font-size:16.5px}
+.chartcard .chartsub{color:var(--ink2);font-size:13.5px;font-family:system-ui,sans-serif;margin:0 0 12px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-family:system-ui,sans-serif;font-size:12.5px;color:var(--ink2);margin:10px 0 2px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block;vertical-align:-1px;margin-right:6px}
+.toggle{display:inline-flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;margin:2px 0 16px}
+.toggle button{border:none;border-radius:0;background:transparent;padding:8px 16px}
+.toggle button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+svg text{font-family:system-ui,sans-serif;fill:var(--ink2);font-size:12px}
+svg .tickline{stroke:var(--line);stroke-width:1}
+.tt{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-family:system-ui,sans-serif;
+  font-size:12.5px;padding:7px 11px;border-radius:8px;opacity:0;transition:opacity .12s;z-index:50;max-width:260px}
+/* ladder */
+.ladder .rij{border:1px solid var(--line);border-radius:11px;margin-bottom:8px;background:var(--card);overflow:hidden}
+.ladder .rij>button{width:100%;display:flex;gap:12px;align-items:center;border:none;background:transparent;
+  padding:13px 16px;text-align:left;font-size:15px}
+.ladder .rij .lt{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;color:var(--accent);width:20px}
+.ladder .rij .vraag{flex:1;min-width:120px}
+.ladder .rij .body{display:none;padding:0 16px 14px 48px;color:var(--ink2);font-size:15px}
+.ladder .rij.open .body{display:block}
+/* timeline */
+.tl{display:flex;gap:8px;overflow-x:auto;padding:14px 2px 10px}
+.tl button{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;gap:4px;
+  min-width:118px;border-radius:11px;padding:10px 12px;text-align:left}
+.tl button b{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px}
+.tl button small{font-family:system-ui,sans-serif;font-size:11.5px;color:var(--ink2);line-height:1.35}
+.tl button[aria-selected="true"]{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 12%,var(--card))}
+.tlpane{min-height:90px}
+/* hypotheses */
+.hypo{display:grid;gap:8px;margin:16px 0}
+@media(min-width:720px){.hypo{grid-template-columns:1fr 1fr}}
+.hypo details{margin:0;padding:10px 14px}
+.hypo summary{display:flex;gap:10px;align-items:center;font-size:14px}
+.hypo summary .hnr{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;color:var(--accent)}
+.hypo summary .pill{margin-left:auto}
+.hypo p{font-size:13.5px;color:var(--ink2);font-family:system-ui,sans-serif;margin:8px 0 2px}
+footer{margin-top:90px;border-top:1px solid var(--line);padding-top:22px;color:var(--ink2);font-size:14px}
+.klein{font-size:13.5px;color:var(--muted);font-family:system-ui,sans-serif}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="topbar sans"><div class="in">
+  <a href="#stap1">1 Probleem</a><a href="#stap2">2 Idee</a><a href="#stap3">3 Probeer het</a>
+  <a href="#stap4">4 Naast je AI</a><a href="#stap5">5 Bewijs</a><a href="#stap6">6 De reis</a>
+  <a href="#stap7">7 Grenzen</a><a href="#stap8">8 Vooruit</a>
+  <span class="spacer"></span>
+  <button id="themabtn" aria-label="wissel licht/donker">🌗 thema</button>
+</div></div>
+<nav class="dots sans" aria-label="stappen"></nav>
+<div class="tt" id="tt" role="status"></div>
+
+<main>
+<header class="hero" id="top">
+  <p class="eyebrow">Shadow Seed Learning · Nederlands onderzoek · juli 2026</p>
+  <h1>De AI die opmerkt wat jij vergeet te vragen</h1>
+  <p class="sub">AI is heel goed in antwoorden op wat je vraagt. Maar het belangrijkste zit vaak
+  in wat níemand noemt. Shadow Seed Learning leert een AI dat op te merken, veilig te bewaren,
+  en er pas iets mee te doen als het punt zich bewezen heeft.</p>
+  <p class="sub" style="margin-top:8px">Dit verhaal legt het uit in acht stappen. Bij elke stap kun je
+  klikken, spelen en het bewijs zelf bekijken. Techniek zit steeds in een uitklapje.</p>
+</header>
+
+<section id="stap1">
+  <p class="eyebrow">Stap 1</p>
+  <h2>AI ziet niet wat er ontbreekt</h2>
+  <p>Doe een simpele test. Geef een AI een verslag en vraag: wat staat hierin?
+  Het antwoord is indrukwekkend. Vraag daarna: wat míst hierin? Dan wordt het stil,
+  of komt er een gok.</p>
+  <p>Dat is geen mening. Onderzoekers knipten stukken uit teksten en vroegen de beste
+  AI-modellen ter wereld wat er weggehaald was. Zelfs met de originele tekst ernaast
+  vonden ze maar ongeveer 70 procent.</p>
+  <div class="tiles">
+    <div class="tile"><span class="big num">≈70%</span><small>meer vindt zelfs top-AI niet terug van
+      bewust weggeknipte tekst (AbsenceBench, 2025)</small></div>
+    <div class="tile"><span class="big">blinde vlek</span><small>een AI kan letterlijk niet kijken naar
+      iets dat er niet staat. De techniek erachter kent geen "gat"</small></div>
+    <div class="tile"><span class="big goud">expertblik</span><small>de arts die hoort welke vraag de patiënt
+      ontwijkt. De adviseur die ziet wie er niet aan tafel zit. Dát willen we een AI leren</small></div>
+  </div>
+  <details class="tech"><summary>🔧 Voor wie de techniek in wil</summary>
+    <p>De studie heet AbsenceBench (Fu et al., 2025, arXiv:2506.11440). Frontier-modellen halen
+    rond de 70% F1 op het detecteren van weggelaten passages, al bij 5.000 tokens context.
+    De verklaring zit in de architectuur: het attention-mechanisme van een transformer verdeelt
+    aandacht over tokens die er zíjn. Voor een afwezige passage bestaat geen token, dus valt er
+    niets te attenderen. Afwezigheid is voor het model onzichtbaar.</p>
+  </details>
+</section>
+
+<section id="stap2">
+  <p class="eyebrow">Stap 2</p>
+  <h2>Het idee: een aantekening zonder stem</h2>
+  <p>Denk aan een onderzoeksjournalist met een muur vol post-its. Elke post-it is een vermoeden:
+  "niemand heeft de financiering gecheckt". Die muur is goud waard. Maar geen enkel vermoeden
+  mag zomaar de voorpagina op. Eerst checken, dan pas publiceren.</p>
+  <p>Shadow Seed Learning bouwt die muur, én die controle, in software. Merkt het systeem op dat
+  er iets ontbreekt in een gesprek of tekst, dan maakt het een kleine aantekening. Zo'n aantekening
+  heet een <b>seed</b>. En nu komt de kern:</p>
+  <div class="grid c3" style="margin:22px 0">
+    <div class="card"><b>1. De seed heeft geen stem</b><p class="klein" style="margin:8px 0 0">
+      Hij wordt "gewichtloos" geboren. Hij reist mee in de schaduw van het gesprek,
+      maar verandert niets aan de antwoorden. Kijken mag, sturen niet.</p></div>
+    <div class="card"><b>2. Invloed moet je verdienen</b><p class="klein" style="margin:8px 0 0">
+      Pas als het punt vaker terugkomt, steun krijgt en een controle doorstaat
+      (de "poort"), mag de seed een later antwoord verrijken.</p></div>
+    <div class="card"><b>3. En je kunt hem kwijtraken</b><p class="klein" style="margin:8px 0 0">
+      Elke goedgekeurde seed kan alsnog worden aangevallen en afgekeurd.
+      Alles wordt gelogd, alles is terug te spelen.</p></div>
+  </div>
+  <p>Drie woorden vatten de spelregel samen:</p>
+  <p class="doctrine">Gevonden is niet waar. Waar is niet sturend.</p>
+  <p>Iets opmerken maakt het niet waar. En zelfs iets dat waar is, mag pas meepraten
+  als het die rol verdiend heeft.</p>
+  <details class="tech"><summary>🔧 Voor wie de techniek in wil</summary>
+    <p>Elke seed is atomisch: precies één klein, toetsbaar punt. Niet "security, privacy en
+    schaalbaarheid ontbreken" (dat is een analyseplan) maar "AVG-compliance bij verwerking van
+    medische hartslagdata". Brede detecties worden gesplitst of geweigerd.</p>
+    <p>Elke seed heeft twee gescheiden velden. <span class="mono">trace</span> meet aanwezigheid:
+    start op 2.0, vervalt vanzelf (TTL) en leeft op wanneer het gesprek het thema raakt (TrTL).
+    <span class="mono">weight</span> meet invloed: start op exact 0.0 en kan alleen stijgen via de
+    Validation Gate (herhaalde herkenning + steun + geen tegenspraak). Een verlopen seed (EXPIRED)
+    komt nooit terug. Wetenschappelijke wortels: epistemische onzekerheid (Kendall &amp; Gal 2017),
+    computationele nieuwsgierigheid (Schmidhuber 2011), active learning (Settles 2009) en het
+    engram-onderzoek naar geheugenconsolidatie (Josselyn &amp; Tonegawa 2020), waarin een vers
+    geheugenspoor ook alleen door herhaalde reactivatie overleeft.</p>
+  </details>
+</section>
+
+<section id="stap3">
+  <p class="eyebrow">Stap 3</p>
+  <h2>Probeer het zelf</h2>
+  <p>Dit is een echte mini-versie van het systeem. De groene balk is de aanwezigheid van
+  één seed. Hij zakt vanzelf. De gouden balk is zijn invloed. Die begint op nul en daar
+  krijg je hem alleen omhoog via de poort. Speel maar:</p>
+  <div class="card sim" id="sim">
+    <div class="top">
+      <div class="seedline">
+        <div class="seeddot" id="seeddot" aria-hidden="true"></div>
+        <div>
+          <b>De seed: "de drijfveren van de doelgroep ontbreken"</b><br>
+          <span class="klein">status: <span class="mono" id="status">NEW</span></span>
+        </div>
+      </div>
+      <span class="pill grijs sans" id="simhint">aanwezigheid zakt vanzelf…</span>
+    </div>
+    <div class="meter"><label class="sans">aanwezigheid (trace) <span class="mono num" id="tval">2.00</span></label>
+      <div class="bar trace"><i id="tbar"></i></div></div>
+    <div class="meter"><label class="sans">invloed (weight), start altijd op 0 <span class="mono num" id="wval">0.00</span></label>
+      <div class="bar weight"><i id="wbar"></i></div></div>
+    <div class="simbtns">
+      <button id="b-trtl" title="het gesprek raakt het thema weer">Het thema komt terug</button>
+      <button id="b-gate" class="primary" title="vraagt om herhaalde herkenning">Door de poort</button>
+      <button id="b-fals" title="probeer de seed af te schieten">Val hem aan</button>
+      <button id="b-reset">Opnieuw</button>
+    </div>
+    <div class="audit mono" id="audit" aria-live="polite"><div>· seed geboren. Aanwezig: ja. <b>Invloed: 0.0</b></div></div>
+  </div>
+  <p style="margin-top:16px">Probeer meteen door de poort te gaan: dat weigert het systeem, want het punt is
+  nog maar één keer gezien. Laat de balk leeglopen: dan verloopt de seed voorgoed. En een goedgekeurde
+  seed kun je alsnog aanvallen. Precies zó werkt het echte systeem, stap voor stap:</p>
+  <div class="pathviz sans" id="pathviz" aria-hidden="true"></div>
+  <div class="stepper sans" role="tablist" id="stepper"></div>
+  <div class="card steppane" id="steppane" role="tabpanel"></div>
+  <details class="tech" style="margin-top:16px"><summary>🔧 Voor wie de techniek in wil</summary>
+    <p>De demo hierboven volgt de echte statusketen: NEW → ACTIVE → DECAYING → DORMANT →
+    PROMOTED of EXPIRED. Op het moment van gebruik controleert een agent-contract bovendien
+    opnieuw: invloed groter dan 0? Status PROMOTED? Promotie gelogd? Geen tegenspraak sindsdien?
+    Elke poging tot invloed staat in een audit-trail die je kunt terugspelen. Het volledige
+    systeem draait als <span class="mono">shadowseed chat</span> en wordt bewaakt door 354
+    automatische tests.</p>
+  </details>
+</section>
+
+<section id="stap4">
+  <p class="eyebrow">Stap 4</p>
+  <h2>Het schuift zó naast je bestaande AI</h2>
+  <p>Belangrijk om te weten: dit is géén nieuw AI-model. Je hoeft niets te hertrainen en
+  niets te vervangen. Shadow Seed Learning is een laag die naast je bestaande AI werkt,
+  net zoals veel bedrijven nu al een zoeklaag (RAG) naast hun AI hebben. Klik op de blokken:</p>
+  <div class="card">
+    <div class="arch sans">
+      <div class="archrow">
+        <button data-a="0" aria-selected="true"><b>Jouw AI-model</b><small>ChatGPT, Claude, een open model. Blijft precies zoals het is.</small></button>
+      </div>
+      <div class="archlink">▲ ▼</div>
+      <div class="archrow">
+        <button data-a="1"><b>Zoeklaag (RAG)</b><small>Haalt kennis op bij een vraag. Heeft bijna iedereen al.</small></button>
+        <button data-a="2" class="ssl"><b>Schaduwlaag (SSL)</b><small>Onthoudt wat er ontbrak. Nieuw. Werkt ernaast.</small></button>
+      </div>
+    </div>
+    <div class="archpane" id="archpane"></div>
+  </div>
+  <p style="margin-top:16px">Het verschil in één zin: de zoeklaag beantwoordt de vraag die je stélt.
+  De schaduwlaag onthoudt de vraag die je had móeten stellen, en komt daar op het juiste
+  moment op terug.</p>
+  <details class="tech"><summary>🔧 Voor wie de techniek in wil</summary>
+    <p>SSL is een architecturale laag op API-niveau: detectie-pass op de output, seeds met eigen
+    embeddings in een vectorstore, surfacing via cosine-similarity op de nieuwe beurt. Vergelijking
+    met verwant werk: RAG (Lewis 2020) haalt op wat je vraagt; SSL registreert wat de retrieval
+    níet activeerde. Self-RAG en Reflexion reflecteren binnen of direct na een beurt; SSL houdt
+    observaties gewichtloos vast over beurten heen, met levenscyclus en validatie. FLARE triggert
+    op lage zekerheid; SSL op structurele afwezigheid. S2G-RAG vult een gat meteen; SSL laat het
+    bewust bestaan tot het zich bewezen heeft. Er is ook een gebouwde brug: een goedgekeurde seed
+    kan een documentcorpus doorzoeken, waarbij "gevonden" expliciet géén sturing wordt.</p>
+  </details>
+</section>
+
+<section id="stap5">
+  <p class="eyebrow">Stap 5</p>
+  <h2>Het bewijs: helpt het echt?</h2>
+  <p>We testen dit zo eerlijk mogelijk. Menselijke beoordelaars krijgen steeds twee antwoorden
+  naast elkaar: één met en één zonder de schaduwlaag. Ze weten niet welke welke is. Pas na het
+  beoordelen gaat de envelop open. Eerst: voel zelf het verschil. Dit voorbeeld is nagespeeld
+  naar het patroon uit de echte tests:</p>
+  <div class="card ba">
+    <b>Vraag in beurt 6: "Waar moet onze campagne tegen energiedrank bij jongeren op letten?"</b>
+    <div class="kies sans" role="group" style="margin-top:12px">
+      <button id="ba-zonder" aria-pressed="true">Zonder schaduwlaag</button>
+      <button id="ba-met" aria-pressed="false">Met schaduwlaag</button>
+    </div>
+    <div class="antwoord" id="ba-tekst"></div>
+    <p class="klein" style="margin-top:10px">Illustratief voorbeeld, geparafraseerd naar het patroon uit
+    ronde 029 (gezondheidsdomein). In de blinde beoordeling van precies dit domein kozen beoordelaars
+    de kant met schaduwlaag 3 van de 3 keer, met het oordeel "helpt duidelijk".</p>
+  </div>
+  <p style="margin-top:22px">Nu de cijfers. Bij elk beoordeeld antwoord noteerden de beoordelaars
+  ook apart: hielp de extra aantekening hier, maakte hij niets uit, of zat hij in de weg?
+  Alle 83 blinde oordelen bij elkaar:</p>
+  <div class="card chartcard" id="assenkaart">
+    <h4 id="askop">Hielp de seed het antwoord vooruit? Alle 83 blinde oordelen</h4>
+    <p class="chartsub" id="assub">Per testronde, rechtstreeks uit de vastgelegde beoordelingsformulieren</p>
+    <div class="scroll"><svg id="aschart" viewBox="0 0 640 260" width="100%" role="img" aria-label="Gestapelde staven per ronde met de oordelen, rounds 022 tot en met 031"></svg></div>
+    <div class="legend" id="aslegend"></div>
+    <div class="toggle sans" role="group" aria-label="kies weergave" style="margin-top:10px">
+      <button id="as-seed" aria-pressed="true">Hielp het?</button>
+      <button id="as-win" aria-pressed="false">Wie won de vergelijking?</button>
+    </div>
+    <details style="margin-top:8px"><summary>Tabelweergave (zelfde data)</summary>
+      <div class="scroll"><table class="num" id="astabel"></table></div></details>
+  </div>
+  <div class="tiles">
+    <div class="tile"><span class="big num">57/83</span><small>van alle blinde oordelen: "de aantekening
+      hielp het antwoord vooruit". Dat is ongeveer 69 procent</small></div>
+    <div class="tile"><span class="big num">14/14</span><small>in de zwaarste testronde (drie nieuwe
+      onderwerpen) zeiden béide beoordelaars bij élk antwoord: dit hielp</small></div>
+    <div class="tile"><span class="big num">0</span><small>keer verzon een seed feiten, in alle rondes.
+      Afleiding door een seed wordt apart gelabeld en eerlijk meegeteld (13 van 83)</small></div>
+  </div>
+  <p>Belangrijk om goed te lezen: de aantekening hoeft niet te winnen. Soms is het niks,
+  soms ondersteunend, soms winnend. Drie goede uitkomsten. Alleen in de weg zitten is fout,
+  en dát is het getal dat omlaag moet (nu 13 van 83).</p>
+  <p>Eerlijk erbij: als je alleen telt wie de vergelijking "wint", is het ongeveer gelijkspel.
+  Logisch, want de tegenstander is hetzelfde topmodel op zijn best. Gelijkspel betekent daar:
+  even goed, en in ruim twee derde van de gevallen kwam er iets waardevols bij dat er anders niet was.
+  Wissel hierboven maar van weergave.</p>
+  <details class="tech"><summary>🔧 Voor wie de techniek in wil: hoe streng is de toets?</summary>
+    <p>Blinde A/B-reviews met antwoordsleutel in quarantaine tot na de scoring; de ontsleuteling wordt
+    onafhankelijk geverifieerd tegen de motivaties. De poort wordt apart aangevallen met bewust
+    misleidende lokaas-seeds en verslaat daar zwakkere promotie-regels. De leercurve is zichtbaar:
+    de eerste blinde ronde kwam verdeeld terug (overeenstemming 0.125) en er zat ruis in goedgekeurde
+    seeds. Eén gerichte gebruiksregel later (maximaal twee seeds per antwoord, altijd als suggestie)
+    steeg de overeenstemming naar 0.67 en daarna 0.71, en verdween de ruis vrijwel. Het programma
+    formuleerde bovendien vooraf twaalf toetsbare hypotheses; die staan in stap 6.</p>
+    <div class="scroll" style="margin-top:8px"><svg id="agree" viewBox="0 0 640 240" width="100%" role="img" aria-label="Overeenstemming steeg van 0.125 naar 0.67 en 0.71"></svg></div>
+    <p>De volledige bewijsladder, per laag met eigen vraag en bewust zonder totaalscore:</p>
+    <div class="ladder sans" id="ladder"></div>
+  </details>
+</section>
+
+<section id="stap6">
+  <p class="eyebrow">Stap 6</p>
+  <h2>De reis: elk resultaat is een ronde</h2>
+  <p>Dit is geen zwarte doos met één mooi getal. Elke testronde staat openbaar in de repository,
+  met de ruwe beoordelingsformulieren erbij. Klik door de mijlpalen:</p>
+  <div class="card" style="padding:10px 16px 16px">
+    <div class="tl sans" id="tl" role="tablist"></div>
+    <div class="tlpane" id="tlpane" role="tabpanel"></div>
+  </div>
+  <details class="tech"><summary>🔧 De twaalf vooraf opgeschreven hypotheses en hun stand</summary>
+    <p>Het programma schreef vooraf op waarop het afgerekend wil worden (H1 tot en met H12).
+    Vier zijn gemeten, vier hebben eerste evidence, vier staan open:</p>
+    <div class="hypo sans" id="hypo"></div>
+  </details>
+</section>
+
+<section id="stap7">
+  <p class="eyebrow">Stap 7</p>
+  <h2>Eerlijk over de grenzen</h2>
+  <p>Wie overtuigen wil, moet ook laten zien wat er níet lukte. Twee dingen horen erbij.</p>
+  <p><b>Eén.</b> De hulp is niet gelijk verdeeld. Bij sterke fit, vragen die om verdieping
+  vragen, is de schaduwlaag op zijn sterkst. Maar een matig passende aantekening kan hinderen:
+  eerst zagen we dat op vroege gespreksbeurten (2 oordelen in ronde 029), en na een gerichte
+  ingreep verdween dat daar, maar bleef zo'n aantekening in de hertest juist op latere beurten
+  terugduwen (8 van 14 oordelen in ronde 031). Dat is eerlijk gemeten, precies gelokaliseerd,
+  en het staat bovenaan de werklijst: een aantekening die al een antwoord stuurde, niet meteen
+  wéér laten meesturen.</p>
+  <p><b>Twee.</b> We zochten ook ín het AI-model naar een spoor van dit alles, in de interne
+  rekenlagen. Drie zorgvuldige metingen zeiden drie keer: niets gevonden. Dat is geen mislukking.
+  Het meetinstrument bewees juist dat het "nee" durft te zeggen, ook toen "ja" aantrekkelijker was.
+  De vraag gaat door naar grotere modellen.</p>
+  <details class="tech"><summary>🔧 Voor wie de techniek in wil: de metingen in het model</summary>
+    <p>Spoor: bestaat er, analoog aan hallucinatie-neuronen (Gao et al. 2025, arXiv:2512.01797),
+    een intern signaal voor de houdbaarheid van het afwezige? Keten: gpt-4.1 velt
+    houdbaarheidsoordelen over stellingen, een klein model wordt tijdens het lezen van diezelfde
+    stellingen gesondeerd (forward-hooks op de MLP-lagen, pooling op de stelling-tokens), en een
+    permutatietoets houdt elke gevonden scheiding tegen gehusselde labels.</p>
+    <div class="scroll"><svg id="gchart" viewBox="0 0 640 230" width="100%" role="img" aria-label="Permutatie-p-waarden ver boven de haalbare vloer in beide runs"></svg></div>
+    <p>Beide gemeten runs (distilgpt2 met p 0.833 bij vloer 0.028, en het Nederlandstalige
+    gpt2-small-dutch met p 0.206 bij vloer 0.002) laten geen scheiding boven toeval zien.
+    Een derde kruismeting raakte wél de vloer maar is in het dossier als artefact van een te
+    kleine klasse gelezen en telt daarom bewust niet als resultaat. Niet uitgesloten blijven:
+    niet-lineaire codering, andere leeslocaties, of grotere modellen.</p>
+  </details>
+</section>
+
+<section id="stap8">
+  <p class="eyebrow">Stap 8</p>
+  <h2>Waarom dit ertoe doet, en wat nu</h2>
+  <p>AI-assistenten krijgen overal geheugen. Meestal werkt dat zo: onthoud alles, en hoop dat
+  het goed gaat. Eén verkeerde aanname blijft dan plakken en duikt drie gesprekken later op
+  als feit. Shadow Seed Learning laat zien dat het anders kan: geheugen dat zijn invloed moet
+  verdienen, dat je kunt controleren, en dat je kunt terugdraaien.</p>
+  <p>Dat is precies wat straks gevraagd wordt van AI die meebeslist, door gebruikers,
+  door organisaties en door toezichthouders: laat zien wáárom iets invloed had, wanneer dat
+  gerechtvaardigd werd, en hoe het herroepen kan worden.</p>
+  <div class="grid c3" style="margin:20px 0">
+    <div class="card"><span class="pill groen sans">nu</span>
+      <p class="klein" style="margin:10px 0 0">De laatste bekende ruisbron dichten (die vroege
+      gespreksbeurten) en opnieuw blind testen. En een derde AI-model toevoegen aan de vergelijking.</p></div>
+    <div class="card"><span class="pill goud sans">daarna</span>
+      <p class="klein" style="margin:10px 0 0">Seeds die niet alleen zeggen wat ontbreekt maar ook wat er
+      zou kunnen staan. En de zoektocht naar het interne spoor, op grotere modellen.</p></div>
+    <div class="card"><span class="pill grijs sans">de horizon</span>
+      <p class="klein" style="margin:10px 0 0">De schaduwlaag als vast onderdeel naast elke serieuze
+      AI-assistent: in onderzoek, journalistiek, beleid, zorg. En in het onderwijs, waar dit idee
+      geboren is: opmerken wat een leerling structureel overslaat.</p></div>
+  </div>
+  <p class="doctrine" style="border-left-color:var(--accent)">Wat er staat, kan elke AI voorlezen.<br>
+  Wat er ontbreekt, is de volgende grens. Daar bouwen wij.</p>
+</section>
+
+<footer class="sans">
+  <p><b>Zelf nakijken?</b> Alles is openbaar: theorie, code, tests en de ruwe beoordelingsformulieren
+  van elke ronde staan op <a href="https://github.com/E-AI-MODEL/shadowseed">github.com/E-AI-MODEL/shadowseed</a>.
+  Startpunten: <span class="mono">docs/ssl-het-verhaal.md</span> (dit verhaal, met bronnen) en
+  <span class="mono">benchmarks/open_review/rounds/</span> (alle rondes).</p>
+  <p class="klein"><b>Eerlijkheidsgrens.</b> Dit is een verhalend overzicht. Alle cijfers komen uit de
+  vastgelegde testrondes; waar het vooruitkijkt is dat richting, geen belofte. De eigen spelregel geldt
+  ook hier: gevonden is niet waar, waar is niet sturend, en enthousiasme is geen bewijs.
+  Kernbronnen: AbsenceBench (Fu et al. 2025) · H-Neurons (Gao et al. 2025) · Kendall &amp; Gal 2017 ·
+  Schmidhuber 2011 · Settles 2009 · Lewis et al. 2020 · Josselyn &amp; Tonegawa 2020.</p>
+</footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var css=function(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim()};
+var reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- seed-sim ---------- */
+var sim={trace:2.0,weight:0,status:"NEW",recog:0,expired:false,promoted:false};
+var lastT=null;
+function log(msg){var d=document.createElement("div");d.innerHTML="· "+msg;var a=$("audit");a.appendChild(d);a.scrollTop=a.scrollHeight;}
+function render(){
+  $("tval").textContent=sim.trace.toFixed(2);
+  $("wval").textContent=sim.weight.toFixed(2);
+  $("tbar").style.width=Math.min(100,sim.trace/2*100)+"%";
+  $("wbar").style.width=(sim.weight*100)+"%";
+  $("status").textContent=sim.status;
+  var dot=$("seeddot");dot.classList.toggle("promoted",sim.promoted);dot.classList.toggle("expired",sim.expired);
+  $("b-trtl").disabled=sim.expired;
+  $("b-gate").disabled=sim.expired||sim.promoted;
+  $("b-fals").disabled=sim.expired||!sim.promoted;
+  $("simhint").textContent=sim.expired?"verlopen is verlopen. Druk op Opnieuw":
+    sim.promoted?"goedgekeurd: mag nu een later antwoord verrijken":
+    "aanwezigheid zakt vanzelf…";
+}
+function tick(t){
+  if(lastT===null)lastT=t;
+  var dt=(t-lastT)/1000;lastT=t;
+  if(!sim.expired && !sim.promoted){
+    sim.trace*=Math.pow(0.93,dt*(reduced?0.4:1));
+    if(sim.trace<0.12){sim.expired=true;sim.status="EXPIRED";sim.trace=0;
+      log("<b>verlopen</b>. Een verlopen seed komt nooit terug");}
+    else if(sim.trace<0.5&&sim.status!=="DORMANT"){sim.status="DORMANT";log("bijna vergeten (sluimert)");}
+    else if(sim.trace<1.2&&sim.status==="ACTIVE"){sim.status="DECAYING";}
+    render();
+  }
+  requestAnimationFrame(tick);
+}
+$("b-trtl").addEventListener("click",function(){
+  sim.trace=Math.min(2.4,sim.trace+0.7);sim.recog++;sim.status=sim.promoted?"PROMOTED":"ACTIVE";
+  log("het thema komt terug: aanwezigheid stijgt (nu "+sim.recog+"x gezien). Invloed blijft "+sim.weight.toFixed(1));
+  render();});
+$("b-gate").addEventListener("click",function(){
+  if(sim.recog<2){log("de poort <b>weigert</b>: dit punt is pas "+sim.recog+"x gezien, minstens 2x nodig");return;}
+  sim.promoted=true;sim.weight=0.8;sim.status="PROMOTED";
+  log("poort: vaker gezien ✓ steun ✓ geen tegenspraak ✓ → <b>goedgekeurd, invloed 0.8</b> (gelogd)");
+  render();});
+$("b-fals").addEventListener("click",function(){
+  sim.promoted=false;sim.weight=0;sim.status="DECAYING";sim.trace=Math.min(sim.trace,0.9);
+  log("aanval geslaagd: <b>afgekeurd</b>. Invloed terug naar 0, en dat staat in het logboek");
+  render();});
+$("b-reset").addEventListener("click",function(){
+  sim={trace:2.0,weight:0,status:"NEW",recog:0,expired:false,promoted:false};
+  $("audit").innerHTML="<div>· seed geboren. Aanwezig: ja. <b>Invloed: 0.0</b></div>";render();});
+render();requestAnimationFrame(tick);
+
+/* ---------- golden path stepper ---------- */
+var steps=[
+ ["Geboorte","Het systeem merkt iets op dat ontbreekt en maakt een seed. Invloed: nul. Het antwoord van dat moment verandert niet."],
+ ["De schaduw","De seed reist mee. Komt het thema terug, dan leeft hij op. Blijft het stil, dan verloopt hij vanzelf. Voorgoed."],
+ ["De poort","Vaker gezien, steun gekregen, geen tegenspraak? Alleen dan mag de invloed omhoog. Er is geen tweede route."],
+ ["De dubbele check","Zelfs een goedgekeurde seed wordt op het moment van gebruik nóg een keer gecontroleerd. Elke poging tot invloed komt in een logboek dat je kunt terugspelen."],
+ ["De bijdrage","Nu pas verrijkt de seed een antwoord. In de blinde test van dit voorbeelddomein kozen beoordelaars deze kant 3 van de 3 keer."],
+ ["De aanval achteraf","Op elk moment kan een goedgekeurde seed opnieuw worden aangevallen. Verliest hij, dan is zijn invloed weg en staat dat in het logboek."]];
+var nodes=["seed","schaduw","poort","check","antwoord","aanval"];
+var pv=$("pathviz");
+nodes.forEach(function(n,i){
+  var s=document.createElement("span");s.className="node";s.textContent=n;s.id="pv"+i;pv.appendChild(s);
+  if(i<nodes.length-1){var a=document.createElement("span");a.className="arrow";a.textContent="→";pv.appendChild(a);}});
+var st=$("stepper");
+steps.forEach(function(s,i){
+  var b=document.createElement("button");b.setAttribute("role","tab");b.textContent=(i+1)+" · "+s[0];
+  b.addEventListener("click",function(){setStep(i)});st.appendChild(b);});
+function setStep(i){
+  [].forEach.call(st.children,function(b,j){b.setAttribute("aria-selected",j===i)});
+  nodes.forEach(function(_,j){$("pv"+j).classList.toggle("on",j<=i)});
+  $("steppane").innerHTML="<p class='eyebrow' style='margin-top:0'>stap "+(i+1)+" van 6 — "+steps[i][0]+"</p><p style='margin:6px 0 0'>"+steps[i][1]+"</p>";
+}
+setStep(0);
+
+/* ---------- architecture ---------- */
+var archTeksten=[
+ "Je huidige AI-model blijft onaangeraakt. Geen hertraining, geen vervanging. SSL praat ermee via dezelfde interface die je nu al gebruikt.",
+ "De zoeklaag (RAG) beantwoordt de vraag die gesteld wórdt: hij haalt er passende kennis bij. Sterk, maar hij reageert alleen op wat je vraagt.",
+ "De schaduwlaag doet wat de zoeklaag niet kan: hij onthoudt wat er ontbrák. Gewichtloos, tot een punt zich bewezen heeft. Dan, en alleen dan, verrijkt het een later antwoord. De twee lagen werken naast elkaar en versterken elkaar: een goedgekeurde seed kan zelfs een extra zoekopdracht sturen."];
+var archBtns=document.querySelectorAll(".arch button");
+function setArch(i){
+  archBtns.forEach(function(b){b.setAttribute("aria-selected",+b.dataset.a===i)});
+  $("archpane").innerHTML="<p style='margin:6px 0 0'>"+archTeksten[i]+"</p>";}
+archBtns.forEach(function(b){b.addEventListener("click",function(){setArch(+b.dataset.a)})});
+setArch(2);
+
+/* ---------- before/after ---------- */
+var baZonder="Richt de campagne op duidelijke informatie over de risico's, betrek scholen en ouders, en let op de leeftijd van de doelgroep. Zorg voor herkenbare voorbeelden en herhaal de boodschap regelmatig.";
+var baMet="Richt de campagne op duidelijke informatie over de risico's, betrek scholen en ouders, en let op de leeftijd van de doelgroep. <mark>Kijk daarnaast naar wat jongeren er werkelijk toe drijft: status in de groep, energie voor school en sport, en gewoontevorming. Een campagne die alleen risico's noemt en die drijfveren negeert, mist zijn doel.</mark> Zorg voor herkenbare voorbeelden en herhaal de boodschap regelmatig.";
+function setBA(met){
+  $("ba-zonder").setAttribute("aria-pressed",!met);
+  $("ba-met").setAttribute("aria-pressed",met);
+  $("ba-tekst").innerHTML="<p style='margin:6px 0 0'>"+(met?baMet:baZonder)+"</p>"+
+    (met?"<p class='klein' style='margin-top:8px'>Het gemarkeerde deel komt uit de goedgekeurde seed. De rest bleef gelijk.</p>":"<p class='klein' style='margin-top:8px'>Prima antwoord. Maar er ontbreekt iets, en dat blijft onzichtbaar.</p>");}
+$("ba-zonder").addEventListener("click",function(){setBA(false)});
+$("ba-met").addEventListener("click",function(){setBA(true)});
+setBA(false);
+
+/* ---------- ladder ---------- */
+var lagen=[
+ ["A","Blijft de kern technisch correct?","Sterk","CI-bewaakt met 354 tests: velden, verval, statusketen en poortgedrag."],
+ ["B","Werkt het op vaste casussen?","Bruikbaar","Bewust smal gehouden: regressie en kleine benchmark."],
+ ["C","Zijn gevonden seeds goed op onbekende tekst?","Gemengd","Relevant, maar soms triviaal. Gevonden is niet automatisch waardevol."],
+ ["D","Houdt de poort misleidend lokaas tegen?","Eerste echte evidence","De poort verslaat zwakkere promotie-regels op een adversarial set."],
+ ["E","Maken goedgekeurde seeds antwoorden beter?","~69% helpt","57 van 83 blinde oordelen zeggen: dit hielp. Head-to-head is het gelijkspel tegen hetzelfde topmodel; matig passende seeds die blijven terugduwen zijn de gemeten zwakte."],
+ ["F","Werkt het ook buiten de bekende onderwerpen?","Voorzichtig positief","Gerepliceerd over twee AI-modellen; op het tweede model voorlopig (één beoordelingsformulier vastgelegd)."],
+ ["G","Zit er een spoor in het model zelf?","Drie keer nee","Drie zorgvuldige nulmetingen tot en met een Nederlandstalig model. De vraag gaat door naar grotere modellen."]];
+var ld=$("ladder");
+lagen.forEach(function(l){
+  var d=document.createElement("div");d.className="rij";
+  d.innerHTML="<button aria-expanded='false'><span class='lt'>"+l[0]+"</span><span class='vraag'>"+l[1]+
+    "</span><span class='pill "+(l[2]==="Sterk"||l[2]==="Voorzichtig positief"?"groen":l[2]==="~69% helpt"?"goud":"grijs")+"'>"+l[2]+
+    "</span></button><div class='body'>"+l[3]+"</div>";
+  d.querySelector("button").addEventListener("click",function(){
+    var open=d.classList.toggle("open");this.setAttribute("aria-expanded",open)});
+  ld.appendChild(d);});
+
+/* ---------- tooltip helper ---------- */
+var tt=$("tt");
+function showTT(evt,html){tt.innerHTML=html;tt.style.opacity=1;
+  tt.style.left=Math.min(innerWidth-280,evt.clientX+14)+"px";tt.style.top=(evt.clientY+14)+"px";}
+function hideTT(){tt.style.opacity=0;}
+
+/* ---------- agreement chart ---------- */
+function drawAgree(){
+  var svg=$("agree");if(!svg)return;svg.innerHTML="";
+  var W=640,H=240,L=52,R=20,T=18,B=42;
+  var pts=[["022",0.125,"verdeeld: oneens op 7 van de 8"],["023",0.67,"na de gebruiksregel: ruis vrijwel weg"],["025",0.71,"zwaarste ronde: hoogste overeenstemming"],["031",0.43,"hertest: reviewers weer verdeeld; de les staat in stap 7"]];
+  var x=function(i){return L+i*(W-L-R)/(pts.length-1)};
+  var y=function(v){return T+(1-v)*(H-T-B)};
+  var g="";
+  [0,0.25,0.5,0.75,1].forEach(function(v){
+    g+="<line class='tickline' x1='"+L+"' y1='"+y(v)+"' x2='"+(W-R)+"' y2='"+y(v)+"'/>"+
+       "<text x='"+(L-8)+"' y='"+(y(v)+4)+"' text-anchor='end'>"+v+"</text>";});
+  var path=pts.map(function(p,i){return (i?"L":"M")+x(i)+","+y(p[1])}).join(" ");
+  g+="<path d='"+path+"' fill='none' stroke='"+css('--accent')+"' stroke-width='2.5' stroke-linecap='round'/>";
+  pts.forEach(function(p,i){
+    g+="<circle cx='"+x(i)+"' cy='"+y(p[1])+"' r='"+(i===pts.length-1?7:5.5)+"' fill='"+css('--accent')+"' stroke='"+css('--chart-surface')+"' stroke-width='2' data-i='"+i+"' style='cursor:pointer'/>";
+    g+="<text x='"+x(i)+"' y='"+(H-14)+"' text-anchor='middle'>ronde "+p[0]+"</text>";
+    g+="<text x='"+x(i)+"' y='"+(y(p[1])-14)+"' text-anchor='middle' style='font-weight:700;fill:"+css('--ink')+"'>"+p[1]+"</text>";});
+  svg.innerHTML=g;
+  svg.querySelectorAll("circle").forEach(function(c){
+    var p=pts[+c.dataset.i];
+    c.addEventListener("mousemove",function(e){showTT(e,"<b>ronde "+p[0]+"</b> · overeenstemming "+p[1]+"<br>"+p[2])});
+    c.addEventListener("mouseleave",hideTT);});
+}
+
+/* ---------- two-axes chart ---------- */
+var seedData=[
+ ["022",6,6,1,3,"vóór de gebruiksregel (2 beoordelaars, 8 antwoorden)"],
+ ["023",12,8,10,0,"met gebruiksregel (3 beoordelaars, 10 antwoorden)"],
+ ["025",9,5,0,0,"drie nieuwe onderwerpen: 14 van 14 hielp"],
+ ["029",4,2,1,2,"tweede AI-model; de 2 zijpaden zaten op vroege beurten"],
+ ["031",2,3,1,8,"discipline-hertest: vroege ruis weg, maar een matig passende aantekening bleef laat terugduwen"]];
+var seedCats=["hielp duidelijk","hielp een beetje","maakte geen verschil","zat in de weg"];
+var winData=[
+ ["022","verdeeld","beoordelaars te zeer oneens voor een uitslag",null],
+ ["023","≈0.40","iets vaker koos men het antwoord zonder schaduwlaag",0.40],
+ ["025","4 van 7","consensus voor de schaduwlaag-kant, 1 voor de andere, 2 verdeeld",0.57],
+ ["029","gelijkspel","4 tegen 4, met 1 onbeslist",0.50],
+ ["031","verdeeld","r1 gelijkspel (3-3-1), r2 koos 6 van 7 keer de andere kant; overeenstemming 0.43",null]];
+var curAs="seed";
+function drawAs(){
+  var svg=$("aschart");svg.innerHTML="";var W=640,H=260,L=52,R=20,T=16,B=56;
+  var cols=[css('--c1'),css('--c2'),css('--c3'),css('--c4')], leg=$("aslegend"), tb=$("astabel");
+  if(curAs==="seed"){
+    $("askop").textContent="Hielp de seed het antwoord vooruit? Alle 83 blinde oordelen";
+    $("assub").textContent="Per testronde, rechtstreeks uit de vastgelegde beoordelingsformulieren";
+    var maxN=30, bw=64, x=function(i){return L+30+i*(W-L-R-60)/(seedData.length-1)-bw/2};
+    var y=function(v){return T+(1-v/maxN)*(H-T-B)};
+    var g="";
+    [0,10,20,30].forEach(function(v){g+="<line class='tickline' x1='"+L+"' y1='"+y(v)+"' x2='"+(W-R)+"' y2='"+y(v)+"'/>"+
+      "<text x='"+(L-8)+"' y='"+(y(v)+4)+"' text-anchor='end'>"+v+"</text>";});
+    seedData.forEach(function(r,i){
+      var acc=0, helpt=r[1]+r[2];
+      for(var s=0;s<4;s++){
+        var v=r[1+s];if(!v)continue;
+        var y1=y(acc+v), h=y(acc)-y(acc+v);
+        g+="<rect x='"+x(i)+"' y='"+y1+"' width='"+bw+"' height='"+Math.max(0,h-2)+"' rx='3' fill='"+cols[s]+
+           "' data-r='"+i+"' data-s='"+s+"' style='cursor:pointer'/>";
+        acc+=v;}
+      g+="<text x='"+(x(i)+bw/2)+"' y='"+(y(acc)-8)+"' text-anchor='middle' style='font-weight:700;fill:"+css('--ink')+"'>"+helpt+"/"+acc+" hielp</text>";
+      g+="<text x='"+(x(i)+bw/2)+"' y='"+(H-30)+"' text-anchor='middle'>ronde "+r[0]+"</text>";});
+    svg.innerHTML=g;
+    svg.querySelectorAll("rect").forEach(function(rc){
+      var r=seedData[+rc.dataset.r], s=+rc.dataset.s;
+      rc.addEventListener("mousemove",function(e){showTT(e,"<b>ronde "+r[0]+"</b><br>"+seedCats[s]+": <b>"+r[1+s]+"x</b><br>"+r[5])});
+      rc.addEventListener("mouseleave",hideTT);});
+    leg.innerHTML=seedCats.map(function(c,i){return "<span><i style='background:"+cols[i]+"'></i>"+c+"</span>"}).join("");
+    tb.innerHTML="<thead><tr><th>Ronde</th>"+seedCats.map(function(c){return "<th>"+c+"</th>"}).join("")+"<th>Totaal</th></tr></thead><tbody>"+
+      seedData.map(function(r){return "<tr><td>"+r[0]+"</td><td>"+r[1]+"</td><td>"+r[2]+"</td><td>"+r[3]+"</td><td>"+r[4]+"</td><td>"+(r[1]+r[2]+r[3]+r[4])+"</td></tr>"}).join("")+
+      (function(){var t=[0,0,0,0];seedData.forEach(function(r){for(var k=0;k<4;k++)t[k]+=r[1+k]});
+      var tot=t[0]+t[1]+t[2]+t[3];
+      return "<tr><td><b>Totaal</b></td><td><b>"+t[0]+"</b></td><td><b>"+t[1]+"</b></td><td><b>"+t[2]+"</b></td><td><b>"+t[3]+"</b></td><td><b>"+tot+"</b></td></tr></tbody>";})();
+  }else{
+    $("askop").textContent="Wie won de vergelijking? Head-to-head tegen hetzelfde topmodel";
+    $("assub").textContent="Beoordelaars moesten kiezen, ook als beide antwoorden goed waren. 0.5 betekent hier: even goed";
+    var x2=function(i){return L+30+i*(W-L-R-60)/(winData.length-1)};
+    var y2=function(v){return T+(1-v)*(H-T-B)};
+    var g2="";
+    [0,0.25,0.5,0.75,1].forEach(function(v){g2+="<line class='tickline' x1='"+L+"' y1='"+y2(v)+"' x2='"+(W-R)+"' y2='"+y2(v)+"'/>"+
+      "<text x='"+(L-8)+"' y='"+(y2(v)+4)+"' text-anchor='end'>"+v+"</text>";});
+    g2+="<line x1='"+L+"' y1='"+y2(0.5)+"' x2='"+(W-R)+"' y2='"+y2(0.5)+"' stroke='"+css('--gold')+"' stroke-width='1.5' stroke-dasharray='5 4'/>";
+    g2+="<line x1='"+(L+6)+"' y1='"+(y2(0.93))+"' x2='"+(L+26)+"' y2='"+(y2(0.93))+"' stroke='"+css('--gold')+"' stroke-width='1.5' stroke-dasharray='5 4'/>";
+    g2+="<text x='"+(L+32)+"' y='"+(y2(0.93)+4)+"' text-anchor='start' style='fill:"+css('--gold')+"'>0.5 = even goed als hetzelfde topmodel</text>";
+    winData.forEach(function(r,i){
+      if(r[3]!==null){
+        g2+="<circle cx='"+x2(i)+"' cy='"+y2(r[3])+"' r='7' fill='"+css('--c3')+"' stroke='"+css('--chart-surface')+"' stroke-width='2' data-i='"+i+"' style='cursor:pointer'/>";
+        g2+="<text x='"+x2(i)+"' y='"+(y2(r[3])+(r[3]<0.48?26:-13))+"' text-anchor='middle' style='font-weight:700;fill:"+css('--ink')+"'>"+r[1]+"</text>";
+      }else{
+        g2+="<text x='"+x2(i)+"' y='"+(y2(0.5)-12)+"' text-anchor='middle' style='font-style:italic' data-i='"+i+"'>"+r[1]+"</text>";}
+      g2+="<text x='"+x2(i)+"' y='"+(H-30)+"' text-anchor='middle'>ronde "+r[0]+"</text>";});
+    svg.innerHTML=g2;
+    svg.querySelectorAll("[data-i]").forEach(function(el){
+      var r=winData[+el.dataset.i];
+      el.addEventListener("mousemove",function(e){showTT(e,"<b>ronde "+r[0]+"</b> · "+r[1]+"<br>"+r[2])});
+      el.addEventListener("mouseleave",hideTT);});
+    leg.innerHTML="<span><i style='background:"+css('--c3')+"'></i>aandeel gekozen voor de schaduwlaag-kant</span>";
+    tb.innerHTML="<thead><tr><th>Ronde</th><th>Uitslag</th><th>Toelichting</th></tr></thead><tbody>"+
+      winData.map(function(r){return "<tr><td>"+r[0]+"</td><td>"+r[1]+"</td><td class='sans' style='font-size:13px'>"+r[2]+"</td></tr>"}).join("")+"</tbody>";
+  }
+}
+$("as-seed").addEventListener("click",function(){curAs="seed";this.setAttribute("aria-pressed",true);$("as-win").setAttribute("aria-pressed",false);drawAs();});
+$("as-win").addEventListener("click",function(){curAs="win";this.setAttribute("aria-pressed",true);$("as-seed").setAttribute("aria-pressed",false);drawAs();});
+
+/* ---------- laag G chart ---------- */
+function drawG(){
+  var svg=$("gchart");if(!svg)return;svg.innerHTML="";var W=640,H=230,L=52,R=20,T=16,B=52;
+  var runs=[["distilgpt2 (Engels)",0.833,0.028],["gpt2-small-dutch (Nederlands)",0.206,0.002]];
+  var y=function(v){return T+(1-v)*(H-T-B)};
+  var x=function(i){return L+110+i*(W-L-R-220)/(runs.length-1)};
+  var g="";
+  [0,0.25,0.5,0.75,1].forEach(function(v){g+="<line class='tickline' x1='"+L+"' y1='"+y(v)+"' x2='"+(W-R)+"' y2='"+y(v)+"'/>"+
+    "<text x='"+(L-8)+"' y='"+(y(v)+4)+"' text-anchor='end'>"+v+"</text>";});
+  runs.forEach(function(r,i){
+    g+="<line x1='"+(x(i)-22)+"' y1='"+y(r[2])+"' x2='"+(x(i)+22)+"' y2='"+y(r[2])+"' stroke='"+css('--gold')+"' stroke-width='2.5' data-i='"+i+"'/>";
+    g+="<line x1='"+x(i)+"' y1='"+y(r[1])+"' x2='"+x(i)+"' y2='"+y(r[2])+"' stroke='"+css('--line')+"' stroke-width='1' stroke-dasharray='3 3'/>";
+    g+="<circle cx='"+x(i)+"' cy='"+y(r[1])+"' r='7' fill='"+css('--c4')+"' stroke='"+css('--chart-surface')+"' stroke-width='2' data-i='"+i+"' style='cursor:pointer'/>";
+    g+="<text x='"+x(i)+"' y='"+(y(r[1])-12)+"' text-anchor='middle' style='font-weight:700;fill:"+css('--ink')+"'>p "+r[1]+"</text>";
+    g+="<text x='"+x(i)+"' y='"+(H-28)+"' text-anchor='middle'>"+r[0]+"</text>";});
+  svg.innerHTML=g;
+  svg.querySelectorAll("[data-i]").forEach(function(el){
+    var r=runs[+el.dataset.i];
+    el.addEventListener("mousemove",function(e){showTT(e,"<b>"+r[0]+"</b><br>gemeten p: <b>"+r[1]+"</b> · haalbare vloer: "+r[2]+"<br>ver boven de vloer, dus geen signaal")});
+    el.addEventListener("mouseleave",hideTT);});
+}
+
+/* ---------- timeline ---------- */
+var mijlpalen=[
+ ["005–007","De eerste toets","κ≈0.63","Eerste beoordelingen op onbekende tekst. Les: het systeem vindt relevante punten, maar gevonden is nog niet waardevol."],
+ ["019","Eerste succes","92–98%","Aantekeningen uit eerdere beurten maken latere antwoorden rijker. Twee blinde beoordelaars zijn het daar vrijwel volledig over eens."],
+ ["022","De tegenslag","0.125","Eerste blinde ronde op veilige instellingen: beoordelaars zijn het grondig oneens en er zit ruis in goedgekeurde seeds. Terug naar de tekentafel."],
+ ["023","De doorbraak","0.67","Eén gebruiksregel (maximaal twee seeds, altijd als suggestie) en de overeenstemming vervijfvoudigt. De ruis verdwijnt vrijwel."],
+ ["025","De zware test","14/14","Drie totaal nieuwe onderwerpen. Beide beoordelaars zeggen bij elk antwoord: dit hielp. Alle strikvragen gaan naar de schaduwlaag-kant."],
+ ["026–028","In het model kijken","nul","Een meetinstrument voor sporen in de interne rekenlagen. Het rapporteert eerlijk: niets gevonden op kleine modellen."],
+ ["029","Tweede AI-model","6/9","Herhaling op een ander topmodel. De hulp blijft (6 van 9, gezondheidsdomein 3 van 3). De zijpaden zitten op vroege beurten en zijn gelokaliseerd."],
+ ["030","De Nederlandse meting","p 0.206","Nederlandstalig model, 24 testgevallen, veel scherpere meetlat. Opnieuw eerlijk: geen intern spoor. De vraag gaat door naar grotere modellen."],
+ ["031","De hertest","5/14","Gerichte ingreep tegen vroege zijpaden, blind hertest. Uitkomst eerlijk: vroege ruis weg, maar een matig passende aantekening bleef op latere beurten terugduwen. De volgende ingreep ligt klaar."]];
+var tl=$("tl");
+mijlpalen.forEach(function(m,i){
+  var b=document.createElement("button");b.setAttribute("role","tab");
+  b.innerHTML="<b>ronde "+m[0]+"</b><small>"+m[1]+"</small><span class='pill goud'>"+m[2]+"</span>";
+  b.addEventListener("click",function(){setTL(i)});tl.appendChild(b);});
+function setTL(i){
+  [].forEach.call(tl.children,function(b,j){b.setAttribute("aria-selected",j===i)});
+  var m=mijlpalen[i];
+  $("tlpane").innerHTML="<p class='eyebrow' style='margin:10px 0 4px'>ronde "+m[0]+" — "+m[1]+"</p><p style='margin:0'>"+m[3]+"</p>";}
+setTL(8);
+
+/* ---------- hypotheses ---------- */
+var hypos=[
+ ["H1","Detectie","Een AI vindt in een tweede leesronde systematisch kleine ontbrekende punten.","Detectie werkt op onbekende tekst. De kwaliteit is de open vraag: relevant, soms triviaal.","deels"],
+ ["H2","Gewichtloosheid","Seeds zonder invloed verstoren niets; seeds mét invloed dragen meetbaar bij aan het zoeken.","Eerste helft gemeten (geen verstoring). Voor de tweede helft is de meetopstelling gebouwd maar de echte meting nog niet gedaan.","deels"],
+ ["H3","Herkenning versterkt","Vaker herkende seeds zijn bij goedkeuring nuttiger dan willekeurige.","Het systeem bouwt hierop en werkt op veilige instellingen. Eerste steun.","deels"],
+ ["H4","Vergeten vermindert ruis","Het vanzelf-verlopen van seeds verlaagt het aantal valse punten.","Technisch bewaakt in de tests; nog niet als aparte blinde vergelijking gemeten.","deels"],
+ ["H5","Over beurten heen is essentieel","De meerwaarde ontstaat pas over meerdere gespreksbeurten.","Precies dit is bevestigd: het mechanisme werkt over beurten heen.","gemeten"],
+ ["H6","Eerst investeren, dan oogsten","De eerste beurt kost iets, latere beurten worden rijker.","Bevestigd op de hielp-het-vraag (ongeveer 69%). Head-to-head blijft het gelijkspel.","gemeten"],
+ ["H7","Binnen en buiten het model gelijk","De externe aanpak en de modelinterne tonen dezelfde dynamiek.","Open. Drie nulmetingen op kleine modellen.","open"],
+ ["H8","Vrij zoeken verslaat vaste lijstjes","Vrije detectie verslaat vooraf bedachte categorieën.","Het systeem werkt volledig vrij; de directe vergelijking is niet apart gemeten.","open"],
+ ["H9","Gerichte vervolgvragen werken","Actief doorvragen op een seed geeft sneller een vollediger beeld.","Eerste evidence; de efficiëntie-claim staat nog open.","deels"],
+ ["H10","Clusters voorspellen","Groepjes verwante seeds voorspellen beter dan losse.","Clusters worden gebruikt; de voorspellende claim is niet apart getoetst.","open"],
+ ["H11","De poort filtert echt","De poort haalt minstens de helft van de valse goedkeuringen weg.","Gemeten: de poort verslaat zwakkere regels op een adversarial testset.","gemeten"],
+ ["H12","Mensen merken het verschil","Gebruikers ervaren het systeem als slimmer.","Nog niet gemeten. Vraagt een gebruikersstudie.","open"]];
+var hy=$("hypo");
+hypos.forEach(function(h){
+  var pill=h[4]==="gemeten"?"<span class='pill groen'>gemeten ✓</span>":
+           h[4]==="deels"?"<span class='pill goud'>eerste evidence</span>":
+           "<span class='pill grijs'>open</span>";
+  var d=document.createElement("details");
+  d.innerHTML="<summary><span class='hnr'>"+h[0]+"</span> "+h[1]+" "+pill+"</summary>"+
+    "<p><i>"+h[2]+"</i></p><p>"+h[3]+"</p>";
+  hy.appendChild(d);});
+
+/* ---------- theme toggle ---------- */
+var root=document.documentElement;
+try{var saved=localStorage.getItem("ssl-thema");if(saved)root.setAttribute("data-theme",saved);}catch(e){}
+$("themabtn").addEventListener("click",function(){
+  var cur=root.getAttribute("data-theme")||
+    (matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+  var next=cur==="dark"?"light":"dark";
+  root.setAttribute("data-theme",next);
+  try{localStorage.setItem("ssl-thema",next)}catch(e){}
+});
+
+/* ---------- count-up tiles ---------- */
+if(!reduced){
+  var seen=new WeakSet();
+  var cobs=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(!e.isIntersecting||seen.has(e.target))return;seen.add(e.target);
+    var el=e.target,fin=el.textContent,m=fin.match(/^([~≈]?)(\d+)([%]?)(\/(\d+))?$/);
+    if(!m)return;
+    var pre=m[1]||"",target=+m[2],suf=m[3]||"",den=m[5]?"/"+m[5]:"";
+    var t0=null;
+    function step(t){if(t0===null)t0=t;var k=Math.min(1,(t-t0)/900);
+      el.textContent=pre+Math.round(target*(0.3+0.7*k*k))+suf+den;
+      if(k<1)requestAnimationFrame(step);else el.textContent=fin;}
+    requestAnimationFrame(step);});},{threshold:0.6});
+  document.querySelectorAll(".tile .big").forEach(function(el){cobs.observe(el)});
+}
+
+/* ---------- chapter dots ---------- */
+var secs=["top","stap1","stap2","stap3","stap4","stap5","stap6","stap7","stap8"];
+var dots=document.querySelector("nav.dots");
+secs.forEach(function(s){var a=document.createElement("a");a.href="#"+s;a.title=s;dots.appendChild(a);});
+var obs=new IntersectionObserver(function(es){es.forEach(function(e){
+  if(e.isIntersecting){var i=secs.indexOf(e.target.id);
+    [].forEach.call(dots.children,function(d,j){d.classList.toggle("on",j===i)});}});},{rootMargin:"-40% 0px -55% 0px"});
+secs.forEach(function(s){var el=document.getElementById(s);if(el)obs.observe(el);});
+
+/* redraw charts on theme flips */
+function drawAll(){drawAgree();drawAs();drawG();}
+drawAll();
+new MutationObserver(drawAll).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",drawAll);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1595 @@
+{
+  "file_count": 647,
+  "bytes": 8367132,
+  "by_area": {
+    ".env.example": {
+      "files": 1,
+      "bytes": 146,
+      "lines": 5
+    },
+    ".github": {
+      "files": 23,
+      "bytes": 130486,
+      "lines": 3484
+    },
+    ".gitignore": {
+      "files": 1,
+      "bytes": 615,
+      "lines": 28
+    },
+    ".pytest_cache": {
+      "files": 5,
+      "bytes": 33972,
+      "lines": 404
+    },
+    "README.md": {
+      "files": 1,
+      "bytes": 10719,
+      "lines": 174
+    },
+    "benchmarks": {
+      "files": 177,
+      "bytes": 3168240,
+      "lines": 74131
+    },
+    "data": {
+      "files": 2,
+      "bytes": 959613,
+      "lines": 1
+    },
+    "docs": {
+      "files": 80,
+      "bytes": 498785,
+      "lines": 13855
+    },
+    "examples": {
+      "files": 1,
+      "bytes": 459,
+      "lines": 19
+    },
+    "experiments": {
+      "files": 1,
+      "bytes": 709,
+      "lines": 31
+    },
+    "pyproject.toml": {
+      "files": 1,
+      "bytes": 1658,
+      "lines": 89
+    },
+    "requirements.txt": {
+      "files": 1,
+      "bytes": 11,
+      "lines": 2
+    },
+    "results": {
+      "files": 33,
+      "bytes": 878072,
+      "lines": 32367
+    },
+    "scripts": {
+      "files": 15,
+      "bytes": 131097,
+      "lines": 1855
+    },
+    "src": {
+      "files": 182,
+      "bytes": 1231136,
+      "lines": 15716
+    },
+    "templates": {
+      "files": 2,
+      "bytes": 340,
+      "lines": 5
+    },
+    "tests": {
+      "files": 120,
+      "bytes": 1261419,
+      "lines": 7242
+    },
+    "verhaal.html": {
+      "files": 1,
+      "bytes": 59655,
+      "lines": 851
+    }
+  },
+  "by_suffix": {
+    ".example": 1,
+    ".txt": 2,
+    ".yml": 22,
+    "": 6,
+    ".tag": 1,
+    ".md": 183,
+    ".json": 119,
+    ".csv": 16,
+    ".17762": 1,
+    ".py": 151,
+    ".toml": 1,
+    ".svg": 6,
+    ".pyc": 137,
+    ".html": 1
+  },
+  "duplicate_groups": [
+    [
+      "benchmarks/open_review/input/hf_batch.json",
+      "benchmarks/open_review/rounds/round_003/input/hf_batch.json",
+      "benchmarks/open_review/rounds/round_004/input/hf_batch.json",
+      "benchmarks/open_review/rounds/round_006/batch1/input/hf_batch.json"
+    ],
+    [
+      "benchmarks/open_review/rounds/round_005/ai_review/offset0_disagreements.json",
+      "benchmarks/open_review/rounds/round_006/batch1/ai_review/open_set_disagreements.json",
+      "benchmarks/open_review/rounds/round_006/batch2/ai_review/open_set_disagreements.json",
+      "benchmarks/open_review/rounds/round_007/batchA/ai_review/open_set_disagreements.json",
+      "benchmarks/open_review/rounds/round_007/batchB/ai_review/open_set_disagreements.json",
+      "results/open_review/open_set_disagreements.json"
+    ],
+    [
+      "results/imported/analysis-job-25591076723/coverage.svg",
+      "results/latest/analysis/coverage.svg",
+      "results/latest/coverage.svg"
+    ],
+    [
+      "results/latest/analysis/analysis_report.md",
+      "results/latest/analysis_report.md"
+    ],
+    [
+      "results/latest/analysis/analysis_summary.json",
+      "results/latest/summary.json"
+    ],
+    [
+      "results/latest/analysis/false_positive.svg",
+      "results/latest/false_positive.svg"
+    ]
+  ],
+  "test_helpers": [
+    {
+      "file": "tests/test_activation_probe.py",
+      "kind": "function",
+      "name": "_planted_data",
+      "line": 218
+    },
+    {
+      "file": "tests/test_agent_safety_contract.py",
+      "kind": "function",
+      "name": "make_seed",
+      "line": 19
+    },
+    {
+      "file": "tests/test_agent_safety_contract.py",
+      "kind": "function",
+      "name": "promotion_gate",
+      "line": 36
+    },
+    {
+      "file": "tests/test_answer_pair_winrate.py",
+      "kind": "function",
+      "name": "_payload",
+      "line": 12
+    },
+    {
+      "file": "tests/test_bad_seed_dies_out.py",
+      "kind": "function",
+      "name": "_embedding",
+      "line": 17
+    },
+    {
+      "file": "tests/test_blind_control_packets.py",
+      "kind": "function",
+      "name": "_output",
+      "line": 13
+    },
+    {
+      "file": "tests/test_dialectic_falsification.py",
+      "kind": "function",
+      "name": "_promoted_seed",
+      "line": 32
+    },
+    {
+      "file": "tests/test_embedding_backends.py",
+      "kind": "class",
+      "name": "_FakeEmbeddings",
+      "line": 24
+    },
+    {
+      "file": "tests/test_embedding_backends.py",
+      "kind": "class",
+      "name": "_FakeSDK",
+      "line": 44
+    },
+    {
+      "file": "tests/test_lifecycle_ttl.py",
+      "kind": "function",
+      "name": "_embedding",
+      "line": 15
+    },
+    {
+      "file": "tests/test_lifecycle_ttl.py",
+      "kind": "function",
+      "name": "_manager",
+      "line": 23
+    },
+    {
+      "file": "tests/test_make_blind_ab_review.py",
+      "kind": "function",
+      "name": "_payload",
+      "line": 16
+    },
+    {
+      "file": "tests/test_manager_alignment.py",
+      "kind": "function",
+      "name": "_embedding",
+      "line": 8
+    },
+    {
+      "file": "tests/test_manager_alignment.py",
+      "kind": "function",
+      "name": "_manager",
+      "line": 20
+    },
+    {
+      "file": "tests/test_manager_smoke.py",
+      "kind": "function",
+      "name": "fake_embedding",
+      "line": 8
+    },
+    {
+      "file": "tests/test_ollama_backend.py",
+      "kind": "class",
+      "name": "_FakeResponse",
+      "line": 28
+    },
+    {
+      "file": "tests/test_ollama_backend.py",
+      "kind": "function",
+      "name": "_fake_urlopen",
+      "line": 37
+    },
+    {
+      "file": "tests/test_open_set_candidate_adapter_v2.py",
+      "kind": "function",
+      "name": "_sample_item",
+      "line": 17
+    },
+    {
+      "file": "tests/test_open_set_hf.py",
+      "kind": "class",
+      "name": "_FakeResponse",
+      "line": 9
+    },
+    {
+      "file": "tests/test_open_set_model_detector.py",
+      "kind": "function",
+      "name": "_sample_item",
+      "line": 25
+    },
+    {
+      "file": "tests/test_open_set_models.py",
+      "kind": "function",
+      "name": "_workflow_model_choices",
+      "line": 47
+    },
+    {
+      "file": "tests/test_open_set_review_summary.py",
+      "kind": "function",
+      "name": "_accepted_fields",
+      "line": 122
+    },
+    {
+      "file": "tests/test_open_set_seed_review.py",
+      "kind": "function",
+      "name": "_seed_key",
+      "line": 16
+    },
+    {
+      "file": "tests/test_open_set_workflow_integration.py",
+      "kind": "function",
+      "name": "_pending_packets",
+      "line": 20
+    },
+    {
+      "file": "tests/test_openai_backend.py",
+      "kind": "class",
+      "name": "_FakeChatCompletions",
+      "line": 29
+    },
+    {
+      "file": "tests/test_openai_backend.py",
+      "kind": "class",
+      "name": "_FakeEmbeddings",
+      "line": 40
+    },
+    {
+      "file": "tests/test_openai_backend.py",
+      "kind": "class",
+      "name": "_FakeOpenAISDK",
+      "line": 50
+    },
+    {
+      "file": "tests/test_optional_vector_backends.py",
+      "kind": "function",
+      "name": "_chroma_store_or_skip",
+      "line": 33
+    },
+    {
+      "file": "tests/test_probe_feedback_behavior_suite.py",
+      "kind": "function",
+      "name": "_run",
+      "line": 16
+    },
+    {
+      "file": "tests/test_recurrence_clustering.py",
+      "kind": "function",
+      "name": "sessmod",
+      "line": 317
+    },
+    {
+      "file": "tests/test_seed_retrieval_probe.py",
+      "kind": "function",
+      "name": "_store",
+      "line": 13
+    },
+    {
+      "file": "tests/test_semantic_coverage.py",
+      "kind": "function",
+      "name": "_embedder",
+      "line": 19
+    },
+    {
+      "file": "tests/test_shadow_chat.py",
+      "kind": "class",
+      "name": "_Model",
+      "line": 37
+    },
+    {
+      "file": "tests/test_shadow_chat.py",
+      "kind": "class",
+      "name": "_Detector",
+      "line": 48
+    },
+    {
+      "file": "tests/test_shadow_chat.py",
+      "kind": "function",
+      "name": "_emb_factory",
+      "line": 60
+    },
+    {
+      "file": "tests/test_shadow_chat.py",
+      "kind": "function",
+      "name": "_make_session",
+      "line": 84
+    },
+    {
+      "file": "tests/test_shadow_chat.py",
+      "kind": "function",
+      "name": "session",
+      "line": 92
+    },
+    {
+      "file": "tests/test_shadow_chat.py",
+      "kind": "function",
+      "name": "_drive",
+      "line": 96
+    },
+    {
+      "file": "tests/test_ssl45_formulas.py",
+      "kind": "function",
+      "name": "fake_embedding",
+      "line": 8
+    },
+    {
+      "file": "tests/test_ssot_falsification.py",
+      "kind": "function",
+      "name": "make_manager_and_ssot",
+      "line": 8
+    },
+    {
+      "file": "tests/test_ssot_falsification.py",
+      "kind": "function",
+      "name": "prepare_open_seed",
+      "line": 20
+    },
+    {
+      "file": "tests/test_vectorstore_hardening.py",
+      "kind": "class",
+      "name": "_FakeIndexFlatIP",
+      "line": 102
+    },
+    {
+      "file": "tests/test_vectorstore_hardening.py",
+      "kind": "function",
+      "name": "faiss_store",
+      "line": 117
+    },
+    {
+      "file": "tests/test_vectorstore_hardening.py",
+      "kind": "class",
+      "name": "_FakeCollection",
+      "line": 158
+    },
+    {
+      "file": "tests/test_vectorstore_hardening.py",
+      "kind": "class",
+      "name": "_FakeClient",
+      "line": 208
+    },
+    {
+      "file": "tests/test_vectorstore_hardening.py",
+      "kind": "function",
+      "name": "chroma_env",
+      "line": 218
+    },
+    {
+      "file": "tests/test_vectorstore_hardening.py",
+      "kind": "function",
+      "name": "_stub_seed_metadata",
+      "line": 307
+    }
+  ],
+  "dutch_files": [
+    {
+      "path": "docs/legacy/00_shadow_seed_learning_4_5.md",
+      "matches": 83
+    },
+    {
+      "path": "verhaal.html",
+      "matches": 63
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_004/open_set_seed_output.json",
+      "matches": 57
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_008/payoff_run_01/model_benefit_judged.json",
+      "matches": 54
+    },
+    {
+      "path": "docs/ssl-het-verhaal.md",
+      "matches": 54
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_019/human_review/review_pack.json",
+      "matches": 52
+    },
+    {
+      "path": "docs/research/vision-generative-seeds.md",
+      "matches": 51
+    },
+    {
+      "path": "results/latest/ssl45_gap_suite_turns_8.json",
+      "matches": 47
+    },
+    {
+      "path": "results/latest/ssl45_gap_suite_turns_5.json",
+      "matches": 38
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_019/human_review/review_pack.md",
+      "matches": 36
+    },
+    {
+      "path": "docs/research/ssl-integrale-evaluatie.md",
+      "matches": 34
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_023/human_review/scores.csv",
+      "matches": 33
+    },
+    {
+      "path": "results/latest/ssl45_model_benefit_suite.json",
+      "matches": 33
+    },
+    {
+      "path": "results/latest/ssl45_gap_suite.json",
+      "matches": 32
+    },
+    {
+      "path": "results/latest/ssl45_gap_suite_turns_3.json",
+      "matches": 32
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_013/human_review/review_pack.md",
+      "matches": 31
+    },
+    {
+      "path": "src/shadowseed/cli.py",
+      "matches": 30
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_013/human_review/review_pack.json",
+      "matches": 29
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_003/open_set_seed_output.json",
+      "matches": 27
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_004/ai_prescreen.json",
+      "matches": 27
+    },
+    {
+      "path": "src/shadowseed/benchmark/ssl_session_suite.py",
+      "matches": 27
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_031/human_review/RESULTS.md",
+      "matches": 26
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_014/human_review/review_pack.md",
+      "matches": 25
+    },
+    {
+      "path": "results/imported/analysis-job-25591076723/analysis_summary.json",
+      "matches": 25
+    },
+    {
+      "path": "results/latest/analysis/analysis_summary.json",
+      "matches": 25
+    },
+    {
+      "path": "results/latest/summary.json",
+      "matches": 25
+    },
+    {
+      "path": "src/shadowseed/benchmark/open_set_model_detector.py",
+      "matches": 25
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_004/open_set_review_packets.json",
+      "matches": 24
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_008/payoff_run_02/model_benefit_append.json",
+      "matches": 24
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_025/human_review/r1_review_items_annotated.json",
+      "matches": 24
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_031/README.md",
+      "matches": 24
+    },
+    {
+      "path": "tests/test_ssl_session_suite.py",
+      "matches": 24
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_014/human_review/review_pack.json",
+      "matches": 23
+    },
+    {
+      "path": "results/latest/ssl45_gap_suite_turns_2.json",
+      "matches": 23
+    },
+    {
+      "path": "results/latest/ssl45_benefit_suite.json",
+      "matches": 22
+    },
+    {
+      "path": "src/shadowseed/benchmark/activation_probe.py",
+      "matches": 22
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_022/human_review/reviewer_a.md",
+      "matches": 21
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_028/README.md",
+      "matches": 20
+    },
+    {
+      "path": "docs/02_atomic_seeds.md",
+      "matches": 20
+    },
+    {
+      "path": "docs/06_handleiding_beoordelaars.md",
+      "matches": 20
+    },
+    {
+      "path": "results/latest/analysis_summary.json",
+      "matches": 20
+    },
+    {
+      "path": "results/latest/ssl45_gap_suite_turns_1.json",
+      "matches": 20
+    },
+    {
+      "path": "src/shadowseed/analysis/ssl45_result_analyzer.py",
+      "matches": 20
+    },
+    {
+      "path": "src/shadowseed/data/adversarial_gate_benchmark.json",
+      "matches": 20
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_029/human_review/RESULTS.md",
+      "matches": 19
+    },
+    {
+      "path": "docs/05_prompts.md",
+      "matches": 19
+    },
+    {
+      "path": "docs/research/current-status.md",
+      "matches": 19
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_005/model_seed_output.json",
+      "matches": 18
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_005/reviewed_offset12/open_set_review_packets.json",
+      "matches": 18
+    },
+    {
+      "path": "docs/research/independent-review-signoff.md",
+      "matches": 18
+    },
+    {
+      "path": "docs/research/shadow-chat-demo.md",
+      "matches": 18
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_005/reviewed_offset12/open_set_seed_review_summary.json",
+      "matches": 17
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_023/README.md",
+      "matches": 17
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_024/README.md",
+      "matches": 17
+    },
+    {
+      "path": "docs/research/pva-checklist.md",
+      "matches": 17
+    },
+    {
+      "path": "results/imported/analysis-job-25591076723/analysis_report.md",
+      "matches": 17
+    },
+    {
+      "path": "results/latest/analysis/analysis_report.md",
+      "matches": 17
+    },
+    {
+      "path": "results/latest/analysis_report.md",
+      "matches": 17
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_003/open_set_review_packets.json",
+      "matches": 16
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_019/human_review/README.md",
+      "matches": 16
+    },
+    {
+      "path": "docs/research/laag-g-scoping.md",
+      "matches": 16
+    },
+    {
+      "path": "tests/test_cli_route_integration.py",
+      "matches": 16
+    },
+    {
+      "path": "src/shadowseed/benchmark/ssl45_model_benefit_suite.py",
+      "matches": 15
+    },
+    {
+      "path": "README.md",
+      "matches": 14
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_023/human_review/RESULTS.md",
+      "matches": 14
+    },
+    {
+      "path": "docs/wiki/Eindconclusie-SSL-4-5.md",
+      "matches": 14
+    },
+    {
+      "path": "docs/wiki/Tussentijdse-Rapportage.md",
+      "matches": 14
+    },
+    {
+      "path": "docs/wiki/Visueel-Verhaal.md",
+      "matches": 14
+    },
+    {
+      "path": "src/shadowseed/prompts.py",
+      "matches": 14
+    },
+    {
+      "path": "docs/03_gap_test_suite.md",
+      "matches": 13
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_004/reviewer_a_packets.csv",
+      "matches": 12
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_004/reviewer_b_packets.csv",
+      "matches": 12
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_005/blind_review_packets.json",
+      "matches": 12
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_034/README.md",
+      "matches": 12
+    },
+    {
+      "path": "docs/research/w9f-evaluatieconclusie.md",
+      "matches": 12
+    },
+    {
+      "path": "src/shadowseed/prompt_templates.py",
+      "matches": 12
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_032/RESULTS.md",
+      "matches": 11
+    },
+    {
+      "path": "docs/00_shadow_seed_learning_4_6.md",
+      "matches": 11
+    },
+    {
+      "path": "docs/01_framework.md",
+      "matches": 11
+    },
+    {
+      "path": "docs/phase2_model_benefit.md",
+      "matches": 11
+    },
+    {
+      "path": "docs/research/evaluation-matrix.md",
+      "matches": 11
+    },
+    {
+      "path": "src/shadowseed/data/blind_suite_public.json",
+      "matches": 11
+    },
+    {
+      "path": "tests/test_open_set_prescreen.py",
+      "matches": 11
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_016/README.md",
+      "matches": 10
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_032/README.md",
+      "matches": 10
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_033/README.md",
+      "matches": 10
+    },
+    {
+      "path": "docs/research/scenario-independence-roadmap.md",
+      "matches": 10
+    },
+    {
+      "path": "docs/results.md",
+      "matches": 10
+    },
+    {
+      "path": "docs/wiki/Blind-Review-Protocol.md",
+      "matches": 10
+    },
+    {
+      "path": "src/shadowseed/chat.py",
+      "matches": 10
+    },
+    {
+      "path": "src/shadowseed/data/gap_test_suite_false_positive_4_5.json",
+      "matches": 10
+    },
+    {
+      "path": "src/shadowseed/data/ssl45_probe_utility_suite.json",
+      "matches": 10
+    },
+    {
+      "path": "tests/test_vectorstore_memory.py",
+      "matches": 10
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_005/reviewed_offset12/open_set_seed_output.json",
+      "matches": 9
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_006/batch2/open_set_seed_output.json",
+      "matches": 9
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_007/batchA/open_set_seed_output.json",
+      "matches": 9
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_025/README.md",
+      "matches": 9
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_027/README.md",
+      "matches": 9
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_029/README.md",
+      "matches": 9
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_033/RESULTS.md",
+      "matches": 9
+    },
+    {
+      "path": "docs/research/evaluation-layer-target-architecture.md",
+      "matches": 9
+    },
+    {
+      "path": "docs/wiki/Blind-Benchmark.md",
+      "matches": 9
+    },
+    {
+      "path": "scripts/make_blind_ab_review.py",
+      "matches": 9
+    },
+    {
+      "path": "tests/test_ssot_falsification.py",
+      "matches": 9
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_003/reviewer_a_packets.csv",
+      "matches": 8
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_003/reviewer_b_packets.csv",
+      "matches": 8
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_005/mechanical_prescreen.json",
+      "matches": 8
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_022/human_review/RESULTS.md",
+      "matches": 8
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_024/human_review/RESULTS.md",
+      "matches": 8
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_025/human_review/r1_scores.csv",
+      "matches": 8
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_030/RESULTS.md",
+      "matches": 8
+    },
+    {
+      "path": "docs/public-recovery-plan.md",
+      "matches": 8
+    },
+    {
+      "path": "docs/research/positioning-synthese.md",
+      "matches": 8
+    },
+    {
+      "path": "results/latest/blind_benchmark.json",
+      "matches": 8
+    },
+    {
+      "path": "src/shadowseed/benchmark/generative_payoff_suite.py",
+      "matches": 8
+    },
+    {
+      "path": ".github/workflows/open-set-hf-review.yml",
+      "matches": 7
+    },
+    {
+      "path": ".github/workflows/tests.yml",
+      "matches": 7
+    },
+    {
+      "path": "docs/04_testplan_fase_0_4.md",
+      "matches": 7
+    },
+    {
+      "path": "docs/wiki/Waarom-SSL-niet-naief-is.md",
+      "matches": 7
+    },
+    {
+      "path": "scripts/prescreen_open_set_output.py",
+      "matches": 7
+    },
+    {
+      "path": "src/shadowseed/benchmark/ssl45_gap_suite.py",
+      "matches": 7
+    },
+    {
+      "path": "src/shadowseed/data/gap_test_suite_4_5.json",
+      "matches": 7
+    },
+    {
+      "path": "src/shadowseed/data/ssl45_model_benefit_suite.json",
+      "matches": 7
+    },
+    {
+      "path": "tests/test_activation_probe.py",
+      "matches": 7
+    },
+    {
+      "path": ".github/workflows/activation-probe-real-verdict.yml",
+      "matches": 6
+    },
+    {
+      "path": ".github/workflows/full-validation-sweep.yml",
+      "matches": 6
+    },
+    {
+      "path": ".github/workflows/ssot-falsification.yml",
+      "matches": 6
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_005/ai_review/blind_review_packets.json",
+      "matches": 6
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_006/batch1/open_set_seed_output.json",
+      "matches": 6
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_006/batch2/run_review_packets_pending.json",
+      "matches": 6
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_007/batchA/run_review_packets_pending.json",
+      "matches": 6
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_010/README.md",
+      "matches": 6
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_025/human_review/RESULTS.md",
+      "matches": 6
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_031/human_review/r2_scores.csv",
+      "matches": 6
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_035/README.md",
+      "matches": 6
+    },
+    {
+      "path": "docs/wiki/Dashboard.md",
+      "matches": 6
+    },
+    {
+      "path": "src/shadowseed/data/retrieval_benchmark.json",
+      "matches": 6
+    },
+    {
+      "path": "tests/test_blind_benchmark.py",
+      "matches": 6
+    },
+    {
+      "path": ".github/workflows/retrieval-model-comparison.yml",
+      "matches": 5
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_004/README.md",
+      "matches": 5
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_005/mechanical_prescreen.md",
+      "matches": 5
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_006/batch1/human_review/human_review_sheet.md",
+      "matches": 5
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_006/batch1/mechanical_prescreen.md",
+      "matches": 5
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_006/batch2/mechanical_prescreen.json",
+      "matches": 5
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_006/batch2/mechanical_prescreen.md",
+      "matches": 5
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_007/batchA/mechanical_prescreen.json",
+      "matches": 5
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_007/batchA/mechanical_prescreen.md",
+      "matches": 5
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_007/batchB/mechanical_prescreen.md",
+      "matches": 5
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_019/human_review/answer_key.json",
+      "matches": 5
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_022/human_review/reviewer_a.csv",
+      "matches": 5
+    },
+    {
+      "path": "docs/07_reproduceerbaarheid.md",
+      "matches": 5
+    },
+    {
+      "path": "docs/ARCHITECTURE_MAP.md",
+      "matches": 5
+    },
+    {
+      "path": "docs/reproducibility.md",
+      "matches": 5
+    },
+    {
+      "path": "docs/research/open-set-adversarial-plan.md",
+      "matches": 5
+    },
+    {
+      "path": "docs/research/w9f-review-artifacts.md",
+      "matches": 5
+    },
+    {
+      "path": "docs/research/work-categories.md",
+      "matches": 5
+    },
+    {
+      "path": "docs/slm_runs.md",
+      "matches": 5
+    },
+    {
+      "path": "docs/wiki/Start-Hier.md",
+      "matches": 5
+    },
+    {
+      "path": "docs/wiki/Wat-is-SSL.md",
+      "matches": 5
+    },
+    {
+      "path": "src/shadowseed/benchmark/ssot_smoke.py",
+      "matches": 5
+    },
+    {
+      "path": "src/shadowseed/benchmark/vectorstore_smoke.py",
+      "matches": 5
+    },
+    {
+      "path": "src/shadowseed/data/open_set_seed_review_sample.json",
+      "matches": 5
+    },
+    {
+      "path": "src/shadowseed/data/ssl45_benefit_suite.json",
+      "matches": 5
+    },
+    {
+      "path": "src/shadowseed/data/ssl_vs_rag_benchmark.json",
+      "matches": 5
+    },
+    {
+      "path": "tests/test_embedding_backends.py",
+      "matches": 5
+    },
+    {
+      "path": "tests/test_seed_normalization.py",
+      "matches": 5
+    },
+    {
+      "path": "tests/test_ssot_manager.py",
+      "matches": 5
+    },
+    {
+      "path": "benchmarks/absencebench/README.md",
+      "matches": 4
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_006/batch1/mechanical_prescreen.json",
+      "matches": 4
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_006/batch1/run_review_packets_pending.json",
+      "matches": 4
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_026/README.md",
+      "matches": 4
+    },
+    {
+      "path": "docs/CLI_COMMAND_MAP.md",
+      "matches": 4
+    },
+    {
+      "path": "docs/research/workflow-evidence-taxonomy.md",
+      "matches": 4
+    },
+    {
+      "path": "docs/wiki/Architectuur.md",
+      "matches": 4
+    },
+    {
+      "path": "docs/wiki/Benchmarks.md",
+      "matches": 4
+    },
+    {
+      "path": "docs/wiki/SSOT-en-Documentvalidatie.md",
+      "matches": 4
+    },
+    {
+      "path": "results/latest/ssl45_false_positive_suite.json",
+      "matches": 4
+    },
+    {
+      "path": "src/shadowseed/benchmark/adversarial_payoff_suite.py",
+      "matches": 4
+    },
+    {
+      "path": "src/shadowseed/benchmark/dialectic_falsification.py",
+      "matches": 4
+    },
+    {
+      "path": "src/shadowseed/benchmark/retrieval_model_benchmark.py",
+      "matches": 4
+    },
+    {
+      "path": "src/shadowseed/benchmark/ssl45_false_positive_suite.py",
+      "matches": 4
+    },
+    {
+      "path": "src/shadowseed/data/dialectic_falsification_transfer_v2.json",
+      "matches": 4
+    },
+    {
+      "path": "src/shadowseed/data/retrieval_output_benchmark.json",
+      "matches": 4
+    },
+    {
+      "path": "tests/test_shadow_chat.py",
+      "matches": 4
+    },
+    {
+      "path": ".github/workflows/retrieval-model-hf.yml",
+      "matches": 3
+    },
+    {
+      "path": ".github/workflows/ssot-smoke.yml",
+      "matches": 3
+    },
+    {
+      "path": ".github/workflows/vectorstore-smoke.yml",
+      "matches": 3
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_003/README.md",
+      "matches": 3
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_004/AI_PRESCREEN.md",
+      "matches": 3
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_005/ai_review/offset0_review_packets.json",
+      "matches": 3
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_005/ai_review/offset0_seed_review_summary.json",
+      "matches": 3
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_006/batch2/ai_review/open_set_review_packets.json",
+      "matches": 3
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_006/batch2/ai_review/open_set_seed_review_summary.json",
+      "matches": 3
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_007/batchA/ai_review/open_set_review_packets.json",
+      "matches": 3
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_007/batchA/ai_review/open_set_seed_review_summary.json",
+      "matches": 3
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_011/README.md",
+      "matches": 3
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_014/human_review/answer_key.json",
+      "matches": 3
+    },
+    {
+      "path": "docs/README.md",
+      "matches": 3
+    },
+    {
+      "path": "docs/architecture/manager-design.md",
+      "matches": 3
+    },
+    {
+      "path": "docs/wiki/Conceptueel-Overzicht.md",
+      "matches": 3
+    },
+    {
+      "path": "docs/wiki/Paper-naar-Seed-Pipeline.md",
+      "matches": 3
+    },
+    {
+      "path": "docs/wiki/Roadmap.md",
+      "matches": 3
+    },
+    {
+      "path": "docs/wiki/Vectorstore-en-Gewichtloze-Seeds.md",
+      "matches": 3
+    },
+    {
+      "path": "results/latest/README.md",
+      "matches": 3
+    },
+    {
+      "path": "results/open_review/README.md",
+      "matches": 3
+    },
+    {
+      "path": "results/open_review/open_set_seed_review_summary.json",
+      "matches": 3
+    },
+    {
+      "path": "scripts/run_absencebench.py",
+      "matches": 3
+    },
+    {
+      "path": "src/shadowseed/benchmark/absencebench_local.py",
+      "matches": 3
+    },
+    {
+      "path": "src/shadowseed/benchmark/ssl_vs_rag_benchmark.py",
+      "matches": 3
+    },
+    {
+      "path": "src/shadowseed/benchmark/wild_payoff_suite.py",
+      "matches": 3
+    },
+    {
+      "path": "src/shadowseed/data/adversarial_payoff_suite.json",
+      "matches": 3
+    },
+    {
+      "path": "tests/test_cli_smoke.py",
+      "matches": 3
+    },
+    {
+      "path": "tests/test_manager_alignment.py",
+      "matches": 3
+    },
+    {
+      "path": "tests/test_open_set_review_summary.py",
+      "matches": 3
+    },
+    {
+      "path": "tests/test_vectorstore_hardening.py",
+      "matches": 3
+    },
+    {
+      "path": ".github/workflows/nightly-vector-backend-comparison.yml",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/absencebench/runkaart.md",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/open_review/README.md",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_001/README.md",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_005/README.md",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_006/README.md",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_006/batch1/ai_review/open_set_review_packets.json",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_006/batch1/ai_review/open_set_seed_review_summary.json",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_006/batch1/human_review/human_review_packets.json",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_006/batch1/human_review/sheet_numbering.json",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_007/batchB/mechanical_prescreen.json",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_026/activation_probe_pythia14m.json",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_026/activation_probe_pythia14m_stelling.json",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_027/activation_probe_pythia14m_transfer_permutation.json",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_027/activation_probe_pythia31m_transfer_permutation.json",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_028/activation_probe_pythia14m_gpt41verdict.json",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_029/human_review/r1_scores.csv",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_030/README.md",
+      "matches": 2
+    },
+    {
+      "path": "benchmarks/slm_open_eval/prompts/2026-05-10-smoke.json",
+      "matches": 2
+    },
+    {
+      "path": "docs/research/next-phase-implementation.md",
+      "matches": 2
+    },
+    {
+      "path": "docs/research/roadmap-shadowseed-stabilization.md",
+      "matches": 2
+    },
+    {
+      "path": "docs/wiki/Home.md",
+      "matches": 2
+    },
+    {
+      "path": "docs/wiki/Huidige-Evidence-Status.md",
+      "matches": 2
+    },
+    {
+      "path": "docs/wiki/SLM-Runs.md",
+      "matches": 2
+    },
+    {
+      "path": "results/latest/absencebench_smoke.json",
+      "matches": 2
+    },
+    {
+      "path": "src/shadowseed/benchmark/blind/detector.py",
+      "matches": 2
+    },
+    {
+      "path": "src/shadowseed/evaluation/README.md",
+      "matches": 2
+    },
+    {
+      "path": "src/shadowseed/evaluation/open_review/README.md",
+      "matches": 2
+    },
+    {
+      "path": "src/shadowseed/evaluation/regression/README.md",
+      "matches": 2
+    },
+    {
+      "path": "src/shadowseed/evaluation/transfer/README.md",
+      "matches": 2
+    },
+    {
+      "path": "tests/test_adversarial_gate_benchmark.py",
+      "matches": 2
+    },
+    {
+      "path": "tests/test_lifecycle_ttl.py",
+      "matches": 2
+    },
+    {
+      "path": "tests/test_ollama_backend.py",
+      "matches": 2
+    },
+    {
+      "path": "tests/test_semantic_coverage.py",
+      "matches": 2
+    },
+    {
+      "path": ".github/workflows/activation-probe.yml",
+      "matches": 1
+    },
+    {
+      "path": ".github/workflows/publish-test-results.yml",
+      "matches": 1
+    },
+    {
+      "path": ".github/workflows/slm-model-benefit.yml",
+      "matches": 1
+    },
+    {
+      "path": "benchmarks/README.md",
+      "matches": 1
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_005/ai_review/blind_control_summary.json",
+      "matches": 1
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_006/batch2/README.md",
+      "matches": 1
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_012/README.md",
+      "matches": 1
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_014/README.md",
+      "matches": 1
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_025/human_review/r3_review.md",
+      "matches": 1
+    },
+    {
+      "path": "benchmarks/open_review/rounds/round_031/human_review/r1_scores.csv",
+      "matches": 1
+    },
+    {
+      "path": "benchmarks/pipeline.md",
+      "matches": 1
+    },
+    {
+      "path": "benchmarks/results/README.md",
+      "matches": 1
+    },
+    {
+      "path": "benchmarks/results/example_result.json",
+      "matches": 1
+    },
+    {
+      "path": "benchmarks/results/example_scan.json",
+      "matches": 1
+    },
+    {
+      "path": "docs/08_referenties.md",
+      "matches": 1
+    },
+    {
+      "path": "docs/adr/0001-open-set-detector-strategy.md",
+      "matches": 1
+    },
+    {
+      "path": "docs/architecture/ssl-foundation.md",
+      "matches": 1
+    },
+    {
+      "path": "docs/benchmarking/execution-readiness.md",
+      "matches": 1
+    },
+    {
+      "path": "docs/research/slm-open-evaluation-plan.md",
+      "matches": 1
+    },
+    {
+      "path": "docs/research/workflow-map.md",
+      "matches": 1
+    },
+    {
+      "path": "docs/wiki/Archief.md",
+      "matches": 1
+    },
+    {
+      "path": "docs/wiki/Resultaten-en-Analyse.md",
+      "matches": 1
+    },
+    {
+      "path": "scripts/analyze_rubric_sensitivity.py",
+      "matches": 1
+    },
+    {
+      "path": "scripts/build_blind_control_packets.py",
+      "matches": 1
+    },
+    {
+      "path": "scripts/verify_absencebench.py",
+      "matches": 1
+    },
+    {
+      "path": "src/shadowseed/benchmark/retrieval_output_benchmark.py",
+      "matches": 1
+    },
+    {
+      "path": "src/shadowseed/benchmark/runner.py",
+      "matches": 1
+    },
+    {
+      "path": "src/shadowseed/data/dialectic_falsification_fixture.json",
+      "matches": 1
+    },
+    {
+      "path": "src/shadowseed/data/dialectic_falsification_transfer.json",
+      "matches": 1
+    },
+    {
+      "path": "src/shadowseed/data/dialectic_falsification_transfer_v3.json",
+      "matches": 1
+    },
+    {
+      "path": "src/shadowseed/data/generative_payoff_suite.json",
+      "matches": 1
+    },
+    {
+      "path": "src/shadowseed/data/open_set_models.json",
+      "matches": 1
+    },
+    {
+      "path": "src/shadowseed/data/probe_utility_benchmark.json",
+      "matches": 1
+    },
+    {
+      "path": "src/shadowseed/evaluation/adversarial/README.md",
+      "matches": 1
+    },
+    {
+      "path": "src/shadowseed/evaluation/behavioral/README.md",
+      "matches": 1
+    },
+    {
+      "path": "tests/test_dialectic_falsification.py",
+      "matches": 1
+    },
+    {
+      "path": "tests/test_generative_seed_variant.py",
+      "matches": 1
+    },
+    {
+      "path": "tests/test_open_set_hf.py",
+      "matches": 1
+    },
+    {
+      "path": "tests/test_open_set_model_detector.py",
+      "matches": 1
+    },
+    {
+      "path": "tests/test_open_set_workflow_integration.py",
+      "matches": 1
+    },
+    {
+      "path": "tests/test_openai_backend.py",
+      "matches": 1
+    },
+    {
+      "path": "tests/test_seed_retrieval_probe.py",
+      "matches": 1
+    }
+  ]
+}

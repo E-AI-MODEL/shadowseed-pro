@@ -1,0 +1,261 @@
+{
+  "artifact": "activation_probe",
+  "evidence_layer": "G",
+  "backend": "hf:/tmp/claude-0/-home-user-shadowseed/82c4df92-8cd3-59bf-9463-e0f190ca264e/scratchpad/pythia-14m",
+  "pooling": "stelling",
+  "doctrine": "Laag G-signaal: activatie-scheiding tussen dialectische verdict-klassen. Signaal != verdict; raakt geen seed-state; voedt geen promotie. Fake-backend bewijst alleen de harnas-mechaniek.",
+  "cases": [
+    {
+      "seed_text": "Onafhankelijke toetsing van de uitstootcijfers als verklarend kader voor deze tekst.",
+      "verdict": "HOUDT_STAND",
+      "layers": [
+        "gpt_neox.layers.0.mlp",
+        "gpt_neox.layers.1.mlp",
+        "gpt_neox.layers.2.mlp",
+        "gpt_neox.layers.3.mlp",
+        "gpt_neox.layers.4.mlp",
+        "gpt_neox.layers.5.mlp"
+      ]
+    },
+    {
+      "seed_text": "Aandacht voor exoplaneetonderzoek en telescooptijd.",
+      "verdict": "WEERLEGD",
+      "layers": [
+        "gpt_neox.layers.0.mlp",
+        "gpt_neox.layers.1.mlp",
+        "gpt_neox.layers.2.mlp",
+        "gpt_neox.layers.3.mlp",
+        "gpt_neox.layers.4.mlp",
+        "gpt_neox.layers.5.mlp"
+      ]
+    },
+    {
+      "seed_text": "Betaalbaarheid van woningisolatie voor huurders als ontbrekende invalshoek.",
+      "verdict": "HOUDT_STAND",
+      "layers": [
+        "gpt_neox.layers.0.mlp",
+        "gpt_neox.layers.1.mlp",
+        "gpt_neox.layers.2.mlp",
+        "gpt_neox.layers.3.mlp",
+        "gpt_neox.layers.4.mlp",
+        "gpt_neox.layers.5.mlp"
+      ]
+    }
+  ],
+  "report": {
+    "layers": {
+      "gpt_neox.layers.0.mlp": {
+        "separable": true,
+        "classes": [
+          "HOUDT_STAND",
+          "WEERLEGD"
+        ],
+        "cosine_between_class_means": 0.8732082843780518,
+        "cosine_distance": 0.12679171562194824,
+        "candidate_dimensions": [
+          {
+            "dim": 126,
+            "abs_mean_diff": 0.037574175745248795
+          },
+          {
+            "dim": 33,
+            "abs_mean_diff": 0.03234110772609711
+          },
+          {
+            "dim": 116,
+            "abs_mean_diff": 0.03215295821428299
+          },
+          {
+            "dim": 121,
+            "abs_mean_diff": 0.029895786195993423
+          },
+          {
+            "dim": 115,
+            "abs_mean_diff": 0.029233602806925774
+          }
+        ],
+        "n_per_class": {
+          "HOUDT_STAND": 2,
+          "WEERLEGD": 1
+        }
+      },
+      "gpt_neox.layers.1.mlp": {
+        "separable": true,
+        "classes": [
+          "HOUDT_STAND",
+          "WEERLEGD"
+        ],
+        "cosine_between_class_means": 0.7903474569320679,
+        "cosine_distance": 0.20965254306793213,
+        "candidate_dimensions": [
+          {
+            "dim": 57,
+            "abs_mean_diff": 0.04135514795780182
+          },
+          {
+            "dim": 97,
+            "abs_mean_diff": 0.04049704223871231
+          },
+          {
+            "dim": 115,
+            "abs_mean_diff": 0.03782542049884796
+          },
+          {
+            "dim": 73,
+            "abs_mean_diff": 0.03165026381611824
+          },
+          {
+            "dim": 125,
+            "abs_mean_diff": 0.03155524283647537
+          }
+        ],
+        "n_per_class": {
+          "HOUDT_STAND": 2,
+          "WEERLEGD": 1
+        }
+      },
+      "gpt_neox.layers.2.mlp": {
+        "separable": true,
+        "classes": [
+          "HOUDT_STAND",
+          "WEERLEGD"
+        ],
+        "cosine_between_class_means": 0.9199606776237488,
+        "cosine_distance": 0.08003932237625122,
+        "candidate_dimensions": [
+          {
+            "dim": 45,
+            "abs_mean_diff": 0.03259272128343582
+          },
+          {
+            "dim": 116,
+            "abs_mean_diff": 0.028406638652086258
+          },
+          {
+            "dim": 42,
+            "abs_mean_diff": 0.027147438377141953
+          },
+          {
+            "dim": 44,
+            "abs_mean_diff": 0.024321800097823143
+          },
+          {
+            "dim": 110,
+            "abs_mean_diff": 0.024267707020044327
+          }
+        ],
+        "n_per_class": {
+          "HOUDT_STAND": 2,
+          "WEERLEGD": 1
+        }
+      },
+      "gpt_neox.layers.3.mlp": {
+        "separable": true,
+        "classes": [
+          "HOUDT_STAND",
+          "WEERLEGD"
+        ],
+        "cosine_between_class_means": 0.8617241382598877,
+        "cosine_distance": 0.1382758617401123,
+        "candidate_dimensions": [
+          {
+            "dim": 63,
+            "abs_mean_diff": 0.07220037281513214
+          },
+          {
+            "dim": 13,
+            "abs_mean_diff": 0.07076643407344818
+          },
+          {
+            "dim": 20,
+            "abs_mean_diff": 0.06707415729761124
+          },
+          {
+            "dim": 97,
+            "abs_mean_diff": 0.06165379285812378
+          },
+          {
+            "dim": 108,
+            "abs_mean_diff": 0.05823671445250511
+          }
+        ],
+        "n_per_class": {
+          "HOUDT_STAND": 2,
+          "WEERLEGD": 1
+        }
+      },
+      "gpt_neox.layers.4.mlp": {
+        "separable": true,
+        "classes": [
+          "HOUDT_STAND",
+          "WEERLEGD"
+        ],
+        "cosine_between_class_means": 0.9752402305603027,
+        "cosine_distance": 0.024759769439697266,
+        "candidate_dimensions": [
+          {
+            "dim": 48,
+            "abs_mean_diff": 0.04604697600007057
+          },
+          {
+            "dim": 9,
+            "abs_mean_diff": 0.04372183978557587
+          },
+          {
+            "dim": 10,
+            "abs_mean_diff": 0.04319107159972191
+          },
+          {
+            "dim": 123,
+            "abs_mean_diff": 0.039976827800273895
+          },
+          {
+            "dim": 121,
+            "abs_mean_diff": 0.038453854620456696
+          }
+        ],
+        "n_per_class": {
+          "HOUDT_STAND": 2,
+          "WEERLEGD": 1
+        }
+      },
+      "gpt_neox.layers.5.mlp": {
+        "separable": true,
+        "classes": [
+          "HOUDT_STAND",
+          "WEERLEGD"
+        ],
+        "cosine_between_class_means": 0.9895557761192322,
+        "cosine_distance": 0.010444223880767822,
+        "candidate_dimensions": [
+          {
+            "dim": 82,
+            "abs_mean_diff": 0.056104496121406555
+          },
+          {
+            "dim": 84,
+            "abs_mean_diff": 0.05483439564704895
+          },
+          {
+            "dim": 73,
+            "abs_mean_diff": 0.05471526086330414
+          },
+          {
+            "dim": 122,
+            "abs_mean_diff": 0.04729166626930237
+          },
+          {
+            "dim": 65,
+            "abs_mean_diff": 0.04541352391242981
+          }
+        ],
+        "n_per_class": {
+          "HOUDT_STAND": 2,
+          "WEERLEGD": 1
+        }
+      }
+    },
+    "strongest_layer": "gpt_neox.layers.1.mlp",
+    "strongest_cosine_distance": 0.20965254306793213
+  }
+}

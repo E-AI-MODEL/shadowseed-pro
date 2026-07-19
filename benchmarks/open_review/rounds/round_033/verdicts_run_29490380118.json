@@ -1,0 +1,100 @@
+{
+ "records": [
+  {
+   "seed_text": "Hittewerende maatregelen die de woningen ook in warme zomers koel houden als onderdeel van dezelfde renovatie.",
+   "verdict": "HOUDT_STAND"
+  },
+  {
+   "seed_text": "Gezondheidswinst door de aanpak van vocht en schimmel als meetbaar nevendoel van de isolatie.",
+   "verdict": "HOUDT_STAND"
+  },
+  {
+   "seed_text": "Tijdelijke herhuisvesting en bouwoverlast als risico voor het draagvlak onder bewoners.",
+   "verdict": "HOUDT_STAND"
+  },
+  {
+   "seed_text": "Structurele ontlasting van mantelzorgers als hefboom om de zorgvraag zelf te verkleinen.",
+   "verdict": "HOUDT_STAND"
+  },
+  {
+   "seed_text": "Een uitstroomanalyse van waarom medewerkers nu vertrekken als basis voor het behoudbeleid.",
+   "verdict": "HOUDT_STAND"
+  },
+  {
+   "seed_text": "Laaggeletterdheid van ouders betrekken zodat lezen ook thuis ondersteund wordt.",
+   "verdict": "HOUDT_STAND"
+  },
+  {
+   "seed_text": "Meetbare doelen en monitoring van leesvaardigheid om het leesoffensief tussentijds bij te sturen.",
+   "verdict": "HOUDT_STAND"
+  },
+  {
+   "seed_text": "De gevels worden geïsoleerd en er komen zonnepanelen op de daken.",
+   "verdict": "WEERLEGD"
+  },
+  {
+   "seed_text": "Er zijn afspraken gemaakt over de huurverhoging na de renovatie.",
+   "verdict": "WEERLEGD"
+  },
+  {
+   "seed_text": "Het werven van zij-instromers is onderdeel van de aanpak van het personeelstekort.",
+   "verdict": "WEERLEGD"
+  },
+  {
+   "seed_text": "De bibliotheek vernieuwt haar jeugdcollectie.",
+   "verdict": "WEERLEGD"
+  },
+  {
+   "seed_text": "Er komen leesclubs op middelbare scholen.",
+   "verdict": "WEERLEGD"
+  },
+  {
+   "seed_text": "Verduurzaming van de flatwijk is uitsluitend de verantwoordelijkheid van de bewoners zelf.",
+   "verdict": "WEERLEGD"
+  },
+  {
+   "seed_text": "Het personeelstekort in de ouderenzorg lost zichzelf op zonder gericht beleid.",
+   "verdict": "WEERLEGD"
+  },
+  {
+   "seed_text": "Circulair materiaalgebruik bij de renovatie om de milieu-impact van de bouw te beperken.",
+   "verdict": "HOUDT_STAND"
+  },
+  {
+   "seed_text": "Inzet van zorgtechnologie op afstand om de werkdruk per medewerker te verlagen.",
+   "verdict": "HOUDT_STAND"
+  },
+  {
+   "seed_text": "Regionale samenwerking met opleiders voor voldoende stageplekken in de ouderenzorg.",
+   "verdict": "HOUDT_STAND"
+  },
+  {
+   "seed_text": "Samenwerking met boekhandels en auteurs voor schrijversbezoeken op scholen.",
+   "verdict": "HOUDT_STAND"
+  },
+  {
+   "seed_text": "Meertalige communicatie bij de bewonersavonden zodat alle portiekbewoners kunnen meepraten.",
+   "verdict": "HOUDT_STAND"
+  },
+  {
+   "seed_text": "Middeleeuwse kloosterbibliotheken als studieobject voor manuscriptconservering.",
+   "verdict": "WEERLEGD"
+  },
+  {
+   "seed_text": "De migratieroutes van trekvogels boven de Waddenzee in het najaar.",
+   "verdict": "WEERLEGD"
+  },
+  {
+   "seed_text": "Kwantumcomputing als doorbraaktechnologie voor moderne cryptografie.",
+   "verdict": "WEERLEGD"
+  },
+  {
+   "seed_text": "De invloed van vulkanische activiteit op de IJslandse gletsjers.",
+   "verdict": "WEERLEGD"
+  },
+  {
+   "seed_text": "Sponsoring van professionele wielerploegen als marketinginstrument voor banken.",
+   "verdict": "WEERLEGD"
+  }
+ ]
+}

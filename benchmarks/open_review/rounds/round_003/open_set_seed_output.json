@@ -1,0 +1,626 @@
+{
+  "summary": {
+    "evidence_layer": "open_set_seed_quality",
+    "artifact_contract_version": "open-review-0.2",
+    "corpus_version": "hf-open-set-batch-0.1",
+    "item_count": 12,
+    "raw_candidate_count": 59,
+    "normalized_candidate_count": 69,
+    "accepted_count": 62,
+    "rejected_count": 7,
+    "acceptance_rate": 0.8985507246376812,
+    "domain_item_counts": {
+      "nieuws - Business": 1,
+      "nieuws - Sci/Tech": 11
+    },
+    "domain_accept_counts": {
+      "nieuws - Business": 5,
+      "nieuws - Sci/Tech": 57
+    },
+    "candidate_source_counts": {
+      "open_set_model_detector": 12
+    },
+    "detector": "model",
+    "model_backend": "hf-transformers:Qwen/Qwen2.5-1.5B-Instruct",
+    "candidate_adapter": "ssl45_open_set_candidate_adapter_v0.1",
+    "fixed_scenario_priors_used": false,
+    "expected_gaps_used": false,
+    "ground_truth_seeds_used": false,
+    "regression_gap_detector_used": false,
+    "candidate_quality_requires_human_review": true,
+    "seed_verdict_rule": "A seed counts as accepted or rejected only after every generated reviewer row for that seed is completed and valid.",
+    "reviewer_ids": [
+      "reviewer_a",
+      "reviewer_b"
+    ],
+    "reviewer_count": 2,
+    "review_packet_count": 124,
+    "review_criteria": [
+      "atomicity",
+      "relevance",
+      "testability",
+      "non_triviality",
+      "follow_up_utility"
+    ],
+    "reject_codes": [
+      "too_broad",
+      "too_vague",
+      "trivial",
+      "not_relevant",
+      "not_testable",
+      "duplicate",
+      "style_not_gap"
+    ],
+    "status": "review_pending",
+    "next_step": "Fill review packets and run summarize-open-set-seed-review.",
+    "artifacts": {
+      "seed_output": "results/open_review/open_set_seed_output.json",
+      "review_packets": "results/open_review/open_set_review_packets.json"
+    }
+  },
+  "results": [
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Fears for T N pension after talks Unions representing workers at Turner Newall say they are 'disappointed' after talks with stricken parent firm Federal Mogul.",
+        "Pension funds and their representatives have expressed concerns about the future financial stability of T N due to the ongoing negotiations with Federal Mogul.",
+        "The unions claim that the talks were not productive or satisfactory, leading to a sense of disappointment among the employees.",
+        "Federal Mogul's bankruptcy has led to uncertainty regarding the company's ability to continue providing benefits to its workforce, including pensions.",
+        "The situation highlights the potential risks associated with outsourcing production to foreign companies, as it can lead to job losses and financial instability for local labor unions."
+      ],
+      "normalized_candidates": [
+        "Fears for T N pension after talks Unions representing workers at Turner Newall say they are 'disappointed' after talks with stricken parent firm Federal Mogul.",
+        "Pension funds and their representatives have expressed concerns about the future financial stability of T N due to the ongoing negotiations with Federal Mogul.",
+        "The unions claim that the talks were not productive or satisfactory.",
+        "leading to a sense of disappointment among the employees.",
+        "Federal Mogul's bankruptcy has led to uncertainty regarding the company's ability to continue providing benefits to its workforce.",
+        "including pensions.",
+        "The situation highlights the potential risks associated with outsourcing production to foreign companies.",
+        "as it can lead to job losses and financial instability for local labor unions."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "The unions claim that the talks were not productive or satisfactory."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "leading to a sense of disappointment among the employees."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "including pensions."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "The situation highlights the potential risks associated with outsourcing production to foreign companies."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "as it can lead to job losses and financial instability for local labor unions."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "Fears for T N pension after talks Unions representing workers at Turner Newall say they are 'disappointed' after talks with stricken parent firm Federal Mogul.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Pension funds and their representatives have expressed concerns about the future financial stability of T N due to the ongoing negotiations with Federal Mogul.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "Federal Mogul's bankruptcy has led to uncertainty regarding the company's ability to continue providing benefits to its workforce.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De Ansari X Prize is een financiële prijsvergunning.",
+        "Een team heeft officieel een launchdatum vastgesteld.",
+        "Het is een menselijk toestel dat wordt gebruikt voor landings.",
+        "De launchdatum is officieel bekend gemaakt.",
+        "De Ansari X Prize is een competitie voor ruimtespacefliegende rockets."
+      ],
+      "normalized_candidates": [
+        "De Ansari X Prize is een financiële prijsvergunning.",
+        "Een team heeft officieel een launchdatum vastgesteld.",
+        "Het is een menselijk toestel dat wordt gebruikt voor landings.",
+        "De launchdatum is officieel bekend gemaakt.",
+        "De Ansari X Prize is een competitie voor ruimtespacefliegende rockets."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De Ansari X Prize is een financiële prijsvergunning."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Een team heeft officieel een launchdatum vastgesteld."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Het is een menselijk toestel dat wordt gebruikt voor landings."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De launchdatum is officieel bekend gemaakt."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De Ansari X Prize is een competitie voor ruimtespacefliegende rockets."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Nee, er wordt geen aanname gemaakt dat de chemisch wetenschapper zich op basis van zijn opleiding heeft ingezet om een methode te ontwikkelen.",
+        "De tekst wees niet op hoe de chemisch wetenschapper de methode zou ontwikkelen.",
+        "Het was niet duidelijk waarom de chemisch wetenschapper een methode voor de producentie van peptiden wilde ontwikkelen.",
+        "De tekst maakte geen melding van de doelen die de chemisch wetenschapper had voor de methode.",
+        "Er werd geen informatie gegeven over wie de chemisch wetenschapper was."
+      ],
+      "normalized_candidates": [
+        "Nee.",
+        "er wordt geen aanname gemaakt dat de chemisch wetenschapper zich op basis van zijn opleiding heeft ingezet om een methode te ontwikkelen.",
+        "De tekst wees niet op hoe de chemisch wetenschapper de methode zou ontwikkelen.",
+        "Het was niet duidelijk waarom de chemisch wetenschapper een methode voor de producentie van peptiden wilde ontwikkelen.",
+        "De tekst maakte geen melding van de doelen die de chemisch wetenschapper had voor de methode.",
+        "Er werd geen informatie gegeven over wie de chemisch wetenschapper was."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Nee."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De tekst wees niet op hoe de chemisch wetenschapper de methode zou ontwikkelen."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Het was niet duidelijk waarom de chemisch wetenschapper een methode voor de producentie van peptiden wilde ontwikkelen."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De tekst maakte geen melding van de doelen die de chemisch wetenschapper had voor de methode."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Er werd geen informatie gegeven over wie de chemisch wetenschapper was."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "er wordt geen aanname gemaakt dat de chemisch wetenschapper zich op basis van zijn opleiding heeft ingezet om een methode te ontwikkelen.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De forensisch wetenschap ontbreken in de beschrijving van de forensische technologie.",
+        "Het gebruik van AI-bewaking ontbreken in de beschrijving van de forensische technologie.",
+        "De rol van de forensische technologie in de forensische diagnostiek wordt niet duidelijk.",
+        "De toepassing van AI-informatie ontbreken in de beschrijving van de forensische technologie."
+      ],
+      "normalized_candidates": [
+        "De forensisch wetenschap ontbreken in de beschrijving van de forensische technologie.",
+        "Het gebruik van AI-bewaking ontbreken in de beschrijving van de forensische technologie.",
+        "De rol van de forensische technologie in de forensische diagnostiek wordt niet duidelijk.",
+        "De toepassing van AI-informatie ontbreken in de beschrijving van de forensische technologie."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De forensisch wetenschap ontbreken in de beschrijving van de forensische technologie."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Het gebruik van AI-bewaking ontbreken in de beschrijving van de forensische technologie."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De rol van de forensische technologie in de forensische diagnostiek wordt niet duidelijk."
+        },
+        {
+          "seed_id": "ss_001",
+          "text": "De toepassing van AI-informatie ontbreken in de beschrijving van de forensische technologie."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Calafonts ontstaan niet door bovinen.",
+        "De regio waar de smog wordt gedreven bestaat niet.",
+        "Het land waar de smog wordt gedreven heeft geen calafonts.",
+        "De regio waar de smog wordt gedreven kan geen calafonts hebben.",
+        "De regio waar de smog wordt gedreven heeft geen calafonts."
+      ],
+      "normalized_candidates": [
+        "Calafonts ontstaan niet door bovinen.",
+        "De regio waar de smog wordt gedreven bestaat niet.",
+        "Het land waar de smog wordt gedreven heeft geen calafonts.",
+        "De regio waar de smog wordt gedreven kan geen calafonts hebben.",
+        "De regio waar de smog wordt gedreven heeft geen calafonts."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Calafonts ontstaan niet door bovinen."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De regio waar de smog wordt gedreven bestaat niet."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Het land waar de smog wordt gedreven heeft geen calafonts."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De regio waar de smog wordt gedreven kan geen calafonts hebben."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De regio waar de smog wordt gedreven heeft geen calafonts."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Children are not being taught how to legally download music.",
+        "The government should not be involved in educational content.",
+        "The Music Manifesto lacks transparency regarding its funding sources.",
+        "The letter was written by someone who does not understand copyright law.",
+        "The letter did not address the broader issue of school curriculum."
+      ],
+      "normalized_candidates": [
+        "Children are not being taught how to legally download music.",
+        "The government should not be involved in educational content.",
+        "The Music Manifesto lacks transparency regarding its funding sources.",
+        "The letter was written by someone who does not understand copyright law.",
+        "The letter did not address the broader issue of school curriculum."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Children are not being taught how to legally download music."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "The government should not be involved in educational content."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "The Music Manifesto lacks transparency regarding its funding sources."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "The letter was written by someone who does not understand copyright law."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "The letter did not address the broader issue of school curriculum."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De informatie over Jaschan en zijn responsabilité wordt niet beschreven.",
+        "Het antwoord op hoe Jaschan zich heeft verraden wordt niet duidelijk.",
+        "Het aantal varianten van de NetSky-worm wordt niet genoteerd.",
+        "Het proces waarbij Jaschan werd gearresteerd wordt niet besproken.",
+        "Het impact van Jaschan op de virusbelasting wordt niet expliciet gedefinieerd."
+      ],
+      "normalized_candidates": [
+        "De informatie over Jaschan en zijn responsabilité wordt niet beschreven.",
+        "Het antwoord op hoe Jaschan zich heeft verraden wordt niet duidelijk.",
+        "Het aantal varianten van de NetSky-worm wordt niet genoteerd.",
+        "Het proces waarbij Jaschan werd gearresteerd wordt niet besproken.",
+        "Het impact van Jaschan op de virusbelasting wordt niet expliciet gedefinieerd."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De informatie over Jaschan en zijn responsabilité wordt niet beschreven."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Het antwoord op hoe Jaschan zich heeft verraden wordt niet duidelijk."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Het aantal varianten van de NetSky-worm wordt niet genoteerd."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Het proces waarbij Jaschan werd gearresteerd wordt niet besproken."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Het impact van Jaschan op de virusbelasting wordt niet expliciet gedefinieerd."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De inputtekst gaat over sociale netwerken en whitelist distributie.",
+        "De inputtekst behandel FOAF, PGP, Key Distribution en Bloom Filters.",
+        "De inputtekst beschrijft een methodiek voor het toewijzen van PGP-keyfingerprints in FOAF-bestanden.",
+        "De inputtekst bespreekt het gebruik van FOAF-bestanden voor het toewijzen van PGP-keyfingerprints.",
+        "De inputtekst behandelt het concept van whitelist distributie in sociale netwerken."
+      ],
+      "normalized_candidates": [
+        "De inputtekst gaat over sociale netwerken en whitelist distributie.",
+        "De inputtekst behandel FOAF.",
+        "PGP.",
+        "Key Distribution en Bloom Filters.",
+        "De inputtekst beschrijft een methodiek voor het toewijzen van PGP-keyfingerprints in FOAF-bestanden.",
+        "De inputtekst bespreekt het gebruik van FOAF-bestanden voor het toewijzen van PGP-keyfingerprints.",
+        "De inputtekst behandelt het concept van whitelist distributie in sociale netwerken."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De inputtekst gaat over sociale netwerken en whitelist distributie."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De inputtekst behandel FOAF."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "PGP."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Key Distribution en Bloom Filters."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De inputtekst beschrijft een methodiek voor het toewijzen van PGP-keyfingerprints in FOAF-bestanden."
+        },
+        {
+          "seed_id": "ss_006",
+          "text": "De inputtekst bespreekt het gebruik van FOAF-bestanden voor het toewijzen van PGP-keyfingerprints."
+        },
+        {
+          "seed_id": "ss_007",
+          "text": "De inputtekst behandelt het concept van whitelist distributie in sociale netwerken."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De unit heeft slechts 36,000 cards opgehaald.",
+        "Het unit heeft 171 arrestes gemaakt.",
+        "Het unit maakt estimaties.",
+        "De unit heeft geen financiële resultaten.",
+        "De unit werkt exclusief met cardfraude."
+      ],
+      "normalized_candidates": [
+        "De unit heeft slechts 36.",
+        "cards opgehaald.",
+        "Het unit heeft 171 arrestes gemaakt.",
+        "Het unit maakt estimaties.",
+        "De unit heeft geen financiële resultaten.",
+        "De unit werkt exclusief met cardfraude."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De unit heeft slechts 36."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "cards opgehaald."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Het unit heeft 171 arrestes gemaakt."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Het unit maakt estimaties."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De unit heeft geen financiële resultaten."
+        },
+        {
+          "seed_id": "ss_006",
+          "text": "De unit werkt exclusief met cardfraude."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De nieuwe high-speed wireless format moet worden ontworpen door een team van technologisch experten, niet door een groep van bedrijven.",
+        "Het wordt niet duidelijk hoe de nieuwe standard zal verschillen van de huidige standaard op basis van snelheid, nauwkeurigheid en energieverbruik.",
+        "De beschrijving van de nieuwe standard is niet genoeg om te begrijpen hoe deze kan worden implementeerd en gebruikt worden door verschillende apparatuur.",
+        "De beschrijving van de nieuwe standard wees niet aan hoe deze kan worden geïntegreerd in existente netwerken en infrastructuur.",
+        "De beschrijving van de nieuwe standard was niet duidelijk over hoe deze kan worden gecontroleerd en gecontroleerd op compliance met regels en standards."
+      ],
+      "normalized_candidates": [
+        "De nieuwe high-speed wireless format moet worden ontworpen door een team van technologisch experten.",
+        "niet door een groep van bedrijven.",
+        "Het wordt niet duidelijk hoe de nieuwe standard zal verschillen van de huidige standaard op basis van snelheid.",
+        "nauwkeurigheid.",
+        "energieverbruik.",
+        "De beschrijving van de nieuwe standard is niet genoeg om te begrijpen hoe deze kan worden implementeerd en gebruikt worden door verschillende apparatuur.",
+        "De beschrijving van de nieuwe standard wees niet aan hoe deze kan worden geïntegreerd in existente netwerken en infrastructuur.",
+        "De beschrijving van de nieuwe standard was niet duidelijk over hoe deze kan worden gecontroleerd en gecontroleerd op compliance met regels en standards."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De nieuwe high-speed wireless format moet worden ontworpen door een team van technologisch experten."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "niet door een groep van bedrijven."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Het wordt niet duidelijk hoe de nieuwe standard zal verschillen van de huidige standaard op basis van snelheid."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "nauwkeurigheid."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "energieverbruik."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "De beschrijving van de nieuwe standard is niet genoeg om te begrijpen hoe deze kan worden implementeerd en gebruikt worden door verschillende apparatuur.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "De beschrijving van de nieuwe standard wees niet aan hoe deze kan worden geïntegreerd in existente netwerken en infrastructuur.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "De beschrijving van de nieuwe standard was niet duidelijk over hoe deze kan worden gecontroleerd en gecontroleerd op compliance met regels en standards.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Nieuw programma ontworpen voor real-time motion graphics.",
+        "New video editing software bundle wordt gepresenteerd.",
+        "Apple Computer Inc. beginnt aan het leveren van nieuwe producten.",
+        "Voor gebruikers wordt een nieuw programma gecreëerd.",
+        "Discount-videoeditingsoftware-bundle wordt opgeleverd."
+      ],
+      "normalized_candidates": [
+        "Nieuw programma ontworpen voor real-time motion graphics.",
+        "New video editing software bundle wordt gepresenteerd.",
+        "Apple Computer Inc. beginnt aan het leveren van nieuwe producten.",
+        "Voor gebruikers wordt een nieuw programma gecreëerd.",
+        "Discount-videoeditingsoftware-bundle wordt opgeleverd."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Nieuw programma ontworpen voor real-time motion graphics."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "New video editing software bundle wordt gepresenteerd."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Apple Computer Inc. beginnt aan het leveren van nieuwe producten."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Voor gebruikers wordt een nieuw programma gecreëerd."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Discount-videoeditingsoftware-bundle wordt opgeleverd."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Nieuw downloadservice van Free Record Shop ontstaat.",
+        "New download service launched by Free Record Shop.",
+        "Launching of new download service by Free Record Shop.",
+        "Service voor nieuwe downloadservice van Free Record Shop.",
+        "New download service introduced by Free Record Shop."
+      ],
+      "normalized_candidates": [
+        "Nieuw downloadservice van Free Record Shop ontstaat.",
+        "New download service launched by Free Record Shop.",
+        "Launching of new download service by Free Record Shop.",
+        "Service voor nieuwe downloadservice van Free Record Shop.",
+        "New download service introduced by Free Record Shop."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Nieuw downloadservice van Free Record Shop ontstaat."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "New download service launched by Free Record Shop."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Launching of new download service by Free Record Shop."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Service voor nieuwe downloadservice van Free Record Shop."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "New download service introduced by Free Record Shop."
+        }
+      ],
+      "rejected": []
+    }
+  ]
+}

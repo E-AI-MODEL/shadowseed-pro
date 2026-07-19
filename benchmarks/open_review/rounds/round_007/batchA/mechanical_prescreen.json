@@ -1,0 +1,480 @@
+{
+  "artifact": "mechanical_prescreen",
+  "disclaimer": "Deterministische prescreen, GEEN menselijke review. Telt NIET als reviewer_a/reviewer_b en niet als open_set_seed_quality (Laag C) evidence, en geeft GEEN accept/reject-verdict. Bedoeld om aandacht te richten en de v0.3e-prompt te toetsen aan haar eigen regels.",
+  "round": "round_007_batchA",
+  "detector": "model",
+  "model_backend": "hf-transformers:microsoft/Phi-3.5-mini-instruct",
+  "yield": {
+    "item_count": 12,
+    "items_with_candidates": 12,
+    "items_empty": 0,
+    "empty_rate": 0.0,
+    "mean_candidates_per_item": 5.0
+  },
+  "mechanical_codes": [
+    "claim_vs_gap",
+    "truncated",
+    "parse_leak",
+    "language_leak",
+    "entity_bleed",
+    "citation_fragment",
+    "fewshot_leak",
+    "not_atomic",
+    "near_duplicate"
+  ],
+  "not_mechanically_checkable": [
+    "false_gap",
+    "mistranslation",
+    "grammar"
+  ],
+  "seed_count": 60,
+  "flagged_count": 6,
+  "clean_count": 54,
+  "clean_rate": 0.9,
+  "near_duplicate_rate": 0.0,
+  "failure_code_counts": {
+    "claim_vs_gap": 0,
+    "truncated": 0,
+    "parse_leak": 0,
+    "language_leak": 0,
+    "entity_bleed": 0,
+    "citation_fragment": 0,
+    "fewshot_leak": 0,
+    "not_atomic": 6,
+    "near_duplicate": 0
+  },
+  "verdicts": [
+    {
+      "item_id": "AG_NEWS_TEST_30",
+      "position": 1,
+      "seed": "De specifieke acties die Ricky Bryant, Chas Gessner, Michael Jennings, en David Patten ondernomen.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_30",
+      "position": 2,
+      "seed": "Bill Belichick's beslissing over de receivers.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_30",
+      "position": 3,
+      "seed": "De impact van de acties op Belichick's beslissing.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_30",
+      "position": 4,
+      "seed": "De context of omstandigheden van de gebeurtenissen van vrijdagavond.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_30",
+      "position": 5,
+      "seed": "De gevolgen of resultaten van de acties van de vier individuen.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_31",
+      "position": 1,
+      "seed": "De exacte stand van de AL Central lead na de wedstrijd.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_31",
+      "position": 2,
+      "seed": "De naam van de tegenstander die werd gespeeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_31",
+      "position": 3,
+      "seed": "De specifieke spelers die home runs scoorden.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_31",
+      "position": 4,
+      "seed": "De totale aantal punten gescoord tijdens de wedstrijd.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_31",
+      "position": 5,
+      "seed": "De datum en tijd waarop de wedstrijd werd gespeeld.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_32",
+      "position": 1,
+      "seed": "Verklaring van de sister voor de acties van de chief constable.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_32",
+      "position": 2,
+      "seed": "De specifieke bevelen die tot de confrontatie leidden.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_32",
+      "position": 3,
+      "seed": "De reden voor de resignation van de chief constable.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_32",
+      "position": 4,
+      "seed": "De perspectief van de police op de incident.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_32",
+      "position": 5,
+      "seed": "De juridische implicaties van de confrontatie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_33",
+      "position": 1,
+      "seed": "De specifieke details van het geschil over de cashsetteling.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_33",
+      "position": 2,
+      "seed": "De exacte omvang van de gevraagde compensatie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_33",
+      "position": 3,
+      "seed": "De reden voor het verlangen naar een cashsetteling.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_33",
+      "position": 4,
+      "seed": "De tijdrelatie tussen het verlangen naar de cashsetteling en de geloofwaardigheid van het geschil.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_33",
+      "position": 5,
+      "seed": "De impact van de aanvankelijke geheimhouding op het geschil.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_34",
+      "position": 1,
+      "seed": "De reden voor de terugkeer van U.S. troepen in Najaf.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_34",
+      "position": 2,
+      "seed": "De details van de collapsie van de onderhandelingen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_34",
+      "position": 3,
+      "seed": "De impact van de explosies op de lokale bevolking.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_34",
+      "position": 4,
+      "seed": "De reactie van andere internationale actoren op de gebeurtenissen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_34",
+      "position": 5,
+      "seed": "De voortgang van de onderhandelingen na de explosies.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_35",
+      "position": 1,
+      "seed": "De specifieke gezondheidsproblemen van de pilgrims.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_35",
+      "position": 2,
+      "seed": "De omvang van de pilgrimageerbevolking.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_35",
+      "position": 3,
+      "seed": "De omvang van de openbare bijeenkomst.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_35",
+      "position": 4,
+      "seed": "De specifieke verzoeken of gebaren van de Pope tijdens de homilie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_35",
+      "position": 5,
+      "seed": "De historische betekenis van Lourdes voor de pilgrimage.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_36",
+      "position": 1,
+      "seed": "De mogelijke fraudpreventiemaatregelen voor de recall-stemmen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_36",
+      "position": 2,
+      "seed": "De gevolgen van Chavez's nederlaag voor de wereldwijde oliehandel.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_36",
+      "position": 3,
+      "seed": "De stemmenbevragingprocedure voor de recall.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_36",
+      "position": 4,
+      "seed": "De reacties van oppositiepartijen op de voorbereidingen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_36",
+      "position": 5,
+      "seed": "De impact van de stemmen op de stabiliteit van de Venezolaanse economie.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_37",
+      "position": 1,
+      "seed": "Re-integratieproces voor militaire dienstuitvoerenden.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_37",
+      "position": 2,
+      "seed": "Juridische gevolgen voor werkgevers die niet voldoen aan USERRA.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_37",
+      "position": 3,
+      "seed": "Specifieke beschermingsniveaus voor verschillende diensttijden.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_37",
+      "position": 4,
+      "seed": "Procedure voor het claimen van re-integratie-uitkeringen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_37",
+      "position": 5,
+      "seed": "Onderzoek naar de effectiviteit van de 1994 law.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_38",
+      "position": 1,
+      "seed": "De specifieke soorten missielussen die Iran heeft.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_38",
+      "position": 2,
+      "seed": "De beschikbare afstanden van de Iranische missielussen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_38",
+      "position": 3,
+      "seed": "De mogelijke impact van de missielussen op Israëlische infrastructuur.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_38",
+      "position": 4,
+      "seed": "De strategische planning van Iran met betrekking tot de missielussen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_38",
+      "position": 5,
+      "seed": "Reakties of voorbereidingen van Israël en de Verenigde Staten op de Iranische missielussen.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_39",
+      "position": 1,
+      "seed": "De reden voor de interventie van de Afghanische strijdkrachten.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_39",
+      "position": 2,
+      "seed": "De specifieke locatie waar de strijdkrachten landden.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_39",
+      "position": 3,
+      "seed": "De soort luchtvaartuigen die door de U.S. en NATO werden gebruikt.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_39",
+      "position": 4,
+      "seed": "De doelstelling van de terugkeer naar de contesteerde luchthaven.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_39",
+      "position": 5,
+      "seed": "De datum of tijd van de officiële verklaring.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_40",
+      "position": 1,
+      "seed": "De reden voor Johnson's vierhitter in de negende inning.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_40",
+      "position": 2,
+      "seed": "De impact van Johnson's performance op de negen-game losing streak.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_40",
+      "position": 3,
+      "seed": "De reactie van Steve Trachsel op Johnson's vierhitter.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_40",
+      "position": 4,
+      "seed": "De gevolgen van de 2-0 overwinning voor de New York Mets.",
+      "codes": [
+        "not_atomic"
+      ],
+      "clean": false
+    },
+    {
+      "item_id": "AG_NEWS_TEST_40",
+      "position": 5,
+      "seed": "De strategische aanpak van de Arizona Diamondbacks tijdens de negende inning.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_41",
+      "position": 1,
+      "seed": "De specifieke stijlkeuzes die retailers aanbieden om de interesse van teenagers en jonge volwassenen te wekken.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_41",
+      "position": 2,
+      "seed": "De mate van budgettering door studenten en ouders voor back-to-school aankopen.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_41",
+      "position": 3,
+      "seed": "De effectiviteit van de back-to-school mode van retailers bij het aantrekken van de doelmarkt.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_41",
+      "position": 4,
+      "seed": "De economische omstandigheden die de aankoopbeslissingen van studenten en jonge volwassenen beïnvloeden.",
+      "codes": [],
+      "clean": true
+    },
+    {
+      "item_id": "AG_NEWS_TEST_41",
+      "position": 5,
+      "seed": "De concurrentie tussen retailers in het aanbieden van back-to-school aanbiedingen.",
+      "codes": [],
+      "clean": true
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+item_id,conversation_id,domain,turn,winner,content_completeness_A,content_completeness_B,question_relevance_A,question_relevance_B,specificity_sharpness_A,specificity_sharpness_B,no_noise_A,no_noise_B,usefulness_A,usefulness_B,seed_effect_after_choice,noise_or_hallucinated_relevance,exclude_from_winrate,motivation
+CONV_EDU-t04-01,CONV_EDU,onderwijs,4,B,4,4,5,5,3,4,5,5,4,4,helps_a_little,no,no,"Zeer gelijk; B iets concreter (open source/gratis tools, computerlokaal na school)."
+CONV_EDU-t05-02,CONV_EDU,onderwijs,5,A,5,4,5,4,4,4,5,4,5,4,causes_noise,yes,no,"A heeft extra motivatie-hefboom (erkenning/beloning); B leunt op inclusiviteit-seed, iets minder on-topic voor collega-adoptie."
+CONV_EDU-t06-03,CONV_EDU,onderwijs,6,B,4,5,4,5,4,5,4,5,4,5,narrows,no,no,"B noemt curriculum-overbelasting; A wordt door seed richting inclusiviteit getrokken."
+CONV_HEALTH-t05-04,CONV_HEALTH,publieke gezondheid,5,tie,4,4,5,5,4,4,5,5,4,4,helps_a_little,no,no,"Beide dekken scholen/ouders/samenwerking goed; geen duidelijke winnaar."
+CONV_HEALTH-t06-05,CONV_HEALTH,publieke gezondheid,6,A,4,4,5,4,5,4,5,5,5,4,helps_clearly,no,no,"A benut peer pressure + psychologische motivaties relevant en domeinspecifiek; B generieker."
+CONV_POLICY-t05-06,CONV_POLICY,beleid,5,B,4,5,5,5,4,4,5,4,4,5,helps_a_little,no,no,"Nek-aan-nek; B voegt lokale kennis toe als extra hefboom, randje geforceerd."
+CONV_POLICY-t06-07,CONV_POLICY,beleid,6,B,4,5,4,5,4,5,4,5,4,5,narrows,no,no,"B opent met data/analyse + realistische doelen (kernfaalfactoren); A door seed vernauwd naar lokale kennis."

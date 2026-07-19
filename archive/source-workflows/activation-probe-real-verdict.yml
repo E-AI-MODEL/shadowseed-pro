@@ -1,0 +1,184 @@
+name: "Research · Laag G sonde met echte verdictbron"
+
+# De echte Laag G-vraag: encodeert een klein model intern het houdbaarheids-
+# oordeel dat een STERK model (gpt-4.1) velt? De keten:
+#   1. run-dialectic-falsification --backend openai  -> echte verdict-labels
+#   2. run-activation-probe --backend hf --verdicts    -> internals van klein model,
+#      gelabeld door gpt-4.1, met permutatie-controle.
+# Verdictbron en gesondeerd model zijn bewust ontkoppeld.
+
+on:
+  workflow_dispatch:
+    inputs:
+      probe_model_id:
+        description: "Klein HF-model om te sonderen (internals)"
+        required: true
+        default: "distilgpt2"
+      dialectic_model_id:
+        description: "Sterk model dat de houdbaarheid oordeelt (OpenAI)"
+        required: true
+        default: "gpt-4.1"
+      input_path:
+        description: "Dialectische case-file (source_text + cases)"
+        required: true
+        default: "src/shadowseed/data/dialectic_falsification_transfer.json"
+      read_location:
+        description: "Leespunt: mlp_out (rounds 026-030) of neuron (H-Neurons: down_proj-input)"
+        required: true
+        default: "neuron"
+      sparse_permutations:
+        description: "Label-shuffles voor de sparse detector; vloer = 1/(N+1). Default 500 -> ~0.002, net onder de Bonferroni-lat voor 24 lagen (0.05/24)"
+        required: true
+        default: "500"
+      verdicts_path:
+        description: "Optioneel: gecommit verdict-bestand (skip gpt-4.1, faithful re-probe van een eerdere run). Leeg = gpt-4.1 oordeelt vers."
+        required: false
+        default: ""
+      report_layers:
+        description: "Komma-lijst lagen waarvan de samenvatting expliciet centroide-p en sparse-p print (bv. gepreregistreerde lagen). Leeg = alleen de sterkste."
+        required: false
+        default: ""
+      probe_model_revision:
+        description: "HF-modelrevisie (commit-SHA/tag) om de gesondeerde modelversie te pinnen — reproduceerbaarheid. Leeg = laatste snapshot."
+        required: false
+        default: ""
+      probe_dtype:
+        description: "Laad-precisie van het gesondeerde model (float32/float16/bfloat16). Leeg = fp32. bfloat16 voor grotere modellen (3B+) op de CPU-runner (16GB)."
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  real-verdict-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      PROBE_MODEL_ID: ${{ inputs.probe_model_id }}
+      DIALECTIC_MODEL_ID: ${{ inputs.dialectic_model_id }}
+      INPUT_PATH: ${{ inputs.input_path }}
+      READ_LOCATION: ${{ inputs.read_location }}
+      SPARSE_PERMUTATIONS: ${{ inputs.sparse_permutations }}
+      VERDICTS_PATH: ${{ inputs.verdicts_path }}
+      REPORT_LAYERS: ${{ inputs.report_layers }}
+      PROBE_MODEL_REVISION: ${{ inputs.probe_model_revision }}
+      PROBE_DTYPE: ${{ inputs.probe_dtype }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installeer package + torch (CPU) + transformers + openai
+        # Gepinde versies (codex round-033-P1): zonder pin installeert elke run
+        # verse torch/transformers en produceren identieke inputs net andere
+        # activaties (BLAS/kernel-verschillen), waardoor een "faithful re-probe"
+        # niet reproduceert. Pin => bit-reproduceerbaar op vaste CPU + seed.
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+          pip install "torch==2.12.1" --index-url https://download.pytorch.org/whl/cpu
+          pip install "transformers==5.12.1" openai
+          # numpy expliciet pinnen NA de editable install (codex round-033-P1):
+          # de sparse L1-classifier en de permutatiestatistiek draaien in numpy,
+          # dus een numpy-/BLAS-wissel kan identieke inputs weer andere scores
+          # geven. pyproject laat numpy>=1.24 open; hier vastzetten.
+          pip install "numpy==2.4.6"
+          python -c "import numpy, torch, transformers; print('pins:', numpy.__version__, torch.__version__, transformers.__version__)"
+
+      - name: Stap 1 — dialectische verdicten (gpt-4.1 oordeelt, of gepind bestand)
+        run: |
+          mkdir -p results
+          if [ -n "$VERDICTS_PATH" ]; then
+            # Een faithful re-probe is pas durable-reproduceerbaar als óók de
+            # modelsnapshot vastligt (codex round-033-P1): met gepinde verdicten
+            # maar zonder revisie serveert de Hub de laatste snapshot en kan een
+            # upstream model-update alle activaties stil veranderen.
+            if [ -z "$PROBE_MODEL_REVISION" ]; then
+              echo "::error::faithful re-probe (verdicts_path gezet) vereist een probe_model_revision (immutable commit-SHA)."
+              exit 1
+            fi
+            echo "Gepind verdict-bestand: $VERDICTS_PATH + modelrevisie $PROBE_MODEL_REVISION (faithful re-probe)"
+            cp "$VERDICTS_PATH" results/dialectic_verdicts.json
+          else
+            args=(run-dialectic-falsification
+              --backend openai
+              --model-id "$DIALECTIC_MODEL_ID"
+              --input "$INPUT_PATH"
+              --output results/dialectic_verdicts.json)
+            python -m shadowseed.cli "${args[@]}"
+          fi
+
+      - name: Stap 2 — sondeer klein model, gelabeld door gpt-4.1
+        run: |
+          args=(run-activation-probe
+            --backend hf
+            --model-id "$PROBE_MODEL_ID"
+            --input "$INPUT_PATH"
+            --verdicts results/dialectic_verdicts.json
+            --pooling stelling
+            --read-location "$READ_LOCATION"
+            --sparse-permutations "$SPARSE_PERMUTATIONS"
+            --output results/activation_probe_real_verdict.json)
+          [ -n "$PROBE_MODEL_REVISION" ] && args+=(--model-revision "$PROBE_MODEL_REVISION")
+          [ -n "$PROBE_DTYPE" ] && args+=(--dtype "$PROBE_DTYPE")
+          # gepind verdict-bestand = faithful re-probe: eis volledige dekking
+          [ -n "$VERDICTS_PATH" ] && args+=(--require-verdict-coverage)
+          python -m shadowseed.cli "${args[@]}"
+
+      - name: Samenvatting naar de job-log
+        run: |
+          python - <<'EOF'
+          import json
+          r = json.load(open("results/activation_probe_real_verdict.json"))
+          rep = r["report"]
+          print("gesondeerd model:", r["backend"], "| verdict-bron:", r["verdict_source"],
+                "| leespunt:", r.get("read_location", "mlp_out"))
+          print("cases:", [(c["seed_text"][:40], c["verdict"]) for c in r["cases"]])
+          best = rep["strongest_layer"]
+          if best:
+              perm = rep["layers"][best]["permutation"]
+              print("sterkste laag (centroide):", best,
+                    "| cosine-afstand:", round(rep["strongest_cosine_distance"], 4),
+                    "| permutatie-p:", round(perm["p_value"], 4),
+                    "| haalbare vloer:", round(perm["min_possible_p"], 4))
+          else:
+              print("geen separabele laag (te weinig van een klasse)")
+          sbest = rep.get("strongest_sparse_layer")
+          if sbest:
+              sp = rep["layers"][sbest]["sparse_probe"]
+              print("sterkste laag (sparse L1):", sbest,
+                    "| LOOCV balanced accuracy:", round(sp["loocv_balanced_accuracy"], 4),
+                    "| permutatie-p:", round(sp["p_value"], 4) if sp["p_value"] is not None else None,
+                    "| nonzero:", sp["n_nonzero_full_fit"], "/", sp["n_dims"])
+          else:
+              print("sparse detector: niet toepasbaar (minder dan 2 per klasse)")
+          import os
+          report_layers = [x for x in os.environ.get("REPORT_LAYERS", "").split(",") if x.strip()]
+          if report_layers:
+              print("--- gepreregistreerde lagen (expliciete toetsen) ---")
+              for name in report_layers:
+                  name = name.strip()
+                  lay = rep["layers"].get(name)
+                  if not lay or not lay.get("separable"):
+                      print(f"{name}: niet separabel / afwezig")
+                      continue
+                  cp = lay["permutation"]["p_value"]
+                  sp = lay.get("sparse_probe", {}).get("p_value")
+                  sa = lay.get("sparse_probe", {}).get("loocv_balanced_accuracy")
+                  print(f"{name}: centroide-p {round(cp,4)} | "
+                        f"sparse-p {round(sp,4) if sp is not None else None} "
+                        f"(LOOCV {round(sa,4) if sa is not None else None})")
+          EOF
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: activation-probe-real-verdict
+          path: |
+            results/activation_probe_real_verdict.json
+            results/dialectic_verdicts.json
+          if-no-files-found: error

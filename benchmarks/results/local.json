@@ -1,0 +1,123 @@
+{
+  "benchmark_name": "AbsenceBench",
+  "run_type": "benchmark_scan",
+  "execution_status": "benchmark_scan",
+  "ssl_input_basis": [
+    "shadowseed-manager",
+    "local-json-or-hf-sample"
+  ],
+  "host_platform": "local",
+  "dataset_status": "local",
+  "runner_status": "baseline-vs-shadowseed harness",
+  "score": 0.0,
+  "score_type": "Shadow Seed F1 against absence labels",
+  "interpretation": "Compares a lexical baseline with the Shadow Seed pipeline. The score is Shadow Seed F1; delta_f1 is included in the output.",
+  "limitations": [
+    "free local harness; no paid LLM calls",
+    "lexical embedding instead of an external embedding model",
+    "no upstream AbsenceBench evaluator"
+  ],
+  "execution_gap": false,
+  "timestamp": "2026-07-19T04:33:35.661767+00:00",
+  "evaluation": {
+    "baseline": {
+      "true_positive": 0,
+      "false_positive": 0,
+      "true_negative": 2,
+      "false_negative": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    "shadowseed": {
+      "true_positive": 0,
+      "false_positive": 0,
+      "true_negative": 2,
+      "false_negative": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    "delta_f1": 0.0,
+    "examples": [
+      {
+        "id": null,
+        "expected_absence": false,
+        "baseline_detected": false,
+        "shadowseed_detected": false,
+        "trace": {
+          "candidate_count": 0,
+          "promoted_count": 0,
+          "rejected_candidates": [],
+          "manager": {
+            "config": {
+              "trace_start": 2.0,
+              "half_life_turns": 3.0,
+              "dedup_threshold": 0.95,
+              "promotion_threshold": 0.4,
+              "dormant_threshold": 0.05,
+              "validation_increment": 0.2,
+              "contradiction_penalty": 0.3,
+              "reward_step": 0.1,
+              "penalty_step": 0.2,
+              "max_trace": 3.0,
+              "reactivation_increment": 2.0,
+              "min_occurrences_for_gate": 3,
+              "min_evidence_for_gate": 2,
+              "min_trace_for_gate": 0.5,
+              "max_seed_words": 18,
+              "dormant_ttl_turns": 5,
+              "contradiction_trace_penalty": 0.5
+            },
+            "seeds": [],
+            "constellations": [],
+            "validation_log": [],
+            "event_log": [],
+            "feedback_log": [],
+            "vector_constellation": null
+          }
+        }
+      },
+      {
+        "id": null,
+        "expected_absence": false,
+        "baseline_detected": false,
+        "shadowseed_detected": false,
+        "trace": {
+          "candidate_count": 0,
+          "promoted_count": 0,
+          "rejected_candidates": [],
+          "manager": {
+            "config": {
+              "trace_start": 2.0,
+              "half_life_turns": 3.0,
+              "dedup_threshold": 0.95,
+              "promotion_threshold": 0.4,
+              "dormant_threshold": 0.05,
+              "validation_increment": 0.2,
+              "contradiction_penalty": 0.3,
+              "reward_step": 0.1,
+              "penalty_step": 0.2,
+              "max_trace": 3.0,
+              "reactivation_increment": 2.0,
+              "min_occurrences_for_gate": 3,
+              "min_evidence_for_gate": 2,
+              "min_trace_for_gate": 0.5,
+              "max_seed_words": 18,
+              "dormant_ttl_turns": 5,
+              "contradiction_trace_penalty": 0.5
+            },
+            "seeds": [],
+            "constellations": [],
+            "validation_log": [],
+            "event_log": [],
+            "feedback_log": [],
+            "vector_constellation": null
+          }
+        }
+      }
+    ]
+  }
+}

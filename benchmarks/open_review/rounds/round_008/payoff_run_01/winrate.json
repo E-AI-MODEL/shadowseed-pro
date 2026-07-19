@@ -1,0 +1,12 @@
+{
+  "artifact": "answer_pair_winrate",
+  "disclaimer": "End-to-end payoff signal: SSL-guided vs baseline answer under blind reader judgment. Small n, reader-judged; a signal, not proof. A null/negative result is a valid outcome.",
+  "decided_pairs": 3,
+  "ssl_wins": 1,
+  "baseline_wins": 2,
+  "ties": 0,
+  "pending": 0,
+  "ssl_win_rate": 0.333,
+  "length_neutral_decided_pairs": 2,
+  "ssl_win_rate_length_neutral": 0.5
+}

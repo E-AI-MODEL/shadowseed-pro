@@ -1,0 +1,1126 @@
+{
+  "evidence_layer": "open_set_seed_quality",
+  "review_note": "DELEGATED AI REVIEW (reviewer_ai_claude), single reviewer. NOT human review. First v0.3g run; compare against round 006 batch 2 (arXiv offset 0, AI pass).",
+  "packets": [
+    {
+      "item_id": "ARXIV_ABSTRACTS_20",
+      "title": "Molecular Synchronization Waves in Arrays of Allosterically Regulated Enzymes",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Spatiotemporal pattern formation in a product-activated enzymic reaction at high enzyme concentrations is investigated. Stochastic simulations show that catalytic turnover cycles of individual enzymes can become coherent and that complex wa",
+      "seed_id": "ss_001",
+      "seed_text": "De dynamische processen van de enzymcyclus bij hoge enzymconcentraties.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_20",
+      "title": "Molecular Synchronization Waves in Arrays of Allosterically Regulated Enzymes",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Spatiotemporal pattern formation in a product-activated enzymic reaction at high enzyme concentrations is investigated. Stochastic simulations show that catalytic turnover cycles of individual enzymes can become coherent and that complex wa",
+      "seed_id": "ss_002",
+      "seed_text": "De rol van Hopf- en wisselbifurcaties in de vorming van spatiotemporale patronen.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_20",
+      "title": "Molecular Synchronization Waves in Arrays of Allosterically Regulated Enzymes",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Spatiotemporal pattern formation in a product-activated enzymic reaction at high enzyme concentrations is investigated. Stochastic simulations show that catalytic turnover cycles of individual enzymes can become coherent and that complex wa",
+      "seed_id": "ss_003",
+      "seed_text": "De ontwikkeling van complexe synchronisatiepatronen in stochastische simulaties.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_20",
+      "title": "Molecular Synchronization Waves in Arrays of Allosterically Regulated Enzymes",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Spatiotemporal pattern formation in a product-activated enzymic reaction at high enzyme concentrations is investigated. Stochastic simulations show that catalytic turnover cycles of individual enzymes can become coherent and that complex wa",
+      "seed_id": "ss_004",
+      "seed_text": "De impact van de mean-fieldapproximatie op het begrijpen van de gevormde patronen.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "too_vague",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_20",
+      "title": "Molecular Synchronization Waves in Arrays of Allosterically Regulated Enzymes",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Spatiotemporal pattern formation in a product-activated enzymic reaction at high enzyme concentrations is investigated. Stochastic simulations show that catalytic turnover cycles of individual enzymes can become coherent and that complex wa",
+      "seed_id": "ss_005",
+      "seed_text": "De relatie tussen individuele en collectieve moleculaire synchronisatie in de reaktie.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_21",
+      "title": "Stochastic Lie group integrators",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We present Lie group integrators for nonlinear stochastic differential equations with non-commutative vector fields whose solution evolves on a smooth finite dimensional manifold. Given a Lie group action that generates transport along the ",
+      "seed_id": "ss_001",
+      "seed_text": "De precisie van de Castell--Gaines methoden ten opzichte van de stochastische Taylor schalen.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_21",
+      "title": "Stochastic Lie group integrators",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We present Lie group integrators for nonlinear stochastic differential equations with non-commutative vector fields whose solution evolves on a smooth finite dimensional manifold. Given a Lie group action that generates transport along the ",
+      "seed_id": "ss_002",
+      "seed_text": "De implementatie van de Munthe-Kaas methoden als onderliggende oorzaak voor de stochastische Lie group integratoren.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "too_vague",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_21",
+      "title": "Stochastic Lie group integrators",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We present Lie group integrators for nonlinear stochastic differential equations with non-commutative vector fields whose solution evolves on a smooth finite dimensional manifold. Given a Lie group action that generates transport along the ",
+      "seed_id": "ss_003",
+      "seed_text": "De afstemming van de stochastische Lie group integratoren op de dynamica van een bevroren rigide object.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_21",
+      "title": "Stochastic Lie group integrators",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We present Lie group integrators for nonlinear stochastic differential equations with non-commutative vector fields whose solution evolves on a smooth finite dimensional manifold. Given a Lie group action that generates transport along the ",
+      "seed_id": "ss_004",
+      "seed_text": "De effectiviteit van de stochastische Lie group integratoren bij het simuleren van een autonoom onderwatervoertuig.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_21",
+      "title": "Stochastic Lie group integrators",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We present Lie group integrators for nonlinear stochastic differential equations with non-commutative vector fields whose solution evolves on a smooth finite dimensional manifold. Given a Lie group action that generates transport along the ",
+      "seed_id": "ss_005",
+      "seed_text": "De integratie van twee onafhankelijke stochastische laagnoiseprocessen in de dynamica van de simulaties.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_22",
+      "title": "ALMA as the ideal probe of the solar chromosphere",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The very nature of the solar chromosphere, its structuring and dynamics, remains far from being properly understood, in spite of intensive research. Here we point out the potential of chromospheric observations at millimeter wavelengths to ",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke dynamische processen in de chromosfeer die millimeteremissie beïnvloeden.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_22",
+      "title": "ALMA as the ideal probe of the solar chromosphere",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The very nature of the solar chromosphere, its structuring and dynamics, remains far from being properly understood, in spite of intensive research. Here we point out the potential of chromospheric observations at millimeter wavelengths to ",
+      "seed_id": "ss_002",
+      "seed_text": "De exacte wavelheggen (0.8-5.0 mm) waarop dynamische signaturen worden gezien.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_22",
+      "title": "ALMA as the ideal probe of the solar chromosphere",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The very nature of the solar chromosphere, its structuring and dynamics, remains far from being properly understood, in spite of intensive research. Here we point out the potential of chromospheric observations at millimeter wavelengths to ",
+      "seed_id": "ss_003",
+      "seed_text": "De eigenschappen van high resolution mm wavelheggenobservaties die het verschil kunnen maken tussen warm en koud gas.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_22",
+      "title": "ALMA as the ideal probe of the solar chromosphere",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The very nature of the solar chromosphere, its structuring and dynamics, remains far from being properly understood, in spite of intensive research. Here we point out the potential of chromospheric observations at millimeter wavelengths to ",
+      "seed_id": "ss_004",
+      "seed_text": "De specifieke resultaten van de BIMA array observaties op 3.5 mm wavelheggen.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_22",
+      "title": "ALMA as the ideal probe of the solar chromosphere",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The very nature of the solar chromosphere, its structuring and dynamics, remains far from being properly understood, in spite of intensive research. Here we point out the potential of chromospheric observations at millimeter wavelengths to ",
+      "seed_id": "ss_005",
+      "seed_text": "De noodzaak van hogere spatial resolutie voor een onderscheidende analyse van atmosferische features.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "too_vague",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_23",
+      "title": "Formation of quasi-solitons in transverse confined ferromagnetic film media",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The formation of quasi-2D spin-wave waveforms in longitudinally magnetized stripes of ferrimagnetic film was observed by using time- and space-resolved Brillouin light scattering technique. In the linear regime it was found that the confine",
+      "seed_id": "ss_001",
+      "seed_text": "De effectieve dipolar pinning van dynamische magnetisatie bij de laterale stripekanten.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_23",
+      "title": "Formation of quasi-solitons in transverse confined ferromagnetic film media",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The formation of quasi-2D spin-wave waveforms in longitudinally magnetized stripes of ferrimagnetic film was observed by using time- and space-resolved Brillouin light scattering technique. In the linear regime it was found that the confine",
+      "seed_id": "ss_002",
+      "seed_text": "De transversale instabiliteit en interactie met de zijwanden van de golflichaasstructuur.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_23",
+      "title": "Formation of quasi-solitons in transverse confined ferromagnetic film media",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The formation of quasi-2D spin-wave waveforms in longitudinally magnetized stripes of ferrimagnetic film was observed by using time- and space-resolved Brillouin light scattering technique. In the linear regime it was found that the confine",
+      "seed_id": "ss_003",
+      "seed_text": "De invloed van de confinement op de vorm en gedraging van de gevormde spin-wave packetten.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_23",
+      "title": "Formation of quasi-solitons in transverse confined ferromagnetic film media",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The formation of quasi-2D spin-wave waveforms in longitudinally magnetized stripes of ferrimagnetic film was observed by using time- and space-resolved Brillouin light scattering technique. In the linear regime it was found that the confine",
+      "seed_id": "ss_004",
+      "seed_text": "De dynamische magnetisatieamplitude nabij de laterale stripekanten in de lineaire regel.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_23",
+      "title": "Formation of quasi-solitons in transverse confined ferromagnetic film media",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "The formation of quasi-2D spin-wave waveforms in longitudinally magnetized stripes of ferrimagnetic film was observed by using time- and space-resolved Brillouin light scattering technique. In the linear regime it was found that the confine",
+      "seed_id": "ss_005",
+      "seed_text": "De observatie van een nieuw stabiele spin-wave packet dat langs een golflichaasstructuur gaat.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_24",
+      "title": "Spectroscopic Properties of Polarons in Strongly Correlated Systems by Exact Diagrammatic Monte Carlo Method",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We present recent advances in understanding of the ground and excited states of the electron-phonon coupled systems obtained by novel methods of Diagrammatic Monte Carlo and Stochastic Optimization, which enable the approximation-free calcu",
+      "seed_id": "ss_001",
+      "seed_text": "Methode voor berekening van Matsubara Green function in imaginaire tijd.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_24",
+      "title": "Spectroscopic Properties of Polarons in Strongly Correlated Systems by Exact Diagrammatic Monte Carlo Method",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We present recent advances in understanding of the ground and excited states of the electron-phonon coupled systems obtained by novel methods of Diagrammatic Monte Carlo and Stochastic Optimization, which enable the approximation-free calcu",
+      "seed_id": "ss_002",
+      "seed_text": "Analytische continuatie naar real frequenteytijd.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_24",
+      "title": "Spectroscopic Properties of Polarons in Strongly Correlated Systems by Exact Diagrammatic Monte Carlo Method",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We present recent advances in understanding of the ground and excited states of the electron-phonon coupled systems obtained by novel methods of Diagrammatic Monte Carlo and Stochastic Optimization, which enable the approximation-free calcu",
+      "seed_id": "ss_003",
+      "seed_text": "Numerieke resultaten voor de Lehmann spectral function.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_24",
+      "title": "Spectroscopic Properties of Polarons in Strongly Correlated Systems by Exact Diagrammatic Monte Carlo Method",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We present recent advances in understanding of the ground and excited states of the electron-phonon coupled systems obtained by novel methods of Diagrammatic Monte Carlo and Stochastic Optimization, which enable the approximation-free calcu",
+      "seed_id": "ss_004",
+      "seed_text": "Grondstaten eigenschappen van Frohlich polaron.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_24",
+      "title": "Spectroscopic Properties of Polarons in Strongly Correlated Systems by Exact Diagrammatic Monte Carlo Method",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We present recent advances in understanding of the ground and excited states of the electron-phonon coupled systems obtained by novel methods of Diagrammatic Monte Carlo and Stochastic Optimization, which enable the approximation-free calcu",
+      "seed_id": "ss_005",
+      "seed_text": "Optische conductiviteit van interactie met phononen in t-J model.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_25",
+      "title": "Placeholder Substructures II: Meta-Fractals, Made of Box-Kites, Fill Infinite-Dimensional Skies",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Zero-divisors (ZDs) derived by Cayley-Dickson Process (CDP) from N-dimensional hypercomplex numbers (N a power of 2, at least 4) can represent singularities and, as N approaches infinite, fractals -- and thereby,scale-free networks. Any int",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke bit-manipulatie regels voor fractal transformatie.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_25",
+      "title": "Placeholder Substructures II: Meta-Fractals, Made of Box-Kites, Fill Infinite-Dimensional Skies",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Zero-divisors (ZDs) derived by Cayley-Dickson Process (CDP) from N-dimensional hypercomplex numbers (N a power of 2, at least 4) can represent singularities and, as N approaches infinite, fractals -- and thereby,scale-free networks. Any int",
+      "seed_id": "ss_002",
+      "seed_text": "De relatie tussen het strut constant (S) en het genereren van meta-fractals.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_25",
+      "title": "Placeholder Substructures II: Meta-Fractals, Made of Box-Kites, Fill Infinite-Dimensional Skies",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Zero-divisors (ZDs) derived by Cayley-Dickson Process (CDP) from N-dimensional hypercomplex numbers (N a power of 2, at least 4) can represent singularities and, as N approaches infinite, fractals -- and thereby,scale-free networks. Any int",
+      "seed_id": "ss_003",
+      "seed_text": "De rol van N-dimensional hypercomplex numbers bij het vormgeven van scale-free networks.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_25",
+      "title": "Placeholder Substructures II: Meta-Fractals, Made of Box-Kites, Fill Infinite-Dimensional Skies",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Zero-divisors (ZDs) derived by Cayley-Dickson Process (CDP) from N-dimensional hypercomplex numbers (N a power of 2, at least 4) can represent singularities and, as N approaches infinite, fractals -- and thereby,scale-free networks. Any int",
+      "seed_id": "ss_004",
+      "seed_text": "De transformatie van één fractal genus naar andere binnen Wolfram's Class 4 complexiteit.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_25",
+      "title": "Placeholder Substructures II: Meta-Fractals, Made of Box-Kites, Fill Infinite-Dimensional Skies",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "Zero-divisors (ZDs) derived by Cayley-Dickson Process (CDP) from N-dimensional hypercomplex numbers (N a power of 2, at least 4) can represent singularities and, as N approaches infinite, fractals -- and thereby,scale-free networks. Any int",
+      "seed_id": "ss_005",
+      "seed_text": "De relatie tussen het Cayley-Dickson Process (CDP) en de representatie van singularites.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_26",
+      "title": "Filling-Factor-Dependent Magnetophonon Resonance in Graphene",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We describe a peculiar fine structure acquired by the in-plane optical phonon at the Gamma-point in graphene when it is brought into resonance with one of the inter-Landau-level transitions in this material. The effect is most pronounced wh",
+      "seed_id": "ss_001",
+      "seed_text": "De resonantiecondities van de inter-Landau-level transitions.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_26",
+      "title": "Filling-Factor-Dependent Magnetophonon Resonance in Graphene",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We describe a peculiar fine structure acquired by the in-plane optical phonon at the Gamma-point in graphene when it is brought into resonance with one of the inter-Landau-level transitions in this material. The effect is most pronounced wh",
+      "seed_id": "ss_002",
+      "seed_text": "De afhankelijkheid van de luchtingsfactor bij de detectie van cirkelvormige lichaammodi.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_26",
+      "title": "Filling-Factor-Dependent Magnetophonon Resonance in Graphene",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We describe a peculiar fine structure acquired by the in-plane optical phonon at the Gamma-point in graphene when it is brought into resonance with one of the inter-Landau-level transitions in this material. The effect is most pronounced wh",
+      "seed_id": "ss_003",
+      "seed_text": "De directe meting van de sterkte van de elektron-golf-interactie.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_26",
+      "title": "Filling-Factor-Dependent Magnetophonon Resonance in Graphene",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We describe a peculiar fine structure acquired by the in-plane optical phonon at the Gamma-point in graphene when it is brought into resonance with one of the inter-Landau-level transitions in this material. The effect is most pronounced wh",
+      "seed_id": "ss_004",
+      "seed_text": "De omvang van de resonantie van de in-plane optische golven in de Gamma-punt.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_26",
+      "title": "Filling-Factor-Dependent Magnetophonon Resonance in Graphene",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We describe a peculiar fine structure acquired by the in-plane optical phonon at the Gamma-point in graphene when it is brought into resonance with one of the inter-Landau-level transitions in this material. The effect is most pronounced wh",
+      "seed_id": "ss_005",
+      "seed_text": "De invloed van de magnetische veldsterkte B_0 op de resonantie.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_27",
+      "title": "Pfaffians, hafnians and products of real linear functionals",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We prove pfaffian and hafnian versions of Lieb's inequalities on determinants and permanents of positive semi-definite matrices. We use the hafnian inequality to improve the lower bound of R\\'ev\\'esz and Sarantopoulos on the norm of a produ",
+      "seed_id": "ss_001",
+      "seed_text": "De exacte vorm van de verbeterde ondergrens van R\\'ev\\'esz en Sarantopoulos.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_27",
+      "title": "Pfaffians, hafnians and products of real linear functionals",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We prove pfaffian and hafnian versions of Lieb's inequalities on determinants and permanents of positive semi-definite matrices. We use the hafnian inequality to improve the lower bound of R\\'ev\\'esz and Sarantopoulos on the norm of a produ",
+      "seed_id": "ss_002",
+      "seed_text": "De specifieke toepassing van de hafnian inequality in de probleemstelling.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "too_vague",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_27",
+      "title": "Pfaffians, hafnians and products of real linear functionals",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We prove pfaffian and hafnian versions of Lieb's inequalities on determinants and permanents of positive semi-definite matrices. We use the hafnian inequality to improve the lower bound of R\\'ev\\'esz and Sarantopoulos on the norm of a produ",
+      "seed_id": "ss_003",
+      "seed_text": "De definitie van de `real linear polarization constant' probleem.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "trivial",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_27",
+      "title": "Pfaffians, hafnians and products of real linear functionals",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We prove pfaffian and hafnian versions of Lieb's inequalities on determinants and permanents of positive semi-definite matrices. We use the hafnian inequality to improve the lower bound of R\\'ev\\'esz and Sarantopoulos on the norm of a produ",
+      "seed_id": "ss_004",
+      "seed_text": "De exacte determinanten- en permanente eigenschappen van de positieve semi-definente matrices die worden benaderd.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_28",
+      "title": "Understanding the Flavor Symmetry Breaking and Nucleon Flavor-Spin Structure within Chiral Quark Model",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "In $\\XQM$, a quark can emit Goldstone bosons. The flavor symmetry breaking in the Goldstone boson emission process is used to intepret the nucleon flavor-spin structure. In this paper, we study the inner structure of constituent quarks impl",
+      "seed_id": "ss_001",
+      "seed_text": "Transition probabilities van de emissie van Goldstone bosonen uit een quark.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_28",
+      "title": "Understanding the Flavor Symmetry Breaking and Nucleon Flavor-Spin Structure within Chiral Quark Model",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "In $\\XQM$, a quark can emit Goldstone bosons. The flavor symmetry breaking in the Goldstone boson emission process is used to intepret the nucleon flavor-spin structure. In this paper, we study the inner structure of constituent quarks impl",
+      "seed_id": "ss_002",
+      "seed_text": "Interpretatie van de flavor-spinstructuur van nucleonen door flavor symmetriebreking.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_28",
+      "title": "Understanding the Flavor Symmetry Breaking and Nucleon Flavor-Spin Structure within Chiral Quark Model",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "In $\\XQM$, a quark can emit Goldstone bosons. The flavor symmetry breaking in the Goldstone boson emission process is used to intepret the nucleon flavor-spin structure. In this paper, we study the inner structure of constituent quarks impl",
+      "seed_id": "ss_003",
+      "seed_text": "Intrinsieke golffuncties van constituerende quarks uitgedrukt in $\\XQM$.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_28",
+      "title": "Understanding the Flavor Symmetry Breaking and Nucleon Flavor-Spin Structure within Chiral Quark Model",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "In $\\XQM$, a quark can emit Goldstone bosons. The flavor symmetry breaking in the Goldstone boson emission process is used to intepret the nucleon flavor-spin structure. In this paper, we study the inner structure of constituent quarks impl",
+      "seed_id": "ss_004",
+      "seed_text": "Toepassing van een vereenvoudigde Hamiltonianopstelling op $\\XQM$ voor het bepalen van quarkintrinsieke golffuncties.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_28",
+      "title": "Understanding the Flavor Symmetry Breaking and Nucleon Flavor-Spin Structure within Chiral Quark Model",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "In $\\XQM$, a quark can emit Goldstone bosons. The flavor symmetry breaking in the Goldstone boson emission process is used to intepret the nucleon flavor-spin structure. In this paper, we study the inner structure of constituent quarks impl",
+      "seed_id": "ss_005",
+      "seed_text": "Relatie tussen Goldstone boson emissie en nucleon flavor-spinstructuur in $\\XQM$.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_29",
+      "title": "Tuning correlation effects with electron-phonon interactions",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We investigate the effect of tuning the phonon energy on the correlation effects in models of electron-phonon interactions using DMFT. In the regime where itinerant electrons, instantaneous electron-phonon driven correlations and static dis",
+      "seed_id": "ss_001",
+      "seed_text": "De specifieke effecten van de phononenergieafstemming op de korrelatieeffecten in de spectralfunctie.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_29",
+      "title": "Tuning correlation effects with electron-phonon interactions",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We investigate the effect of tuning the phonon energy on the correlation effects in models of electron-phonon interactions using DMFT. In the regime where itinerant electrons, instantaneous electron-phonon driven correlations and static dis",
+      "seed_id": "ss_002",
+      "seed_text": "De relatie tussen de vorm van de spectralfunctie en de optische conductiviteit in dit regime.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_29",
+      "title": "Tuning correlation effects with electron-phonon interactions",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We investigate the effect of tuning the phonon energy on the correlation effects in models of electron-phonon interactions using DMFT. In the regime where itinerant electrons, instantaneous electron-phonon driven correlations and static dis",
+      "seed_id": "ss_003",
+      "seed_text": "De aanwezigheid van een dubbele kondo-peelingstructuur in de resistiviteit.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_30",
+      "title": "Crystal channeling of LHC forward protons with preserved distribution in phase space",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We show that crystal can trap a broad (x, x', y, y', E) distribution of particles and channel it preserved with a high precision. This sampled-and-hold distribution can be steered by a bent crystal for analysis downstream. In simulations fo",
+      "seed_id": "ss_001",
+      "seed_text": "Precisie van de crystaltransmissie voor protonenangles.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_30",
+      "title": "Crystal channeling of LHC forward protons with preserved distribution in phase space",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We show that crystal can trap a broad (x, x', y, y', E) distribution of particles and channel it preserved with a high precision. This sampled-and-hold distribution can be steered by a bent crystal for analysis downstream. In simulations fo",
+      "seed_id": "ss_002",
+      "seed_text": "Preserved divergentie van diffractief gespreide protonen in crystal.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_30",
+      "title": "Crystal channeling of LHC forward protons with preserved distribution in phase space",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We show that crystal can trap a broad (x, x', y, y', E) distribution of particles and channel it preserved with a high precision. This sampled-and-hold distribution can be steered by a bent crystal for analysis downstream. In simulations fo",
+      "seed_id": "ss_003",
+      "seed_text": "Steerbaarheid van de bent crystal voor analyse.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_30",
+      "title": "Crystal channeling of LHC forward protons with preserved distribution in phase space",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We show that crystal can trap a broad (x, x', y, y', E) distribution of particles and channel it preserved with a high precision. This sampled-and-hold distribution can be steered by a bent crystal for analysis downstream. In simulations fo",
+      "seed_id": "ss_004",
+      "seed_text": "Accuratie van protonenangles in microrad in crystaltransmissie.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": true,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "not_relevant",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_31",
+      "title": "Probing non-standard neutrino interactions with supernova neutrinos",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We analyze the possibility of probing non-standard neutrino interactions (NSI, for short) through the detection of neutrinos produced in a future galactic supernova (SN).We consider the effect of NSI on the neutrino propagation through the ",
+      "seed_id": "ss_001",
+      "seed_text": "Effekten van NSI-strength op resonante conversies in de neutrino-spectrum.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": true,
+        "testability": true,
+        "non_triviality": true,
+        "follow_up_utility": true
+      },
+      "review_status": "accepted",
+      "reject_reason": null,
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_31",
+      "title": "Probing non-standard neutrino interactions with supernova neutrinos",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We analyze the possibility of probing non-standard neutrino interactions (NSI, for short) through the detection of neutrinos produced in a future galactic supernova (SN).We consider the effect of NSI on the neutrino propagation through the ",
+      "seed_id": "ss_002",
+      "seed_text": "Detectabiliteit van NSI-effecten door shockwaves door de SN-envelope.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_31",
+      "title": "Probing non-standard neutrino interactions with supernova neutrinos",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We analyze the possibility of probing non-standard neutrino interactions (NSI, for short) through the detection of neutrinos produced in a future galactic supernova (SN).We consider the effect of NSI on the neutrino propagation through the ",
+      "seed_id": "ss_003",
+      "seed_text": "Variaties in de elektronfractie en hun invloed op NSI-detectie.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_31",
+      "title": "Probing non-standard neutrino interactions with supernova neutrinos",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We analyze the possibility of probing non-standard neutrino interactions (NSI, for short) through the detection of neutrinos produced in a future galactic supernova (SN).We consider the effect of NSI on the neutrino propagation through the ",
+      "seed_id": "ss_004",
+      "seed_text": "Effecten van aarde-materiële effecten op NSI-modulatie in $\\bar\\nu_e$ spectrum.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_31",
+      "title": "Probing non-standard neutrino interactions with supernova neutrinos",
+      "domain": "wetenschap - arXiv abstract",
+      "source_excerpt": "We analyze the possibility of probing non-standard neutrino interactions (NSI, for short) through the detection of neutrinos produced in a future galactic supernova (SN).We consider the effect of NSI on the neutrino propagation through the ",
+      "seed_id": "ss_005",
+      "seed_text": "Potentieel detecteerbaar neutronizatie $\\nu_e$ burst als gevolg van NSI.",
+      "reviewer_id": "reviewer_ai_claude",
+      "reviewer_slot": 1,
+      "review_fields": {
+        "atomicity": true,
+        "relevance": false,
+        "testability": false,
+        "non_triviality": false,
+        "follow_up_utility": false
+      },
+      "review_status": "rejected",
+      "reject_reason": "style_not_gap",
+      "reviewer_notes": "delegated AI review, round 007 batch B (v0.3g, arXiv offset 20)"
+    }
+  ]
+}
