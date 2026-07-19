@@ -1,0 +1,279 @@
+# Repository authority map for Shadowseed Pro.
+#
+# Purpose: give humans and agents a single, machine-readable answer to
+# "what is this file for, is it canonical, and may runtime code import it?"
+# so the repository hierarchy is unambiguous and legacy/archive material is
+# never mistaken for current authority.
+#
+# Authority classes (the only allowed values):
+#   CANONICAL_SPEC           Authoritative specifications and architecture docs.
+#   RUNTIME_IMPLEMENTATION    Canonical runtime code that ships in the package.
+#   CONTRACT_TEST             Tests that pin public/compatibility contracts.
+#   EVALUATION_IMPLEMENTATION Benchmarks, evaluation suites, research tooling.
+#   EVIDENCE_ARTIFACT         Generated or curated result/evidence data.
+#   COMPATIBILITY_ONLY        Legacy import facades; re-export only, no logic.
+#   HISTORICAL_REFERENCE      Superseded material kept for provenance.
+#   ARCHIVE                   Frozen source material, not part of the package.
+#
+# Matching rule: the MOST SPECIFIC path/glob wins. Explicit file paths
+# override directory globs, so the COMPATIBILITY_ONLY entries below take
+# precedence over the broader benchmark package glob. No two entries may make
+# contradictory claims about the same file under this rule.
+
+version: 1
+repository: shadowseed-pro
+package_namespace: shadowseed
+
+entries:
+  # --- Canonical specifications ------------------------------------------
+  - path: docs/architecture/**
+    authority: CANONICAL_SPEC
+    owner: architecture
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: >
+      Authoritative architecture, lifecycle, gate, compatibility, and
+      repository-structure documentation. Active docs must cite canonical
+      paths only.
+
+  - path: repository-authority.yaml
+    authority: CANONICAL_SPEC
+    owner: architecture
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: This file. The authoritative authority map.
+
+  - path: pyproject.toml
+    authority: CANONICAL_SPEC
+    owner: packaging
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: Build, packaging, and tool configuration authority.
+
+  # --- Canonical runtime implementation ----------------------------------
+  - path: src/shadowseed/*.py
+    authority: RUNTIME_IMPLEMENTATION
+    owner: core-runtime
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: >
+      Canonical top-level runtime modules (chat, cli, manager, ssot,
+      recurrence, retrieval_probe, prompts, seed_normalization, etc.).
+
+  - path: src/shadowseed/adapters/**
+    authority: RUNTIME_IMPLEMENTATION
+    owner: adapters
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: Canonical model/service adapters (embedding, OpenAI, Ollama, models).
+
+  - path: src/shadowseed/detection/**
+    authority: RUNTIME_IMPLEMENTATION
+    owner: detection
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: Canonical open-set model detector implementation.
+
+  - path: src/shadowseed/analysis/**
+    authority: RUNTIME_IMPLEMENTATION
+    owner: analysis
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: >
+      Result analyzer and artifact snapshotting. Enforces canonical-first
+      artifact precedence.
+
+  - path: src/shadowseed/vectorstore/**
+    authority: RUNTIME_IMPLEMENTATION
+    owner: vectorstore
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: Vector store backends (memory canonical; faiss/chroma optional).
+
+  - path: src/shadowseed/data/**
+    authority: RUNTIME_IMPLEMENTATION
+    owner: core-runtime
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: >
+      Packaged curated input data (shipped as package-data per pyproject).
+      Loaded by runtime/evaluation; not generated evidence.
+
+  - path: src/shadowseed_agent/**
+    authority: RUNTIME_IMPLEMENTATION
+    owner: agent
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: Agent contract and audit/retrieval policy modules.
+
+  # --- Compatibility facades (most specific: explicit files) -------------
+  - path: src/shadowseed/benchmark/embedding_backends.py
+    authority: COMPATIBILITY_ONLY
+    owner: adapters
+    canonical_successor: shadowseed.adapters.embedding
+    runtime_import_allowed: false
+    modifications_allowed: false
+    notes: Legacy import facade. Re-export only. See compatibility-policy.md.
+
+  - path: src/shadowseed/benchmark/openai_client.py
+    authority: COMPATIBILITY_ONLY
+    owner: adapters
+    canonical_successor: shadowseed.adapters.openai_client
+    runtime_import_allowed: false
+    modifications_allowed: false
+    notes: Legacy import facade. Re-export only.
+
+  - path: src/shadowseed/benchmark/ollama_client.py
+    authority: COMPATIBILITY_ONLY
+    owner: adapters
+    canonical_successor: shadowseed.adapters.ollama_client
+    runtime_import_allowed: false
+    modifications_allowed: false
+    notes: Legacy import facade. Re-export only.
+
+  - path: src/shadowseed/benchmark/open_set_model_detector.py
+    authority: COMPATIBILITY_ONLY
+    owner: detection
+    canonical_successor: shadowseed.detection.model_detector
+    runtime_import_allowed: false
+    modifications_allowed: false
+    notes: Legacy import facade. Re-export only.
+
+  - path: src/shadowseed/benchmark/recurrence_clustering.py
+    authority: COMPATIBILITY_ONLY
+    owner: core-runtime
+    canonical_successor: shadowseed.recurrence_clustering
+    runtime_import_allowed: false
+    modifications_allowed: false
+    notes: Legacy import facade. Re-export only.
+
+  - path: src/shadowseed/benchmark/seed_retrieval_probe.py
+    authority: COMPATIBILITY_ONLY
+    owner: core-runtime
+    canonical_successor: shadowseed.retrieval_probe
+    runtime_import_allowed: false
+    modifications_allowed: false
+    notes: Legacy import facade. Re-export only.
+
+  - path: src/shadowseed/prompt_templates.py
+    authority: COMPATIBILITY_ONLY
+    owner: core-runtime
+    canonical_successor: shadowseed.prompts
+    runtime_import_allowed: false
+    modifications_allowed: false
+    notes: Legacy import facade. Re-export only.
+
+  # --- Evaluation implementation -----------------------------------------
+  - path: src/shadowseed/benchmark/**
+    authority: EVALUATION_IMPLEMENTATION
+    owner: benchmark
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: >
+      Canonical benchmark and evaluation suites. Excludes the seven
+      COMPATIBILITY_ONLY facades above (which win by most-specific match).
+
+  - path: src/shadowseed/evaluation/**
+    authority: EVALUATION_IMPLEMENTATION
+    owner: benchmark
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: >
+      Evaluation-area documentation placeholders (README-only): adversarial,
+      behavioral, open_review, regression, transfer.
+
+  - path: benchmarks/**
+    authority: EVALUATION_IMPLEMENTATION
+    owner: benchmark
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: >
+      Benchmark definitions, inputs, prompts, and curated review rounds.
+      Not an importable package.
+
+  - path: scripts/**
+    authority: EVALUATION_IMPLEMENTATION
+    owner: tooling
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: Standalone research/operational scripts. Not shipped in the package.
+
+  - path: experiments/**
+    authority: EVALUATION_IMPLEMENTATION
+    owner: research
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: Exploratory experiment runners. Not part of supported runtime.
+
+  # --- Tests --------------------------------------------------------------
+  - path: tests/**
+    authority: CONTRACT_TEST
+    owner: qa
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: >
+      Contract and regression tests. tests/test_compatibility_contracts.py is
+      the pure compatibility contract guard; other files are behavioral or
+      regression tests for canonical modules.
+
+  # --- Evidence artifacts -------------------------------------------------
+  - path: benchmarks/results/**
+    authority: EVIDENCE_ARTIFACT
+    owner: benchmark
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: Generated benchmark result snapshots and schemas.
+
+  - path: benchmarks/open_review/rounds/**
+    authority: EVIDENCE_ARTIFACT
+    owner: benchmark
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: Curated open-set review rounds (committed summary evidence).
+
+  - path: results/**
+    authority: EVIDENCE_ARTIFACT
+    owner: analysis
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: >
+      Runtime/analysis output location. Canonical summary is
+      results/open_set_seed_review_summary.json; the nested
+      open_review/open_set_review_summary.json is a legacy fallback only.
+
+  - path: data/**
+    authority: EVIDENCE_ARTIFACT
+    owner: research
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: Source reference material (e.g. papers). Not packaged.
+
+  # --- Archive / historical ----------------------------------------------
+  - path: archive/legacy/**
+    authority: HISTORICAL_REFERENCE
+    owner: archive
+    runtime_import_allowed: false
+    modifications_allowed: false
+    notes: >
+      Superseded documentation and wiki content kept for provenance. Not
+      canonical; do not link to as current guidance. Language may be Dutch.
+
+  - path: archive/**
+    authority: ARCHIVE
+    owner: archive
+    runtime_import_allowed: false
+    modifications_allowed: false
+    notes: >
+      Frozen source material from the pre-rebuild repository. Excluded from
+      package discovery (packaging discovers only src/). Never import at
+      runtime; preserve content as-is for provenance.
+
+  # --- Documentation (non-architecture) ----------------------------------
+  - path: docs/**
+    authority: CANONICAL_SPEC
+    owner: docs
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: >
+      Usage, migration, and research documentation. Must reference canonical
+      paths. docs/architecture/** is the primary specification authority.

@@ -70,3 +70,55 @@ def test_result_analyzer_reads_open_review_summary_from_nested_path(tmp_path: Pa
 
     assert summary["open_set_review"]["seed_acceptance_rate"] == 0.5
     assert "## Open-set review" in report_text
+
+
+def _write_open_set_summary(path: Path, seed_acceptance_rate: float) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(
+            {
+                "summary": {
+                    "packet_count": 1,
+                    "unique_seed_count": 1,
+                    "seed_acceptance_rate": seed_acceptance_rate,
+                    "seed_rejection_rate": 1.0 - seed_acceptance_rate,
+                    "agreement_eligible_seed_count": 1,
+                    "unanimous_verdict_rate": 1.0,
+                    "pairwise_decision_agreement_rate": 1.0,
+                }
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def test_result_analyzer_prefers_canonical_open_set_summary_over_legacy(
+    tmp_path: Path,
+) -> None:
+    """When both the canonical and legacy summaries exist, canonical wins.
+
+    Regression guard for artifact precedence: the canonical
+    ``open_set_seed_review_summary.json`` must take precedence over the legacy
+    ``open_review/open_set_review_summary.json`` fallback.
+    """
+    results_dir = tmp_path / "results"
+    output_dir = results_dir / "analysis"
+
+    # Distinguishable values so the winning source is unambiguous.
+    _write_open_set_summary(
+        results_dir / "open_set_seed_review_summary.json",
+        seed_acceptance_rate=0.9,
+    )
+    _write_open_set_summary(
+        results_dir / "open_review" / "open_set_review_summary.json",
+        seed_acceptance_rate=0.1,
+    )
+
+    analyze_results(str(results_dir), str(output_dir))
+
+    summary = json.loads(
+        (output_dir / "analysis_summary.json").read_text(encoding="utf-8")
+    )
+    assert summary["open_set_review"]["seed_acceptance_rate"] == 0.9
