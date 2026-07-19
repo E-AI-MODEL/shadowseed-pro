@@ -602,8 +602,11 @@ def analyze_results(
     adversarial = load_json(source / "adversarial_gate_benchmark.json")
     open_set_review = load_first_json(
         [
-            source / "open_review" / "open_set_review_summary.json",
+            # Canonical artifact first, legacy artifact second. When both
+            # exist the canonical summary must win; the nested open_review
+            # name is only a backward-compatible fallback.
             source / "open_set_seed_review_summary.json",
+            source / "open_review" / "open_set_review_summary.json",
         ]
     )
     retrieval = load_json(source / "retrieval_benchmark.json")
