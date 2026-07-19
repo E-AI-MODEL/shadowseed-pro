@@ -1,0 +1,46 @@
+{
+  "version": "ssl-session-0.2",
+  "description": "Multi-turn conversations to test SSL through the REAL pipeline (SSLManager): weight-0 seeding, recurrence dedup, the Validation Gate across turns, TTL decay + TrTL reactivation, and only pipeline-PROMOTED seeds (born in an earlier turn) may shape a later answer. v0.2 adds long, theme-RETURNING conversations (>=9 turns) so a genuinely recurring gap can recur 3x+ and promote on its own merit -- giving SSL's 'not-yet-an-answer-now-can-become-one-later' property a fair chance. Topics author-chosen so a stable gap CAN recur; whether it does, promotes, and pays off is left to the pipeline + model. Seeds detector-produced.",
+  "conversations": [
+    {
+      "id": "CONV_IR_SHORT",
+      "domain": "geschiedenis en economie",
+      "turns": [
+        {"question": "Leg in het kort uit waarom de Industriële Revolutie juist in Groot-Brittannië kon ontstaan."},
+        {"question": "Hoe verspreidde de industrialisatie zich daarna naar het Europese vasteland?"},
+        {"question": "Wat verklaart waarom sommige regio's veel sneller industrialiseerden dan andere?"},
+        {"question": "Welke factor wordt in standaarduitleg het meest onderschat?"}
+      ]
+    },
+    {
+      "id": "CONV_STARTUP",
+      "domain": "product en groei",
+      "turns": [
+        {"question": "Ik bouw een sociale app voor jongeren. Hoe krijg ik de eerste duizend gebruikers?"},
+        {"question": "Welke features houden gebruikers het beste vast (retentie)?"},
+        {"question": "Hoe maak ik de app viraal zodat gebruikers vrienden uitnodigen?"},
+        {"question": "Wat is het beste verdienmodel voor zo'n app met jonge gebruikers?"},
+        {"question": "Hoe gebruik ik gebruikersdata om de aanbevelingen te verbeteren?"},
+        {"question": "Hoe schaal ik de infrastructuur als het hard groeit?"},
+        {"question": "Welke meetwaarden moet ik aan investeerders laten zien?"},
+        {"question": "Hoe ga ik om met negatieve publiciteit als die komt?"},
+        {"question": "Wat is op de lange termijn de grootste bedreiging voor dit soort apps?"}
+      ]
+    },
+    {
+      "id": "CONV_CITY",
+      "domain": "stadsontwikkeling",
+      "turns": [
+        {"question": "Onze stad wil de binnenstad nieuw leven inblazen. Waar beginnen we?"},
+        {"question": "Hoe trekken we meer winkels en horeca aan?"},
+        {"question": "Hoe verbeteren we de bereikbaarheid en het verkeer?"},
+        {"question": "Hoe maken we de binnenstad aantrekkelijker voor toeristen?"},
+        {"question": "Welke rol moet woningbouw in de binnenstad spelen?"},
+        {"question": "Hoe vergroenen we de openbare ruimte?"},
+        {"question": "Hoe houden we de binnenstad veilig en levendig in de avond?"},
+        {"question": "Hoe financieren we dit alles als gemeente?"},
+        {"question": "Wat gaat er bij dit soort binnenstad-vernieuwingen het vaakst mis?"}
+      ]
+    }
+  ]
+}

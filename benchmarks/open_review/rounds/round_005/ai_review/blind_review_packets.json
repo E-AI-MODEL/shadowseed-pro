@@ -1,0 +1,3895 @@
+[
+  {
+    "blind_id": "b_976dbf0194f2",
+    "item_id": "AG_NEWS_TEST_0",
+    "shown_position": 1,
+    "candidate": "Of de Federal Mogul heeft een plan of strategie geformuleerd voor de toekomstige financiële situatie van T N, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_a18dbf7fb36c",
+    "item_id": "AG_NEWS_TEST_0",
+    "shown_position": 2,
+    "candidate": "Of de Federal Mogul heeft een afspraak gemaakt met de werknemers van T N over de toekomstige financiële situatie, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_c08fa88b6d01",
+    "item_id": "AG_NEWS_TEST_0",
+    "shown_position": 3,
+    "candidate": "Tijdlijn van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_24e644715cf0",
+    "item_id": "AG_NEWS_TEST_0",
+    "shown_position": 4,
+    "candidate": "Of de Federal Mogul heeft besproken wat ze doen om de toekomstige pensionen van T N werknemers te waarborgen, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_655a3be25374",
+    "item_id": "AG_NEWS_TEST_0",
+    "shown_position": 5,
+    "candidate": "Rol van Fears in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_a4d005b1963f",
+    "item_id": "AG_NEWS_TEST_0",
+    "shown_position": 6,
+    "candidate": "Direct geraakte groep in het item.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_d24d4e8f89af",
+    "item_id": "AG_NEWS_TEST_0",
+    "shown_position": 7,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_081b435ca6ec",
+    "item_id": "AG_NEWS_TEST_0",
+    "shown_position": 8,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_ab9520be9c30",
+    "item_id": "AG_NEWS_TEST_0",
+    "shown_position": 9,
+    "candidate": "Of de Federal Mogul heeft besloten om de werknemers van T N te informeren over de mogelijke toekomstige financiële situatie, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_accaaec50d60",
+    "item_id": "AG_NEWS_TEST_0",
+    "shown_position": 10,
+    "candidate": "Of de Federal Mogul onderzoek heeft gedaan naar de toekomstige financiële situatie van T N, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_4adca4418482",
+    "item_id": "AG_NEWS_TEST_1",
+    "shown_position": 1,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_037ea9480a5f",
+    "item_id": "AG_NEWS_TEST_1",
+    "shown_position": 2,
+    "candidate": "Of de tweede team een locatie heeft genoemd, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_0c7ac7b78883",
+    "item_id": "AG_NEWS_TEST_1",
+    "shown_position": 3,
+    "candidate": "Herkomst van de genoemde cijfers.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_048e60b9791b",
+    "item_id": "AG_NEWS_TEST_1",
+    "shown_position": 4,
+    "candidate": "Bron van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_5ff9b190f480",
+    "item_id": "AG_NEWS_TEST_1",
+    "shown_position": 5,
+    "candidate": "Of de tweede team een sponsor heeft genoemd, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_56458e6e5e33",
+    "item_id": "AG_NEWS_TEST_1",
+    "shown_position": 6,
+    "candidate": "Rol van Race in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_4003de32afcb",
+    "item_id": "AG_NEWS_TEST_1",
+    "shown_position": 7,
+    "candidate": "Of de tweede team een naam heeft genoemd, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_c58c7a1097f7",
+    "item_id": "AG_NEWS_TEST_1",
+    "shown_position": 8,
+    "candidate": "Of de tweede team een organisatie heeft genoemd, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_9e4cf7c8486f",
+    "item_id": "AG_NEWS_TEST_1",
+    "shown_position": 9,
+    "candidate": "Of de tweede team een officiële lanceringdatum heeft aangegeven, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_82be9e2276f6",
+    "item_id": "AG_NEWS_TEST_1",
+    "shown_position": 10,
+    "candidate": "Tijdstip van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_4d332c7a334d",
+    "item_id": "AG_NEWS_TEST_10",
+    "shown_position": 1,
+    "candidate": "Of de nieuwe high-speed wireless format wordt aangegeven, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_919f8d9cea40",
+    "item_id": "AG_NEWS_TEST_10",
+    "shown_position": 2,
+    "candidate": "Tijdlijn van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_f1206b568990",
+    "item_id": "AG_NEWS_TEST_10",
+    "shown_position": 3,
+    "candidate": "Of de nieuwe standaard ook in gebruik wordt genomen, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_e2625f6f30a5",
+    "item_id": "AG_NEWS_TEST_10",
+    "shown_position": 4,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_4fa7e2691802",
+    "item_id": "AG_NEWS_TEST_10",
+    "shown_position": 5,
+    "candidate": "Rol van Group in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_f482c130e544",
+    "item_id": "AG_NEWS_TEST_10",
+    "shown_position": 6,
+    "candidate": "De technologie die de nieuwe standaard zal gebruiken, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_f561ef2a26e3",
+    "item_id": "AG_NEWS_TEST_10",
+    "shown_position": 7,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_02f050c37679",
+    "item_id": "AG_NEWS_TEST_10",
+    "shown_position": 8,
+    "candidate": "Bron van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_459096ccadce",
+    "item_id": "AG_NEWS_TEST_10",
+    "shown_position": 9,
+    "candidate": "Of de nieuwe standaard ook in gebruik wordt genomen, wordt niet vermeld. 1. Of de nieuwe high-speed wireless format wordt aangegeven, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_15aae329b165",
+    "item_id": "AG_NEWS_TEST_11",
+    "shown_position": 1,
+    "candidate": "Of Apple Computer Inc. een marktadviseur heeft gehad, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_e403b86e0ba2",
+    "item_id": "AG_NEWS_TEST_11",
+    "shown_position": 2,
+    "candidate": "Direct geraakte groep in het item.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_4e51cec31083",
+    "item_id": "AG_NEWS_TEST_11",
+    "shown_position": 3,
+    "candidate": "Reden voor de beschreven beslissing.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_5284a0b7566e",
+    "item_id": "AG_NEWS_TEST_11",
+    "shown_position": 4,
+    "candidate": "Rol van Apple in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_b47d1d68bd8b",
+    "item_id": "AG_NEWS_TEST_11",
+    "shown_position": 5,
+    "candidate": "Of Apple Computer Inc. een strategisch adviesaanbod heeft ontvangen, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_d7debf7ef1f4",
+    "item_id": "AG_NEWS_TEST_11",
+    "shown_position": 6,
+    "candidate": "Tijdlijn van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_1f43f9b947f6",
+    "item_id": "AG_NEWS_TEST_11",
+    "shown_position": 7,
+    "candidate": "Of Apple Computer Inc. een kosten-benefits-analyse heeft uitgevoerd voor deze producten, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_aca44da57f80",
+    "item_id": "AG_NEWS_TEST_11",
+    "shown_position": 8,
+    "candidate": "Of Apple Computer Inc. een marketingdoelgroep heeft bestudeerd, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_eaf9cbd9e14e",
+    "item_id": "AG_NEWS_TEST_11",
+    "shown_position": 9,
+    "candidate": "Of Apple Computer Inc. een concurrentieanalyse heeft uitgevoerd, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_7211305a700c",
+    "item_id": "AG_NEWS_TEST_11",
+    "shown_position": 10,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_2b7ba72c5486",
+    "item_id": "AG_NEWS_TEST_12",
+    "shown_position": 1,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_b464e5354a2c",
+    "item_id": "AG_NEWS_TEST_12",
+    "shown_position": 2,
+    "candidate": "Rol van Dutch in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_b0686644c6b7",
+    "item_id": "AG_NEWS_TEST_12",
+    "shown_position": 3,
+    "candidate": "Tijdlijn van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_118304d82676",
+    "item_id": "AG_NEWS_TEST_12",
+    "shown_position": 4,
+    "candidate": "Of Apple Computer Inc. een Amerikaanse firma is, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_relevant"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_05795f869661",
+    "item_id": "AG_NEWS_TEST_12",
+    "shown_position": 5,
+    "candidate": "Of Free Record Shop een downloadservice biedt, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_relevant"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_a0a2bab73a19",
+    "item_id": "AG_NEWS_TEST_12",
+    "shown_position": 6,
+    "candidate": "Of Free Record Shop een Nederlandse firma is, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_relevant"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_f98416665764",
+    "item_id": "AG_NEWS_TEST_12",
+    "shown_position": 7,
+    "candidate": "Of Free Record Shop een music retail chain is, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_relevant"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_124b7f44b4e0",
+    "item_id": "AG_NEWS_TEST_12",
+    "shown_position": 8,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_117b05e57e44",
+    "item_id": "AG_NEWS_TEST_12",
+    "shown_position": 9,
+    "candidate": "Of Apple Computer Inc. een competitor is van Free Record Shop, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_relevant"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_2fca6106f352",
+    "item_id": "AG_NEWS_TEST_12",
+    "shown_position": 10,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_001b620d8c7e",
+    "item_id": "AG_NEWS_TEST_13",
+    "shown_position": 1,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_505b58beab07",
+    "item_id": "AG_NEWS_TEST_13",
+    "shown_position": 2,
+    "candidate": "Of er sprake is van een toezichthouder of bestuursinstantie die de situatie beheert, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_54431368cd26",
+    "item_id": "AG_NEWS_TEST_13",
+    "shown_position": 3,
+    "candidate": "Rol van Super in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_564341c867bc",
+    "item_id": "AG_NEWS_TEST_13",
+    "shown_position": 4,
+    "candidate": "Tijdstip van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_4809b79e1e93",
+    "item_id": "AG_NEWS_TEST_13",
+    "shown_position": 5,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_5e2359adf00b",
+    "item_id": "AG_NEWS_TEST_13",
+    "shown_position": 6,
+    "candidate": "Of er een plan is om de super-colonie te beperken of te elimineren, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_03b827a3045b",
+    "item_id": "AG_NEWS_TEST_13",
+    "shown_position": 7,
+    "candidate": "Of er specifieke maatregelen zijn genomen om de potentiële schade van de super-colonie te voorkomen, wordt niet aangegeven.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_361ddde16979",
+    "item_id": "AG_NEWS_TEST_13",
+    "shown_position": 8,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_d40a611d4c7f",
+    "item_id": "AG_NEWS_TEST_13",
+    "shown_position": 9,
+    "candidate": "Of er sprake is van een studie of onderzoek dat de impact van de super-colonie op lokale insectensoorten heeft onderzocht, wordt niet vermeld. 1. Of de super-colonie van esophagele antrennissen in Melbourne, Australië, een bedreiging vormt voor lokale insectensoorten, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_testable"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_fa34fa9ea1e2",
+    "item_id": "AG_NEWS_TEST_13",
+    "shown_position": 10,
+    "candidate": "Of de super-colonie van esophagele antrennissen in Melbourne, Australië, een bedreiging vormt voor lokale insectensoorten, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_4eff20abf1c5",
+    "item_id": "AG_NEWS_TEST_14",
+    "shown_position": 1,
+    "candidate": "Of socialites activeren specifieke sociale vaardigheden, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_34d2958f24b8",
+    "item_id": "AG_NEWS_TEST_14",
+    "shown_position": 2,
+    "candidate": "Tijdstip van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_1170186cb494",
+    "item_id": "AG_NEWS_TEST_14",
+    "shown_position": 3,
+    "candidate": "Of er een verband wordt getoond tussen de activiteit van socialites en de stabiliteit van de dolphin-pod, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_cffb6a1baa7c",
+    "item_id": "AG_NEWS_TEST_14",
+    "shown_position": 4,
+    "candidate": "Bron van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_e78798610b89",
+    "item_id": "AG_NEWS_TEST_14",
+    "shown_position": 5,
+    "candidate": "Of er specifieke soorten dolphin-pods worden genoemd, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_473399617377",
+    "item_id": "AG_NEWS_TEST_14",
+    "shown_position": 6,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_2ae0ef945091",
+    "item_id": "AG_NEWS_TEST_14",
+    "shown_position": 7,
+    "candidate": "Rol van Socialites in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_8fc6037040ad",
+    "item_id": "AG_NEWS_TEST_14",
+    "shown_position": 8,
+    "candidate": "Of de effecten van socialiteacties op de structuur van de dolphin-pod worden niet aangegeven.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_cc4a57c12b06",
+    "item_id": "AG_NEWS_TEST_14",
+    "shown_position": 9,
+    "candidate": "Of er specifieke soorten socialiteacties worden beschreven, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_3cfdcd8aa935",
+    "item_id": "AG_NEWS_TEST_14",
+    "shown_position": 10,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_d795bbce8cb3",
+    "item_id": "AG_NEWS_TEST_15",
+    "shown_position": 1,
+    "candidate": "Tijdlijn van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_6356df1f6015",
+    "item_id": "AG_NEWS_TEST_15",
+    "shown_position": 2,
+    "candidate": "Of de precieze duur of periode van de groeiperiode wordt niet aangegeven.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_979d2c8e4007",
+    "item_id": "AG_NEWS_TEST_15",
+    "shown_position": 3,
+    "candidate": "Rol van Teenage in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_e50d7cdcd0ea",
+    "item_id": "AG_NEWS_TEST_15",
+    "shown_position": 4,
+    "candidate": "Of Teenage T. rex's monster growth werd veroorzaakt door een andere fase dan adolescentie, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_56b21b2cbf79",
+    "item_id": "AG_NEWS_TEST_15",
+    "shown_position": 5,
+    "candidate": "Of de effecten van deze groeiperiode op de longen, tanden of andere organen, worden niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_80f164841539",
+    "item_id": "AG_NEWS_TEST_15",
+    "shown_position": 6,
+    "candidate": "Of de mate of intensiteit van de groeiperiode wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_f6e454543724",
+    "item_id": "AG_NEWS_TEST_15",
+    "shown_position": 7,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_c67db9fea909",
+    "item_id": "AG_NEWS_TEST_15",
+    "shown_position": 8,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_f110100a8ee2",
+    "item_id": "AG_NEWS_TEST_15",
+    "shown_position": 9,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_e761615c79a6",
+    "item_id": "AG_NEWS_TEST_15",
+    "shown_position": 10,
+    "candidate": "Of de specifieke mechanismen die leidden tot de groei, zoals voedselvoorziening of hormonen, worden niet genoemd.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_2fc3984c8363",
+    "item_id": "AG_NEWS_TEST_16",
+    "shown_position": 1,
+    "candidate": "Of de lumps onder de ijskust van Ganymede een effect op de oppervlakte.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_testable"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_8d9c1ab9f97a",
+    "item_id": "AG_NEWS_TEST_16",
+    "shown_position": 2,
+    "candidate": "Rol van Scientists in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_c788e6fbc727",
+    "item_id": "AG_NEWS_TEST_16",
+    "shown_position": 3,
+    "candidate": "Tijdstip van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_4d0c318e0cc7",
+    "item_id": "AG_NEWS_TEST_16",
+    "shown_position": 4,
+    "candidate": "Of de lumps onder de ijskust van Ganymede een natuurlijke of een.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_testable"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_3df52379aad7",
+    "item_id": "AG_NEWS_TEST_16",
+    "shown_position": 5,
+    "candidate": "Of de lumps onder de ijskust van Ganymede een invloed hebben op de.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_testable"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_844a8a64b1e2",
+    "item_id": "AG_NEWS_TEST_16",
+    "shown_position": 6,
+    "candidate": "Of de lumps onder de ijskust van Ganymede bestaan, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_relevant"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_8f4b63d07ebd",
+    "item_id": "AG_NEWS_TEST_16",
+    "shown_position": 7,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_6aef74f8fa2b",
+    "item_id": "AG_NEWS_TEST_16",
+    "shown_position": 8,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_95e592bc1ac1",
+    "item_id": "AG_NEWS_TEST_16",
+    "shown_position": 9,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_f25454461af0",
+    "item_id": "AG_NEWS_TEST_16",
+    "shown_position": 10,
+    "candidate": "Of de lumps onder de ijskust van Ganymede een impact hebben op de.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_testable"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_233d83873b51",
+    "item_id": "AG_NEWS_TEST_17",
+    "shown_position": 1,
+    "candidate": "Of de Mars Express de foto's verwerkt, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_100dd1e48f0f",
+    "item_id": "AG_NEWS_TEST_17",
+    "shown_position": 2,
+    "candidate": "Of de Mars Express ondersteuning biedt aan de rover, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_71892b93b585",
+    "item_id": "AG_NEWS_TEST_17",
+    "shown_position": 3,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_520b59716efb",
+    "item_id": "AG_NEWS_TEST_17",
+    "shown_position": 4,
+    "candidate": "Of de Mars Express de foto's naar de opnamecentrum stuurt, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_1ffba49a75ef",
+    "item_id": "AG_NEWS_TEST_17",
+    "shown_position": 5,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_69ae0d83f4ca",
+    "item_id": "AG_NEWS_TEST_17",
+    "shown_position": 6,
+    "candidate": "Of de Mars Express de foto's verzamelt, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_433f6533d7ae",
+    "item_id": "AG_NEWS_TEST_17",
+    "shown_position": 7,
+    "candidate": "Tijdstip van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_28d0c80e9fd3",
+    "item_id": "AG_NEWS_TEST_17",
+    "shown_position": 8,
+    "candidate": "Of de Mars Express de foto's naar de rover stuurt, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_relevant"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_69eb96031658",
+    "item_id": "AG_NEWS_TEST_17",
+    "shown_position": 9,
+    "candidate": "Rol van Mars in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_0fd6e2b39335",
+    "item_id": "AG_NEWS_TEST_17",
+    "shown_position": 10,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_8a1cb6a091be",
+    "item_id": "AG_NEWS_TEST_18",
+    "shown_position": 1,
+    "candidate": "Rol van Rocking in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_7139a740720e",
+    "item_id": "AG_NEWS_TEST_18",
+    "shown_position": 2,
+    "candidate": "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet besproken. 1. Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_testable"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_6eabfdecbba1",
+    "item_id": "AG_NEWS_TEST_18",
+    "shown_position": 3,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_2cb05323b832",
+    "item_id": "AG_NEWS_TEST_18",
+    "shown_position": 4,
+    "candidate": "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet aangegeven.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_c97e06e37c9c",
+    "item_id": "AG_NEWS_TEST_18",
+    "shown_position": 5,
+    "candidate": "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet genoemd.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_fce6b56949f4",
+    "item_id": "AG_NEWS_TEST_18",
+    "shown_position": 6,
+    "candidate": "Tijdstip van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_27edc954d7ae",
+    "item_id": "AG_NEWS_TEST_18",
+    "shown_position": 7,
+    "candidate": "Of de fossiele resten in de sedimenten biologisch of chemisch zijn, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_ce0658296bc3",
+    "item_id": "AG_NEWS_TEST_18",
+    "shown_position": 8,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_4a9d5b025d45",
+    "item_id": "AG_NEWS_TEST_18",
+    "shown_position": 9,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_a59dd4b8eb5c",
+    "item_id": "AG_NEWS_TEST_18",
+    "shown_position": 10,
+    "candidate": "Of de sedimenten biologisch of chemisch zijn, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_aee5efe329fd",
+    "item_id": "AG_NEWS_TEST_19",
+    "shown_position": 1,
+    "candidate": "Of HP heeft hijft op storage, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_dc64701fbae7",
+    "item_id": "AG_NEWS_TEST_19",
+    "shown_position": 2,
+    "candidate": "Tijdstip van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_369a70f1781f",
+    "item_id": "AG_NEWS_TEST_19",
+    "shown_position": 3,
+    "candidate": "Rol van Storage in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_71e71b6ef570",
+    "item_id": "AG_NEWS_TEST_19",
+    "shown_position": 4,
+    "candidate": "Of HP heeft hijft op analysts' expectations, wordt niet vermeld. 1. Of HP heeft hijft op servers bruise, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_testable"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_e3cbdd179fb8",
+    "item_id": "AG_NEWS_TEST_19",
+    "shown_position": 5,
+    "candidate": "Of HP heeft hijft op servers bruise, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_36960c303c64",
+    "item_id": "AG_NEWS_TEST_19",
+    "shown_position": 6,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_620b2c4780e8",
+    "item_id": "AG_NEWS_TEST_19",
+    "shown_position": 7,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_677384e06fe4",
+    "item_id": "AG_NEWS_TEST_19",
+    "shown_position": 8,
+    "candidate": "Of HP heeft hijft op earnings update, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_2fdd3c8dd991",
+    "item_id": "AG_NEWS_TEST_19",
+    "shown_position": 9,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_726a6e428e42",
+    "item_id": "AG_NEWS_TEST_19",
+    "shown_position": 10,
+    "candidate": "Of HP heeft hijft op earnings per share, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_a8f58091a9fc",
+    "item_id": "AG_NEWS_TEST_2",
+    "shown_position": 1,
+    "candidate": "Of de peptides door de Ky. Company worden ingevoerd in de markt, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_f8671cc49c13",
+    "item_id": "AG_NEWS_TEST_2",
+    "shown_position": 2,
+    "candidate": "Rol van Wins in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_d04447a3a50d",
+    "item_id": "AG_NEWS_TEST_2",
+    "shown_position": 3,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_fe96e57db54f",
+    "item_id": "AG_NEWS_TEST_2",
+    "shown_position": 4,
+    "candidate": "Of de peptides door de Ky. Company worden geproduceerd, wordt niet vermeld. 1. Of de peptides door de Ky. Company worden gebruikt, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_testable"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_4f1642169f24",
+    "item_id": "AG_NEWS_TEST_2",
+    "shown_position": 5,
+    "candidate": "Tijdstip van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_ee8d867dd94c",
+    "item_id": "AG_NEWS_TEST_2",
+    "shown_position": 6,
+    "candidate": "Of de Ky. Company onderzoek heeft gedaan, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_relevant"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_4575bcbb7954",
+    "item_id": "AG_NEWS_TEST_2",
+    "shown_position": 7,
+    "candidate": "Of de peptides door de Ky. Company worden gebruikt, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "duplicate"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_eb56dd6f82e0",
+    "item_id": "AG_NEWS_TEST_2",
+    "shown_position": 8,
+    "candidate": "Of de peptides door de Ky. Company worden verkocht, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_1b00a25d8e46",
+    "item_id": "AG_NEWS_TEST_2",
+    "shown_position": 9,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_61d6b3b81937",
+    "item_id": "AG_NEWS_TEST_2",
+    "shown_position": 10,
+    "candidate": "Reden voor de beschreven beslissing.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_97773a43b46d",
+    "item_id": "AG_NEWS_TEST_20",
+    "shown_position": 1,
+    "candidate": "Wat de grootste hoofdcijfers sinds 1991 zijn, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_36b588f2ee91",
+    "item_id": "AG_NEWS_TEST_20",
+    "shown_position": 2,
+    "candidate": "Hoeveel nieuwe werknemers IBM gaat huren, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_65e15987ab66",
+    "item_id": "AG_NEWS_TEST_20",
+    "shown_position": 3,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_0912095ebff6",
+    "item_id": "AG_NEWS_TEST_20",
+    "shown_position": 4,
+    "candidate": "Reden voor de beschreven beslissing.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_9fb73df41862",
+    "item_id": "AG_NEWS_TEST_20",
+    "shown_position": 5,
+    "candidate": "Tijdstip van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_69c018665e50",
+    "item_id": "AG_NEWS_TEST_20",
+    "shown_position": 6,
+    "candidate": "Rol van IBM in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_6d695370352f",
+    "item_id": "AG_NEWS_TEST_20",
+    "shown_position": 7,
+    "candidate": "Of er al eerder een grotere hoofdcijfer was, wordt niet aangegeven.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_fa74a0e20619",
+    "item_id": "AG_NEWS_TEST_20",
+    "shown_position": 8,
+    "candidate": "Hoeveel werknemers IBM had sinds 1991, wordt niet vermeld. 1. Hoeveel nieuwe werknemers IBM gaat huren, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_3e868be2dc1c",
+    "item_id": "AG_NEWS_TEST_20",
+    "shown_position": 9,
+    "candidate": "Wanneer het einde van het jaar wordt bereikt, wordt niet aangegeven.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_64a7fc533910",
+    "item_id": "AG_NEWS_TEST_20",
+    "shown_position": 10,
+    "candidate": "Direct geraakte groep in het item.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_21d41aac5950",
+    "item_id": "AG_NEWS_TEST_23",
+    "shown_position": 1,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_8f92ab61e5ac",
+    "item_id": "AG_NEWS_TEST_23",
+    "shown_position": 2,
+    "candidate": "Of Google een procedure heeft om te bepalen wie mogen proberen in te.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_testable"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_c58477d3669a",
+    "item_id": "AG_NEWS_TEST_23",
+    "shown_position": 3,
+    "candidate": "Of Google heeft een lijst met mensen die niet mogen proberen in te.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_testable"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_05d9b8764ef4",
+    "item_id": "AG_NEWS_TEST_23",
+    "shown_position": 4,
+    "candidate": "Tijdstip van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_910bb7e0a7a9",
+    "item_id": "AG_NEWS_TEST_23",
+    "shown_position": 5,
+    "candidate": "Of Google een criteria heeft om te bepalen wie mogen proberen in te.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_testable"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_a7b0150f4409",
+    "item_id": "AG_NEWS_TEST_23",
+    "shown_position": 6,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_0a395c1c07fc",
+    "item_id": "AG_NEWS_TEST_23",
+    "shown_position": 7,
+    "candidate": "Rol van Some in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_e746c26826e9",
+    "item_id": "AG_NEWS_TEST_23",
+    "shown_position": 8,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_a7eb065d7895",
+    "item_id": "AG_NEWS_TEST_23",
+    "shown_position": 9,
+    "candidate": "Of Google een beperking heeft opgelegd aan het aantal aandelen dat.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_testable"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_2576f1997c8a",
+    "item_id": "AG_NEWS_TEST_23",
+    "shown_position": 10,
+    "candidate": "Of Google een beperking heeft opgelegd aan de prijs die mensen mogen.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_testable"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_65ff009c92b5",
+    "item_id": "AG_NEWS_TEST_24",
+    "shown_position": 1,
+    "candidate": "Tijdstip van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_eb1aeade6ce8",
+    "item_id": "AG_NEWS_TEST_24",
+    "shown_position": 2,
+    "candidate": "Of Charles Schwab heeft een competitor, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_relevant"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_114a9f6ef4f1",
+    "item_id": "AG_NEWS_TEST_24",
+    "shown_position": 3,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_24184965b869",
+    "item_id": "AG_NEWS_TEST_24",
+    "shown_position": 4,
+    "candidate": "Rol van Rivals in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_94c28e601e0a",
+    "item_id": "AG_NEWS_TEST_24",
+    "shown_position": 5,
+    "candidate": "Of Charles Schwab een rival is, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_relevant"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_23d908537220",
+    "item_id": "AG_NEWS_TEST_24",
+    "shown_position": 6,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_736fc957c844",
+    "item_id": "AG_NEWS_TEST_24",
+    "shown_position": 7,
+    "candidate": "Of Charles Schwab wordt beschreven als een competitor, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_relevant"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_fa21bfef9a06",
+    "item_id": "AG_NEWS_TEST_24",
+    "shown_position": 8,
+    "candidate": "Of Charles Schwab een competitor heeft, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "duplicate"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_24847329ce05",
+    "item_id": "AG_NEWS_TEST_24",
+    "shown_position": 9,
+    "candidate": "Of Charles Schwab wordt beschreven als een rival, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_relevant"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_1877298d99ca",
+    "item_id": "AG_NEWS_TEST_24",
+    "shown_position": 10,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_4dc3ca3e3122",
+    "item_id": "AG_NEWS_TEST_25",
+    "shown_position": 1,
+    "candidate": "Of de industrie- of standaardcyber-beveiliging onderzoekt wel of de meest kwetsbare componenten van de elektriciteitsnetwerk worden beschermd, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_68b5c8e59769",
+    "item_id": "AG_NEWS_TEST_25",
+    "shown_position": 2,
+    "candidate": "Of er een duidelijke verantwoordelijkheidsstructuur bestaat voor het onderhouden van de beveiliging van de meest kwetsbare componenten, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_6cf8f101b966",
+    "item_id": "AG_NEWS_TEST_25",
+    "shown_position": 3,
+    "candidate": "Rol van Sluggish in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_efe68fde0565",
+    "item_id": "AG_NEWS_TEST_25",
+    "shown_position": 4,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_310ee9b5fd3d",
+    "item_id": "AG_NEWS_TEST_25",
+    "shown_position": 5,
+    "candidate": "Of er een budget is aangewezen voor het onderhouden van de beveiliging van de meest kwetsbare componenten, wordt niet vermeld. 1. Of de industrie- of standaardcyber-beveiliging onderzoekt wel of de meest kwetsbare componenten van de elektriciteitsnetwerk worden beschermd, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_testable"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_ad37b13bdfdd",
+    "item_id": "AG_NEWS_TEST_25",
+    "shown_position": 6,
+    "candidate": "Tijdstip van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_76b9369c5424",
+    "item_id": "AG_NEWS_TEST_25",
+    "shown_position": 7,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_328e2c56437c",
+    "item_id": "AG_NEWS_TEST_25",
+    "shown_position": 8,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_cfb9bf909b95",
+    "item_id": "AG_NEWS_TEST_25",
+    "shown_position": 9,
+    "candidate": "Of er een plan is om de cyber-beveiligingstandaarden te verbeteren, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_ddfadb558818",
+    "item_id": "AG_NEWS_TEST_25",
+    "shown_position": 10,
+    "candidate": "Of er een procedure is om de beveiligingsrisico's van de meest kwetsbare componenten te evalueren, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_99b75e773018",
+    "item_id": "AG_NEWS_TEST_3",
+    "shown_position": 1,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_982c43c71f20",
+    "item_id": "AG_NEWS_TEST_3",
+    "shown_position": 2,
+    "candidate": "Rol van Prediction in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_9b47b4bd4b71",
+    "item_id": "AG_NEWS_TEST_3",
+    "shown_position": 3,
+    "candidate": "Tijdstip van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_712a8244725e",
+    "item_id": "AG_NEWS_TEST_3",
+    "shown_position": 4,
+    "candidate": "Of de Prediction Unit een bepaalde periode niet in dienst is, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_7c8cc6a9e370",
+    "item_id": "AG_NEWS_TEST_3",
+    "shown_position": 5,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_4e946ac9e5cd",
+    "item_id": "AG_NEWS_TEST_3",
+    "shown_position": 6,
+    "candidate": "Of de Prediction Unit zich beperkt tot bepaalde regio's, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_5a3fdf3fec1c",
+    "item_id": "AG_NEWS_TEST_3",
+    "shown_position": 7,
+    "candidate": "Of de Prediction Unit een bepaalde periode in dienst is, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "duplicate"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_1a91f508ad42",
+    "item_id": "AG_NEWS_TEST_3",
+    "shown_position": 8,
+    "candidate": "Of de Prediction Unit ondersteuning biedt voor bepaalde regio's, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_02d09a055028",
+    "item_id": "AG_NEWS_TEST_3",
+    "shown_position": 9,
+    "candidate": "Of de Prediction Unit een bepaalde periode niet in dienst is, wordt niet vermeld. (dubbel) 1. Of de Prediction Unit een bepaalde periode in dienst is, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_testable"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_611efdcee236",
+    "item_id": "AG_NEWS_TEST_3",
+    "shown_position": 10,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_f29b9c6db75d",
+    "item_id": "AG_NEWS_TEST_4",
+    "shown_position": 1,
+    "candidate": "Of er sprake is van een land waar deze regels worden toegepast, wordt niet vermeld. 1. Of de bovengenoemde regels effectief zijn, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_df9937c61a68",
+    "item_id": "AG_NEWS_TEST_4",
+    "shown_position": 2,
+    "candidate": "Rol van Calif in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_183b01d586af",
+    "item_id": "AG_NEWS_TEST_4",
+    "shown_position": 3,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_5ce06f8d0c44",
+    "item_id": "AG_NEWS_TEST_4",
+    "shown_position": 4,
+    "candidate": "Tijdlijn van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_ff56b3d63d2f",
+    "item_id": "AG_NEWS_TEST_4",
+    "shown_position": 5,
+    "candidate": "Of er sprake is van een periode waarin deze regels werden ingevoerd, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_349c1d38e328",
+    "item_id": "AG_NEWS_TEST_4",
+    "shown_position": 6,
+    "candidate": "Of er sprake is van een toezichthouder die deze regels uitwerkt, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_relevant"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_0b57b4d751f3",
+    "item_id": "AG_NEWS_TEST_4",
+    "shown_position": 7,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_1b79bf5e6bba",
+    "item_id": "AG_NEWS_TEST_4",
+    "shown_position": 8,
+    "candidate": "Of er sprake is van een financiële belasting die aan deze regels wordt toegeschreven, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_c395bf8629f9",
+    "item_id": "AG_NEWS_TEST_4",
+    "shown_position": 9,
+    "candidate": "Of de bovengenoemde regels effectief zijn, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_ccd48dddf0bc",
+    "item_id": "AG_NEWS_TEST_4",
+    "shown_position": 10,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_79771403e06e",
+    "item_id": "AG_NEWS_TEST_5",
+    "shown_position": 1,
+    "candidate": "Of de DfES en de music-industrie onderhandeld hebben om de inhoud van het manifest, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_5ea698cb2e9b",
+    "item_id": "AG_NEWS_TEST_5",
+    "shown_position": 2,
+    "candidate": "Of de DfES en de music-industrie een communicatiedomein hebben gesloten om de leerlingen te instrueren over het illegale downloaden van muziek, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_3ad4ac64e8f0",
+    "item_id": "AG_NEWS_TEST_5",
+    "shown_position": 3,
+    "candidate": "Rol van Open in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_3db902121766",
+    "item_id": "AG_NEWS_TEST_5",
+    "shown_position": 4,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_0954923af6fb",
+    "item_id": "AG_NEWS_TEST_5",
+    "shown_position": 5,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_e7778e115ffd",
+    "item_id": "AG_NEWS_TEST_5",
+    "shown_position": 6,
+    "candidate": "Of de DfES en de music-industrie een contract hebben getekend, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_be5a1fe83372",
+    "item_id": "AG_NEWS_TEST_5",
+    "shown_position": 7,
+    "candidate": "Of de DfES en de music-industrie een plan hebben gehad om de leerlingen te informeren over de wetten betreffende muziekverkrijging, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_f8f3227ac993",
+    "item_id": "AG_NEWS_TEST_5",
+    "shown_position": 8,
+    "candidate": "Of de DfES en de music-industrie een strategie hebben ontwikkeld om de leerlingen te instrueren over het illegale downloaden van muziek, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_47a50771a476",
+    "item_id": "AG_NEWS_TEST_5",
+    "shown_position": 9,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_472e1d83c260",
+    "item_id": "AG_NEWS_TEST_5",
+    "shown_position": 10,
+    "candidate": "Tijdstip van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_0090a1f7fbfc",
+    "item_id": "AG_NEWS_TEST_6",
+    "shown_position": 1,
+    "candidate": "Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_relevant"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_532ca4ea4db2",
+    "item_id": "AG_NEWS_TEST_6",
+    "shown_position": 2,
+    "candidate": "Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 1. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 2. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 3. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 4. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 5. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 6. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 7. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 8. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 9. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 10. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 11. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 12. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld. 13. Of er sprake is van een Microsoft antivirus reward program, wordt niet vermeld. 14. Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_testable"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_d0898030dcf5",
+    "item_id": "AG_NEWS_TEST_6",
+    "shown_position": 3,
+    "candidate": "Rol van Loosing in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_68f575f0a8d5",
+    "item_id": "AG_NEWS_TEST_6",
+    "shown_position": 4,
+    "candidate": "Herkomst van de genoemde cijfers.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_54f0623454c2",
+    "item_id": "AG_NEWS_TEST_6",
+    "shown_position": 5,
+    "candidate": "Of de 18-jarige Jaschan heeft geprogrammeerd, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_relevant"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_defee8d12625",
+    "item_id": "AG_NEWS_TEST_6",
+    "shown_position": 6,
+    "candidate": "Of er sprake is van port-scanning network worm Sasser, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": true,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "not_relevant"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_4cb753206771",
+    "item_id": "AG_NEWS_TEST_6",
+    "shown_position": 7,
+    "candidate": "Of er nog varianten van Netsky en Sasser bestaan, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_74313cee0cc3",
+    "item_id": "AG_NEWS_TEST_6",
+    "shown_position": 8,
+    "candidate": "Tijdlijn van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_8fc7e514fea6",
+    "item_id": "AG_NEWS_TEST_6",
+    "shown_position": 9,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_f62817fc46e2",
+    "item_id": "AG_NEWS_TEST_6",
+    "shown_position": 10,
+    "candidate": "Bron van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_3d94e0c021da",
+    "item_id": "AG_NEWS_TEST_7",
+    "shown_position": 1,
+    "candidate": "Of de whitelist beheerd wordt door de directe vrienden, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_81d97eb7a764",
+    "item_id": "AG_NEWS_TEST_7",
+    "shown_position": 2,
+    "candidate": "Of de whitelist beheerd wordt door de social network, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_b144bfdd91a6",
+    "item_id": "AG_NEWS_TEST_7",
+    "shown_position": 3,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_f4ed060cf3d3",
+    "item_id": "AG_NEWS_TEST_7",
+    "shown_position": 4,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_d6a7469f59f3",
+    "item_id": "AG_NEWS_TEST_7",
+    "shown_position": 5,
+    "candidate": "Of de PGP key fingerprints worden gebruikt om de whitelist te beheren, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_466bc88c4cfd",
+    "item_id": "AG_NEWS_TEST_7",
+    "shown_position": 6,
+    "candidate": "Of de whitelist beheerd wordt door de source FOAF file, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_3e964fe0345f",
+    "item_id": "AG_NEWS_TEST_7",
+    "shown_position": 7,
+    "candidate": "Rol van FOAFKey in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_b09023692e37",
+    "item_id": "AG_NEWS_TEST_7",
+    "shown_position": 8,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_6929914bc015",
+    "item_id": "AG_NEWS_TEST_7",
+    "shown_position": 9,
+    "candidate": "Tijdstip van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_dc940dadfd66",
+    "item_id": "AG_NEWS_TEST_7",
+    "shown_position": 10,
+    "candidate": "Of de whitelist beheerd wordt door de client, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_3609757e9a1d",
+    "item_id": "AG_NEWS_TEST_9",
+    "shown_position": 1,
+    "candidate": "Of de arrestaties gerapporteerd werden aan de media of direct door de card fraud unit, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_12b8361f60cf",
+    "item_id": "AG_NEWS_TEST_9",
+    "shown_position": 2,
+    "candidate": "Rol van Card in de gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_5480fad09f09",
+    "item_id": "AG_NEWS_TEST_9",
+    "shown_position": 3,
+    "candidate": "Onderbouwing van de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_26953e437b6e",
+    "item_id": "AG_NEWS_TEST_9",
+    "shown_position": 4,
+    "candidate": "Of de arrestaties werden gedaan door de card fraud unit of door een andere organisatie, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": true,
+      "non_trivial": true,
+      "useful_for_followup": true,
+      "accept": true,
+      "reject_reason": null
+    },
+    "review_status": "accepted"
+  },
+  {
+    "blind_id": "b_e860472854d5",
+    "item_id": "AG_NEWS_TEST_9",
+    "shown_position": 5,
+    "candidate": "Of het aantal arrestaties 171 of het bedrag dat besparingen werden gemaakt van 65 miljoen wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_95d787f196f1",
+    "item_id": "AG_NEWS_TEST_9",
+    "shown_position": 6,
+    "candidate": "Of de arrestaties plaatsvonden in de eerste twee jaren of later, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_b5e2eca77cce",
+    "item_id": "AG_NEWS_TEST_9",
+    "shown_position": 7,
+    "candidate": "Of de arrestaties gerapporteerd werden aan de politie of direct door de card fraud unit, wordt niet vermeld.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": false,
+      "relevant": true,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_broad"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_04d07a76b517",
+    "item_id": "AG_NEWS_TEST_9",
+    "shown_position": 8,
+    "candidate": "Onzekerheid rond de centrale bewering.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "style_not_gap"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_d0a4b8106173",
+    "item_id": "AG_NEWS_TEST_9",
+    "shown_position": 9,
+    "candidate": "Tijdstip van de beschreven gebeurtenis.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  },
+  {
+    "blind_id": "b_dc275f77264f",
+    "item_id": "AG_NEWS_TEST_9",
+    "shown_position": 10,
+    "candidate": "Betrokken partij buiten de hoofdactor.",
+    "reviewer_id": "reviewer_ai_claude",
+    "judgment": {
+      "atomic": true,
+      "relevant": false,
+      "testable": false,
+      "non_trivial": false,
+      "useful_for_followup": false,
+      "accept": false,
+      "reject_reason": "too_vague"
+    },
+    "review_status": "rejected"
+  }
+]

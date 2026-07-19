@@ -1,0 +1,43 @@
+{
+  "version": "ssl-vs-rag-0.1",
+  "description": "Gap-3 head-to-head fixture: per item a question, the seed(s) naming the gap, and a small corpus. RAG retrieves on the question; the SSL probe retrieves on the seed. Deterministic, CI-safe; not a quality claim.",
+  "documents": [
+    {
+      "doc_id": "industrial_revolution",
+      "source": "fixture",
+      "chunks": [
+        {"chunk_id": "ir::innovation", "text": "James Watt verbeterde de stoommachine en uitvindingen zoals de spinning jenny lieten de textielproductie in Manchester exploderen."},
+        {"chunk_id": "ir::colonial_capital", "text": "Winsten uit koloniale handel en de trans-Atlantische slavenhandel vormden een belangrijke financieringsbron voor investeringen in Britse fabrieken."},
+        {"chunk_id": "ir::raw_materials", "text": "Goedkope koloniale grondstoffen, met name katoen uit de koloniën, waren een voorwaarde voor schaalvergroting van de Britse textielindustrie."},
+        {"chunk_id": "ir::labour", "text": "De fabrieken trokken een nieuwe arbeidersklasse aan; arbeidsomstandigheden en kinderarbeid waren hard."}
+      ]
+    },
+    {
+      "doc_id": "consumer_law",
+      "source": "fixture",
+      "chunks": [
+        {"chunk_id": "law::eu_rights", "text": "EU-richtlijnen geven consumenten recht op garantie en retour bij een defect product binnen de Europese Unie."},
+        {"chunk_id": "law::jurisdiction", "text": "Bij een grensoverschrijdend consumentengeschil bepaalt het internationaal privaatrecht eerst welke rechter bevoegd is en welk recht van toepassing is."},
+        {"chunk_id": "law::enforcement", "text": "De afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer is beperkt en vergt vaak een forumkeuze of erkenning van het vonnis."}
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "SSLRAG_IR",
+      "question": "Waarom kon de Industriële Revolutie in Groot-Brittannië ontstaan?",
+      "seed_texts": [
+        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+        "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting."
+      ]
+    },
+    {
+      "id": "SSLRAG_LAW",
+      "question": "Welke rechten heeft een Nederlandse consument bij een defecte laptop van een Amerikaanse webwinkel?",
+      "seed_texts": [
+        "Toepasselijk recht en bevoegde rechter bij een grensoverschrijdend consumentengeschil.",
+        "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "artifact": "blind_control_summary",
+  "disclaimer": "Per-arm aggregatie van blinde review. Model vs adapter_v1-baseline op identieke items. Geen totaalscore; lagen blijven gescheiden. Zie reviewer_ids voor de herkomst van de oordelen (mens of gedelegeerde AI).",
+  "reviewer_ids": [
+    "reviewer_ai_claude"
+  ],
+  "per_arm": {
+    "model": {
+      "judged": 114,
+      "accepted": 25,
+      "accept_rate": 0.219,
+      "atomic_rate_of_accepted": 1.0
+    },
+    "baseline": {
+      "judged": 115,
+      "accepted": 0,
+      "accept_rate": 0.0,
+      "atomic_rate_of_accepted": 0.0
+    }
+  },
+  "accept_rate_delta_model_minus_baseline": 0.219,
+  "reject_codes": [
+    "too_broad",
+    "too_vague",
+    "trivial",
+    "not_relevant",
+    "not_testable",
+    "duplicate",
+    "style_not_gap"
+  ]
+}

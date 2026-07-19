@@ -1,0 +1,198 @@
+{
+  "version": "1.0",
+  "description": "SSOT-grounded retrieval benchmark for comparing vectorstore backends.",
+  "documents": [
+    {
+      "doc_id": "legal_001",
+      "source": "fixture_legal_cross_border_consumer_contract",
+      "chunks": [
+        {
+          "chunk_id": "legal_001::chunk_001",
+          "text": "Bij een grensoverschrijdend consumentencontract tussen een Nederlandse consument en een Amerikaanse webwinkel moet eerst de rechtsbevoegdheid worden beoordeeld."
+        },
+        {
+          "chunk_id": "legal_001::chunk_002",
+          "text": "Het toepasselijk recht bepaalt welke consumentenregels de internationale online koop beheersen."
+        },
+        {
+          "chunk_id": "legal_001::chunk_003",
+          "text": "De afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer moet apart worden getoetst."
+        },
+        {
+          "chunk_id": "legal_001::chunk_004",
+          "text": "Een forumkeuzebeding in internationale online voorwaarden kan invloed hebben op waar een geschil wordt behandeld."
+        }
+      ]
+    },
+    {
+      "doc_id": "history_001",
+      "source": "fixture_history_industrialization",
+      "chunks": [
+        {
+          "chunk_id": "history_001::chunk_001",
+          "text": "Koloniaal kapitaal kon dienen als financieringsbron voor Britse fabrieksinvesteringen tijdens industrialisatie."
+        },
+        {
+          "chunk_id": "history_001::chunk_002",
+          "text": "De driehoekshandel verbond plantageproductie, maritieme handel en Europese kapitaalvorming."
+        },
+        {
+          "chunk_id": "history_001::chunk_003",
+          "text": "Enclosure verschoof grondgebruik en droeg bij aan arbeidsmigratie richting stedelijke fabrieken."
+        },
+        {
+          "chunk_id": "history_001::chunk_004",
+          "text": "Technologische innovatie alleen verklaart de industriële revolutie niet zonder kapitaal, arbeid en markten."
+        }
+      ]
+    },
+    {
+      "doc_id": "software_001",
+      "source": "fixture_software_api_design",
+      "chunks": [
+        {
+          "chunk_id": "software_001::chunk_001",
+          "text": "Een idempotente API-operatie mag bij herhaling hetzelfde beoogde effect houden zonder dubbele bijwerkingen."
+        },
+        {
+          "chunk_id": "software_001::chunk_002",
+          "text": "Rate limiting beschermt een service tegen overbelasting door het aantal verzoeken per tijdseenheid te begrenzen."
+        },
+        {
+          "chunk_id": "software_001::chunk_003",
+          "text": "Observability vereist logs, metrics en traces zodat fouten in een gedistribueerd systeem herleidbaar blijven."
+        },
+        {
+          "chunk_id": "software_001::chunk_004",
+          "text": "Schema versioning voorkomt dat oudere clients breken wanneer een API-response verandert."
+        }
+      ]
+    },
+    {
+      "doc_id": "education_001",
+      "source": "fixture_education_assessment",
+      "chunks": [
+        {
+          "chunk_id": "education_001::chunk_001",
+          "text": "Formatieve toetsing gebruikt feedback tijdens het leerproces en is niet alleen bedoeld voor eindbeoordeling."
+        },
+        {
+          "chunk_id": "education_001::chunk_002",
+          "text": "Een rubric maakt beoordelingscriteria expliciet en helpt leerlingen begrijpen wat kwaliteit betekent."
+        },
+        {
+          "chunk_id": "education_001::chunk_003",
+          "text": "Retrieval practice versterkt leren doordat leerlingen informatie actief uit het geheugen ophalen."
+        },
+        {
+          "chunk_id": "education_001::chunk_004",
+          "text": "Differentiatie vraagt om aanpassing van instructie, verwerking of ondersteuning aan verschillen tussen leerlingen."
+        }
+      ]
+    },
+    {
+      "doc_id": "biology_001",
+      "source": "fixture_biology_cell_processes",
+      "chunks": [
+        {
+          "chunk_id": "biology_001::chunk_001",
+          "text": "Fotosynthese zet lichtenergie om in chemische energie en gebruikt koolstofdioxide en water om glucose te vormen."
+        },
+        {
+          "chunk_id": "biology_001::chunk_002",
+          "text": "Cellulaire respiratie breekt glucose af om ATP te produceren voor cellulaire processen."
+        },
+        {
+          "chunk_id": "biology_001::chunk_003",
+          "text": "Osmose is de netto verplaatsing van water door een semipermeabel membraan naar een hogere concentratie opgeloste stoffen."
+        },
+        {
+          "chunk_id": "biology_001::chunk_004",
+          "text": "Enzymactiviteit wordt beïnvloed door temperatuur, pH en substraatconcentratie."
+        }
+      ]
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "q_001",
+      "query": "Welke rol speelt toepasselijk recht bij een Amerikaanse webwinkel?",
+      "relevant_chunk_ids": ["legal_001::chunk_002"]
+    },
+    {
+      "query_id": "q_002",
+      "query": "Wanneer moet rechtsbevoegdheid bij een grensoverschrijdende consumentenkoop worden beoordeeld?",
+      "relevant_chunk_ids": ["legal_001::chunk_001"]
+    },
+    {
+      "query_id": "q_003",
+      "query": "Waarom is EU-consumentenrecht tegenover een niet-EU verkoper niet vanzelf afdwingbaar?",
+      "relevant_chunk_ids": ["legal_001::chunk_003"]
+    },
+    {
+      "query_id": "q_004",
+      "query": "Wat kan een forumkeuzebeding veranderen bij internationale online voorwaarden?",
+      "relevant_chunk_ids": ["legal_001::chunk_004"]
+    },
+    {
+      "query_id": "q_005",
+      "query": "Hoe kon koloniaal kapitaal Britse fabrieksinvesteringen ondersteunen?",
+      "relevant_chunk_ids": ["history_001::chunk_001"]
+    },
+    {
+      "query_id": "q_006",
+      "query": "Welke relatie had driehoekshandel met Europese kapitaalvorming?",
+      "relevant_chunk_ids": ["history_001::chunk_002"]
+    },
+    {
+      "query_id": "q_007",
+      "query": "Waarom verklaart technologie alleen de industriële revolutie niet?",
+      "relevant_chunk_ids": ["history_001::chunk_004"]
+    },
+    {
+      "query_id": "q_008",
+      "query": "Wat betekent idempotentie bij een API-operatie?",
+      "relevant_chunk_ids": ["software_001::chunk_001"]
+    },
+    {
+      "query_id": "q_009",
+      "query": "Waarom gebruik je rate limiting in een service?",
+      "relevant_chunk_ids": ["software_001::chunk_002"]
+    },
+    {
+      "query_id": "q_010",
+      "query": "Welke signalen heb je nodig voor observability in een gedistribueerd systeem?",
+      "relevant_chunk_ids": ["software_001::chunk_003"]
+    },
+    {
+      "query_id": "q_011",
+      "query": "Waarom helpt een rubric leerlingen bij beoordeling?",
+      "relevant_chunk_ids": ["education_001::chunk_002"]
+    },
+    {
+      "query_id": "q_012",
+      "query": "Wat is formatieve toetsing tijdens het leerproces?",
+      "relevant_chunk_ids": ["education_001::chunk_001"]
+    },
+    {
+      "query_id": "q_013",
+      "query": "Waarom werkt retrieval practice voor leren?",
+      "relevant_chunk_ids": ["education_001::chunk_003"]
+    },
+    {
+      "query_id": "q_014",
+      "query": "Wat vormt glucose bij fotosynthese?",
+      "relevant_chunk_ids": ["biology_001::chunk_001"]
+    },
+    {
+      "query_id": "q_015",
+      "query": "Hoe produceert cellulaire respiratie energie voor cellen?",
+      "relevant_chunk_ids": ["biology_001::chunk_002"]
+    },
+    {
+      "query_id": "q_016",
+      "query": "Wat gebeurt er bij osmose door een semipermeabel membraan?",
+      "relevant_chunk_ids": ["biology_001::chunk_003"]
+    }
+  ]
+}

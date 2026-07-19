@@ -1,0 +1,206 @@
+name: Research · Vector backend comparison
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  compare-vector-backends:
+    name: Compare vector backends
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test,vector]"
+
+      - name: Run backend comparison
+        run: |
+          set -e
+          mkdir -p results/backend_comparison
+          for backend in memory faiss chroma; do
+            echo "Running backend: ${backend}"
+            python -m shadowseed.cli run-vectorstore-smoke \
+              --backend "${backend}" \
+              --output "results/backend_comparison/vectorstore_${backend}.json"
+            python -m shadowseed.cli run-ssot-smoke \
+              --backend "${backend}" \
+              --output "results/backend_comparison/ssot_${backend}.json"
+          done
+
+      - name: Build comparison report
+        env:
+          SHA: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          base = Path('results/backend_comparison')
+          backends = ['memory', 'faiss', 'chroma']
+          rows = []
+          bundle = {
+              'summary': {
+                  'commit': os.environ.get('SHA', ''),
+                  'backends': backends,
+              },
+              'backends': {},
+          }
+
+          for backend in backends:
+              vector = json.loads((base / f'vectorstore_{backend}.json').read_text(encoding='utf-8'))
+              ssot = json.loads((base / f'ssot_{backend}.json').read_text(encoding='utf-8'))
+              vector_summary = vector['summary']
+              ssot_summary = ssot['summary']
+              passed = bool(vector_summary.get('passed')) and bool(ssot_summary.get('passed'))
+              row = {
+                  'backend': backend,
+                  'passed': passed,
+                  'vector_passed': vector_summary.get('passed'),
+                  'vector_uncertain_matches': vector_summary.get('uncertain_matches'),
+                  'vector_promoted_weight': vector_summary.get('promoted_weight'),
+                  'vector_contradicted_weight': vector_summary.get('contradicted_weight'),
+                  'ssot_passed': ssot_summary.get('passed'),
+                  'ssot_chunk_count': ssot_summary.get('chunk_count'),
+                  'ssot_retrieved_context_count': ssot_summary.get('retrieved_context_count'),
+                  'ssot_validations': ssot_summary.get('validations'),
+                  'ssot_after_status': ssot_summary.get('after_status'),
+                  'ssot_after_weight': ssot_summary.get('after_weight'),
+                  'ssot_after_evidence_count': ssot_summary.get('after_evidence_count'),
+              }
+              rows.append(row)
+              bundle['backends'][backend] = {
+                  'summary': row,
+                  'vectorstore': vector,
+                  'ssot': ssot,
+              }
+
+          all_passed = all(row['passed'] for row in rows)
+          bundle['summary']['all_passed'] = all_passed
+          bundle['summary']['rows'] = rows
+          (base / 'backend_comparison.json').write_text(
+              json.dumps(bundle, indent=2, ensure_ascii=False) + '\n',
+              encoding='utf-8',
+          )
+
+          headline = (
+              'Alle vectorbackends slagen in de complete Vector + SSOT-keten.'
+              if all_passed else
+              'Niet alle vectorbackends slagen in de complete Vector + SSOT-keten.'
+          )
+
+          lines = [
+              '# Nightly Vector Backend Comparison',
+              '',
+              headline,
+              '',
+              'Deze pagina vergelijkt `memory`, `faiss` en `chroma` in dezelfde keten:',
+              '',
+              '```text',
+              'weightless seed → vectorstore → uncertainty match → feedback → Validation Gate',
+              'trusted document → SSOT-vectorstore → seed validation → Validation Gate → promotion',
+              '```',
+              '',
+              '## Vergelijking',
+              '',
+              '| Backend | Passed | Vector passed | Uncertain matches | Promoted weight | Contradicted weight | SSOT passed | SSOT chunks | SSOT hits | Validations | SSOT status | SSOT weight | Evidence |',
+              '|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|---:|',
+          ]
+          for row in rows:
+              lines.append(
+                  '| {backend} | {passed} | {vector_passed} | {vector_uncertain_matches} | {vector_promoted_weight} | {vector_contradicted_weight} | {ssot_passed} | {ssot_chunk_count} | {ssot_retrieved_context_count} | {ssot_validations} | {ssot_after_status} | {ssot_after_weight} | {ssot_after_evidence_count} |'.format(**row)
+              )
+
+          lines.extend([
+              '',
+              '## Conclusie',
+              '',
+          ])
+          if all_passed:
+              lines.extend([
+                  'De optionele backendlaag werkt technisch over alle drie de varianten. Dat betekent dat de SSL-lifecycle niet afhankelijk is van één vectorstore-implementatie.',
+                  '',
+                  'De belangrijkste conclusie blijft: de vectorstore zoekt, maar beslist niet. `SSLManager.seeds` en de Validation Gate blijven leidend voor weight, status en promotie.',
+              ])
+          else:
+              failed = ', '.join(row['backend'] for row in rows if not row['passed'])
+              lines.extend([
+                  f'De volgende backends vragen aandacht: {failed}.',
+                  '',
+                  'Controleer de ruwe JSON en de workflowlogs. Een falende backend betekent niet dat SSL faalt, maar dat de gekozen zoekindexadapter of thresholds moeten worden bijgesteld.',
+              ])
+
+          lines.extend([
+              '',
+              '## Grens van de claim',
+              '',
+              'Deze vergelijking gebruikt smoke-fixtures. Ze test backend-compatibiliteit en lifecycle-integratie, niet grootschalige retrievalkwaliteit op echte kennisbanken.',
+              '',
+              '## Ruwe output',
+              '',
+              '- [Backend Comparison Raw](https://raw.githubusercontent.com/wiki/E-AI-MODEL/shadowseed/Backend-Comparison-Raw.json)',
+              '- [Complete Vector + SSOT Run](Complete-Vector-SSOT-Run)',
+              '- [Vectorstore Smoke](Vectorstore-Smoke)',
+              '- [SSOT Smoke](SSOT-Smoke)',
+              '',
+              '## Commit',
+              '',
+              f"`{os.environ.get('SHA', '')}`",
+              '',
+          ])
+          Path('Backend-Comparison.md').write_text('\n'.join(lines), encoding='utf-8')
+          PY
+
+      - name: Upload backend comparison artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ssl45-vector-backend-comparison
+          path: |
+            results/backend_comparison
+            Backend-Comparison.md
+          if-no-files-found: error
+
+      - name: Publish backend comparison to GitHub Wiki
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -e
+          WIKI_URL="https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.wiki.git"
+          if ! git clone "$WIKI_URL" wiki; then
+            echo "Wiki repo not available. Enable Wiki in repo settings and create the first page once."
+            exit 0
+          fi
+          cp Backend-Comparison.md wiki/Backend-Comparison.md
+          cp results/backend_comparison/backend_comparison.json wiki/Backend-Comparison-Raw.json
+          for backend in memory faiss chroma; do
+            cp "results/backend_comparison/vectorstore_${backend}.json" "wiki/Vectorstore-Smoke-Raw-${backend}.json"
+            cp "results/backend_comparison/ssot_${backend}.json" "wiki/SSOT-Smoke-Raw-${backend}.json"
+          done
+          if [ ! -f wiki/Home.md ]; then
+            printf '# Shadow Seed Learning 4.5\n\n- [Backend Comparison](Backend-Comparison)\n' > wiki/Home.md
+          elif ! grep -q "Backend-Comparison" wiki/Home.md; then
+            printf '\n- [Backend Comparison](Backend-Comparison)\n' >> wiki/Home.md
+          fi
+          cd wiki
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Home.md Backend-Comparison.md Backend-Comparison-Raw.json Vectorstore-Smoke-Raw-*.json SSOT-Smoke-Raw-*.json
+          if git diff --cached --quiet; then
+            echo "No wiki changes."
+          else
+            git commit -m "Update backend comparison wiki (${SHA})"
+            git push
+          fi

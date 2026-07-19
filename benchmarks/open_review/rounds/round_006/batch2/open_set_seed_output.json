@@ -1,0 +1,595 @@
+{
+  "summary": {
+    "evidence_layer": "open_set_seed_quality",
+    "artifact_contract_version": "open-review-0.2",
+    "corpus_version": "hf-open-set-batch-0.1",
+    "source": {
+      "id": "arxiv_abstracts",
+      "dataset": "gfissore/arxiv-abstracts-2021",
+      "config": "default",
+      "split": "train",
+      "revision": "main",
+      "license": "cc0-1.0",
+      "registry_path": "src/shadowseed/data/open_set_hf_sources.json",
+      "requested_limit": 12,
+      "requested_offset": 0,
+      "returned_count": 12,
+      "authenticated": false
+    },
+    "item_count": 12,
+    "raw_candidate_count": 60,
+    "normalized_candidate_count": 60,
+    "accepted_count": 48,
+    "rejected_count": 12,
+    "acceptance_rate": 0.8,
+    "domain_item_counts": {
+      "wetenschap - arXiv abstract": 12
+    },
+    "domain_accept_counts": {
+      "wetenschap - arXiv abstract": 48
+    },
+    "candidate_source_counts": {
+      "open_set_model_detector": 12
+    },
+    "detector": "model",
+    "model_backend": "hf-transformers:microsoft/Phi-3.5-mini-instruct",
+    "candidate_adapter": "ssl45_open_set_candidate_adapter_v0.1",
+    "fixed_scenario_priors_used": false,
+    "expected_gaps_used": false,
+    "ground_truth_seeds_used": false,
+    "regression_gap_detector_used": false,
+    "candidate_quality_requires_human_review": true,
+    "seed_verdict_rule": "A seed counts as accepted or rejected only after every generated reviewer row for that seed is completed and valid.",
+    "reviewer_ids": [
+      "reviewer_a",
+      "reviewer_b"
+    ],
+    "reviewer_count": 2,
+    "review_packet_count": 96,
+    "review_criteria": [
+      "atomicity",
+      "relevance",
+      "testability",
+      "non_triviality",
+      "follow_up_utility"
+    ],
+    "reject_codes": [
+      "too_broad",
+      "too_vague",
+      "trivial",
+      "not_relevant",
+      "not_testable",
+      "duplicate",
+      "style_not_gap"
+    ],
+    "status": "review_pending",
+    "next_step": "Fill review packets and run summarize-open-set-seed-review.",
+    "artifacts": {
+      "seed_output": "results/open_review/open_set_seed_output.json",
+      "review_packets": "results/open_review/open_set_review_packets.json"
+    }
+  },
+  "results": [
+    {
+      "item_id": "ARXIV_ABSTRACTS_0",
+      "title": "Calculation of prompt diphoton production cross sections at Tevatron and LHC energies",
+      "domain": "wetenschap - arXiv abstract",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Specifieke fase-ruimte waarin de berekening het meest betrouwbaar is.",
+        "Precisiesniveau van initial-state gluon radiation resomming.",
+        "Specifieke diphoton paarverdelingen die zijn voorspeld voor LHC.",
+        "Contrast tussen Higgs boson decayen en QCD processen in LHC.",
+        "Methoden voor selectie van evenementen voor verbeterde signalgevoeligheid."
+      ],
+      "normalized_candidates": [
+        "Specifieke fase-ruimte waarin de berekening het meest betrouwbaar is.",
+        "Precisiesniveau van initial-state gluon radiation resomming.",
+        "Specifieke diphoton paarverdelingen die zijn voorspeld voor LHC.",
+        "Contrast tussen Higgs boson decayen en QCD processen in LHC.",
+        "Methoden voor selectie van evenementen voor verbeterde signalgevoeligheid."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Specifieke fase-ruimte waarin de berekening het meest betrouwbaar is."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Precisiesniveau van initial-state gluon radiation resomming."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Specifieke diphoton paarverdelingen die zijn voorspeld voor LHC."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Contrast tussen Higgs boson decayen en QCD processen in LHC."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Methoden voor selectie van evenementen voor verbeterde signalgevoeligheid."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_1",
+      "title": "Sparsity-certifying Graph Decompositions",
+      "domain": "wetenschap - arXiv abstract",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Specifieke eigenschappen van de $(k,\\ell)$-sparse grafen die worden gecharacteriseerd.",
+        "Details van de algoritmen voor tree decompositions van grafen gebaseerd op het $(k,\\ell)$-pebble game.",
+        "Specifieke toepassingen van de $(k,\\ell)$-sparse grafen in rigiditeitstheorie.",
+        "Het exacte aantal pebbles dat kan worden gebruikt in het $(k,\\ell)$-pebble game met kleuren.",
+        "De specifieke verbeteringen of nieuwe resultaten die door het gebruik van de gekleurde pebbles worden geleverd ten opzichte van de eerdere resultaten van Lee en Streinu."
+      ],
+      "normalized_candidates": [
+        "Specifieke eigenschappen van de $(k,\\ell)$-sparse grafen die worden gecharacteriseerd.",
+        "Details van de algoritmen voor tree decompositions van grafen gebaseerd op het $(k,\\ell)$-pebble game.",
+        "Specifieke toepassingen van de $(k,\\ell)$-sparse grafen in rigiditeitstheorie.",
+        "Het exacte aantal pebbles dat kan worden gebruikt in het $(k,\\ell)$-pebble game met kleuren.",
+        "De specifieke verbeteringen of nieuwe resultaten die door het gebruik van de gekleurde pebbles worden geleverd ten opzichte van de eerdere resultaten van Lee en Streinu."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Specifieke eigenschappen van de $(k,\\ell)$-sparse grafen die worden gecharacteriseerd."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Details van de algoritmen voor tree decompositions van grafen gebaseerd op het $(k,\\ell)$-pebble game."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Specifieke toepassingen van de $(k,\\ell)$-sparse grafen in rigiditeitstheorie."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Het exacte aantal pebbles dat kan worden gebruikt in het $(k,\\ell)$-pebble game met kleuren."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "De specifieke verbeteringen of nieuwe resultaten die door het gebruik van de gekleurde pebbles worden geleverd ten opzichte van de eerdere resultaten van Lee en Streinu.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_2",
+      "title": "The evolution of the Earth-Moon system based on the dark matter field fluid model",
+      "domain": "wetenschap - arXiv abstract",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De specifieke rol van tidal friction in de evolutie van het aardoppervlak wordt niet vermeld.",
+        "De exacte relatie tussen de dark matter field fluid constant en de geologische processen van de aarde.",
+        "De methodologie of experimenten die de nauwkeurigheid van de modelafstemming met geologisch en fossiel bewijs ondersteunen.",
+        "De implicaties van de modelvoorstelling voor de bewegingspatronen van andere hemellichamen.",
+        "De rol van andere mogelijke krachten of processen naast de dark matter field fluid in de evolutie van het aardoppervlak."
+      ],
+      "normalized_candidates": [
+        "De specifieke rol van tidal friction in de evolutie van het aardoppervlak wordt niet vermeld.",
+        "De exacte relatie tussen de dark matter field fluid constant en de geologische processen van de aarde.",
+        "De methodologie of experimenten die de nauwkeurigheid van de modelafstemming met geologisch en fossiel bewijs ondersteunen.",
+        "De implicaties van de modelvoorstelling voor de bewegingspatronen van andere hemellichamen.",
+        "De rol van andere mogelijke krachten of processen naast de dark matter field fluid in de evolutie van het aardoppervlak."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De specifieke rol van tidal friction in de evolutie van het aardoppervlak wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De exacte relatie tussen de dark matter field fluid constant en de geologische processen van de aarde."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De implicaties van de modelvoorstelling voor de bewegingspatronen van andere hemellichamen."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "De methodologie of experimenten die de nauwkeurigheid van de modelafstemming met geologisch en fossiel bewijs ondersteunen.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "De rol van andere mogelijke krachten of processen naast de dark matter field fluid in de evolutie van het aardoppervlak.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_5",
+      "title": "Bosonic characters of atomic Cooper pairs across resonance",
+      "domain": "wetenschap - arXiv abstract",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De specifieke manier waarop de Feshbach resonance de interactiviteitstransformatie beheert, wordt niet vermeld.",
+        "De exacte relatie tussen de bosonische eigenschappen en de aanpasbare scattering lengte, boven een bepaalde drempel, wordt niet uitgelegd.",
+        "De methodologie of berekeningen die de overeenkomstige resultaten in moleculaire condensaten bij $(k_F a)^{-1} \\ge 1$ bevestigen, worden niet beschreven.",
+        "De implicaties of interpretaties van de meer bosonische karakteristiek van de ODLRO-definieerbare paardefinitie ten opzichte van de BCS-projeeerde definieerbare paardefinitie, worden niet uitgelegd.",
+        "De onderzoekscontext of de relevante theoretische basis voor het vergelijken van de twee definities van de Cooper pair wave function, worden niet vermeld."
+      ],
+      "normalized_candidates": [
+        "De specifieke manier waarop de Feshbach resonance de interactiviteitstransformatie beheert, wordt niet vermeld.",
+        "De exacte relatie tussen de bosonische eigenschappen en de aanpasbare scattering lengte, boven een bepaalde drempel, wordt niet uitgelegd.",
+        "De methodologie of berekeningen die de overeenkomstige resultaten in moleculaire condensaten bij $(k_F a)^{-1} \\ge 1$ bevestigen, worden niet beschreven.",
+        "De implicaties of interpretaties van de meer bosonische karakteristiek van de ODLRO-definieerbare paardefinitie ten opzichte van de BCS-projeeerde definieerbare paardefinitie, worden niet uitgelegd.",
+        "De onderzoekscontext of de relevante theoretische basis voor het vergelijken van de twee definities van de Cooper pair wave function, worden niet vermeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De specifieke manier waarop de Feshbach resonance de interactiviteitstransformatie beheert, wordt niet vermeld."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "De exacte relatie tussen de bosonische eigenschappen en de aanpasbare scattering lengte, boven een bepaalde drempel, wordt niet uitgelegd.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "De methodologie of berekeningen die de overeenkomstige resultaten in moleculaire condensaten bij $(k_F a)^{-1} \\ge 1$ bevestigen, worden niet beschreven.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "De implicaties of interpretaties van de meer bosonische karakteristiek van de ODLRO-definieerbare paardefinitie ten opzichte van de BCS-projeeerde definieerbare paardefinitie, worden niet uitgelegd.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "De onderzoekscontext of de relevante theoretische basis voor het vergelijken van de twee definities van de Cooper pair wave function, worden niet vermeld.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_6",
+      "title": "Polymer Quantum Mechanics and its Continuum Limit",
+      "domain": "wetenschap - arXiv abstract",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De specifieke relatie tussen polymer representation en Planck scale physics wordt niet gedetailleerd.",
+        "De exacte methodologie voor het overgaan van de polymer quantum mechanics naar de continuümlimiet wordt niet beschreven.",
+        "De manier waarop de polymer description de schroedinger theorie in specifieke gevallen (zoals de harmonische oscillator) weerspiegelt, wordt niet uitgelegd.",
+        "De implicaties van de polymer representation voor de loop quantum gravity, specifiek loop quantum cosmology, worden niet uitgebreid.",
+        "De uitdagingen of beperkingen van het overgaan van de discrete polymer theorie naar de continuümschroedinger theorie worden niet besproken."
+      ],
+      "normalized_candidates": [
+        "De specifieke relatie tussen polymer representation en Planck scale physics wordt niet gedetailleerd.",
+        "De exacte methodologie voor het overgaan van de polymer quantum mechanics naar de continuümlimiet wordt niet beschreven.",
+        "De manier waarop de polymer description de schroedinger theorie in specifieke gevallen (zoals de harmonische oscillator) weerspiegelt, wordt niet uitgelegd.",
+        "De implicaties van de polymer representation voor de loop quantum gravity, specifiek loop quantum cosmology, worden niet uitgebreid.",
+        "De uitdagingen of beperkingen van het overgaan van de discrete polymer theorie naar de continuümschroedinger theorie worden niet besproken."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De specifieke relatie tussen polymer representation en Planck scale physics wordt niet gedetailleerd."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De exacte methodologie voor het overgaan van de polymer quantum mechanics naar de continuümlimiet wordt niet beschreven."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De implicaties van de polymer representation voor de loop quantum gravity, specifiek loop quantum cosmology, worden niet uitgebreid."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "De manier waarop de polymer description de schroedinger theorie in specifieke gevallen (zoals de harmonische oscillator) weerspiegelt, wordt niet uitgelegd.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "De uitdagingen of beperkingen van het overgaan van de discrete polymer theorie naar de continuümschroedinger theorie worden niet besproken.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_7",
+      "title": "Numerical solution of shock and ramp compression for general material properties",
+      "domain": "wetenschap - arXiv abstract",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Specifieke materialmodellen die in de formulatie zijn opgenomen.",
+        "Precisiesnede van de numerieke methoden voor shock en ramp compressie.",
+        "Analyse van de robuustheid en flexibiliteit van de numerieke methoden.",
+        "Details over hoe de basis ramp en shock methoden worden gekoppeld voor composite deformatie.",
+        "Specifieke effecten van plastic werk op temperaturen in quasi-isentropische en shock-release experimenten."
+      ],
+      "normalized_candidates": [
+        "Specifieke materialmodellen die in de formulatie zijn opgenomen.",
+        "Precisiesnede van de numerieke methoden voor shock en ramp compressie.",
+        "Analyse van de robuustheid en flexibiliteit van de numerieke methoden.",
+        "Details over hoe de basis ramp en shock methoden worden gekoppeld voor composite deformatie.",
+        "Specifieke effecten van plastic werk op temperaturen in quasi-isentropische en shock-release experimenten."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Specifieke materialmodellen die in de formulatie zijn opgenomen."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Precisiesnede van de numerieke methoden voor shock en ramp compressie."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Analyse van de robuustheid en flexibiliteit van de numerieke methoden."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Details over hoe de basis ramp en shock methoden worden gekoppeld voor composite deformatie."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Specifieke effecten van plastic werk op temperaturen in quasi-isentropische en shock-release experimenten."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_8",
+      "title": "The Spitzer c2d Survey of Large, Nearby, Insterstellar Clouds. IX. The Serpens YSO Population As Observed With IRAC and MIPS",
+      "domain": "wetenschap - arXiv abstract",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De exacte methode voor het isoleren van bona fide YSO's uit de achtergrondcontaminaatie.",
+        "De specifieke criteria gebruikt voor het bepalen van de hoge betrouwbaarheid van de YSO's.",
+        "De exacte omvang van het gebied dat werd bestudeerd met IRAC en MIPS.",
+        "De specifieke methoden gebruikt om de lagere betrouwbaarheid YSO's te identificeren.",
+        "De exacte details van de color-color diagrammen en de modelresultaten voor star/disk/envelope systemen."
+      ],
+      "normalized_candidates": [
+        "De exacte methode voor het isoleren van bona fide YSO's uit de achtergrondcontaminaatie.",
+        "De specifieke criteria gebruikt voor het bepalen van de hoge betrouwbaarheid van de YSO's.",
+        "De exacte omvang van het gebied dat werd bestudeerd met IRAC en MIPS.",
+        "De specifieke methoden gebruikt om de lagere betrouwbaarheid YSO's te identificeren.",
+        "De exacte details van de color-color diagrammen en de modelresultaten voor star/disk/envelope systemen."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De exacte methode voor het isoleren van bona fide YSO's uit de achtergrondcontaminaatie."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De specifieke criteria gebruikt voor het bepalen van de hoge betrouwbaarheid van de YSO's."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De exacte omvang van het gebied dat werd bestudeerd met IRAC en MIPS."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De specifieke methoden gebruikt om de lagere betrouwbaarheid YSO's te identificeren."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De exacte details van de color-color diagrammen en de modelresultaten voor star/disk/envelope systemen."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_9",
+      "title": "Partial cubes: structures, characterizations, and constructions",
+      "domain": "wetenschap - arXiv abstract",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De specifieke dimensie van de hypercubes waar de partial cubes deel van uitmaken, wordt niet vermeld.",
+        "De exacte manier waarop semicubes de structuren op de graf definiëren, wordt niet beschreven.",
+        "De specifieke rol van Djokovič's en Winkler's relaties in de theorie van partial cubes, wordt niet gedetailleerd.",
+        "De manier waarop de Cartesian product en pasting, en expansie- en contractionprocessen worden gebruikt om nieuwe partial cubes te construeren, wordt niet uitgelegd.",
+        "De methoden of resultaten van de nieuwe characterisaties en bewijzen van bestaande resultaten, worden niet gedetailleerd."
+      ],
+      "normalized_candidates": [
+        "De specifieke dimensie van de hypercubes waar de partial cubes deel van uitmaken, wordt niet vermeld.",
+        "De exacte manier waarop semicubes de structuren op de graf definiëren, wordt niet beschreven.",
+        "De specifieke rol van Djokovič's en Winkler's relaties in de theorie van partial cubes, wordt niet gedetailleerd.",
+        "De manier waarop de Cartesian product en pasting, en expansie- en contractionprocessen worden gebruikt om nieuwe partial cubes te construeren, wordt niet uitgelegd.",
+        "De methoden of resultaten van de nieuwe characterisaties en bewijzen van bestaande resultaten, worden niet gedetailleerd."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De specifieke dimensie van de hypercubes waar de partial cubes deel van uitmaken, wordt niet vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De exacte manier waarop semicubes de structuren op de graf definiëren, wordt niet beschreven."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "De specifieke rol van Djokovič's en Winkler's relaties in de theorie van partial cubes, wordt niet gedetailleerd.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "De manier waarop de Cartesian product en pasting, en expansie- en contractionprocessen worden gebruikt om nieuwe partial cubes te construeren, wordt niet uitgelegd.",
+          "reason": "not_atomic"
+        },
+        {
+          "text": "De methoden of resultaten van de nieuwe characterisaties en bewijzen van bestaande resultaten, worden niet gedetailleerd.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_10",
+      "title": "Computing genus 2 Hilbert-Siegel modular forms over $\\Q(\\sqrt{5})$ via the Jacquet-Langlands correspondence",
+      "domain": "wetenschap - arXiv abstract",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De specifieke eigenschappen van de real quadratic field $\\Q(\\sqrt{5})$.",
+        "De exacte methodologie van het algoritme voor het berekenen van Hecke eigensystemen.",
+        "De definitie van Hilbert-Siegel cusp forms in de context van de tekst.",
+        "De manier waarop de identiteit van Hilbert eigenforms met Hilbert-Siegel eigenforms wordt geïdentificeerd.",
+        "Het aantal of de aard van de illustratieve voorbeelden gebruikt in het voorbeeld."
+      ],
+      "normalized_candidates": [
+        "De specifieke eigenschappen van de real quadratic field $\\Q(\\sqrt{5})$.",
+        "De exacte methodologie van het algoritme voor het berekenen van Hecke eigensystemen.",
+        "De definitie van Hilbert-Siegel cusp forms in de context van de tekst.",
+        "De manier waarop de identiteit van Hilbert eigenforms met Hilbert-Siegel eigenforms wordt geïdentificeerd.",
+        "Het aantal of de aard van de illustratieve voorbeelden gebruikt in het voorbeeld."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De specifieke eigenschappen van de real quadratic field $\\Q(\\sqrt{5})$."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De exacte methodologie van het algoritme voor het berekenen van Hecke eigensystemen."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De definitie van Hilbert-Siegel cusp forms in de context van de tekst."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De manier waarop de identiteit van Hilbert eigenforms met Hilbert-Siegel eigenforms wordt geïdentificeerd."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Het aantal of de aard van de illustratieve voorbeelden gebruikt in het voorbeeld."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_11",
+      "title": "Distribution of integral Fourier Coefficients of a Modular Form of Half Integral Weight Modulo Primes",
+      "domain": "wetenschap - arXiv abstract",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De specifieke distributioneigenschap die cusp forms niet voor modulo odd primes $p$",
+        "De exacte eigenschappen van modular forms van half integral weight die in de",
+        "De methodologische details over het gebruik van de Rankin-Cohen Bracket in",
+        "De precieze eigenschappen van traces van singular moduli en Hurwitz class number",
+        "De analoge aspecten van Newman's conjecture voor overpartitions die in het onderzoek"
+      ],
+      "normalized_candidates": [
+        "De specifieke distributioneigenschap die cusp forms niet voor modulo odd primes $p$.",
+        "De exacte eigenschappen van modular forms van half integral weight die in de.",
+        "De methodologische details over het gebruik van de Rankin-Cohen Bracket in.",
+        "De precieze eigenschappen van traces van singular moduli en Hurwitz class number.",
+        "De analoge aspecten van Newman's conjecture voor overpartitions die in het onderzoek."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De specifieke distributioneigenschap die cusp forms niet voor modulo odd primes $p$."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De exacte eigenschappen van modular forms van half integral weight die in de."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De methodologische details over het gebruik van de Rankin-Cohen Bracket in."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De precieze eigenschappen van traces van singular moduli en Hurwitz class number."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De analoge aspecten van Newman's conjecture voor overpartitions die in het onderzoek."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_12",
+      "title": "$p$-adic Limit of Weakly Holomorphic Modular Forms of Half Integral Weight",
+      "domain": "wetenschap - arXiv abstract",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De specifieke half integral weegingen waarvoor de resultaten worden uitgebreid.",
+        "De exacte linear relaties tussen Fourier coefficients die worden gebruikt in de bewijsvoering.",
+        "De specifieke congruenties van Borcherds exponenten die worden verkregen.",
+        "De precieze congruenties van quotiënten van Eisentein series die worden verkregen.",
+        "De specifieke punten waar de congruenties van $L$-functies worden verkregen."
+      ],
+      "normalized_candidates": [
+        "De specifieke half integral weegingen waarvoor de resultaten worden uitgebreid.",
+        "De exacte linear relaties tussen Fourier coefficients die worden gebruikt in de bewijsvoering.",
+        "De specifieke congruenties van Borcherds exponenten die worden verkregen.",
+        "De precieze congruenties van quotiënten van Eisentein series die worden verkregen.",
+        "De specifieke punten waar de congruenties van $L$-functies worden verkregen."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De specifieke half integral weegingen waarvoor de resultaten worden uitgebreid."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De exacte linear relaties tussen Fourier coefficients die worden gebruikt in de bewijsvoering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De specifieke congruenties van Borcherds exponenten die worden verkregen."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De precieze congruenties van quotiënten van Eisentein series die worden verkregen."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De specifieke punten waar de congruenties van $L$-functies worden verkregen."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "ARXIV_ABSTRACTS_14",
+      "title": "Fermionic superstring loop amplitudes in the pure spinor formalism",
+      "domain": "wetenschap - arXiv abstract",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Methoden om de integralen in pure spinor superspace te evalueren.",
+        "Procedure voor het berekenen van de kinematische factoren van de one-loop amplitudes.",
+        "Procedure voor het berekenen van de kinematische factoren van de twee-loop amplitudes.",
+        "De rol van de Ramond-staten in de vier-puntamplitudesberekening.",
+        "Manifeste supersymmetrie in de one-loop en twee-loop amplitudes."
+      ],
+      "normalized_candidates": [
+        "Methoden om de integralen in pure spinor superspace te evalueren.",
+        "Procedure voor het berekenen van de kinematische factoren van de one-loop amplitudes.",
+        "Procedure voor het berekenen van de kinematische factoren van de twee-loop amplitudes.",
+        "De rol van de Ramond-staten in de vier-puntamplitudesberekening.",
+        "Manifeste supersymmetrie in de one-loop en twee-loop amplitudes."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Methoden om de integralen in pure spinor superspace te evalueren."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Procedure voor het berekenen van de kinematische factoren van de one-loop amplitudes."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Procedure voor het berekenen van de kinematische factoren van de twee-loop amplitudes."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De rol van de Ramond-staten in de vier-puntamplitudesberekening."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Manifeste supersymmetrie in de one-loop en twee-loop amplitudes."
+        }
+      ],
+      "rejected": []
+    }
+  ]
+}

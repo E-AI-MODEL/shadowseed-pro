@@ -1,0 +1,594 @@
+{
+  "summary": {
+    "evidence_layer": "open_set_seed_quality",
+    "artifact_contract_version": "open-review-0.2",
+    "corpus_version": "hf-open-set-batch-0.1",
+    "source": {
+      "id": "ag_news_test",
+      "dataset": "szhuggingface/ag_news",
+      "config": "default",
+      "split": "test",
+      "revision": "main",
+      "license": "apache-2.0",
+      "registry_path": "src/shadowseed/data/open_set_hf_sources.json",
+      "requested_limit": 12,
+      "requested_offset": 0,
+      "returned_count": 12,
+      "authenticated": false
+    },
+    "item_count": 12,
+    "raw_candidate_count": 60,
+    "normalized_candidate_count": 60,
+    "accepted_count": 58,
+    "rejected_count": 2,
+    "acceptance_rate": 0.9666666666666667,
+    "domain_item_counts": {
+      "nieuws - Business": 1,
+      "nieuws - Sci/Tech": 11
+    },
+    "domain_accept_counts": {
+      "nieuws - Business": 4,
+      "nieuws - Sci/Tech": 54
+    },
+    "candidate_source_counts": {
+      "open_set_model_detector": 12
+    },
+    "detector": "model",
+    "model_backend": "hf-transformers:microsoft/Phi-3.5-mini-instruct",
+    "candidate_adapter": "ssl45_open_set_candidate_adapter_v0.1",
+    "fixed_scenario_priors_used": false,
+    "expected_gaps_used": false,
+    "ground_truth_seeds_used": false,
+    "regression_gap_detector_used": false,
+    "candidate_quality_requires_human_review": true,
+    "seed_verdict_rule": "A seed counts as accepted or rejected only after every generated reviewer row for that seed is completed and valid.",
+    "reviewer_ids": [
+      "reviewer_a",
+      "reviewer_b"
+    ],
+    "reviewer_count": 2,
+    "review_packet_count": 116,
+    "review_criteria": [
+      "atomicity",
+      "relevance",
+      "testability",
+      "non_triviality",
+      "follow_up_utility"
+    ],
+    "reject_codes": [
+      "too_broad",
+      "too_vague",
+      "trivial",
+      "not_relevant",
+      "not_testable",
+      "duplicate",
+      "style_not_gap"
+    ],
+    "status": "review_pending",
+    "next_step": "Fill review packets and run summarize-open-set-seed-review.",
+    "artifacts": {
+      "seed_output": "results/open_review/open_set_seed_output.json",
+      "review_packets": "results/open_review/open_set_review_packets.json"
+    }
+  },
+  "results": [
+    {
+      "item_id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Specifieke resultaten of uitkomsten van de talks.",
+        "De exacte bemiddelingsmethode of tussenpersoon.",
+        "Specifieke belangen of eisen van de werknemers.",
+        "De reactie of standpunt van Federal Mogul na de gesprekken.",
+        "De mogelijke impact of gevolgen voor T N pension."
+      ],
+      "normalized_candidates": [
+        "Specifieke resultaten of uitkomsten van de talks.",
+        "De exacte bemiddelingsmethode of tussenpersoon.",
+        "Specifieke belangen of eisen van de werknemers.",
+        "De reactie of standpunt van Federal Mogul na de gesprekken.",
+        "De mogelijke impact of gevolgen voor T N pension."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Specifieke resultaten of uitkomsten van de talks."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De exacte bemiddelingsmethode of tussenpersoon."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Specifieke belangen of eisen van de werknemers."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De reactie of standpunt van Federal Mogul na de gesprekken."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "De mogelijke impact of gevolgen voor T N pension.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Specifieke datum voor de eerste lancering.",
+        "Details over de technologie van de rocket.",
+        "De naam van de tweede private team.",
+        "Specifieke criteria voor het winnen van de Ansari X Prize.",
+        "De locatie waar de lancering zal plaatsvinden."
+      ],
+      "normalized_candidates": [
+        "Specifieke datum voor de eerste lancering.",
+        "Details over de technologie van de rocket.",
+        "De naam van de tweede private team.",
+        "Specifieke criteria voor het winnen van de Ansari X Prize.",
+        "De locatie waar de lancering zal plaatsvinden."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Specifieke datum voor de eerste lancering."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Details over de technologie van de rocket."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De naam van de tweede private team."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Specifieke criteria voor het winnen van de Ansari X Prize."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De locatie waar de lancering zal plaatsvinden."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Specifieke soorten peptides die in de studie worden onderzocht.",
+        "Omvang van het gehonoreerde grant.",
+        "De specifieke gebruikssituatie of toepassing van betere peptides.",
+        "De exacte universiteit waar de chemie researcher aan het begin van het bedrijf werkte.",
+        "De geplande duur of termijn van de peptide-productie method."
+      ],
+      "normalized_candidates": [
+        "Specifieke soorten peptides die in de studie worden onderzocht.",
+        "Omvang van het gehonoreerde grant.",
+        "De specifieke gebruikssituatie of toepassing van betere peptides.",
+        "De exacte universiteit waar de chemie researcher aan het begin van het bedrijf werkte.",
+        "De geplande duur of termijn van de peptide-productie method."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Specifieke soorten peptides die in de studie worden onderzocht."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Omvang van het gehonoreerde grant."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De specifieke gebruikssituatie of toepassing van betere peptides."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De exacte universiteit waar de chemie researcher aan het begin van het bedrijf werkte."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De geplande duur of termijn van de peptide-productie method."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Specifieke geografische locaties waar de wildfires voorspeld worden.",
+        "Precisiesnelheden of nauwkeurigheidspercentages van de Prediction Unit.",
+        "De specifieke methodologie of techniek die door de Prediction Unit wordt gebruikt.",
+        "Historische nauwkeurigheid van voorspellingen van de Prediction Unit voor wildfires.",
+        "Impact of Prediction Unit's forecasts on wildfire prevention or response strategies."
+      ],
+      "normalized_candidates": [
+        "Specifieke geografische locaties waar de wildfires voorspeld worden.",
+        "Precisiesnelheden of nauwkeurigheidspercentages van de Prediction Unit.",
+        "De specifieke methodologie of techniek die door de Prediction Unit wordt gebruikt.",
+        "Historische nauwkeurigheid van voorspellingen van de Prediction Unit voor wildfires.",
+        "Impact of Prediction Unit's forecasts on wildfire prevention or response strategies."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Specifieke geografische locaties waar de wildfires voorspeld worden."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Precisiesnelheden of nauwkeurigheidspercentages van de Prediction Unit."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De specifieke methodologie of techniek die door de Prediction Unit wordt gebruikt."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Historische nauwkeurigheid van voorspellingen van de Prediction Unit voor wildfires."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Impact of Prediction Unit's forecasts on wildfire prevention or response strategies."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Specifieke technische maatregelen om emissies van dairy cow manure te verminderen.",
+        "De impact van de nieuwe regelgeving op de algehele luchtkwaliteit in Southern California.",
+        "De reactie van de landbouwsector op de adoptie van deze regels.",
+        "De specifieke tijdlijn of deadline voor de implementatie van de nieuwe regels.",
+        "De verwachte effectiviteit van de regelgeving op de vermindering van smog."
+      ],
+      "normalized_candidates": [
+        "Specifieke technische maatregelen om emissies van dairy cow manure te verminderen.",
+        "De impact van de nieuwe regelgeving op de algehele luchtkwaliteit in Southern California.",
+        "De reactie van de landbouwsector op de adoptie van deze regels.",
+        "De specifieke tijdlijn of deadline voor de implementatie van de nieuwe regels.",
+        "De verwachte effectiviteit van de regelgeving op de vermindering van smog."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Specifieke technische maatregelen om emissies van dairy cow manure te verminderen."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De impact van de nieuwe regelgeving op de algehele luchtkwaliteit in Southern California."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De reactie van de landbouwsector op de adoptie van deze regels."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De specifieke tijdlijn of deadline voor de implementatie van de nieuwe regels."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De verwachte effectiviteit van de regelgeving op de vermindering van smog."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Het specifieke doel van de \"Music Manifesto\" campagne van de DfES.",
+        "De exacte details van de samenwerking tussen de DfES en de muziekindustrie.",
+        "Specifieke beleidsmaatregelen of acties die door EMI zijn onderhandeld.",
+        "De impact van deze indoctrinatie op de scholieren in de Britse scholen.",
+        "Eventuele reacties of acties van andere belanghebbenden of organisaties na het schrijven van het open brief."
+      ],
+      "normalized_candidates": [
+        "Het specifieke doel van de \"Music Manifesto\" campagne van de DfES.",
+        "De exacte details van de samenwerking tussen de DfES en de muziekindustrie.",
+        "Specifieke beleidsmaatregelen of acties die door EMI zijn onderhandeld.",
+        "De impact van deze indoctrinatie op de scholieren in de Britse scholen.",
+        "Eventuele reacties of acties van andere belanghebbenden of organisaties na het schrijven van het open brief."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Het specifieke doel van de \"Music Manifesto\" campagne van de DfES."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De exacte details van de samenwerking tussen de DfES en de muziekindustrie."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Specifieke beleidsmaatregelen of acties die door EMI zijn onderhandeld."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De impact van deze indoctrinatie op de scholieren in de Britse scholen."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Eventuele reacties of acties van andere belanghebbenden of organisaties na het schrijven van het open brief."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De specifieke strategieën die door Sophos zijn gebruikt om de virussen te identificeren.",
+        "De exacte percentages van andere veroorzakende factoren voor virusinfecties in 2004.",
+        "Details over de juridische consequenties van Jaschan's veroordeling.",
+        "De specifieke technische details van hoe Jaschan de Netsky en Sasser worms heeft geprogrammeerd.",
+        "De impact van de arrestatie op de algehele trend van virusinfecties in de daaropvolgende periode."
+      ],
+      "normalized_candidates": [
+        "De specifieke strategieën die door Sophos zijn gebruikt om de virussen te identificeren.",
+        "De exacte percentages van andere veroorzakende factoren voor virusinfecties in 2004.",
+        "Details over de juridische consequenties van Jaschan's veroordeling.",
+        "De specifieke technische details van hoe Jaschan de Netsky en Sasser worms heeft geprogrammeerd.",
+        "De impact van de arrestatie op de algehele trend van virusinfecties in de daaropvolgende periode."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De specifieke strategieën die door Sophos zijn gebruikt om de virussen te identificeren."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "Details over de juridische consequenties van Jaschan's veroordeling."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De specifieke technische details van hoe Jaschan de Netsky en Sasser worms heeft geprogrammeerd."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De impact van de arrestatie op de algehele trend van virusinfecties in de daaropvolgende periode."
+        }
+      ],
+      "rejected": [
+        {
+          "text": "De exacte percentages van andere veroorzakende factoren voor virusinfecties in 2004.",
+          "reason": "not_atomic"
+        }
+      ]
+    },
+    {
+      "item_id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "De specifieke manier waarop de bloom filter wordt gebruikt voor de PGP",
+        "De procedure voor het invoegen van PGP keyfingerprints in de FOAF",
+        "De manier waarop de client het whitelist vult vanuit de sociale netwerk.",
+        "De encryptiebehoeften van de bron FOAF file voor veiligheid.",
+        "De relatie tussen de directe vrienden en de bloom filter van hun PGP"
+      ],
+      "normalized_candidates": [
+        "De specifieke manier waarop de bloom filter wordt gebruikt voor de PGP.",
+        "De procedure voor het invoegen van PGP keyfingerprints in de FOAF.",
+        "De manier waarop de client het whitelist vult vanuit de sociale netwerk.",
+        "De encryptiebehoeften van de bron FOAF file voor veiligheid.",
+        "De relatie tussen de directe vrienden en de bloom filter van hun PGP."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "De specifieke manier waarop de bloom filter wordt gebruikt voor de PGP."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De procedure voor het invoegen van PGP keyfingerprints in de FOAF."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De manier waarop de client het whitelist vult vanuit de sociale netwerk."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De encryptiebehoeften van de bron FOAF file voor veiligheid."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De relatie tussen de directe vrienden en de bloom filter van hun PGP."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Het exacte aantal geredde kredietkaarten buiten de 36,000 die worden vermeld.",
+        "De specifieke soorten misdrijven waarmee de card fraud unit is betrokken.",
+        "Het exacte aantal gevallen waarin de card fraud unit heeft bijgedragen aan de arrestatie van verdachten.",
+        "De exacte kosten die zijn bespaard door de inzet van de card fraud unit.",
+        "De periode waarin de card fraud unit haar prestaties heeft gemeten."
+      ],
+      "normalized_candidates": [
+        "Het exacte aantal geredde kredietkaarten buiten de 36,000 die worden vermeld.",
+        "De specifieke soorten misdrijven waarmee de card fraud unit is betrokken.",
+        "Het exacte aantal gevallen waarin de card fraud unit heeft bijgedragen aan de arrestatie van verdachten.",
+        "De exacte kosten die zijn bespaard door de inzet van de card fraud unit.",
+        "De periode waarin de card fraud unit haar prestaties heeft gemeten."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Het exacte aantal geredde kredietkaarten buiten de 36,000 die worden vermeld."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De specifieke soorten misdrijven waarmee de card fraud unit is betrokken."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "Het exacte aantal gevallen waarin de card fraud unit heeft bijgedragen aan de arrestatie van verdachten."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "De exacte kosten die zijn bespaard door de inzet van de card fraud unit."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De periode waarin de card fraud unit haar prestaties heeft gemeten."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Specifieke technische specificaties van de nieuwe high-speed wireless format.",
+        "De exacte groep technologiebedrijven die de voorstellen doen.",
+        "De timing en details van het voorstelpresentatie.",
+        "Potentiële impact en vooruitzichten van de nieuwe high-speed wireless standard.",
+        "Andere technologiebedrijven of belanghebbenden die mogelijk betrokken zijn bij het voorstel."
+      ],
+      "normalized_candidates": [
+        "Specifieke technische specificaties van de nieuwe high-speed wireless format.",
+        "De exacte groep technologiebedrijven die de voorstellen doen.",
+        "De timing en details van het voorstelpresentatie.",
+        "Potentiële impact en vooruitzichten van de nieuwe high-speed wireless standard.",
+        "Andere technologiebedrijven of belanghebbenden die mogelijk betrokken zijn bij het voorstel."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Specifieke technische specificaties van de nieuwe high-speed wireless format."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De exacte groep technologiebedrijven die de voorstellen doen."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De timing en details van het voorstelpresentatie."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Potentiële impact en vooruitzichten van de nieuwe high-speed wireless standard."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Andere technologiebedrijven of belanghebbenden die mogelijk betrokken zijn bij het voorstel."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Specifieke functies van de nieuwe program voor real-time motion graphics.",
+        "De prijs van de discount video-editing software bundle.",
+        "De beschikbaarheid van de software in verschillende regio's.",
+        "Specifieke updates of verbeteringen ten opzichte van eerdere versies van Final Cut Pro.",
+        "Reviews of feedback van gebruikers na de lancering van de software."
+      ],
+      "normalized_candidates": [
+        "Specifieke functies van de nieuwe program voor real-time motion graphics.",
+        "De prijs van de discount video-editing software bundle.",
+        "De beschikbaarheid van de software in verschillende regio's.",
+        "Specifieke updates of verbeteringen ten opzichte van eerdere versies van Final Cut Pro.",
+        "Reviews of feedback van gebruikers na de lancering van de software."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Specifieke functies van de nieuwe program voor real-time motion graphics."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De prijs van de discount video-editing software bundle."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De beschikbaarheid van de software in verschillende regio's."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Specifieke updates of verbeteringen ten opzichte van eerdere versies van Final Cut Pro."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "Reviews of feedback van gebruikers na de lancering van de software."
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "item_id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "candidate_source": "open_set_model_detector",
+      "raw_candidates": [
+        "Specifieke functies van de nieuwe download service.",
+        "De reactie van Apple Computer Inc. op de lancering.",
+        "De impact van de nieuwe download service op de Europese muziekmarkt.",
+        "Details over de concurrentie tussen Free Record Shop en andere spelers.",
+        "De timing en locatie van de lancering buiten Nederland."
+      ],
+      "normalized_candidates": [
+        "Specifieke functies van de nieuwe download service.",
+        "De reactie van Apple Computer Inc. op de lancering.",
+        "De impact van de nieuwe download service op de Europese muziekmarkt.",
+        "Details over de concurrentie tussen Free Record Shop en andere spelers.",
+        "De timing en locatie van de lancering buiten Nederland."
+      ],
+      "accepted": [
+        {
+          "seed_id": "ss_001",
+          "text": "Specifieke functies van de nieuwe download service."
+        },
+        {
+          "seed_id": "ss_002",
+          "text": "De reactie van Apple Computer Inc. op de lancering."
+        },
+        {
+          "seed_id": "ss_003",
+          "text": "De impact van de nieuwe download service op de Europese muziekmarkt."
+        },
+        {
+          "seed_id": "ss_004",
+          "text": "Details over de concurrentie tussen Free Record Shop en andere spelers."
+        },
+        {
+          "seed_id": "ss_005",
+          "text": "De timing en locatie van de lancering buiten Nederland."
+        }
+      ],
+      "rejected": []
+    }
+  ]
+}

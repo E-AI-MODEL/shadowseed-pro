@@ -1,0 +1,20 @@
+{
+  "source_text": "De gemeente publiceert jaarlijks een klimaatrapport. Het rapport beschrijft de uitstootcijfers per sector, de voortgang op de warmtetransitie en de subsidieregelingen voor woningisolatie. Bewoners kunnen via een loket terecht met vragen over verduurzaming.",
+  "cases": [
+    {
+      "seed_text": "Onafhankelijke toetsing van de uitstootcijfers als verklarend kader voor deze tekst.",
+      "expected_verdict": "HOUDT_STAND",
+      "note": "Deelt inhoudswoorden met de bron (uitstootcijfers) en benoemt een echt ontbrekend punt: wie controleert de cijfers?"
+    },
+    {
+      "seed_text": "Aandacht voor exoplaneetonderzoek en telescooptijd.",
+      "expected_verdict": "WEERLEGD",
+      "note": "Geen aanknoping met de bron; hoort weggeargumenteerd te worden."
+    },
+    {
+      "seed_text": "Betaalbaarheid van woningisolatie voor huurders als ontbrekende invalshoek.",
+      "expected_verdict": "HOUDT_STAND",
+      "note": "Deelt inhoudswoorden (woningisolatie) en opent een toetsbare vraag die de bron niet dekt."
+    }
+  ]
+}

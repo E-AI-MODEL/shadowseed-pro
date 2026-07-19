@@ -1,0 +1,227 @@
+{
+  "version": "probe-feedback-behavior-0.1",
+  "description": "Behavioral lifecycle tests for SSL probe feedback (Layer E). Each scenario drives apply_probe_feedback through a sequence of outcomes from a forced initial seed state and asserts the resulting weight, status, demotion flag and skip count.",
+  "scenarios": [
+    {
+      "id": "PFB_001",
+      "title": "Reward strengthens active seed",
+      "category": "strengthen",
+      "initial_state": {
+        "weight": 0.30,
+        "status": "ACTIVE",
+        "occurrence_count": 1,
+        "trace": 1.0,
+        "evidence_count": 0
+      },
+      "feedback_sequence": [
+        {"outcome": "reward", "probe_type": "follow_up"},
+        {"outcome": "reward", "probe_type": "follow_up"},
+        {"outcome": "reward", "probe_type": "retrieval"}
+      ],
+      "expected": {
+        "weight": 0.60,
+        "status": "ACTIVE",
+        "demoted": false,
+        "skip_count": 0
+      }
+    },
+    {
+      "id": "PFB_002",
+      "title": "Penalty weakens active seed",
+      "category": "weaken",
+      "initial_state": {
+        "weight": 0.60,
+        "status": "ACTIVE",
+        "occurrence_count": 1,
+        "trace": 1.0,
+        "evidence_count": 0
+      },
+      "feedback_sequence": [
+        {"outcome": "penalty", "probe_type": "dialectic"},
+        {"outcome": "penalty", "probe_type": "dialectic"}
+      ],
+      "expected": {
+        "weight": 0.20,
+        "status": "ACTIVE",
+        "demoted": false,
+        "skip_count": 0
+      }
+    },
+    {
+      "id": "PFB_003",
+      "title": "Reward clamps at upper bound 1.0",
+      "category": "clamp_upper",
+      "initial_state": {
+        "weight": 0.95,
+        "status": "PROMOTED",
+        "occurrence_count": 3,
+        "trace": 1.0,
+        "evidence_count": 2
+      },
+      "feedback_sequence": [
+        {"outcome": "reward", "probe_type": "follow_up"},
+        {"outcome": "reward", "probe_type": "follow_up"}
+      ],
+      "expected": {
+        "weight": 1.00,
+        "status": "PROMOTED",
+        "demoted": false,
+        "skip_count": 0
+      }
+    },
+    {
+      "id": "PFB_004",
+      "title": "Penalty clamps at lower bound 0.0",
+      "category": "clamp_lower",
+      "initial_state": {
+        "weight": 0.05,
+        "status": "ACTIVE",
+        "occurrence_count": 1,
+        "trace": 1.0,
+        "evidence_count": 0
+      },
+      "feedback_sequence": [
+        {"outcome": "penalty", "probe_type": "dialectic"},
+        {"outcome": "penalty", "probe_type": "dialectic"}
+      ],
+      "expected": {
+        "weight": 0.00,
+        "status": "ACTIVE",
+        "demoted": false,
+        "skip_count": 0
+      }
+    },
+    {
+      "id": "PFB_005",
+      "title": "Penalties demote promoted seed back to active",
+      "category": "demotion",
+      "initial_state": {
+        "weight": 0.55,
+        "status": "PROMOTED",
+        "occurrence_count": 3,
+        "trace": 1.0,
+        "evidence_count": 2
+      },
+      "feedback_sequence": [
+        {"outcome": "penalty", "probe_type": "dialectic"}
+      ],
+      "expected": {
+        "weight": 0.35,
+        "status": "ACTIVE",
+        "demoted": true,
+        "skip_count": 0
+      }
+    },
+    {
+      "id": "PFB_006",
+      "title": "Reward on dormant seed is skipped",
+      "category": "status_block",
+      "initial_state": {
+        "weight": 0.20,
+        "status": "DORMANT",
+        "occurrence_count": 1,
+        "trace": 0.1,
+        "evidence_count": 0
+      },
+      "feedback_sequence": [
+        {"outcome": "reward", "probe_type": "follow_up"}
+      ],
+      "expected": {
+        "weight": 0.20,
+        "status": "DORMANT",
+        "demoted": false,
+        "skip_count": 1
+      }
+    },
+    {
+      "id": "PFB_007",
+      "title": "Reward on expired seed is skipped",
+      "category": "status_block",
+      "initial_state": {
+        "weight": 0.20,
+        "status": "EXPIRED",
+        "occurrence_count": 1,
+        "trace": 0.0,
+        "evidence_count": 0
+      },
+      "feedback_sequence": [
+        {"outcome": "reward", "probe_type": "follow_up"},
+        {"outcome": "reward", "probe_type": "retrieval"}
+      ],
+      "expected": {
+        "weight": 0.20,
+        "status": "EXPIRED",
+        "demoted": false,
+        "skip_count": 2
+      }
+    },
+    {
+      "id": "PFB_008",
+      "title": "Neutral feedback is a no-op",
+      "category": "neutral",
+      "initial_state": {
+        "weight": 0.40,
+        "status": "ACTIVE",
+        "occurrence_count": 1,
+        "trace": 1.0,
+        "evidence_count": 0
+      },
+      "feedback_sequence": [
+        {"outcome": "neutral", "probe_type": "general"},
+        {"outcome": "neutral", "probe_type": "general"}
+      ],
+      "expected": {
+        "weight": 0.40,
+        "status": "ACTIVE",
+        "demoted": false,
+        "skip_count": 0
+      }
+    },
+    {
+      "id": "PFB_009",
+      "title": "Reward cannot promote on its own",
+      "category": "promotion_block",
+      "initial_state": {
+        "weight": 0.40,
+        "status": "ACTIVE",
+        "occurrence_count": 1,
+        "trace": 1.0,
+        "evidence_count": 0
+      },
+      "feedback_sequence": [
+        {"outcome": "reward", "probe_type": "follow_up"},
+        {"outcome": "reward", "probe_type": "follow_up"}
+      ],
+      "expected": {
+        "weight": 0.60,
+        "status": "ACTIVE",
+        "demoted": false,
+        "skip_count": 0
+      }
+    },
+    {
+      "id": "PFB_010",
+      "title": "Mixed reward and penalty net to small change",
+      "category": "mixed",
+      "initial_state": {
+        "weight": 0.40,
+        "status": "ACTIVE",
+        "occurrence_count": 1,
+        "trace": 1.0,
+        "evidence_count": 0
+      },
+      "feedback_sequence": [
+        {"outcome": "reward", "probe_type": "follow_up"},
+        {"outcome": "penalty", "probe_type": "dialectic"},
+        {"outcome": "reward", "probe_type": "retrieval"},
+        {"outcome": "neutral", "probe_type": "general"}
+      ],
+      "expected": {
+        "weight": 0.40,
+        "status": "ACTIVE",
+        "demoted": false,
+        "skip_count": 0
+      }
+    }
+  ]
+}

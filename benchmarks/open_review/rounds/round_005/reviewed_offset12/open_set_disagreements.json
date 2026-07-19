@@ -1,0 +1,10 @@
+{
+  "summary": {
+    "evidence_layer": "open_set_seed_quality",
+    "disagreement_count": 0,
+    "agreement_eligible_seed_count": 41,
+    "unanimous_verdict_rate": 1.0,
+    "pairwise_decision_agreement_rate": 1.0
+  },
+  "disagreements": []
+}

@@ -1,0 +1,130 @@
+{
+  "version": "4.5-model-benefit-phase-2",
+  "description": "Phase 2: compare the same model without SSL guidance against the same model with SSL-guided revision prompts. Round 010 expanded the fixture from 3 to 10 scenarios across more domains to give the payoff win-rate a larger n, plus one no-gap do-no-harm control (DNH_UNITS). Scenarios and ground-truth gaps are author-designed; detection is driven by DOMAIN_PRIORS in ssl45_gap_suite. Signal, not proof.",
+  "validation_mode": "benchmark_validated_ssl_seeds",
+  "scenarios": [
+    {
+      "id": "MODEL_A",
+      "title": "Industriële Revolutie",
+      "domain": "geschiedenis en economie",
+      "question": "Leg uit waarom de Industriële Revolutie in Groot-Brittannië kon ontstaan.",
+      "baseline_answer": "De Industriële Revolutie in het 18e-eeuwse Groot-Brittannië werd gekenmerkt door een ongekende versnelling van technologische innovatie. De verbeteringen van James Watt aan de stoommachine maakten het mogelijk om fabrieken los te koppelen van waterbronnen. De textielindustrie groeide door uitvindingen zoals de spinning jenny. Dat leidde tot urbanisatie en fabrieksarbeid.",
+      "expected_ssl_additions": [
+        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+        "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie."
+      ]
+    },
+    {
+      "id": "MODEL_B",
+      "title": "Grensoverschrijdende juridische casus",
+      "domain": "recht en jurisdictie",
+      "question": "Beoordeel de juridische positie van een Nederlandse consument die een defecte laptop koopt bij een Amerikaanse webwinkel.",
+      "baseline_answer": "De consument kan zich beroepen op consumentenbescherming rond garantie en een defect product. De kern is dat de laptop moet werken en dat de consument mogelijk recht heeft op herstel, vervanging of terugbetaling.",
+      "expected_ssl_additions": [
+        "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse webwinkel.",
+        "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
+        "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer.",
+        "Forumkeuzebeding in internationale online koopvoorwaarden."
+      ]
+    },
+    {
+      "id": "MODEL_C",
+      "title": "Software Architectuur",
+      "domain": "IT en engineering",
+      "question": "Beoordeel het ontwerp voor de HealthTrack app.",
+      "baseline_answer": "Het ontwerp bestaat uit een React Native frontend, een Node.js backend en MongoDB voor opslag. De app heeft een dashboard, Bluetooth-synchronisatie en notificaties. De UI volgt Material Design om de app toegankelijk te houden.",
+      "expected_ssl_additions": [
+        "AVG-compliance bij verwerking van medische hartslagdata.",
+        "Authenticatiestrategie voor toegang tot gezondheidsdata.",
+        "Encryptie van medische data in rust en tijdens transport.",
+        "Rate-limiting op API's die gezondheidsdata verwerken."
+      ]
+    },
+    {
+      "id": "MODEL_D",
+      "title": "Nieuw afslankmedicijn",
+      "domain": "geneeskunde en publieke gezondheid",
+      "question": "Wat zijn de voordelen van een nieuw afslankmedicijn op basis van een GLP-1-agonist?",
+      "baseline_answer": "Het medicijn helpt mensen om gewicht te verliezen door de eetlust te verminderen en het verzadigingsgevoel te vergroten. Studies laten een aanzienlijke gewichtsafname zien en ook verbeteringen in de bloedsuikerregulatie. Het wordt wekelijks toegediend via een injectie.",
+      "expected_ssl_additions": [
+        "Langetermijnbijwerkingen bij chronisch gebruik van het medicijn.",
+        "Contra-indicaties bij patiënten met bestaande aandoeningen.",
+        "Kosteneffectiviteit en toegankelijkheid voor patiënten.",
+        "Gewichtstoename na het stoppen met het medicijn."
+      ]
+    },
+    {
+      "id": "MODEL_E",
+      "title": "Zonne-energie",
+      "domain": "klimaat en energie",
+      "question": "Wat zijn de voordelen van grootschalige zonne-energie?",
+      "baseline_answer": "Zonne-energie is een hernieuwbare bron die geen directe CO2-uitstoot veroorzaakt tijdens gebruik. De kosten van zonnepanelen zijn de laatste jaren sterk gedaald, waardoor zonnestroom op veel plaatsen goedkoper is dan fossiele alternatieven. Het is schaalbaar van een enkel dak tot grote parken.",
+      "expected_ssl_additions": [
+        "Opslag van energie bij intermitterende zonproductie.",
+        "Netintegratie en balancering bij grootschalige zonne-energie.",
+        "Levenscyclus en mijnbouw van materialen voor zonnepanelen.",
+        "Landgebruik en ruimtebeslag van zonneparken."
+      ]
+    },
+    {
+      "id": "MODEL_F",
+      "title": "Indexbeleggen",
+      "domain": "financiën en beleggen",
+      "question": "Is beleggen in een wereldwijd indexfonds een goede strategie voor een particulier?",
+      "baseline_answer": "Een wereldwijd indexfonds spreidt het geld over duizenden bedrijven en heeft lage kosten. Historisch leverde de aandelenmarkt op lange termijn een goed gemiddeld rendement op. Door automatisch periodiek in te leggen profiteer je van gemiddelde aankoopprijzen en hoef je de markt niet te timen.",
+      "expected_ssl_additions": [
+        "Volgorde-risico van rendementen rond de pensioneringsdatum.",
+        "Inflatie-erosie van nominale rendementen op lange termijn.",
+        "Fiscale behandeling van dividenden en vermogenswinst.",
+        "Concentratierisico in marktgewogen indexfondsen."
+      ]
+    },
+    {
+      "id": "MODEL_G",
+      "title": "Plantaardig dieet",
+      "domain": "voeding en gezondheid",
+      "question": "Wat zijn de gezondheidsvoordelen van een volledig plantaardig dieet?",
+      "baseline_answer": "Een plantaardig dieet bevat veel vezels, vitamines en antioxidanten en weinig verzadigd vet. Het wordt in verband gebracht met een lager risico op hart- en vaatziekten, een gezonder gewicht en een lagere milieubelasting. Veel mensen ervaren meer energie en een betere spijsvertering.",
+      "expected_ssl_additions": [
+        "Suppletie van vitamine B12 bij een plantaardig dieet.",
+        "Biobeschikbaarheid van ijzer en zink uit plantaardige bronnen.",
+        "Eiwitcompleetheid en combinatie van aminozuren.",
+        "Omega-3-voorziening via ALA versus EPA en DHA."
+      ]
+    },
+    {
+      "id": "MODEL_H",
+      "title": "Classifier in productie",
+      "domain": "machine learning",
+      "question": "Waar moet ik op letten als ik een classificatiemodel naar productie breng?",
+      "baseline_answer": "Zorg dat het model goed getraind is op representatieve data en evalueer het op een aparte testset met metrics zoals accuracy, precision en recall. Verpak het achter een API, log de voorspellingen en zorg voor versiebeheer van zowel model als data zodat je resultaten kunt reproduceren.",
+      "expected_ssl_additions": [
+        "Monitoring van datadrift na deployment.",
+        "Bias- en fairness-audit op beschermde groepen.",
+        "Labellekkage tussen trainings- en testdata.",
+        "Kalibratie van voorspelde waarschijnlijkheden."
+      ]
+    },
+    {
+      "id": "MODEL_I",
+      "title": "Fietspaden in de stad",
+      "domain": "stadsplanning en mobiliteit",
+      "question": "Wat zijn de voordelen van het aanleggen van meer vrijliggende fietspaden in een stad?",
+      "baseline_answer": "Meer fietspaden moedigen mensen aan om de fiets te pakken in plaats van de auto, wat zorgt voor minder uitstoot, minder files en een gezondere bevolking. Het maakt de stad aantrekkelijker en levendiger en kan de drukte op het openbaar vervoer verlichten.",
+      "expected_ssl_additions": [
+        "Veiligheid op kruispunten en conflictpunten met autoverkeer.",
+        "Toegankelijkheid voor mensen met een beperking.",
+        "Onderhoud en sneeuwruiming van vrijliggende fietspaden.",
+        "Verschuiving van parkeerruimte en verkeersverdringing."
+      ]
+    },
+    {
+      "id": "DNH_UNITS",
+      "title": "Do-no-harm controle: eenheden omrekenen",
+      "domain": "rekenen en eenheden",
+      "question": "Reken 2,5 kilometer om naar meters en leg de stap kort uit.",
+      "baseline_answer": "2,5 kilometer is gelijk aan 2500 meter, omdat één kilometer per definitie 1000 meter is. Je vermenigvuldigt dus 2,5 met 1000 en krijgt 2500 meter.",
+      "expected_ssl_additions": []
+    }
+  ]
+}

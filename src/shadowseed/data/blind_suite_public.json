@@ -1,0 +1,51 @@
+{
+  "version": "blind-0.1-public",
+  "description": "Publieke scenario's voor de blinde benchmark. Dit bestand bevat bewust geen expected_gaps, must_not_add of ground truth.",
+  "scenarios": [
+    {
+      "id": "BLIND_HIST_001",
+      "domain": "geschiedenis",
+      "input": "Een antwoord over de Franse Revolutie bespreekt de standenmaatschappij, politieke ideeën, voedselprijzen en de rol van de monarchie. Het antwoord blijft binnen Frankrijk en noemt vooral directe binnenlandse oorzaken.",
+      "metadata": {
+        "difficulty": "subtiel",
+        "type": "missing external dependency"
+      }
+    },
+    {
+      "id": "BLIND_LAW_001",
+      "domain": "recht",
+      "input": "Een Nederlandse klant koopt online een product bij een buitenlandse aanbieder. Het antwoord bespreekt consumentenrechten en retourtermijnen, maar blijft vaag over procedurele vragen rond welk recht geldt en waar het geschil behandeld kan worden.",
+      "metadata": {
+        "difficulty": "makkelijk",
+        "type": "cross-border procedure"
+      }
+    },
+    {
+      "id": "BLIND_ARCH_001",
+      "domain": "softwarearchitectuur",
+      "input": "Een ontwerp voor een mobiele zorgapp noemt React Native, een Node.js API, MongoDB en pushnotificaties. Het antwoord focust op functies en schermen, maar werkt de bescherming van gevoelige data en misbruik van publieke endpoints niet uit.",
+      "metadata": {
+        "difficulty": "makkelijk",
+        "type": "security and privacy"
+      }
+    },
+    {
+      "id": "BLIND_ETH_001",
+      "domain": "medische ethiek",
+      "input": "Een onderzoeksvoorstel wil patiëntdata gebruiken voor een voorspellend model. Het antwoord bespreekt wetenschappelijke waarde en verwachte nauwkeurigheid, maar gaat nauwelijks in op de positie van patiënten en de omgang met gevoelige gegevens.",
+      "metadata": {
+        "difficulty": "subtiel",
+        "type": "patient rights"
+      }
+    },
+    {
+      "id": "BLIND_EDU_001",
+      "domain": "onderwijs",
+      "input": "Een school wil adaptieve oefensoftware invoeren. Het antwoord noemt gepersonaliseerd leren, voortgangsdata en betere motivatie, maar laat de effecten op verschillende leerlinggroepen en de uitvoerbaarheid voor docenten grotendeels liggen.",
+      "metadata": {
+        "difficulty": "gedeeltelijk volledig",
+        "type": "implementation impact"
+      }
+    }
+  ]
+}

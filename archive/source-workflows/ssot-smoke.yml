@@ -1,0 +1,123 @@
+name: Research · SSOT smoke
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ssot-smoke:
+    name: SSOT document validation smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+
+      - name: Run SSOT smoke
+        run: |
+          python -m pytest tests/test_ssot_manager.py -q
+          python -m shadowseed.cli run-ssot-smoke
+
+      - name: Upload SSOT smoke result
+        uses: actions/upload-artifact@v4
+        with:
+          name: ssl45-ssot-smoke-results
+          path: results/ssot_smoke.json
+          if-no-files-found: error
+
+      - name: Build SSOT wiki page
+        env:
+          SHA: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          payload = json.loads(Path('results/ssot_smoke.json').read_text(encoding='utf-8'))
+          summary = payload['summary']
+          lines = [
+              '# SSOT Smoke Run',
+              '',
+              'Deze pagina beschrijft de optionele SSOT-smoke voor documentgestuurde validatie van open shadow seeds.',
+              '',
+              '## Conclusie',
+              '',
+              'De SSOT-smoke is geslaagd.' if summary.get('passed') else 'De SSOT-smoke is niet geslaagd.',
+              '',
+              '## Kerncijfers',
+              '',
+              '| Metric | Waarde |',
+              '|---|---:|',
+              f"| Seed ID | {summary.get('seed_id')} |",
+              f"| Documenten | {summary.get('doc_count')} |",
+              f"| SSOT chunks | {summary.get('chunk_count')} |",
+              f"| Retrieved context hits | {summary.get('retrieved_context_count')} |",
+              f"| Validaties | {summary.get('validations')} |",
+              f"| Status voor SSOT | {summary.get('before_status')} |",
+              f"| Weight voor SSOT | {summary.get('before_weight')} |",
+              f"| Evidence voor SSOT | {summary.get('before_evidence_count')} |",
+              f"| Status na SSOT | {summary.get('after_status')} |",
+              f"| Weight na SSOT | {summary.get('after_weight')} |",
+              f"| Evidence na SSOT | {summary.get('after_evidence_count')} |",
+              '',
+              '## Wat hiermee is aangetoond',
+              '',
+              '- Een vertrouwd document wordt in een aparte SSOT-vectorstore geplaatst.',
+              '- De SSOT-store staat los van de seed-vectorstore.',
+              '- Een open, gewichtloze seed kan door SSOT-chunks externe evidence krijgen.',
+              '- De SSOT kent niet zelf weight toe; promotie loopt via de Validation Gate.',
+              '- Na voldoende evidence kan de seed `PROMOTED` worden.',
+              '',
+              '## Grens van de claim',
+              '',
+              'Deze run gebruikt een kleine fixture en `InMemoryVectorStore`. Dit bewijst dat de SSOT-lus veilig in de bestaande SSL-lifecycle past. Het bewijst nog niet dat documentvalidatie op grote PDF-sets of echte kennisbanken volledig robuust is.',
+              '',
+              '## Commit',
+              '',
+              f"`{os.environ.get('SHA', '')}`",
+              '',
+          ]
+          Path('SSOT-Smoke.md').write_text('\n'.join(lines), encoding='utf-8')
+          PY
+
+      - name: Publish SSOT smoke to GitHub Wiki
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -e
+          WIKI_URL="https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.wiki.git"
+          if ! git clone "$WIKI_URL" wiki; then
+            echo "Wiki repo not available. Enable Wiki in repo settings and create the first page once."
+            exit 0
+          fi
+          cp SSOT-Smoke.md wiki/SSOT-Smoke.md
+          cp results/ssot_smoke.json wiki/SSOT-Smoke-Raw.json
+          if [ ! -f wiki/Home.md ]; then
+            printf '# Shadow Seed Learning 4.5\n\n- [SSOT Smoke](SSOT-Smoke)\n' > wiki/Home.md
+          elif ! grep -q "SSOT-Smoke" wiki/Home.md; then
+            printf '\n- [SSOT Smoke](SSOT-Smoke)\n' >> wiki/Home.md
+          fi
+          cd wiki
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Home.md SSOT-Smoke.md SSOT-Smoke-Raw.json
+          if git diff --cached --quiet; then
+            echo "No wiki changes."
+          else
+            git commit -m "Update SSOT smoke wiki (${SHA})"
+            git push
+          fi

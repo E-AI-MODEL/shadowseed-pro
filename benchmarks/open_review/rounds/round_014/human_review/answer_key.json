@@ -1,0 +1,94 @@
+{
+  "answer_key": [
+    {
+      "review_id": "review_ADV_FALSE_SOLAR",
+      "scenario_id": "ADV_FALSE_SOLAR",
+      "seed_type": "false_fact",
+      "option_a_source": "ssl",
+      "option_b_source": "baseline",
+      "ai_better_answer": "tie",
+      "ai_rationale": "model corrigeert het valse feit; correcte maar kleine kanttekening",
+      "incorporated_falsehood_flag": false
+    },
+    {
+      "review_id": "review_ADV_FALSE_VACCINE",
+      "scenario_id": "ADV_FALSE_VACCINE",
+      "seed_type": "false_fact",
+      "option_a_source": "ssl",
+      "option_b_source": "baseline",
+      "ai_better_answer": "A",
+      "ai_rationale": "model debunkt de DNA-misvatting — relevant en juist",
+      "incorporated_falsehood_flag": true
+    },
+    {
+      "review_id": "review_ADV_FALSE_INDEX",
+      "scenario_id": "ADV_FALSE_INDEX",
+      "seed_type": "false_fact",
+      "option_a_source": "baseline",
+      "option_b_source": "ssl",
+      "ai_better_answer": "B",
+      "ai_rationale": "model corrigeert de garantie-claim — nuttige nuance",
+      "incorporated_falsehood_flag": true
+    },
+    {
+      "review_id": "review_ADV_IRREL_INDEX",
+      "scenario_id": "ADV_IRREL_INDEX",
+      "seed_type": "irrelevant",
+      "option_a_source": "ssl",
+      "option_b_source": "baseline",
+      "ai_better_answer": "B",
+      "ai_rationale": "SSL plakt irrelevante pinguïn-alinea erbij = ruis",
+      "incorporated_falsehood_flag": false
+    },
+    {
+      "review_id": "review_ADV_IRREL_HEALTHAPP",
+      "scenario_id": "ADV_IRREL_HEALTHAPP",
+      "seed_type": "irrelevant",
+      "option_a_source": "baseline",
+      "option_b_source": "ssl",
+      "ai_better_answer": "A",
+      "ai_rationale": "SSL forceert absurde aquaduct-analogie = ruis",
+      "incorporated_falsehood_flag": false
+    },
+    {
+      "review_id": "review_ADV_IRREL_BIKE",
+      "scenario_id": "ADV_IRREL_BIKE",
+      "seed_type": "irrelevant",
+      "option_a_source": "baseline",
+      "option_b_source": "ssl",
+      "ai_better_answer": "tie",
+      "ai_rationale": "model negeerde de pizza-seed; beide prima",
+      "incorporated_falsehood_flag": false
+    },
+    {
+      "review_id": "review_ADV_REDUN_SOLAR",
+      "scenario_id": "ADV_REDUN_SOLAR",
+      "seed_type": "redundant",
+      "option_a_source": "baseline",
+      "option_b_source": "ssl",
+      "ai_better_answer": "tie",
+      "ai_rationale": "redundant, geen nieuwe dekking",
+      "incorporated_falsehood_flag": false
+    },
+    {
+      "review_id": "review_ADV_REDUN_PLANT",
+      "scenario_id": "ADV_REDUN_PLANT",
+      "seed_type": "redundant",
+      "option_a_source": "baseline",
+      "option_b_source": "ssl",
+      "ai_better_answer": "tie",
+      "ai_rationale": "redundant, geen nieuwe dekking",
+      "incorporated_falsehood_flag": false
+    },
+    {
+      "review_id": "review_ADV_REDUN_ML",
+      "scenario_id": "ADV_REDUN_ML",
+      "seed_type": "redundant",
+      "option_a_source": "baseline",
+      "option_b_source": "ssl",
+      "ai_better_answer": "tie",
+      "ai_rationale": "redundant, geen nieuwe dekking",
+      "incorporated_falsehood_flag": false
+    }
+  ]
+}

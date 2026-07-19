@@ -1,0 +1,258 @@
+{
+  "benchmark_name": "AbsenceBench",
+  "run_type": "benchmarkscan",
+  "execution_status": "benchmarkscan",
+  "ssl_input_basis": [
+    "shadowseed-manager",
+    "local-json-or-hf-sample"
+  ],
+  "host_platform": "local",
+  "dataset_status": "lokaal",
+  "runner_status": "baseline-vs-shadowseed harness",
+  "score": 0.0,
+  "score_type": "Shadow Seed F1 against absence labels",
+  "interpretation": "Vergelijkt een lexicale baseline met de Shadow Seed pipeline. De score is de Shadow Seed F1; delta_f1 staat in de output.",
+  "limitations": [
+    "gratis lokale harness; geen betaalde LLM-calls",
+    "lexicale embedding in plaats van extern embeddingmodel",
+    "geen upstream AbsenceBench evaluator"
+  ],
+  "execution_gap": false,
+  "timestamp": "2026-05-07T04:26:28.974802+00:00",
+  "evaluation": {
+    "baseline": {
+      "true_positive": 1,
+      "false_positive": 0,
+      "true_negative": 0,
+      "false_negative": 1,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6666666666666666,
+      "accuracy": 0.5
+    },
+    "shadowseed": {
+      "true_positive": 0,
+      "false_positive": 0,
+      "true_negative": 0,
+      "false_negative": 2,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.0
+    },
+    "delta_f1": -0.6666666666666666,
+    "examples": [
+      {
+        "id": "sample-001",
+        "expected_absence": true,
+        "baseline_detected": false,
+        "shadowseed_detected": false,
+        "trace": {
+          "candidate_count": 0,
+          "promoted_count": 0,
+          "rejected_candidates": [],
+          "manager": {
+            "config": {
+              "trace_start": 2.0,
+              "half_life_turns": 3.0,
+              "dedup_threshold": 0.95,
+              "promotion_threshold": 0.4,
+              "dormant_threshold": 0.05,
+              "validation_increment": 0.2,
+              "contradiction_penalty": 0.3,
+              "max_trace": 3.0,
+              "reactivation_increment": 2.0,
+              "min_occurrences_for_gate": 3,
+              "min_evidence_for_gate": 2,
+              "min_trace_for_gate": 0.5,
+              "max_seed_words": 18
+            },
+            "seeds": [],
+            "constellations": [],
+            "validation_log": [],
+            "event_log": [],
+            "vector_constellation": null
+          }
+        }
+      },
+      {
+        "id": "sample-002",
+        "expected_absence": true,
+        "baseline_detected": true,
+        "shadowseed_detected": false,
+        "trace": {
+          "candidate_count": 1,
+          "promoted_count": 0,
+          "rejected_candidates": [],
+          "manager": {
+            "config": {
+              "trace_start": 2.0,
+              "half_life_turns": 3.0,
+              "dedup_threshold": 0.95,
+              "promotion_threshold": 0.4,
+              "dormant_threshold": 0.05,
+              "validation_increment": 0.2,
+              "contradiction_penalty": 0.3,
+              "max_trace": 3.0,
+              "reactivation_increment": 2.0,
+              "min_occurrences_for_gate": 3,
+              "min_evidence_for_gate": 2,
+              "min_trace_for_gate": 0.5,
+              "max_seed_words": 18
+            },
+            "seeds": [
+              {
+                "id": "ss_001",
+                "text": "Ontbrekend concept: bewijs",
+                "embedding": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.5773502691896258,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.5773502691896258,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.5773502691896258,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "trigger_keywords": [
+                  "bewijs"
+                ],
+                "trace": 2.0,
+                "weight": 0.2,
+                "occurrence_count": 3,
+                "evidence_count": 2,
+                "status": "ACTIVE",
+                "created_at": "2026-05-07T04:26:28.974581",
+                "updated_at": "2026-05-07T04:26:28.974620"
+              }
+            ],
+            "constellations": [],
+            "validation_log": [
+              {
+                "seed_id": "ss_001",
+                "status_before": "NEW",
+                "status_after": "NEW",
+                "weight_before": 0.0,
+                "weight_after": 0.0,
+                "occurrence_count": 3,
+                "evidence_count": 1,
+                "internal_recognition_passed": true,
+                "external_evidence_passed": false,
+                "contradiction_free": true,
+                "external_evidence_applied": true,
+                "contradiction_applied": false,
+                "promoted": false,
+                "verdict": "blocked",
+                "created_at": "2026-05-07T04:26:28.974614"
+              },
+              {
+                "seed_id": "ss_001",
+                "status_before": "NEW",
+                "status_after": "ACTIVE",
+                "weight_before": 0.0,
+                "weight_after": 0.2,
+                "occurrence_count": 3,
+                "evidence_count": 2,
+                "internal_recognition_passed": true,
+                "external_evidence_passed": true,
+                "contradiction_free": true,
+                "external_evidence_applied": true,
+                "contradiction_applied": false,
+                "promoted": false,
+                "verdict": "validated",
+                "created_at": "2026-05-07T04:26:28.974627"
+              }
+            ],
+            "event_log": [
+              {
+                "event_type": "created",
+                "seed_id": "ss_001",
+                "detail": {
+                  "text": "Ontbrekend concept: bewijs"
+                },
+                "created_at": "2026-05-07T04:26:28.974597"
+              },
+              {
+                "event_type": "validation_blocked",
+                "seed_id": "ss_001",
+                "detail": {
+                  "internal_recognition_passed": true,
+                  "external_evidence_passed": false,
+                  "contradiction_free": true
+                },
+                "created_at": "2026-05-07T04:26:28.974607"
+              },
+              {
+                "event_type": "validated",
+                "seed_id": "ss_001",
+                "detail": {
+                  "promoted": false,
+                  "weight_after": 0.2,
+                  "evidence_count": 2
+                },
+                "created_at": "2026-05-07T04:26:28.974623"
+              }
+            ],
+            "vector_constellation": null
+          }
+        }
+      }
+    ]
+  }
+}

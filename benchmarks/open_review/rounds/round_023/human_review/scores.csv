@@ -1,0 +1,31 @@
+reviewer,item_id,ssl_side,winner,ssl_won,seed_effect,noise
+r1,CONV_STARTUP-t04,B,A,no,helpt (privacy-integratie),geen
+r1,CONV_STARTUP-t05,A,A,yes,neutraal (puur technisch),geen
+r1,CONV_STARTUP-t06,B,B,yes,helpt sterk (netwerkeffecten),geen
+r1,CONV_STARTUP-t07,A,B,no,helpt (privacy bij jongeren),geen
+r1,CONV_STARTUP-t08,B,B,yes,helpt (netwerk+privacy),geen
+r1,CONV_CITY-t04,B,A,no,helpt (historische gelaagdheid),geen
+r1,CONV_CITY-t05,A,A,yes,neutraal-licht,geen
+r1,CONV_CITY-t06,B,A,no,neutraal,geen
+r1,CONV_CITY-t07,A,A,yes,neutraal,geen
+r1,CONV_CITY-t08,B,A,no,helpt sterk (historische gelaagdheid),geen
+r2,CONV_STARTUP-t04,B,A,no,helpt duidelijk,geen
+r2,CONV_STARTUP-t05,A,B,no,maakt geen verschil,geen
+r2,CONV_STARTUP-t06,B,A,no,helpt duidelijk,geen
+r2,CONV_STARTUP-t07,A,B,no,helpt een beetje,geen
+r2,CONV_STARTUP-t08,B,A,no,helpt duidelijk,geen
+r2,CONV_CITY-t04,B,A,no,helpt duidelijk,geen
+r2,CONV_CITY-t05,A,A,yes,helpt duidelijk,geen
+r2,CONV_CITY-t06,B,B,yes,maakt geen verschil,geen
+r2,CONV_CITY-t07,A,A,yes,helpt een beetje,geen
+r2,CONV_CITY-t08,B,A,no,helpt duidelijk,geen
+r3,CONV_STARTUP-t04,B,A,no,helpt een beetje,beperkte ruis in B (apparaatgegevens)
+r3,CONV_STARTUP-t05,A,B,no,maakt geen verschil,geen
+r3,CONV_STARTUP-t06,B,B,yes,helpt duidelijk,A: harde benchmarks zonder context
+r3,CONV_STARTUP-t07,A,B,no,helpt duidelijk,geen
+r3,CONV_STARTUP-t08,B,B,yes,helpt duidelijk,A: reguleringsclaims breed
+r3,CONV_CITY-t04,B,A,no,helpt een beetje,geen
+r3,CONV_CITY-t05,A,B,no,maakt geen verschil,geen
+r3,CONV_CITY-t06,B,B,yes,maakt geen verschil,geen
+r3,CONV_CITY-t07,A,A,yes,maakt geen verschil,geen
+r3,CONV_CITY-t08,B,A,no,helpt duidelijk,geen

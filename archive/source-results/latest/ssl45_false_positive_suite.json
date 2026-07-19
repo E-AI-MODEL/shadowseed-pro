@@ -1,0 +1,40 @@
+{
+  "summary": {
+    "suite_version": "4.5-negative-controls",
+    "scenario_count": 3,
+    "candidate_false_positives": 0,
+    "promoted_false_positives": 0,
+    "candidate_false_positive_rate": 0.0,
+    "promoted_false_positive_rate": 0.0,
+    "passed": true
+  },
+  "results": [
+    {
+      "scenario_id": "NEG_A",
+      "title": "Industriële Revolutie volledig antwoord",
+      "domain": "geschiedenis en economie",
+      "candidate_false_positives": 0,
+      "promoted_false_positives": 0,
+      "detected_candidates": [],
+      "passed": true
+    },
+    {
+      "scenario_id": "NEG_B",
+      "title": "Grensoverschrijdende juridische casus volledig antwoord",
+      "domain": "recht en jurisdictie",
+      "candidate_false_positives": 0,
+      "promoted_false_positives": 0,
+      "detected_candidates": [],
+      "passed": true
+    },
+    {
+      "scenario_id": "NEG_C",
+      "title": "Software architectuur volledig antwoord",
+      "domain": "IT en engineering",
+      "candidate_false_positives": 0,
+      "promoted_false_positives": 0,
+      "detected_candidates": [],
+      "passed": true
+    }
+  ]
+}

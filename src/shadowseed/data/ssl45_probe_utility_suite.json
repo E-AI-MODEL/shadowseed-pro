@@ -1,0 +1,48 @@
+{
+  "version": "4.5-probe-utility-0.1",
+  "description": "First probe utility suite for SSL 4.5. Measures whether promoted seeds yield sharper follow-up actions than broad baseline prompts.",
+  "scenarios": [
+    {
+      "id": "PROBE_A",
+      "title": "History follow-up",
+      "domain": "geschiedenis en economie",
+      "seed": "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+      "baseline_follow_up": "Kun je meer context geven over de Industriële Revolutie?",
+      "ssl_follow_up": "Welke rol speelde koloniaal kapitaal specifiek als financieringsbron voor Britse fabrieksinvesteringen?",
+      "baseline_retrieval_query": "Industriële Revolutie context Groot-Brittannië",
+      "ssl_retrieval_query": "koloniaal kapitaal Britse fabrieksinvesteringen industriële revolutie",
+      "baseline_dialectic": "Misschien ontbreekt er nog iets economisch of sociaal.",
+      "ssl_dialectic": "Welke aanname over binnenlandse kapitaalvorming moet eerst worden gefalsificeerd voordat koloniaal kapitaal als noodzakelijke factor geldt?",
+      "expected_terms": ["koloniaal", "kapitaal", "fabrieksinvesteringen"],
+      "forbidden_broad_terms": ["context", "meer", "algemeen"]
+    },
+    {
+      "id": "PROBE_B",
+      "title": "Legal follow-up",
+      "domain": "recht en jurisdictie",
+      "seed": "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
+      "baseline_follow_up": "Kun je de juridische analyse verder uitwerken?",
+      "ssl_follow_up": "Welk recht is toepasselijk op dit grensoverschrijdende consumentencontract tussen Nederlandse consument en Amerikaanse aanbieder?",
+      "baseline_retrieval_query": "internationale consumentenrecht analyse",
+      "ssl_retrieval_query": "toepasselijk recht grensoverschrijdend consumentencontract nederland vs verenigde staten",
+      "baseline_dialectic": "Misschien ontbreekt nog extra internationale context.",
+      "ssl_dialectic": "Welke conflictregel zou de aanname weerleggen dat automatisch alleen Nederlands consumentenrecht geldt?",
+      "expected_terms": ["toepasselijk", "recht", "grensoverschrijdend"],
+      "forbidden_broad_terms": ["extra", "context", "analyse"]
+    },
+    {
+      "id": "PROBE_C",
+      "title": "Engineering follow-up",
+      "domain": "IT en engineering",
+      "seed": "Encryptie van medische data in rust en tijdens transport.",
+      "baseline_follow_up": "Kun je dit ontwerp verder verbeteren?",
+      "ssl_follow_up": "Hoe moet medische data in rust en tijdens transport concreet worden versleuteld in dit ontwerp?",
+      "baseline_retrieval_query": "health app ontwerp verbeteren",
+      "ssl_retrieval_query": "encryptie medische data in rust tijdens transport health app architectuur",
+      "baseline_dialectic": "Misschien ontbreekt nog iets rondom security.",
+      "ssl_dialectic": "Welke aanname over veilige opslag wordt ongeldig als data wel in rust maar niet tijdens transport versleuteld is?",
+      "expected_terms": ["encryptie", "rust", "transport"],
+      "forbidden_broad_terms": ["verbeteren", "security", "iets"]
+    }
+  ]
+}

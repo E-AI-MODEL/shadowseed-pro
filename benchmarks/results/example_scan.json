@@ -1,0 +1,22 @@
+{
+  "benchmark_name": "AbsenceBench",
+  "run_type": "benchmark_scan",
+  "execution_status": "benchmark_scan",
+  "ssl_input_basis": [
+    "README.md",
+    "docs/architecture/lifecycle-and-gate.md",
+    "docs/research/status.md"
+  ],
+  "host_platform": "Hugging Face dataset and GitHub repository",
+  "dataset_status": "present",
+  "runner_status": "structure_present",
+  "score": null,
+  "score_type": "unverified",
+  "interpretation": "Public sources and runner structure are visible; no live benchmark was executed.",
+  "limitations": [
+    "end-to-end execution not verified",
+    "score-output mapping not verified"
+  ],
+  "execution_gap": true,
+  "timestamp": "2026-07-19T00:00:00+00:00"
+}

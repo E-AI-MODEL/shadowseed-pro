@@ -1,0 +1,85 @@
+{
+  "answer_key": [
+    {
+      "review_id": "review_CONV_STARTUP_t4",
+      "scenario_id": "CONV_STARTUP_t4",
+      "option_a_source": "baseline",
+      "option_b_source": "ssl",
+      "ai_better_answer": "B",
+      "surfaced_seeds": "Netwerkeffecten en kritische massa als verklarend kader voor vroege gebruikersgroei. | Vertrouwensdynamiek tussen jongeren en nieuwe digitale platforms als sociologisch perspectief."
+    },
+    {
+      "review_id": "review_CONV_STARTUP_t5",
+      "scenario_id": "CONV_STARTUP_t5",
+      "option_a_source": "ssl",
+      "option_b_source": "baseline",
+      "ai_better_answer": "A",
+      "surfaced_seeds": "Netwerkeffecten en kritische massa als verklarend kader voor vroege gebruikersgroei. | Vertrouwensdynamiek tussen jongeren en nieuwe digitale platforms als sociologisch perspectief."
+    },
+    {
+      "review_id": "review_CONV_STARTUP_t6",
+      "scenario_id": "CONV_STARTUP_t6",
+      "option_a_source": "baseline",
+      "option_b_source": "ssl",
+      "ai_better_answer": "B",
+      "surfaced_seeds": "Netwerkeffecten en kritische massa als verklarend kader voor vroege gebruikersgroei. | Vertrouwensdynamiek tussen jongeren en nieuwe digitale platforms als sociologisch perspectief. | Ethische afwegingen rond verslavingsgevoelige ontwerpprincipes voor jongeren."
+    },
+    {
+      "review_id": "review_CONV_STARTUP_t7",
+      "scenario_id": "CONV_STARTUP_t7",
+      "option_a_source": "ssl",
+      "option_b_source": "baseline",
+      "ai_better_answer": "tie",
+      "surfaced_seeds": "Netwerkeffecten en kritische massa als verklarend kader voor vroege gebruikersgroei. | Vertrouwensdynamiek tussen jongeren en nieuwe digitale platforms als sociologisch perspectief. | Ethische afwegingen rond verslavingsgevoelige ontwerpprincipes voor jongeren. | Invloed van platformonafhankelijke netwerkeffecten op retentie buiten de app zelf."
+    },
+    {
+      "review_id": "review_CONV_STARTUP_t8",
+      "scenario_id": "CONV_STARTUP_t8",
+      "option_a_source": "baseline",
+      "option_b_source": "ssl",
+      "ai_better_answer": "B",
+      "surfaced_seeds": "Netwerkeffecten en kritische massa als verklarend kader voor vroege gebruikersgroei. | Vertrouwensdynamiek tussen jongeren en nieuwe digitale platforms als sociologisch perspectief. | Ethische afwegingen rond verslavingsgevoelige ontwerpprincipes voor jongeren. | Invloed van platformonafhankelijke netwerkeffecten op retentie buiten de app zelf."
+    },
+    {
+      "review_id": "review_CONV_CITY_t4",
+      "scenario_id": "CONV_CITY_t4",
+      "option_a_source": "baseline",
+      "option_b_source": "ssl",
+      "ai_better_answer": "B",
+      "surfaced_seeds": "Historische gelaagdheid van de binnenstad als uitgangspunt voor revitalisering."
+    },
+    {
+      "review_id": "review_CONV_CITY_t5",
+      "scenario_id": "CONV_CITY_t5",
+      "option_a_source": "ssl",
+      "option_b_source": "baseline",
+      "ai_better_answer": "A",
+      "surfaced_seeds": "Historische gelaagdheid van de binnenstad als uitgangspunt voor revitalisering. | De rol van informele netwerken en spontane initiatieven naast formele participatieprocessen."
+    },
+    {
+      "review_id": "review_CONV_CITY_t6",
+      "scenario_id": "CONV_CITY_t6",
+      "option_a_source": "baseline",
+      "option_b_source": "ssl",
+      "ai_better_answer": "B",
+      "surfaced_seeds": "Historische gelaagdheid van de binnenstad als uitgangspunt voor revitalisering. | De rol van informele netwerken en spontane initiatieven naast formele participatieprocessen. | Klimaatadaptatie en ecologische veerkracht als leidende principes voor binnenstedelijke vernieuwing. | De impact van digitalisering en slimme mobiliteitssystemen op het sturen van verkeersstromen in de binnenstad."
+    },
+    {
+      "review_id": "review_CONV_CITY_t7",
+      "scenario_id": "CONV_CITY_t7",
+      "option_a_source": "ssl",
+      "option_b_source": "baseline",
+      "ai_better_answer": "A",
+      "surfaced_seeds": "Historische gelaagdheid van de binnenstad als uitgangspunt voor revitalisering. | De rol van informele netwerken en spontane initiatieven naast formele participatieprocessen. | Klimaatadaptatie en ecologische veerkracht als leidende principes voor binnenstedelijke vernieuwing. | Sociale inclusie als lens voor bereikbaarheid: toegankelijkheid voor mensen met beperkte mobiliteit of verschillende sociaaleconomische achtergronden. | Tijdelijke en seizoensgebonden fluctuaties in bezoekersstromen als verklarend kader voor flexibele mobiliteitsoplossingen. | De impact van digitalisering en slimme mobiliteitssystemen op het sturen van verkeersstromen in de binnenstad."
+    },
+    {
+      "review_id": "review_CONV_CITY_t8",
+      "scenario_id": "CONV_CITY_t8",
+      "option_a_source": "baseline",
+      "option_b_source": "ssl",
+      "ai_better_answer": "tie",
+      "surfaced_seeds": "Historische gelaagdheid van de binnenstad als uitgangspunt voor revitalisering. | De rol van informele netwerken en spontane initiatieven naast formele participatieprocessen. | Klimaatadaptatie en ecologische veerkracht als leidende principes voor binnenstedelijke vernieuwing. | De rol van digitale transformatie in het herdefiniëren van winkel- en horecabeleving. | Sociale inclusie als lens voor bereikbaarheid: toegankelijkheid voor mensen met beperkte mobiliteit of verschillende sociaaleconomische achtergronden. | Tijdelijke en seizoensgebonden fluctuaties in bezoekersstromen als verklarend kader voor flexibele mobiliteitsoplossingen. | De impact van digitalisering en slimme mobiliteitssystemen op het sturen van verkeersstromen in de binnenstad. | Lokale participatie en co-creatie als kader voor duurzame toeristische ontwikkeling."
+    }
+  ],
+  "legend": "ai_better_answer = assistant blind lean (8 ssl, 2 tie) for human-vs-AI agreement; do not show before scoring."
+}

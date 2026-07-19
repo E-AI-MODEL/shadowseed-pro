@@ -1,0 +1,38 @@
+{
+  "version": "open-set-seed-review-sample-0.1",
+  "items": [
+    {
+      "id": "OPEN_HIST_001",
+      "title": "Korte economische uitleg zonder koloniale verdieping",
+      "domain": "geschiedenis en economie",
+      "text": "De Industriële Revolutie in Groot-Brittannië werd aangedreven door stoomkracht, fabrieken en urbanisatie. De tekst noemt technologische innovatie, maar werkt internationale afhankelijkheden en financieringsstructuren niet uit.",
+      "candidate_seeds": [
+        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+        "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie.",
+        "oorzaken, gevolgen en bredere context van industrialisatie"
+      ]
+    },
+    {
+      "id": "OPEN_LAW_001",
+      "title": "Consumentenrecht zonder procedurele uitwerking",
+      "domain": "recht en jurisdictie",
+      "text": "Een Nederlandse consument koopt software bij een Amerikaanse aanbieder. De tekst noemt dat consumenten bescherming hebben, maar bespreekt niet welke rechter bevoegd is en welk recht geldt.",
+      "candidate_seeds": [
+        "Rechtsbevoegdheid bij een geschil tussen een Nederlandse consument en een Amerikaanse aanbieder.",
+        "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
+        "internationale juridische context en meerdere perspectieven"
+      ]
+    },
+    {
+      "id": "OPEN_IT_001",
+      "title": "Health app ontwerp zonder veiligheidsuitwerking",
+      "domain": "IT en engineering",
+      "text": "Een mobiele health app synchroniseert hartslagdata met een cloudbackend. Het ontwerp noemt gebruikersgemak en realtime sync, maar laat beveiliging en privacy grotendeels impliciet.",
+      "candidate_seeds": [
+        "AVG-compliance bij verwerking van medische hartslagdata.",
+        "Encryptie van medische data in rust en tijdens transport.",
+        "security, privacy en schaalbaarheid"
+      ]
+    }
+  ]
+}

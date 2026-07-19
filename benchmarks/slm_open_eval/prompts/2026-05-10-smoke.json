@@ -1,0 +1,43 @@
+{
+  "version": "slm-open-eval-0.1",
+  "prompt_set_id": "2026-05-10-smoke",
+  "source": "human_curated_rotating",
+  "status": "experimental",
+  "items": [
+    {
+      "id": "SLM_OPEN_001",
+      "domain": "legal_reasoning",
+      "prompt": "Een Nederlandse webwinkel verkoopt een refurbished laptop aan een klant in Belgie. De laptop werkt na drie weken niet meer. Leg uit welke vragen eerst beantwoord moeten worden voordat je iets kunt zeggen over rechten, plichten en een mogelijke oplossing.",
+      "source_note": "Cross-border consumer dispute prompt without embedded answer key.",
+      "hidden_review_notes": null
+    },
+    {
+      "id": "SLM_OPEN_002",
+      "domain": "education_policy",
+      "prompt": "Een middelbare school wil een AI-tool gebruiken om leerlingen automatisch extra oefenmateriaal te geven. De directie vraagt of dit meteen schoolbreed kan worden ingevoerd. Geef een zorgvuldig antwoord met punten die eerst onderzocht moeten worden.",
+      "source_note": "Education governance prompt aimed at missing considerations, not a fixed expected gap.",
+      "hidden_review_notes": null
+    },
+    {
+      "id": "SLM_OPEN_003",
+      "domain": "software_architecture",
+      "prompt": "Een klein team bouwt een interne zoekfunctie voor documenten. Ze twijfelen tussen een simpele keyword-index, embeddings, of een hybride aanpak. Beschrijf hoe je de keuze zou beoordelen en welke informatie ontbreekt om een goede beslissing te nemen.",
+      "source_note": "Architecture decision prompt with several plausible routes.",
+      "hidden_review_notes": null
+    },
+    {
+      "id": "SLM_OPEN_004",
+      "domain": "medical_ethics",
+      "prompt": "Een onderzoeksgroep wil oude patientnotities gebruiken om een samenvattingsmodel te testen. De data is niet direct herleidbaar tot namen, maar bevat wel details over behandelingen. Welke vragen moeten eerst beantwoord worden voordat dit verantwoord kan gebeuren?",
+      "source_note": "Ethics and privacy prompt without hidden ground-truth labels.",
+      "hidden_review_notes": null
+    },
+    {
+      "id": "SLM_OPEN_005",
+      "domain": "public_policy",
+      "prompt": "Een gemeente wil verkeersdrukte verminderen door slimme camera's en kentekendata te gebruiken. Geef een analyse van wat er zorgvuldig moet worden afgewogen voordat het plan wordt uitgevoerd.",
+      "source_note": "Public policy prompt requiring trade-off reasoning without a fixed target answer.",
+      "hidden_review_notes": null
+    }
+  ]
+}

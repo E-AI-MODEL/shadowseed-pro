@@ -1,0 +1,39 @@
+{
+  "version": "hf-open-set-sources-0.2",
+  "sources": [
+    {
+          "id": "ag_news_test",
+          "dataset": "szhuggingface/ag_news",
+          "config": "default",
+          "split": "test",
+          "revision": "main",
+          "license": "apache-2.0",
+          "text_field": "text",
+          "label_field": "label",
+          "label_names": {
+                "0": "World",
+                "1": "Sports",
+                "2": "Business",
+                "3": "Sci/Tech"
+          },
+          "domain_template": "nieuws - {label_name}",
+          "title_template": "AG News {label_name} #{row_idx}",
+          "min_text_length": 120,
+          "notes": "Lichte, publiek toegankelijke nieuwsset met meerdere domeincategorieen voor een eerste open-set reviewbatch. De huidige adapter gebruikt de Hugging Face Datasets Server rows-endpoint en registreert de gewenste revision in metadata."
+    },
+    {
+          "id": "arxiv_abstracts",
+          "dataset": "gfissore/arxiv-abstracts-2021",
+          "config": "default",
+          "split": "train",
+          "revision": "main",
+          "license": "cc0-1.0",
+          "text_field": "abstract",
+          "title_field": "title",
+          "default_domain": "wetenschap - arXiv abstract",
+          "domain_template": "wetenschap - arXiv abstract",
+          "min_text_length": 300,
+          "notes": "Tweede bron, gekozen voor Laag F (domeintransfer): wetenschappelijke arXiv-abstracts staan qua stijl, structuur en priors ver van de ag_news nieuwsteksten, zijn kort en feitelijk dicht (methode, steekproef, baseline en limitaties kunnen concreet ontbreken), en de dataset is ungated met CC0-licentie. Zelfde Datasets Server rows-route als ag_news. Let op: draai voor een eerste gebruik een goedkope smoke-dispatch (detector=adapter_v1, limit=2) om de veldmapping (abstract/title) tegen de live API te verifieren."
+    }
+  ]
+}

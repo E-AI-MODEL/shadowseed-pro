@@ -1,0 +1,132 @@
+{
+  "version": "wild-payoff-0.1",
+  "description": "Real open-set seeds (round 006 batch1, AI-reviewed accepted, kappa 0.63 vs human) fed through the payoff pipeline. Per item: the source text and the detector's accepted gap-seeds. Tests whether weaving detector-found gaps beats a strong model's unaided gap-spotting.",
+  "source": "benchmarks/open_review/rounds/round_006/batch1 (ai_review accepted)",
+  "items": [
+    {
+      "id": "AG_NEWS_TEST_0",
+      "title": "AG News Business #0",
+      "domain": "nieuws - Business",
+      "text": "Fears for T N pension after talks Unions representing workers at Turner Newall say they are 'disappointed' after talks with stricken parent firm Federal Mogul.",
+      "detected_seeds": [
+        "Specifieke resultaten of uitkomsten van de talks.",
+        "Specifieke belangen of eisen van de werknemers.",
+        "De reactie of standpunt van Federal Mogul na de gesprekken."
+      ]
+    },
+    {
+      "id": "AG_NEWS_TEST_1",
+      "title": "AG News Sci/Tech #1",
+      "domain": "nieuws - Sci/Tech",
+      "text": "The Race is On: Second Private Team Sets Launch Date for Human Spaceflight (SPACE.com) SPACE.com - TORONTO, Canada -- A second\\team of rocketeers competing for the #36;10 million Ansari X Prize, a contest for\\privately funded suborbital spa",
+      "detected_seeds": [
+        "Specifieke datum voor de eerste lancering.",
+        "De naam van de tweede private team.",
+        "Specifieke criteria voor het winnen van de Ansari X Prize.",
+        "De locatie waar de lancering zal plaatsvinden."
+      ]
+    },
+    {
+      "id": "AG_NEWS_TEST_2",
+      "title": "AG News Sci/Tech #2",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Ky. Company Wins Grant to Study Peptides (AP) AP - A company founded by a chemistry researcher at the University of Louisville won a grant to develop a method of producing better peptides, which are short chains of amino acids, the building",
+      "detected_seeds": [
+        "Specifieke soorten peptides die in de studie worden onderzocht.",
+        "Omvang van het gehonoreerde grant.",
+        "De specifieke gebruikssituatie of toepassing van betere peptides."
+      ]
+    },
+    {
+      "id": "AG_NEWS_TEST_3",
+      "title": "AG News Sci/Tech #3",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Prediction Unit Helps Forecast Wildfires (AP) AP - It's barely dawn when Mike Fitzpatrick starts his shift with a blur of colorful maps, figures and endless charts, but already he knows what the day will bring. Lightning will strike in plac",
+      "detected_seeds": [
+        "Specifieke geografische locaties waar de wildfires voorspeld worden.",
+        "Precisiesnelheden of nauwkeurigheidspercentages van de Prediction Unit.",
+        "De specifieke methodologie of techniek die door de Prediction Unit wordt gebruikt."
+      ]
+    },
+    {
+      "id": "AG_NEWS_TEST_4",
+      "title": "AG News Sci/Tech #4",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Calif. Aims to Limit Farm-Related Smog (AP) AP - Southern California's smog-fighting agency went after emissions of the bovine variety Friday, adopting the nation's first rules to reduce air pollution from dairy cow manure.",
+      "detected_seeds": [
+        "Specifieke technische maatregelen om emissies van dairy cow manure te verminderen.",
+        "De impact van de nieuwe regelgeving op de algehele luchtkwaliteit in Southern California.",
+        "De reactie van de landbouwsector op de adoptie van deze regels.",
+        "De specifieke tijdlijn of deadline voor de implementatie van de nieuwe regels."
+      ]
+    },
+    {
+      "id": "AG_NEWS_TEST_5",
+      "title": "AG News Sci/Tech #5",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Open Letter Against British Copyright Indoctrination in Schools The British Department for Education and Skills (DfES) recently launched a \"Music Manifesto\" campaign, with the ostensible intention of educating the next generation of British",
+      "detected_seeds": [
+        "Specifieke beleidsmaatregelen of acties die door EMI zijn onderhandeld."
+      ]
+    },
+    {
+      "id": "AG_NEWS_TEST_6",
+      "title": "AG News Sci/Tech #6",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Loosing the War on Terrorism \\\\\"Sven Jaschan, self-confessed author of the Netsky and Sasser viruses, is\\responsible for 70 percent of virus infections in 2004, according to a six-month\\virus roundup published Wednesday by antivirus company",
+      "detected_seeds": [
+        "De specifieke strategieën die door Sophos zijn gebruikt om de virussen te identificeren.",
+        "Details over de juridische consequenties van Jaschan's veroordeling.",
+        "De impact van de arrestatie op de algehele trend van virusinfecties in de daaropvolgende periode."
+      ]
+    },
+    {
+      "id": "AG_NEWS_TEST_7",
+      "title": "AG News Sci/Tech #7",
+      "domain": "nieuws - Sci/Tech",
+      "text": "FOAFKey: FOAF, PGP, Key Distribution, and Bloom Filters \\\\FOAF/LOAF and bloom filters have a lot of interesting properties for social\\network and whitelist distribution.\\\\I think we can go one level higher though and include GPG/OpenPGP key",
+      "detected_seeds": [
+        "De procedure voor het invoegen van PGP keyfingerprints in de FOAF."
+      ]
+    },
+    {
+      "id": "AG_NEWS_TEST_9",
+      "title": "AG News Sci/Tech #9",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Card fraud unit nets 36,000 cards In its first two years, the UK's dedicated card fraud unit, has recovered 36,000 stolen cards and 171 arrests - and estimates it saved 65m.",
+      "detected_seeds": [
+        "De specifieke soorten misdrijven waarmee de card fraud unit is betrokken."
+      ]
+    },
+    {
+      "id": "AG_NEWS_TEST_10",
+      "title": "AG News Sci/Tech #10",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Group to Propose New High-Speed Wireless Format LOS ANGELES (Reuters) - A group of technology companies including Texas Instruments Inc. &lt;TXN.N&gt;, STMicroelectronics &lt;STM.PA&gt; and Broadcom Corp. &lt;BRCM.O&gt;, on Thursday said th",
+      "detected_seeds": [
+        "Specifieke technische specificaties van de nieuwe high-speed wireless format.",
+        "De exacte groep technologiebedrijven die de voorstellen doen."
+      ]
+    },
+    {
+      "id": "AG_NEWS_TEST_11",
+      "title": "AG News Sci/Tech #11",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Apple Launches Graphics Software, Video Bundle LOS ANGELES (Reuters) - Apple Computer Inc.&lt;AAPL.O&gt; on Tuesday began shipping a new program designed to let users create real-time motion graphics and unveiled a discount video-editing so",
+      "detected_seeds": [
+        "Specifieke functies van de nieuwe program voor real-time motion graphics.",
+        "De prijs van de discount video-editing software bundle."
+      ]
+    },
+    {
+      "id": "AG_NEWS_TEST_12",
+      "title": "AG News Sci/Tech #12",
+      "domain": "nieuws - Sci/Tech",
+      "text": "Dutch Retailer Beats Apple to Local Download Market AMSTERDAM (Reuters) - Free Record Shop, a Dutch music retail chain, beat Apple Computer Inc. to market on Tuesday with the launch of a new download service in Europe's latest battleground ",
+      "detected_seeds": [
+        "Specifieke functies van de nieuwe download service.",
+        "De reactie van Apple Computer Inc. op de lancering."
+      ]
+    }
+  ]
+}
