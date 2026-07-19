@@ -1,0 +1,88 @@
+[project]
+name = "shadowseed"
+version = "0.3.0"
+description = "Auditable research implementation of Shadow Seed Learning"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.24",
+]
+
+[project.scripts]
+shadowseed = "shadowseed.cli:main"
+
+[project.optional-dependencies]
+models = [
+  "sentence-transformers>=2.7",
+  # 4.51 is the floor for the curated dropdown: Qwen3 needs >=4.51 and
+  # Phi-3.5-mini needs >=4.43. CI installs fresh, but a stale local env
+  # satisfying an older floor would advertise models it cannot load.
+  "transformers>=4.51",
+  "torch>=2.2",
+]
+openai = [
+  "openai>=1.40",
+]
+paper = [
+  "pymupdf>=1.24",
+]
+vector-faiss = [
+  "faiss-cpu>=1.8",
+]
+vector-chroma = [
+  "chromadb>=0.5",
+]
+vector = [
+  "shadowseed[vector-faiss,vector-chroma]",
+]
+test = [
+  "pytest>=8.0",
+  "pytest-cov>=5.0",
+  "ruff>=0.6",
+]
+dev = [
+  "shadowseed[test,models,vector,paper,openai]",
+]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+shadowseed = ["data/*.json"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E9", "F63", "F7", "F82"]
+
+[tool.coverage.run]
+source = ["shadowseed"]
+branch = true
+omit = [
+  "tests/*",
+  "*/site-packages/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+precision = 1
+exclude_lines = [
+  "pragma: no cover",
+  "raise NotImplementedError",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
