@@ -18,6 +18,7 @@ from datetime import datetime
 from typing import Any
 import re
 
+from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal
 from shadowseed.manager import SSLManager, SeedStatus
 from shadowseed.vectorstore.base import VectorStore
 
@@ -220,7 +221,21 @@ class SSOTManager:
             ]
             applied = []
             for chunk_id, score, metadata in accepted_hits[:max_evidence_per_seed]:
-                result = self.ssl.run_validation_gate(seed_id, external_evidence=True)
+                result = self.ssl.run_validation_gate(
+                    seed_id,
+                    external_evidence=True,
+                    signals=[
+                        ValidationSignal(
+                            kind=SignalKind.SSOT,
+                            direction=SignalDirection.SUPPORT,
+                            strength=float(score),
+                            source_ref=chunk_id,
+                            verified=True,
+                            independent=True,
+                            reason=f"verified SSOT chunk {chunk_id}",
+                        )
+                    ],
+                )
                 applied.append(
                     {
                         "chunk_id": chunk_id,

@@ -69,3 +69,36 @@ be detected during replay.
 Event ids are deterministic (`gate::<seed_id>::<sequence>`) so replay and
 golden-file tests are stable. For deterministic replay hashing, exclude
 timestamps or inject a fixed clock rather than relying on wall-clock stability.
+
+## Runtime wiring (issue #12)
+
+The manager exposes two Gate entry points, and both append to
+`SSLManager.gate_events`:
+
+- **`submit_signals(seed_id, signals, policy_id=None)`** — the signal-native
+  path. Helpers build `ValidationSignal`s and call here; the named policy
+  proposes and the Gate applies through `_set_authority`. Recurrence signals can
+  promote under the `exploratory` policy without ever incrementing
+  `evidence_count`.
+- **`run_validation_gate[_detailed](...)`** — the boolean-compatible path. The
+  `external_evidence` / `contradiction` booleans are **retained for backward
+  compatibility** (they are the evidence-required mechanics the existing suite
+  depends on) but are considered deprecated for new code. This path also records
+  a `GateEvent`, and it represents recurrence as a recurrence signal from the
+  occurrence count — never as external evidence.
+
+Migrated callers:
+
+- **chat** submits a recurrence signal under the `exploratory` policy. This
+  replaces the previous `external_evidence = occurrence_count >= 2` relabeling —
+  recurrence now promotes as recurrence.
+- **SSOT** (`validate_open_seeds_against_ssot`) passes a verified `ssot` signal
+  carrying the source chunk id.
+- **external feedback** (`apply_external_feedback`) passes a `human_feedback`
+  support signal or a `contradiction` signal.
+- **probe feedback** (`apply_probe_feedback`) records a `probe` signal and a
+  Gate event for the bounded weight nudge.
+
+A static test (`test_no_direct_authority_mutation_in_non_benchmark_runtime`)
+enforces that no runtime module outside `manager.py` writes an authority field
+directly.
