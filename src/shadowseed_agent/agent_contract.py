@@ -9,6 +9,7 @@ other decisions.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Iterable, Protocol
 
@@ -40,13 +41,38 @@ class SeedLike(Protocol):
 
 @dataclass(frozen=True)
 class InfluenceDecision:
-    """Decision record for one attempted seed-driven agent action."""
+    """Internal decision result. Not part of the public API.
+
+    Carries an ``allowed`` verdict and is produced only inside the contract; the
+    only public object with an authorization result is the already-recorded
+    ``AgentInfluenceRecord`` from :meth:`AgentSafetyContract.decide_and_record`.
+    """
 
     seed_id: str
     action: str
     allowed: bool
     reason: str
     gate_event_ref: str | None = None
+
+
+@dataclass(frozen=True)
+class InfluenceInspection:
+    """Diagnostic result of :meth:`AgentSafetyContract.inspect`.
+
+    Deliberately has **no** ``allowed``/``authorized`` field: inspection is for
+    status/UX only and must never be used to authorize influence. An empty
+    ``blocking_reasons`` means nothing currently blocks the seed; a non-empty
+    tuple lists why it is blocked. To actually influence, call
+    ``decide_and_record`` (which records the decision).
+    """
+
+    seed_id: str
+    action: str
+    blocking_reasons: tuple[str, ...] = ()
+
+    @property
+    def is_blocked(self) -> bool:
+        return bool(self.blocking_reasons)
 
 
 def _value(obj: Any, name: str, default: Any = None) -> Any:
@@ -172,22 +198,25 @@ class AgentSafetyContract:
         gate_log: Iterable[Any] = (),
         *,
         contradiction_blocking: bool | None = None,
-    ) -> InfluenceDecision:
-        """Report a seed's current eligibility for status/UX purposes only.
+    ) -> InfluenceInspection:
+        """Report why a seed is (or is not) currently blocked, for status/UX only.
 
-        This is explicitly **not** an authorization: its result must never be
-        used to gate an actual influence. To let a seed influence an action, use
-        :meth:`decide_and_record`, which records the decision and links it to a
-        Gate event. ``inspect`` exists so callers can display "blocked" /
-        "eligible" without recording a spurious influence attempt.
+        Returns an :class:`InfluenceInspection` with ``blocking_reasons`` and no
+        ``allowed`` verdict, so its result cannot be used to authorize influence.
+        To let a seed influence an action, use :meth:`decide_and_record`, which
+        records the decision and links it to a Gate event.
 
         (The former public ``decide``/``can_influence`` methods were removed:
         they returned an allowed verdict that could be used to drive influence
         without recording, which the point-of-use contract forbids.)
         """
 
-        return self._decide(
+        decision = self._decide(
             seed, action, gate_log, contradiction_blocking=contradiction_blocking
+        )
+        reasons: tuple[str, ...] = () if decision.allowed else (decision.reason,)
+        return InfluenceInspection(
+            seed_id=decision.seed_id, action=decision.action, blocking_reasons=reasons
         )
 
     def decide_and_record(
@@ -251,7 +280,9 @@ class AgentSafetyContract:
             contradiction_blocking=bool(contradiction_blocking),
             policy_id=policy_id,
             context_ref=context_ref,
-            decided_at=now,
+            # Every decision is timestamped. ``now`` allows deterministic
+            # injection in tests; otherwise a timezone-aware UTC stamp is used.
+            decided_at=now or datetime.now(timezone.utc).isoformat(),
         )
         ledger.append(record)
         return record

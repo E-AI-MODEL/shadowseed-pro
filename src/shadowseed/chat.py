@@ -433,12 +433,12 @@ class ShadowChatSession:
         seed = self.manager.seeds[seed_id]
         # Status inspection only (not an authorization); reports whether the
         # seed is now blocked from influence after the contradiction.
-        blocked = not self.contract.inspect(
+        blocked = self.contract.inspect(
             seed,
             InfluenceAction.ANSWER_MODIFICATION,
             self.manager.gate_events,
             contradiction_blocking=self.manager.is_blocking_contradiction(seed_id),
-        ).allowed
+        ).is_blocked
         return {
             "seed_id": seed_id,
             "weight_after": seed.weight,

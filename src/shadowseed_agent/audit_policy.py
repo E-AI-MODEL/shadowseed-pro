@@ -105,6 +105,10 @@ def assert_influence_records_valid(
             raise InfluenceReplayError(
                 f"allowed influence with no policy id for seed {record.seed_id!r}"
             )
+        if not record.decided_at:
+            raise InfluenceReplayError(
+                f"allowed influence with no timestamp for seed {record.seed_id!r}"
+            )
         event = index.get(record.gate_event_ref)
         if event is None:
             raise InfluenceReplayError(

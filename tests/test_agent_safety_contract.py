@@ -71,8 +71,8 @@ def test_weightless_seed_cannot_trigger_retrieval() -> None:
         gate_log=[promotion_gate()],
     )
 
-    assert not decision.allowed
-    assert decision.reason == "weightless_seed"
+    assert decision.is_blocked
+    assert "weightless_seed" in decision.blocking_reasons
 
 
 def test_promoted_seed_requires_logged_gate() -> None:
@@ -80,8 +80,8 @@ def test_promoted_seed_requires_logged_gate() -> None:
 
     decision = AgentSafetyContract().inspect(seed, InfluenceAction.PROBE, gate_log=[])
 
-    assert not decision.allowed
-    assert decision.reason == "missing_logged_promotion"
+    assert decision.is_blocked
+    assert "missing_logged_promotion" in decision.blocking_reasons
 
 
 def test_promoted_seed_with_logged_gate_can_trigger_retrieval() -> None:
@@ -93,8 +93,8 @@ def test_promoted_seed_with_logged_gate_can_trigger_retrieval() -> None:
         gate_log=[promotion_gate()],
     )
 
-    assert decision.allowed
-    assert decision.reason == "allowed_promoted_gate_logged"
+    assert not decision.is_blocked
+    assert decision.blocking_reasons == ()
 
     # The retrieval helper now records the decision and links it to a
     # current-version Gate event.
@@ -147,8 +147,8 @@ def test_contradiction_blocks_promoted_seed_by_default() -> None:
         gate_log=[promotion_gate()],
     )
 
-    assert not decision.allowed
-    assert decision.reason == "contradiction_present"
+    assert decision.is_blocked
+    assert "contradiction_present" in decision.blocking_reasons
 
 
 def test_audit_replay_rejects_weightless_influence() -> None:

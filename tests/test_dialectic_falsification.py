@@ -70,18 +70,18 @@ def test_weerlegd_drops_weight_and_contract_blocks():
     sid = _promoted_seed(manager, "Een toetsbaar ontbrekend punt over subsidies.")
     seed = manager.seeds[sid]
     contract = AgentSafetyContract()
-    assert contract.inspect(
+    assert not contract.inspect(
         seed, InfluenceAction.ANSWER_MODIFICATION, manager.gate_events,
         contradiction_blocking=manager.is_blocking_contradiction(sid),
-    ).allowed
+    ).is_blocked
 
     record = apply_dialectic_outcome(manager, sid, VERDICT_WEERLEGD)
     assert record["channel"] == "gate_contradiction"
     assert record["weight_after"] < record["weight_before"]
-    assert not contract.inspect(
+    assert contract.inspect(
         seed, InfluenceAction.ANSWER_MODIFICATION, manager.gate_events,
         contradiction_blocking=manager.is_blocking_contradiction(sid),
-    ).allowed
+    ).is_blocked
 
 
 def test_houdt_stand_is_bounded_and_never_promotes():

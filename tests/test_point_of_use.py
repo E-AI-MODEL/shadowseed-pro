@@ -139,6 +139,7 @@ def test_strict_replay_rejects_unknown_gate_event_ref():
             seed_id="ss_001", action="answer_modification", seed_weight=0.6,
             seed_status="PROMOTED", allowed=True, reason="x", gate_event_ref="nope",
             authority_version=1, policy_id="exploratory",
+            decided_at="2026-07-20T00:00:00+00:00",
         )
     ]
     with pytest.raises(InfluenceReplayError, match="unknown Gate event"):
@@ -174,6 +175,7 @@ def test_strict_replay_rejects_stale_authority_version():
         seed_id="ss_001", action="answer_modification", seed_weight=0.6,
         seed_status="PROMOTED", allowed=True, reason="x", gate_event_ref="e1",
         authority_version=5, policy_id="exploratory",
+        decided_at="2026-07-20T00:00:00+00:00",
     )
     event = _promotion_event("ss_001", version=3)  # record says 5, event says 3
     with pytest.raises(InfluenceReplayError, match="stale authority version"):
@@ -185,6 +187,7 @@ def test_strict_replay_rejects_foreign_seed_event():
         seed_id="ss_001", action="answer_modification", seed_weight=0.6,
         seed_status="PROMOTED", allowed=True, reason="x", gate_event_ref="e1",
         authority_version=1, policy_id="exploratory",
+        decided_at="2026-07-20T00:00:00+00:00",
     )
     event = _promotion_event("ss_999", version=1)  # different seed
     with pytest.raises(InfluenceReplayError, match="different seed"):
@@ -196,6 +199,7 @@ def test_strict_replay_rejects_non_promoting_event():
         seed_id="ss_001", action="answer_modification", seed_weight=0.6,
         seed_status="PROMOTED", allowed=True, reason="x", gate_event_ref="e1",
         authority_version=1, policy_id="exploratory",
+        decided_at="2026-07-20T00:00:00+00:00",
     )
     # A confirming decision (validated) that nonetheless did not leave the seed
     # promoted must be rejected by the status_after check.
@@ -214,6 +218,7 @@ def test_strict_replay_rejects_blocked_event_as_authorization():
         seed_id="ss_001", action="answer_modification", seed_weight=0.6,
         seed_status="PROMOTED", allowed=True, reason="x", gate_event_ref="e1",
         authority_version=3, policy_id="exploratory",
+        decided_at="2026-07-20T00:00:00+00:00",
     )
     blocked_event = GateEvent(
         event_id="e1", seed_id="ss_001", policy_id="exploratory",
@@ -282,6 +287,7 @@ def test_strict_replay_rejects_policy_mismatch():
         seed_id="ss_001", action="answer_modification", seed_weight=0.6,
         seed_status="PROMOTED", allowed=True, reason="x", gate_event_ref="e1",
         authority_version=1, policy_id="evidence_backed",
+        decided_at="2026-07-20T00:00:00+00:00",
     )
     event = _promotion_event("ss_001", version=1, policy_id="exploratory")
     with pytest.raises(InfluenceReplayError, match="policy mismatch"):
@@ -312,15 +318,81 @@ def test_no_public_nonrecording_allow_decision():
     # method that returns an allowed verdict without recording.
     assert not hasattr(contract, "decide")
     assert not hasattr(contract, "can_influence")
-    # inspect() exists for status/UX only and is documented as non-authorizing;
-    # it returns an InfluenceDecision but records nothing to any ledger.
-    decision = contract.inspect(
+    # inspect() is status/UX only: its result carries no allowed/authorized
+    # verdict, only diagnostic blocking_reasons, so it cannot gate influence.
+    inspection = contract.inspect(
         manager.seeds[seed_id],
         InfluenceAction.RETRIEVAL,
         manager.gate_events,
         contradiction_blocking=manager.is_blocking_contradiction(seed_id),
     )
-    assert decision.allowed is True
+    assert not hasattr(inspection, "allowed")
+    assert not hasattr(inspection, "authorized")
+    assert inspection.blocking_reasons == ()
+    assert inspection.is_blocked is False
+    # InfluenceDecision is no longer part of the public package surface.
+    import shadowseed_agent
+    assert "InfluenceDecision" not in shadowseed_agent.__all__
+
+
+def test_decision_is_timestamped_automatically():
+    manager, seed_id = _promoted_manager()
+    contract = AgentSafetyContract()
+    ledger: list = []
+    record = contract.decide_and_record(
+        manager.seeds[seed_id], InfluenceAction.ANSWER_MODIFICATION,
+        gate_events=manager.gate_events, ledger=ledger,
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
+    )
+    assert record.decided_at  # auto-stamped, not None
+
+
+def test_injected_timestamp_is_used():
+    manager, seed_id = _promoted_manager()
+    contract = AgentSafetyContract()
+    ledger: list = []
+    record = contract.decide_and_record(
+        manager.seeds[seed_id], InfluenceAction.ANSWER_MODIFICATION,
+        gate_events=manager.gate_events, ledger=ledger,
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
+        now="2026-07-20T00:00:00+00:00",
+    )
+    assert record.decided_at == "2026-07-20T00:00:00+00:00"
+
+
+def test_denied_decision_is_also_timestamped():
+    manager = SSLManager(embedding_fn=fake_embedding)
+    seed_id = manager.add_or_update_seed("unpromoted")
+    contract = AgentSafetyContract()
+    ledger: list = []
+    record = contract.decide_and_record(
+        manager.seeds[seed_id], InfluenceAction.ANSWER_MODIFICATION,
+        gate_events=manager.gate_events, ledger=ledger,
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
+    )
+    assert record.allowed is False
+    assert record.decided_at
+
+
+def test_retrieval_helper_stamps_timestamp():
+    manager, seed_id = _promoted_manager()
+    ledger: list = []
+    can_seed_trigger_retrieval(
+        manager.seeds[seed_id], gate_events=manager.gate_events, ledger=ledger,
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
+    )
+    assert ledger[0].decided_at
+
+
+def test_strict_replay_rejects_missing_timestamp():
+    record = AgentInfluenceRecord(
+        seed_id="ss_001", action="answer_modification", seed_weight=0.6,
+        seed_status="PROMOTED", allowed=True, reason="x", gate_event_ref="e1",
+        authority_version=1, policy_id="exploratory", decided_at=None,
+    )
+    event = _promotion_event("ss_001", version=1)
+    with pytest.raises(InfluenceReplayError, match="no timestamp"):
+        assert_influence_records_valid([record], [event])
 
 
 def test_retrieval_helper_records_and_replays():

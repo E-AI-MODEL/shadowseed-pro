@@ -8,7 +8,7 @@ mechanics.
 from shadowseed_agent.agent_contract import (
     AgentSafetyContract,
     InfluenceAction,
-    InfluenceDecision,
+    InfluenceInspection,
     evidence_can_support_gate,
     has_logged_promotion,
 )
@@ -25,7 +25,7 @@ __all__ = [
     "AgentInfluenceRecord",
     "AgentSafetyContract",
     "InfluenceAction",
-    "InfluenceDecision",
+    "InfluenceInspection",
     "InfluenceReplayError",
     "WeightlessInfluenceError",
     "assert_influence_records_valid",
