@@ -29,7 +29,7 @@ This repository contains the runtime, tests, benchmark harnesses, research instr
 > The repository implements and tests the main SSL mechanics. It does not establish general answer-quality improvement, universal hallucination detection, a general neural signal for missing context, or safe deployment in high-impact settings.
 
 > [!NOTE]
-> Active runtime code and current documentation are in English. Historical Dutch source material is retained under [`archive/`](archive/) for provenance and must not be treated as current runtime authority.
+> The core runtime code is English, and this is enforced automatically ([`docs/migration/language-policy.md`](docs/migration/language-policy.md)). Benchmark suites and JSON data fixtures retain documented Dutch content for compatibility, and historical Dutch source material is kept under [`archive/`](archive/) for provenance — neither should be treated as current runtime authority.
 
 > [!CAUTION]
 > This repository currently has **no open-source license**. All rights are reserved. Public visibility is not permission for reuse. See [Rights and temporary licensing position](#rights-and-temporary-licensing-position).

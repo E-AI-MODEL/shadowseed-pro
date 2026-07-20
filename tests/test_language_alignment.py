@@ -27,12 +27,14 @@ SRC = pathlib.Path(__file__).resolve().parents[1] / "src"
 CORE_ROOTS = [SRC / "shadowseed", SRC / "shadowseed_agent"]
 EXCLUDE_DIR_PARTS = {"benchmark", "data", "__pycache__"}
 
-# Exact phrases that must never reappear (regressions fixed under #16).
-FORBIDDEN_PHRASES = (
-    "Cluster rond",
-    "Installeer sentence-transformers",
-    "te gebruiken",
-    "OP:",
+# Exact phrases that must never reappear (regressions fixed under #16). Each is a
+# compiled regex so word boundaries can be enforced where a bare substring would
+# over-match (for example the old feedback prefix "OP:" must not flag "STOP:").
+FORBIDDEN_PATTERNS = (
+    re.compile(r"Cluster rond"),
+    re.compile(r"Installeer sentence-transformers"),
+    re.compile(r"te gebruiken"),
+    re.compile(r"(?<![A-Za-z])OP:"),  # old feedback prefix, not "STOP:"
 )
 
 # Distinctive Dutch words (chosen to avoid English collisions such as "of"/"on").
@@ -90,9 +92,9 @@ def test_core_modules_have_no_forbidden_phrases():
     for path in _core_modules():
         prose = _prose(path)
         rel = path.relative_to(SRC).as_posix()
-        for phrase in FORBIDDEN_PHRASES:
-            if phrase in prose:
-                offenders.append(f"{rel}: {phrase!r}")
+        for pattern in FORBIDDEN_PATTERNS:
+            if pattern.search(prose):
+                offenders.append(f"{rel}: {pattern.pattern!r}")
     assert not offenders, "forbidden Dutch phrase(s): " + ", ".join(offenders)
 
 
@@ -137,9 +139,9 @@ def _scan_text(text: str, rel: str = "shadowseed/_fixture.py") -> list[str]:
     for word in _WORD.findall(prose):
         if word.lower() in DUTCH_VOCAB and word.lower() not in allowed:
             hits.append(word)
-    for phrase in FORBIDDEN_PHRASES:
-        if phrase in prose:
-            hits.append(phrase)
+    for pattern in FORBIDDEN_PATTERNS:
+        if pattern.search(prose):
+            hits.append(pattern.pattern)
     return hits
 
 
@@ -148,7 +150,13 @@ def test_checker_flags_cluster_rond_regression():
 
 
 def test_checker_flags_old_feedback_prefix():
-    assert "OP:" in _scan_text('x = "FEEDBACK: a OP: b"\n')
+    hits = _scan_text('x = "FEEDBACK: a OP: b"\n')
+    assert any("OP:" in h for h in hits)
+
+
+def test_checker_does_not_flag_stop_as_old_prefix():
+    # "STOP:" contains "OP:" but must not trip the boundary-anchored pattern.
+    assert _scan_text('x = "Please STOP: now"\n') == []
 
 
 def test_checker_flags_arbitrary_dutch_sentence():

@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import re
+from enum import Enum
 from pathlib import Path
 from typing import Any
 
@@ -35,6 +36,38 @@ _VERDICTS = (VERDICT_WEERLEGD, VERDICT_HOUDT_STAND, VERDICT_ONBESLIST)
 VERDICT_REFUTED = VERDICT_WEERLEGD
 VERDICT_SURVIVES = VERDICT_HOUDT_STAND
 VERDICT_UNDECIDED = VERDICT_ONBESLIST
+
+
+class DialecticVerdict(str, Enum):
+    """Canonical dialectic verdicts.
+
+    The member *names* are the canonical English identifiers; the member *values*
+    are the legacy Dutch tokens, retained as serialization aliases so existing
+    result artifacts and model-output parsing remain compatible. Prefer the enum
+    members in new code; use :func:`normalize_verdict` to map any legacy or
+    English token onto a member.
+    """
+
+    REFUTED = VERDICT_WEERLEGD
+    SURVIVES = VERDICT_HOUDT_STAND
+    UNDECIDED = VERDICT_ONBESLIST
+
+
+#: Maps legacy Dutch tokens and canonical English names to enum members.
+LEGACY_TO_VERDICT: dict[str, DialecticVerdict] = {
+    VERDICT_WEERLEGD: DialecticVerdict.REFUTED,
+    VERDICT_HOUDT_STAND: DialecticVerdict.SURVIVES,
+    VERDICT_ONBESLIST: DialecticVerdict.UNDECIDED,
+    "REFUTED": DialecticVerdict.REFUTED,
+    "SURVIVES": DialecticVerdict.SURVIVES,
+    "UNDECIDED": DialecticVerdict.UNDECIDED,
+}
+
+
+def normalize_verdict(token: str) -> DialecticVerdict:
+    """Normalize a legacy Dutch or English verdict token to a canonical member."""
+
+    return LEGACY_TO_VERDICT[str(token).strip().upper()]
 
 _VERDICT_LINE_RE = re.compile(r"VERDICT\s*:\s*(.+)", re.IGNORECASE)
 _VERDICT_TOKEN_RE = re.compile(r"WEERLEGD|HOUDT[_ ]STAND|ONBESLIST", re.IGNORECASE)
