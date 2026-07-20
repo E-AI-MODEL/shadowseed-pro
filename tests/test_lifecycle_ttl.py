@@ -29,7 +29,7 @@ def test_dormant_seed_expires_after_ttl():
     sid = m.add_or_update_seed("Encryptie van medische data tijdens transport.")
     # force it just below the dormant threshold with no weight
     m.seeds[sid].trace = 0.04
-    m.seeds[sid].weight = 0.0
+    m.seeds[sid].unsafe_set_authority(weight=0.0)
 
     for turn in range(1, m.dormant_ttl_turns + 1):
         m.decay_traces(turns_passed=1)
@@ -44,7 +44,7 @@ def test_dormant_seed_expires_after_ttl():
 def test_expired_seed_is_not_reactivated_or_decayed():
     m = _manager()
     sid = m.add_or_update_seed("Rate-limiting op API's die gezondheidsdata verwerken.")
-    m.seeds[sid].status = SeedStatus.EXPIRED
+    m.seeds[sid].unsafe_set_authority(status=SeedStatus.EXPIRED)
     # decay must skip it; reactivation must not touch it
     m.decay_traces(turns_passed=3)
     assert m.seeds[sid].status == SeedStatus.EXPIRED
@@ -56,7 +56,7 @@ def test_expired_seed_is_not_reactivated_or_decayed():
 def test_expired_seed_gate_is_noop():
     m = _manager()
     sid = m.add_or_update_seed("Authenticatiestrategie voor toegang tot gezondheidsdata.")
-    m.seeds[sid].status = SeedStatus.EXPIRED
+    m.seeds[sid].unsafe_set_authority(status=SeedStatus.EXPIRED)
     for _ in range(5):
         m.run_validation_gate(sid, external_evidence=True)
     assert m.seeds[sid].status == SeedStatus.EXPIRED
@@ -68,7 +68,7 @@ def test_dedup_does_not_resurrect_expired_seed():
     m = _manager()
     text = "AVG-compliance bij verwerking van medische hartslagdata."
     sid = m.add_or_update_seed(text)
-    m.seeds[sid].status = SeedStatus.EXPIRED
+    m.seeds[sid].unsafe_set_authority(status=SeedStatus.EXPIRED)
 
     # same text would normally dedup onto sid; it must create a NEW seed instead
     new_id = m.add_or_update_seed(text)
@@ -90,7 +90,7 @@ def test_scan_trtl_triggers_is_reactivate_alias():
     m = _manager()
     text = "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen."
     sid = m.add_or_update_seed(text)
-    m.seeds[sid].status = SeedStatus.DORMANT
+    m.seeds[sid].unsafe_set_authority(status=SeedStatus.DORMANT)
     reactivated = m.scan_trtl_triggers(text)
     assert reactivated == [sid]
     assert m.seeds[sid].status == SeedStatus.NEW
@@ -100,7 +100,7 @@ def test_reactivation_resets_dormancy_clock():
     m = _manager()
     text = "Toepasselijk recht bij een grensoverschrijdend consumentencontract."
     sid = m.add_or_update_seed(text)
-    m.seeds[sid].status = SeedStatus.DORMANT
+    m.seeds[sid].unsafe_set_authority(status=SeedStatus.DORMANT)
     m.seeds[sid].turns_dormant = 2
     m.reactivate_by_text(text)
     assert m.seeds[sid].status == SeedStatus.NEW

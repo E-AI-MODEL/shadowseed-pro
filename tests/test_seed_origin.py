@@ -138,7 +138,7 @@ def test_reactivation_records_basis() -> None:
         "Koloniale katoen als grondstof voor de Britse textielindustrie.",
         trigger_keywords=["katoen", "textiel"],
     )
-    manager.seeds[seed_id].status = SeedStatus.DORMANT
+    manager.seeds[seed_id].unsafe_set_authority(status=SeedStatus.DORMANT)
     manager.seeds[seed_id].trace = 0.01
 
     reactivated = manager.reactivate_by_text("De katoenhandel voedde de textielindustrie.")

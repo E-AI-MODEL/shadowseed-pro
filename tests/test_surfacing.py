@@ -26,8 +26,7 @@ def _promoted_manager() -> tuple[SSLManager, str]:
     manager = SSLManager(embedding_fn=_embedding)
     seed_id = manager.add_or_update_seed("seed perspective")
     seed = manager.seeds[seed_id]
-    seed.status = SeedStatus.PROMOTED
-    seed.weight = 1.0
+    seed.unsafe_set_authority(status=SeedStatus.PROMOTED, weight=1.0)
     return manager, seed_id
 
 

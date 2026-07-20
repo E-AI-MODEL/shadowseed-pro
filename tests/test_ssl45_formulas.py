@@ -55,7 +55,7 @@ def test_weight_only_increases_after_all_gate_checks_pass():
         "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen."
     )
     manager.seeds[seed_id].occurrence_count = 3
-    manager.seeds[seed_id].evidence_count = 2
+    manager.seeds[seed_id].unsafe_set_authority(evidence_count=2)
 
     result = manager.run_validation_gate(seed_id)
 
@@ -70,7 +70,7 @@ def test_promotion_threshold_requires_repeated_gate_passes():
         "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen."
     )
     manager.seeds[seed_id].occurrence_count = 3
-    manager.seeds[seed_id].evidence_count = 2
+    manager.seeds[seed_id].unsafe_set_authority(evidence_count=2)
 
     manager.run_validation_gate(seed_id)
     manager.run_validation_gate(seed_id)
@@ -85,7 +85,7 @@ def test_contradiction_reduces_weight_and_resets_seed():
     seed_id = manager.add_or_update_seed(
         "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen."
     )
-    manager.seeds[seed_id].weight = 0.6
+    manager.seeds[seed_id].unsafe_set_authority(weight=0.6)
     manager.seeds[seed_id].occurrence_count = 3
 
     result = manager.run_validation_gate(seed_id, contradiction=True)

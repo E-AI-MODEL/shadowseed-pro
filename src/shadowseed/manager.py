@@ -84,6 +84,15 @@ class SeedOrigin:
         }
 
 
+# Authority fields: only the Validation Gate transition path (SSLManager) may
+# change these. They determine whether a seed can eventually influence behavior.
+# trace, occurrence_count, and turns_dormant are observation/lifecycle-support
+# fields and stay freely writable.
+AUTHORITY_FIELDS: frozenset[str] = frozenset(
+    {"weight", "status", "evidence_count", "contradiction_score"}
+)
+
+
 @dataclass
 class ShadowSeed:
     id: str
@@ -100,9 +109,78 @@ class ShadowSeed:
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now().isoformat())
     origin: SeedOrigin | None = None
+    # Monotonic counter stamped whenever authority (weight, promotion state, or
+    # contradiction authority) changes. A point-of-use decision references it so
+    # a stale authorization can be detected on replay.
+    authority_version: int = 0
+    _authority_sealed: bool = field(default=False, repr=False, compare=False)
+
+    def __post_init__(self) -> None:
+        # Seal after construction so field defaults and deserialization can set
+        # authority normally, but later assignments are guarded.
+        object.__setattr__(self, "_authority_sealed", True)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name in AUTHORITY_FIELDS and getattr(self, "_authority_sealed", False):
+            raise AttributeError(
+                f"'{name}' is authority state and cannot be assigned directly. "
+                "Authority changes only through the SSLManager Validation Gate "
+                "transition path. In tests or benchmarks, use "
+                "ShadowSeed.unsafe_set_authority(...)."
+            )
+        object.__setattr__(self, name, value)
+
+    def _write_authority(self, changes: dict[str, Any]) -> None:
+        """Apply an authority change and bump the version when it matters.
+
+        This is the single low-level writer. It bypasses the ``__setattr__``
+        guard on purpose; callers are the manager's transition path and the
+        explicit unsafe test hook. The version bumps when weight or
+        contradiction authority changes, or when promotion status is crossed.
+        """
+
+        promoted_before = self.status == SeedStatus.PROMOTED
+        for name, value in changes.items():
+            if name not in AUTHORITY_FIELDS:
+                raise KeyError(f"'{name}' is not an authority field")
+            object.__setattr__(self, name, value)
+        promoted_after = self.status == SeedStatus.PROMOTED
+        if (
+            "weight" in changes
+            or "contradiction_score" in changes
+            or promoted_before != promoted_after
+        ):
+            object.__setattr__(self, "authority_version", self.authority_version + 1)
+
+    def unsafe_set_authority(
+        self,
+        *,
+        weight: float | None = None,
+        status: "SeedStatus | None" = None,
+        evidence_count: int | None = None,
+        contradiction_score: float | None = None,
+    ) -> None:
+        """Explicitly unsafe authority setter for tests and benchmark fixtures.
+
+        Production code must never call this. It exists so tests can construct
+        edge-case authority states without a full Gate run, while direct field
+        assignment stays blocked.
+        """
+
+        changes: dict[str, Any] = {}
+        if weight is not None:
+            changes["weight"] = weight
+        if status is not None:
+            changes["status"] = status
+        if evidence_count is not None:
+            changes["evidence_count"] = evidence_count
+        if contradiction_score is not None:
+            changes["contradiction_score"] = contradiction_score
+        self._write_authority(changes)
 
     def to_dict(self) -> dict[str, Any]:
         data = asdict(self)
+        data.pop("_authority_sealed", None)
         data["embedding"] = self.embedding.tolist()
         data["status"] = self.status.value
         data["origin"] = self.origin.to_dict() if self.origin is not None else None
@@ -275,6 +353,35 @@ class SSLManager:
     def _touch_seed(self, seed: ShadowSeed) -> None:
         seed.updated_at = self._now_iso()
 
+    def _set_authority(
+        self,
+        seed: ShadowSeed,
+        *,
+        weight: float | None = None,
+        status: SeedStatus | None = None,
+        evidence_count: int | None = None,
+        contradiction_score: float | None = None,
+    ) -> None:
+        """The single production authority-transition path.
+
+        Every runtime authority change (validation, contradiction, probe
+        feedback, decay/expiry, lifecycle status moves) goes through here. #12
+        migrates the callers to feed this from typed signals and a named policy;
+        #11 establishes that no runtime code writes authority fields directly.
+        """
+
+        changes: dict[str, Any] = {}
+        if weight is not None:
+            changes["weight"] = weight
+        if status is not None:
+            changes["status"] = status
+        if evidence_count is not None:
+            changes["evidence_count"] = evidence_count
+        if contradiction_score is not None:
+            changes["contradiction_score"] = contradiction_score
+        if changes:
+            seed._write_authority(changes)
+
     def _sync_seed(self, seed_id: str) -> None:
         if self.vector_constellation is not None:
             self.vector_constellation.sync_seed(self.seeds[seed_id])
@@ -425,7 +532,7 @@ class SSLManager:
         seed.trace = min(seed.trace + 0.5, self.max_trace)
         seed.turns_dormant = 0
         if seed.status != SeedStatus.PROMOTED:
-            seed.status = SeedStatus.ACTIVE
+            self._set_authority(seed, status=SeedStatus.ACTIVE)
         self._touch_seed(seed)
         self._record_and_sync(
             "deduplicated",
@@ -504,17 +611,18 @@ class SSLManager:
 
             before_trace = seed.trace
             seed.trace *= math.exp(-turns_passed / self.half_life_turns)
-            seed.status = self._status_after_decay(seed)
+            self._set_authority(seed, status=self._status_after_decay(seed))
 
             # TTL to disappearance (4.5 §10): count consecutive dormant turns; a
             # seed that stays DORMANT without a re-recognising trigger for
-            # dormant_ttl_turns becomes EXPIRED ("te lang dormant zonder trigger").
+            # dormant_ttl_turns becomes EXPIRED (dormant too long without a
+            # trigger). Expiry is a lifecycle-driven authority reset: it clears
+            # weight, so it is routed through the single authority path.
             expired = False
             if seed.status == SeedStatus.DORMANT:
                 seed.turns_dormant += turns_passed
                 if self.dormant_ttl_turns > 0 and seed.turns_dormant >= self.dormant_ttl_turns:
-                    seed.status = SeedStatus.EXPIRED
-                    seed.weight = 0.0
+                    self._set_authority(seed, status=SeedStatus.EXPIRED, weight=0.0)
                     expired = True
             else:
                 seed.turns_dormant = 0
@@ -598,8 +706,12 @@ class SSLManager:
         flags: ValidationGateFlags,
         external_evidence: bool,
     ) -> ValidationGateResult:
-        seed.weight = max(0.0, seed.weight - self.contradiction_penalty)
-        seed.contradiction_score = min(1.0, seed.contradiction_score + 0.25)
+        self._set_authority(
+            seed,
+            weight=max(0.0, seed.weight - self.contradiction_penalty),
+            contradiction_score=min(1.0, seed.contradiction_score + 0.25),
+            status=SeedStatus.NEW,
+        )
         seed.occurrence_count = 1
         # Doctrine: falsified → weight 0, back to NEW. But also start the
         # disappearance clock: lower trace so a degraded seed decays toward
@@ -608,7 +720,6 @@ class SSLManager:
         if self.contradiction_trace_penalty:
             seed.trace = max(0.0, seed.trace - self.contradiction_trace_penalty)
         seed.turns_dormant = 0
-        seed.status = SeedStatus.NEW
         self._touch_seed(seed)
         result = self._build_validation_result(
             seed_id=seed_id,
@@ -628,12 +739,13 @@ class SSLManager:
         )
 
     def _apply_successful_validation(self, *, seed: ShadowSeed) -> tuple[bool, str]:
-        seed.weight = min(1.0, seed.weight + self.validation_increment)
-        seed.status = (
+        new_weight = min(1.0, seed.weight + self.validation_increment)
+        new_status = (
             SeedStatus.PROMOTED
-            if seed.weight >= self.promotion_threshold
+            if new_weight >= self.promotion_threshold
             else SeedStatus.ACTIVE
         )
+        self._set_authority(seed, weight=new_weight, status=new_status)
         self._touch_seed(seed)
         promoted = seed.status == SeedStatus.PROMOTED
         verdict = "promoted" if promoted else "validated"
@@ -666,7 +778,7 @@ class SSLManager:
             return self._finalize_validation_result(result)
 
         if external_evidence:
-            seed.evidence_count += 1
+            self._set_authority(seed, evidence_count=seed.evidence_count + 1)
 
         flags = self._validation_flags(seed, contradiction)
 
@@ -767,7 +879,7 @@ class SSLManager:
 
             if similarity >= threshold or keyword_hit:
                 seed.trace = min(seed.trace + self.reactivation_increment, self.max_trace)
-                seed.status = SeedStatus.NEW
+                self._set_authority(seed, status=SeedStatus.NEW)
                 seed.turns_dormant = 0
                 self._touch_seed(seed)
                 semantic_hit = similarity >= threshold
@@ -867,7 +979,7 @@ class SSLManager:
         expired = self.vector_constellation.housekeeping(max_age_days=max_age_days)
         for seed_id in expired:
             if seed_id in self.seeds:
-                self.seeds[seed_id].status = SeedStatus.EXPIRED
+                self._set_authority(self.seeds[seed_id], status=SeedStatus.EXPIRED)
                 self._touch_seed(self.seeds[seed_id])
                 self._record_event("expired", seed_id, max_age_days=max_age_days)
         return expired
@@ -974,9 +1086,11 @@ class SSLManager:
             and new_weight < self.promotion_threshold
         )
 
-        seed.weight = new_weight
-        if demoted:
-            seed.status = SeedStatus.ACTIVE
+        self._set_authority(
+            seed,
+            weight=new_weight,
+            status=SeedStatus.ACTIVE if demoted else None,
+        )
         self._touch_seed(seed)
 
         delta_applied = seed.weight - weight_before

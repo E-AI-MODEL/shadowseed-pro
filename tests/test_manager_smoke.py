@@ -97,7 +97,7 @@ def test_reactivate_dormant_seed_by_keyword():
         "Koloniale katoen als grondstof voor de Britse textielindustrie.",
         trigger_keywords=["katoen", "textiel"],
     )
-    manager.seeds[seed_id].status = SeedStatus.DORMANT
+    manager.seeds[seed_id].unsafe_set_authority(status=SeedStatus.DORMANT)
     manager.seeds[seed_id].trace = 0.01
 
     reactivated = manager.reactivate_by_text("De katoenhandel voedde de textielindustrie.")
@@ -111,7 +111,7 @@ def test_contradiction_resets_weight_and_status():
     seed_id = manager.add_or_update_seed(
         "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen."
     )
-    manager.seeds[seed_id].weight = 0.6
+    manager.seeds[seed_id].unsafe_set_authority(weight=0.6)
     manager.seeds[seed_id].occurrence_count = 4
 
     result = manager.run_validation_gate(seed_id, contradiction=True)
@@ -126,7 +126,7 @@ def test_contradiction_detailed_result_records_reset():
     seed_id = manager.add_or_update_seed(
         "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen."
     )
-    manager.seeds[seed_id].weight = 0.6
+    manager.seeds[seed_id].unsafe_set_authority(weight=0.6)
     manager.seeds[seed_id].occurrence_count = 4
 
     result = manager.run_validation_gate_detailed(seed_id, contradiction=True)
@@ -150,8 +150,8 @@ def test_constellations_group_promoted_seeds():
     )
 
     for seed_id in [first, second, third]:
-        manager.seeds[seed_id].status = SeedStatus.PROMOTED
-        manager.seeds[seed_id].weight = 0.6
+        manager.seeds[seed_id].unsafe_set_authority(status=SeedStatus.PROMOTED)
+        manager.seeds[seed_id].unsafe_set_authority(weight=0.6)
 
     constellations = manager.find_constellations(threshold=0.95, min_members=3)
     assert len(constellations) == 1

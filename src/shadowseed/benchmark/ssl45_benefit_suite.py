@@ -126,7 +126,7 @@ def run_ssl45_benefit_suite(input_path: str, output_path: str, turns: int = 3) -
             scored = score_seed(seed.text, ground_truth)
             seed_scores.append(scored)
             if scored.score == 2:
-                seed.evidence_count = max(seed.evidence_count, 2)
+                seed.unsafe_set_authority(evidence_count=max(seed.evidence_count, 2))
                 for _ in range(3):
                     manager.run_validation_gate(seed_id)
             elif scored.score == 0:

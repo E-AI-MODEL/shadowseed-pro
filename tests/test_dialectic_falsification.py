@@ -86,7 +86,7 @@ def test_houdt_stand_is_bounded_and_never_promotes():
         "accepted"
     ][0]["seed_id"]
     seed = manager.seeds[sid]
-    seed.status = SeedStatus.ACTIVE
+    seed.unsafe_set_authority(status=SeedStatus.ACTIVE)
     for _ in range(30):  # hammer the reward channel: promotion must never happen
         apply_dialectic_outcome(manager, sid, VERDICT_HOUDT_STAND)
     assert seed.status != SeedStatus.PROMOTED

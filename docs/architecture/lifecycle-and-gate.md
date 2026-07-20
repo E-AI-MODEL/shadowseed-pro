@@ -16,6 +16,32 @@ Trace never grants influence by itself.
 
 `weight` is steering power. New candidates start at `0.0`. The manager can raise weight only through a successful Validation Gate decision.
 
+## Authority encapsulation
+
+The authority fields — `weight`, `status`, `evidence_count`, and
+`contradiction_score` — are encapsulated. They cannot be assigned directly:
+`seed.weight = 0.6` raises `AttributeError`. All runtime changes go through the
+manager's single transition path (`SSLManager._set_authority`), which stamps a
+monotonic `authority_version` whenever weight, contradiction authority, or
+promotion state changes. A point-of-use decision references that version so a
+stale authorization can be detected on replay.
+
+Tests and benchmark fixtures that need an edge-case authority state without a
+full Gate run use the explicit, clearly-named `ShadowSeed.unsafe_set_authority(...)`
+hook. Production code never calls it.
+
+`trace`, `occurrence_count`, and `turns_dormant` are observation and
+lifecycle-support fields and remain freely writable — they never grant
+influence on their own.
+
+**Decay and expiry (classification).** Trace decay is a pure observation and
+stays outside the authority path. Expiry is the one lifecycle transition that
+also resets authority: when a seed expires it loses its weight. That weight
+reset is therefore routed through `_set_authority` like any other authority
+change, rather than being written directly. Influence eligibility is derived
+from authority state (promoted, positive weight, no blocking contradiction), not
+stored as a separate mutable field.
+
 ## Validation Gate
 
 The gate evaluates stored evidence, contradiction state, and configured thresholds. Its result is logged. Contradiction can block promotion, reduce influence, or reset a seed depending on the manager policy.

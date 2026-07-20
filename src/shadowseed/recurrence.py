@@ -26,5 +26,5 @@ def refresh_cluster_representative(
     )
     representative_seed.turns_dormant = 0
     if representative_seed.status != SeedStatus.PROMOTED:
-        representative_seed.status = SeedStatus.ACTIVE
+        manager._set_authority(representative_seed, status=SeedStatus.ACTIVE)
     manager._touch_seed(representative_seed)
