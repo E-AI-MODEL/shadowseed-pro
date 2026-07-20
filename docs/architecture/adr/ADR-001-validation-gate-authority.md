@@ -1,7 +1,8 @@
 # ADR-001: The Validation Gate Is the Sole Authority-Changing Boundary
 
-- Status: Proposed
+- Status: Accepted (with amendments — see "Amendments" and "Implementation status")
 - Date: 2026-07-20
+- Accepted: 2026-07-20, after issue #17 verified runtime/test/documentation alignment
 - Related issue: #8
 
 ## Context
@@ -155,3 +156,53 @@ Every point-of-use decision must reference the relevant Gate event and be record
 4. Every authority change must be attributable to typed signals, a named policy, and a Gate event.
 5. No authorised seed may influence an action without a separate recorded point-of-use decision.
 6. No helper, benchmark, probe, SSOT component, or caller may directly mutate authority fields.
+
+## Amendments (accepted second opinion)
+
+The proposal was accepted **with material amendments** from an independent
+review. The amendments do not change the doctrine; they make it concrete and
+falsifiable:
+
+1. **Policy profiles.** Only the two profiles with concrete semantics ship as
+   real policies: `exploratory` (the explicit default) and `evidence_backed`.
+   `research`, `creative`, and `high_impact` are documented examples that raise
+   a clear error if requested, until their required signal combinations are
+   justified. The default policy is never implicit.
+2. **Decay and expiry.** Trace decay is a pure observation and stays outside the
+   authority path. Expiry is the one lifecycle transition that also resets
+   authority (it clears weight), so that reset is routed through the single
+   authority path. Influence eligibility is *derived* from authority state, not
+   stored as a separate field.
+3. **Contradictions supplement the scalar.** Contradiction records are the
+   canonical blocking source; the legacy `contradiction_score` scalar is
+   retained for compatibility and migration, and a legacy positive scalar with
+   no records is treated as one open contradiction.
+4. **Authority versioning.** The manager stamps a monotonic `authority_version`
+   on every authority change. A point-of-use decision links to a Gate event of
+   the seed's *current* version, and both decision-time and replay reject stale
+   authorizations.
+5. **Encapsulation and migration.** Authority fields are constructor-excluded
+   and guarded; the seed registry is a read-only view. Persisted seeds are
+   restored via `ShadowSeed.from_dict` / `SSLManager.restore_seed` (preserving
+   the original version). Explicit, clearly-named unsafe hooks remain available
+   for tests and benchmarks — an unsupported escape hatch, not a claim that
+   mutation is technically impossible for third parties.
+
+## Implementation status
+
+Implemented and verified on the alignment branch (issues #10–#17):
+
+| ADR area | Where | Verified by |
+|---|---|---|
+| Typed signals, policies, Gate events | `shadowseed.gate` | `test_gate_contracts` |
+| Encapsulated, non-bypassable authority | `SSLManager`, `ShadowSeed` | `test_authority_encapsulation`, `test_gate_signal_routing` (static guards) |
+| Effects routed through the Gate | `submit_signals`, chat/SSOT/feedback/probe | `test_gate_signal_routing` |
+| Contradiction lifecycle + recovery | `shadowseed.gate.contradictions`, `SSLManager` | `test_contradiction_lifecycle` |
+| Atomic, replayable point-of-use | `shadowseed_agent` contract + audit | `test_point_of_use` |
+| Prompt-data boundary | `shadowseed.surfacing` | `test_prompt_boundary` |
+| English alignment + enforcement | core runtime, checker | `test_language_alignment` |
+| End-to-end invariants | — | `test_ssl_invariants` |
+
+The full suite passes (545 passed, 4 skipped), ruff is clean, the wheel builds,
+and the CLI runs. Umbrella issue #8 tracks final closure once this branch is
+merged.
