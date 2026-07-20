@@ -146,6 +146,7 @@ class ShadowChatSession:
                 ledger=self.influence_records,
                 context_ref=f"turn:{self._turn}",
                 now=self.manager._now_iso(),
+                contradiction_blocking=self.manager.is_blocking_contradiction(seed_id),
             )
             if record.allowed:
                 allowed.append((similarity, seed_id, text))

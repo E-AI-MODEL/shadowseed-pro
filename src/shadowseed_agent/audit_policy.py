@@ -90,6 +90,10 @@ def assert_influence_records_valid(
             raise InfluenceReplayError(
                 f"allowed influence with no Gate-event reference for seed {record.seed_id!r}"
             )
+        if record.authority_version is None:
+            raise InfluenceReplayError(
+                f"allowed influence with no authority version for seed {record.seed_id!r}"
+            )
         if gate_events is not None:
             event = index.get(record.gate_event_ref)
             if event is None:
@@ -105,4 +109,15 @@ def assert_influence_records_valid(
                 raise InfluenceReplayError(
                     f"Gate-event {record.gate_event_ref!r} did not leave seed "
                     f"{record.seed_id!r} promoted"
+                )
+            if getattr(event, "authority_version", None) != record.authority_version:
+                raise InfluenceReplayError(
+                    f"stale authority version for seed {record.seed_id!r}: "
+                    f"record={record.authority_version} event="
+                    f"{getattr(event, 'authority_version', None)}"
+                )
+            if record.policy_id is not None and getattr(event, "policy_id", None) != record.policy_id:
+                raise InfluenceReplayError(
+                    f"policy mismatch for seed {record.seed_id!r}: "
+                    f"record={record.policy_id!r} event={getattr(event, 'policy_id', None)!r}"
                 )

@@ -9,14 +9,29 @@ from shadowseed_agent.agent_contract import AgentSafetyContract, InfluenceAction
 
 def can_seed_trigger_retrieval(
     seed: SeedLike,
-    gate_log: Iterable[Any] = (),
+    *,
+    gate_events: Iterable[Any],
+    ledger: list,
     contract: AgentSafetyContract | None = None,
+    context_ref: str | None = None,
+    contradiction_blocking: bool | None = None,
 ) -> bool:
-    """Return whether a seed may trigger retrieval.
+    """Return whether a seed may trigger retrieval, recording the decision.
 
-    Retrieval is an influence surface. By default it requires a promoted seed,
-    positive weight, and a logged Validation Gate promotion.
+    Retrieval is an influence surface, so this goes through the atomic
+    point-of-use API (#14): the decision is recorded on ``ledger`` and linked to
+    the authorizing Gate event before the boolean is returned. It requires a
+    promoted seed, positive weight, a current-version Gate promotion, and no
+    blocking contradiction.
     """
 
     active_contract = contract or AgentSafetyContract()
-    return active_contract.can_influence(seed, InfluenceAction.RETRIEVAL, gate_log)
+    record = active_contract.decide_and_record(
+        seed,
+        InfluenceAction.RETRIEVAL,
+        gate_events=gate_events,
+        ledger=ledger,
+        context_ref=context_ref,
+        contradiction_blocking=contradiction_blocking,
+    )
+    return record.allowed

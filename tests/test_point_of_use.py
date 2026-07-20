@@ -5,6 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
+from shadowseed.gate.events import GateDecision, GateEvent
 from shadowseed.gate.signals import recurrence_signal
 from shadowseed.manager import SSLManager, SeedStatus
 from shadowseed_agent import (
@@ -13,7 +14,19 @@ from shadowseed_agent import (
     InfluenceAction,
     InfluenceReplayError,
     assert_influence_records_valid,
+    can_seed_trigger_retrieval,
 )
+
+
+def _promotion_event(seed_id: str, version: int, *, event_id: str = "e1", policy_id: str = "exploratory") -> GateEvent:
+    return GateEvent(
+        event_id=event_id,
+        seed_id=seed_id,
+        policy_id=policy_id,
+        decision=GateDecision.PROMOTED,
+        status_after="PROMOTED",
+        authority_version=version,
+    )
 
 
 def fake_embedding(text: str) -> np.ndarray:
@@ -137,3 +150,143 @@ def test_strict_replay_rejects_contradicted_allowed():
     ]
     with pytest.raises(InfluenceReplayError):
         assert_influence_records_valid(bad, [])
+
+
+def test_strict_replay_rejects_missing_authority_version():
+    bad = [
+        AgentInfluenceRecord(
+            seed_id="ss_001", action="answer_modification", seed_weight=0.6,
+            seed_status="PROMOTED", allowed=True, reason="x", gate_event_ref="e1",
+            authority_version=None,
+        )
+    ]
+    with pytest.raises(InfluenceReplayError):
+        assert_influence_records_valid(bad, [])
+
+
+def test_strict_replay_rejects_stale_authority_version():
+    record = AgentInfluenceRecord(
+        seed_id="ss_001", action="answer_modification", seed_weight=0.6,
+        seed_status="PROMOTED", allowed=True, reason="x", gate_event_ref="e1",
+        authority_version=5, policy_id="exploratory",
+    )
+    event = _promotion_event("ss_001", version=3)  # record says 5, event says 3
+    with pytest.raises(InfluenceReplayError, match="stale authority version"):
+        assert_influence_records_valid([record], [event])
+
+
+def test_strict_replay_rejects_foreign_seed_event():
+    record = AgentInfluenceRecord(
+        seed_id="ss_001", action="answer_modification", seed_weight=0.6,
+        seed_status="PROMOTED", allowed=True, reason="x", gate_event_ref="e1",
+        authority_version=1,
+    )
+    event = _promotion_event("ss_999", version=1)  # different seed
+    with pytest.raises(InfluenceReplayError, match="different seed"):
+        assert_influence_records_valid([record], [event])
+
+
+def test_strict_replay_rejects_non_promoting_event():
+    record = AgentInfluenceRecord(
+        seed_id="ss_001", action="answer_modification", seed_weight=0.6,
+        seed_status="PROMOTED", allowed=True, reason="x", gate_event_ref="e1",
+        authority_version=1,
+    )
+    event = GateEvent(
+        event_id="e1", seed_id="ss_001", policy_id="exploratory",
+        decision=GateDecision.BLOCKED, status_after="ACTIVE", authority_version=1,
+    )
+    with pytest.raises(InfluenceReplayError, match="did not leave"):
+        assert_influence_records_valid([record], [event])
+
+
+def test_strict_replay_rejects_policy_mismatch():
+    record = AgentInfluenceRecord(
+        seed_id="ss_001", action="answer_modification", seed_weight=0.6,
+        seed_status="PROMOTED", allowed=True, reason="x", gate_event_ref="e1",
+        authority_version=1, policy_id="evidence_backed",
+    )
+    event = _promotion_event("ss_001", version=1, policy_id="exploratory")
+    with pytest.raises(InfluenceReplayError, match="policy mismatch"):
+        assert_influence_records_valid([record], [event])
+
+
+def test_decide_time_stale_authorization_is_denied():
+    manager, seed_id = _promoted_manager()
+    contract = AgentSafetyContract()
+    ledger: list = []
+    # Only a stale promotion event exists (version does not match current).
+    stale_events = [_promotion_event(seed_id, version=manager.seeds[seed_id].authority_version - 1)]
+    record = contract.decide_and_record(
+        manager.seeds[seed_id],
+        InfluenceAction.ANSWER_MODIFICATION,
+        gate_events=stale_events,
+        ledger=ledger,
+    )
+    assert record.allowed is False
+    assert record.reason == "stale_gate_authorization"
+
+
+def test_public_decide_and_can_influence_do_not_record():
+    manager, seed_id = _promoted_manager()
+    contract = AgentSafetyContract()
+    # The deprecated check-only APIs return a verdict but record nothing.
+    decision = contract.decide(manager.seeds[seed_id], InfluenceAction.RETRIEVAL, manager.gate_events)
+    assert decision.allowed is True
+    assert contract.can_influence(manager.seeds[seed_id], InfluenceAction.RETRIEVAL, manager.gate_events) is True
+    # No ledger exists to bypass; the only recording route is decide_and_record.
+
+
+def test_retrieval_helper_records_and_replays():
+    manager, seed_id = _promoted_manager()
+    ledger: list = []
+    allowed = can_seed_trigger_retrieval(
+        manager.seeds[seed_id],
+        gate_events=manager.gate_events,
+        ledger=ledger,
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
+    )
+    assert allowed is True
+    assert len(ledger) == 1 and ledger[0].action == "retrieval"
+    assert_influence_records_valid(ledger, manager.gate_events)
+
+
+def test_contradiction_blocking_uses_canonical_state():
+    manager, seed_id = _promoted_manager()
+    # Open a contradiction via the Gate; canonical blocking becomes True.
+    from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal
+
+    manager.submit_signals(
+        seed_id,
+        [ValidationSignal(kind=SignalKind.CONTRADICTION, direction=SignalDirection.OPPOSE)],
+        "exploratory",
+    )
+    contract = AgentSafetyContract()
+    ledger: list = []
+    record = contract.decide_and_record(
+        manager.seeds[seed_id],
+        InfluenceAction.ANSWER_MODIFICATION,
+        gate_events=manager.gate_events,
+        ledger=ledger,
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
+    )
+    assert record.allowed is False
+
+
+def test_influence_record_is_serializable():
+    from dataclasses import asdict
+
+    manager, seed_id = _promoted_manager()
+    contract = AgentSafetyContract()
+    ledger: list = []
+    contract.decide_and_record(
+        manager.seeds[seed_id],
+        InfluenceAction.ANSWER_MODIFICATION,
+        gate_events=manager.gate_events,
+        ledger=ledger,
+        now="2026-07-20T00:00:00",
+    )
+    data = asdict(ledger[0])
+    assert data["gate_event_ref"] is not None
+    assert data["authority_version"] == manager.seeds[seed_id].authority_version
+    assert data["decided_at"] == "2026-07-20T00:00:00"

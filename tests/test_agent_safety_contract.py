@@ -3,6 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
+from shadowseed.gate.events import GateDecision, GateEvent
 from shadowseed.manager import SeedStatus, ShadowSeed, ValidationGateResult
 from shadowseed_agent import (
     AgentInfluenceRecord,
@@ -94,7 +95,20 @@ def test_promoted_seed_with_logged_gate_can_trigger_retrieval() -> None:
 
     assert decision.allowed
     assert decision.reason == "allowed_promoted_gate_logged"
-    assert can_seed_trigger_retrieval(seed, gate_log=[promotion_gate()])
+
+    # The retrieval helper now records the decision and links it to a
+    # current-version Gate event.
+    event = GateEvent(
+        event_id="e1",
+        seed_id="seed-1",
+        policy_id="exploratory",
+        decision=GateDecision.PROMOTED,
+        status_after="PROMOTED",
+        authority_version=seed.authority_version,
+    )
+    ledger: list = []
+    assert can_seed_trigger_retrieval(seed, gate_events=[event], ledger=ledger)
+    assert ledger and ledger[0].allowed and ledger[0].gate_event_ref == "e1"
 
 
 def test_gate_log_accepts_exported_dict_records() -> None:

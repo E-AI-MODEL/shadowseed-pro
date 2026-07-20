@@ -459,6 +459,13 @@ class SSLManager:
 
         return [r for r in self.contradiction_records if r.seed_id == seed_id]
 
+    def is_blocking_contradiction(self, seed_id: str) -> bool:
+        """Canonical blocking state for a seed (derived from records, with the
+        legacy scalar as fallback). This is the value point-of-use decisions
+        should consult rather than reading contradiction_score directly."""
+
+        return self._contradiction_state(self._seeds[seed_id]).blocking
+
     def _contradiction_state(self, seed: ShadowSeed) -> ContradictionState:
         """Derive the blocking-contradiction snapshot.
 

@@ -101,10 +101,24 @@ allowed record is linked to the Gate event that authorized it
 authorization can be detected on replay. Denied decisions are recorded too, with
 a stable reason.
 
+The Gate-event link is selected strictly: the latest event for the same seed
+that left it promoted, carries no blocking contradiction, and whose
+`authority_version` equals the seed's current version. If no such event exists,
+the decision is denied at decision time with reason `stale_gate_authorization`
+— a stale promotion is never enough. Blocking-contradiction state passed to the
+decision is the canonical value derived from contradiction records
+(`SSLManager.is_blocking_contradiction`), not the legacy scalar.
+
 Strict replay (`assert_influence_records_valid(records, gate_events)`) re-checks
 every allowed decision against all point-of-use invariants — positive weight,
-`PROMOTED` status, no blocking contradiction, and a Gate-event link that exists,
-belongs to the same seed, and left it promoted — not just positive weight.
+`PROMOTED` status, no blocking contradiction, a present authority version, and a
+Gate-event link that exists, belongs to the same seed, left it promoted, matches
+the recorded `authority_version`, and matches the recorded `policy_id`.
+
+`decide_and_record` is the only route that records. `decide()` and
+`can_influence()` are retained as deprecated, check-only helpers (for reporting
+a seed's blocked state) and record nothing; the chat, retrieval, and agent
+helper paths all use `decide_and_record`.
 
 A blocked candidate is not recorded as surfaced. Resurface damping applies only after a seed was allowed and actually supplied to the model.
 
