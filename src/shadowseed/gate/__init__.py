@@ -23,6 +23,11 @@ onto these contracts is issues #11 and #12.
 
 from __future__ import annotations
 
+from shadowseed.gate.contradictions import (
+    BLOCKING_STATUSES,
+    ContradictionRecord,
+    ContradictionStatus,
+)
 from shadowseed.gate.events import ContradictionState, GateDecision, GateEvent
 from shadowseed.gate.policies import (
     DEFAULT_POLICY_ID,
@@ -57,4 +62,7 @@ __all__ = [
     "GateEvent",
     "GateDecision",
     "ContradictionState",
+    "ContradictionRecord",
+    "ContradictionStatus",
+    "BLOCKING_STATUSES",
 ]

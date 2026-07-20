@@ -26,6 +26,7 @@ from typing import TYPE_CHECKING, Any, Callable, Iterable, Literal
 import numpy as np
 
 from shadowseed.core_config import SSLCoreConfig
+from shadowseed.gate.contradictions import ContradictionRecord, ContradictionStatus
 from shadowseed.gate.events import (
     ContradictionState,
     GateDecision,
@@ -360,6 +361,10 @@ class SSLManager:
         # before/after authority state.
         self.gate_events: list[GateEvent] = []
         self._gate_sequence = 0
+        # Explicit contradiction records (#13). Blocking state is derived from
+        # unresolved records; contradiction_score is kept for compatibility.
+        self.contradiction_records: list[ContradictionRecord] = []
+        self._contradiction_sequence = 0
 
     @staticmethod
     def _now_iso() -> str:
@@ -400,19 +405,148 @@ class SSLManager:
         if changes:
             seed._write_authority(changes)
 
-    def _contradiction_state(self, seed: ShadowSeed) -> ContradictionState:
-        """Derive the blocking-contradiction snapshot from the scalar score.
+    def open_contradictions(self, seed_id: str) -> list[ContradictionRecord]:
+        """Unresolved (blocking) contradiction records for a seed."""
 
-        #13 replaces the scalar with explicit records; this derivation is the
-        compatibility bridge until then.
+        return [
+            record
+            for record in self.contradiction_records
+            if record.seed_id == seed_id and record.is_blocking
+        ]
+
+    def contradictions_for(self, seed_id: str) -> list[ContradictionRecord]:
+        """All contradiction records for a seed, in creation order."""
+
+        return [r for r in self.contradiction_records if r.seed_id == seed_id]
+
+    def _contradiction_state(self, seed: ShadowSeed) -> ContradictionState:
+        """Derive the blocking-contradiction snapshot.
+
+        Blocking state comes from unresolved records. Seeds that predate the
+        record model (a positive scalar but no records) are treated as carrying
+        one legacy open contradiction, so migration is lossless.
         """
 
-        blocking = seed.contradiction_score > 0.0
+        records = self.contradictions_for(seed.id)
+        if records:
+            open_count = sum(1 for r in records if r.is_blocking)
+            return ContradictionState(
+                blocking=open_count > 0,
+                open_count=open_count,
+                score=seed.contradiction_score,
+            )
+        legacy_blocking = seed.contradiction_score > 0.0
         return ContradictionState(
-            blocking=blocking,
-            open_count=1 if blocking else 0,
+            blocking=legacy_blocking,
+            open_count=1 if legacy_blocking else 0,
             score=seed.contradiction_score,
         )
+
+    def _open_contradiction_record(
+        self,
+        seed: ShadowSeed,
+        *,
+        reason: str,
+        source_ref: str | None,
+        strength: float,
+    ) -> ContradictionRecord:
+        self._contradiction_sequence += 1
+        record = ContradictionRecord(
+            contradiction_id=f"contra::{seed.id}::{self._contradiction_sequence:06d}",
+            seed_id=seed.id,
+            reason=reason,
+            source_ref=source_ref,
+            strength=max(0.0, min(1.0, strength)),
+            status=ContradictionStatus.OPEN,
+            created_at=self._now_iso(),
+        )
+        self.contradiction_records.append(record)
+        return record
+
+    def resolve_contradiction(
+        self,
+        seed_id: str,
+        *,
+        basis: str,
+        contradiction_id: str | None = None,
+        superseded: bool = False,
+        withdrawn: bool = False,
+        resolver: str = "human",
+    ) -> GateEvent:
+        """Gate-controlled contradiction recovery.
+
+        Marks the seed's open contradiction record(s) as resolved (or superseded
+        / withdrawn) with a recorded ``basis``, then — if no blocking record
+        remains — clears the blocking scalar through the authority path. This
+        only *unblocks* the seed; authority is not restored here. Recovery still
+        requires revalidation (a subsequent signal submission) under the active
+        policy, which is what actually raises weight again.
+
+        Recurrence alone can never reach this method: resolution is an explicit,
+        separately-recorded action with a mandatory basis.
+        """
+
+        seed = self.seeds[seed_id]
+        if seed.status == SeedStatus.EXPIRED:
+            raise ValueError("expired seeds cannot recover through contradiction resolution")
+        open_records = self.open_contradictions(seed_id)
+        if contradiction_id is not None:
+            open_records = [r for r in open_records if r.contradiction_id == contradiction_id]
+        if not open_records:
+            raise ValueError(f"no open contradiction to resolve for seed '{seed_id}'")
+
+        status_before = seed.status.value
+        weight_before = seed.weight
+        contradiction_before = self._contradiction_state(seed)
+        for record in open_records:
+            record.resolve(
+                basis,
+                superseded=superseded,
+                withdrawn=withdrawn,
+                resolved_at=self._now_iso(),
+            )
+        # If nothing blocking remains, clear the scalar so the point-of-use
+        # contract and the policies stop treating the seed as contradicted.
+        if not self.open_contradictions(seed_id):
+            self._set_authority(seed, contradiction_score=0.0)
+        self._touch_seed(seed)
+        signal = ValidationSignal(
+            kind=SignalKind.CONTRADICTION_RESOLUTION,
+            direction=SignalDirection.SUPPORT,
+            strength=1.0,
+            source_ref=resolver,
+            reason=basis,
+        )
+        return self._record_gate_event(
+            seed,
+            GateDecision.CONTRADICTION_RESOLVED,
+            [signal],
+            policy_id="contradiction_resolution",
+            status_before=status_before,
+            weight_before=weight_before,
+            contradiction_before=contradiction_before,
+            reason=f"resolved by {resolver}: {basis}",
+        )
+
+    def migrate_legacy_contradictions(self) -> list[ContradictionRecord]:
+        """Create an open record for any seed with a legacy scalar but no records.
+
+        Idempotent: seeds that already have records are left untouched. Returns
+        the records created, for logging or tests.
+        """
+
+        created: list[ContradictionRecord] = []
+        for seed in self.seeds.values():
+            if seed.contradiction_score > 0.0 and not self.contradictions_for(seed.id):
+                created.append(
+                    self._open_contradiction_record(
+                        seed,
+                        reason="migrated from legacy contradiction_score",
+                        source_ref="legacy_migration",
+                        strength=min(1.0, seed.contradiction_score),
+                    )
+                )
+        return created
 
     def _record_gate_event(
         self,
@@ -488,6 +622,15 @@ class SSLManager:
         proposal = policy.propose(signal_list, snapshot)
 
         if proposal.verdict is ProposedVerdict.CONTRADICT:
+            contradiction_signal = next(
+                (s for s in signal_list if s.kind is SignalKind.CONTRADICTION), None
+            )
+            self._open_contradiction_record(
+                seed,
+                reason=(contradiction_signal.reason if contradiction_signal else "") or "contradiction signal",
+                source_ref=contradiction_signal.source_ref if contradiction_signal else None,
+                strength=contradiction_signal.strength if contradiction_signal else 1.0,
+            )
             self._set_authority(
                 seed,
                 weight=max(0.0, seed.weight - self.contradiction_penalty),
@@ -913,6 +1056,12 @@ class SSLManager:
         flags: ValidationGateFlags,
         external_evidence: bool,
     ) -> ValidationGateResult:
+        self._open_contradiction_record(
+            seed,
+            reason="validation gate contradiction",
+            source_ref=None,
+            strength=1.0,
+        )
         self._set_authority(
             seed,
             weight=max(0.0, seed.weight - self.contradiction_penalty),
@@ -1486,6 +1635,7 @@ class SSLManager:
             "event_log": [item.to_dict() for item in self.event_log],
             "feedback_log": [item.to_dict() for item in self.feedback_log],
             "gate_events": [item.to_dict() for item in self.gate_events],
+            "contradiction_records": [item.to_dict() for item in self.contradiction_records],
             "vector_constellation": (
                 self.vector_constellation.to_dict()
                 if self.vector_constellation is not None

@@ -46,6 +46,27 @@ stored as a separate mutable field.
 
 The gate evaluates stored evidence, contradiction state, and configured thresholds. Its result is logged. Contradiction can block promotion, reduce influence, or reset a seed depending on the manager policy.
 
+## Contradictions
+
+Contradictions are explicit, auditable records (`ContradictionRecord`), not just
+a scalar. Each record has a stable id, a reason, an optional source reference, a
+strength, a lifecycle status (`open`, `resolved`, `superseded`, `withdrawn`),
+and — once closed — a resolution basis and timestamp.
+
+Blocking state is **derived**: a seed is blocked while it has any `open` record.
+The legacy `contradiction_score` scalar is retained for compatibility; a seed
+with a positive scalar but no records (older data) is treated as carrying one
+open contradiction, and `migrate_legacy_contradictions()` can materialize those
+into records.
+
+Recovery is possible but never silent. `SSLManager.resolve_contradiction(seed_id,
+basis=...)` requires a non-empty basis, moves the open record(s) to a terminal
+state, records a `contradiction_resolved` Gate event, and clears the blocking
+scalar — but it only *unblocks*. It does not restore authority: the seed must be
+revalidated under the active policy (a fresh signal submission) before weight
+rises again. Recurrence alone can never resolve a contradiction; resolution is a
+separate, explicitly-recorded action.
+
 ## Point-of-use contract
 
 Promotion is necessary but not sufficient. `AgentSafetyContract` verifies the seed again before answer modification, retrieval, warnings, probes, or downstream action. It checks promotion state, positive weight, evidence suitability, and the presence of a logged promotion decision.
