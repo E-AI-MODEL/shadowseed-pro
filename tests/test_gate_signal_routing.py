@@ -154,3 +154,25 @@ def test_no_direct_authority_mutation_in_non_benchmark_runtime():
                 if isinstance(target, ast.Attribute) and target.attr in AUTHORITY_FIELDS:
                     offenders.append(f"{path.relative_to(src_root)}:{target.lineno} .{target.attr}")
     assert not offenders, "direct authority writes outside the Gate: " + ", ".join(offenders)
+
+
+def test_no_unsafe_authority_hooks_in_runtime():
+    """The explicit unsafe escape hatches (unsafe_set_authority /
+    unsafe_install_seed) exist for tests and benchmarks only. No runtime module
+    may call them."""
+
+    src_root = pathlib.Path(__file__).resolve().parents[1] / "src" / "shadowseed"
+    unsafe_calls = {"unsafe_set_authority", "unsafe_install_seed"}
+    offenders: list[str] = []
+    for path in src_root.rglob("*.py"):
+        if "benchmark" in path.parts:
+            continue
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            if (
+                isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Attribute)
+                and node.func.attr in unsafe_calls
+            ):
+                offenders.append(f"{path.relative_to(src_root)}:{node.lineno} .{node.func.attr}")
+    assert not offenders, "unsafe authority hook used in runtime: " + ", ".join(offenders)

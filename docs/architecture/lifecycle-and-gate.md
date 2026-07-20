@@ -26,9 +26,32 @@ monotonic `authority_version` whenever weight, contradiction authority, or
 promotion state changes. A point-of-use decision references that version so a
 stale authorization can be detected on replay.
 
+The encapsulation is closed on every side:
+
+- authority fields are `init=False`, so the constructor cannot set them — a
+  seed is always born weightless;
+- `authority_version` is itself an authority field, so it cannot be assigned
+  directly; it is stamped automatically by the transition path;
+- the seed registry is exposed as a read-only `Mapping` view
+  (`SSLManager.seeds`), so callers cannot replace it or insert/remove entries;
+  seed creation goes through `add_or_update_seed`.
+
 Tests and benchmark fixtures that need an edge-case authority state without a
 full Gate run use the explicit, clearly-named `ShadowSeed.unsafe_set_authority(...)`
-hook. Production code never calls it.
+and `SSLManager.unsafe_install_seed(...)` hooks. Production code never calls
+them, and a static test enforces that.
+
+The `authority_version` bumps only when an authority-determining value actually
+changes — weight, evidence count, or contradiction score — or when the PROMOTED
+boundary is crossed. An unchanged rewrite does not bump it, and neither does a
+pure lifecycle status move (for example ACTIVE → DORMANT).
+
+**Why status is an authority field.** `status` carries both lifecycle presence
+(`NEW`/`ACTIVE`/`DECAYING`/`DORMANT`/`EXPIRED`) and the authority state
+`PROMOTED`. Rather than split one enum, all status writes go through the single
+transition path, and only PROMOTED-boundary crossings affect the authority
+version. Lifecycle moves that never cross that boundary change presence without
+changing authority.
 
 `trace`, `occurrence_count`, and `turns_dormant` are observation and
 lifecycle-support fields and remain freely writable — they never grant

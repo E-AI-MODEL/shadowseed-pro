@@ -23,14 +23,15 @@ def make_seed(
     weight: float = 0.0,
     contradiction_score: float = 0.0,
 ) -> ShadowSeed:
-    return ShadowSeed(
+    seed = ShadowSeed(
         id=seed_id,
-        text="De eigenaar van dit actiepunt is niet expliciet genoemd.",
+        text="The owner of this action item is not explicitly named.",
         embedding=np.array([1.0, 0.0]),
-        status=status,
-        weight=weight,
-        contradiction_score=contradiction_score,
     )
+    seed.unsafe_set_authority(
+        status=status, weight=weight, contradiction_score=contradiction_score
+    )
+    return seed
 
 
 def promotion_gate(seed_id: str = "seed-1") -> ValidationGateResult:

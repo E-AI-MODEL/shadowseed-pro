@@ -90,3 +90,59 @@ def test_authority_fields_are_readable_everywhere():
     assert seed.status is SeedStatus.NEW
     assert seed.evidence_count == 0
     assert seed.contradiction_score == 0.0
+
+
+def test_constructor_cannot_set_authority():
+    # init=False closes the construction bypass: authority kwargs are rejected.
+    for kwargs in ({"weight": 1.0}, {"status": SeedStatus.PROMOTED}, {"evidence_count": 9}):
+        with pytest.raises(TypeError):
+            ShadowSeed(id="x", text="t", embedding=fake_embedding("t"), **kwargs)
+
+
+def test_authority_version_is_not_directly_writable():
+    seed = _seed()
+    with pytest.raises(AttributeError):
+        seed.authority_version = 999
+
+
+def test_seed_registry_is_read_only():
+    manager = SSLManager(embedding_fn=fake_embedding)
+    seed_id = manager.add_or_update_seed("a seed")
+    # The view cannot be replaced or mutated in place.
+    with pytest.raises((TypeError, AttributeError)):
+        manager.seeds = {}
+    with pytest.raises(TypeError):
+        manager.seeds["x"] = manager.seeds[seed_id]
+    # But it reads normally.
+    assert seed_id in manager.seeds
+    assert manager.seeds[seed_id].text == "a seed"
+
+
+def test_unchanged_authority_rewrite_does_not_bump_version():
+    seed = _seed()
+    seed.unsafe_set_authority(weight=0.4)
+    version = seed.authority_version
+    seed.unsafe_set_authority(weight=0.4)  # same value
+    assert seed.authority_version == version
+
+
+def test_evidence_count_change_bumps_version():
+    seed = _seed()
+    version = seed.authority_version
+    seed.unsafe_set_authority(evidence_count=2)
+    assert seed.authority_version == version + 1
+
+
+def test_vector_only_expiry_resets_weight():
+    manager = SSLManager(embedding_fn=fake_embedding)
+    seed_id = manager.add_or_update_seed("a seed to expire")
+    manager.seeds[seed_id].unsafe_set_authority(weight=0.8, status=SeedStatus.PROMOTED)
+
+    class _Store:
+        def housekeeping(self, max_age_days):
+            return [seed_id]
+
+    manager.vector_constellation = _Store()
+    manager.expire_vector_only_open_seeds(max_age_days=1)
+    assert manager.seeds[seed_id].status is SeedStatus.EXPIRED
+    assert manager.seeds[seed_id].weight == 0.0

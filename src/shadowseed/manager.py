@@ -21,7 +21,8 @@ from datetime import datetime
 from enum import Enum
 import math
 import re
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Literal
+from types import MappingProxyType
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Literal, Mapping
 
 import numpy as np
 
@@ -101,9 +102,18 @@ class SeedOrigin:
 # Authority fields: only the Validation Gate transition path (SSLManager) may
 # change these. They determine whether a seed can eventually influence behavior.
 # trace, occurrence_count, and turns_dormant are observation/lifecycle-support
-# fields and stay freely writable.
+# fields and stay freely writable. authority_version is included so it cannot be
+# assigned externally; it is managed automatically by _write_authority.
 AUTHORITY_FIELDS: frozenset[str] = frozenset(
-    {"weight", "status", "evidence_count", "contradiction_score"}
+    {"weight", "status", "evidence_count", "contradiction_score", "authority_version"}
+)
+
+# The subset whose value actually changing marks an authority change (and bumps
+# the version). Status is handled separately: only crossing the PROMOTED
+# boundary counts, so ordinary lifecycle moves (ACTIVE/DORMANT/NEW) do not churn
+# the authority version.
+_VERSIONED_AUTHORITY_FIELDS: frozenset[str] = frozenset(
+    {"weight", "contradiction_score", "evidence_count"}
 )
 
 
@@ -114,24 +124,28 @@ class ShadowSeed:
     embedding: np.ndarray
     trigger_keywords: list[str] = field(default_factory=list)
     trace: float = 2.0
-    weight: float = 0.0
     occurrence_count: int = 1
-    evidence_count: int = 0
-    contradiction_score: float = 0.0
     turns_dormant: int = 0
-    status: SeedStatus = SeedStatus.NEW
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now().isoformat())
     origin: SeedOrigin | None = None
-    # Monotonic counter stamped whenever authority (weight, promotion state, or
-    # contradiction authority) changes. A point-of-use decision references it so
-    # a stale authorization can be detected on replay.
-    authority_version: int = 0
-    _authority_sealed: bool = field(default=False, repr=False, compare=False)
+    # Authority fields are init=False: they cannot be set through the
+    # constructor, closing the construction bypass. A seed is always born
+    # weightless; authority is reached only through the Gate, and tests use
+    # unsafe_set_authority(...).
+    weight: float = field(default=0.0, init=False)
+    evidence_count: int = field(default=0, init=False)
+    contradiction_score: float = field(default=0.0, init=False)
+    status: SeedStatus = field(default=SeedStatus.NEW, init=False)
+    # Monotonic counter stamped whenever authority (weight, evidence,
+    # contradiction, or promotion state) changes. A point-of-use decision
+    # references it so a stale authorization can be detected on replay.
+    authority_version: int = field(default=0, init=False)
+    _authority_sealed: bool = field(default=False, repr=False, compare=False, init=False)
 
     def __post_init__(self) -> None:
-        # Seal after construction so field defaults and deserialization can set
-        # authority normally, but later assignments are guarded.
+        # Seal after construction so field defaults can be set during init, but
+        # later direct assignments are guarded.
         object.__setattr__(self, "_authority_sealed", True)
 
     def __setattr__(self, name: str, value: Any) -> None:
@@ -149,21 +163,24 @@ class ShadowSeed:
 
         This is the single low-level writer. It bypasses the ``__setattr__``
         guard on purpose; callers are the manager's transition path and the
-        explicit unsafe test hook. The version bumps when weight or
-        contradiction authority changes, or when promotion status is crossed.
+        explicit unsafe test hook. The version bumps only when an
+        authority-determining value actually changes (weight, evidence, or
+        contradiction score) or when the PROMOTED boundary is crossed — not on
+        an unchanged rewrite, and not on a pure lifecycle status move.
         """
 
         promoted_before = self.status == SeedStatus.PROMOTED
+        value_changed = False
         for name, value in changes.items():
+            if name == "authority_version":
+                raise KeyError("authority_version is managed automatically")
             if name not in AUTHORITY_FIELDS:
                 raise KeyError(f"'{name}' is not an authority field")
+            if name in _VERSIONED_AUTHORITY_FIELDS and value != getattr(self, name):
+                value_changed = True
             object.__setattr__(self, name, value)
         promoted_after = self.status == SeedStatus.PROMOTED
-        if (
-            "weight" in changes
-            or "contradiction_score" in changes
-            or promoted_before != promoted_after
-        ):
+        if value_changed or promoted_before != promoted_after:
             object.__setattr__(self, "authority_version", self.authority_version + 1)
 
     def unsafe_set_authority(
@@ -320,7 +337,7 @@ class SSLManager:
         self._embedding_fn = embedding_fn
         self.model_name = model_name
         self._embedder = None
-        self.seeds: dict[str, ShadowSeed] = {}
+        self._seeds: dict[str, ShadowSeed] = {}
         self.config = replace(
             base_config,
             half_life_turns=base_config.half_life_turns if half_life_turns is None else half_life_turns,
@@ -365,6 +382,29 @@ class SSLManager:
         # unresolved records; contradiction_score is kept for compatibility.
         self.contradiction_records: list[ContradictionRecord] = []
         self._contradiction_sequence = 0
+
+    @property
+    def seeds(self) -> "Mapping[str, ShadowSeed]":
+        """Read-only view of the seed registry.
+
+        The mapping itself cannot be replaced or have entries inserted/removed
+        through this view — seed creation goes through ``add_or_update_seed`` and
+        the Gate owns authority. Individual ``ShadowSeed`` objects are returned
+        directly, so their non-authority observation fields remain writable while
+        authority fields stay guarded.
+        """
+
+        return MappingProxyType(self._seeds)
+
+    def unsafe_install_seed(self, seed: ShadowSeed) -> None:
+        """Test/benchmark-only: insert a pre-built seed into the registry.
+
+        Production code creates seeds through ``add_or_update_seed``. This hook
+        exists so tests can install hand-constructed seeds (paired with
+        ``ShadowSeed.unsafe_set_authority``) without a public mutable registry.
+        """
+
+        self._seeds[seed.id] = seed
 
     @staticmethod
     def _now_iso() -> str:
@@ -486,7 +526,7 @@ class SSLManager:
         separately-recorded action with a mandatory basis.
         """
 
-        seed = self.seeds[seed_id]
+        seed = self._seeds[seed_id]
         if seed.status == SeedStatus.EXPIRED:
             raise ValueError("expired seeds cannot recover through contradiction resolution")
         open_records = self.open_contradictions(seed_id)
@@ -536,7 +576,7 @@ class SSLManager:
         """
 
         created: list[ContradictionRecord] = []
-        for seed in self.seeds.values():
+        for seed in self._seeds.values():
             if seed.contradiction_score > 0.0 and not self.contradictions_for(seed.id):
                 created.append(
                     self._open_contradiction_record(
@@ -598,7 +638,7 @@ class SSLManager:
         recurrence stay distinct.
         """
 
-        seed = self.seeds[seed_id]
+        seed = self._seeds[seed_id]
         policy = resolve_policy(policy_id)
         signal_list = list(signals)
         status_before = seed.status.value
@@ -734,7 +774,7 @@ class SSLManager:
 
     def _sync_seed(self, seed_id: str) -> None:
         if self.vector_constellation is not None:
-            self.vector_constellation.sync_seed(self.seeds[seed_id])
+            self.vector_constellation.sync_seed(self._seeds[seed_id])
 
     def _record_and_sync(self, event_type: str, seed_id: str, **detail: Any) -> None:
         self._record_event(event_type, seed_id, **detail)
@@ -865,7 +905,7 @@ class SSLManager:
         }
 
     def _maybe_deduplicate_seed(self, new_embedding: np.ndarray) -> tuple[str, float] | None:
-        for seed_id, seed in self.seeds.items():
+        for seed_id, seed in self._seeds.items():
             # EXPIRED is terminal (removed from shadow memory): a degraded
             # seed must not be resurrected by a near-duplicate re-detection. Skip
             # it so a new seed is created instead of reviving the dead one.
@@ -877,7 +917,7 @@ class SSLManager:
         return None
 
     def _activate_existing_seed(self, seed_id: str, similarity: float) -> str:
-        seed = self.seeds[seed_id]
+        seed = self._seeds[seed_id]
         seed.occurrence_count += 1
         seed.trace = min(seed.trace + 0.5, self.max_trace)
         seed.turns_dormant = 0
@@ -900,8 +940,8 @@ class SSLManager:
         trigger_keywords: Iterable[str] | None,
         origin: SeedOrigin | None = None,
     ) -> str:
-        seed_id = f"ss_{len(self.seeds) + 1:03d}"
-        self.seeds[seed_id] = ShadowSeed(
+        seed_id = f"ss_{len(self._seeds) + 1:03d}"
+        self._seeds[seed_id] = ShadowSeed(
             id=seed_id,
             text=text,
             embedding=embedding,
@@ -955,7 +995,7 @@ class SSLManager:
         DORMANT for ``dormant_ttl_turns`` without a TrTL trigger becomes EXPIRED.
         This is the mirror of ``reactivate_by_text`` (TrTL), which keeps seeds
         alive. EXPIRED seeds are terminal and skipped."""
-        for seed_id, seed in self.seeds.items():
+        for seed_id, seed in self._seeds.items():
             if seed.status == SeedStatus.EXPIRED:
                 continue
 
@@ -1173,7 +1213,7 @@ class SSLManager:
         ``signals`` (when given) are recorded verbatim on the event.
         """
 
-        seed = self.seeds[seed_id]
+        seed = self._seeds[seed_id]
         weight_before = seed.weight
         contradiction_before = self._contradiction_state(seed)
         recorded_signals = self._signals_for_boolean_gate(
@@ -1201,7 +1241,7 @@ class SSLManager:
         external_evidence: bool = False,
         contradiction: bool = False,
     ) -> ValidationGateResult:
-        seed = self.seeds[seed_id]
+        seed = self._seeds[seed_id]
         status_before = seed.status.value
         weight_before = seed.weight
 
@@ -1316,7 +1356,7 @@ class SSLManager:
         query_emb = self.get_embedding(text)
         reactivated: list[str] = []
 
-        for seed_id, seed in self.seeds.items():
+        for seed_id, seed in self._seeds.items():
             if seed.status != SeedStatus.DORMANT:
                 continue
 
@@ -1368,7 +1408,7 @@ class SSLManager:
         matches = self.vector_constellation.search_similar_seeds(query_emb, threshold=threshold)
         uncertain = []
         for seed_id, score, metadata in matches:
-            seed = self.seeds.get(seed_id)
+            seed = self._seeds.get(seed_id)
             if seed is None:
                 continue
             if not include_promoted and seed.status == SeedStatus.PROMOTED:
@@ -1399,7 +1439,7 @@ class SSLManager:
         matches = self.vector_constellation.search_similar_seeds(feedback_emb, threshold=threshold)
         updates = []
         for seed_id, score, _metadata in matches:
-            if seed_id not in self.seeds:
+            if seed_id not in self._seeds:
                 continue
             if positive:
                 result = self.run_validation_gate(
@@ -1441,7 +1481,7 @@ class SSLManager:
                     "seed_id": seed_id,
                     "similarity": score,
                     "gate_result": result,
-                    "seed": self.seeds[seed_id].to_dict(),
+                    "seed": self._seeds[seed_id].to_dict(),
                 }
             )
         return updates
@@ -1451,9 +1491,13 @@ class SSLManager:
             return []
         expired = self.vector_constellation.housekeeping(max_age_days=max_age_days)
         for seed_id in expired:
-            if seed_id in self.seeds:
-                self._set_authority(self.seeds[seed_id], status=SeedStatus.EXPIRED)
-                self._touch_seed(self.seeds[seed_id])
+            if seed_id in self._seeds:
+                # Expiry is a terminal authority reset: clear weight too, matching
+                # TTL expiry, so an expired seed carries no residual authority.
+                self._set_authority(
+                    self._seeds[seed_id], status=SeedStatus.EXPIRED, weight=0.0
+                )
+                self._touch_seed(self._seeds[seed_id])
                 self._record_event("expired", seed_id, max_age_days=max_age_days)
         return expired
 
@@ -1471,7 +1515,7 @@ class SSLManager:
         self, threshold: float = 0.70, min_members: int = 3
     ) -> list[Constellation]:
         promoted = [
-            seed for seed in self.seeds.values() if seed.status == SeedStatus.PROMOTED
+            seed for seed in self._seeds.values() if seed.status == SeedStatus.PROMOTED
         ]
         constellations: list[Constellation] = []
         seen: set[tuple[str, ...]] = set()
@@ -1503,7 +1547,7 @@ class SSLManager:
         return constellations
 
     def get_seed(self, seed_id: str) -> ShadowSeed:
-        return self.seeds[seed_id]
+        return self._seeds[seed_id]
 
     def apply_probe_feedback(
         self,
@@ -1518,10 +1562,10 @@ class SSLManager:
         its own, but it can demote a PROMOTED seed back to ACTIVE when repeated
         penalties push weight below the promotion threshold.
         """
-        if seed_id not in self.seeds:
+        if seed_id not in self._seeds:
             raise KeyError(f"Seed '{seed_id}' does not exist.")
 
-        seed = self.seeds[seed_id]
+        seed = self._seeds[seed_id]
         outcome_enum = ProbeOutcome(outcome)
         probe_type_enum = ProbeType(probe_type)
 
@@ -1629,7 +1673,7 @@ class SSLManager:
     def to_dict(self) -> dict[str, Any]:
         return {
             "config": self.config.to_dict(),
-            "seeds": [seed.to_dict() for seed in self.seeds.values()],
+            "seeds": [seed.to_dict() for seed in self._seeds.values()],
             "constellations": [item.to_dict() for item in self.find_constellations()],
             "validation_log": [item.to_dict() for item in self.validation_log],
             "event_log": [item.to_dict() for item in self.event_log],
