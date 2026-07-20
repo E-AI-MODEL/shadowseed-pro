@@ -28,6 +28,14 @@ VERDICT_HOUDT_STAND = "HOUDT_STAND"
 VERDICT_ONBESLIST = "ONBESLIST"
 _VERDICTS = (VERDICT_WEERLEGD, VERDICT_HOUDT_STAND, VERDICT_ONBESLIST)
 
+# Canonical English names for the verdicts. These are the preferred identifiers
+# in new code; the underlying token *values* remain the Dutch forms so existing
+# result artifacts and model-output parsing stay compatible (see the module
+# docstring). REFUTED = refuted, SURVIVES = survives, UNDECIDED = undecided.
+VERDICT_REFUTED = VERDICT_WEERLEGD
+VERDICT_SURVIVES = VERDICT_HOUDT_STAND
+VERDICT_UNDECIDED = VERDICT_ONBESLIST
+
 _VERDICT_LINE_RE = re.compile(r"VERDICT\s*:\s*(.+)", re.IGNORECASE)
 _VERDICT_TOKEN_RE = re.compile(r"WEERLEGD|HOUDT[_ ]STAND|ONBESLIST", re.IGNORECASE)
 _REASON_RE = re.compile(r"(?:REASON|REDEN)\s*:\s*(.+)", re.IGNORECASE)
