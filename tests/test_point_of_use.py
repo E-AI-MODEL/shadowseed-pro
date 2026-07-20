@@ -54,6 +54,7 @@ def test_decide_and_record_is_atomic():
         InfluenceAction.ANSWER_MODIFICATION,
         gate_events=manager.gate_events,
         ledger=ledger,
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
         context_ref="turn:3",
     )
     # The decision was recorded as part of the same call.
@@ -70,6 +71,7 @@ def test_allowed_decision_links_to_a_gate_event():
         InfluenceAction.ANSWER_MODIFICATION,
         gate_events=manager.gate_events,
         ledger=ledger,
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
     )
     assert record.gate_event_ref is not None
     referenced = [e for e in manager.gate_events if e.event_id == record.gate_event_ref]
@@ -88,6 +90,7 @@ def test_denied_decision_is_also_recorded():
         InfluenceAction.ANSWER_MODIFICATION,
         gate_events=manager.gate_events,
         ledger=ledger,
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
     )
     assert record.allowed is False
     assert ledger == [record]
@@ -103,6 +106,7 @@ def test_strict_replay_passes_for_valid_records():
         InfluenceAction.ANSWER_MODIFICATION,
         gate_events=manager.gate_events,
         ledger=ledger,
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
     )
     assert_influence_records_valid(ledger, manager.gate_events)
 
@@ -134,9 +138,10 @@ def test_strict_replay_rejects_unknown_gate_event_ref():
         AgentInfluenceRecord(
             seed_id="ss_001", action="answer_modification", seed_weight=0.6,
             seed_status="PROMOTED", allowed=True, reason="x", gate_event_ref="nope",
+            authority_version=1, policy_id="exploratory",
         )
     ]
-    with pytest.raises(InfluenceReplayError):
+    with pytest.raises(InfluenceReplayError, match="unknown Gate event"):
         assert_influence_records_valid(bad, [])
 
 
@@ -179,7 +184,7 @@ def test_strict_replay_rejects_foreign_seed_event():
     record = AgentInfluenceRecord(
         seed_id="ss_001", action="answer_modification", seed_weight=0.6,
         seed_status="PROMOTED", allowed=True, reason="x", gate_event_ref="e1",
-        authority_version=1,
+        authority_version=1, policy_id="exploratory",
     )
     event = _promotion_event("ss_999", version=1)  # different seed
     with pytest.raises(InfluenceReplayError, match="different seed"):
@@ -190,14 +195,86 @@ def test_strict_replay_rejects_non_promoting_event():
     record = AgentInfluenceRecord(
         seed_id="ss_001", action="answer_modification", seed_weight=0.6,
         seed_status="PROMOTED", allowed=True, reason="x", gate_event_ref="e1",
-        authority_version=1,
+        authority_version=1, policy_id="exploratory",
     )
+    # A confirming decision (validated) that nonetheless did not leave the seed
+    # promoted must be rejected by the status_after check.
     event = GateEvent(
         event_id="e1", seed_id="ss_001", policy_id="exploratory",
-        decision=GateDecision.BLOCKED, status_after="ACTIVE", authority_version=1,
+        decision=GateDecision.VALIDATED, status_after="ACTIVE", authority_version=1,
     )
     with pytest.raises(InfluenceReplayError, match="did not leave"):
         assert_influence_records_valid([record], [event])
+
+
+def test_strict_replay_rejects_blocked_event_as_authorization():
+    # A later BLOCKED event that still shows status_after=PROMOTED and the same
+    # version must not count as the authorizing event.
+    record = AgentInfluenceRecord(
+        seed_id="ss_001", action="answer_modification", seed_weight=0.6,
+        seed_status="PROMOTED", allowed=True, reason="x", gate_event_ref="e1",
+        authority_version=3, policy_id="exploratory",
+    )
+    blocked_event = GateEvent(
+        event_id="e1", seed_id="ss_001", policy_id="exploratory",
+        decision=GateDecision.BLOCKED, status_after="PROMOTED", authority_version=3,
+    )
+    with pytest.raises(InfluenceReplayError, match="authority-confirming"):
+        assert_influence_records_valid([record], [blocked_event])
+
+
+def test_link_gate_event_ignores_blocked_event_at_decision_time():
+    manager, seed_id = _promoted_manager()
+    # A later BLOCKED submission leaves the promoted seed unchanged.
+    manager.submit_signals(seed_id, [], "exploratory")  # no signals -> BLOCKED, no change
+    contract = AgentSafetyContract()
+    ledger: list = []
+    record = contract.decide_and_record(
+        manager.seeds[seed_id],
+        InfluenceAction.ANSWER_MODIFICATION,
+        gate_events=manager.gate_events,
+        ledger=ledger,
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
+    )
+    # It must still link to the promoting event, not the blocked one.
+    assert record.allowed is True
+    linked = [e for e in manager.gate_events if e.event_id == record.gate_event_ref]
+    assert linked and linked[0].decision is GateDecision.PROMOTED
+    assert_influence_records_valid(ledger, manager.gate_events)
+
+
+def test_strict_replay_requires_policy_id_for_allowed():
+    record = AgentInfluenceRecord(
+        seed_id="ss_001", action="answer_modification", seed_weight=0.6,
+        seed_status="PROMOTED", allowed=True, reason="x", gate_event_ref="e1",
+        authority_version=1, policy_id=None,
+    )
+    event = _promotion_event("ss_001", version=1)
+    with pytest.raises(InfluenceReplayError, match="no policy id"):
+        assert_influence_records_valid([record], [event])
+
+
+def test_influence_record_json_roundtrip_replays():
+    import json
+    from dataclasses import asdict
+
+    manager, seed_id = _promoted_manager()
+    contract = AgentSafetyContract()
+    ledger: list = []
+    contract.decide_and_record(
+        manager.seeds[seed_id],
+        InfluenceAction.ANSWER_MODIFICATION,
+        gate_events=manager.gate_events,
+        ledger=ledger,
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
+        now="2026-07-20T00:00:00",
+    )
+    payload = json.loads(json.dumps(asdict(ledger[0])))
+    restored = AgentInfluenceRecord(**payload)
+    assert restored == ledger[0]
+    # And the deserialized record still replays cleanly against the ledger.
+    events = [GateEvent.from_dict(json.loads(json.dumps(e.to_dict()))) for e in manager.gate_events]
+    assert_influence_records_valid([restored], events)
 
 
 def test_strict_replay_rejects_policy_mismatch():
@@ -222,19 +299,28 @@ def test_decide_time_stale_authorization_is_denied():
         InfluenceAction.ANSWER_MODIFICATION,
         gate_events=stale_events,
         ledger=ledger,
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
     )
     assert record.allowed is False
     assert record.reason == "stale_gate_authorization"
 
 
-def test_public_decide_and_can_influence_do_not_record():
+def test_no_public_nonrecording_allow_decision():
     manager, seed_id = _promoted_manager()
     contract = AgentSafetyContract()
-    # The deprecated check-only APIs return a verdict but record nothing.
-    decision = contract.decide(manager.seeds[seed_id], InfluenceAction.RETRIEVAL, manager.gate_events)
+    # The former public allow-returning APIs are gone: there is no public
+    # method that returns an allowed verdict without recording.
+    assert not hasattr(contract, "decide")
+    assert not hasattr(contract, "can_influence")
+    # inspect() exists for status/UX only and is documented as non-authorizing;
+    # it returns an InfluenceDecision but records nothing to any ledger.
+    decision = contract.inspect(
+        manager.seeds[seed_id],
+        InfluenceAction.RETRIEVAL,
+        manager.gate_events,
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
+    )
     assert decision.allowed is True
-    assert contract.can_influence(manager.seeds[seed_id], InfluenceAction.RETRIEVAL, manager.gate_events) is True
-    # No ledger exists to bypass; the only recording route is decide_and_record.
 
 
 def test_retrieval_helper_records_and_replays():
@@ -284,6 +370,7 @@ def test_influence_record_is_serializable():
         InfluenceAction.ANSWER_MODIFICATION,
         gate_events=manager.gate_events,
         ledger=ledger,
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
         now="2026-07-20T00:00:00",
     )
     data = asdict(ledger[0])

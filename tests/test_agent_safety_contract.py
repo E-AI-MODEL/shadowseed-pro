@@ -65,7 +65,7 @@ def test_shadowseed_agent_public_exports_import() -> None:
 def test_weightless_seed_cannot_trigger_retrieval() -> None:
     seed = make_seed(status=SeedStatus.PROMOTED, weight=0.0)
 
-    decision = AgentSafetyContract().decide(
+    decision = AgentSafetyContract().inspect(
         seed,
         InfluenceAction.RETRIEVAL,
         gate_log=[promotion_gate()],
@@ -78,7 +78,7 @@ def test_weightless_seed_cannot_trigger_retrieval() -> None:
 def test_promoted_seed_requires_logged_gate() -> None:
     seed = make_seed(status=SeedStatus.PROMOTED, weight=0.6)
 
-    decision = AgentSafetyContract().decide(seed, InfluenceAction.PROBE, gate_log=[])
+    decision = AgentSafetyContract().inspect(seed, InfluenceAction.PROBE, gate_log=[])
 
     assert not decision.allowed
     assert decision.reason == "missing_logged_promotion"
@@ -87,7 +87,7 @@ def test_promoted_seed_requires_logged_gate() -> None:
 def test_promoted_seed_with_logged_gate_can_trigger_retrieval() -> None:
     seed = make_seed(status=SeedStatus.PROMOTED, weight=0.6)
 
-    decision = AgentSafetyContract().decide(
+    decision = AgentSafetyContract().inspect(
         seed,
         InfluenceAction.RETRIEVAL,
         gate_log=[promotion_gate()],
@@ -107,7 +107,9 @@ def test_promoted_seed_with_logged_gate_can_trigger_retrieval() -> None:
         authority_version=seed.authority_version,
     )
     ledger: list = []
-    assert can_seed_trigger_retrieval(seed, gate_events=[event], ledger=ledger)
+    assert can_seed_trigger_retrieval(
+        seed, gate_events=[event], ledger=ledger, contradiction_blocking=False
+    )
     assert ledger and ledger[0].allowed and ledger[0].gate_event_ref == "e1"
 
 
@@ -139,7 +141,7 @@ def test_contradiction_blocks_promoted_seed_by_default() -> None:
         contradiction_score=0.4,
     )
 
-    decision = AgentSafetyContract().decide(
+    decision = AgentSafetyContract().inspect(
         seed,
         InfluenceAction.WARNING,
         gate_log=[promotion_gate()],

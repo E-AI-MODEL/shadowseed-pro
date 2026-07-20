@@ -12,9 +12,9 @@ def can_seed_trigger_retrieval(
     *,
     gate_events: Iterable[Any],
     ledger: list,
+    contradiction_blocking: bool,
     contract: AgentSafetyContract | None = None,
     context_ref: str | None = None,
-    contradiction_blocking: bool | None = None,
 ) -> bool:
     """Return whether a seed may trigger retrieval, recording the decision.
 

@@ -431,9 +431,14 @@ class ShadowChatSession:
             raise KeyError(f"Unknown seed id: {seed_id}")
         self.manager.run_validation_gate(seed_id, contradiction=True)
         seed = self.manager.seeds[seed_id]
-        blocked = not self.contract.can_influence(
-            seed, InfluenceAction.ANSWER_MODIFICATION, self.manager.validation_log
-        )
+        # Status inspection only (not an authorization); reports whether the
+        # seed is now blocked from influence after the contradiction.
+        blocked = not self.contract.inspect(
+            seed,
+            InfluenceAction.ANSWER_MODIFICATION,
+            self.manager.gate_events,
+            contradiction_blocking=self.manager.is_blocking_contradiction(seed_id),
+        ).allowed
         return {
             "seed_id": seed_id,
             "weight_after": seed.weight,

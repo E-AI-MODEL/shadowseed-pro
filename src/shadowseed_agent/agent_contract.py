@@ -165,31 +165,30 @@ class AgentSafetyContract:
 
         return InfluenceDecision(seed_id, action_value, True, "allowed_promoted_gate_logged")
 
-    def decide(
+    def inspect(
         self,
         seed: SeedLike,
         action: InfluenceAction | str,
         gate_log: Iterable[Any] = (),
+        *,
+        contradiction_blocking: bool | None = None,
     ) -> InfluenceDecision:
-        """Deprecated: check-only decision that records nothing.
+        """Report a seed's current eligibility for status/UX purposes only.
 
-        Retained for status checks (for example reporting whether a seed is
-        blocked). To actually let a seed influence an action, use
-        ``decide_and_record`` so the decision is audited and linked to a Gate
-        event.
+        This is explicitly **not** an authorization: its result must never be
+        used to gate an actual influence. To let a seed influence an action, use
+        :meth:`decide_and_record`, which records the decision and links it to a
+        Gate event. ``inspect`` exists so callers can display "blocked" /
+        "eligible" without recording a spurious influence attempt.
+
+        (The former public ``decide``/``can_influence`` methods were removed:
+        they returned an allowed verdict that could be used to drive influence
+        without recording, which the point-of-use contract forbids.)
         """
 
-        return self._decide(seed, action, gate_log)
-
-    def can_influence(
-        self,
-        seed: SeedLike,
-        action: InfluenceAction | str,
-        gate_log: Iterable[Any] = (),
-    ) -> bool:
-        """Deprecated check-only helper; see :meth:`decide`."""
-
-        return self._decide(seed, action, gate_log).allowed
+        return self._decide(
+            seed, action, gate_log, contradiction_blocking=contradiction_blocking
+        )
 
     def decide_and_record(
         self,
@@ -198,9 +197,9 @@ class AgentSafetyContract:
         *,
         gate_events: Iterable[Any],
         ledger: list,
+        contradiction_blocking: bool,
         context_ref: str | None = None,
         now: str | None = None,
-        contradiction_blocking: bool | None = None,
     ):
         """Decide and record one influence attempt as a single atomic step.
 
@@ -220,10 +219,6 @@ class AgentSafetyContract:
         events = list(gate_events)
         seed_id = _seed_id(seed)
         current_version = _value(seed, "authority_version", None)
-        if contradiction_blocking is None:
-            contradiction_blocking = (
-                float(_value(seed, "contradiction_score", 0.0) or 0.0) > 0.0
-            )
 
         decision = self._decide(
             seed, action, events, contradiction_blocking=contradiction_blocking
@@ -261,6 +256,12 @@ class AgentSafetyContract:
         ledger.append(record)
         return record
 
+    #: Gate decisions that establish or confirm positive authority. Only these
+    #: may act as the authorizing event for an influence decision; a later
+    #: BLOCKED/NO_CHANGE/etc. event that happens to leave status_after==PROMOTED
+    #: must never be treated as the authorization.
+    _AUTHORITY_CONFIRMING_DECISIONS = frozenset({"promoted", "validated"})
+
     @staticmethod
     def _link_gate_event(
         seed_id: str,
@@ -270,16 +271,21 @@ class AgentSafetyContract:
         """Return (event_id, authority_version, policy_id) of the latest Gate
         event that represents the seed's current promoted authority.
 
-        Selects the latest event for the same seed that left it promoted, whose
-        recorded ``contradiction_after`` is non-blocking, and — when
-        ``current_version`` is given — whose ``authority_version`` matches the
-        seed's current version. Returns ``(None, None, None)`` if none qualifies,
-        which the caller treats as a stale or missing authorization.
+        Selects the latest event for the same seed that (a) carries an
+        authority-confirming decision (promoted/validated), (b) left the seed
+        promoted, (c) records a non-blocking contradiction state, and (d) — when
+        ``current_version`` is given — matches the seed's current authority
+        version. Returns ``(None, None, None)`` if none qualifies, which the
+        caller treats as a stale or missing authorization.
         """
 
         latest = None
         for event in gate_events:
             if str(_value(event, "seed_id", "")) != seed_id:
+                continue
+            decision = _value(event, "decision", "")
+            decision_value = str(getattr(decision, "value", decision))
+            if decision_value not in AgentSafetyContract._AUTHORITY_CONFIRMING_DECISIONS:
                 continue
             if str(_value(event, "status_after", "")) != PROMOTED_STATUS:
                 continue

@@ -53,26 +53,33 @@ def assert_no_weightless_influence(records: list[AgentInfluenceRecord]) -> None:
     )
 
 
+#: Gate decisions that may authorize influence (mirror of the contract's set).
+_AUTHORITY_CONFIRMING_DECISIONS = frozenset({"promoted", "validated"})
+
+
 def assert_influence_records_valid(
     records: list[AgentInfluenceRecord],
-    gate_events: list | None = None,
+    gate_events: list,
 ) -> None:
     """Strict replay of every allowed influence decision.
 
-    Beyond positive weight, each allowed record must be PROMOTED, free of a
-    blocking contradiction, and linked to a Gate event that exists (when a
-    ``gate_events`` ledger is supplied), belongs to the same seed, and left the
-    seed PROMOTED. Raises on the first violation.
+    ``gate_events`` (the manager's Gate ledger) is required: strict replay must
+    be able to independently reconstruct each authorization. Each allowed record
+    must be PROMOTED, free of a blocking contradiction (checked both on the
+    record and on the linked event), carry a policy id and an authority version,
+    and link to a Gate event that exists, belongs to the same seed, carries an
+    authority-confirming decision, left the seed promoted, matches the recorded
+    authority version, and matches the recorded policy. Raises on the first
+    violation.
     """
 
     assert_no_weightless_influence(records)
 
     index: dict[str, object] = {}
-    if gate_events is not None:
-        for event in gate_events:
-            event_id = getattr(event, "event_id", None)
-            if event_id is not None:
-                index[event_id] = event
+    for event in gate_events:
+        event_id = getattr(event, "event_id", None)
+        if event_id is not None:
+            index[event_id] = event
 
     for record in records:
         if not record.allowed:
@@ -94,30 +101,46 @@ def assert_influence_records_valid(
             raise InfluenceReplayError(
                 f"allowed influence with no authority version for seed {record.seed_id!r}"
             )
-        if gate_events is not None:
-            event = index.get(record.gate_event_ref)
-            if event is None:
-                raise InfluenceReplayError(
-                    f"allowed influence references unknown Gate event "
-                    f"{record.gate_event_ref!r} for seed {record.seed_id!r}"
-                )
-            if getattr(event, "seed_id", None) != record.seed_id:
-                raise InfluenceReplayError(
-                    f"Gate-event {record.gate_event_ref!r} belongs to a different seed"
-                )
-            if getattr(event, "status_after", None) != "PROMOTED":
-                raise InfluenceReplayError(
-                    f"Gate-event {record.gate_event_ref!r} did not leave seed "
-                    f"{record.seed_id!r} promoted"
-                )
-            if getattr(event, "authority_version", None) != record.authority_version:
-                raise InfluenceReplayError(
-                    f"stale authority version for seed {record.seed_id!r}: "
-                    f"record={record.authority_version} event="
-                    f"{getattr(event, 'authority_version', None)}"
-                )
-            if record.policy_id is not None and getattr(event, "policy_id", None) != record.policy_id:
-                raise InfluenceReplayError(
-                    f"policy mismatch for seed {record.seed_id!r}: "
-                    f"record={record.policy_id!r} event={getattr(event, 'policy_id', None)!r}"
-                )
+        if record.policy_id is None:
+            raise InfluenceReplayError(
+                f"allowed influence with no policy id for seed {record.seed_id!r}"
+            )
+        event = index.get(record.gate_event_ref)
+        if event is None:
+            raise InfluenceReplayError(
+                f"allowed influence references unknown Gate event "
+                f"{record.gate_event_ref!r} for seed {record.seed_id!r}"
+            )
+        if getattr(event, "seed_id", None) != record.seed_id:
+            raise InfluenceReplayError(
+                f"Gate-event {record.gate_event_ref!r} belongs to a different seed"
+            )
+        decision = getattr(event, "decision", None)
+        decision_value = str(getattr(decision, "value", decision))
+        if decision_value not in _AUTHORITY_CONFIRMING_DECISIONS:
+            raise InfluenceReplayError(
+                f"Gate-event {record.gate_event_ref!r} is not an authority-confirming "
+                f"decision (decision={decision_value!r})"
+            )
+        if getattr(event, "status_after", None) != "PROMOTED":
+            raise InfluenceReplayError(
+                f"Gate-event {record.gate_event_ref!r} did not leave seed "
+                f"{record.seed_id!r} promoted"
+            )
+        contradiction_after = getattr(event, "contradiction_after", None)
+        if contradiction_after is not None and getattr(contradiction_after, "blocking", False):
+            raise InfluenceReplayError(
+                f"Gate-event {record.gate_event_ref!r} records a blocking contradiction "
+                f"for seed {record.seed_id!r}"
+            )
+        if getattr(event, "authority_version", None) != record.authority_version:
+            raise InfluenceReplayError(
+                f"stale authority version for seed {record.seed_id!r}: "
+                f"record={record.authority_version} event="
+                f"{getattr(event, 'authority_version', None)}"
+            )
+        if getattr(event, "policy_id", None) != record.policy_id:
+            raise InfluenceReplayError(
+                f"policy mismatch for seed {record.seed_id!r}: "
+                f"record={record.policy_id!r} event={getattr(event, 'policy_id', None)!r}"
+            )
