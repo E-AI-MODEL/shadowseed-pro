@@ -44,6 +44,46 @@ class SeedStatus(str, Enum):
     EXPIRED = "EXPIRED"
 
 
+class CandidateType(str, Enum):
+    """Why a candidate absence was proposed.
+
+    This is observability metadata only. It records what kind of gap the
+    detector believed it found; it never affects trace, weight, evidence, or
+    the Validation Gate. Closed vocabulary so audit logs stay legible.
+    """
+
+    MISSING_RELATION = "missing_relation"
+    MISSING_BOUNDARY = "missing_boundary"
+    UNSTATED_ASSUMPTION = "unstated_assumption"
+    CONTRADICTION = "contradiction"
+    ALTERNATIVE_HYPOTHESIS = "alternative_hypothesis"
+    MISSING_DEPENDENCY = "missing_dependency"
+    POSSIBLE_COMPLETION = "possible_completion"
+    UNSPECIFIED = "unspecified"
+
+
+@dataclass
+class SeedOrigin:
+    """Optional, audit-only record of *why* a seed was generated.
+
+    Purely descriptive provenance. It makes the conceptual origin of a seed
+    visible in the created-event and export, but carries no epistemic force:
+    a convincing rationale here must still leave ``weight`` at ``0.0``. Weight
+    can rise only through the Validation Gate, never from this metadata.
+    """
+
+    candidate_type: CandidateType = CandidateType.UNSPECIFIED
+    detection_basis: str = ""
+    context_ref: str | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "candidate_type": self.candidate_type.value,
+            "detection_basis": self.detection_basis,
+            "context_ref": self.context_ref,
+        }
+
+
 @dataclass
 class ShadowSeed:
     id: str
@@ -59,11 +99,13 @@ class ShadowSeed:
     status: SeedStatus = SeedStatus.NEW
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now().isoformat())
+    origin: SeedOrigin | None = None
 
     def to_dict(self) -> dict[str, Any]:
         data = asdict(self)
         data["embedding"] = self.embedding.tolist()
         data["status"] = self.status.value
+        data["origin"] = self.origin.to_dict() if self.origin is not None else None
         return data
 
 
@@ -318,6 +360,7 @@ class SSLManager:
         split_broad: bool = True,
         deduplicate: bool = True,
         min_seed_words: int = 0,
+        origin: SeedOrigin | None = None,
     ) -> dict[str, Any]:
         raw_candidates = list(candidates)
         normalized = self.normalize_detection_candidates(
@@ -339,7 +382,10 @@ class SSLManager:
                 continue
             try:
                 seed_id = self.add_or_update_seed(
-                    candidate, trigger_keywords=trigger_keywords, deduplicate=deduplicate
+                    candidate,
+                    trigger_keywords=trigger_keywords,
+                    deduplicate=deduplicate,
+                    origin=origin,
                 )
             except ValueError:
                 rejected.append({"text": candidate, "reason": "not_atomic"})
@@ -395,6 +441,7 @@ class SSLManager:
         text: str,
         embedding: np.ndarray,
         trigger_keywords: Iterable[str] | None,
+        origin: SeedOrigin | None = None,
     ) -> str:
         seed_id = f"ss_{len(self.seeds) + 1:03d}"
         self.seeds[seed_id] = ShadowSeed(
@@ -403,8 +450,14 @@ class SSLManager:
             embedding=embedding,
             trigger_keywords=list(trigger_keywords or []),
             trace=self.config.trace_start,
+            origin=origin,
         )
-        self._record_and_sync("created", seed_id, text=text)
+        self._record_and_sync(
+            "created",
+            seed_id,
+            text=text,
+            origin=origin.to_dict() if origin is not None else None,
+        )
         return seed_id
 
     def add_or_update_seed(
@@ -412,6 +465,7 @@ class SSLManager:
         text: str,
         trigger_keywords: Iterable[str] | None = None,
         deduplicate: bool = True,
+        origin: SeedOrigin | None = None,
     ) -> str:
         if not self.is_atomic_seed(text, max_seed_words=self.config.max_seed_words):
             raise ValueError("Seed appears too broad. Split it into atomic seeds first.")
@@ -420,10 +474,13 @@ class SSLManager:
         if deduplicate:
             deduplicated = self._maybe_deduplicate_seed(new_embedding)
             if deduplicated is not None:
+                # Origin records the first detection of a seed; a later
+                # near-duplicate re-detection reinforces the existing seed and
+                # does not overwrite its recorded origin.
                 seed_id, similarity = deduplicated
                 return self._activate_existing_seed(seed_id, similarity)
 
-        return self._create_seed(text, new_embedding, trigger_keywords)
+        return self._create_seed(text, new_embedding, trigger_keywords, origin=origin)
 
     def _status_after_decay(self, seed: ShadowSeed) -> SeedStatus:
         if seed.trace < self.dormant_threshold and seed.weight == 0.0:
@@ -713,11 +770,19 @@ class SSLManager:
                 seed.status = SeedStatus.NEW
                 seed.turns_dormant = 0
                 self._touch_seed(seed)
+                semantic_hit = similarity >= threshold
+                if semantic_hit and keyword_hit:
+                    basis = "semantic+keyword"
+                elif semantic_hit:
+                    basis = "semantic"
+                else:
+                    basis = "keyword"
                 self._record_and_sync(
                     "reactivated",
                     seed_id,
                     similarity=similarity,
                     keyword_hit=keyword_hit,
+                    basis=basis,
                     trace=seed.trace,
                 )
                 reactivated.append(seed_id)

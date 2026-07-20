@@ -26,6 +26,22 @@ Promotion is necessary but not sufficient. `AgentSafetyContract` verifies the se
 
 A blocked candidate is not recorded as surfaced. Resurface damping applies only after a seed was allowed and actually supplied to the model.
 
+## Seed origin (observability only)
+
+A seed may carry optional `SeedOrigin` metadata: a `candidate_type` from a
+closed vocabulary (for example `missing_relation`, `unstated_assumption`,
+`contradiction`), a free-text `detection_basis`, and an optional `context_ref`.
+This records *why* a candidate absence was proposed and is written to the
+`created` event and the seed export.
+
+Origin is descriptive provenance only. It carries no epistemic force: it never
+increases `trace` or `weight`, never counts as evidence, and never influences
+the Validation Gate. A convincing detection rationale must still leave
+`weight = 0.0`; weight rises only through a gate decision. Any psychological
+framing of seeds as "hunches" or "curiosity" is an analogy for readers, not a
+claim that the system models mental states — it models controlled candidate
+hypotheses.
+
 ## Audit requirements
 
 A reviewable run should retain:
