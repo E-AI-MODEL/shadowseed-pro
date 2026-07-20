@@ -12,7 +12,7 @@
   <img alt="Python 3.10 or higher" src="https://img.shields.io/badge/Python-3.10%2B-3776AB">
   <img alt="Research status research ready" src="https://img.shields.io/badge/status-research--ready-c88719">
   <img alt="Active repository language English" src="https://img.shields.io/badge/active_language-English-6f42c1">
-  <img alt="License pending" src="https://img.shields.io/badge/license-pending-lightgrey">
+  <img alt="All rights reserved" src="https://img.shields.io/badge/rights-all_rights_reserved-red">
 </p>
 
 <p align="center">
@@ -31,24 +31,77 @@ This repository contains the runtime, tests, benchmark harnesses, research instr
 > [!NOTE]
 > Active runtime code and current documentation are in English. Historical Dutch source material is retained under [`archive/`](archive/) for provenance and must not be treated as current runtime authority.
 
+> [!CAUTION]
+> This repository currently has **no open-source license**. All rights are reserved. Public visibility is not permission for reuse. See [Rights and temporary licensing position](#rights-and-temporary-licensing-position).
+
 ---
 
 ## Choose your route
 
 | I want to... | Start here |
 |---|---|
+| Understand why this project exists | [Project origin and author note](#project-origin-and-author-note) |
 | Understand SSL without reading code | [The idea in plain language](#the-idea-in-plain-language) |
 | See the rule that protects answers from unverified seeds | [The invariant](#the-invariant) |
 | See the full runtime path | [How a seed moves through the system](#how-a-seed-moves-through-the-system) |
 | Find the code behind each claim | [What the code enforces](#what-the-code-enforces) |
 | Understand the H-Neurons connection | [H-Neurons: code influence and separate experiment](#h-neurons-code-influence-and-separate-experiment) |
 | Review the scientific basis | [Scientific basis and exact claim boundaries](#scientific-basis-and-exact-claim-boundaries) |
+| Review weaknesses and open questions | [Discussion and limitations](#discussion-and-limitations) |
 | Install and run the package | [Quick start](#quick-start) |
 | Run the H-Neurons-style activation probe | [Activation-probe commands](#activation-probe-commands) |
 | Navigate the repository | [Repository map](#repository-map) |
 | Understand what is canonical, legacy, or archived | [Repository authority](#repository-authority) |
 | Check the evidence level of a result | [Evidence hierarchy](#evidence-hierarchy) |
 | See what is proven and what remains open | [Research status](#research-status) |
+| Check current usage rights | [Rights and temporary licensing position](#rights-and-temporary-licensing-position) |
+
+---
+
+# Project origin and author note
+
+## The question that started the project
+
+Most AI systems are evaluated on what they produce. Much less attention is paid to what a fluent answer leaves out.
+
+A response can be plausible and still omit a causal boundary, dependency, stakeholder, alternative explanation, contradiction, or necessary question. That omission may matter more than another paragraph of generated text.
+
+Shadow Seed Learning began with a practical question:
+
+> Can an AI system record a suspected omission, keep it powerless while it is uncertain, test it over time, and allow it to influence later work only after explicit validation?
+
+The safety condition was part of the question from the start. A detected gap must not quietly become a fact, memory, or instruction.
+
+## Author note
+
+I am not a formally trained programmer or machine-learning researcher. This repository was developed through iterative, AI-assisted engineering, public research, explicit specifications, tests, benchmark rounds, and repeated attempts to disprove attractive results.
+
+That background is not presented as a credential. It is a limitation that shaped the repository:
+
+- claims are linked to code, tests, or result artifacts;
+- runtime code is separated from experiments and history;
+- seeds start powerless rather than trusted;
+- generated proposals are separated from verified evidence;
+- negative results are retained;
+- the project states what has not been established;
+- independent review remains necessary.
+
+The repository should not be trusted because its author sounds certain. It should be inspected because the decision path is visible.
+
+## How the project developed
+
+The project can be read as a sequence of stricter questions:
+
+1. Can a missing point be represented as one small, testable candidate?
+2. Can presence be separated from influence through `trace` and `weight`?
+3. Can candidates decay, reactivate, expire, and lose influence after contradiction?
+4. Can recurrence, evidence, and falsification pass through one logged Gate?
+5. Can promoted seeds be checked again at the exact point where an agent might use them?
+6. Can the mechanism be tested with fixtures, adversarial cases, open-set review, transfer, and blind comparison?
+7. Can an H-Neurons-style instrument find a stable internal signal for dialectical verdicts?
+8. Can a failed replication narrow the claim instead of being hidden?
+
+The H-Neurons work is part of this path, but it is not the sole origin or foundation of SSL. It supplied a recent measurement precedent for one separate research track. The operational runtime remains based on external, logged, reversible decisions.
 
 ---
 
@@ -352,42 +405,155 @@ Shadow Seed Learning is a research architecture, not a direct implementation of 
 
 | Research | Finding relevant to this repository | Where it appears in code | Boundary |
 |---|---|---|---|
+| Fu et al. (2025), **AbsenceBench** | Models can retrieve present information while struggling to identify information that is missing | Candidate-gap detection, atomic normalization, and gap benchmarks under [`src/shadowseed/detection/`](src/shadowseed/detection/) and [`src/shadowseed/benchmark/`](src/shadowseed/benchmark/) | Does not validate Shadowseed's detector, lifecycle, or answer benefit |
+| Li, Kim, and Wang (2025), **QuestBench** | Models can struggle to identify the minimal question needed to resolve underspecified reasoning | Atomic seed rules and optional Socratic-style follow-up behavior | Shadowseed does not guarantee that a generated seed is the minimal or best clarification question |
 | Gao et al. (2025), **H-Neurons** | Sparse FFN activations can carry predictive hallucination signals; sparse classifiers and the down-projection input are useful research instruments | [`activation_probe.py`](src/shadowseed/benchmark/activation_probe.py), `read_location="neuron"`, sparse L1 probe | Shadowseed does not claim to have found H-Neurons or to reproduce results from 24B-70B models |
 | Vaddi & Vaddi (2026), **Do Hallucination Neurons Generalize?** | A recent preprint reports a large drop from within-domain to cross-domain transfer across 3B-8B models | Domain-specific evaluation, transfer case sets, and refusal to treat one internal signal as universal | This is a preprint, and it does not establish that all neuron signals fail to transfer |
 | Alansari et al. (2026), **CrossHallu** | Another recent preprint finds that transfer can occur for many models, while depending on model, language alignment, and dataset | The README and research status treat generalization as an empirical question, not a settled property | The emerging literature is mixed; Shadowseed makes no universal cross-domain or cross-lingual claim |
+| Wu et al. (2025), **LongMemEval** | Long-term memory needs separate tests for information extraction, multi-session reasoning, temporal reasoning, knowledge updates, and abstention | Explicit seed lifecycle, TTL, TrTL, expiry, baseline isolation, and audit logs | Shadowseed does not yet provide durable production memory or validated multi-user long-term memory |
 | Farquhar et al. (2024), **Semantic entropy** | Uncertainty over meanings can detect a class of confabulations and support selective handling | Candidate gaps are stored as uncertain, powerless signals until checked | Shadowseed does not implement semantic entropy and does not equate a gap signal with hallucination probability |
+| Kirichenko et al. (2025), **AbstentionBench** | Models may fail to abstain reliably when questions are unanswerable | Weightless storage, Gate blocking, and explicit `ONBESLIST` handling in dialectical review | Shadowseed has not established calibrated abstention or selective prediction |
+| Dhuliawala et al. (2024), **Chain-of-Verification** | Separating initial generation from independent verification can reduce hallucinations | Baseline isolation, external SSOT evidence, Validation Gate, and dialectical falsification | Shadowseed is not a Chain-of-Verification reproduction and verification can still be wrong |
+| Fatahi Bayat et al. (2025), **FactBench / VERIFY** | Factuality evaluation benefits from separating supported, unsupported, and undecidable cases | Verified versus proposed SSOT chunks and explicit contradiction or neutral verdicts | Shadowseed has not established comparable evaluator accuracy or coverage |
+| Jeong et al. (2024), **Adaptive-RAG** | Retrieval can be selected according to estimated need rather than applied uniformly | Optional seed-triggered retrieval probes and point-of-use surfacing | Shadowseed does not contain a trained complexity router |
 | Yao et al. (2025), **SeaKR** | Internal self-aware uncertainty can trigger adaptive retrieval in a trained research system | Promoted seeds can drive optional retrieval probes and are filtered by relevance at use time | Shadowseed does not use its failed activation probe as a runtime retrieval trigger |
 | Asai et al. (2024), **Self-RAG** | Retrieval can be selective and paired with explicit critique rather than invoked indiscriminately | Shared surfacing policy, optional retrieval probes, and dialectical review | Shadowseed is not trained with reflection tokens and is not a Self-RAG reproduction |
 | Soudani et al. (2025), **Uncertainty estimation in RAG** | Existing uncertainty estimators do not fully satisfy proposed correctness axioms in RAG | Uncertainty remains separate from verified evidence, contradiction, and gate permission | The Gate is an inspectable policy mechanism, not proof that response correctness is calibrated |
-| Ge et al. (2025), **Conflicting evidence in RAG fact-checking** | Conflicting evidence and source credibility can materially reduce RAG reliability | Separate SSOT store, trust status, verified proposals, contradiction handling | Shadowseed does not yet implement a complete media-credibility model or source-ranking science |
+| Ge et al. (2025), **Conflicting evidence in RAG fact-checking** | Conflicting evidence and source credibility can materially reduce RAG reliability | Separate SSOT store, trust status, verified proposals, contradiction handling | Shadowseed does not yet implement a complete source-credibility model or source-ranking science |
+| Zou et al. (2025), **PoisonedRAG** | A small number of malicious documents can corrupt retrieval-augmented generation | Separation of uncertain seeds, verified evidence, contradiction checks, and production-gap warnings | Current controls are not a demonstrated defense against retrieval poisoning |
+| Debenedetti et al. (2024), **AgentDojo** | Agents can be hijacked through untrusted tool or retrieved content | Point-of-use [`AgentSafetyContract`](src/shadowseed_agent/agent_contract.py), audit policy, and explicit high-impact restrictions | Shadowseed has not completed an AgentDojo-style prompt-injection evaluation |
+
+## Design rationale
+
+### Atomic seeds
+
+AbsenceBench and QuestBench support treating missing information as a distinct and difficult target. SSL narrows that target to one candidate at a time so it can be accepted, rejected, or qualified.
+
+### Weightless storage
+
+A detector can be useful without being trustworthy. Weightless storage preserves a lead without allowing it to alter an answer.
+
+### Separate proposals and evidence
+
+FactBench, conflicting-evidence research, PoisonedRAG, and AgentDojo show why generated or retrieved text cannot be treated as automatically trustworthy.
+
+### Independent verification and falsification
+
+Chain-of-Verification supports separating generation from verification. SSL adds a dialectical route that tries to show a candidate is redundant, already covered, unsupported, or contradicted.
+
+### Selective retrieval
+
+Adaptive-RAG, Self-RAG, and SeaKR support the broader principle that retrieval should be selective. SSL applies selection to promoted candidate absences at the moment of use.
+
+### Explicit memory lifecycle
+
+LongMemEval shows that memory quality is not one score. SSL makes persistence, reactivation, decay, and expiry visible, but it does not yet provide durable multi-user memory.
 
 ## Scientific position of the repository
 
 The code follows five research-facing principles:
 
-### 1. Treat uncertainty as a reason to inspect, not a reason to believe
-
-A candidate absence may be useful even when it is wrong. The safe first operation is to preserve it without influence.
-
-### 2. Separate model-generated proposals from trusted evidence
-
-Generated text can suggest what to investigate. It cannot verify itself.
-
-### 3. Make falsification a first-class operation
-
-A candidate should face an active attempt to show that it is redundant, already covered, unsupported, or contradicted.
-
-### 4. Require selection at the moment of use
-
-Even a promoted seed may be irrelevant to the current question. Surfacing is based on current semantic fit, conversation timing, top-k limits, and resurface damping.
-
-### 5. Prefer bounded null results over attractive overclaims
-
-The H-Neurons-style track retained its negative replication and used it to tighten the runtime claim boundary.
+1. **Treat uncertainty as a reason to inspect, not a reason to believe.** A candidate absence may be useful even when it is wrong. The safe first operation is to preserve it without influence.
+2. **Separate model-generated proposals from trusted evidence.** Generated text can suggest what to investigate. It cannot verify itself.
+3. **Make falsification a first-class operation.** A candidate should face an active attempt to show that it is redundant, already covered, unsupported, or contradicted.
+4. **Require selection at the moment of use.** Even a promoted seed may be irrelevant to the current question. Surfacing is based on current semantic fit, conversation timing, top-k limits, and resurface damping.
+5. **Prefer bounded null results over attractive overclaims.** The H-Neurons-style track retained its negative replication and used it to tighten the runtime claim boundary.
 
 ## Older conceptual antecedents
 
 The mechanism also relates to older work on epistemic uncertainty, active learning, and computational curiosity. Those lines help explain why an uncertain region may be worth probing. They do not by themselves validate this implementation.
+
+---
+
+# Discussion and limitations
+
+## Conceptual limits
+
+### Meaningful absence is not fully defined
+
+A missing point may be essential, useful but optional, already implied, outside scope, unknowable from the evidence, or invented by the detector. Atomicity makes a candidate testable. It does not make it important.
+
+### Recurrence is not truth
+
+A seed can recur because it matters. It can also recur because the detector repeats the same bias. The Gate therefore keeps recurrence separate from verified evidence.
+
+### Weight is not probability
+
+`weight` is steering authority. It is not the probability that a seed is true, useful, complete, or safe.
+
+### Promotion is not relevance
+
+A valid seed may still distract from the current question. Thresholds and top-k limits reduce this risk but do not solve it.
+
+## Method limits
+
+- fixtures verify mechanics, not real-model quality;
+- benchmark suites can encode repository assumptions;
+- some verdict labels are model-generated;
+- human review sets are still small;
+- the author designed both the mechanism and much of the evaluation;
+- broad independent replication is missing;
+- results may change by model, prompt, language, domain, and backend;
+- the activation study has limited sample size and model scale.
+
+The null H-Neurons-style result is valid for the tested setup. It does not rule out other scales or methods.
+
+## Author and development limits
+
+The author is not a formally trained programmer. AI-assisted development introduces risks:
+
+- generated code may look convincing while hiding flaws;
+- repeated AI review can share blind spots;
+- tests may encode the same assumptions as the implementation;
+- documentation may look more mature than the runtime;
+- abstractions may reflect the prompts used to create them.
+
+The repository reduces these risks through explicit authority rules, tests, public artifacts, negative-result retention, and claim limits. These controls do not replace expert review.
+
+## Engineering limits
+
+Production use still requires:
+
+- durable transactional storage and migrations;
+- deterministic replay across versions;
+- multi-user authorization and isolation;
+- privacy, retention, deletion, and export controls;
+- prompt-injection and evidence-poisoning defenses;
+- seed-spam controls and rate limits;
+- monitoring, rollback, and failure recovery;
+- operator approval for high-impact actions;
+- independent security, software, and statistical review;
+- real-world latency, cost, and load testing.
+
+## Design tensions
+
+| Tension | Current choice | Open question |
+|---|---|---|
+| Memory versus contamination | Weightless seeds and baseline isolation | What useful context is lost? |
+| Persistence versus forgetting | TTL, TrTL, and expiry | How should decay vary by domain and risk? |
+| Exploration versus distraction | Relevance thresholds and top-k | Can usefulness be predicted before generation? |
+| Recurrence versus bias | Recurrence supports but cannot complete the Gate | How should correlated detector errors be measured? |
+| Verification versus verifier error | Evidence and dialectical review | How should malicious or conflicting verifiers be handled? |
+| Transparency versus overload | Full logs and authority maps | Can people review the trail efficiently? |
+| Memory utility versus privacy | Explicit seed and evidence text | What is the minimum safe retained data? |
+
+## Open research questions
+
+- Can independent reviewers agree on atomic, meaningful absences?
+- Does seed quality transfer across languages and professions?
+- Can promoted seeds improve answers without narrowing the question?
+- What is the best negative control for a plausible but unnecessary seed?
+- How should source credibility and conflicting evidence enter the Gate?
+- Can Gate thresholds be tied to real decision costs?
+- Can a memory system remain auditable while retaining less sensitive text?
+- Do larger models contain a replicable signal related to candidate absence?
+- Can external teams reproduce the behavioral results?
+
+## Appropriate use today
+
+Suitable uses include research inspection, mechanism testing, benchmark development, controlled local experiments, and discussion of auditable agent memory.
+
+Do not treat Shadowseed Pro as a ready safety layer for healthcare, education decisions, employment, finance, law, public administration, or autonomous high-impact action.
 
 ---
 
@@ -659,7 +825,7 @@ A strong README claim should point downward through this stack, not stop at pros
 - explicit operator approval for high-impact actions;
 - failure isolation for model, embedding, vector-store, and retrieval backends;
 - real-world evaluations with independent review;
-- a selected software license.
+- a formal decision about future licensing.
 
 ---
 
@@ -702,16 +868,31 @@ Do not select the strongest layer and then present its uncorrected p-value as co
 
 # References
 
-## Recent research
+## Missing information and memory
 
-- Gao, C., Chen, H., Xiao, C., Chen, Z., Liu, Z., & Sun, M. (2025). **H-Neurons: On the Existence, Impact, and Origin of Hallucination-Associated Neurons in LLMs.** [arXiv:2512.01797](https://arxiv.org/abs/2512.01797). [Official implementation](https://github.com/thunlp/H-Neurons).
-- Vaddi, S., & Vaddi, P. (2026). **Do Hallucination Neurons Generalize? Evidence from Cross-Domain Transfer in LLMs.** Preprint. [arXiv:2604.19765](https://arxiv.org/abs/2604.19765).
-- Alansari, A., Alkhorasani, M., & Luqman, H. (2026). **CrossHallu: Do Hallucination Signals Generalize Across Languages and Domains in Large Language Model's Internals?** Preprint. [arXiv:2607.04029](https://arxiv.org/abs/2607.04029).
-- Farquhar, S., Kossen, J., Kuhn, L., & Gal, Y. (2024). **Detecting hallucinations in large language models using semantic entropy.** *Nature, 630*, 625-630. [DOI: 10.1038/s41586-024-07421-0](https://doi.org/10.1038/s41586-024-07421-0).
-- Yao, Z., Qi, W., Pan, L., Cao, S., Hu, L., Liu, W., Hou, L., & Li, J. (2025). **SeaKR: Self-aware Knowledge Retrieval for Adaptive Retrieval Augmented Generation.** *ACL 2025*, 27022-27043. [DOI: 10.18653/v1/2025.acl-long.1312](https://doi.org/10.18653/v1/2025.acl-long.1312).
-- Soudani, H., Kanoulas, E., & Hasibi, F. (2025). **Why Uncertainty Estimation Methods Fall Short in RAG: An Axiomatic Analysis.** *Findings of ACL 2025*, 16596-16616. [DOI: 10.18653/v1/2025.findings-acl.852](https://doi.org/10.18653/v1/2025.findings-acl.852).
-- Ge, Z., Wu, Y., Chin, D. W. K., Lee, R. K.-W., & Cao, R. (2025). **Resolving Conflicting Evidence in Automated Fact-Checking: A Study on Retrieval-Augmented LLMs.** [arXiv:2505.17762](https://arxiv.org/abs/2505.17762).
-- Asai, A., Wu, Z., Wang, Y., Sil, A., & Hajishirzi, H. (2024). **Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection.** *ICLR 2024 oral*. [OpenReview](https://openreview.net/forum?id=hSyW5go0v8).
+- Fu et al. (2025). **Absence Bench: Language Models Can't See What's Missing.** *NeurIPS 2025*. [Paper](https://papers.neurips.cc/paper_files/paper/2025/hash/36b31e1bb8ecd4f4081686448e9eff2d-Abstract-Datasets_and_Benchmarks_Track.html).
+- Li, Kim, and Wang (2025). **QuestBench.** [arXiv:2503.22674](https://arxiv.org/abs/2503.22674).
+- Kirichenko et al. (2025). **AbstentionBench.** [arXiv:2506.09038](https://arxiv.org/abs/2506.09038).
+- Wu et al. (2025). **LongMemEval.** *ICLR 2025*. [Proceedings](https://proceedings.iclr.cc/paper_files/paper/2025/hash/d813d324dbf0598bbdc9c8e79740ed01-Abstract-Conference.html).
+
+## Verification, retrieval, and security
+
+- Dhuliawala et al. (2024). **Chain-of-Verification.** *Findings of ACL 2024*. [Paper](https://aclanthology.org/2024.findings-acl.212/).
+- Fatahi Bayat et al. (2025). **FactBench.** *ACL 2025*. [Paper](https://aclanthology.org/2025.acl-long.1587/).
+- Jeong et al. (2024). **Adaptive-RAG.** *NAACL 2024*. [Paper](https://aclanthology.org/2024.naacl-long.389/).
+- Asai et al. (2024). **Self-RAG.** *ICLR 2024*. [OpenReview](https://openreview.net/forum?id=hSyW5go0v8).
+- Yao et al. (2025). **SeaKR.** *ACL 2025*. [Paper](https://aclanthology.org/2025.acl-long.1312/).
+- Soudani et al. (2025). **Why Uncertainty Estimation Methods Fall Short in RAG.** *Findings of ACL 2025*. [Paper](https://aclanthology.org/2025.findings-acl.852/).
+- Ge et al. (2025). **Resolving Conflicting Evidence in Automated Fact-Checking.** *IJCAI 2025*. [Paper](https://www.ijcai.org/proceedings/2025/1073).
+- Zou et al. (2025). **PoisonedRAG.** *USENIX Security 2025*. [Paper](https://www.usenix.org/conference/usenixsecurity25/presentation/zou-poisonedrag).
+- Debenedetti et al. (2024). **AgentDojo.** *NeurIPS 2024*. [Paper](https://proceedings.neurips.cc/paper_files/paper/2024/hash/97091a5177d8dc64b1da8bf3e1f6fb54-Abstract-Datasets_and_Benchmarks_Track.html).
+- Farquhar et al. (2024). **Detecting Hallucinations Using Semantic Entropy.** *Nature*. [DOI](https://doi.org/10.1038/s41586-024-07421-0).
+
+## H-Neurons and internal representations
+
+- Gao et al. (2025). **H-Neurons.** [arXiv:2512.01797](https://arxiv.org/abs/2512.01797). [Official implementation](https://github.com/thunlp/H-Neurons).
+- Vaddi and Vaddi (2026). **Do Hallucination Neurons Generalize?** [arXiv:2604.19765](https://arxiv.org/abs/2604.19765).
+- Alansari et al. (2026). **CrossHallu.** [arXiv:2607.04029](https://arxiv.org/abs/2607.04029).
 
 ## Conceptual antecedents
 
@@ -719,10 +900,20 @@ Do not select the strongest layer and then present its uncorrected p-value as co
 - Schmidhuber, J. (2010). **Formal Theory of Creativity, Fun, and Intrinsic Motivation.** *IEEE Transactions on Autonomous Mental Development, 2*(3), 230-247.
 - Settles, B. (2009). **Active Learning Literature Survey.** University of Wisconsin-Madison.
 
-These references provide context and testable precedents. They do not collectively prove Shadow Seed Learning.
+These references provide problems, methods, counter-evidence, and precedents. They do not collectively prove Shadow Seed Learning.
 
 ---
 
-# License
+# Rights and temporary licensing position
 
-No software license was present in the source material used for the repository rebuild. A license must be selected before third-party reuse, redistribution, or integration can be treated as permitted.
+**Copyright © 2026 H. Visser / E-AI-MODEL. All rights reserved.**
+
+This repository intentionally has no open-source license at present. No general permission is granted to use, copy, modify, redistribute, publish, commercialize, or incorporate the original repository content into another product or service.
+
+Public access is provided for inspection, research discussion, and evaluation. Reuse requires prior written permission from the copyright holder, except where applicable law, GitHub's Terms of Service, or a separate written agreement provides otherwise.
+
+Third-party libraries, papers, datasets, model weights, quoted material, and archived external artifacts remain subject to their own rights and terms.
+
+This is a temporary rights reservation. A later repository update may adopt a different license. Until then, no implied open-source license is granted.
+
+For a legally binding licensing arrangement or commercial use, contact the repository owner and obtain professional legal advice.
