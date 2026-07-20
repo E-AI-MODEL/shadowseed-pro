@@ -48,6 +48,7 @@ from shadowseed.recurrence import refresh_cluster_representative
 from shadowseed.surfacing import (
     SurfacingCandidate,
     SurfacingPolicy,
+    apply_prompt_boundary,
     build_chat_prompt,
     collect_eligible_promoted_seeds,
     mark_surfaced,
@@ -412,6 +413,7 @@ class ShadowChatSession:
                 else []
             ),
             "seeds_born_weightless": born,
+            "prompt_boundary_markers": apply_prompt_boundary(surfaced)[1] if surfaced else [],
             "promoted_this_turn": promoted_now,
             "reactivated_trtl": reactivated,
             "shadow_size": len(self.manager.seeds),
