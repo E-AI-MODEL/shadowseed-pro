@@ -871,7 +871,7 @@ class SSLManager:
             from sentence_transformers import SentenceTransformer
         except ImportError as exc:
             raise ImportError(
-                "Installeer sentence-transformers om SSLManager te gebruiken: "
+                "Install sentence-transformers to use SSLManager: "
                 "pip install sentence-transformers"
             ) from exc
         self._embedder = SentenceTransformer(self.model_name)
@@ -892,9 +892,22 @@ class SSLManager:
 
     @staticmethod
     def is_atomic_seed(text: str, max_seed_words: int | None = None) -> bool:
-        """Heuristic filter. Human review is still needed."""
+        """Heuristic filter for whether a candidate is a single atomic seed.
+
+        Human review is still needed. The separator/broad-term/category token
+        lists below include Dutch words (for example " en ", " of ", "zoals",
+        "analysekader", "ontbreekt"): these are retained, documented
+        input-language aliases for the historical Dutch research corpus. They are
+        matched as substrings and never surfaced to the user, so keeping them
+        does not change the repository's English-facing behavior; translating
+        them away would silently weaken detection on the existing corpus.
+        """
+
         lowered = text.lower().strip()
+        # Dutch: " en "=and, " of "=or, "zoals"=such as, "bijvoorbeeld"=for example.
         separators = [",", ";", " en ", " of ", "zoals", "bijvoorbeeld"]
+        # Dutch: analysekader=analysis framework, oorzaken=causes, gevolgen=effects,
+        # contexten=contexts, perspectieven=perspectives, meerdere=multiple.
         broad_terms = [
             "analysekader",
             "complete",
@@ -904,6 +917,7 @@ class SSLManager:
             "perspectieven",
             "meerdere",
         ]
+        # Dutch: schaalbaarheid=scalability, kolonialisme=colonialism.
         generic_category_terms = {
             "security",
             "privacy",
@@ -1519,7 +1533,7 @@ class SSLManager:
     ) -> list[dict[str, Any]]:
         if self.vector_constellation is None:
             return []
-        feedback_emb = self.get_embedding(f"FEEDBACK: {feedback_text} OP: {context}")
+        feedback_emb = self.get_embedding(f"FEEDBACK: {feedback_text} ON: {context}")
         matches = self.vector_constellation.search_similar_seeds(feedback_emb, threshold=threshold)
         updates = []
         for seed_id, score, _metadata in matches:
@@ -1591,9 +1605,9 @@ class SSLManager:
             for keyword in seed.trigger_keywords:
                 clean = keyword.strip()
                 if clean:
-                    return f"Cluster rond {clean}."
+                    return f"Cluster around {clean}."
         seed_text = cluster[0].text.strip().rstrip(".")
-        return f"Cluster rond {seed_text[:48]}."
+        return f"Cluster around {seed_text[:48]}."
 
     def find_constellations(
         self, threshold: float = 0.70, min_members: int = 3

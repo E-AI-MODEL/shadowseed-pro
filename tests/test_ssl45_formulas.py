@@ -6,7 +6,7 @@ from shadowseed.manager import SSLManager, SeedStatus
 
 
 def fake_embedding(text: str) -> np.ndarray:
-    if "Koloniaal kapitaal" in text:
+    if "Colonial capital" in text:
         return np.array([1.0, 0.0, 0.0])
     return np.array([0.0, 1.0, 0.0])
 
@@ -14,7 +14,7 @@ def fake_embedding(text: str) -> np.ndarray:
 def test_seed_starts_with_trace_and_zero_weight():
     manager = SSLManager(embedding_fn=fake_embedding)
     seed_id = manager.add_or_update_seed(
-        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen."
+        "Colonial capital as a funding source for British factory investment."
     )
 
     seed = manager.get_seed(seed_id)
@@ -26,7 +26,7 @@ def test_seed_starts_with_trace_and_zero_weight():
 def test_trace_decay_formula():
     manager = SSLManager(embedding_fn=fake_embedding, half_life_turns=3)
     seed_id = manager.add_or_update_seed(
-        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen."
+        "Colonial capital as a funding source for British factory investment."
     )
 
     manager.decay_traces(turns_passed=1)
@@ -38,7 +38,7 @@ def test_trace_decay_formula():
 def test_weight_does_not_increase_without_external_evidence():
     manager = SSLManager(embedding_fn=fake_embedding)
     seed_id = manager.add_or_update_seed(
-        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen."
+        "Colonial capital as a funding source for British factory investment."
     )
     manager.seeds[seed_id].occurrence_count = 3
 
@@ -52,7 +52,7 @@ def test_weight_does_not_increase_without_external_evidence():
 def test_weight_only_increases_after_all_gate_checks_pass():
     manager = SSLManager(embedding_fn=fake_embedding)
     seed_id = manager.add_or_update_seed(
-        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen."
+        "Colonial capital as a funding source for British factory investment."
     )
     manager.seeds[seed_id].occurrence_count = 3
     manager.seeds[seed_id].unsafe_set_authority(evidence_count=2)
@@ -67,7 +67,7 @@ def test_weight_only_increases_after_all_gate_checks_pass():
 def test_promotion_threshold_requires_repeated_gate_passes():
     manager = SSLManager(embedding_fn=fake_embedding)
     seed_id = manager.add_or_update_seed(
-        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen."
+        "Colonial capital as a funding source for British factory investment."
     )
     manager.seeds[seed_id].occurrence_count = 3
     manager.seeds[seed_id].unsafe_set_authority(evidence_count=2)
@@ -83,7 +83,7 @@ def test_promotion_threshold_requires_repeated_gate_passes():
 def test_contradiction_reduces_weight_and_resets_seed():
     manager = SSLManager(embedding_fn=fake_embedding)
     seed_id = manager.add_or_update_seed(
-        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen."
+        "Colonial capital as a funding source for British factory investment."
     )
     manager.seeds[seed_id].unsafe_set_authority(weight=0.6)
     manager.seeds[seed_id].occurrence_count = 3

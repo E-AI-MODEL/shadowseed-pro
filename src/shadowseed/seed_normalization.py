@@ -4,12 +4,23 @@ SSL 4.5 requires a normalization step before storage. This module keeps that
 step explicit and conservative: it splits broad lists into smaller candidates,
 but it does not pretend to prove that every fragment is already a valid atomic
 seed. The manager still decides what is accepted or rejected.
+
+Language note: the token lists and the generated " ontbreekt." suffix
+("ontbreekt" is Dutch for "is missing") are retained, documented input-language
+aliases for the historical Dutch research corpus. They are matched or appended
+as literal tokens, and translating them would change the generated seed text and
+the behavior of the existing corpus and its tests. English prose (comments,
+docstrings, messages) is the canonical language of this module; the Dutch tokens
+are data, not user-facing text.
 """
 
 from __future__ import annotations
 
 import re
 
+# Dutch broad-intro prefixes stripped before splitting. Glosses: "voeg ... toe
+# met aandacht voor" = "add ... with attention to"; "ontbrekende context/
+# onderdelen" = "missing context/parts"; "let op:" = "note:".
 BROAD_PREFIXES = (
     "voeg een volledig analysekader toe met aandacht voor",
     "voeg een analysekader toe met aandacht voor",
@@ -120,17 +131,16 @@ def normalize_detection_candidates(
     """Normalize raw detection output into seed-shaped candidates.
 
     Set ``expand_short_fragments=False`` for output produced by a real
-    taalmodel detector. The historical default keeps the auto-"ontbreekt"
-    expansion which is appropriate for broad human-written categories
-    but disguises garbage as a well-formed seed when applied to model
-    output.
+    language-model detector. The historical default keeps the auto-"ontbreekt"
+    expansion, which is appropriate for broad human-written categories but
+    disguises garbage as a well-formed seed when applied to model output.
 
-    Set ``split_broad=False`` for real taalmodel output. The comma /
-    semicolon / "en" / "of" splitting exists to break up broad
-    human-written category stacks ("Security, privacy en schaalbaarheid
-    ontbreken."). A language model already emits one gap per line, and
-    natural sentences contain commas, so splitting them only shreds whole
-    sentences into fragments ("De #36." / "wordt niet aangegeven.").
+    Set ``split_broad=False`` for real language-model output. The comma /
+    semicolon / "en" / "of" splitting exists to break up broad human-written
+    category stacks (for example the Dutch "Security, privacy en schaalbaarheid
+    ontbreken."). A language model already emits one gap per line, and natural
+    sentences contain commas, so splitting them only shreds whole sentences into
+    fragments.
     """
     normalized: list[str] = []
     for candidate in candidates:
