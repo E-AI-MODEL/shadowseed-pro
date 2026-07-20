@@ -46,13 +46,16 @@ class ContradictionRecord:
     reason: str = ""
     source_ref: str | None = None
     strength: float = 1.0
-    status: ContradictionStatus = ContradictionStatus.OPEN
+    # Named lifecycle_state (not `status`) so the domain is explicit: this is the
+    # contradiction record's own lifecycle, never a seed's authority `status`.
+    # The static authority-mutation guard relies on that separation.
+    lifecycle_state: ContradictionStatus = ContradictionStatus.OPEN
     created_at: str | None = None
     resolved_at: str | None = None
     resolution_basis: str | None = None
 
     def __post_init__(self) -> None:
-        self.status = ContradictionStatus(self.status)
+        self.lifecycle_state = ContradictionStatus(self.lifecycle_state)
         strength = float(self.strength)
         if not 0.0 <= strength <= 1.0:
             raise ValueError(
@@ -62,7 +65,7 @@ class ContradictionRecord:
 
     @property
     def is_blocking(self) -> bool:
-        return self.status in BLOCKING_STATUSES
+        return self.lifecycle_state in BLOCKING_STATUSES
 
     def resolve(
         self,
@@ -79,32 +82,34 @@ class ContradictionRecord:
         state; the default is ``resolved``.
         """
 
-        if self.status is not ContradictionStatus.OPEN:
+        if self.lifecycle_state is not ContradictionStatus.OPEN:
             raise ValueError(
                 f"contradiction {self.contradiction_id} is not open "
-                f"(status={self.status.value})"
+                f"(lifecycle_state={self.lifecycle_state.value})"
             )
         if not basis or not basis.strip():
             raise ValueError("contradiction resolution requires a non-empty basis")
         if superseded and withdrawn:
             raise ValueError("a contradiction cannot be both superseded and withdrawn")
         if superseded:
-            self.status = ContradictionStatus.SUPERSEDED
+            self.lifecycle_state = ContradictionStatus.SUPERSEDED
         elif withdrawn:
-            self.status = ContradictionStatus.WITHDRAWN
+            self.lifecycle_state = ContradictionStatus.WITHDRAWN
         else:
-            self.status = ContradictionStatus.RESOLVED
+            self.lifecycle_state = ContradictionStatus.RESOLVED
         self.resolution_basis = basis
         self.resolved_at = resolved_at
 
     def to_dict(self) -> dict[str, Any]:
+        # The serialized key stays "status" for backward compatibility, even
+        # though the in-memory attribute is lifecycle_state.
         return {
             "contradiction_id": self.contradiction_id,
             "seed_id": self.seed_id,
             "reason": self.reason,
             "source_ref": self.source_ref,
             "strength": self.strength,
-            "status": self.status.value,
+            "status": self.lifecycle_state.value,
             "created_at": self.created_at,
             "resolved_at": self.resolved_at,
             "resolution_basis": self.resolution_basis,
@@ -118,7 +123,9 @@ class ContradictionRecord:
             reason=data.get("reason", ""),
             source_ref=data.get("source_ref"),
             strength=float(data.get("strength", 1.0)),
-            status=ContradictionStatus(data.get("status", ContradictionStatus.OPEN.value)),
+            lifecycle_state=ContradictionStatus(
+                data.get("status", ContradictionStatus.OPEN.value)
+            ),
             created_at=data.get("created_at"),
             resolved_at=data.get("resolved_at"),
             resolution_basis=data.get("resolution_basis"),

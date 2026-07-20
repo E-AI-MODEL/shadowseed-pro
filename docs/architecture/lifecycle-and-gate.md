@@ -71,6 +71,18 @@ separate, explicitly-recorded action.
 
 Promotion is necessary but not sufficient. `AgentSafetyContract` verifies the seed again before answer modification, retrieval, warnings, probes, or downstream action. It checks promotion state, positive weight, evidence suitability, and the presence of a logged promotion decision.
 
+Decisions are **atomic**: `AgentSafetyContract.decide_and_record(...)` decides and
+records in one call, so a decision cannot be used without being recorded. Each
+allowed record is linked to the Gate event that authorized it
+(`gate_event_ref`) and snapshots the seed's `authority_version`, so a stale
+authorization can be detected on replay. Denied decisions are recorded too, with
+a stable reason.
+
+Strict replay (`assert_influence_records_valid(records, gate_events)`) re-checks
+every allowed decision against all point-of-use invariants — positive weight,
+`PROMOTED` status, no blocking contradiction, and a Gate-event link that exists,
+belongs to the same seed, and left it promoted — not just positive weight.
+
 A blocked candidate is not recorded as surfaced. Resurface damping applies only after a seed was allowed and actually supplied to the model.
 
 ## Seed origin (observability only)

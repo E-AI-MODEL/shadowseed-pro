@@ -160,3 +160,71 @@ class AgentSafetyContract:
         gate_log: Iterable[Any] = (),
     ) -> bool:
         return self.decide(seed, action, gate_log).allowed
+
+    def decide_and_record(
+        self,
+        seed: SeedLike,
+        action: InfluenceAction | str,
+        *,
+        gate_events: Iterable[Any],
+        ledger: list,
+        context_ref: str | None = None,
+        now: str | None = None,
+    ):
+        """Decide and record one influence attempt as a single atomic step.
+
+        This is the mandatory point-of-use API (#14): a decision cannot be used
+        without being recorded, because the record is produced here and appended
+        to ``ledger`` before the decision is returned. Each allowed decision is
+        linked to the Gate event that authorized it, and the seed's authority
+        version is snapshotted so a stale authorization can be detected on
+        replay. ``gate_events`` is consumed both for the promotion check and for
+        the event linkage, so it should be the manager's ``gate_events`` ledger.
+
+        Returns the recorded ``AgentInfluenceRecord``.
+        """
+
+        from shadowseed_agent.audit_policy import AgentInfluenceRecord
+
+        events = list(gate_events)
+        decision = self.decide(seed, action, events)
+        ref, version, policy_id = self._link_gate_event(_seed_id(seed), events)
+        contradiction_score = float(_value(seed, "contradiction_score", 0.0) or 0.0)
+        record = AgentInfluenceRecord(
+            seed_id=decision.seed_id,
+            action=decision.action,
+            seed_weight=float(_value(seed, "weight", 0.0) or 0.0),
+            seed_status=_status_name(seed),
+            allowed=decision.allowed,
+            reason=decision.reason,
+            gate_event_ref=ref,
+            authority_version=_value(seed, "authority_version", None),
+            contradiction_blocking=contradiction_score > 0.0,
+            policy_id=policy_id,
+            context_ref=context_ref,
+            decided_at=now,
+        )
+        ledger.append(record)
+        return record
+
+    @staticmethod
+    def _link_gate_event(
+        seed_id: str, gate_events: Iterable[Any]
+    ) -> tuple[str | None, int | None, str | None]:
+        """Return (event_id, authority_version, policy_id) of the latest Gate
+        event that left this seed promoted, or (None, None, None)."""
+
+        latest = None
+        for event in gate_events:
+            if str(_value(event, "seed_id", "")) != seed_id:
+                continue
+            if str(_value(event, "status_after", "")) != PROMOTED_STATUS:
+                continue
+            latest = event
+        if latest is None:
+            return None, None, None
+        return (
+            _value(latest, "event_id", None),
+            _value(latest, "authority_version", None),
+            _value(latest, "policy_id", None),
+        )

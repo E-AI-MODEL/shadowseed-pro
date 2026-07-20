@@ -143,10 +143,6 @@ def test_no_direct_authority_mutation_in_non_benchmark_runtime():
             continue
         if path.name == "manager.py":
             continue  # the single owner of the authority transition path
-        if "gate" in path.parts:
-            # The gate package defines the authority machinery and its own
-            # contract dataclasses (whose fields include an unrelated `status`).
-            continue
         tree = ast.parse(path.read_text(encoding="utf-8"))
         for node in ast.walk(tree):
             targets = []

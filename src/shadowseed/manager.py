@@ -457,7 +457,7 @@ class SSLManager:
             reason=reason,
             source_ref=source_ref,
             strength=max(0.0, min(1.0, strength)),
-            status=ContradictionStatus.OPEN,
+            lifecycle_state=ContradictionStatus.OPEN,
             created_at=self._now_iso(),
         )
         self.contradiction_records.append(record)

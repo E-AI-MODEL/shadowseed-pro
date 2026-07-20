@@ -59,7 +59,7 @@ from shadowseed_agent import (
     AgentInfluenceRecord,
     AgentSafetyContract,
     InfluenceAction,
-    assert_no_weightless_influence,
+    assert_influence_records_valid,
 )
 
 
@@ -135,26 +135,26 @@ class ShadowChatSession:
         allowed: list[SurfacingCandidate] = []
         for similarity, seed_id, text in candidates:
             seed = self.manager.seeds[seed_id]
-            decision = self.contract.decide(
-                seed, InfluenceAction.ANSWER_MODIFICATION, self.manager.validation_log
+            # Atomic point-of-use: decide and record in one step, linked to the
+            # authorizing Gate event (#14). A decision cannot be used without
+            # being recorded, because the record is produced here.
+            record = self.contract.decide_and_record(
+                seed,
+                InfluenceAction.ANSWER_MODIFICATION,
+                gate_events=self.manager.gate_events,
+                ledger=self.influence_records,
+                context_ref=f"turn:{self._turn}",
+                now=self.manager._now_iso(),
             )
-            self.influence_records.append(
-                AgentInfluenceRecord(
-                    seed_id=seed_id,
-                    action=decision.action,
-                    seed_weight=float(seed.weight),
-                    seed_status=seed.status.value,
-                    allowed=decision.allowed,
-                    reason=decision.reason,
-                )
-            )
-            if decision.allowed:
+            if record.allowed:
                 allowed.append((similarity, seed_id, text))
         return allowed
 
     def audit(self) -> int:
-        """Replay all influence decisions; raise on any weightless influence."""
-        assert_no_weightless_influence(self.influence_records)
+        """Replay every influence decision against all point-of-use invariants;
+        raise on any allowed influence that is weightless, non-promoted,
+        contradicted, or not linked to a valid Gate event."""
+        assert_influence_records_valid(self.influence_records, self.manager.gate_events)
         return len(self.influence_records)
 
 

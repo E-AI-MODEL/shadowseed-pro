@@ -45,7 +45,7 @@ def test_record_resolution_requires_non_empty_basis():
     with pytest.raises(ValueError):
         record.resolve("   ")
     record.resolve("new evidence overturns the objection")
-    assert record.status is ContradictionStatus.RESOLVED
+    assert record.lifecycle_state is ContradictionStatus.RESOLVED
     assert record.is_blocking is False
 
 
@@ -67,7 +67,7 @@ def test_record_roundtrip():
 def test_terminal_states(kwargs, expected):
     record = ContradictionRecord(contradiction_id="c1", seed_id="s1")
     record.resolve("basis", **kwargs)
-    assert record.status is expected
+    assert record.lifecycle_state is expected
 
 
 # -- manager integration -----------------------------------------------------
@@ -128,7 +128,7 @@ def test_resolved_record_is_retained_for_audit():
     manager.resolve_contradiction(seed_id, basis="fixed", superseded=True)
     records = manager.contradictions_for(seed_id)
     assert len(records) == 1
-    assert records[0].status is ContradictionStatus.SUPERSEDED
+    assert records[0].lifecycle_state is ContradictionStatus.SUPERSEDED
     assert records[0].resolution_basis == "fixed"
 
 
