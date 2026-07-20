@@ -133,6 +133,40 @@ def test_evidence_count_change_bumps_version():
     assert seed.authority_version == version + 1
 
 
+def test_from_dict_restores_authority_snapshot_and_version_losslessly():
+    manager = SSLManager(embedding_fn=fake_embedding)
+    seed_id = manager.add_or_update_seed("a seed to serialize")
+    seed = manager.seeds[seed_id]
+    seed.unsafe_set_authority(weight=0.6, status=SeedStatus.PROMOTED, evidence_count=2)
+    version = seed.authority_version
+
+    data = seed.to_dict()
+    restored = ShadowSeed.from_dict(data)
+
+    assert restored.weight == 0.6
+    assert restored.status is SeedStatus.PROMOTED
+    assert restored.evidence_count == 2
+    # The historical version is restored exactly, not recomputed/incremented.
+    assert restored.authority_version == version
+    assert restored.to_dict()["authority_version"] == version
+    # And it is still guarded after restoration.
+    with pytest.raises(AttributeError):
+        restored.weight = 0.1
+
+
+def test_restore_seed_installs_into_registry():
+    manager = SSLManager(embedding_fn=fake_embedding)
+    seed_id = manager.add_or_update_seed("persisted seed")
+    manager.seeds[seed_id].unsafe_set_authority(weight=0.7, status=SeedStatus.PROMOTED)
+    data = manager.seeds[seed_id].to_dict()
+
+    fresh = SSLManager(embedding_fn=fake_embedding)
+    restored = fresh.restore_seed(data)
+    assert restored.id in fresh.seeds
+    assert fresh.seeds[restored.id].weight == 0.7
+    assert fresh.seeds[restored.id].authority_version == manager.seeds[seed_id].authority_version
+
+
 def test_vector_only_expiry_resets_weight():
     manager = SSLManager(embedding_fn=fake_embedding)
     seed_id = manager.add_or_update_seed("a seed to expire")

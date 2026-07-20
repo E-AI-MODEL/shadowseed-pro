@@ -136,12 +136,12 @@ def test_no_direct_authority_mutation_in_non_benchmark_runtime():
     authority fields. No other runtime module (excluding benchmark harnesses and
     tests) assigns weight/status/evidence_count/contradiction_score directly."""
 
-    src_root = pathlib.Path(__file__).resolve().parents[1] / "src" / "shadowseed"
+    src_root = pathlib.Path(__file__).resolve().parents[1] / "src"
     offenders: list[str] = []
     for path in src_root.rglob("*.py"):
         if "benchmark" in path.parts:
             continue
-        if path.name == "manager.py":
+        if path.name in {"manager.py", "_testing.py"}:
             continue  # the single owner of the authority transition path
         tree = ast.parse(path.read_text(encoding="utf-8"))
         for node in ast.walk(tree):
@@ -161,11 +161,11 @@ def test_no_unsafe_authority_hooks_in_runtime():
     unsafe_install_seed) exist for tests and benchmarks only. No runtime module
     may call them."""
 
-    src_root = pathlib.Path(__file__).resolve().parents[1] / "src" / "shadowseed"
+    src_root = pathlib.Path(__file__).resolve().parents[1] / "src"
     unsafe_calls = {"unsafe_set_authority", "unsafe_install_seed"}
     offenders: list[str] = []
     for path in src_root.rglob("*.py"):
-        if "benchmark" in path.parts:
+        if "benchmark" in path.parts or path.name == "_testing.py":
             continue
         tree = ast.parse(path.read_text(encoding="utf-8"))
         for node in ast.walk(tree):

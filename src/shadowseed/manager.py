@@ -191,11 +191,14 @@ class ShadowSeed:
         evidence_count: int | None = None,
         contradiction_score: float | None = None,
     ) -> None:
-        """Explicitly unsafe authority setter for tests and benchmark fixtures.
+        """Explicitly unsafe, unsupported authority setter for tests/benchmarks.
 
-        Production code must never call this. It exists so tests can construct
-        edge-case authority states without a full Gate run, while direct field
-        assignment stays blocked.
+        This is not a normal API and production code must never call it (a static
+        test enforces that for this repository). It exists so tests can construct
+        edge-case authority states without a full Gate run. It does not claim to
+        make mutation *technically* impossible for third-party callers — it is an
+        explicit, clearly-named escape hatch. It bumps the authority version like
+        any other change; use :meth:`from_dict` to restore a persisted version.
         """
 
         changes: dict[str, Any] = {}
@@ -209,6 +212,28 @@ class ShadowSeed:
             changes["contradiction_score"] = contradiction_score
         self._write_authority(changes)
 
+    def _restore_authority(
+        self,
+        *,
+        weight: float,
+        evidence_count: int,
+        contradiction_score: float,
+        status: "SeedStatus",
+        authority_version: int,
+    ) -> None:
+        """Restore a persisted authority snapshot exactly, version included.
+
+        Used only by :meth:`from_dict`. Unlike a Gate transition this does not
+        recompute or increment the version — it reinstates the stored one — so a
+        round-trip is lossless. It is deserialization, not an authority decision.
+        """
+
+        object.__setattr__(self, "weight", float(weight))
+        object.__setattr__(self, "evidence_count", int(evidence_count))
+        object.__setattr__(self, "contradiction_score", float(contradiction_score))
+        object.__setattr__(self, "status", SeedStatus(status))
+        object.__setattr__(self, "authority_version", int(authority_version))
+
     def to_dict(self) -> dict[str, Any]:
         data = asdict(self)
         data.pop("_authority_sealed", None)
@@ -216,6 +241,48 @@ class ShadowSeed:
         data["status"] = self.status.value
         data["origin"] = self.origin.to_dict() if self.origin is not None else None
         return data
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "ShadowSeed":
+        """Reconstruct a seed from its serialized form (deserialization/migration).
+
+        Restores the full authority snapshot — weight, evidence count,
+        contradiction score, status, and the original ``authority_version`` —
+        without treating the restoration as a new Gate transition. This is the
+        documented migration path required now that authority fields are
+        ``init=False``; ``ShadowSeed(**saved)`` intentionally no longer works.
+        """
+
+        origin_data = data.get("origin")
+        origin = (
+            SeedOrigin(
+                candidate_type=CandidateType(origin_data.get("candidate_type", "unspecified")),
+                detection_basis=origin_data.get("detection_basis", ""),
+                context_ref=origin_data.get("context_ref"),
+            )
+            if origin_data
+            else None
+        )
+        seed = cls(
+            id=data["id"],
+            text=data["text"],
+            embedding=np.asarray(data["embedding"], dtype=float),
+            trigger_keywords=list(data.get("trigger_keywords", [])),
+            trace=float(data.get("trace", 2.0)),
+            occurrence_count=int(data.get("occurrence_count", 1)),
+            turns_dormant=int(data.get("turns_dormant", 0)),
+            created_at=data.get("created_at") or datetime.now().isoformat(),
+            updated_at=data.get("updated_at") or datetime.now().isoformat(),
+            origin=origin,
+        )
+        seed._restore_authority(
+            weight=data.get("weight", 0.0),
+            evidence_count=data.get("evidence_count", 0),
+            contradiction_score=data.get("contradiction_score", 0.0),
+            status=data.get("status", SeedStatus.NEW.value),
+            authority_version=data.get("authority_version", 0),
+        )
+        return seed
 
 
 @dataclass
@@ -402,9 +469,19 @@ class SSLManager:
         Production code creates seeds through ``add_or_update_seed``. This hook
         exists so tests can install hand-constructed seeds (paired with
         ``ShadowSeed.unsafe_set_authority``) without a public mutable registry.
+        It is an explicit, unsupported escape hatch, not a normal API.
         """
 
         self._seeds[seed.id] = seed
+
+    def restore_seed(self, data: dict[str, Any]) -> ShadowSeed:
+        """Deserialize a persisted seed and install it, preserving its authority
+        snapshot and version. This is the supported migration/deserialization
+        path (not an authority decision); it does not run the Gate."""
+
+        seed = ShadowSeed.from_dict(data)
+        self._seeds[seed.id] = seed
+        return seed
 
     @staticmethod
     def _now_iso() -> str:

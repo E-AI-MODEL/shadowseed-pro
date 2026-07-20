@@ -22,9 +22,9 @@ The authority fields — `weight`, `status`, `evidence_count`, and
 `contradiction_score` — are encapsulated. They cannot be assigned directly:
 `seed.weight = 0.6` raises `AttributeError`. All runtime changes go through the
 manager's single transition path (`SSLManager._set_authority`), which stamps a
-monotonic `authority_version` whenever weight, contradiction authority, or
-promotion state changes. A point-of-use decision references that version so a
-stale authorization can be detected on replay.
+monotonic `authority_version` whenever weight, evidence count, or contradiction
+score changes, or the PROMOTED boundary is crossed. A point-of-use decision
+references that version so a stale authorization can be detected on replay.
 
 The encapsulation is closed on every side:
 
@@ -36,10 +36,20 @@ The encapsulation is closed on every side:
   (`SSLManager.seeds`), so callers cannot replace it or insert/remove entries;
   seed creation goes through `add_or_update_seed`.
 
+Persisted seeds are restored through `ShadowSeed.from_dict(...)` /
+`SSLManager.restore_seed(...)`, which reinstate the stored authority snapshot
+*including the original `authority_version`* without running the Gate. This is
+deserialization/migration, not an authority decision, and is the supported path
+now that authority fields are `init=False` (so `ShadowSeed(**saved)` no longer
+works).
+
 Tests and benchmark fixtures that need an edge-case authority state without a
 full Gate run use the explicit, clearly-named `ShadowSeed.unsafe_set_authority(...)`
-and `SSLManager.unsafe_install_seed(...)` hooks. Production code never calls
-them, and a static test enforces that.
+and `SSLManager.unsafe_install_seed(...)` hooks. These are explicit, unsupported
+escape hatches, not normal APIs: this repository's runtime never calls them and
+a static test over the whole `src/` tree enforces that. They do not claim to
+make mutation *technically impossible* for third-party callers — the guarantee
+is that the normal public API surface offers no authority mutator.
 
 The `authority_version` bumps only when an authority-determining value actually
 changes — weight, evidence count, or contradiction score — or when the PROMOTED
