@@ -84,7 +84,7 @@ def test_recurring_relevant_seed_survives_the_same_pressure():
     m = SSLManager(embedding_fn=_embedding)
     good = "Concentratierisico in marktgewogen indexfondsen."
     sid = m.add_or_update_seed(good)
-    m.seeds[sid].status = SeedStatus.DORMANT  # drifted toward sleep
+    m.seeds[sid].unsafe_set_authority(status=SeedStatus.DORMANT)  # drifted toward sleep
 
     for _ in range(20):
         m.decay_traces(turns_passed=1)

@@ -93,3 +93,38 @@ def test_vector_constellation_housekeeping_expires_old_open_seed():
     assert expired == [seed_id]
     assert manager.get_seed(seed_id).status == SeedStatus.EXPIRED
     assert seed_id not in constellation.store.get_all_ids()
+
+
+def test_feedback_prefix_change_matches_intended_seed_only():
+    """Regression for the feedback embedding prefix change (issue #16).
+
+    Positive feedback must still reach the intended seed via the Gate, and an
+    unrelated seed must not be matched or promoted through the same call.
+    """
+    constellation = VectorConstellation(InMemoryVectorStore())
+    manager = SSLManager(
+        embedding_fn=lexical_embedding,
+        vector_constellation=constellation,
+        validation_increment=0.2,
+        promotion_threshold=0.5,
+    )
+    target_text = "Toepasselijk recht bij een grensoverschrijdend consumentencontract."
+    unrelated_text = "Onderhoudsschema voor industriele koelinstallaties."
+    target_id = manager.add_or_update_seed(target_text)
+    unrelated_id = manager.add_or_update_seed(unrelated_text)
+    manager.add_or_update_seed(target_text)  # recurrence on the target
+    manager.add_or_update_seed(target_text)  # reach the internal-recognition floor
+
+    for _ in range(4):
+        updates = manager.apply_external_feedback(
+            "Toepasselijk recht ontbreekt in deze grensoverschrijdende consumentenkoop.",
+            context=target_text,
+            positive=True,
+            threshold=0.10,
+        )
+        touched = {u["seed_id"] for u in updates}
+        assert unrelated_id not in touched
+
+    assert manager.get_seed(target_id).status == SeedStatus.PROMOTED
+    assert manager.get_seed(unrelated_id).status != SeedStatus.PROMOTED
+    assert manager.get_seed(unrelated_id).weight == 0.0

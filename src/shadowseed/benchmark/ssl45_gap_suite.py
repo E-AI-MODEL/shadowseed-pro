@@ -184,7 +184,7 @@ def apply_ssl45_validation(manager: SSLManager, seed_id: str, score: SeedScore) 
     """
     if score.score == 2:
         seed = manager.seeds[seed_id]
-        seed.evidence_count = max(seed.evidence_count, 2)
+        seed.unsafe_set_authority(evidence_count=max(seed.evidence_count, 2))
         for _ in range(3):
             manager.run_validation_gate(seed_id, external_evidence=False)
     elif score.score == 0:

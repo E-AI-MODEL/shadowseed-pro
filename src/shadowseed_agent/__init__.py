@@ -8,13 +8,15 @@ mechanics.
 from shadowseed_agent.agent_contract import (
     AgentSafetyContract,
     InfluenceAction,
-    InfluenceDecision,
+    InfluenceInspection,
     evidence_can_support_gate,
     has_logged_promotion,
 )
 from shadowseed_agent.audit_policy import (
     AgentInfluenceRecord,
+    InfluenceReplayError,
     WeightlessInfluenceError,
+    assert_influence_records_valid,
     assert_no_weightless_influence,
 )
 from shadowseed_agent.retrieval_policy import can_seed_trigger_retrieval
@@ -23,8 +25,10 @@ __all__ = [
     "AgentInfluenceRecord",
     "AgentSafetyContract",
     "InfluenceAction",
-    "InfluenceDecision",
+    "InfluenceInspection",
+    "InfluenceReplayError",
     "WeightlessInfluenceError",
+    "assert_influence_records_valid",
     "assert_no_weightless_influence",
     "can_seed_trigger_retrieval",
     "evidence_can_support_gate",

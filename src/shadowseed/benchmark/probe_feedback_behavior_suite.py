@@ -39,11 +39,15 @@ def _force_seed_state(manager: SSLManager, text: str, state: dict[str, Any]) -> 
     """Seed the manager with one seed and force it into the requested state."""
     seed_id = manager.add_or_update_seed(text, trigger_keywords=["probe", "behavior"])
     seed = manager.seeds[seed_id]
-    seed.weight = float(state.get("weight", 0.0))
-    seed.status = SeedStatus(state.get("status", "ACTIVE"))
+    # Benchmark fixture: force an edge-case authority state without a full Gate
+    # run. Authority fields are otherwise read-only outside the Gate.
+    seed.unsafe_set_authority(
+        weight=float(state.get("weight", 0.0)),
+        status=SeedStatus(state.get("status", "ACTIVE")),
+        evidence_count=int(state.get("evidence_count", 0)),
+    )
     seed.occurrence_count = int(state.get("occurrence_count", 1))
     seed.trace = float(state.get("trace", 1.0))
-    seed.evidence_count = int(state.get("evidence_count", 0))
     return seed_id
 
 

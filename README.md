@@ -29,7 +29,7 @@ This repository contains the runtime, tests, benchmark harnesses, research instr
 > The repository implements and tests the main SSL mechanics. It does not establish general answer-quality improvement, universal hallucination detection, a general neural signal for missing context, or safe deployment in high-impact settings.
 
 > [!NOTE]
-> Active runtime code and current documentation are in English. Historical Dutch source material is retained under [`archive/`](archive/) for provenance and must not be treated as current runtime authority.
+> The core runtime code is English, and this is enforced automatically ([`docs/migration/language-policy.md`](docs/migration/language-policy.md)). Benchmark suites and JSON data fixtures retain documented Dutch content for compatibility, and historical Dutch source material is kept under [`archive/`](archive/) for provenance — neither should be treated as current runtime authority.
 
 > [!CAUTION]
 > This repository currently has **no open-source license**. All rights are reserved. Public visibility is not permission for reuse. See [Rights and temporary licensing position](#rights-and-temporary-licensing-position).
@@ -252,21 +252,26 @@ NEW -> ACTIVE -> DECAYING -> DORMANT -> EXPIRED
 
 The table below connects repository claims to current code. It is not a list of aspirations.
 
+The authority model — the single non-bypassable Validation Gate — is specified in [ADR-001](docs/architecture/adr/ADR-001-validation-gate-authority.md) and detailed under [`docs/architecture/`](docs/architecture/) ([gate contracts](docs/architecture/gate-contracts.md), [lifecycle and gate](docs/architecture/lifecycle-and-gate.md), [prompt boundary](docs/architecture/prompt-boundary.md)).
+
 | Property | Runtime implementation | Tests or evaluation |
 |---|---|---|
 | Atomic candidate seeds | [`manager.py`](src/shadowseed/manager.py), [`seed_normalization.py`](src/shadowseed/seed_normalization.py) | [`test_atomic_seed_rules.py`](tests/test_atomic_seed_rules.py), [`test_seed_normalization.py`](tests/test_seed_normalization.py) |
-| New seeds start weightless | [`ShadowSeed.weight = 0.0`](src/shadowseed/manager.py) | [`test_manager_smoke.py`](tests/test_manager_smoke.py), [`test_manager_alignment.py`](tests/test_manager_alignment.py) |
+| New seeds start weightless, and authority is encapsulated | [`ShadowSeed`](src/shadowseed/manager.py) (authority fields are `init=False` and guarded; the seed registry is a read-only view) | [`test_authority_encapsulation.py`](tests/test_authority_encapsulation.py) |
 | Trace is separate from influence | [`manager.py`](src/shadowseed/manager.py) | [`test_manager_alignment.py`](tests/test_manager_alignment.py), [`test_lifecycle_ttl.py`](tests/test_lifecycle_ttl.py) |
 | TTL decay and terminal expiry | [`SSLManager.decay_traces`](src/shadowseed/manager.py) | [`test_lifecycle_ttl.py`](tests/test_lifecycle_ttl.py), [`test_bad_seed_dies_out.py`](tests/test_bad_seed_dies_out.py) |
 | TrTL reactivation | [`SSLManager.reactivate_by_text`](src/shadowseed/manager.py) | [`test_lifecycle_ttl.py`](tests/test_lifecycle_ttl.py) |
-| Evidence and recurrence pass through a Gate | [`SSLManager.run_validation_gate_detailed`](src/shadowseed/manager.py) | [`test_manager_alignment.py`](tests/test_manager_alignment.py), [`test_adversarial_gate_benchmark.py`](tests/test_adversarial_gate_benchmark.py) |
-| Contradiction can reset influence | [`SSLManager._apply_contradiction`](src/shadowseed/manager.py) | [`test_ssot_falsification.py`](tests/test_ssot_falsification.py), [`test_dialectic_falsification.py`](tests/test_dialectic_falsification.py) |
+| Effects route through one Gate via typed signals and a named policy | [`SSLManager.submit_signals`](src/shadowseed/manager.py), [`shadowseed.gate`](src/shadowseed/gate/) | [`test_gate_contracts.py`](tests/test_gate_contracts.py), [`test_gate_signal_routing.py`](tests/test_gate_signal_routing.py) |
+| Recurrence is never relabeled or double-counted as external evidence | [`shadowseed.gate.signals`](src/shadowseed/gate/signals.py), [`chat.py`](src/shadowseed/chat.py) | [`test_gate_signal_routing.py`](tests/test_gate_signal_routing.py) |
+| Contradictions have an auditable lifecycle and Gate-controlled recovery | [`shadowseed.gate.contradictions`](src/shadowseed/gate/contradictions.py), [`SSLManager.resolve_contradiction`](src/shadowseed/manager.py) | [`test_contradiction_lifecycle.py`](tests/test_contradiction_lifecycle.py) |
 | Generated output is not trusted evidence | [`ssot.py`](src/shadowseed/ssot.py), [`agent_contract.py`](src/shadowseed_agent/agent_contract.py) | [`test_ssot_manager.py`](tests/test_ssot_manager.py), [`test_agent_safety_contract.py`](tests/test_agent_safety_contract.py) |
-| Promotion is rechecked at use time | [`AgentSafetyContract`](src/shadowseed_agent/agent_contract.py) | [`test_agent_safety_contract.py`](tests/test_agent_safety_contract.py) |
+| Influence is one atomic, replayable point-of-use decision | [`AgentSafetyContract.decide_and_record`](src/shadowseed_agent/agent_contract.py) | [`test_point_of_use.py`](tests/test_point_of_use.py) |
+| Surfaced seeds are bounded, quoted candidate data (prompt boundary) | [`surfacing.py`](src/shadowseed/surfacing.py) | [`test_prompt_boundary.py`](tests/test_prompt_boundary.py) |
 | Live chat and benchmarks share surfacing logic | [`surfacing.py`](src/shadowseed/surfacing.py) | [`test_surfacing.py`](tests/test_surfacing.py), [`test_ssl_session_suite.py`](tests/test_ssl_session_suite.py) |
 | Baseline history remains uncontaminated | [`chat.py`](src/shadowseed/chat.py) | [`test_shadow_chat.py`](tests/test_shadow_chat.py) |
 | Retrieval probes report presence without declaring truth | [`retrieval_probe.py`](src/shadowseed/retrieval_probe.py), [`chat.py`](src/shadowseed/chat.py) | [`test_seed_retrieval_probe.py`](tests/test_seed_retrieval_probe.py), [`test_ssl_vs_rag_benchmark.py`](tests/test_ssl_vs_rag_benchmark.py) |
-| Every gate and influence attempt is auditable | [`manager.py`](src/shadowseed/manager.py), [`audit_policy.py`](src/shadowseed_agent/audit_policy.py) | [`test_agent_safety_contract.py`](tests/test_agent_safety_contract.py), [`test_shadow_chat.py`](tests/test_shadow_chat.py) |
+| Every Gate decision and influence attempt is an immutable, replayable record | [`SSLManager.gate_events`](src/shadowseed/manager.py), [`audit_policy.py`](src/shadowseed_agent/audit_policy.py) | [`test_point_of_use.py`](tests/test_point_of_use.py), [`test_shadow_chat.py`](tests/test_shadow_chat.py) |
+| Active runtime language is English (enforced) | core runtime + checker | [`test_language_alignment.py`](tests/test_language_alignment.py) |
 
 ## Seed origin metadata
 
@@ -287,10 +292,12 @@ This metadata is audit-only. It does not count as evidence and cannot raise weig
 
 [`dialectic_falsification.py`](src/shadowseed/benchmark/dialectic_falsification.py) asks an adversarial reviewer to argue a candidate away against its source text.
 
-- `WEERLEGD` routes through a Gate contradiction and removes influence;
-- `HOUDT_STAND` can provide bounded probe feedback but cannot promote a seed;
-- `ONBESLIST` is neutral;
-- ambiguous model output fails safe to `ONBESLIST`.
+- `WEERLEGD` (canonical `REFUTED`) routes through a Gate contradiction and removes influence;
+- `HOUDT_STAND` (canonical `SURVIVES`) can provide bounded probe feedback but cannot promote a seed;
+- `ONBESLIST` (canonical `UNDECIDED`) is neutral;
+- ambiguous model output fails safe to `ONBESLIST` / `UNDECIDED`.
+
+The `DialecticVerdict` enum provides the canonical English names; the Dutch token values are retained as serialization aliases for artifact and model-output compatibility.
 
 ---
 

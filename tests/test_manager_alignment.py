@@ -59,32 +59,15 @@ def test_contradiction_score_persists_in_to_dict() -> None:
 
 def test_constellation_exports_alignment_fields() -> None:
     manager = _manager()
-    manager.seeds = {
-        "ss_001": ShadowSeed(
-            id="ss_001",
-            text="AVG-compliance bij medische data.",
-            embedding=np.array([1.0, 0.0]),
-            trigger_keywords=["AVG"],
-            weight=0.8,
-            status=SeedStatus.PROMOTED,
-        ),
-        "ss_002": ShadowSeed(
-            id="ss_002",
-            text="Encryptie van medische data.",
-            embedding=np.array([0.99, 0.01]),
-            trigger_keywords=["Encryptie"],
-            weight=0.7,
-            status=SeedStatus.PROMOTED,
-        ),
-        "ss_003": ShadowSeed(
-            id="ss_003",
-            text="Toegangscontrole voor medische data.",
-            embedding=np.array([0.98, 0.02]),
-            trigger_keywords=["Toegang"],
-            weight=0.9,
-            status=SeedStatus.PROMOTED,
-        ),
-    }
+    specs = [
+        ("ss_001", "AVG-compliance bij medische data.", np.array([1.0, 0.0]), ["AVG"], 0.8),
+        ("ss_002", "Encryptie van medische data.", np.array([0.99, 0.01]), ["Encryptie"], 0.7),
+        ("ss_003", "Toegangscontrole voor medische data.", np.array([0.98, 0.02]), ["Toegang"], 0.9),
+    ]
+    for seed_id, text, embedding, keywords, weight in specs:
+        seed = ShadowSeed(id=seed_id, text=text, embedding=embedding, trigger_keywords=keywords)
+        seed.unsafe_set_authority(weight=weight, status=SeedStatus.PROMOTED)
+        manager.unsafe_install_seed(seed)
 
     constellations = manager.find_constellations(threshold=0.95, min_members=3)
 

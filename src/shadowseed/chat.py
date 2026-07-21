@@ -42,10 +42,13 @@ from shadowseed.recurrence_clustering import (
 )
 from shadowseed.retrieval_probe import retrieval_probe_vs_question
 from shadowseed.adapters.models import make_backend
+from shadowseed.gate.events import GateDecision
+from shadowseed.gate.signals import recurrence_signal
 from shadowseed.recurrence import refresh_cluster_representative
 from shadowseed.surfacing import (
     SurfacingCandidate,
     SurfacingPolicy,
+    apply_prompt_boundary,
     build_chat_prompt,
     collect_eligible_promoted_seeds,
     mark_surfaced,
@@ -57,7 +60,7 @@ from shadowseed_agent import (
     AgentInfluenceRecord,
     AgentSafetyContract,
     InfluenceAction,
-    assert_no_weightless_influence,
+    assert_influence_records_valid,
 )
 
 
@@ -133,26 +136,27 @@ class ShadowChatSession:
         allowed: list[SurfacingCandidate] = []
         for similarity, seed_id, text in candidates:
             seed = self.manager.seeds[seed_id]
-            decision = self.contract.decide(
-                seed, InfluenceAction.ANSWER_MODIFICATION, self.manager.validation_log
+            # Atomic point-of-use: decide and record in one step, linked to the
+            # authorizing Gate event (#14). A decision cannot be used without
+            # being recorded, because the record is produced here.
+            record = self.contract.decide_and_record(
+                seed,
+                InfluenceAction.ANSWER_MODIFICATION,
+                gate_events=self.manager.gate_events,
+                ledger=self.influence_records,
+                context_ref=f"turn:{self._turn}",
+                now=self.manager._now_iso(),
+                contradiction_blocking=self.manager.is_blocking_contradiction(seed_id),
             )
-            self.influence_records.append(
-                AgentInfluenceRecord(
-                    seed_id=seed_id,
-                    action=decision.action,
-                    seed_weight=float(seed.weight),
-                    seed_status=seed.status.value,
-                    allowed=decision.allowed,
-                    reason=decision.reason,
-                )
-            )
-            if decision.allowed:
+            if record.allowed:
                 allowed.append((similarity, seed_id, text))
         return allowed
 
     def audit(self) -> int:
-        """Replay all influence decisions; raise on any weightless influence."""
-        assert_no_weightless_influence(self.influence_records)
+        """Replay every influence decision against all point-of-use invariants;
+        raise on any allowed influence that is weightless, non-promoted,
+        contradicted, or not linked to a valid Gate event."""
+        assert_influence_records_valid(self.influence_records, self.manager.gate_events)
         return len(self.influence_records)
 
 
@@ -369,8 +373,11 @@ class ShadowChatSession:
                         self.clusterer.recurrence(cluster_id),
                     )
 
-        # 6. Recurrence can provide evidence, but only the Validation Gate may
-        # raise weight. Non-representative cluster members remain weightless.
+        # 6. Recurrence is a first-class SSL signal: under the exploratory policy
+        # it may drive promotion on its own, and only the Validation Gate raises
+        # weight. Recurrence is submitted as a recurrence signal, never relabeled
+        # as external evidence. Non-representative cluster members remain
+        # weightless.
         promoted_now: list[str] = []
         for seed_id, seed in list(self.manager.seeds.items()):
             if seed.status == SeedStatus.EXPIRED:
@@ -379,11 +386,12 @@ class ShadowChatSession:
                 cluster_id = self.seed_to_cluster.get(seed_id)
                 if cluster_id is not None and self.cluster_rep.get(cluster_id) != seed_id:
                     continue
-            external_evidence = seed.occurrence_count >= 2
-            verdict = self.manager.run_validation_gate(
-                seed_id, external_evidence=external_evidence
+            event = self.manager.submit_signals(
+                seed_id,
+                [recurrence_signal(seed.occurrence_count, threshold=2)],
+                policy_id="exploratory",
             )
-            if verdict and seed.status == SeedStatus.PROMOTED:
+            if event.decision is GateDecision.PROMOTED and seed.status == SeedStatus.PROMOTED:
                 promoted_now.append(seed_id)
 
         # 7. The baseline is the stable conversation history. SSL remains a
@@ -406,6 +414,7 @@ class ShadowChatSession:
                 else []
             ),
             "seeds_born_weightless": born,
+            "prompt_boundary_markers": apply_prompt_boundary(surfaced)[1] if surfaced else [],
             "promoted_this_turn": promoted_now,
             "reactivated_trtl": reactivated,
             "shadow_size": len(self.manager.seeds),
@@ -422,9 +431,14 @@ class ShadowChatSession:
             raise KeyError(f"Unknown seed id: {seed_id}")
         self.manager.run_validation_gate(seed_id, contradiction=True)
         seed = self.manager.seeds[seed_id]
-        blocked = not self.contract.can_influence(
-            seed, InfluenceAction.ANSWER_MODIFICATION, self.manager.validation_log
-        )
+        # Status inspection only (not an authorization); reports whether the
+        # seed is now blocked from influence after the contradiction.
+        blocked = self.contract.inspect(
+            seed,
+            InfluenceAction.ANSWER_MODIFICATION,
+            self.manager.gate_events,
+            contradiction_blocking=self.manager.is_blocking_contradiction(seed_id),
+        ).is_blocked
         return {
             "seed_id": seed_id,
             "weight_after": seed.weight,

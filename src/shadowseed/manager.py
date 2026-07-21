@@ -21,11 +21,26 @@ from datetime import datetime
 from enum import Enum
 import math
 import re
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Literal
+from types import MappingProxyType
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Literal, Mapping
 
 import numpy as np
 
 from shadowseed.core_config import SSLCoreConfig
+from shadowseed.gate.contradictions import ContradictionRecord, ContradictionStatus
+from shadowseed.gate.events import (
+    ContradictionState,
+    GateDecision,
+    GateEvent,
+    new_event_id,
+)
+from shadowseed.gate.policies import AuthoritySnapshot, ProposedVerdict, resolve_policy
+from shadowseed.gate.signals import (
+    SignalDirection,
+    SignalKind,
+    ValidationSignal,
+    recurrence_signal,
+)
 from shadowseed.seed_normalization import normalize_detection_candidates
 
 if TYPE_CHECKING:
@@ -84,6 +99,24 @@ class SeedOrigin:
         }
 
 
+# Authority fields: only the Validation Gate transition path (SSLManager) may
+# change these. They determine whether a seed can eventually influence behavior.
+# trace, occurrence_count, and turns_dormant are observation/lifecycle-support
+# fields and stay freely writable. authority_version is included so it cannot be
+# assigned externally; it is managed automatically by _write_authority.
+AUTHORITY_FIELDS: frozenset[str] = frozenset(
+    {"weight", "status", "evidence_count", "contradiction_score", "authority_version"}
+)
+
+# The subset whose value actually changing marks an authority change (and bumps
+# the version). Status is handled separately: only crossing the PROMOTED
+# boundary counts, so ordinary lifecycle moves (ACTIVE/DORMANT/NEW) do not churn
+# the authority version.
+_VERSIONED_AUTHORITY_FIELDS: frozenset[str] = frozenset(
+    {"weight", "contradiction_score", "evidence_count"}
+)
+
+
 @dataclass
 class ShadowSeed:
     id: str
@@ -91,22 +124,165 @@ class ShadowSeed:
     embedding: np.ndarray
     trigger_keywords: list[str] = field(default_factory=list)
     trace: float = 2.0
-    weight: float = 0.0
     occurrence_count: int = 1
-    evidence_count: int = 0
-    contradiction_score: float = 0.0
     turns_dormant: int = 0
-    status: SeedStatus = SeedStatus.NEW
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now().isoformat())
     origin: SeedOrigin | None = None
+    # Authority fields are init=False: they cannot be set through the
+    # constructor, closing the construction bypass. A seed is always born
+    # weightless; authority is reached only through the Gate, and tests use
+    # unsafe_set_authority(...).
+    weight: float = field(default=0.0, init=False)
+    evidence_count: int = field(default=0, init=False)
+    contradiction_score: float = field(default=0.0, init=False)
+    status: SeedStatus = field(default=SeedStatus.NEW, init=False)
+    # Monotonic counter stamped whenever authority (weight, evidence,
+    # contradiction, or promotion state) changes. A point-of-use decision
+    # references it so a stale authorization can be detected on replay.
+    authority_version: int = field(default=0, init=False)
+    _authority_sealed: bool = field(default=False, repr=False, compare=False, init=False)
+
+    def __post_init__(self) -> None:
+        # Seal after construction so field defaults can be set during init, but
+        # later direct assignments are guarded.
+        object.__setattr__(self, "_authority_sealed", True)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name in AUTHORITY_FIELDS and getattr(self, "_authority_sealed", False):
+            raise AttributeError(
+                f"'{name}' is authority state and cannot be assigned directly. "
+                "Authority changes only through the SSLManager Validation Gate "
+                "transition path. In tests or benchmarks, use "
+                "ShadowSeed.unsafe_set_authority(...)."
+            )
+        object.__setattr__(self, name, value)
+
+    def _write_authority(self, changes: dict[str, Any]) -> None:
+        """Apply an authority change and bump the version when it matters.
+
+        This is the single low-level writer. It bypasses the ``__setattr__``
+        guard on purpose; callers are the manager's transition path and the
+        explicit unsafe test hook. The version bumps only when an
+        authority-determining value actually changes (weight, evidence, or
+        contradiction score) or when the PROMOTED boundary is crossed — not on
+        an unchanged rewrite, and not on a pure lifecycle status move.
+        """
+
+        promoted_before = self.status == SeedStatus.PROMOTED
+        value_changed = False
+        for name, value in changes.items():
+            if name == "authority_version":
+                raise KeyError("authority_version is managed automatically")
+            if name not in AUTHORITY_FIELDS:
+                raise KeyError(f"'{name}' is not an authority field")
+            if name in _VERSIONED_AUTHORITY_FIELDS and value != getattr(self, name):
+                value_changed = True
+            object.__setattr__(self, name, value)
+        promoted_after = self.status == SeedStatus.PROMOTED
+        if value_changed or promoted_before != promoted_after:
+            object.__setattr__(self, "authority_version", self.authority_version + 1)
+
+    def unsafe_set_authority(
+        self,
+        *,
+        weight: float | None = None,
+        status: "SeedStatus | None" = None,
+        evidence_count: int | None = None,
+        contradiction_score: float | None = None,
+    ) -> None:
+        """Explicitly unsafe, unsupported authority setter for tests/benchmarks.
+
+        This is not a normal API and production code must never call it (a static
+        test enforces that for this repository). It exists so tests can construct
+        edge-case authority states without a full Gate run. It does not claim to
+        make mutation *technically* impossible for third-party callers — it is an
+        explicit, clearly-named escape hatch. It bumps the authority version like
+        any other change; use :meth:`from_dict` to restore a persisted version.
+        """
+
+        changes: dict[str, Any] = {}
+        if weight is not None:
+            changes["weight"] = weight
+        if status is not None:
+            changes["status"] = status
+        if evidence_count is not None:
+            changes["evidence_count"] = evidence_count
+        if contradiction_score is not None:
+            changes["contradiction_score"] = contradiction_score
+        self._write_authority(changes)
+
+    def _restore_authority(
+        self,
+        *,
+        weight: float,
+        evidence_count: int,
+        contradiction_score: float,
+        status: "SeedStatus",
+        authority_version: int,
+    ) -> None:
+        """Restore a persisted authority snapshot exactly, version included.
+
+        Used only by :meth:`from_dict`. Unlike a Gate transition this does not
+        recompute or increment the version — it reinstates the stored one — so a
+        round-trip is lossless. It is deserialization, not an authority decision.
+        """
+
+        object.__setattr__(self, "weight", float(weight))
+        object.__setattr__(self, "evidence_count", int(evidence_count))
+        object.__setattr__(self, "contradiction_score", float(contradiction_score))
+        object.__setattr__(self, "status", SeedStatus(status))
+        object.__setattr__(self, "authority_version", int(authority_version))
 
     def to_dict(self) -> dict[str, Any]:
         data = asdict(self)
+        data.pop("_authority_sealed", None)
         data["embedding"] = self.embedding.tolist()
         data["status"] = self.status.value
         data["origin"] = self.origin.to_dict() if self.origin is not None else None
         return data
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "ShadowSeed":
+        """Reconstruct a seed from its serialized form (deserialization/migration).
+
+        Restores the full authority snapshot — weight, evidence count,
+        contradiction score, status, and the original ``authority_version`` —
+        without treating the restoration as a new Gate transition. This is the
+        documented migration path required now that authority fields are
+        ``init=False``; ``ShadowSeed(**saved)`` intentionally no longer works.
+        """
+
+        origin_data = data.get("origin")
+        origin = (
+            SeedOrigin(
+                candidate_type=CandidateType(origin_data.get("candidate_type", "unspecified")),
+                detection_basis=origin_data.get("detection_basis", ""),
+                context_ref=origin_data.get("context_ref"),
+            )
+            if origin_data
+            else None
+        )
+        seed = cls(
+            id=data["id"],
+            text=data["text"],
+            embedding=np.asarray(data["embedding"], dtype=float),
+            trigger_keywords=list(data.get("trigger_keywords", [])),
+            trace=float(data.get("trace", 2.0)),
+            occurrence_count=int(data.get("occurrence_count", 1)),
+            turns_dormant=int(data.get("turns_dormant", 0)),
+            created_at=data.get("created_at") or datetime.now().isoformat(),
+            updated_at=data.get("updated_at") or datetime.now().isoformat(),
+            origin=origin,
+        )
+        seed._restore_authority(
+            weight=data.get("weight", 0.0),
+            evidence_count=data.get("evidence_count", 0),
+            contradiction_score=data.get("contradiction_score", 0.0),
+            status=data.get("status", SeedStatus.NEW.value),
+            authority_version=data.get("authority_version", 0),
+        )
+        return seed
 
 
 @dataclass
@@ -228,7 +404,7 @@ class SSLManager:
         self._embedding_fn = embedding_fn
         self.model_name = model_name
         self._embedder = None
-        self.seeds: dict[str, ShadowSeed] = {}
+        self._seeds: dict[str, ShadowSeed] = {}
         self.config = replace(
             base_config,
             half_life_turns=base_config.half_life_turns if half_life_turns is None else half_life_turns,
@@ -264,6 +440,48 @@ class SSLManager:
         self.validation_log: list[ValidationGateResult] = []
         self.event_log: list[SeedEvent] = []
         self.feedback_log: list[ProbeFeedbackResult] = []
+        # Immutable authority-decision ledger (#10/#12). Every Gate invocation
+        # appends one GateEvent recording the typed signals, the policy, and the
+        # before/after authority state.
+        self.gate_events: list[GateEvent] = []
+        self._gate_sequence = 0
+        # Explicit contradiction records (#13). Blocking state is derived from
+        # unresolved records; contradiction_score is kept for compatibility.
+        self.contradiction_records: list[ContradictionRecord] = []
+        self._contradiction_sequence = 0
+
+    @property
+    def seeds(self) -> "Mapping[str, ShadowSeed]":
+        """Read-only view of the seed registry.
+
+        The mapping itself cannot be replaced or have entries inserted/removed
+        through this view — seed creation goes through ``add_or_update_seed`` and
+        the Gate owns authority. Individual ``ShadowSeed`` objects are returned
+        directly, so their non-authority observation fields remain writable while
+        authority fields stay guarded.
+        """
+
+        return MappingProxyType(self._seeds)
+
+    def unsafe_install_seed(self, seed: ShadowSeed) -> None:
+        """Test/benchmark-only: insert a pre-built seed into the registry.
+
+        Production code creates seeds through ``add_or_update_seed``. This hook
+        exists so tests can install hand-constructed seeds (paired with
+        ``ShadowSeed.unsafe_set_authority``) without a public mutable registry.
+        It is an explicit, unsupported escape hatch, not a normal API.
+        """
+
+        self._seeds[seed.id] = seed
+
+    def restore_seed(self, data: dict[str, Any]) -> ShadowSeed:
+        """Deserialize a persisted seed and install it, preserving its authority
+        snapshot and version. This is the supported migration/deserialization
+        path (not an authority decision); it does not run the Gate."""
+
+        seed = ShadowSeed.from_dict(data)
+        self._seeds[seed.id] = seed
+        return seed
 
     @staticmethod
     def _now_iso() -> str:
@@ -275,9 +493,372 @@ class SSLManager:
     def _touch_seed(self, seed: ShadowSeed) -> None:
         seed.updated_at = self._now_iso()
 
+    def _set_authority(
+        self,
+        seed: ShadowSeed,
+        *,
+        weight: float | None = None,
+        status: SeedStatus | None = None,
+        evidence_count: int | None = None,
+        contradiction_score: float | None = None,
+    ) -> None:
+        """The single production authority-transition path.
+
+        Every runtime authority change (validation, contradiction, probe
+        feedback, decay/expiry, lifecycle status moves) goes through here. #12
+        migrates the callers to feed this from typed signals and a named policy;
+        #11 establishes that no runtime code writes authority fields directly.
+        """
+
+        changes: dict[str, Any] = {}
+        if weight is not None:
+            changes["weight"] = weight
+        if status is not None:
+            changes["status"] = status
+        if evidence_count is not None:
+            changes["evidence_count"] = evidence_count
+        if contradiction_score is not None:
+            changes["contradiction_score"] = contradiction_score
+        if changes:
+            seed._write_authority(changes)
+
+    def open_contradictions(self, seed_id: str) -> list[ContradictionRecord]:
+        """Unresolved (blocking) contradiction records for a seed."""
+
+        return [
+            record
+            for record in self.contradiction_records
+            if record.seed_id == seed_id and record.is_blocking
+        ]
+
+    def contradictions_for(self, seed_id: str) -> list[ContradictionRecord]:
+        """All contradiction records for a seed, in creation order."""
+
+        return [r for r in self.contradiction_records if r.seed_id == seed_id]
+
+    def is_blocking_contradiction(self, seed_id: str) -> bool:
+        """Canonical blocking state for a seed (derived from records, with the
+        legacy scalar as fallback). This is the value point-of-use decisions
+        should consult rather than reading contradiction_score directly."""
+
+        return self._contradiction_state(self._seeds[seed_id]).blocking
+
+    def _contradiction_state(self, seed: ShadowSeed) -> ContradictionState:
+        """Derive the blocking-contradiction snapshot.
+
+        Blocking state comes from unresolved records. Seeds that predate the
+        record model (a positive scalar but no records) are treated as carrying
+        one legacy open contradiction, so migration is lossless.
+        """
+
+        records = self.contradictions_for(seed.id)
+        if records:
+            open_count = sum(1 for r in records if r.is_blocking)
+            return ContradictionState(
+                blocking=open_count > 0,
+                open_count=open_count,
+                score=seed.contradiction_score,
+            )
+        legacy_blocking = seed.contradiction_score > 0.0
+        return ContradictionState(
+            blocking=legacy_blocking,
+            open_count=1 if legacy_blocking else 0,
+            score=seed.contradiction_score,
+        )
+
+    def _open_contradiction_record(
+        self,
+        seed: ShadowSeed,
+        *,
+        reason: str,
+        source_ref: str | None,
+        strength: float,
+    ) -> ContradictionRecord:
+        self._contradiction_sequence += 1
+        record = ContradictionRecord(
+            contradiction_id=f"contra::{seed.id}::{self._contradiction_sequence:06d}",
+            seed_id=seed.id,
+            reason=reason,
+            source_ref=source_ref,
+            strength=max(0.0, min(1.0, strength)),
+            lifecycle_state=ContradictionStatus.OPEN,
+            created_at=self._now_iso(),
+        )
+        self.contradiction_records.append(record)
+        return record
+
+    def resolve_contradiction(
+        self,
+        seed_id: str,
+        *,
+        basis: str,
+        contradiction_id: str | None = None,
+        superseded: bool = False,
+        withdrawn: bool = False,
+        resolver: str = "human",
+    ) -> GateEvent:
+        """Gate-controlled contradiction recovery.
+
+        Marks the seed's open contradiction record(s) as resolved (or superseded
+        / withdrawn) with a recorded ``basis``, then — if no blocking record
+        remains — clears the blocking scalar through the authority path. This
+        only *unblocks* the seed; authority is not restored here. Recovery still
+        requires revalidation (a subsequent signal submission) under the active
+        policy, which is what actually raises weight again.
+
+        Recurrence alone can never reach this method: resolution is an explicit,
+        separately-recorded action with a mandatory basis.
+        """
+
+        seed = self._seeds[seed_id]
+        if seed.status == SeedStatus.EXPIRED:
+            raise ValueError("expired seeds cannot recover through contradiction resolution")
+        open_records = self.open_contradictions(seed_id)
+        if contradiction_id is not None:
+            open_records = [r for r in open_records if r.contradiction_id == contradiction_id]
+        if not open_records:
+            raise ValueError(f"no open contradiction to resolve for seed '{seed_id}'")
+
+        status_before = seed.status.value
+        weight_before = seed.weight
+        contradiction_before = self._contradiction_state(seed)
+        for record in open_records:
+            record.resolve(
+                basis,
+                superseded=superseded,
+                withdrawn=withdrawn,
+                resolved_at=self._now_iso(),
+            )
+        # If nothing blocking remains, clear the scalar so the point-of-use
+        # contract and the policies stop treating the seed as contradicted.
+        if not self.open_contradictions(seed_id):
+            self._set_authority(seed, contradiction_score=0.0)
+        self._touch_seed(seed)
+        signal = ValidationSignal(
+            kind=SignalKind.CONTRADICTION_RESOLUTION,
+            direction=SignalDirection.SUPPORT,
+            strength=1.0,
+            source_ref=resolver,
+            reason=basis,
+        )
+        return self._record_gate_event(
+            seed,
+            GateDecision.CONTRADICTION_RESOLVED,
+            [signal],
+            policy_id="contradiction_resolution",
+            status_before=status_before,
+            weight_before=weight_before,
+            contradiction_before=contradiction_before,
+            reason=f"resolved by {resolver}: {basis}",
+        )
+
+    def migrate_legacy_contradictions(self) -> list[ContradictionRecord]:
+        """Create an open record for any seed with a legacy scalar but no records.
+
+        Idempotent: seeds that already have records are left untouched. Returns
+        the records created, for logging or tests.
+        """
+
+        created: list[ContradictionRecord] = []
+        for seed in self._seeds.values():
+            if seed.contradiction_score > 0.0 and not self.contradictions_for(seed.id):
+                created.append(
+                    self._open_contradiction_record(
+                        seed,
+                        reason="migrated from legacy contradiction_score",
+                        source_ref="legacy_migration",
+                        strength=min(1.0, seed.contradiction_score),
+                    )
+                )
+        return created
+
+    def _record_gate_event(
+        self,
+        seed: ShadowSeed,
+        decision: GateDecision,
+        signals: Iterable[ValidationSignal],
+        *,
+        policy_id: str,
+        status_before: str,
+        weight_before: float,
+        contradiction_before: ContradictionState,
+        reason: str,
+    ) -> GateEvent:
+        self._gate_sequence += 1
+        event = GateEvent(
+            event_id=new_event_id(seed.id, self._gate_sequence),
+            seed_id=seed.id,
+            policy_id=policy_id,
+            decision=decision,
+            signals=tuple(signals),
+            status_before=status_before,
+            status_after=seed.status.value,
+            weight_before=weight_before,
+            weight_after=seed.weight,
+            contradiction_before=contradiction_before,
+            contradiction_after=self._contradiction_state(seed),
+            authority_version=seed.authority_version,
+            reason=reason,
+            created_at=self._now_iso(),
+        )
+        self.gate_events.append(event)
+        return event
+
+    def submit_signals(
+        self,
+        seed_id: str,
+        signals: Iterable[ValidationSignal],
+        policy_id: str | None = None,
+    ) -> GateEvent:
+        """Route typed signals through a named policy and apply the Gate decision.
+
+        This is the signal-native Gate entry point. Helpers (recurrence, probes,
+        feedback, SSOT, dialectic) build ``ValidationSignal`` objects and call
+        here; only this method applies the resulting authority change, and only
+        through ``_set_authority``. The policy proposes; the Gate applies.
+
+        Recurrence signals contribute to promotion under the exploratory policy
+        without ever incrementing ``evidence_count`` — external evidence and
+        recurrence stay distinct.
+        """
+
+        seed = self._seeds[seed_id]
+        policy = resolve_policy(policy_id)
+        signal_list = list(signals)
+        status_before = seed.status.value
+        weight_before = seed.weight
+        contradiction_before = self._contradiction_state(seed)
+
+        if seed.status == SeedStatus.EXPIRED:
+            # Terminal: an expired seed cannot regain authority.
+            return self._record_gate_event(
+                seed, GateDecision.EXPIRED, signal_list,
+                policy_id=policy.policy_id, status_before=status_before,
+                weight_before=weight_before, contradiction_before=contradiction_before,
+                reason="expired seed is terminal",
+            )
+
+        snapshot = AuthoritySnapshot(
+            weight=seed.weight,
+            status=seed.status.value,
+            has_blocking_contradiction=contradiction_before.blocking,
+        )
+        proposal = policy.propose(signal_list, snapshot)
+
+        if proposal.verdict is ProposedVerdict.CONTRADICT:
+            contradiction_signal = next(
+                (s for s in signal_list if s.kind is SignalKind.CONTRADICTION), None
+            )
+            self._open_contradiction_record(
+                seed,
+                reason=(contradiction_signal.reason if contradiction_signal else "") or "contradiction signal",
+                source_ref=contradiction_signal.source_ref if contradiction_signal else None,
+                strength=contradiction_signal.strength if contradiction_signal else 1.0,
+            )
+            self._set_authority(
+                seed,
+                weight=max(0.0, seed.weight - self.contradiction_penalty),
+                contradiction_score=min(1.0, seed.contradiction_score + 0.25),
+                status=SeedStatus.NEW,
+            )
+            seed.occurrence_count = 1
+            if self.contradiction_trace_penalty:
+                seed.trace = max(0.0, seed.trace - self.contradiction_trace_penalty)
+            seed.turns_dormant = 0
+            self._touch_seed(seed)
+            decision = GateDecision.CONTRADICTED
+        elif proposal.verdict is ProposedVerdict.PROMOTE_OR_VALIDATE and proposal.satisfied:
+            new_weight = min(1.0, seed.weight + proposal.weight_delta)
+            new_status = (
+                SeedStatus.PROMOTED
+                if new_weight >= self.promotion_threshold
+                else SeedStatus.ACTIVE
+            )
+            external_support = sum(
+                1
+                for s in signal_list
+                if s.is_external_evidence and s.direction is SignalDirection.SUPPORT
+            )
+            self._set_authority(
+                seed,
+                weight=new_weight,
+                status=new_status,
+                evidence_count=(
+                    seed.evidence_count + external_support if external_support else None
+                ),
+            )
+            self._touch_seed(seed)
+            decision = (
+                GateDecision.PROMOTED
+                if new_status is SeedStatus.PROMOTED
+                else GateDecision.VALIDATED
+            )
+        else:
+            decision = GateDecision.BLOCKED
+
+        # Mirror the decision into validation_log so the existing point-of-use
+        # contract (which inspects validation_log for a logged promotion) stays
+        # consistent with the signal-native path. #14 links point-of-use
+        # decisions to gate_events directly.
+        self._log_validation_from_signals(
+            seed, decision, signal_list,
+            status_before=status_before, weight_before=weight_before,
+        )
+        event = self._record_gate_event(
+            seed, decision, signal_list,
+            policy_id=policy.policy_id, status_before=status_before,
+            weight_before=weight_before, contradiction_before=contradiction_before,
+            reason=proposal.reason,
+        )
+        self._sync_seed(seed_id)
+        return event
+
+    _DECISION_TO_VERDICT = {
+        GateDecision.PROMOTED: "promoted",
+        GateDecision.VALIDATED: "validated",
+        GateDecision.BLOCKED: "blocked",
+        GateDecision.CONTRADICTED: "contradicted",
+        GateDecision.EXPIRED: "expired",
+    }
+
+    def _log_validation_from_signals(
+        self,
+        seed: ShadowSeed,
+        decision: GateDecision,
+        signals: list[ValidationSignal],
+        *,
+        status_before: str,
+        weight_before: float,
+    ) -> None:
+        has_recurrence_support = any(
+            s.kind is SignalKind.RECURRENCE and s.direction is SignalDirection.SUPPORT
+            for s in signals
+        )
+        has_external_support = any(
+            s.is_external_evidence and s.direction is SignalDirection.SUPPORT
+            for s in signals
+        )
+        result = ValidationGateResult(
+            seed_id=seed.id,
+            status_before=status_before,
+            status_after=seed.status.value,
+            weight_before=weight_before,
+            weight_after=seed.weight,
+            occurrence_count=seed.occurrence_count,
+            evidence_count=seed.evidence_count,
+            internal_recognition_passed=has_recurrence_support,
+            external_evidence_passed=has_external_support,
+            contradiction_free=decision is not GateDecision.CONTRADICTED,
+            external_evidence_applied=has_external_support,
+            contradiction_applied=decision is GateDecision.CONTRADICTED,
+            promoted=decision is GateDecision.PROMOTED,
+            verdict=self._DECISION_TO_VERDICT.get(decision, "blocked"),
+        )
+        self.validation_log.append(result)
+
     def _sync_seed(self, seed_id: str) -> None:
         if self.vector_constellation is not None:
-            self.vector_constellation.sync_seed(self.seeds[seed_id])
+            self.vector_constellation.sync_seed(self._seeds[seed_id])
 
     def _record_and_sync(self, event_type: str, seed_id: str, **detail: Any) -> None:
         self._record_event(event_type, seed_id, **detail)
@@ -290,7 +871,7 @@ class SSLManager:
             from sentence_transformers import SentenceTransformer
         except ImportError as exc:
             raise ImportError(
-                "Installeer sentence-transformers om SSLManager te gebruiken: "
+                "Install sentence-transformers to use SSLManager: "
                 "pip install sentence-transformers"
             ) from exc
         self._embedder = SentenceTransformer(self.model_name)
@@ -311,9 +892,22 @@ class SSLManager:
 
     @staticmethod
     def is_atomic_seed(text: str, max_seed_words: int | None = None) -> bool:
-        """Heuristic filter. Human review is still needed."""
+        """Heuristic filter for whether a candidate is a single atomic seed.
+
+        Human review is still needed. The separator/broad-term/category token
+        lists below include Dutch words (for example " en ", " of ", "zoals",
+        "analysekader", "ontbreekt"): these are retained, documented
+        input-language aliases for the historical Dutch research corpus. They are
+        matched as substrings and never surfaced to the user, so keeping them
+        does not change the repository's English-facing behavior; translating
+        them away would silently weaken detection on the existing corpus.
+        """
+
         lowered = text.lower().strip()
+        # Dutch: " en "=and, " of "=or, "zoals"=such as, "bijvoorbeeld"=for example.
         separators = [",", ";", " en ", " of ", "zoals", "bijvoorbeeld"]
+        # Dutch: analysekader=analysis framework, oorzaken=causes, gevolgen=effects,
+        # contexten=contexts, perspectieven=perspectives, meerdere=multiple.
         broad_terms = [
             "analysekader",
             "complete",
@@ -323,6 +917,7 @@ class SSLManager:
             "perspectieven",
             "meerdere",
         ]
+        # Dutch: schaalbaarheid=scalability, kolonialisme=colonialism.
         generic_category_terms = {
             "security",
             "privacy",
@@ -408,7 +1003,7 @@ class SSLManager:
         }
 
     def _maybe_deduplicate_seed(self, new_embedding: np.ndarray) -> tuple[str, float] | None:
-        for seed_id, seed in self.seeds.items():
+        for seed_id, seed in self._seeds.items():
             # EXPIRED is terminal (removed from shadow memory): a degraded
             # seed must not be resurrected by a near-duplicate re-detection. Skip
             # it so a new seed is created instead of reviving the dead one.
@@ -420,12 +1015,12 @@ class SSLManager:
         return None
 
     def _activate_existing_seed(self, seed_id: str, similarity: float) -> str:
-        seed = self.seeds[seed_id]
+        seed = self._seeds[seed_id]
         seed.occurrence_count += 1
         seed.trace = min(seed.trace + 0.5, self.max_trace)
         seed.turns_dormant = 0
         if seed.status != SeedStatus.PROMOTED:
-            seed.status = SeedStatus.ACTIVE
+            self._set_authority(seed, status=SeedStatus.ACTIVE)
         self._touch_seed(seed)
         self._record_and_sync(
             "deduplicated",
@@ -443,8 +1038,8 @@ class SSLManager:
         trigger_keywords: Iterable[str] | None,
         origin: SeedOrigin | None = None,
     ) -> str:
-        seed_id = f"ss_{len(self.seeds) + 1:03d}"
-        self.seeds[seed_id] = ShadowSeed(
+        seed_id = f"ss_{len(self._seeds) + 1:03d}"
+        self._seeds[seed_id] = ShadowSeed(
             id=seed_id,
             text=text,
             embedding=embedding,
@@ -498,23 +1093,24 @@ class SSLManager:
         DORMANT for ``dormant_ttl_turns`` without a TrTL trigger becomes EXPIRED.
         This is the mirror of ``reactivate_by_text`` (TrTL), which keeps seeds
         alive. EXPIRED seeds are terminal and skipped."""
-        for seed_id, seed in self.seeds.items():
+        for seed_id, seed in self._seeds.items():
             if seed.status == SeedStatus.EXPIRED:
                 continue
 
             before_trace = seed.trace
             seed.trace *= math.exp(-turns_passed / self.half_life_turns)
-            seed.status = self._status_after_decay(seed)
+            self._set_authority(seed, status=self._status_after_decay(seed))
 
             # TTL to disappearance (4.5 §10): count consecutive dormant turns; a
             # seed that stays DORMANT without a re-recognising trigger for
-            # dormant_ttl_turns becomes EXPIRED ("te lang dormant zonder trigger").
+            # dormant_ttl_turns becomes EXPIRED (dormant too long without a
+            # trigger). Expiry is a lifecycle-driven authority reset: it clears
+            # weight, so it is routed through the single authority path.
             expired = False
             if seed.status == SeedStatus.DORMANT:
                 seed.turns_dormant += turns_passed
                 if self.dormant_ttl_turns > 0 and seed.turns_dormant >= self.dormant_ttl_turns:
-                    seed.status = SeedStatus.EXPIRED
-                    seed.weight = 0.0
+                    self._set_authority(seed, status=SeedStatus.EXPIRED, weight=0.0)
                     expired = True
             else:
                 seed.turns_dormant = 0
@@ -598,8 +1194,18 @@ class SSLManager:
         flags: ValidationGateFlags,
         external_evidence: bool,
     ) -> ValidationGateResult:
-        seed.weight = max(0.0, seed.weight - self.contradiction_penalty)
-        seed.contradiction_score = min(1.0, seed.contradiction_score + 0.25)
+        self._open_contradiction_record(
+            seed,
+            reason="validation gate contradiction",
+            source_ref=None,
+            strength=1.0,
+        )
+        self._set_authority(
+            seed,
+            weight=max(0.0, seed.weight - self.contradiction_penalty),
+            contradiction_score=min(1.0, seed.contradiction_score + 0.25),
+            status=SeedStatus.NEW,
+        )
         seed.occurrence_count = 1
         # Doctrine: falsified → weight 0, back to NEW. But also start the
         # disappearance clock: lower trace so a degraded seed decays toward
@@ -608,7 +1214,6 @@ class SSLManager:
         if self.contradiction_trace_penalty:
             seed.trace = max(0.0, seed.trace - self.contradiction_trace_penalty)
         seed.turns_dormant = 0
-        seed.status = SeedStatus.NEW
         self._touch_seed(seed)
         result = self._build_validation_result(
             seed_id=seed_id,
@@ -628,24 +1233,113 @@ class SSLManager:
         )
 
     def _apply_successful_validation(self, *, seed: ShadowSeed) -> tuple[bool, str]:
-        seed.weight = min(1.0, seed.weight + self.validation_increment)
-        seed.status = (
+        new_weight = min(1.0, seed.weight + self.validation_increment)
+        new_status = (
             SeedStatus.PROMOTED
-            if seed.weight >= self.promotion_threshold
+            if new_weight >= self.promotion_threshold
             else SeedStatus.ACTIVE
         )
+        self._set_authority(seed, weight=new_weight, status=new_status)
         self._touch_seed(seed)
         promoted = seed.status == SeedStatus.PROMOTED
         verdict = "promoted" if promoted else "validated"
         return promoted, verdict
+
+    _VERDICT_TO_DECISION = {
+        "expired": GateDecision.EXPIRED,
+        "contradicted": GateDecision.CONTRADICTED,
+        "promoted": GateDecision.PROMOTED,
+        "validated": GateDecision.VALIDATED,
+        "blocked": GateDecision.BLOCKED,
+    }
+
+    def _signals_for_boolean_gate(
+        self,
+        seed: ShadowSeed,
+        external_evidence: bool,
+        contradiction: bool,
+        extra_signals: Iterable[ValidationSignal] | None,
+    ) -> list[ValidationSignal]:
+        """Represent a boolean-API Gate call as typed signals for the ledger.
+
+        Recurrence is always recorded as a recurrence signal from the occurrence
+        count — never as external evidence. External evidence is a separate,
+        verified SSOT-kind signal only when the caller actually passed one.
+        """
+
+        if extra_signals is not None:
+            return list(extra_signals)
+        signals: list[ValidationSignal] = [
+            recurrence_signal(seed.occurrence_count, threshold=self.config.min_occurrences_for_gate)
+        ]
+        if external_evidence:
+            signals.append(
+                ValidationSignal(
+                    kind=SignalKind.SSOT,
+                    direction=SignalDirection.SUPPORT,
+                    strength=1.0,
+                    verified=True,
+                    reason="legacy external_evidence=True",
+                )
+            )
+        if contradiction:
+            signals.append(
+                ValidationSignal(
+                    kind=SignalKind.CONTRADICTION,
+                    direction=SignalDirection.OPPOSE,
+                    strength=1.0,
+                    reason="legacy contradiction=True",
+                )
+            )
+        return signals
 
     def run_validation_gate_detailed(
         self,
         seed_id: str,
         external_evidence: bool = False,
         contradiction: bool = False,
+        signals: Iterable[ValidationSignal] | None = None,
+        policy_id: str | None = None,
     ) -> ValidationGateResult:
-        seed = self.seeds[seed_id]
+        """Boolean-compatible Validation Gate.
+
+        The ``external_evidence`` / ``contradiction`` booleans are retained for
+        backward compatibility; they are the "evidence-required" mechanics that
+        the existing suite depends on. Prefer :meth:`submit_signals` for new
+        code. Either way, one immutable ``GateEvent`` is recorded, and recurrence
+        is represented as recurrence — never relabeled as external evidence.
+        ``signals`` (when given) are recorded verbatim on the event.
+        """
+
+        seed = self._seeds[seed_id]
+        weight_before = seed.weight
+        contradiction_before = self._contradiction_state(seed)
+        recorded_signals = self._signals_for_boolean_gate(
+            seed, external_evidence, contradiction, signals
+        )
+        status_before_event = seed.status.value
+        result = self._run_validation_gate_core(
+            seed_id, external_evidence=external_evidence, contradiction=contradiction
+        )
+        self._record_gate_event(
+            seed,
+            self._VERDICT_TO_DECISION.get(result.verdict, GateDecision.NO_CHANGE),
+            recorded_signals,
+            policy_id=policy_id or "legacy_boolean_gate",
+            status_before=status_before_event,
+            weight_before=weight_before,
+            contradiction_before=contradiction_before,
+            reason=f"verdict={result.verdict}",
+        )
+        return result
+
+    def _run_validation_gate_core(
+        self,
+        seed_id: str,
+        external_evidence: bool = False,
+        contradiction: bool = False,
+    ) -> ValidationGateResult:
+        seed = self._seeds[seed_id]
         status_before = seed.status.value
         weight_before = seed.weight
 
@@ -666,7 +1360,7 @@ class SSLManager:
             return self._finalize_validation_result(result)
 
         if external_evidence:
-            seed.evidence_count += 1
+            self._set_authority(seed, evidence_count=seed.evidence_count + 1)
 
         flags = self._validation_flags(seed, contradiction)
 
@@ -733,11 +1427,15 @@ class SSLManager:
         seed_id: str,
         external_evidence: bool = False,
         contradiction: bool = False,
+        signals: Iterable[ValidationSignal] | None = None,
+        policy_id: str | None = None,
     ) -> bool | None:
         result = self.run_validation_gate_detailed(
             seed_id,
             external_evidence=external_evidence,
             contradiction=contradiction,
+            signals=signals,
+            policy_id=policy_id,
         )
         if result.verdict == "contradicted":
             return False
@@ -756,7 +1454,7 @@ class SSLManager:
         query_emb = self.get_embedding(text)
         reactivated: list[str] = []
 
-        for seed_id, seed in self.seeds.items():
+        for seed_id, seed in self._seeds.items():
             if seed.status != SeedStatus.DORMANT:
                 continue
 
@@ -767,7 +1465,7 @@ class SSLManager:
 
             if similarity >= threshold or keyword_hit:
                 seed.trace = min(seed.trace + self.reactivation_increment, self.max_trace)
-                seed.status = SeedStatus.NEW
+                self._set_authority(seed, status=SeedStatus.NEW)
                 seed.turns_dormant = 0
                 self._touch_seed(seed)
                 semantic_hit = similarity >= threshold
@@ -808,7 +1506,7 @@ class SSLManager:
         matches = self.vector_constellation.search_similar_seeds(query_emb, threshold=threshold)
         uncertain = []
         for seed_id, score, metadata in matches:
-            seed = self.seeds.get(seed_id)
+            seed = self._seeds.get(seed_id)
             if seed is None:
                 continue
             if not include_promoted and seed.status == SeedStatus.PROMOTED:
@@ -835,16 +1533,41 @@ class SSLManager:
     ) -> list[dict[str, Any]]:
         if self.vector_constellation is None:
             return []
-        feedback_emb = self.get_embedding(f"FEEDBACK: {feedback_text} OP: {context}")
+        feedback_emb = self.get_embedding(f"FEEDBACK: {feedback_text} ON: {context}")
         matches = self.vector_constellation.search_similar_seeds(feedback_emb, threshold=threshold)
         updates = []
         for seed_id, score, _metadata in matches:
-            if seed_id not in self.seeds:
+            if seed_id not in self._seeds:
                 continue
             if positive:
-                result = self.run_validation_gate(seed_id, external_evidence=True)
+                result = self.run_validation_gate(
+                    seed_id,
+                    external_evidence=True,
+                    signals=[
+                        ValidationSignal(
+                            kind=SignalKind.HUMAN_FEEDBACK,
+                            direction=SignalDirection.SUPPORT,
+                            strength=float(score),
+                            source_ref=context,
+                            verified=True,
+                            reason="external feedback (positive)",
+                        )
+                    ],
+                )
             else:
-                result = self.run_validation_gate(seed_id, contradiction=True)
+                result = self.run_validation_gate(
+                    seed_id,
+                    contradiction=True,
+                    signals=[
+                        ValidationSignal(
+                            kind=SignalKind.CONTRADICTION,
+                            direction=SignalDirection.OPPOSE,
+                            strength=float(score),
+                            source_ref=context,
+                            reason="external feedback (negative)",
+                        )
+                    ],
+                )
             self.vector_constellation.record_feedback(
                 seed_id=seed_id,
                 feedback=feedback_text,
@@ -856,7 +1579,7 @@ class SSLManager:
                     "seed_id": seed_id,
                     "similarity": score,
                     "gate_result": result,
-                    "seed": self.seeds[seed_id].to_dict(),
+                    "seed": self._seeds[seed_id].to_dict(),
                 }
             )
         return updates
@@ -866,9 +1589,13 @@ class SSLManager:
             return []
         expired = self.vector_constellation.housekeeping(max_age_days=max_age_days)
         for seed_id in expired:
-            if seed_id in self.seeds:
-                self.seeds[seed_id].status = SeedStatus.EXPIRED
-                self._touch_seed(self.seeds[seed_id])
+            if seed_id in self._seeds:
+                # Expiry is a terminal authority reset: clear weight too, matching
+                # TTL expiry, so an expired seed carries no residual authority.
+                self._set_authority(
+                    self._seeds[seed_id], status=SeedStatus.EXPIRED, weight=0.0
+                )
+                self._touch_seed(self._seeds[seed_id])
                 self._record_event("expired", seed_id, max_age_days=max_age_days)
         return expired
 
@@ -878,15 +1605,15 @@ class SSLManager:
             for keyword in seed.trigger_keywords:
                 clean = keyword.strip()
                 if clean:
-                    return f"Cluster rond {clean}."
+                    return f"Cluster around {clean}."
         seed_text = cluster[0].text.strip().rstrip(".")
-        return f"Cluster rond {seed_text[:48]}."
+        return f"Cluster around {seed_text[:48]}."
 
     def find_constellations(
         self, threshold: float = 0.70, min_members: int = 3
     ) -> list[Constellation]:
         promoted = [
-            seed for seed in self.seeds.values() if seed.status == SeedStatus.PROMOTED
+            seed for seed in self._seeds.values() if seed.status == SeedStatus.PROMOTED
         ]
         constellations: list[Constellation] = []
         seen: set[tuple[str, ...]] = set()
@@ -918,7 +1645,7 @@ class SSLManager:
         return constellations
 
     def get_seed(self, seed_id: str) -> ShadowSeed:
-        return self.seeds[seed_id]
+        return self._seeds[seed_id]
 
     def apply_probe_feedback(
         self,
@@ -933,10 +1660,10 @@ class SSLManager:
         its own, but it can demote a PROMOTED seed back to ACTIVE when repeated
         penalties push weight below the promotion threshold.
         """
-        if seed_id not in self.seeds:
+        if seed_id not in self._seeds:
             raise KeyError(f"Seed '{seed_id}' does not exist.")
 
-        seed = self.seeds[seed_id]
+        seed = self._seeds[seed_id]
         outcome_enum = ProbeOutcome(outcome)
         probe_type_enum = ProbeType(probe_type)
 
@@ -974,9 +1701,11 @@ class SSLManager:
             and new_weight < self.promotion_threshold
         )
 
-        seed.weight = new_weight
-        if demoted:
-            seed.status = SeedStatus.ACTIVE
+        self._set_authority(
+            seed,
+            weight=new_weight,
+            status=SeedStatus.ACTIVE if demoted else None,
+        )
         self._touch_seed(seed)
 
         delta_applied = seed.weight - weight_before
@@ -994,6 +1723,38 @@ class SSLManager:
             skip_reason="",
         )
         self.feedback_log.append(result)
+        # Record the probe effect as a typed probe signal on the Gate ledger, so
+        # the authority change is attributable even though probe feedback is a
+        # bounded nudge rather than a full promotion policy.
+        probe_direction = {
+            ProbeOutcome.REWARD: SignalDirection.SUPPORT,
+            ProbeOutcome.PENALTY: SignalDirection.OPPOSE,
+            ProbeOutcome.NEUTRAL: SignalDirection.NEUTRAL,
+        }[outcome_enum]
+        if demoted:
+            probe_decision = GateDecision.DEMOTED
+        elif delta_applied != 0.0:
+            probe_decision = GateDecision.VALIDATED
+        else:
+            probe_decision = GateDecision.NO_CHANGE
+        self._record_gate_event(
+            seed,
+            probe_decision,
+            [
+                ValidationSignal(
+                    kind=SignalKind.PROBE,
+                    direction=probe_direction,
+                    strength=min(1.0, abs(delta_requested)),
+                    source_ref=probe_type_enum.value,
+                    reason=f"probe {outcome_enum.value} ({probe_type_enum.value})",
+                )
+            ],
+            policy_id="probe_feedback",
+            status_before=status_before,
+            weight_before=weight_before,
+            contradiction_before=self._contradiction_state(seed),
+            reason=f"probe {outcome_enum.value}",
+        )
         self._record_and_sync(
             "probe_feedback",
             seed_id,
@@ -1010,11 +1771,13 @@ class SSLManager:
     def to_dict(self) -> dict[str, Any]:
         return {
             "config": self.config.to_dict(),
-            "seeds": [seed.to_dict() for seed in self.seeds.values()],
+            "seeds": [seed.to_dict() for seed in self._seeds.values()],
             "constellations": [item.to_dict() for item in self.find_constellations()],
             "validation_log": [item.to_dict() for item in self.validation_log],
             "event_log": [item.to_dict() for item in self.event_log],
             "feedback_log": [item.to_dict() for item in self.feedback_log],
+            "gate_events": [item.to_dict() for item in self.gate_events],
+            "contradiction_records": [item.to_dict() for item in self.contradiction_records],
             "vector_constellation": (
                 self.vector_constellation.to_dict()
                 if self.vector_constellation is not None
