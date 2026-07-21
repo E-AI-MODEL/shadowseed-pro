@@ -261,6 +261,18 @@ def validate_seed_snapshot(data: Mapping[str, Any]) -> None:
                     f"seed 'origin.candidate_type' is not a valid CandidateType: "
                     f"{candidate_type!r}"
                 ) from exc
+        detection_basis = origin_data.get("detection_basis", "")
+        if not isinstance(detection_basis, str):
+            raise TypeError(
+                f"seed 'origin.detection_basis' must be a string, "
+                f"got {type(detection_basis).__name__}"
+            )
+        context_ref = origin_data.get("context_ref")
+        if context_ref is not None and not isinstance(context_ref, str):
+            raise TypeError(
+                f"seed 'origin.context_ref' must be a string or None, "
+                f"got {type(context_ref).__name__}"
+            )
 
     # --- cross-field invariant: an EXPIRED seed is terminal with zero weight ---
     if status == SeedStatus.EXPIRED and "weight" in data and data["weight"] != 0:

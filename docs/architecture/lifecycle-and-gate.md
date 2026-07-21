@@ -60,7 +60,8 @@ a malformed or internally inconsistent snapshot cannot enter the runtime:
   (finite and within the `[0.0, 1.0]` authority range that every Gate/probe/decay
   path already clamps to), `contradiction_score` (finite, non-negative), `status`
   (a valid `SeedStatus`), and `origin` (when present, a mapping with a valid
-  `CandidateType`).
+  `CandidateType`, a string `detection_basis`, and a string-or-`None`
+  `context_ref`).
 - **Cross-field invariants** already implied by the runtime are enforced: an
   `EXPIRED` seed must have zero weight and stays terminal after restoration, and
   no restored value may be `NaN` or ±infinity.

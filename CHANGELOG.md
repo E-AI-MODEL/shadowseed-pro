@@ -16,9 +16,10 @@ counts as no new evidence.
   integer non-negative counters (`occurrence_count`, `turns_dormant`,
   `evidence_count`, `authority_version`) that reject `bool`; finite `weight`
   within the `[0.0, 1.0]` authority range; finite non-negative
-  `contradiction_score`; a valid `SeedStatus`; a well-formed `origin` with a
-  valid `CandidateType`; and the cross-field invariant that an `EXPIRED` seed
-  has zero weight.
+  `contradiction_score`; a valid `SeedStatus`; a well-formed `origin` (mapping
+  with a valid `CandidateType`, string `detection_basis`, and string-or-`None`
+  `context_ref`); and the cross-field invariant that an `EXPIRED` seed has zero
+  weight.
 - **Explicit duplicate handling (breaking for silent-overwrite callers).**
   `SSLManager.restore_seed` gains a keyword-only `replace_existing=False`
   parameter. Restoring a snapshot whose id already exists now raises by default
