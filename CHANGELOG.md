@@ -1,5 +1,36 @@
 # Changelog
 
+## Unreleased - Hardened seed restoration
+
+Defense-in-depth hardening of the persisted-seed restoration boundary. The
+authority model is unchanged: restoration remains a deserialization/migration
+operation outside the Validation Gate that reinstates the stored authority
+snapshot and original `authority_version` exactly, produces no `GateEvent`, and
+counts as no new evidence.
+
+- **Validated snapshots.** `ShadowSeed.from_dict` now validates the snapshot
+  (via `validate_seed_snapshot`) before building or installing a seed, rejecting
+  malformed or internally inconsistent data with clear, field-specific
+  `ValueError`/`TypeError`. Checks cover: non-empty string `id`; string `text`;
+  non-empty, numeric, all-finite `embedding`; finite non-negative `trace`;
+  integer non-negative counters (`occurrence_count`, `turns_dormant`,
+  `evidence_count`, `authority_version`) that reject `bool`; finite `weight`
+  within the `[0.0, 1.0]` authority range; finite non-negative
+  `contradiction_score`; a valid `SeedStatus`; a well-formed `origin` (mapping
+  with a valid `CandidateType`, string `detection_basis`, and string-or-`None`
+  `context_ref`); and the cross-field invariant that an `EXPIRED` seed has zero
+  weight.
+- **Explicit duplicate handling (breaking for silent-overwrite callers).**
+  `SSLManager.restore_seed` gains a keyword-only `replace_existing=False`
+  parameter. Restoring a snapshot whose id already exists now raises by default
+  instead of silently overwriting the live seed; pass `replace_existing=True`
+  to replace deliberately. Validation completes before the duplicate check, so
+  invalid data never partially mutates the registry.
+- **Compatibility preserved.** Default-valued fields are only checked when
+  present, so legacy snapshots that omit `authority_version` (restored as `0`)
+  or use `occurrence_count = 0` remain valid; only `id`, `text`, and `embedding`
+  are required. No minimum-weight constraint is imposed on `PROMOTED` snapshots.
+
 ## Unreleased - Validation Gate authority alignment
 
 Aligns the authority model around a single Validation Gate (issues #10–#17,
