@@ -1,5 +1,37 @@
 # Changelog
 
+## Unreleased - Validation Gate authority alignment
+
+Aligns the authority model around a single Validation Gate (issues #10–#17,
+[ADR-001](docs/architecture/adr/ADR-001-validation-gate-authority.md)). Scope is
+the core runtime; benchmark suites and data fixtures are unchanged in meaning.
+
+- Added the `shadowseed.gate` package: typed `ValidationSignal`s, named Gate
+  policies (`exploratory` default, `evidence_backed`), immutable `GateEvent`
+  records, and `ContradictionRecord`s.
+- Encapsulated authority state: `weight`, `status`, `evidence_count`,
+  `contradiction_score`, and `authority_version` are no longer settable through
+  the constructor or by direct assignment; all changes go through the manager's
+  single transition path. Added `ShadowSeed.from_dict` / `SSLManager.restore_seed`
+  for deserialization. Test/benchmark fixtures use explicit `unsafe_set_authority`
+  / `unsafe_install_seed` hooks.
+- Routed recurrence, probe, feedback, SSOT, and dialectic effects through the
+  Gate via typed signals. Recurrence is recorded as recurrence and no longer
+  relabeled as external evidence. The `external_evidence` / `contradiction`
+  boolean Gate arguments are retained for backward compatibility.
+- Added a contradiction lifecycle (open/resolved/superseded/withdrawn) with
+  Gate-controlled recovery that requires a recorded resolution basis and
+  revalidation; the legacy `contradiction_score` scalar is retained and migrated.
+- Made point-of-use influence a single atomic `decide_and_record` linked to the
+  authorizing Gate event and authority version, with strict replay validation.
+- **Breaking (agent adapter):** removed the public non-recording
+  `AgentSafetyContract.decide()` / `can_influence()`; use `decide_and_record`
+  to authorize influence, or the new non-authorizing `inspect()` for status.
+- Added a lightweight prompt-data boundary that quotes surfaced seeds as bounded
+  candidate data (not injection prevention).
+- Made English the enforced language of the core runtime prose, with a
+  tokenizer-based check and documented Dutch input-language exceptions.
+
 ## Unreleased - Seed-origin observability
 
 - Added optional, audit-only `SeedOrigin` metadata (`CandidateType` closed

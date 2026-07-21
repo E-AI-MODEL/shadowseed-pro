@@ -119,16 +119,21 @@ the decision is denied at decision time with reason `stale_gate_authorization`
 decision is the canonical value derived from contradiction records
 (`SSLManager.is_blocking_contradiction`), not the legacy scalar.
 
-Strict replay (`assert_influence_records_valid(records, gate_events)`) re-checks
-every allowed decision against all point-of-use invariants — positive weight,
-`PROMOTED` status, no blocking contradiction, a present authority version, and a
-Gate-event link that exists, belongs to the same seed, left it promoted, matches
-the recorded `authority_version`, and matches the recorded `policy_id`.
+Strict replay (`assert_influence_records_valid(records, gate_events)`, with the
+Gate ledger required) re-checks every allowed decision against all point-of-use
+invariants — positive weight, `PROMOTED` status, no blocking contradiction, a
+present authority version, a present policy id, a present timestamp, and a
+Gate-event link that exists, belongs to the same seed, carries an
+authority-confirming decision (`promoted`/`validated`), left the seed promoted,
+records a non-blocking contradiction state, matches the recorded
+`authority_version`, and matches the recorded `policy_id`.
 
-`decide_and_record` is the only route that records. `decide()` and
-`can_influence()` are retained as deprecated, check-only helpers (for reporting
-a seed's blocked state) and record nothing; the chat, retrieval, and agent
-helper paths all use `decide_and_record`.
+`decide_and_record` is the only route that records — and the only public method
+that returns an authorization result (via the recorded `AgentInfluenceRecord`).
+For status/UX, `inspect()` returns an `InfluenceInspection` with diagnostic
+`blocking_reasons` and **no** `allowed` verdict, so it cannot be used to gate
+influence. The chat, retrieval, and agent helper paths all use
+`decide_and_record`.
 
 A blocked candidate is not recorded as surfaced. Resurface damping applies only after a seed was allowed and actually supplied to the model.
 
