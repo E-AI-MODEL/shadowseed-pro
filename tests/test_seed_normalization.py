@@ -20,6 +20,14 @@ def test_normalize_detection_candidates_expands_broad_candidate():
     assert len(normalized) >= 3
 
 
+def test_normalize_strips_broad_prefix_from_single_candidate():
+    normalized = normalize_detection_candidates([
+        "Voeg een analysekader toe met aandacht voor kolonialisme"
+    ])
+
+    assert normalized == ["kolonialisme ontbreekt."]
+
+
 def test_normalize_keeps_single_relational_seed_with_and_intact():
     normalized = normalize_detection_candidates([
         "Encryptie van medische data in rust en tijdens transport."
