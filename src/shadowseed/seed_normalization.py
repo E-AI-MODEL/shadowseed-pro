@@ -1,9 +1,9 @@
 """Helpers for turning broad detection output into reviewable seed candidates.
 
-SSL 4.5 requires a normalization step before storage. This module keeps that
-step explicit and conservative: it splits broad lists into smaller candidates,
-but it does not pretend to prove that every fragment is already a valid atomic
-seed. The manager still decides what is accepted or rejected.
+The normalization step stays explicit and conservative: it splits broad lists
+into smaller candidates, but it does not pretend to prove that every fragment
+is already a valid atomic seed. The manager still decides what is accepted or
+rejected.
 
 Language note: the token lists and the generated " ontbreekt." suffix
 ("ontbreekt" is Dutch for "is missing") are retained, documented input-language
@@ -150,9 +150,7 @@ def normalize_detection_candidates(
         if not split_broad:
             normalized.append(maybe_expand_fragment(cleaned, expand_short_fragments=expand_short_fragments))
             continue
-        parts = split_broad_seed_text(cleaned, expand_short_fragments=expand_short_fragments)
-        if len(parts) <= 1:
-            normalized.append(maybe_expand_fragment(cleaned, expand_short_fragments=expand_short_fragments))
-            continue
-        normalized.extend(parts)
+        normalized.extend(
+            split_broad_seed_text(cleaned, expand_short_fragments=expand_short_fragments)
+        )
     return normalized
