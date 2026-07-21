@@ -43,6 +43,47 @@ deserialization/migration, not an authority decision, and is the supported path
 now that authority fields are `init=False` (so `ShadowSeed(**saved)` no longer
 works).
 
+### Restoration is a validated, trusted persistence boundary
+
+Restoration reconstructs authority; it never *grants* it. Because it bypasses
+the Gate by design, the boundary is hardened with defense-in-depth validation so
+a malformed or internally inconsistent snapshot cannot enter the runtime:
+
+- **Snapshots are validated before installation.** `ShadowSeed.from_dict(...)`
+  calls `validate_seed_snapshot(...)` first, so an invalid snapshot raises a
+  clear, field-specific `ValueError`/`TypeError` before any seed object is built
+  or installed into a manager. Validated fields include `id` (non-empty string),
+  `text` (string), `embedding` (non-empty, numeric, all finite), `trace`
+  (finite, non-negative), the integer counters `occurrence_count`,
+  `turns_dormant`, `evidence_count`, and `authority_version` (genuine integers —
+  `bool` is rejected because it subclasses `int` — and non-negative), `weight`
+  (finite and within the `[0.0, 1.0]` authority range that every Gate/probe/decay
+  path already clamps to), `contradiction_score` (finite, non-negative), `status`
+  (a valid `SeedStatus`), and `origin` (when present, a mapping with a valid
+  `CandidateType`).
+- **Cross-field invariants** already implied by the runtime are enforced: an
+  `EXPIRED` seed must have zero weight and stays terminal after restoration, and
+  no restored value may be `NaN` or ±infinity.
+- **Restoration preserves authority rather than granting it.** It reinstates the
+  stored `authority_version` exactly — validation never increments it — produces
+  **no `GateEvent`**, counts as **no new evidence**, and never relabels
+  recurrence as evidence.
+- **Duplicate replacement is explicit.** `restore_seed(data, *,
+  replace_existing=False)` installs a new id, raises on an existing id by
+  default, and only replaces a live seed when `replace_existing=True` is passed.
+  Validation completes before the duplicate check, and invalid data never
+  partially mutates the registry — an existing seed is never silently
+  overwritten.
+
+**Compatibility rule.** Fields that `from_dict` supplies defaults for
+(`trace`, the counters, `contradiction_score`, `status`, and
+`authority_version`) are only checked when present, so a legitimate legacy
+snapshot that omits `authority_version` still restores with version `0`, and a
+snapshot with `occurrence_count = 0` remains valid. Only `id`, `text`, and
+`embedding` are strictly required. No minimum-weight constraint is imposed on
+`PROMOTED` snapshots, since a promoted seed whose weight was later reduced is a
+legitimate historical state.
+
 Tests and benchmark fixtures that need an edge-case authority state without a
 full Gate run use the explicit, clearly-named `ShadowSeed.unsafe_set_authority(...)`
 and `SSLManager.unsafe_install_seed(...)` hooks. These are explicit, unsupported

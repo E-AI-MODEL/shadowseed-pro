@@ -116,6 +116,159 @@ _VERSIONED_AUTHORITY_FIELDS: frozenset[str] = frozenset(
     {"weight", "contradiction_score", "evidence_count"}
 )
 
+# Authority range for a restored weight. Weight is clamped to [0.0, 1.0]
+# everywhere it is written (every Gate/probe/decay path uses
+# ``max(0.0, min(1.0, ...))``), so this is the invariant the current
+# implementation and policies already enforce — restoration must not silently
+# accept a snapshot claiming an out-of-range weight. Derived from that
+# invariant, not an independent threshold.
+WEIGHT_MIN: float = 0.0
+WEIGHT_MAX: float = 1.0
+
+
+def _is_int(value: Any) -> bool:
+    """True for a genuine integer, rejecting ``bool``.
+
+    ``bool`` is a subclass of ``int`` in Python, so ``isinstance(True, int)``
+    is ``True``. Persisted counters must not silently accept ``True``/``False``.
+    """
+
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
+def _is_real_number(value: Any) -> bool:
+    """True for a real (non-complex) number, rejecting ``bool``."""
+
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def validate_seed_snapshot(data: Mapping[str, Any]) -> None:
+    """Reject a malformed or internally inconsistent persisted seed snapshot.
+
+    Defense-in-depth for the restoration boundary (deserialization/migration),
+    *not* an authority decision: it never changes weight, never runs the Gate,
+    never bumps the authority version, and never counts as evidence. It only
+    confirms that ``data`` is a structurally valid, finite, self-consistent
+    snapshot before ``from_dict`` reconstructs a seed from it.
+
+    Raises a field-specific :class:`ValueError` or :class:`TypeError` on the
+    first violation. Fields that ``from_dict`` supplies defaults for (counters,
+    scores, status, ``authority_version``) are only checked when present, so
+    legitimate legacy snapshots that omit them stay valid.
+    """
+
+    if not isinstance(data, Mapping):
+        raise TypeError(f"seed snapshot must be a mapping, got {type(data).__name__}")
+
+    # --- id: required, non-empty string ---
+    if "id" not in data:
+        raise ValueError("seed snapshot is missing required field 'id'")
+    seed_id = data["id"]
+    if not isinstance(seed_id, str):
+        raise TypeError(f"seed 'id' must be a string, got {type(seed_id).__name__}")
+    if not seed_id:
+        raise ValueError("seed 'id' must be a non-empty string")
+
+    # --- text: required, string ---
+    if "text" not in data:
+        raise ValueError("seed 'text' is missing")
+    if not isinstance(data["text"], str):
+        raise TypeError(f"seed 'text' must be a string, got {type(data['text']).__name__}")
+
+    # --- embedding: numeric, non-empty, all finite ---
+    if "embedding" not in data:
+        raise ValueError("seed 'embedding' is missing")
+    try:
+        embedding = np.asarray(data["embedding"], dtype=float)
+    except (TypeError, ValueError) as exc:
+        raise TypeError(f"seed 'embedding' must be a numeric array: {exc}") from exc
+    if embedding.size == 0:
+        raise ValueError("seed 'embedding' must not be empty")
+    if not np.all(np.isfinite(embedding)):
+        raise ValueError("seed 'embedding' must contain only finite values (no NaN/inf)")
+
+    # --- trace: finite, non-negative ---
+    if "trace" in data:
+        trace = data["trace"]
+        if not _is_real_number(trace):
+            raise TypeError(f"seed 'trace' must be a number, got {type(trace).__name__}")
+        if not math.isfinite(trace):
+            raise ValueError("seed 'trace' must be finite (no NaN/inf)")
+        if trace < 0:
+            raise ValueError(f"seed 'trace' must not be negative, got {trace}")
+
+    # --- integer counters: integer (not bool), non-negative ---
+    for name in ("occurrence_count", "turns_dormant", "evidence_count", "authority_version"):
+        if name in data:
+            value = data[name]
+            if not _is_int(value):
+                raise TypeError(
+                    f"seed '{name}' must be an integer (bool is not accepted), "
+                    f"got {type(value).__name__}"
+                )
+            if value < 0:
+                raise ValueError(f"seed '{name}' must be non-negative, got {value}")
+
+    # --- weight: finite, within the authority range ---
+    if "weight" in data:
+        weight = data["weight"]
+        if not _is_real_number(weight):
+            raise TypeError(f"seed 'weight' must be a number, got {type(weight).__name__}")
+        if not math.isfinite(weight):
+            raise ValueError("seed 'weight' must be finite (no NaN/inf)")
+        if not (WEIGHT_MIN <= weight <= WEIGHT_MAX):
+            raise ValueError(
+                f"seed 'weight' must be within the authority range "
+                f"[{WEIGHT_MIN}, {WEIGHT_MAX}], got {weight}"
+            )
+
+    # --- contradiction_score: finite, non-negative ---
+    if "contradiction_score" in data:
+        score = data["contradiction_score"]
+        if not _is_real_number(score):
+            raise TypeError(
+                f"seed 'contradiction_score' must be a number, got {type(score).__name__}"
+            )
+        if not math.isfinite(score):
+            raise ValueError("seed 'contradiction_score' must be finite (no NaN/inf)")
+        if score < 0:
+            raise ValueError(f"seed 'contradiction_score' must not be negative, got {score}")
+
+    # --- status: a valid SeedStatus ---
+    status_value = data.get("status", SeedStatus.NEW.value)
+    if isinstance(status_value, SeedStatus):
+        status = status_value
+    else:
+        try:
+            status = SeedStatus(status_value)
+        except ValueError as exc:
+            raise ValueError(f"seed 'status' is not a valid SeedStatus: {status_value!r}") from exc
+
+    # --- origin: when present, a mapping with a valid CandidateType ---
+    origin_data = data.get("origin")
+    if origin_data is not None:
+        if not isinstance(origin_data, Mapping):
+            raise TypeError(
+                f"seed 'origin' must be a mapping when present, "
+                f"got {type(origin_data).__name__}"
+            )
+        candidate_type = origin_data.get("candidate_type", CandidateType.UNSPECIFIED.value)
+        if not isinstance(candidate_type, CandidateType):
+            try:
+                CandidateType(candidate_type)
+            except ValueError as exc:
+                raise ValueError(
+                    f"seed 'origin.candidate_type' is not a valid CandidateType: "
+                    f"{candidate_type!r}"
+                ) from exc
+
+    # --- cross-field invariant: an EXPIRED seed is terminal with zero weight ---
+    if status == SeedStatus.EXPIRED and "weight" in data and data["weight"] != 0:
+        raise ValueError(
+            f"an EXPIRED seed must have zero weight, got {data['weight']} "
+            f"(EXPIRED is terminal; restoration must preserve that)"
+        )
+
 
 @dataclass
 class ShadowSeed:
@@ -251,8 +404,14 @@ class ShadowSeed:
         without treating the restoration as a new Gate transition. This is the
         documented migration path required now that authority fields are
         ``init=False``; ``ShadowSeed(**saved)`` intentionally no longer works.
+
+        The snapshot is validated first (see :func:`validate_seed_snapshot`), so
+        a malformed or internally inconsistent snapshot raises before any object
+        is constructed. Validation is defense-in-depth for deserialization; it
+        does not run the Gate, change authority, or bump the version.
         """
 
+        validate_seed_snapshot(data)
         origin_data = data.get("origin")
         origin = (
             SeedOrigin(
@@ -474,12 +633,29 @@ class SSLManager:
 
         self._seeds[seed.id] = seed
 
-    def restore_seed(self, data: dict[str, Any]) -> ShadowSeed:
+    def restore_seed(self, data: dict[str, Any], *, replace_existing: bool = False) -> ShadowSeed:
         """Deserialize a persisted seed and install it, preserving its authority
         snapshot and version. This is the supported migration/deserialization
-        path (not an authority decision); it does not run the Gate."""
+        path (not an authority decision); it does not run the Gate.
 
+        The snapshot is fully validated and reconstructed *before* any registry
+        change, so invalid data never partially mutates the registry. Duplicate
+        handling is explicit and never silent:
+
+        - a new seed id is installed;
+        - an existing id with ``replace_existing=False`` (the default) raises,
+          so a persisted snapshot can never accidentally clobber a live seed;
+        - an existing id with ``replace_existing=True`` is replaced deliberately.
+        """
+
+        # Validate and build first; a malformed snapshot raises here, before the
+        # duplicate check and before the registry is touched.
         seed = ShadowSeed.from_dict(data)
+        if seed.id in self._seeds and not replace_existing:
+            raise ValueError(
+                f"a seed with id {seed.id!r} already exists; pass "
+                "replace_existing=True to replace it deliberately"
+            )
         self._seeds[seed.id] = seed
         return seed
 
