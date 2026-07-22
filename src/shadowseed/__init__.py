@@ -8,6 +8,9 @@ from .manager import (
     ShadowSeed,
     SSLManager,
 )
+from .gate.runtime_adapter import install_gate_runtime_adapter
+
+install_gate_runtime_adapter()
 
 __all__ = [
     "SSLManager",
