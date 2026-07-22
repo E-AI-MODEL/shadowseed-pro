@@ -6,11 +6,11 @@ on:
       - "src/shadowseed/gate/**"
       - "src/shadowseed/manager.py"
       - "src/shadowseed/__init__.py"
-      - "tests/test_gate*.py"
+      - "tests/**"
       - ".github/workflows/gate-unification.yml"
 
 jobs:
-  focused-gate-tests:
+  gate-diagnostics:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,17 +20,11 @@ jobs:
           cache: pip
       - run: python -m pip install -q --upgrade pip
       - run: pip install -q -e ".[test]"
-      - name: Run focused tests
-        run: >-
-          pytest -q --tb=short
-          --junitxml=gate-test-results.xml
-          tests/test_gate_path_unification.py
-          tests/test_gate_contracts.py
-          tests/test_gate_signal_routing.py
-          tests/test_manager_alignment.py
-      - name: Upload focused results
+      - name: Run complete suite with JUnit output
+        run: pytest -q --tb=short --junitxml=full-test-results.xml
+      - name: Upload complete results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: gate-test-results
-          path: gate-test-results.xml
+          name: full-test-results
+          path: full-test-results.xml
