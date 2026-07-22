@@ -1,5 +1,23 @@
 name: CI
 
+# CI contract (see issue #23, "Expand CI coverage"):
+#   - `test`  : Ruff lint + full pytest matrix + CLI smoke on each Python.
+#   - `build` : package builds, installs from the wheel in a clean environment,
+#               and the installed console entry point runs — catching packaging
+#               and entry-point regressions the source-tree tests cannot.
+#
+# Explicit deferrals (tracked as production/assurance gaps, not silently skipped):
+#   - Static type checking (e.g. mypy) is NOT gated yet: the codebase is not fully
+#     annotated, so a green mypy run would require either broad `ignore` pragmas or
+#     large annotation work. Adding it is tracked under issue #23; until then the
+#     tests are the behavioral contract.
+#   - Coverage is measured implicitly by the suite but is NOT gated on a threshold,
+#     to avoid a brittle number that fails unrelated PRs. Revisit alongside type
+#     checking.
+#   - Optional backends (Hugging Face, Ollama, OpenAI, FAISS, Chroma) are exercised
+#     only through deterministic fixtures here; live-backend integration needs
+#     network/credentials and stays out of the default matrix by design.
+
 on:
   push:
   pull_request:
@@ -20,3 +38,27 @@ jobs:
       - run: pip install -e ".[test]"
       - run: ruff check .
       - run: pytest -q
+      - name: CLI smoke (source tree)
+        run: python -m shadowseed.cli --help
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install --upgrade pip build
+      - name: Build wheel and sdist
+        run: python -m build
+      - name: Install from the built wheel in a clean venv
+        run: |
+          python -m venv /tmp/ci-wheel-env
+          /tmp/ci-wheel-env/bin/python -m pip install --upgrade pip
+          /tmp/ci-wheel-env/bin/python -m pip install dist/*.whl
+      - name: CLI smoke (installed package, outside the source tree)
+        run: |
+          cd /tmp
+          /tmp/ci-wheel-env/bin/shadowseed --help
+          /tmp/ci-wheel-env/bin/python -c "import shadowseed; print('import ok', shadowseed.__name__)"
