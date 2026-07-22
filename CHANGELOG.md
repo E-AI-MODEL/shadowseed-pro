@@ -6,19 +6,23 @@ Documentation and CI hardening (issue #23). No runtime behavior change.
 
 - Calibrated README claims to what the runtime and tests support, with a new
   **Assurance boundaries** section:
-  - "non-bypassable" is scoped to the supported runtime/public API surface;
-    the test/benchmark `unsafe_set_authority` / `unsafe_install_seed` hooks
-    exist and arbitrary in-process Python mutation is explicitly out of scope
-    (enforced by the static checks in `test_gate_signal_routing.py`);
+  - "non-bypassable" is scoped to *new* authority decisions on the supported
+    runtime/public API surface; restoration (`from_dict` / `restore_seed`) is
+    carved out as a separate validated trusted boundary that reinstates a
+    prior Gate-produced snapshot, and the test/benchmark `unsafe_set_authority`
+    / `unsafe_install_seed` hooks plus arbitrary in-process Python mutation are
+    explicitly out of scope (enforced by the static checks in
+    `test_gate_signal_routing.py`);
   - "atomic seed" is described as a normalization target and tested heuristic,
     not a semantic guarantee for every model-generated candidate;
   - in-process frozen/replayable `GateEvent` and influence records are
     distinguished from durable, append-only, tamper-evident storage, which is
     called out as a production gap;
   - the point-of-use `AgentSafetyContract` is documented by its exact checks
-    (weight > 0, promoted, live current-version Gate-event link, no blocking
-    contradiction) rather than implying universal safety; "zero-trust" wording
-    bounded accordingly.
+    (always: weight > 0, promoted, live current-version Gate-event link; and, in
+    the default configuration, no blocking contradiction and a logged promotion
+    — both configurable opt-outs) rather than implying universal safety;
+    "zero-trust" wording bounded to the default configuration.
 - Expanded CI: added a `build` job that builds the wheel/sdist, installs it in a
   clean virtualenv, and runs the installed console entry point; added a CLI smoke
   step to the test matrix. Documented explicit deferral decisions for static type
