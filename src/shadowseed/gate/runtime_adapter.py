@@ -1,22 +1,18 @@
-"""Compatibility adapters that route every Gate call through one engine.
+"""Compatibility adapters that route legacy Gate calls through one engine.
 
-The manager historically exposed a boolean Gate API alongside the newer typed
-signal API. This module keeps the public boolean methods working while replacing
-their decision path with the signal-native ``submit_signals`` implementation.
+The historical boolean API remains callable, but it now translates its inputs
+into typed signals and delegates authority changes to ``SSLManager.submit_signals``.
 """
 
 from __future__ import annotations
 
 from collections.abc import Iterable
+from contextlib import contextmanager
+from threading import RLock
 from typing import Any
 
 from shadowseed.gate.events import GateDecision, GateEvent
-from shadowseed.gate.policies import (
-    AuthoritySnapshot,
-    LegacyEvidenceRequiredPolicy,
-    ProposedVerdict,
-    resolve_policy,
-)
+from shadowseed.gate.policies import LegacyEvidenceRequiredPolicy
 from shadowseed.gate.signals import (
     SignalDirection,
     SignalKind,
@@ -25,136 +21,26 @@ from shadowseed.gate.signals import (
 )
 
 LEGACY_POLICY_ID = "legacy_evidence_required"
+_POLICY_LOCK = RLock()
 
 
-def _policy_for(manager: Any, policy_id: str | None):
-    if policy_id == LEGACY_POLICY_ID:
-        return LegacyEvidenceRequiredPolicy(
-            weight_increment=manager.validation_increment
-        )
-    return resolve_policy(policy_id)
+@contextmanager
+def _configured_legacy_policy(manager: Any):
+    """Use the manager's configured increment without creating another Gate."""
 
+    from shadowseed.gate import policies
 
-def _unified_submit_signals(
-    self: Any,
-    seed_id: str,
-    signals: Iterable[ValidationSignal],
-    policy_id: str | None = None,
-) -> GateEvent:
-    """Apply one named policy and record one authoritative Gate event."""
-
-    seed = self._seeds[seed_id]
-    policy = _policy_for(self, policy_id)
-    signal_list = list(signals)
-    status_before = seed.status.value
-    weight_before = seed.weight
-    contradiction_before = self._contradiction_state(seed)
-
-    if seed.status.value == "EXPIRED":
-        return self._record_gate_event(
-            seed,
-            GateDecision.EXPIRED,
-            signal_list,
-            policy_id=policy.policy_id,
-            status_before=status_before,
-            weight_before=weight_before,
-            contradiction_before=contradiction_before,
-            reason="expired seed is terminal",
+    with _POLICY_LOCK:
+        previous = policies._COMPATIBILITY_REGISTRY[LEGACY_POLICY_ID]
+        policies._COMPATIBILITY_REGISTRY[LEGACY_POLICY_ID] = (
+            LegacyEvidenceRequiredPolicy(
+                weight_increment=manager.validation_increment
+            )
         )
-
-    snapshot = AuthoritySnapshot(
-        weight=seed.weight,
-        status=seed.status.value,
-        has_blocking_contradiction=contradiction_before.blocking,
-    )
-    proposal = policy.propose(signal_list, snapshot)
-
-    if proposal.verdict is ProposedVerdict.CONTRADICT:
-        contradiction_signal = next(
-            (
-                signal
-                for signal in signal_list
-                if signal.kind is SignalKind.CONTRADICTION
-            ),
-            None,
-        )
-        self._open_contradiction_record(
-            seed,
-            reason=(contradiction_signal.reason if contradiction_signal else "")
-            or "contradiction signal",
-            source_ref=(
-                contradiction_signal.source_ref if contradiction_signal else None
-            ),
-            strength=(
-                contradiction_signal.strength if contradiction_signal else 1.0
-            ),
-        )
-        self._set_authority(
-            seed,
-            weight=max(0.0, seed.weight - self.contradiction_penalty),
-            contradiction_score=min(1.0, seed.contradiction_score + 0.25),
-            status=type(seed.status).NEW,
-        )
-        seed.occurrence_count = 1
-        if self.contradiction_trace_penalty:
-            seed.trace = max(0.0, seed.trace - self.contradiction_trace_penalty)
-        seed.turns_dormant = 0
-        self._touch_seed(seed)
-        decision = GateDecision.CONTRADICTED
-    elif (
-        proposal.verdict is ProposedVerdict.PROMOTE_OR_VALIDATE
-        and proposal.satisfied
-    ):
-        new_weight = min(1.0, seed.weight + proposal.weight_delta)
-        new_status = (
-            type(seed.status).PROMOTED
-            if new_weight >= self.promotion_threshold
-            else type(seed.status).ACTIVE
-        )
-        external_support = sum(
-            1
-            for signal in signal_list
-            if signal.is_external_evidence
-            and signal.direction is SignalDirection.SUPPORT
-        )
-        self._set_authority(
-            seed,
-            weight=new_weight,
-            status=new_status,
-            evidence_count=(
-                seed.evidence_count + external_support
-                if external_support
-                else None
-            ),
-        )
-        self._touch_seed(seed)
-        decision = (
-            GateDecision.PROMOTED
-            if new_status.value == "PROMOTED"
-            else GateDecision.VALIDATED
-        )
-    else:
-        decision = GateDecision.BLOCKED
-
-    self._log_validation_from_signals(
-        seed,
-        decision,
-        signal_list,
-        status_before=status_before,
-        weight_before=weight_before,
-    )
-    event = self._record_gate_event(
-        seed,
-        decision,
-        signal_list,
-        policy_id=policy.policy_id,
-        status_before=status_before,
-        weight_before=weight_before,
-        contradiction_before=contradiction_before,
-        reason=proposal.reason,
-    )
-    self._sync_seed(seed_id)
-    return event
+        try:
+            yield
+        finally:
+            policies._COMPATIBILITY_REGISTRY[LEGACY_POLICY_ID] = previous
 
 
 def _compatibility_signals(
@@ -202,13 +88,11 @@ def _compatibility_signals(
     return collected
 
 
-def _result_from_event(self: Any, event: GateEvent):
+def _result_from_event(self: Any, event: GateEvent, log_size_before: int):
     from shadowseed.manager import ValidationGateResult
 
-    if self.validation_log:
-        last = self.validation_log[-1]
-        if last.seed_id == event.seed_id and last.status_after == event.status_after:
-            return last
+    if len(self.validation_log) > log_size_before:
+        return self.validation_log[-1]
 
     signals = list(event.signals)
     seed = self._seeds[event.seed_id]
@@ -257,12 +141,23 @@ def _run_validation_gate_detailed(
         contradiction=contradiction,
         signals=signals,
     )
-    event = self.submit_signals(
-        seed_id,
-        signal_list,
-        policy_id=policy_id or LEGACY_POLICY_ID,
-    )
-    return _result_from_event(self, event)
+    selected_policy = policy_id or LEGACY_POLICY_ID
+    log_size_before = len(self.validation_log)
+
+    if selected_policy == LEGACY_POLICY_ID:
+        with _configured_legacy_policy(self):
+            event = self.submit_signals(
+                seed_id,
+                signal_list,
+                policy_id=selected_policy,
+            )
+    else:
+        event = self.submit_signals(
+            seed_id,
+            signal_list,
+            policy_id=selected_policy,
+        )
+    return _result_from_event(self, event, log_size_before)
 
 
 def _run_validation_gate(
@@ -288,11 +183,10 @@ def _run_validation_gate(
 
 
 def install_gate_runtime_adapter() -> None:
-    """Replace the duplicate manager path with compatibility adapters."""
+    """Replace legacy decision methods with signal-native adapters."""
 
     from shadowseed.manager import SSLManager
 
-    SSLManager.submit_signals = _unified_submit_signals
     SSLManager.run_validation_gate_detailed = _run_validation_gate_detailed
     SSLManager.run_validation_gate = _run_validation_gate
     SSLManager._run_validation_gate_core = _run_validation_gate_detailed
