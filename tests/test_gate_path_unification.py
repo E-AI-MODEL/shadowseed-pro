@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from shadowseed.gate import SignalKind, ValidationSignal
+from shadowseed.gate import GateDecision, SignalKind, ValidationSignal
 from shadowseed.gate.signals import recurrence_signal
 from shadowseed.manager import SSLManager
 
@@ -105,5 +105,78 @@ def test_legacy_policy_blocks_unverified_external_signal():
     )
 
     assert result.verdict == "blocked"
+    assert result.external_evidence_passed is False
+    assert result.external_evidence_applied is False
     assert manager.get_seed(seed_id).weight == 0.0
     assert manager.get_seed(seed_id).evidence_count == 0
+
+
+def test_exploratory_policy_blocks_unverified_external_support_alone():
+    manager = _manager()
+    seed_id = manager.add_or_update_seed("A source boundary is missing.")
+    signal = ValidationSignal(kind=SignalKind.RETRIEVAL, verified=False)
+
+    event = manager.submit_signals(seed_id, [signal], policy_id="exploratory")
+
+    assert event.decision is GateDecision.BLOCKED
+    assert event.signals == (signal,)
+    assert manager.get_seed(seed_id).weight == 0.0
+    assert manager.get_seed(seed_id).evidence_count == 0
+    result = manager.validation_log[-1]
+    assert result.external_evidence_passed is False
+    assert result.external_evidence_applied is False
+
+
+def test_exploratory_policy_accepts_verified_external_support():
+    manager = _manager()
+    seed_id = manager.add_or_update_seed("A source boundary is missing.")
+
+    event = manager.submit_signals(
+        seed_id,
+        [ValidationSignal(kind=SignalKind.RETRIEVAL, verified=True)],
+        policy_id="exploratory",
+    )
+
+    assert event.decision is GateDecision.VALIDATED
+    assert manager.get_seed(seed_id).weight > 0.0
+    assert manager.get_seed(seed_id).evidence_count == 1
+    result = manager.validation_log[-1]
+    assert result.external_evidence_passed is True
+    assert result.external_evidence_applied is True
+
+
+def test_mixed_external_signals_count_only_verified_support():
+    manager = _manager()
+    seed_id = manager.add_or_update_seed("A source boundary is missing.")
+
+    manager.submit_signals(
+        seed_id,
+        [
+            ValidationSignal(kind=SignalKind.SSOT, verified=False),
+            ValidationSignal(kind=SignalKind.RETRIEVAL, verified=True),
+            ValidationSignal(kind=SignalKind.HUMAN_FEEDBACK, verified=False),
+        ],
+        policy_id="exploratory",
+    )
+
+    assert manager.get_seed(seed_id).evidence_count == 1
+
+
+def test_recurrence_can_validate_without_promoting_unverified_signal_to_evidence():
+    manager = _manager()
+    seed_id = manager.add_or_update_seed("A recurring boundary is missing.")
+    unverified = ValidationSignal(kind=SignalKind.SSOT, verified=False)
+
+    event = manager.submit_signals(
+        seed_id,
+        [recurrence_signal(3, threshold=2), unverified],
+        policy_id="exploratory",
+    )
+
+    assert event.decision is GateDecision.VALIDATED
+    assert unverified in event.signals
+    assert manager.get_seed(seed_id).evidence_count == 0
+    result = manager.validation_log[-1]
+    assert result.internal_recognition_passed is True
+    assert result.external_evidence_passed is False
+    assert result.external_evidence_applied is False
