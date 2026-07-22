@@ -1,0 +1,217 @@
+from pathlib import Path
+
+
+def replace_exact(path: str, old: str, new: str) -> None:
+    file_path = Path(path)
+    text = file_path.read_text(encoding="utf-8")
+    count = text.count(old)
+    if count != 1:
+        raise SystemExit(
+            f"expected exactly one match in {path}, found {count}: {old[:80]!r}"
+        )
+    file_path.write_text(text.replace(old, new), encoding="utf-8")
+
+
+replace_exact(
+    "README.md",
+    "| evidence | External or verified support | Bypass the Validation Gate |",
+    "| evidence | Verified external support with provenance | Bypass the Validation Gate |",
+)
+replace_exact(
+    "README.md",
+    """- verified chunks may supply external evidence to the Gate;
+- LLM-generated claims enter as unverified proposals;
+- proposed chunks remain searchable but cannot validate seeds until explicitly verified;
+- the SSOT never assigns weight directly.
+
+## Dialectical falsification""",
+    """- verified chunks may supply external evidence to the Gate;
+- LLM-generated claims enter as unverified proposals;
+- proposed chunks remain searchable but cannot validate seeds until explicitly verified;
+- the SSOT never assigns weight directly.
+
+## Gate policy profiles
+
+All authority decisions use one signal-native Gate engine. The selected policy
+states which observations may justify an authority change:
+
+- **`exploratory`** (default): qualifying recurrence or verified external support
+  may raise authority when no unresolved contradiction exists. Recurrence alone
+  is allowed and never increments `evidence_count`.
+- **`evidence_backed`**: verified external support is required. Recurrence may
+  accompany it but cannot replace it.
+- **`legacy_evidence_required`**: compatibility-only behavior for the historical
+  boolean API. The adapter translates booleans into typed signals and preserves
+  the configured recurrence, trace, accumulated-evidence, and weight thresholds.
+
+Unverified external observations remain visible in `GateEvent.signals` for audit,
+but they cannot authorize a seed, increment `evidence_count`, or be reported as
+passed evidence.
+
+## Dialectical falsification""",
+)
+replace_exact(
+    "README.md",
+    """The production-facing path remains external and auditable:
+
+1. store the seed weightless;
+2. require recurrence and verified evidence;
+3. test contradiction;
+4. log the Validation Gate decision;
+5. recheck promotion at the point of use;
+6. record every attempted influence.
+
+This is why the activation probe is located in the benchmark package and is forbidden from touching seed state.""",
+    """The high-assurance, evidence-backed path remains external and auditable:
+
+1. store the seed weightless;
+2. require verified external evidence, with recurrence recorded separately;
+3. test contradiction;
+4. log the Validation Gate decision;
+5. recheck promotion at the point of use;
+6. record every attempted influence.
+
+The default `exploratory` research policy is intentionally different: qualifying
+recurrence may raise authority without external evidence. That permissive rule is
+explicit, policy-bound, and still subject to contradiction handling, Gate logging,
+and the point-of-use contract.
+
+This is why the activation probe is located in the benchmark package and is forbidden from touching seed state.""",
+)
+replace_exact(
+    "README.md",
+    "| Effects route through one Gate via typed signals and a named policy | [`SSLManager.submit_signals`](src/shadowseed/manager.py), [`shadowseed.gate`](src/shadowseed/gate/) | [`test_gate_contracts.py`](tests/test_gate_contracts.py), [`test_gate_signal_routing.py`](tests/test_gate_signal_routing.py) |",
+    "| Effects route through one Gate via typed signals and a named policy | [`SSLManager.submit_signals`](src/shadowseed/manager.py), [`shadowseed.gate`](src/shadowseed/gate/) | [`test_gate_contracts.py`](tests/test_gate_contracts.py), [`test_gate_signal_routing.py`](tests/test_gate_signal_routing.py), [`test_gate_path_unification.py`](tests/test_gate_path_unification.py) |",
+)
+replace_exact(
+    "README.md",
+    "| Generated output is not trusted evidence | [`ssot.py`](src/shadowseed/ssot.py), [`agent_contract.py`](src/shadowseed_agent/agent_contract.py) | [`test_ssot_manager.py`](tests/test_ssot_manager.py), [`test_agent_safety_contract.py`](tests/test_agent_safety_contract.py) |",
+    "| Generated output and unverified external observations are not trusted evidence | [`ssot.py`](src/shadowseed/ssot.py), [`shadowseed.gate`](src/shadowseed/gate/) | [`test_ssot_manager.py`](tests/test_ssot_manager.py), [`test_gate_evidence_verification.py`](tests/test_gate_evidence_verification.py) |",
+)
+replace_exact(
+    "docs/architecture/gate-contracts.md",
+    """These are data contracts. They do not yet change how `SSLManager` mutates
+authority — wiring the runtime onto them is a separate step (issues #11 and #12).""",
+    """These contracts are wired into the runtime. `SSLManager.submit_signals` is
+the single executable authority-changing Gate engine; compatibility methods
+translate their inputs into these same contracts before delegating to it.""",
+)
+replace_exact(
+    "docs/architecture/gate-contracts.md",
+    """Two concrete policies ship today:
+
+- **`exploratory`** (the default): strong recurrence *or* external support, with
+  no unresolved contradiction, proposes a positive change. This keeps SSL
+  permissive — recurrence alone can promote.
+- **`evidence_backed`**: requires a verified external-evidence signal. Recurrence
+  may accompany it but can never satisfy the requirement alone.""",
+    """Two public policies and one compatibility policy ship today:
+
+- **`exploratory`** (the default): qualifying recurrence *or verified* external
+  support, with no unresolved contradiction, proposes a positive change. This
+  keeps SSL permissive — recurrence alone can promote, but an unverified external
+  observation cannot.
+- **`evidence_backed`**: requires a verified external-evidence signal. Recurrence
+  may accompany it but can never satisfy the requirement alone.
+- **`legacy_evidence_required`**: compatibility-only behavior for the historical
+  boolean API. It preserves the configured recurrence, trace, accumulated
+  evidence, and weight thresholds while using the same signal-native Gate engine.""",
+)
+replace_exact(
+    "docs/architecture/gate-contracts.md",
+    """The manager exposes two Gate entry points, and both append to
+`SSLManager.gate_events`:
+
+- **`submit_signals(seed_id, signals, policy_id=None)`** — the signal-native
+  path. Helpers build `ValidationSignal`s and call here; the named policy
+  proposes and the Gate applies through `_set_authority`. Recurrence signals can
+  promote under the `exploratory` policy without ever incrementing
+  `evidence_count`.
+- **`run_validation_gate[_detailed](...)`** — the boolean-compatible path. The
+  `external_evidence` / `contradiction` booleans are **retained for backward
+  compatibility** (they are the evidence-required mechanics the existing suite
+  depends on) but are considered deprecated for new code. This path also records
+  a `GateEvent`, and it represents recurrence as a recurrence signal from the
+  occurrence count — never as external evidence.""",
+    """The manager exposes two public input shapes that converge on one executable
+Gate engine and append one event per call to `SSLManager.gate_events`:
+
+- **`submit_signals(seed_id, signals, policy_id=None)`** — the signal-native
+  entry point. Helpers build `ValidationSignal`s and call here; the named policy
+  proposes and the Gate applies through `_set_authority`. Recurrence can promote
+  under `exploratory` without incrementing `evidence_count`. External support can
+  authorize or count as evidence only when `verified=True`.
+- **`run_validation_gate[_detailed](...)`** — a deprecated compatibility adapter.
+  It translates the historical `external_evidence` / `contradiction` booleans
+  into typed signals, selects `legacy_evidence_required` unless another policy is
+  explicitly requested, delegates to `submit_signals`, and translates the event
+  back into the historical return shape. The old private core alias redirects to
+  this adapter; it is not a second decision engine.""",
+)
+replace_exact(
+    "docs/architecture/lifecycle-and-gate.md",
+    """## Validation Gate
+
+The gate evaluates stored evidence, contradiction state, and configured thresholds. Its result is logged. Contradiction can block promotion, reduce influence, or reset a seed depending on the manager policy.""",
+    """## Validation Gate
+
+Every authority decision is applied by the signal-native `submit_signals` engine
+and recorded as one `GateEvent`. Public callers may submit typed signals directly;
+the historical boolean methods are compatibility adapters into the same engine.
+
+Policy semantics are explicit:
+
+- `exploratory` permits qualifying recurrence or verified external support;
+- `evidence_backed` requires verified external support;
+- `legacy_evidence_required` preserves the historical recurrence, trace, and
+  accumulated verified-evidence thresholds for compatibility callers.
+
+Unverified external observations remain auditable inputs but cannot authorize,
+increment `evidence_count`, or be reported as passed evidence. Contradiction can
+block promotion, reduce influence, or reset a seed according to the active policy.""",
+)
+replace_exact(
+    "docs/architecture/adr/ADR-001-validation-gate-authority.md",
+    """1. **Policy profiles.** Only the two profiles with concrete semantics ship as
+   real policies: `exploratory` (the explicit default) and `evidence_backed`.
+   `research`, `creative`, and `high_impact` are documented examples that raise
+   a clear error if requested, until their required signal combinations are
+   justified. The default policy is never implicit.""",
+    """1. **Policy profiles.** Two user-selectable profiles with concrete semantics
+   ship: `exploratory` (the explicit default) and `evidence_backed`. A third
+   profile, `legacy_evidence_required`, is resolvable only for compatibility with
+   the historical boolean API and is excluded from the public policy list.
+   `research`, `creative`, and `high_impact` remain documented examples that
+   raise a clear error if requested. The default policy is never implicit.""",
+)
+replace_exact(
+    "docs/architecture/adr/ADR-001-validation-gate-authority.md",
+    """5. **Encapsulation and migration.** Authority fields are constructor-excluded
+   and guarded; the seed registry is a read-only view. Persisted seeds are
+   restored via `ShadowSeed.from_dict` / `SSLManager.restore_seed` (preserving
+   the original version). Explicit, clearly-named unsafe hooks remain available
+   for tests and benchmarks — an unsupported escape hatch, not a claim that
+   mutation is technically impossible for third parties.""",
+    """5. **Encapsulation and migration.** Authority fields are constructor-excluded
+   and guarded; the seed registry is a read-only view. Persisted seeds are
+   restored via `ShadowSeed.from_dict` / `SSLManager.restore_seed` (preserving
+   the original version). Explicit, clearly-named unsafe hooks remain available
+   for tests and benchmarks — an unsupported escape hatch, not a claim that
+   mutation is technically impossible for third parties.
+6. **One executable Gate path.** The historical boolean API is a translation and
+   return-shape adapter into `submit_signals`, not an alternative decision engine.
+   The policy id recorded in a `GateEvent` is the policy that made the decision.
+7. **Verification boundary.** External observations may be logged while
+   unverified, but only verified external support can authorize a transition or
+   increment the evidence counter. Recurrence remains a separate signal and may
+   authorize only under a policy that explicitly permits recurrence.""",
+)
+replace_exact(
+    "docs/architecture/adr/ADR-001-validation-gate-authority.md",
+    """The full suite passes (545 passed, 4 skipped), ruff is clean, the wheel builds,
+and the CLI runs. Umbrella issue #8 tracks final closure once this branch is
+merged.""",
+    """The standard CI matrix runs Ruff and the complete pytest suite on Python 3.10
+and 3.12. The wheel and CLI have separate repository checks. Umbrella issue #8
+tracks final closure once the alignment work is merged.""",
+)
