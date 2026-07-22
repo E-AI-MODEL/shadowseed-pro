@@ -20,9 +20,16 @@ jobs:
           cache: pip
       - run: python -m pip install -q --upgrade pip
       - run: pip install -q -e ".[test]"
-      - run: >-
-          pytest -q --tb=short
-          tests/test_gate_path_unification.py
-          tests/test_gate_contracts.py
-          tests/test_gate_signal_routing.py
-          tests/test_manager_alignment.py
+      - name: Run focused tests
+        shell: bash
+        run: |
+          set +e
+          pytest -q --tb=short \
+            tests/test_gate_path_unification.py \
+            tests/test_gate_contracts.py \
+            tests/test_gate_signal_routing.py \
+            tests/test_manager_alignment.py \
+            > /tmp/gate-tests.log 2>&1
+          status=$?
+          tail -n 80 /tmp/gate-tests.log
+          exit "$status"
