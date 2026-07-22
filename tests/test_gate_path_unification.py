@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from shadowseed.gate import SignalKind, ValidationSignal, recurrence_signal
+from shadowseed.gate import SignalKind, ValidationSignal
+from shadowseed.gate.signals import recurrence_signal
 from shadowseed.manager import SSLManager
 
 
