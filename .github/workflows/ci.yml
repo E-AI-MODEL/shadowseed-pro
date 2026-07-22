@@ -20,3 +20,20 @@ jobs:
       - run: pip install -e ".[test]"
       - run: ruff check .
       - run: pytest -q
+
+  gate-docs-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python scripts/align_gate_docs_once.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aligned-gate-docs
+          path: |
+            README.md
+            docs/architecture/gate-contracts.md
+            docs/architecture/lifecycle-and-gate.md
+            docs/architecture/adr/ADR-001-validation-gate-authority.md
