@@ -4,9 +4,6 @@ on:
   push:
   pull_request:
 
-permissions:
-  contents: write
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -23,26 +20,3 @@ jobs:
       - run: pip install -e ".[test]"
       - run: ruff check .
       - run: pytest -q
-
-  gate-docs-commit:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/agent/unify-validation-gate'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: agent/unify-validation-gate
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: python scripts/align_gate_docs_once.py
-      - name: Commit aligned documentation
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md docs/architecture/gate-contracts.md docs/architecture/lifecycle-and-gate.md docs/architecture/adr/ADR-001-validation-gate-authority.md
-          if git diff --cached --quiet; then
-            echo "No documentation changes were needed."
-            exit 0
-          fi
-          git commit -m "Align Gate policy documentation"
-          git push origin HEAD:agent/unify-validation-gate
