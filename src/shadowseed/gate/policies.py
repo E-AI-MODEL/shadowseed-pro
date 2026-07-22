@@ -107,7 +107,12 @@ def _contradiction_proposal(
 
 @dataclass(frozen=True)
 class ExploratoryPolicy:
-    """Permissive policy: recurrence may raise authority."""
+    """Permissive policy: recurrence may raise authority.
+
+    External support remains visible to the Gate but qualifies only when it is
+    explicitly verified. This keeps recurrence exploratory without treating an
+    unverified retrieval, SSOT proposal, or feedback signal as evidence.
+    """
 
     policy_id: str = "exploratory"
     min_recurrence_strength: float = 0.0
@@ -128,9 +133,11 @@ class ExploratoryPolicy:
             and signal.strength >= self.min_recurrence_strength
             for signal in support
         )
-        external = any(signal.is_external_evidence for signal in support)
-        if recurrent or external:
-            basis = "recurrence" if recurrent else "external_support"
+        verified_external = any(
+            signal.is_external_evidence and signal.verified for signal in support
+        )
+        if recurrent or verified_external:
+            basis = "recurrence" if recurrent else "verified_external_support"
             return GateDecisionProposal(
                 self.policy_id,
                 ProposedVerdict.PROMOTE_OR_VALIDATE,
@@ -141,8 +148,8 @@ class ExploratoryPolicy:
         return GateDecisionProposal(
             self.policy_id,
             ProposedVerdict.BLOCK,
-            reason="no qualifying support signal",
-            missing=("recurrence_or_external_support",),
+            reason="no qualifying recurrence or verified external support",
+            missing=("recurrence_or_verified_external_support",),
         )
 
 
