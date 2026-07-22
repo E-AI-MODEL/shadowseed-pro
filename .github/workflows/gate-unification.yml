@@ -1,0 +1,28 @@
+name: Gate unification
+
+on:
+  pull_request:
+    paths:
+      - "src/shadowseed/gate/**"
+      - "src/shadowseed/manager.py"
+      - "src/shadowseed/__init__.py"
+      - "tests/test_gate*.py"
+      - ".github/workflows/gate-unification.yml"
+
+jobs:
+  focused-gate-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -q --upgrade pip
+      - run: pip install -q -e ".[test]"
+      - run: >-
+          pytest -q --tb=short
+          tests/test_gate_path_unification.py
+          tests/test_gate_contracts.py
+          tests/test_gate_signal_routing.py
+          tests/test_manager_alignment.py
