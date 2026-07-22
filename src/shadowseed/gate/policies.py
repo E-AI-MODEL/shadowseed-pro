@@ -5,17 +5,16 @@ seed's current authority state and *proposes* a decision. Policies never mutate
 anything; the Gate applies (or rejects) the proposal (ADR-001, "Typed signals
 and policy profiles"; issue #10).
 
-Amendment (accepted second opinion, §1/§7): the ADR listed five illustrative
-profiles. This module ships the two whose semantics are concrete today —
-``exploratory`` and ``evidence_backed`` — plus an explicit, named default. The
-remaining profiles (``research``, ``creative``, ``high_impact``) are documented
-as examples in ``EXAMPLE_POLICY_IDS`` and are intentionally not implemented
-until their required signal combinations are justified. The default policy is
-never implicit: :func:`default_policy` and :data:`DEFAULT_POLICY_ID` name it
-explicitly and :func:`resolve_policy` raises on an unknown id.
+The module ships the concrete exploratory and evidence-backed policies plus a
+legacy compatibility policy. The compatibility policy preserves the former
+boolean Gate requirement of recurrence plus verified external evidence while
+routing the decision through the same signal-native Gate as every other policy.
 
-Thresholds here are explicit, documented constructor arguments with provisional
-defaults, not magic numbers scattered through the code.
+The remaining profiles (``research``, ``creative``, ``high_impact``) are
+documented examples and are intentionally not implemented until their required
+signal combinations are justified. The default policy is never implicit:
+:func:`default_policy` and :data:`DEFAULT_POLICY_ID` name it explicitly and
+:func:`resolve_policy` raises on an unknown id.
 """
 
 from __future__ import annotations
@@ -39,11 +38,7 @@ class ProposedVerdict(str, Enum):
 
 @dataclass(frozen=True)
 class AuthoritySnapshot:
-    """Read-only view of the authority state a policy is allowed to consider.
-
-    Deliberately minimal: a policy sees enough to reason about the transition
-    but cannot reach in and change anything.
-    """
+    """Read-only view of the authority state a policy may consider."""
 
     weight: float = 0.0
     status: str = "NEW"
@@ -52,7 +47,7 @@ class AuthoritySnapshot:
 
 @dataclass(frozen=True)
 class GateDecisionProposal:
-    """A policy's proposal. Advisory only; the Gate decides whether to apply it."""
+    """A policy proposal. Advisory only; the Gate applies the transition."""
 
     policy_id: str
     verdict: ProposedVerdict
@@ -87,37 +82,55 @@ class GatePolicy(Protocol):
 
 
 def _supporting(signals: Sequence[ValidationSignal]) -> list[ValidationSignal]:
-    return [s for s in signals if s.direction == SignalDirection.SUPPORT]
+    return [signal for signal in signals if signal.direction == SignalDirection.SUPPORT]
+
+
+def _has_fresh_contradiction(signals: Sequence[ValidationSignal]) -> bool:
+    return any(
+        signal.kind == SignalKind.CONTRADICTION
+        and signal.direction == SignalDirection.OPPOSE
+        for signal in signals
+    )
 
 
 def _has_open_contradiction(
     signals: Sequence[ValidationSignal],
     authority: AuthoritySnapshot,
 ) -> bool:
-    """A contradiction is in force if the seed already carries a blocking one and
-    no resolution signal is offered, or if a fresh contradiction signal arrives."""
+    """Return whether a blocking contradiction remains in force."""
 
-    fresh_contradiction = any(
-        s.kind == SignalKind.CONTRADICTION and s.direction == SignalDirection.OPPOSE
-        for s in signals
+    if _has_fresh_contradiction(signals):
+        return True
+    resolution = any(
+        signal.kind == SignalKind.CONTRADICTION_RESOLUTION for signal in signals
     )
-    resolution = any(s.kind == SignalKind.CONTRADICTION_RESOLUTION for s in signals)
-    if fresh_contradiction:
-        return True
-    if authority.has_blocking_contradiction and not resolution:
-        return True
-    return False
+    return authority.has_blocking_contradiction and not resolution
+
+
+def _contradiction_proposal(
+    policy_id: str,
+    signals: Sequence[ValidationSignal],
+    authority: AuthoritySnapshot,
+) -> GateDecisionProposal | None:
+    if _has_fresh_contradiction(signals):
+        return GateDecisionProposal(
+            policy_id,
+            ProposedVerdict.CONTRADICT,
+            reason="contradiction signal present",
+        )
+    if _has_open_contradiction(signals, authority):
+        return GateDecisionProposal(
+            policy_id,
+            ProposedVerdict.BLOCK,
+            reason="unresolved blocking contradiction",
+            missing=("contradiction_resolution",),
+        )
+    return None
 
 
 @dataclass(frozen=True)
 class ExploratoryPolicy:
-    """Permissive policy: recurrence alone may promote, if uncontradicted.
-
-    This is what keeps SSL exploratory. Strong recurrence (or any external
-    support) with no unresolved contradiction proposes a positive authority
-    change. Recurrence is used *as recurrence* — the proposal reason records
-    that explicitly and never calls it external evidence.
-    """
+    """Permissive policy: recurrence may promote if uncontradicted."""
 
     policy_id: str = "exploratory"
     min_recurrence_strength: float = 0.0
@@ -128,30 +141,31 @@ class ExploratoryPolicy:
         signals: Sequence[ValidationSignal],
         authority: AuthoritySnapshot,
     ) -> GateDecisionProposal:
-        if any(s.kind == SignalKind.CONTRADICTION and s.direction == SignalDirection.OPPOSE for s in signals):
-            return GateDecisionProposal(
-                self.policy_id, ProposedVerdict.CONTRADICT,
-                reason="contradiction signal present",
-            )
-        if _has_open_contradiction(signals, authority):
-            return GateDecisionProposal(
-                self.policy_id, ProposedVerdict.BLOCK,
-                reason="unresolved blocking contradiction",
-                missing=("contradiction_resolution",),
-            )
+        contradiction = _contradiction_proposal(self.policy_id, signals, authority)
+        if contradiction is not None:
+            return contradiction
+
         support = _supporting(signals)
-        recurrence = [s for s in support if s.kind == SignalKind.RECURRENCE]
-        strong_recurrence = [s for s in recurrence if s.strength >= self.min_recurrence_strength]
-        if strong_recurrence or any(s.is_external_evidence for s in support):
+        recurrence = [
+            signal for signal in support if signal.kind == SignalKind.RECURRENCE
+        ]
+        strong_recurrence = [
+            signal
+            for signal in recurrence
+            if signal.strength >= self.min_recurrence_strength
+        ]
+        if strong_recurrence or any(signal.is_external_evidence for signal in support):
             basis = "recurrence" if strong_recurrence else "external_support"
             return GateDecisionProposal(
-                self.policy_id, ProposedVerdict.PROMOTE_OR_VALIDATE,
+                self.policy_id,
+                ProposedVerdict.PROMOTE_OR_VALIDATE,
                 weight_delta=self.weight_increment,
                 reason=f"exploratory support via {basis}",
                 satisfied=True,
             )
         return GateDecisionProposal(
-            self.policy_id, ProposedVerdict.BLOCK,
+            self.policy_id,
+            ProposedVerdict.BLOCK,
             reason="no qualifying support signal",
             missing=("recurrence_or_external_support",),
         )
@@ -159,14 +173,7 @@ class ExploratoryPolicy:
 
 @dataclass(frozen=True)
 class EvidenceBackedPolicy:
-    """Strict policy: requires verified external evidence; recurrence is not enough.
-
-    A verified external-evidence signal (SSOT, human feedback, or retrieval,
-    with ``verified=True``) and no unresolved contradiction proposes a positive
-    change. Recurrence may accompany the evidence but can never satisfy the
-    requirement on its own — the guarantee that recurrence is not double-counted
-    as external evidence.
-    """
+    """Strict policy: verified external evidence is required."""
 
     policy_id: str = "evidence_backed"
     weight_increment: float = 0.2
@@ -176,48 +183,88 @@ class EvidenceBackedPolicy:
         signals: Sequence[ValidationSignal],
         authority: AuthoritySnapshot,
     ) -> GateDecisionProposal:
-        if any(s.kind == SignalKind.CONTRADICTION and s.direction == SignalDirection.OPPOSE for s in signals):
-            return GateDecisionProposal(
-                self.policy_id, ProposedVerdict.CONTRADICT,
-                reason="contradiction signal present",
-            )
-        if _has_open_contradiction(signals, authority):
-            return GateDecisionProposal(
-                self.policy_id, ProposedVerdict.BLOCK,
-                reason="unresolved blocking contradiction",
-                missing=("contradiction_resolution",),
-            )
-        support = _supporting(signals)
+        contradiction = _contradiction_proposal(self.policy_id, signals, authority)
+        if contradiction is not None:
+            return contradiction
+
         verified_external = [
-            s for s in support if s.is_external_evidence and s.verified
+            signal
+            for signal in _supporting(signals)
+            if signal.is_external_evidence and signal.verified
         ]
         if verified_external:
             return GateDecisionProposal(
-                self.policy_id, ProposedVerdict.PROMOTE_OR_VALIDATE,
+                self.policy_id,
+                ProposedVerdict.PROMOTE_OR_VALIDATE,
                 weight_delta=self.weight_increment,
                 reason="verified external evidence present",
                 satisfied=True,
             )
         return GateDecisionProposal(
-            self.policy_id, ProposedVerdict.BLOCK,
+            self.policy_id,
+            ProposedVerdict.BLOCK,
             reason="no verified external evidence",
             missing=("verified_external_evidence",),
         )
 
 
-#: The default policy id. Never implicit: callers that do not name a policy get
-#: this one, and it is documented here and in the architecture docs.
+@dataclass(frozen=True)
+class LegacyEvidenceRequiredPolicy:
+    """Compatibility policy requiring recurrence and verified evidence.
+
+    This policy captures the former boolean Gate semantics without maintaining a
+    separate decision engine. It is selected by the compatibility adapter when a
+    caller uses ``run_validation_gate`` without naming another policy.
+    """
+
+    policy_id: str = "legacy_evidence_required"
+    weight_increment: float = 0.2
+
+    def propose(
+        self,
+        signals: Sequence[ValidationSignal],
+        authority: AuthoritySnapshot,
+    ) -> GateDecisionProposal:
+        contradiction = _contradiction_proposal(self.policy_id, signals, authority)
+        if contradiction is not None:
+            return contradiction
+
+        support = _supporting(signals)
+        recurrence = any(
+            signal.kind == SignalKind.RECURRENCE for signal in support
+        )
+        verified_external = any(
+            signal.is_external_evidence and signal.verified for signal in support
+        )
+        if recurrence and verified_external:
+            return GateDecisionProposal(
+                self.policy_id,
+                ProposedVerdict.PROMOTE_OR_VALIDATE,
+                weight_delta=self.weight_increment,
+                reason="legacy compatibility requirements satisfied",
+                satisfied=True,
+            )
+
+        missing: list[str] = []
+        if not recurrence:
+            missing.append("recurrence")
+        if not verified_external:
+            missing.append("verified_external_evidence")
+        return GateDecisionProposal(
+            self.policy_id,
+            ProposedVerdict.BLOCK,
+            reason="legacy compatibility requirements not satisfied",
+            missing=tuple(missing),
+        )
+
+
 DEFAULT_POLICY_ID = "exploratory"
-
-#: Documented-but-unimplemented profiles from ADR-001. Naming them keeps the
-#: examples discoverable while making it explicit that they are not yet real
-#: policies. ``resolve_policy`` raises a clear error if one is requested.
 EXAMPLE_POLICY_IDS: tuple[str, ...] = ("research", "creative", "high_impact")
-
 
 _REGISTRY: dict[str, GatePolicy] = {
     ExploratoryPolicy().policy_id: ExploratoryPolicy(),
     EvidenceBackedPolicy().policy_id: EvidenceBackedPolicy(),
+    LegacyEvidenceRequiredPolicy().policy_id: LegacyEvidenceRequiredPolicy(),
 }
 
 
@@ -228,13 +275,7 @@ def default_policy() -> GatePolicy:
 
 
 def resolve_policy(policy_id: str | None) -> GatePolicy:
-    """Resolve a policy by id.
-
-    ``None`` resolves to the explicit default. An id listed in
-    ``EXAMPLE_POLICY_IDS`` raises a distinct, actionable error so a caller does
-    not silently fall back to a different policy. Any other unknown id also
-    raises.
-    """
+    """Resolve a concrete policy or fail clearly for examples and unknown ids."""
 
     if policy_id is None:
         return default_policy()
@@ -243,16 +284,14 @@ def resolve_policy(policy_id: str | None) -> GatePolicy:
     if policy_id in EXAMPLE_POLICY_IDS:
         raise ValueError(
             f"Gate policy '{policy_id}' is a documented example profile that is "
-            "not implemented yet. Use 'exploratory' or 'evidence_backed', or "
-            "register a concrete policy."
+            "not implemented yet. Use a registered policy or add concrete semantics."
         )
     raise ValueError(
-        f"Unknown Gate policy '{policy_id}'. "
-        f"Known policies: {sorted(_REGISTRY)}."
+        f"Unknown Gate policy '{policy_id}'. Known policies: {sorted(_REGISTRY)}."
     )
 
 
 def available_policy_ids() -> list[str]:
-    """Ids of the concrete, registered policies."""
+    """Return ids of the concrete registered policies."""
 
     return sorted(_REGISTRY)
