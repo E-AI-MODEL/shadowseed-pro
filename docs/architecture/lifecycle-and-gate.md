@@ -119,7 +119,20 @@ stored as a separate mutable field.
 
 ## Validation Gate
 
-The gate evaluates stored evidence, contradiction state, and configured thresholds. Its result is logged. Contradiction can block promotion, reduce influence, or reset a seed depending on the manager policy.
+Every authority decision is applied by the signal-native `submit_signals` engine
+and recorded as one `GateEvent`. Public callers may submit typed signals directly;
+the historical boolean methods are compatibility adapters into the same engine.
+
+Policy semantics are explicit:
+
+- `exploratory` permits qualifying recurrence or verified external support;
+- `evidence_backed` requires verified external support;
+- `legacy_evidence_required` preserves the historical recurrence, trace, and
+  accumulated verified-evidence thresholds for compatibility callers.
+
+Unverified external observations remain auditable inputs but cannot authorize,
+increment `evidence_count`, or be reported as passed evidence. Contradiction can
+block promotion, reduce influence, or reset a seed according to the active policy.
 
 ## Contradictions
 

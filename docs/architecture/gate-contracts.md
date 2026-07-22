@@ -5,8 +5,9 @@ live in the `shadowseed.gate` package and implement Phase 1 of the Validation
 Gate alignment (issue #10) and the data model in
 [ADR-001](adr/ADR-001-validation-gate-authority.md).
 
-These are data contracts. They do not yet change how `SSLManager` mutates
-authority — wiring the runtime onto them is a separate step (issues #11 and #12).
+These contracts are wired into the runtime. `SSLManager.submit_signals` is
+the single executable authority-changing Gate engine; compatibility methods
+translate their inputs into these same contracts before delegating to it.
 
 ## Signals (`shadowseed.gate.signals`)
 
@@ -35,13 +36,17 @@ relabeling in the chat runtime.
 A `GatePolicy` reads the offered signals plus a read-only `AuthoritySnapshot`
 and returns a `GateDecisionProposal`. Policies propose; only the Gate applies.
 
-Two concrete policies ship today:
+Two public policies and one compatibility policy ship today:
 
-- **`exploratory`** (the default): strong recurrence *or* external support, with
-  no unresolved contradiction, proposes a positive change. This keeps SSL
-  permissive — recurrence alone can promote.
+- **`exploratory`** (the default): qualifying recurrence *or verified* external
+  support, with no unresolved contradiction, proposes a positive change. This
+  keeps SSL permissive — recurrence alone can promote, but an unverified external
+  observation cannot.
 - **`evidence_backed`**: requires a verified external-evidence signal. Recurrence
   may accompany it but can never satisfy the requirement alone.
+- **`legacy_evidence_required`**: compatibility-only behavior for the historical
+  boolean API. It preserves the configured recurrence, trace, accumulated
+  evidence, and weight thresholds while using the same signal-native Gate engine.
 
 The default policy is **explicit**: `DEFAULT_POLICY_ID` names it, `default_policy()`
 returns it, and `resolve_policy(None)` resolves to it. `resolve_policy` raises on
@@ -72,20 +77,20 @@ timestamps or inject a fixed clock rather than relying on wall-clock stability.
 
 ## Runtime wiring (issue #12)
 
-The manager exposes two Gate entry points, and both append to
-`SSLManager.gate_events`:
+The manager exposes two public input shapes that converge on one executable
+Gate engine and append one event per call to `SSLManager.gate_events`:
 
 - **`submit_signals(seed_id, signals, policy_id=None)`** — the signal-native
-  path. Helpers build `ValidationSignal`s and call here; the named policy
-  proposes and the Gate applies through `_set_authority`. Recurrence signals can
-  promote under the `exploratory` policy without ever incrementing
-  `evidence_count`.
-- **`run_validation_gate[_detailed](...)`** — the boolean-compatible path. The
-  `external_evidence` / `contradiction` booleans are **retained for backward
-  compatibility** (they are the evidence-required mechanics the existing suite
-  depends on) but are considered deprecated for new code. This path also records
-  a `GateEvent`, and it represents recurrence as a recurrence signal from the
-  occurrence count — never as external evidence.
+  entry point. Helpers build `ValidationSignal`s and call here; the named policy
+  proposes and the Gate applies through `_set_authority`. Recurrence can promote
+  under `exploratory` without incrementing `evidence_count`. External support can
+  authorize or count as evidence only when `verified=True`.
+- **`run_validation_gate[_detailed](...)`** — a deprecated compatibility adapter.
+  It translates the historical `external_evidence` / `contradiction` booleans
+  into typed signals, selects `legacy_evidence_required` unless another policy is
+  explicitly requested, delegates to `submit_signals`, and translates the event
+  back into the historical return shape. The old private core alias redirects to
+  this adapter; it is not a second decision engine.
 
 Migrated callers:
 
