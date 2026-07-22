@@ -261,3 +261,5 @@ tracks final closure once the alignment work is merged.""",
           fi
           git commit -m "Align Gate policy documentation"
           git push origin HEAD:agent/unify-validation-gate
+
+# Second push activates this workflow after its initial creation.
