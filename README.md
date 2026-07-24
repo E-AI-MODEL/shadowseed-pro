@@ -173,7 +173,7 @@ weight = 0   means the seed has no steering authority
 | `trace` | Presence, recurrence, decay, and reactivation | Grant influence by itself |
 | `weight` | Bounded steering authority after validation | Rise because a detector sounds convincing |
 | seed | A candidate absence | Count as evidence for itself |
-| evidence | External or verified support | Bypass the Validation Gate |
+| evidence | Verified external support with provenance | Bypass the Validation Gate |
 | contradiction | A reason to block, reduce, or reset influence | Be hidden from the audit trail |
 | promotion | Permission to be considered | Force inclusion in an answer |
 | surfacing | Contextual selection at use time | Override the safety contract |
@@ -261,10 +261,10 @@ The authority model — the single non-bypassable Validation Gate — is specifi
 | Trace is separate from influence | [`manager.py`](src/shadowseed/manager.py) | [`test_manager_alignment.py`](tests/test_manager_alignment.py), [`test_lifecycle_ttl.py`](tests/test_lifecycle_ttl.py) |
 | TTL decay and terminal expiry | [`SSLManager.decay_traces`](src/shadowseed/manager.py) | [`test_lifecycle_ttl.py`](tests/test_lifecycle_ttl.py), [`test_bad_seed_dies_out.py`](tests/test_bad_seed_dies_out.py) |
 | TrTL reactivation | [`SSLManager.reactivate_by_text`](src/shadowseed/manager.py) | [`test_lifecycle_ttl.py`](tests/test_lifecycle_ttl.py) |
-| Effects route through one Gate via typed signals and a named policy | [`SSLManager.submit_signals`](src/shadowseed/manager.py), [`shadowseed.gate`](src/shadowseed/gate/) | [`test_gate_contracts.py`](tests/test_gate_contracts.py), [`test_gate_signal_routing.py`](tests/test_gate_signal_routing.py) |
+| Effects route through one Gate via typed signals and a named policy | [`SSLManager.submit_signals`](src/shadowseed/manager.py), [`shadowseed.gate`](src/shadowseed/gate/) | [`test_gate_contracts.py`](tests/test_gate_contracts.py), [`test_gate_signal_routing.py`](tests/test_gate_signal_routing.py), [`test_gate_path_unification.py`](tests/test_gate_path_unification.py) |
 | Recurrence is never relabeled or double-counted as external evidence | [`shadowseed.gate.signals`](src/shadowseed/gate/signals.py), [`chat.py`](src/shadowseed/chat.py) | [`test_gate_signal_routing.py`](tests/test_gate_signal_routing.py) |
 | Contradictions have an auditable lifecycle and Gate-controlled recovery | [`shadowseed.gate.contradictions`](src/shadowseed/gate/contradictions.py), [`SSLManager.resolve_contradiction`](src/shadowseed/manager.py) | [`test_contradiction_lifecycle.py`](tests/test_contradiction_lifecycle.py) |
-| Generated output is not trusted evidence | [`ssot.py`](src/shadowseed/ssot.py), [`agent_contract.py`](src/shadowseed_agent/agent_contract.py) | [`test_ssot_manager.py`](tests/test_ssot_manager.py), [`test_agent_safety_contract.py`](tests/test_agent_safety_contract.py) |
+| Generated output and unverified external observations are not trusted evidence | [`ssot.py`](src/shadowseed/ssot.py), [`shadowseed.gate`](src/shadowseed/gate/) | [`test_ssot_manager.py`](tests/test_ssot_manager.py), [`test_gate_evidence_verification.py`](tests/test_gate_evidence_verification.py) |
 | Influence is one atomic, replayable point-of-use decision | [`AgentSafetyContract.decide_and_record`](src/shadowseed_agent/agent_contract.py) | [`test_point_of_use.py`](tests/test_point_of_use.py) |
 | Surfaced seeds are bounded, quoted candidate data (prompt boundary) | [`surfacing.py`](src/shadowseed/surfacing.py) | [`test_prompt_boundary.py`](tests/test_prompt_boundary.py) |
 | Live chat and benchmarks share surfacing logic | [`surfacing.py`](src/shadowseed/surfacing.py) | [`test_surfacing.py`](tests/test_surfacing.py), [`test_ssl_session_suite.py`](tests/test_ssl_session_suite.py) |
@@ -287,6 +287,24 @@ This metadata is audit-only. It does not count as evidence and cannot raise weig
 - LLM-generated claims enter as unverified proposals;
 - proposed chunks remain searchable but cannot validate seeds until explicitly verified;
 - the SSOT never assigns weight directly.
+
+## Gate policy profiles
+
+All authority decisions use one signal-native Gate engine. The selected policy
+states which observations may justify an authority change:
+
+- **`exploratory`** (default): qualifying recurrence or verified external support
+  may raise authority when no unresolved contradiction exists. Recurrence alone
+  is allowed and never increments `evidence_count`.
+- **`evidence_backed`**: verified external support is required. Recurrence may
+  accompany it but cannot replace it.
+- **`legacy_evidence_required`**: compatibility-only behavior for the historical
+  boolean API. The adapter translates booleans into typed signals and preserves
+  the configured recurrence, trace, accumulated-evidence, and weight thresholds.
+
+Unverified external observations remain visible in `GateEvent.signals` for audit,
+but they cannot authorize a seed, increment `evidence_count`, or be reported as
+passed evidence.
 
 ## Dialectical falsification
 
@@ -393,14 +411,19 @@ The experiment supports a conservative boundary already enforced in code:
 internal signal != evidence != verdict != permission to influence
 ```
 
-The production-facing path remains external and auditable:
+The high-assurance, evidence-backed path remains external and auditable:
 
 1. store the seed weightless;
-2. require recurrence and verified evidence;
+2. require verified external evidence, with recurrence recorded separately;
 3. test contradiction;
 4. log the Validation Gate decision;
 5. recheck promotion at the point of use;
 6. record every attempted influence.
+
+The default `exploratory` research policy is intentionally different: qualifying
+recurrence may raise authority without external evidence. That permissive rule is
+explicit, policy-bound, and still subject to contradiction handling, Gate logging,
+and the point-of-use contract.
 
 This is why the activation probe is located in the benchmark package and is forbidden from touching seed state.
 
