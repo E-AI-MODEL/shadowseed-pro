@@ -4,7 +4,12 @@ from __future__ import annotations
 
 import numpy as np
 
-from shadowseed.gate import GateDecision, SignalKind, ValidationSignal
+from shadowseed.gate import (
+    GateDecision,
+    SignalDirection,
+    SignalKind,
+    ValidationSignal,
+)
 from shadowseed.gate.signals import recurrence_signal
 from shadowseed.manager import SSLManager
 
@@ -180,3 +185,48 @@ def test_recurrence_can_validate_without_promoting_unverified_signal_to_evidence
     assert result.internal_recognition_passed is True
     assert result.external_evidence_passed is False
     assert result.external_evidence_applied is False
+
+
+def test_contradiction_boolean_synthesizes_opposition_when_supplied_signal_is_not_opposing():
+    manager = _manager()
+    seed_id = _recurrent_seed(manager)
+    non_opposing = ValidationSignal(
+        kind=SignalKind.CONTRADICTION,
+        direction=SignalDirection.SUPPORT,
+        reason="caller supplied a non-opposing contradiction signal",
+    )
+
+    result = manager.run_validation_gate_detailed(
+        seed_id,
+        external_evidence=True,
+        contradiction=True,
+        signals=[non_opposing],
+    )
+
+    assert result.verdict == "contradicted"
+    assert result.contradiction_applied is True
+    assert any(
+        signal.kind is SignalKind.CONTRADICTION
+        and signal.direction is SignalDirection.OPPOSE
+        for signal in manager.gate_events[-1].signals
+    )
+
+
+def test_legacy_policy_blocks_while_a_contradiction_record_remains_open():
+    manager = _manager()
+    seed_id = _recurrent_seed(manager)
+
+    contradicted = manager.run_validation_gate_detailed(seed_id, contradiction=True)
+    assert contradicted.verdict == "contradicted"
+
+    manager.add_or_update_seed("A relevant boundary is missing.")
+    manager.add_or_update_seed("A relevant boundary is missing.")
+    first = manager.run_validation_gate_detailed(seed_id, external_evidence=True)
+    second = manager.run_validation_gate_detailed(seed_id, external_evidence=True)
+
+    assert first.verdict == "blocked"
+    assert second.verdict == "blocked"
+    assert first.contradiction_free is False
+    assert second.contradiction_free is False
+    assert manager.get_seed(seed_id).weight == 0.0
+    assert manager._contradiction_state(manager.get_seed(seed_id)).blocking is True
