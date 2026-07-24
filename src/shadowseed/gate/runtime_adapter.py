@@ -1,10 +1,7 @@
 """Install one executable Validation Gate engine on ``SSLManager``.
 
-The manager historically contained a boolean decision engine and a typed-signal
-engine. This adapter replaces both runtime entry paths with one implementation:
-``submit_signals``. The old public methods only translate their arguments into
-typed signals and translate the resulting event back to their legacy return
-shape.
+The historical boolean API is retained as an input/output adapter. All authority
+changes are decided by the signal-native Gate path and produce one ``GateEvent``.
 """
 
 from __future__ import annotations
@@ -94,7 +91,7 @@ def _submit_legacy_signals(
     seed_id: str,
     signal_list: list[ValidationSignal],
 ) -> GateEvent:
-    """Apply the former boolean semantics inside the unified Gate engine."""
+    """Apply historical threshold semantics through the unified Gate boundary."""
 
     seed = self._seeds[seed_id]
     status_before = seed.status.value
@@ -113,7 +110,8 @@ def _submit_legacy_signals(
             weight_before=weight_before,
             internal_recognition_passed=False,
             external_evidence_passed=False,
-            contradiction_free=not contradiction_applied,
+            contradiction_free=not contradiction_applied
+            and not contradiction_before.blocking,
             external_evidence_applied=False,
             contradiction_applied=contradiction_applied,
             verdict="expired",
@@ -142,7 +140,9 @@ def _submit_legacy_signals(
         and seed.trace > self.config.min_trace_for_gate
     )
     evidence_passed = seed.evidence_count >= self.config.min_evidence_for_gate
-    contradiction_free = contradiction_signal is None
+    contradiction_free = (
+        contradiction_signal is None and not contradiction_before.blocking
+    )
 
     if contradiction_signal is not None:
         self._open_contradiction_record(
@@ -371,7 +371,9 @@ def _compatibility_signals(
             )
         )
     if contradiction and not any(
-        signal.kind is SignalKind.CONTRADICTION for signal in collected
+        signal.kind is SignalKind.CONTRADICTION
+        and signal.direction is SignalDirection.OPPOSE
+        for signal in collected
     ):
         collected.append(
             ValidationSignal(
