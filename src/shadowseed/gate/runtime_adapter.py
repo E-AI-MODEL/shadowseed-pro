@@ -1,7 +1,16 @@
-"""Install one executable Validation Gate engine on ``SSLManager``.
+"""The one executable Validation Gate engine.
 
-The historical boolean API is retained as an input/output adapter. All authority
-changes are decided by the signal-native Gate path and produce one ``GateEvent``.
+This module holds the *only* implementation that decides authority changes.
+``SSLManager`` does not re-implement it: its Gate methods (``submit_signals``,
+``run_validation_gate``, ``run_validation_gate_detailed``) delegate here
+explicitly, so a reader of ``manager.py`` can follow one call into the real
+body. Nothing is installed onto the class at import time.
+
+The historical boolean API is retained as an input/output adapter only: it
+translates booleans into typed signals, runs this same engine, and translates
+the resulting event back into the legacy return shape. Every call applies one
+policy and records exactly one ``GateEvent`` under the policy that actually
+decided it.
 """
 
 from __future__ import annotations
@@ -17,6 +26,7 @@ from shadowseed.gate.signals import (
     ValidationSignal,
     recurrence_signal,
 )
+from shadowseed.gate.verified_logging import log_validation_from_signals
 
 LEGACY_POLICY_ID = "legacy_evidence_required"
 
@@ -52,7 +62,7 @@ def _opposing_contradiction(signals: list[ValidationSignal]) -> ValidationSignal
 
 
 def _legacy_result(
-    self: Any,
+    manager: Any,
     *,
     seed: Any,
     status_before: str,
@@ -82,21 +92,21 @@ def _legacy_result(
         promoted=verdict == "promoted",
         verdict=verdict,
     )
-    self.validation_log.append(result)
+    manager.validation_log.append(result)
     return result
 
 
 def _submit_legacy_signals(
-    self: Any,
+    manager: Any,
     seed_id: str,
     signal_list: list[ValidationSignal],
 ) -> GateEvent:
     """Apply historical threshold semantics through the unified Gate boundary."""
 
-    seed = self._seeds[seed_id]
+    seed = manager._seeds[seed_id]
     status_before = seed.status.value
     weight_before = seed.weight
-    contradiction_before = self._contradiction_state(seed)
+    contradiction_before = manager._contradiction_state(seed)
     external_signals = _verified_external(signal_list)
     contradiction_signal = _opposing_contradiction(signal_list)
     external_applied = bool(external_signals)
@@ -104,7 +114,7 @@ def _submit_legacy_signals(
 
     if seed.status.value == "EXPIRED":
         _legacy_result(
-            self,
+            manager,
             seed=seed,
             status_before=status_before,
             weight_before=weight_before,
@@ -116,7 +126,7 @@ def _submit_legacy_signals(
             contradiction_applied=contradiction_applied,
             verdict="expired",
         )
-        event = self._record_gate_event(
+        event = manager._record_gate_event(
             seed,
             GateDecision.EXPIRED,
             signal_list,
@@ -126,55 +136,55 @@ def _submit_legacy_signals(
             contradiction_before=contradiction_before,
             reason="expired seed is terminal",
         )
-        self._sync_seed(seed_id)
+        manager._sync_seed(seed_id)
         return event
 
     if external_signals:
-        self._set_authority(
+        manager._set_authority(
             seed,
             evidence_count=seed.evidence_count + len(external_signals),
         )
 
     internal_passed = (
-        seed.occurrence_count >= self.config.min_occurrences_for_gate
-        and seed.trace > self.config.min_trace_for_gate
+        seed.occurrence_count >= manager.config.min_occurrences_for_gate
+        and seed.trace > manager.config.min_trace_for_gate
     )
-    evidence_passed = seed.evidence_count >= self.config.min_evidence_for_gate
+    evidence_passed = seed.evidence_count >= manager.config.min_evidence_for_gate
     contradiction_free = (
         contradiction_signal is None and not contradiction_before.blocking
     )
 
     if contradiction_signal is not None:
-        self._open_contradiction_record(
+        manager._open_contradiction_record(
             seed,
             reason=contradiction_signal.reason or "validation gate contradiction",
             source_ref=contradiction_signal.source_ref,
             strength=contradiction_signal.strength,
         )
-        self._set_authority(
+        manager._set_authority(
             seed,
-            weight=max(0.0, seed.weight - self.contradiction_penalty),
+            weight=max(0.0, seed.weight - manager.contradiction_penalty),
             contradiction_score=min(1.0, seed.contradiction_score + 0.25),
             status=type(seed.status).NEW,
         )
         seed.occurrence_count = 1
-        if self.contradiction_trace_penalty:
-            seed.trace = max(0.0, seed.trace - self.contradiction_trace_penalty)
+        if manager.contradiction_trace_penalty:
+            seed.trace = max(0.0, seed.trace - manager.contradiction_trace_penalty)
         seed.turns_dormant = 0
-        self._touch_seed(seed)
+        manager._touch_seed(seed)
         verdict = "contradicted"
         decision = GateDecision.CONTRADICTED
         event_type = "contradicted"
         event_detail = {"weight_after": seed.weight}
     elif internal_passed and evidence_passed and contradiction_free:
-        new_weight = min(1.0, seed.weight + self.validation_increment)
+        new_weight = min(1.0, seed.weight + manager.validation_increment)
         new_status = (
             type(seed.status).PROMOTED
-            if new_weight >= self.promotion_threshold
+            if new_weight >= manager.promotion_threshold
             else type(seed.status).ACTIVE
         )
-        self._set_authority(seed, weight=new_weight, status=new_status)
-        self._touch_seed(seed)
+        manager._set_authority(seed, weight=new_weight, status=new_status)
+        manager._touch_seed(seed)
         verdict = "promoted" if new_status.value == "PROMOTED" else "validated"
         decision = (
             GateDecision.PROMOTED
@@ -198,7 +208,7 @@ def _submit_legacy_signals(
         }
 
     _legacy_result(
-        self,
+        manager,
         seed=seed,
         status_before=status_before,
         weight_before=weight_before,
@@ -209,8 +219,8 @@ def _submit_legacy_signals(
         contradiction_applied=contradiction_applied,
         verdict=verdict,
     )
-    self._record_event(event_type, seed_id, **event_detail)
-    event = self._record_gate_event(
+    manager._record_event(event_type, seed_id, **event_detail)
+    event = manager._record_gate_event(
         seed,
         decision,
         signal_list,
@@ -220,12 +230,12 @@ def _submit_legacy_signals(
         contradiction_before=contradiction_before,
         reason=f"legacy compatibility verdict={verdict}",
     )
-    self._sync_seed(seed_id)
+    manager._sync_seed(seed_id)
     return event
 
 
-def _unified_submit_signals(
-    self: Any,
+def submit_signals(
+    manager: Any,
     seed_id: str,
     signals: Iterable[ValidationSignal],
     policy_id: str | None = None,
@@ -235,16 +245,16 @@ def _unified_submit_signals(
     signal_list = list(signals)
     selected_policy = policy_id or "exploratory"
     if selected_policy == LEGACY_POLICY_ID:
-        return _submit_legacy_signals(self, seed_id, signal_list)
+        return _submit_legacy_signals(manager, seed_id, signal_list)
 
-    seed = self._seeds[seed_id]
+    seed = manager._seeds[seed_id]
     policy = resolve_policy(selected_policy)
     status_before = seed.status.value
     weight_before = seed.weight
-    contradiction_before = self._contradiction_state(seed)
+    contradiction_before = manager._contradiction_state(seed)
 
     if seed.status.value == "EXPIRED":
-        return self._record_gate_event(
+        return manager._record_gate_event(
             seed,
             GateDecision.EXPIRED,
             signal_list,
@@ -266,7 +276,7 @@ def _unified_submit_signals(
 
     if proposal.verdict is ProposedVerdict.CONTRADICT:
         contradiction_signal = _opposing_contradiction(signal_list)
-        self._open_contradiction_record(
+        manager._open_contradiction_record(
             seed,
             reason=(contradiction_signal.reason if contradiction_signal else "")
             or "contradiction signal",
@@ -277,17 +287,17 @@ def _unified_submit_signals(
                 contradiction_signal.strength if contradiction_signal else 1.0
             ),
         )
-        self._set_authority(
+        manager._set_authority(
             seed,
-            weight=max(0.0, seed.weight - self.contradiction_penalty),
+            weight=max(0.0, seed.weight - manager.contradiction_penalty),
             contradiction_score=min(1.0, seed.contradiction_score + 0.25),
             status=type(seed.status).NEW,
         )
         seed.occurrence_count = 1
-        if self.contradiction_trace_penalty:
-            seed.trace = max(0.0, seed.trace - self.contradiction_trace_penalty)
+        if manager.contradiction_trace_penalty:
+            seed.trace = max(0.0, seed.trace - manager.contradiction_trace_penalty)
         seed.turns_dormant = 0
-        self._touch_seed(seed)
+        manager._touch_seed(seed)
         decision = GateDecision.CONTRADICTED
     elif (
         proposal.verdict is ProposedVerdict.PROMOTE_OR_VALIDATE
@@ -296,11 +306,11 @@ def _unified_submit_signals(
         new_weight = min(1.0, seed.weight + proposal.weight_delta)
         new_status = (
             type(seed.status).PROMOTED
-            if new_weight >= self.promotion_threshold
+            if new_weight >= manager.promotion_threshold
             else type(seed.status).ACTIVE
         )
         external_support = len(_verified_external(signal_list))
-        self._set_authority(
+        manager._set_authority(
             seed,
             weight=new_weight,
             status=new_status,
@@ -310,7 +320,7 @@ def _unified_submit_signals(
                 else None
             ),
         )
-        self._touch_seed(seed)
+        manager._touch_seed(seed)
         decision = (
             GateDecision.PROMOTED
             if new_status.value == "PROMOTED"
@@ -319,14 +329,14 @@ def _unified_submit_signals(
     else:
         decision = GateDecision.BLOCKED
 
-    self._log_validation_from_signals(
+    manager._log_validation_from_signals(
         seed,
         decision,
         signal_list,
         status_before=status_before,
         weight_before=weight_before,
     )
-    event = self._record_gate_event(
+    event = manager._record_gate_event(
         seed,
         decision,
         signal_list,
@@ -336,26 +346,26 @@ def _unified_submit_signals(
         contradiction_before=contradiction_before,
         reason=proposal.reason,
     )
-    self._sync_seed(seed_id)
+    manager._sync_seed(seed_id)
     return event
 
 
 def _compatibility_signals(
-    self: Any,
+    manager: Any,
     seed_id: str,
     *,
     external_evidence: bool,
     contradiction: bool,
     signals: Iterable[ValidationSignal] | None,
 ) -> list[ValidationSignal]:
-    seed = self._seeds[seed_id]
+    seed = manager._seeds[seed_id]
     collected = list(signals or ())
     if not any(signal.kind is SignalKind.RECURRENCE for signal in collected):
         collected.insert(
             0,
             recurrence_signal(
                 seed.occurrence_count,
-                threshold=self.config.min_occurrences_for_gate,
+                threshold=manager.config.min_occurrences_for_gate,
             ),
         )
     if external_evidence and not any(
@@ -386,19 +396,20 @@ def _compatibility_signals(
     return collected
 
 
-def _run_validation_gate_detailed(
-    self: Any,
+def run_validation_gate_detailed(
+    manager: Any,
     seed_id: str,
     external_evidence: bool = False,
     contradiction: bool = False,
     signals: Iterable[ValidationSignal] | None = None,
     policy_id: str | None = None,
 ):
-    before = len(self.validation_log)
-    event = self.submit_signals(
+    before = len(manager.validation_log)
+    event = submit_signals(
+        manager,
         seed_id,
         _compatibility_signals(
-            self,
+            manager,
             seed_id,
             external_evidence=external_evidence,
             contradiction=contradiction,
@@ -406,12 +417,12 @@ def _run_validation_gate_detailed(
         ),
         policy_id=policy_id or LEGACY_POLICY_ID,
     )
-    if len(self.validation_log) > before:
-        return self.validation_log[-1]
+    if len(manager.validation_log) > before:
+        return manager.validation_log[-1]
 
     from shadowseed.manager import ValidationGateResult
 
-    seed = self._seeds[seed_id]
+    seed = manager._seeds[seed_id]
     return ValidationGateResult(
         seed_id=seed_id,
         status_before=event.status_before,
@@ -430,15 +441,16 @@ def _run_validation_gate_detailed(
     )
 
 
-def _run_validation_gate(
-    self: Any,
+def run_validation_gate(
+    manager: Any,
     seed_id: str,
     external_evidence: bool = False,
     contradiction: bool = False,
     signals: Iterable[ValidationSignal] | None = None,
     policy_id: str | None = None,
 ) -> bool | None:
-    result = self.run_validation_gate_detailed(
+    result = run_validation_gate_detailed(
+        manager,
         seed_id,
         external_evidence=external_evidence,
         contradiction=contradiction,
@@ -452,12 +464,10 @@ def _run_validation_gate(
     return None
 
 
-def install_gate_runtime_adapter() -> None:
-    """Install one Gate engine and legacy input/output adapters."""
-
-    from shadowseed.manager import SSLManager
-
-    SSLManager.submit_signals = _unified_submit_signals
-    SSLManager.run_validation_gate_detailed = _run_validation_gate_detailed
-    SSLManager.run_validation_gate = _run_validation_gate
-    SSLManager._run_validation_gate_core = _run_validation_gate_detailed
+__all__ = [
+    "submit_signals",
+    "run_validation_gate",
+    "run_validation_gate_detailed",
+    "log_validation_from_signals",
+    "LEGACY_POLICY_ID",
+]

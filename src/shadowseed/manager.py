@@ -34,12 +34,14 @@ from shadowseed.gate.events import (
     GateEvent,
     new_event_id,
 )
-from shadowseed.gate.policies import AuthoritySnapshot, ProposedVerdict, resolve_policy
+# The single executable Validation Gate engine. The Gate methods on SSLManager
+# delegate to this module; there is no second decision path and nothing is
+# installed onto the class at import time.
+from shadowseed.gate import runtime_adapter as gate_engine
 from shadowseed.gate.signals import (
     SignalDirection,
     SignalKind,
     ValidationSignal,
-    recurrence_signal,
 )
 from shadowseed.seed_normalization import normalize_detection_candidates
 
@@ -908,98 +910,13 @@ class SSLManager:
         Recurrence signals contribute to promotion under the exploratory policy
         without ever incrementing ``evidence_count`` — external evidence and
         recurrence stay distinct.
+
+        The decision body lives in :mod:`shadowseed.gate.runtime_adapter`, the
+        single Gate engine; this method delegates to it explicitly so there is
+        exactly one executable implementation.
         """
 
-        seed = self._seeds[seed_id]
-        policy = resolve_policy(policy_id)
-        signal_list = list(signals)
-        status_before = seed.status.value
-        weight_before = seed.weight
-        contradiction_before = self._contradiction_state(seed)
-
-        if seed.status == SeedStatus.EXPIRED:
-            # Terminal: an expired seed cannot regain authority.
-            return self._record_gate_event(
-                seed, GateDecision.EXPIRED, signal_list,
-                policy_id=policy.policy_id, status_before=status_before,
-                weight_before=weight_before, contradiction_before=contradiction_before,
-                reason="expired seed is terminal",
-            )
-
-        snapshot = AuthoritySnapshot(
-            weight=seed.weight,
-            status=seed.status.value,
-            has_blocking_contradiction=contradiction_before.blocking,
-        )
-        proposal = policy.propose(signal_list, snapshot)
-
-        if proposal.verdict is ProposedVerdict.CONTRADICT:
-            contradiction_signal = next(
-                (s for s in signal_list if s.kind is SignalKind.CONTRADICTION), None
-            )
-            self._open_contradiction_record(
-                seed,
-                reason=(contradiction_signal.reason if contradiction_signal else "") or "contradiction signal",
-                source_ref=contradiction_signal.source_ref if contradiction_signal else None,
-                strength=contradiction_signal.strength if contradiction_signal else 1.0,
-            )
-            self._set_authority(
-                seed,
-                weight=max(0.0, seed.weight - self.contradiction_penalty),
-                contradiction_score=min(1.0, seed.contradiction_score + 0.25),
-                status=SeedStatus.NEW,
-            )
-            seed.occurrence_count = 1
-            if self.contradiction_trace_penalty:
-                seed.trace = max(0.0, seed.trace - self.contradiction_trace_penalty)
-            seed.turns_dormant = 0
-            self._touch_seed(seed)
-            decision = GateDecision.CONTRADICTED
-        elif proposal.verdict is ProposedVerdict.PROMOTE_OR_VALIDATE and proposal.satisfied:
-            new_weight = min(1.0, seed.weight + proposal.weight_delta)
-            new_status = (
-                SeedStatus.PROMOTED
-                if new_weight >= self.promotion_threshold
-                else SeedStatus.ACTIVE
-            )
-            external_support = sum(
-                1
-                for s in signal_list
-                if s.is_external_evidence and s.direction is SignalDirection.SUPPORT
-            )
-            self._set_authority(
-                seed,
-                weight=new_weight,
-                status=new_status,
-                evidence_count=(
-                    seed.evidence_count + external_support if external_support else None
-                ),
-            )
-            self._touch_seed(seed)
-            decision = (
-                GateDecision.PROMOTED
-                if new_status is SeedStatus.PROMOTED
-                else GateDecision.VALIDATED
-            )
-        else:
-            decision = GateDecision.BLOCKED
-
-        # Mirror the decision into validation_log so the existing point-of-use
-        # contract (which inspects validation_log for a logged promotion) stays
-        # consistent with the signal-native path. #14 links point-of-use
-        # decisions to gate_events directly.
-        self._log_validation_from_signals(
-            seed, decision, signal_list,
-            status_before=status_before, weight_before=weight_before,
-        )
-        event = self._record_gate_event(
-            seed, decision, signal_list,
-            policy_id=policy.policy_id, status_before=status_before,
-            weight_before=weight_before, contradiction_before=contradiction_before,
-            reason=proposal.reason,
-        )
-        self._sync_seed(seed_id)
-        return event
+        return gate_engine.submit_signals(self, seed_id, signals, policy_id)
 
     _DECISION_TO_VERDICT = {
         GateDecision.PROMOTED: "promoted",
@@ -1018,31 +935,21 @@ class SSLManager:
         status_before: str,
         weight_before: float,
     ) -> None:
-        has_recurrence_support = any(
-            s.kind is SignalKind.RECURRENCE and s.direction is SignalDirection.SUPPORT
-            for s in signals
-        )
-        has_external_support = any(
-            s.is_external_evidence and s.direction is SignalDirection.SUPPORT
-            for s in signals
-        )
-        result = ValidationGateResult(
-            seed_id=seed.id,
+        """Mirror a Gate decision into ``validation_log``.
+
+        Delegates to the Gate engine's verified-evidence logging: only
+        explicitly verified external support may be reported as passed/applied
+        evidence, so an unverified observation is never logged as evidence.
+        """
+
+        gate_engine.log_validation_from_signals(
+            self,
+            seed,
+            decision,
+            signals,
             status_before=status_before,
-            status_after=seed.status.value,
             weight_before=weight_before,
-            weight_after=seed.weight,
-            occurrence_count=seed.occurrence_count,
-            evidence_count=seed.evidence_count,
-            internal_recognition_passed=has_recurrence_support,
-            external_evidence_passed=has_external_support,
-            contradiction_free=decision is not GateDecision.CONTRADICTED,
-            external_evidence_applied=has_external_support,
-            contradiction_applied=decision is GateDecision.CONTRADICTED,
-            promoted=decision is GateDecision.PROMOTED,
-            verdict=self._DECISION_TO_VERDICT.get(decision, "blocked"),
         )
-        self.validation_log.append(result)
 
     def _sync_seed(self, seed_id: str) -> None:
         if self.vector_constellation is not None:
@@ -1318,169 +1225,6 @@ class SSLManager:
                     "expired", seed_id, reason="dormant_ttl", turns_dormant=seed.turns_dormant
                 )
 
-    def _validation_flags(self, seed: ShadowSeed, contradiction: bool) -> ValidationGateFlags:
-        return ValidationGateFlags(
-            internal_recognition_passed=(
-                seed.occurrence_count >= self.config.min_occurrences_for_gate
-                and seed.trace > self.config.min_trace_for_gate
-            ),
-            external_evidence_passed=seed.evidence_count >= self.config.min_evidence_for_gate,
-            contradiction_free=not contradiction,
-        )
-
-    def _build_validation_result(
-        self,
-        *,
-        seed_id: str,
-        seed: ShadowSeed,
-        status_before: str,
-        weight_before: float,
-        flags: ValidationGateFlags,
-        external_evidence: bool,
-        contradiction: bool,
-        promoted: bool,
-        verdict: str,
-    ) -> ValidationGateResult:
-        return ValidationGateResult(
-            seed_id=seed_id,
-            status_before=status_before,
-            status_after=seed.status.value,
-            weight_before=weight_before,
-            weight_after=seed.weight,
-            occurrence_count=seed.occurrence_count,
-            evidence_count=seed.evidence_count,
-            internal_recognition_passed=flags.internal_recognition_passed,
-            external_evidence_passed=flags.external_evidence_passed,
-            contradiction_free=flags.contradiction_free,
-            external_evidence_applied=external_evidence,
-            contradiction_applied=contradiction,
-            promoted=promoted,
-            verdict=verdict,
-        )
-
-    def _finalize_validation_result(
-        self,
-        result: ValidationGateResult,
-        *,
-        event_type: str | None = None,
-        event_detail: dict[str, Any] | None = None,
-    ) -> ValidationGateResult:
-        self.validation_log.append(result)
-        if event_type is not None:
-            self._record_and_sync(event_type, result.seed_id, **(event_detail or {}))
-        else:
-            self._sync_seed(result.seed_id)
-        return result
-
-    def _apply_contradiction(
-        self,
-        *,
-        seed_id: str,
-        seed: ShadowSeed,
-        status_before: str,
-        weight_before: float,
-        flags: ValidationGateFlags,
-        external_evidence: bool,
-    ) -> ValidationGateResult:
-        self._open_contradiction_record(
-            seed,
-            reason="validation gate contradiction",
-            source_ref=None,
-            strength=1.0,
-        )
-        self._set_authority(
-            seed,
-            weight=max(0.0, seed.weight - self.contradiction_penalty),
-            contradiction_score=min(1.0, seed.contradiction_score + 0.25),
-            status=SeedStatus.NEW,
-        )
-        seed.occurrence_count = 1
-        # Doctrine: falsified → weight 0, back to NEW. But also start the
-        # disappearance clock: lower trace so a degraded seed decays toward
-        # DORMANT/EXPIRED faster unless genuinely re-recognized (weight decreases and
-        # TTL continues until the seed disappears).
-        if self.contradiction_trace_penalty:
-            seed.trace = max(0.0, seed.trace - self.contradiction_trace_penalty)
-        seed.turns_dormant = 0
-        self._touch_seed(seed)
-        result = self._build_validation_result(
-            seed_id=seed_id,
-            seed=seed,
-            status_before=status_before,
-            weight_before=weight_before,
-            flags=flags,
-            external_evidence=external_evidence,
-            contradiction=True,
-            promoted=False,
-            verdict="contradicted",
-        )
-        return self._finalize_validation_result(
-            result,
-            event_type="contradicted",
-            event_detail={"weight_after": seed.weight},
-        )
-
-    def _apply_successful_validation(self, *, seed: ShadowSeed) -> tuple[bool, str]:
-        new_weight = min(1.0, seed.weight + self.validation_increment)
-        new_status = (
-            SeedStatus.PROMOTED
-            if new_weight >= self.promotion_threshold
-            else SeedStatus.ACTIVE
-        )
-        self._set_authority(seed, weight=new_weight, status=new_status)
-        self._touch_seed(seed)
-        promoted = seed.status == SeedStatus.PROMOTED
-        verdict = "promoted" if promoted else "validated"
-        return promoted, verdict
-
-    _VERDICT_TO_DECISION = {
-        "expired": GateDecision.EXPIRED,
-        "contradicted": GateDecision.CONTRADICTED,
-        "promoted": GateDecision.PROMOTED,
-        "validated": GateDecision.VALIDATED,
-        "blocked": GateDecision.BLOCKED,
-    }
-
-    def _signals_for_boolean_gate(
-        self,
-        seed: ShadowSeed,
-        external_evidence: bool,
-        contradiction: bool,
-        extra_signals: Iterable[ValidationSignal] | None,
-    ) -> list[ValidationSignal]:
-        """Represent a boolean-API Gate call as typed signals for the ledger.
-
-        Recurrence is always recorded as a recurrence signal from the occurrence
-        count — never as external evidence. External evidence is a separate,
-        verified SSOT-kind signal only when the caller actually passed one.
-        """
-
-        if extra_signals is not None:
-            return list(extra_signals)
-        signals: list[ValidationSignal] = [
-            recurrence_signal(seed.occurrence_count, threshold=self.config.min_occurrences_for_gate)
-        ]
-        if external_evidence:
-            signals.append(
-                ValidationSignal(
-                    kind=SignalKind.SSOT,
-                    direction=SignalDirection.SUPPORT,
-                    strength=1.0,
-                    verified=True,
-                    reason="legacy external_evidence=True",
-                )
-            )
-        if contradiction:
-            signals.append(
-                ValidationSignal(
-                    kind=SignalKind.CONTRADICTION,
-                    direction=SignalDirection.OPPOSE,
-                    strength=1.0,
-                    reason="legacy contradiction=True",
-                )
-            )
-        return signals
-
     def run_validation_gate_detailed(
         self,
         seed_id: str,
@@ -1489,125 +1233,45 @@ class SSLManager:
         signals: Iterable[ValidationSignal] | None = None,
         policy_id: str | None = None,
     ) -> ValidationGateResult:
-        """Boolean-compatible Validation Gate.
+        """Boolean-compatible Validation Gate (compatibility adapter).
 
         The ``external_evidence`` / ``contradiction`` booleans are retained for
-        backward compatibility; they are the "evidence-required" mechanics that
-        the existing suite depends on. Prefer :meth:`submit_signals` for new
-        code. Either way, one immutable ``GateEvent`` is recorded, and recurrence
-        is represented as recurrence — never relabeled as external evidence.
-        ``signals`` (when given) are recorded verbatim on the event.
+        backward compatibility; prefer :meth:`submit_signals` for new code. This
+        is an input/output adapter only: the arguments are translated into typed
+        signals, the single Gate engine decides under the
+        ``legacy_evidence_required`` policy, and the resulting event is
+        translated back into the legacy result shape. One call still records
+        exactly one ``GateEvent``, attributed to the policy that decided it, and
+        recurrence is represented as recurrence — never as external evidence.
         """
 
-        seed = self._seeds[seed_id]
-        weight_before = seed.weight
-        contradiction_before = self._contradiction_state(seed)
-        recorded_signals = self._signals_for_boolean_gate(
-            seed, external_evidence, contradiction, signals
+        return gate_engine.run_validation_gate_detailed(
+            self,
+            seed_id,
+            external_evidence=external_evidence,
+            contradiction=contradiction,
+            signals=signals,
+            policy_id=policy_id,
         )
-        status_before_event = seed.status.value
-        result = self._run_validation_gate_core(
-            seed_id, external_evidence=external_evidence, contradiction=contradiction
-        )
-        self._record_gate_event(
-            seed,
-            self._VERDICT_TO_DECISION.get(result.verdict, GateDecision.NO_CHANGE),
-            recorded_signals,
-            policy_id=policy_id or "legacy_boolean_gate",
-            status_before=status_before_event,
-            weight_before=weight_before,
-            contradiction_before=contradiction_before,
-            reason=f"verdict={result.verdict}",
-        )
-        return result
 
     def _run_validation_gate_core(
         self,
         seed_id: str,
         external_evidence: bool = False,
         contradiction: bool = False,
+        signals: Iterable[ValidationSignal] | None = None,
+        policy_id: str | None = None,
     ) -> ValidationGateResult:
-        seed = self._seeds[seed_id]
-        status_before = seed.status.value
-        weight_before = seed.weight
+        """Historical private entry point, kept as an alias of the public
+        adapter so no second decision path can exist behind it."""
 
-        # EXPIRED is terminal: a degraded/disappeared seed cannot be re-validated
-        # or re-promoted. No-op so it never climbs back from the dead.
-        if seed.status == SeedStatus.EXPIRED:
-            result = self._build_validation_result(
-                seed_id=seed_id,
-                seed=seed,
-                status_before=status_before,
-                weight_before=weight_before,
-                flags=ValidationGateFlags(False, False, not contradiction),
-                external_evidence=False,
-                contradiction=contradiction,
-                promoted=False,
-                verdict="expired",
-            )
-            return self._finalize_validation_result(result)
-
-        if external_evidence:
-            self._set_authority(seed, evidence_count=seed.evidence_count + 1)
-
-        flags = self._validation_flags(seed, contradiction)
-
-        if contradiction:
-            return self._apply_contradiction(
-                seed_id=seed_id,
-                seed=seed,
-                status_before=status_before,
-                weight_before=weight_before,
-                flags=flags,
-                external_evidence=external_evidence,
-            )
-
-        if (
-            flags.internal_recognition_passed
-            and flags.external_evidence_passed
-            and flags.contradiction_free
-        ):
-            promoted, verdict = self._apply_successful_validation(seed=seed)
-            result = self._build_validation_result(
-                seed_id=seed_id,
-                seed=seed,
-                status_before=status_before,
-                weight_before=weight_before,
-                flags=flags,
-                external_evidence=external_evidence,
-                contradiction=False,
-                promoted=promoted,
-                verdict=verdict,
-            )
-            return self._finalize_validation_result(
-                result,
-                event_type="validated",
-                event_detail={
-                    "promoted": promoted,
-                    "weight_after": seed.weight,
-                    "evidence_count": seed.evidence_count,
-                },
-            )
-
-        result = self._build_validation_result(
-            seed_id=seed_id,
-            seed=seed,
-            status_before=status_before,
-            weight_before=weight_before,
-            flags=flags,
+        return gate_engine.run_validation_gate_detailed(
+            self,
+            seed_id,
             external_evidence=external_evidence,
-            contradiction=False,
-            promoted=False,
-            verdict="blocked",
-        )
-        return self._finalize_validation_result(
-            result,
-            event_type="validation_blocked",
-            event_detail={
-                "internal_recognition_passed": flags.internal_recognition_passed,
-                "external_evidence_passed": flags.external_evidence_passed,
-                "contradiction_free": flags.contradiction_free,
-            },
+            contradiction=contradiction,
+            signals=signals,
+            policy_id=policy_id,
         )
 
     def run_validation_gate(
@@ -1618,18 +1282,16 @@ class SSLManager:
         signals: Iterable[ValidationSignal] | None = None,
         policy_id: str | None = None,
     ) -> bool | None:
-        result = self.run_validation_gate_detailed(
+        """Boolean verdict form of :meth:`run_validation_gate_detailed`."""
+
+        return gate_engine.run_validation_gate(
+            self,
             seed_id,
             external_evidence=external_evidence,
             contradiction=contradiction,
             signals=signals,
             policy_id=policy_id,
         )
-        if result.verdict == "contradicted":
-            return False
-        if result.verdict in {"validated", "promoted"}:
-            return True
-        return None
 
     def reactivate_by_text(self, text: str, threshold: float = 0.65) -> list[str]:
         """TrTL (Trigger-to-Live): scan new input for triggers of DORMANT seeds

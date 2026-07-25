@@ -123,6 +123,15 @@ Every authority decision is applied by the signal-native `submit_signals` engine
 and recorded as one `GateEvent`. Public callers may submit typed signals directly;
 the historical boolean methods are compatibility adapters into the same engine.
 
+That engine has exactly one executable body, in
+[`shadowseed.gate.runtime_adapter`](../../src/shadowseed/gate/runtime_adapter.py).
+The Gate methods on `SSLManager` (`submit_signals`, `run_validation_gate`,
+`run_validation_gate_detailed`, and the historical private
+`_run_validation_gate_core`) are thin methods that delegate to it explicitly, so
+a reader of `manager.py` can follow one call into the code that actually runs.
+Nothing is installed or replaced on the class at import time, and no second
+decision path exists behind the boolean API.
+
 Policy semantics are explicit:
 
 - `exploratory` permits qualifying recurrence or verified external support;

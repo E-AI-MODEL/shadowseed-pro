@@ -1,8 +1,9 @@
-"""Verified-evidence semantics for compatibility validation logs.
+"""Verified-evidence semantics for the derived validation log.
 
 Gate events retain every submitted signal for auditability. The derived legacy
 validation fields, however, may call external support "evidence" only when the
-signal was explicitly verified.
+signal was explicitly verified. ``SSLManager._log_validation_from_signals``
+delegates here; nothing is installed onto the class at import time.
 """
 
 from __future__ import annotations
@@ -13,8 +14,8 @@ from shadowseed.gate.events import GateDecision
 from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal
 
 
-def _verified_log_validation_from_signals(
-    self: Any,
+def log_validation_from_signals(
+    manager: Any,
     seed: Any,
     decision: GateDecision,
     signals: list[ValidationSignal],
@@ -49,14 +50,9 @@ def _verified_log_validation_from_signals(
         external_evidence_applied=has_verified_external_support,
         contradiction_applied=decision is GateDecision.CONTRADICTED,
         promoted=decision is GateDecision.PROMOTED,
-        verdict=self._DECISION_TO_VERDICT.get(decision, "blocked"),
+        verdict=manager._DECISION_TO_VERDICT.get(decision, "blocked"),
     )
-    self.validation_log.append(result)
+    manager.validation_log.append(result)
 
 
-def install_verified_gate_logging() -> None:
-    """Make derived validation logs count only verified external support."""
-
-    from shadowseed.manager import SSLManager
-
-    SSLManager._log_validation_from_signals = _verified_log_validation_from_signals
+__all__ = ["log_validation_from_signals"]

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import numpy as np
+import pytest
 
 from shadowseed.gate import (
     GateDecision,
@@ -230,3 +231,191 @@ def test_legacy_policy_blocks_while_a_contradiction_record_remains_open():
     assert second.contradiction_free is False
     assert manager.get_seed(seed_id).weight == 0.0
     assert manager._contradiction_state(manager.get_seed(seed_id)).blocking is True
+
+
+# --------------------------------------------------------------------------- #
+# P1: contradiction=True must synthesize an opposing contradiction regardless   #
+# of a non-opposing CONTRADICTION signal supplied by the caller.                #
+# --------------------------------------------------------------------------- #
+
+
+def _opposing(signals) -> list[ValidationSignal]:
+    return [
+        signal
+        for signal in signals
+        if signal.kind is SignalKind.CONTRADICTION
+        and signal.direction is SignalDirection.OPPOSE
+    ]
+
+
+@pytest.mark.parametrize(
+    "supplied, label",
+    [
+        pytest.param(
+            ValidationSignal(
+                kind=SignalKind.CONTRADICTION,
+                direction=SignalDirection.SUPPORT,
+                reason="non-opposing SUPPORT contradiction",
+            ),
+            "support",
+            id="direction_support",
+        ),
+        pytest.param(
+            ValidationSignal(
+                kind=SignalKind.CONTRADICTION,
+                direction=SignalDirection.NEUTRAL,
+                reason="non-opposing NEUTRAL contradiction",
+            ),
+            "neutral",
+            id="direction_neutral",
+        ),
+        pytest.param(
+            # ValidationSignal.direction defaults to SUPPORT, so a caller who
+            # omits it supplies a non-opposing contradiction by accident.
+            ValidationSignal(
+                kind=SignalKind.CONTRADICTION,
+                reason="contradiction signal with default direction",
+            ),
+            "default",
+            id="direction_default",
+        ),
+    ],
+)
+def test_non_opposing_contradiction_signal_does_not_suppress_synthesis(supplied, label):
+    """A supplied CONTRADICTION signal that does not oppose must not cancel the
+    opposing contradiction required by ``contradiction=True``."""
+
+    manager = _manager()
+    seed_id = _recurrent_seed(manager)
+
+    result = manager.run_validation_gate_detailed(
+        seed_id,
+        external_evidence=True,
+        contradiction=True,
+        signals=[supplied],
+    )
+
+    assert result.verdict == "contradicted", label
+    assert result.contradiction_applied is True
+    # The opposing contradiction was synthesized and recorded on the event...
+    recorded = _opposing(manager.gate_events[-1].signals)
+    assert len(recorded) == 1
+    # ...the caller's non-opposing signal is preserved for audit...
+    assert supplied in manager.gate_events[-1].signals
+    # ...and the contradiction actually took effect on authority.
+    assert manager.get_seed(seed_id).weight == 0.0
+    assert manager._contradiction_state(manager.get_seed(seed_id)).blocking is True
+
+
+def test_existing_opposing_contradiction_is_not_duplicated():
+    """When the caller already supplies an opposing contradiction, no second one
+    is synthesized."""
+
+    manager = _manager()
+    seed_id = _recurrent_seed(manager)
+    supplied = ValidationSignal(
+        kind=SignalKind.CONTRADICTION,
+        direction=SignalDirection.OPPOSE,
+        reason="caller supplied the opposing contradiction",
+    )
+
+    result = manager.run_validation_gate_detailed(
+        seed_id,
+        contradiction=True,
+        signals=[supplied],
+    )
+
+    assert result.verdict == "contradicted"
+    recorded = _opposing(manager.gate_events[-1].signals)
+    assert len(recorded) == 1
+    assert recorded[0] is supplied
+    # Exactly one contradiction record was opened, not two.
+    assert len(manager.contradictions_for(seed_id)) == 1
+
+
+def test_authority_returns_only_through_the_resolution_route():
+    """An open blocking contradiction cannot be walked around by recurrence or
+    accumulated evidence; authority returns only after a recorded resolution."""
+
+    manager = _manager()
+    seed_id = _recurrent_seed(manager)
+    assert manager.run_validation_gate_detailed(seed_id, contradiction=True).verdict == (
+        "contradicted"
+    )
+
+    # Rebuild recurrence, and accumulate enough verified evidence that the only
+    # remaining reason to refuse is the open contradiction itself. Both calls
+    # must still be blocked.
+    for _ in range(3):
+        manager.add_or_update_seed("A relevant boundary is missing.")
+    first = manager.run_validation_gate_detailed(seed_id, external_evidence=True)
+    second = manager.run_validation_gate_detailed(seed_id, external_evidence=True)
+    assert (first.verdict, second.verdict) == ("blocked", "blocked")
+    # Evidence and recurrence thresholds are satisfied by now, so this is the
+    # contradiction blocking — not a missing-evidence block.
+    assert second.internal_recognition_passed is True
+    assert second.external_evidence_passed is True
+    assert second.contradiction_free is False
+    assert manager.get_seed(seed_id).weight == 0.0
+
+    # The intended route: a recorded resolution basis, then Gate revalidation.
+    manager.resolve_contradiction(seed_id, basis="independent source confirmed the gap")
+    assert manager._contradiction_state(manager.get_seed(seed_id)).blocking is False
+
+    after = manager.run_validation_gate_detailed(seed_id, external_evidence=True)
+    assert after.verdict in {"validated", "promoted"}
+    assert manager.get_seed(seed_id).weight > 0.0
+
+
+# --------------------------------------------------------------------------- #
+# Structure: one visible Gate implementation, no import-time method swapping.   #
+# --------------------------------------------------------------------------- #
+
+
+GATE_METHODS = (
+    "submit_signals",
+    "run_validation_gate",
+    "run_validation_gate_detailed",
+    "_run_validation_gate_core",
+    "_log_validation_from_signals",
+)
+
+
+@pytest.mark.parametrize("method_name", GATE_METHODS)
+def test_gate_methods_are_defined_on_the_manager_not_installed(method_name):
+    """The Gate methods must be real ``SSLManager`` methods declared in
+    manager.py, not functions assigned onto the class at import time."""
+
+    import inspect
+    import pathlib
+
+    method = getattr(SSLManager, method_name)
+    assert method.__qualname__ == f"SSLManager.{method_name}", (
+        f"{method_name} is not declared on SSLManager (qualname "
+        f"{method.__qualname__!r}) — it looks installed rather than defined."
+    )
+    source_file = pathlib.Path(inspect.getsourcefile(method)).name
+    assert source_file == "manager.py", (
+        f"{method_name} resolves to {source_file}, not manager.py"
+    )
+
+
+def test_package_import_installs_nothing_onto_the_manager():
+    """Importing the package must not rewrite SSLManager, and no installer
+    helper may exist to do so."""
+
+    import importlib
+
+    import shadowseed
+    from shadowseed.gate import runtime_adapter, verified_logging
+
+    before = {name: getattr(SSLManager, name) for name in GATE_METHODS}
+    importlib.reload(shadowseed)
+    for name, original in before.items():
+        assert getattr(SSLManager, name) is original, (
+            f"importing shadowseed replaced SSLManager.{name}"
+        )
+
+    for module in (runtime_adapter, verified_logging):
+        installers = [n for n in dir(module) if n.startswith("install_")]
+        assert not installers, f"{module.__name__} still exposes {installers}"
