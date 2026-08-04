@@ -1,13 +1,8 @@
 """Shadow Seed Learning 4.6 package."""
 
-from .manager import (
-    CandidateType,
-    Constellation,
-    SeedOrigin,
-    SeedStatus,
-    ShadowSeed,
-    SSLManager,
-)
+from .manager import SSLManager
+from .models import CandidateType, Constellation, SeedOrigin, SeedStatus, ShadowSeed
+
 __all__ = [
     "SSLManager",
     "ShadowSeed",
