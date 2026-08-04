@@ -1,0 +1,53 @@
+name: Apply models compatibility fix
+
+on:
+  push:
+    branches:
+      - refactor/extract-manager-models
+    paths:
+      - .github/workflows/apply-models-compat-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply-fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: refactor/extract-manager-models
+          fetch-depth: 0
+
+      - name: Remove manager __all__ and add regression test
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          manager_path = Path("src/shadowseed/manager.py")
+          manager_text = manager_path.read_text()
+          marker = "\n\n__all__ = [\n"
+          if marker not in manager_text:
+              raise SystemExit("manager.__all__ block not found")
+          manager_text = manager_text.split(marker, 1)[0].rstrip() + "\n"
+          manager_path.write_text(manager_text)
+
+          tests_path = Path("tests/test_models_extraction.py")
+          tests_text = tests_path.read_text()
+          test_name = "test_manager_wildcard_import_surface_remains_backward_compatible"
+          if test_name not in tests_text:
+              tests_text = tests_text.rstrip() + '''\n\n\ndef test_manager_wildcard_import_surface_remains_backward_compatible():\n    namespace: dict[str, object] = {}\n    exec("from shadowseed.manager import *", namespace)\n\n    assert namespace["GateDecision"] is manager.GateDecision\n    assert namespace["ValidationSignal"] is manager.ValidationSignal\n    assert namespace["ContradictionRecord"] is manager.ContradictionRecord\n    assert namespace["DEFAULT_CONFIG"] is manager.DEFAULT_CONFIG\n''' + "\n"
+              tests_path.write_text(tests_text)
+
+          Path(".github/workflows/apply-models-compat-fix.yml").unlink()
+          PY
+
+      - name: Commit compatibility fix
+        shell: bash
+        run: |
+          git config user.name "EAI"
+          git config user.email "vis@emmauscollege.nl"
+          git add src/shadowseed/manager.py tests/test_models_extraction.py .github/workflows/apply-models-compat-fix.yml
+          git commit -m "Preserve manager wildcard import compatibility"
+          git push origin HEAD:refactor/extract-manager-models
