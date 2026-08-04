@@ -35,6 +35,8 @@ jobs:
               path.write_text("\n".join(line.rstrip() for line in lines) + "\n")
           Path(".github/workflows/cleanup-contradiction-extraction.yml").unlink()
           PY
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
           ruff check .
           pytest -q
       - name: Commit cleanup
