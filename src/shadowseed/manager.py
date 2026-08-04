@@ -252,13 +252,13 @@ class SSLManager:
         """Unresolved (blocking) contradiction records for a seed."""
 
         return self._contradictions.open_for(seed_id)
-    
+
 
     def contradictions_for(self, seed_id: str) -> list[ContradictionRecord]:
         """All contradiction records for a seed, in creation order."""
 
         return self._contradictions.contradictions_for(seed_id)
-    
+
 
     def is_blocking_contradiction(self, seed_id: str) -> bool:
         """Canonical blocking state for a seed (derived from records, with the
@@ -266,7 +266,7 @@ class SSLManager:
         should consult rather than reading contradiction_score directly."""
 
         return self._contradictions.state_for(self._seeds[seed_id]).blocking
-    
+
 
     def _contradiction_state(self, seed: ShadowSeed) -> ContradictionState:
         """Derive the blocking-contradiction snapshot.
@@ -277,7 +277,7 @@ class SSLManager:
         """
 
         return self._contradictions.state_for(seed)
-    
+
 
     def _open_contradiction_record(
         self,
@@ -294,7 +294,7 @@ class SSLManager:
             strength=strength,
             created_at=self._now_iso(),
         )
-    
+
 
     def resolve_contradiction(
         self,
@@ -358,7 +358,7 @@ class SSLManager:
             contradiction_before=contradiction_before,
             reason=f"resolved by {resolver}: {basis}",
         )
-    
+
 
     def migrate_legacy_contradictions(self) -> list[ContradictionRecord]:
         """Create an open record for any seed with a legacy scalar but no records.
@@ -371,7 +371,7 @@ class SSLManager:
             self._seeds.values(),
             created_at=self._now_iso,
         )
-    
+
 
     def _record_gate_event(
         self,
