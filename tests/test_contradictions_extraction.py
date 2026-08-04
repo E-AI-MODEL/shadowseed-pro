@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
+import shadowseed.contradictions as contradiction_module
 from shadowseed import manager as manager_module
 from shadowseed.contradictions import ContradictionDomain
 from shadowseed.gate.contradictions import ContradictionRecord, ContradictionStatus
@@ -17,6 +18,13 @@ def _embedding(_text: str) -> np.ndarray:
 
 def _seed(seed_id: str = "seed-1") -> ShadowSeed:
     return ShadowSeed(id=seed_id, text="a seed", embedding=_embedding("a seed"))
+
+
+def test_new_module_reexports_the_canonical_record_contract() -> None:
+    assert contradiction_module.ContradictionRecord is ContradictionRecord
+    assert contradiction_module.ContradictionStatus is ContradictionStatus
+    assert manager_module.ContradictionRecord is ContradictionRecord
+    assert manager_module.ContradictionStatus is ContradictionStatus
 
 
 def test_domain_roundtrip_preserves_payload_and_identifier_sequence() -> None:
