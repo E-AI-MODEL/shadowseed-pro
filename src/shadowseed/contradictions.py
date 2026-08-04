@@ -2,7 +2,7 @@
 
 The record contract itself remains in :mod:`shadowseed.gate.contradictions`.
 This module owns the mutable collection, identifier sequence, blocking-state
-derivation, formal resolution, migration, and persistence helpers.  The core
+derivation, formal resolution, migration, and persistence helpers. The core
 manager exposes compatibility facade methods and retains authority/Gate
 orchestration.
 """
@@ -123,47 +123,70 @@ class ContradictionDomain:
         superseded: bool = False,
         withdrawn: bool = False,
         resolved_at: Callable[[], str],
+        open_records: Iterable[ContradictionRecord] | None = None,
     ) -> list[ContradictionRecord]:
         """Formally close selected open records and return the changed records."""
 
-        open_records = self.open_for(seed_id)
+        selected = list(
+            self.open_for(seed_id) if open_records is None else open_records
+        )
         if contradiction_id is not None:
-            open_records = [
+            selected = [
                 record
-                for record in open_records
+                for record in selected
                 if record.contradiction_id == contradiction_id
             ]
-        if not open_records:
+        if not selected:
             raise ValueError(f"no open contradiction to resolve for seed '{seed_id}'")
-        for record in open_records:
+        for record in selected:
             record.resolve(
                 basis,
                 superseded=superseded,
                 withdrawn=withdrawn,
                 resolved_at=resolved_at(),
             )
-        return open_records
+        return selected
 
     def migrate_legacy(
         self,
         seeds: Iterable[ShadowSeed],
         *,
-        created_at: Callable[[], str],
+        created_at: Callable[[], str] | None = None,
+        records_for: Callable[[str], Sequence[ContradictionRecord]] | None = None,
+        open_record: Callable[..., ContradictionRecord] | None = None,
     ) -> list[ContradictionRecord]:
-        """Create records for positive legacy scalars that lack records."""
+        """Create records for positive legacy scalars that lack records.
 
+        Optional facade callbacks preserve historical manager override and
+        instrumentation points without duplicating the migration policy.
+        """
+
+        records_for = records_for or self.contradictions_for
         created: list[ContradictionRecord] = []
         for seed in seeds:
-            if seed.contradiction_score > 0.0 and not self.contradictions_for(seed.id):
+            if seed.contradiction_score <= 0.0 or records_for(seed.id):
+                continue
+            if open_record is not None:
                 created.append(
-                    self.open(
+                    open_record(
                         seed,
                         reason="migrated from legacy contradiction_score",
                         source_ref="legacy_migration",
                         strength=min(1.0, seed.contradiction_score),
-                        created_at=created_at(),
                     )
                 )
+                continue
+            if created_at is None:
+                raise TypeError("created_at is required without an open_record facade")
+            created.append(
+                self.open(
+                    seed,
+                    reason="migrated from legacy contradiction_score",
+                    source_ref="legacy_migration",
+                    strength=min(1.0, seed.contradiction_score),
+                    created_at=created_at(),
+                )
+            )
         return created
 
     def to_dicts(self) -> list[dict[str, Any]]:
