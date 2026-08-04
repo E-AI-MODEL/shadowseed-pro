@@ -18,194 +18,50 @@ jobs:
         with:
           ref: refactor/extract-contradictions
           fetch-depth: 0
-      - name: Preserve facade delegation
+      - name: Patch manager facade delegation
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          manager_path = Path("src/shadowseed/manager.py")
-          manager = manager_path.read_text()
-          manager = manager.replace(
-              "        return self._contradictions.state_for(self._seeds[seed_id]).blocking\n",
-              "        return self._contradiction_state(self._seeds[seed_id]).blocking\n",
-              1,
-          )
-          manager = manager.replace(
-              "            resolved_at=self._now_iso,\n"
-              "        )\n",
-              "            resolved_at=self._now_iso,\n"
-              "            open_records=self.open_contradictions(seed_id),\n"
-              "        )\n",
-              1,
-          )
-          manager = manager.replace(
-              "        return self._contradictions.migrate_legacy(\n"
-              "            self._seeds.values(),\n"
-              "            created_at=self._now_iso,\n"
-              "        )\n",
-              "        return self._contradictions.migrate_legacy(\n"
-              "            self._seeds.values(),\n"
-              "            records_for=self.contradictions_for,\n"
-              "            open_record=self._open_contradiction_record,\n"
-              "        )\n",
-              1,
-          )
-          manager = manager.replace(
-              '            "contradiction_records": self._contradictions.to_dicts(),\n',
-              '            "contradiction_records": [\n'
-              '                item.to_dict() for item in self.contradiction_records\n'
-              '            ],\n',
-              1,
-          )
-          manager_path.write_text(manager)
+          path = Path("src/shadowseed/manager.py")
+          source = path.read_text()
 
-          domain_path = Path("src/shadowseed/contradictions.py")
-          domain = domain_path.read_text()
-          domain = domain.replace(
-              "        resolved_at: Callable[[], str],\n"
-              "    ) -> list[ContradictionRecord]:\n",
-              "        resolved_at: Callable[[], str],\n"
-              "        open_records: Iterable[ContradictionRecord] | None = None,\n"
-              "    ) -> list[ContradictionRecord]:\n",
-              1,
+          replacements = (
+              (
+                  "        return self._contradictions.state_for(self._seeds[seed_id]).blocking\n",
+                  "        return self._contradiction_state(self._seeds[seed_id]).blocking\n",
+              ),
+              (
+                  "            resolved_at=self._now_iso,\n        )\n",
+                  "            resolved_at=self._now_iso,\n"
+                  "            open_records=self.open_contradictions(seed_id),\n"
+                  "        )\n",
+              ),
+              (
+                  "        return self._contradictions.migrate_legacy(\n"
+                  "            self._seeds.values(),\n"
+                  "            created_at=self._now_iso,\n"
+                  "        )\n",
+                  "        return self._contradictions.migrate_legacy(\n"
+                  "            self._seeds.values(),\n"
+                  "            records_for=self.contradictions_for,\n"
+                  "            open_record=self._open_contradiction_record,\n"
+                  "        )\n",
+              ),
+              (
+                  "            \"contradiction_records\": self._contradictions.to_dicts(),\n",
+                  "            \"contradiction_records\": [\n"
+                  "                item.to_dict() for item in self.contradiction_records\n"
+                  "            ],\n",
+              ),
           )
-          domain = domain.replace(
-              "        open_records = self.open_for(seed_id)\n"
-              "        if contradiction_id is not None:\n"
-              "            open_records = [\n"
-              "                record\n"
-              "                for record in open_records\n"
-              "                if record.contradiction_id == contradiction_id\n"
-              "            ]\n"
-              "        if not open_records:\n",
-              "        selected = list(\n"
-              "            self.open_for(seed_id) if open_records is None else open_records\n"
-              "        )\n"
-              "        if contradiction_id is not None:\n"
-              "            selected = [\n"
-              "                record\n"
-              "                for record in selected\n"
-              "                if record.contradiction_id == contradiction_id\n"
-              "            ]\n"
-              "        if not selected:\n",
-              1,
-          )
-          domain = domain.replace(
-              "        for record in open_records:\n"
-              "            record.resolve(\n",
-              "        for record in selected:\n"
-              "            record.resolve(\n",
-              1,
-          )
-          domain = domain.replace(
-              "        return open_records\n\n"
-              "    def migrate_legacy(\n",
-              "        return selected\n\n"
-              "    def migrate_legacy(\n",
-              1,
-          )
-          old_migration = '''    def migrate_legacy(
-              self,
-              seeds: Iterable[ShadowSeed],
-              *,
-              created_at: Callable[[], str],
-          ) -> list[ContradictionRecord]:
-              """Create records for positive legacy scalars that lack records."""
+          for old, new in replacements:
+              if old not in source:
+                  raise SystemExit(f"manager replacement not found: {old!r}")
+              source = source.replace(old, new, 1)
 
-              created: list[ContradictionRecord] = []
-              for seed in seeds:
-                  if seed.contradiction_score > 0.0 and not self.contradictions_for(seed.id):
-                      created.append(
-                          self.open(
-                              seed,
-                              reason="migrated from legacy contradiction_score",
-                              source_ref="legacy_migration",
-                              strength=min(1.0, seed.contradiction_score),
-                              created_at=created_at(),
-                          )
-                      )
-              return created
-'''
-          new_migration = '''    def migrate_legacy(
-              self,
-              seeds: Iterable[ShadowSeed],
-              *,
-              created_at: Callable[[], str] | None = None,
-              records_for: Callable[[str], Sequence[ContradictionRecord]] | None = None,
-              open_record: Callable[..., ContradictionRecord] | None = None,
-          ) -> list[ContradictionRecord]:
-              """Create records for positive legacy scalars that lack records.
-
-              Optional facade callbacks preserve historical manager override and
-              instrumentation points without duplicating the migration policy.
-              """
-
-              records_for = records_for or self.contradictions_for
-              created: list[ContradictionRecord] = []
-              for seed in seeds:
-                  if seed.contradiction_score <= 0.0 or records_for(seed.id):
-                      continue
-                  if open_record is not None:
-                      created.append(
-                          open_record(
-                              seed,
-                              reason="migrated from legacy contradiction_score",
-                              source_ref="legacy_migration",
-                              strength=min(1.0, seed.contradiction_score),
-                          )
-                      )
-                      continue
-                  if created_at is None:
-                      raise TypeError("created_at is required without an open_record facade")
-                  created.append(
-                      self.open(
-                          seed,
-                          reason="migrated from legacy contradiction_score",
-                          source_ref="legacy_migration",
-                          strength=min(1.0, seed.contradiction_score),
-                          created_at=created_at(),
-                      )
-                  )
-              return created
-'''
-          if old_migration not in domain:
-              raise SystemExit("legacy migration block not found")
-          domain = domain.replace(old_migration, new_migration, 1)
-          domain_path.write_text(domain)
-
-          tests_path = Path("tests/test_contradictions_extraction.py")
-          tests = tests_path.read_text()
-          tests = tests.replace(
-              "from shadowseed.gate.contradictions import ContradictionRecord, ContradictionStatus\n",
-              "from shadowseed.gate.contradictions import ContradictionRecord, ContradictionStatus\n"
-              "from shadowseed.gate.events import ContradictionState\n",
-              1,
-          )
-          marker = "\ndef test_domain_roundtrip_preserves_payload_and_identifier_sequence() -> None:\n"
-          regression = '''
-
-def test_manager_blocking_query_preserves_the_state_facade() -> None:
-    manager = SSLManager(embedding_fn=_embedding)
-    seed_id = manager.add_or_update_seed("a seed")
-    manager._open_contradiction_record(
-        manager.seeds[seed_id],
-        reason="counterexample",
-        source_ref=None,
-        strength=1.0,
-    )
-    manager._contradiction_state = lambda _seed: ContradictionState(
-        blocking=False,
-        open_count=0,
-        score=0.0,
-    )
-
-    assert manager.is_blocking_contradiction(seed_id) is False
-'''
-          if regression.strip() not in tests:
-              tests = tests.replace(marker, regression + marker, 1)
-          tests_path.write_text(tests)
-
+          path.write_text(source)
           Path(".github/workflows/preserve-contradiction-facade.yml").unlink()
           PY
           python -m pip install --upgrade pip build
@@ -213,15 +69,11 @@ def test_manager_blocking_query_preserves_the_state_facade() -> None:
           ruff check .
           pytest -q
           python -m build
-      - name: Commit compatibility adjustment
+      - name: Commit facade preservation
         shell: bash
         run: |
           git config user.name "EAI"
           git config user.email "vis@emmauscollege.nl"
-          git add \
-            src/shadowseed/contradictions.py \
-            src/shadowseed/manager.py \
-            tests/test_contradictions_extraction.py \
-            .github/workflows/preserve-contradiction-facade.yml
+          git add src/shadowseed/manager.py .github/workflows/preserve-contradiction-facade.yml
           git commit -m "Preserve contradiction facade call paths"
           git push origin HEAD:refactor/extract-contradictions
