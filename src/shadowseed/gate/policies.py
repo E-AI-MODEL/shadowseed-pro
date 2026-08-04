@@ -30,6 +30,12 @@ class AuthoritySnapshot:
     weight: float = 0.0
     status: str = "NEW"
     has_blocking_contradiction: bool = False
+    # Accumulated seed facts a policy may reason about. They carry no thresholds
+    # of their own: a policy owns its thresholds and applies them to these facts,
+    # so the policy stays the single place where a verdict is decided.
+    evidence_count: int = 0
+    occurrence_count: int = 0
+    trace: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -91,11 +97,14 @@ def _contradiction_proposal(
             ProposedVerdict.CONTRADICT,
             reason="contradiction signal present",
         )
-    has_resolution = any(
-        signal.kind is SignalKind.CONTRADICTION_RESOLUTION
-        for signal in signals
-    )
-    if authority.has_blocking_contradiction and not has_resolution:
+    # A blocking contradiction is lifted only by the authority snapshot, never
+    # by a signal offered in this call. Resolution is a separate, deliberate
+    # action (``SSLManager.resolve_contradiction``) that requires a recorded
+    # basis, closes the records, and produces its own Gate event; once it has
+    # run, ``has_blocking_contradiction`` is already False here. Accepting a
+    # bare CONTRADICTION_RESOLUTION signal instead would let a caller restore
+    # weight while the records are still open.
+    if authority.has_blocking_contradiction:
         return GateDecisionProposal(
             policy_id,
             ProposedVerdict.BLOCK,
@@ -191,14 +200,38 @@ class EvidenceBackedPolicy:
 
 @dataclass(frozen=True)
 class LegacyEvidenceRequiredPolicy:
-    """Compatibility policy requiring recurrence and verified evidence.
+    """Compatibility policy reproducing the historical boolean Gate thresholds.
 
-    It preserves the former boolean Gate behavior while using the same typed
-    signal engine as every current policy.
+    This is the *only* implementation of the legacy semantics: internal
+    recognition (recurrence above the occurrence threshold with live trace) plus
+    accumulated verified evidence, with no unresolved contradiction. The
+    compatibility adapter resolves this policy and asks it for the proposal, so
+    an event attributed to ``legacy_evidence_required`` really was decided here.
+
+    The thresholds are fields rather than constants because they are
+    manager-configurable; the adapter rebuilds this policy from the manager's
+    config for each call via :func:`dataclasses.replace`, which keeps the class
+    (and therefore the decision logic) the single source.
     """
 
     policy_id: str = "legacy_evidence_required"
     weight_increment: float = 0.2
+    min_occurrences: int = 3
+    min_trace: float = 0.5
+    min_evidence: int = 2
+
+    def internal_recognition(self, authority: AuthoritySnapshot) -> bool:
+        """Historical 'internal recognition' rule: enough recurrence, still alive."""
+
+        return (
+            authority.occurrence_count >= self.min_occurrences
+            and authority.trace > self.min_trace
+        )
+
+    def evidence_satisfied(self, authority: AuthoritySnapshot) -> bool:
+        """Historical accumulated-evidence rule (verified evidence only)."""
+
+        return authority.evidence_count >= self.min_evidence
 
     def propose(
         self,
@@ -209,12 +242,9 @@ class LegacyEvidenceRequiredPolicy:
         if contradiction is not None:
             return contradiction
 
-        support = _supporting(signals)
-        recurrent = any(signal.kind is SignalKind.RECURRENCE for signal in support)
-        verified_external = any(
-            signal.is_external_evidence and signal.verified for signal in support
-        )
-        if recurrent and verified_external:
+        recognized = self.internal_recognition(authority)
+        evidenced = self.evidence_satisfied(authority)
+        if recognized and evidenced:
             return GateDecisionProposal(
                 self.policy_id,
                 ProposedVerdict.PROMOTE_OR_VALIDATE,
@@ -224,10 +254,10 @@ class LegacyEvidenceRequiredPolicy:
             )
 
         missing: list[str] = []
-        if not recurrent:
-            missing.append("recurrence")
-        if not verified_external:
-            missing.append("verified_external_evidence")
+        if not recognized:
+            missing.append("internal_recognition")
+        if not evidenced:
+            missing.append("accumulated_verified_evidence")
         return GateDecisionProposal(
             self.policy_id,
             ProposedVerdict.BLOCK,

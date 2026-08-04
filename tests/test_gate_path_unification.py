@@ -419,3 +419,121 @@ def test_package_import_installs_nothing_onto_the_manager():
     for module in (runtime_adapter, verified_logging):
         installers = [n for n in dir(module) if n.startswith("install_")]
         assert not installers, f"{module.__name__} still exposes {installers}"
+
+
+# --------------------------------------------------------------------------- #
+# Adversarial review findings (2026-08-04).                                     #
+# --------------------------------------------------------------------------- #
+
+
+def test_resolution_signal_alone_cannot_lift_an_open_contradiction():
+    """A CONTRADICTION_RESOLUTION signal is not a resolution. Only
+    ``resolve_contradiction`` closes records; until then the Gate blocks even
+    with recurrence and verified evidence present."""
+
+    manager = _manager()
+    seed_id = _recurrent_seed(manager)
+    manager.run_validation_gate_detailed(seed_id, contradiction=True)
+    assert manager._contradiction_state(manager.get_seed(seed_id)).blocking is True
+
+    event = manager.submit_signals(
+        seed_id,
+        [
+            recurrence_signal(5, threshold=2),
+            ValidationSignal(kind=SignalKind.CONTRADICTION_RESOLUTION, verified=True),
+            ValidationSignal(kind=SignalKind.SSOT, verified=True),
+        ],
+        policy_id="exploratory",
+    )
+
+    assert event.decision is GateDecision.BLOCKED
+    assert manager.get_seed(seed_id).weight == 0.0
+    # The record is untouched: a signal never closes it.
+    assert manager._contradiction_state(manager.get_seed(seed_id)).blocking is True
+    assert len(manager.open_contradictions(seed_id)) == 1
+
+
+def test_blocked_by_open_contradiction_is_not_logged_as_contradiction_free():
+    """A generic-policy call blocked by an open record returns BLOCKED, not
+    CONTRADICTED — the derived log must still report contradiction_free False."""
+
+    manager = _manager()
+    seed_id = _recurrent_seed(manager)
+    manager.run_validation_gate_detailed(seed_id, contradiction=True)
+
+    manager.submit_signals(
+        seed_id,
+        [recurrence_signal(5, threshold=2)],
+        policy_id="exploratory",
+    )
+
+    result = manager.validation_log[-1]
+    assert result.verdict == "blocked"
+    assert result.contradiction_free is False
+
+
+def test_legacy_verdict_is_produced_by_the_resolved_policy_object():
+    """The event's policy_id must name the object that actually decided: the
+    adapter's verdict has to follow LegacyEvidenceRequiredPolicy.propose()."""
+
+    from dataclasses import replace as _replace
+
+    from shadowseed.gate.policies import AuthoritySnapshot, ProposedVerdict, resolve_policy
+
+    manager = _manager()
+    seed_id = _recurrent_seed(manager)
+    manager.run_validation_gate_detailed(seed_id, external_evidence=True)
+    manager.run_validation_gate_detailed(seed_id, external_evidence=True)
+
+    seed = manager.get_seed(seed_id)
+    policy = _replace(
+        resolve_policy("legacy_evidence_required"),
+        weight_increment=manager.validation_increment,
+        min_occurrences=manager.config.min_occurrences_for_gate,
+        min_trace=manager.config.min_trace_for_gate,
+        min_evidence=manager.config.min_evidence_for_gate,
+    )
+    # Re-deciding the final state with the resolved policy reproduces the Gate's
+    # own verdict, so the recorded attribution is truthful.
+    proposal = policy.propose(
+        list(manager.gate_events[-1].signals),
+        AuthoritySnapshot(
+            weight=manager.gate_events[-1].weight_before,
+            status=manager.gate_events[-1].status_before,
+            has_blocking_contradiction=False,
+            evidence_count=seed.evidence_count,
+            occurrence_count=seed.occurrence_count,
+            trace=seed.trace,
+        ),
+    )
+    assert proposal.policy_id == manager.gate_events[-1].policy_id
+    assert proposal.verdict is ProposedVerdict.PROMOTE_OR_VALIDATE
+    assert proposal.weight_delta == manager.validation_increment
+
+
+@pytest.mark.parametrize(
+    "direction",
+    [SignalDirection.NEUTRAL, SignalDirection.OPPOSE],
+    ids=["neutral", "oppose"],
+)
+def test_external_evidence_boolean_survives_a_non_supporting_verified_signal(direction):
+    """A verified but non-supporting external signal must not cancel the
+    synthesized support that external_evidence=True asks for."""
+
+    manager = _manager()
+    seed_id = _recurrent_seed(manager)
+    supplied = ValidationSignal(
+        kind=SignalKind.SSOT,
+        direction=direction,
+        verified=True,
+        reason="verified but not supporting",
+    )
+
+    manager.run_validation_gate_detailed(
+        seed_id, external_evidence=True, signals=[supplied]
+    )
+    manager.run_validation_gate_detailed(seed_id, external_evidence=True)
+
+    # The boolean still had effect: evidence accumulated and the seed validated.
+    assert manager.get_seed(seed_id).evidence_count >= 2
+    assert manager.get_seed(seed_id).weight > 0.0

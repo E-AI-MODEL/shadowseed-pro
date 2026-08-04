@@ -46,7 +46,11 @@ def log_validation_from_signals(
         evidence_count=seed.evidence_count,
         internal_recognition_passed=has_recurrence_support,
         external_evidence_passed=has_verified_external_support,
-        contradiction_free=decision is not GateDecision.CONTRADICTED,
+        # Derived from the seed's actual contradiction state, not from the
+        # decision: a call blocked by an already-open contradiction returns
+        # BLOCKED (not CONTRADICTED), so keying off the decision would log
+        # contradiction_free=True while the record is still open.
+        contradiction_free=not manager._contradiction_state(seed).blocking,
         external_evidence_applied=has_verified_external_support,
         contradiction_applied=decision is GateDecision.CONTRADICTED,
         promoted=decision is GateDecision.PROMOTED,

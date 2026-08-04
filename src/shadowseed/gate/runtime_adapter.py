@@ -16,6 +16,7 @@ decided it.
 from __future__ import annotations
 
 from collections.abc import Iterable
+from dataclasses import replace
 from typing import Any
 
 from shadowseed.gate.events import GateDecision, GateEvent
@@ -145,11 +146,31 @@ def _submit_legacy_signals(
             evidence_count=seed.evidence_count + len(external_signals),
         )
 
-    internal_passed = (
-        seed.occurrence_count >= manager.config.min_occurrences_for_gate
-        and seed.trace > manager.config.min_trace_for_gate
+    # The legacy verdict is decided by the registered legacy policy itself,
+    # rebuilt from this manager's configured thresholds. Resolving and calling
+    # the policy here is what makes the recorded policy_id truthful: there is no
+    # second decision rule living in this adapter.
+    policy = replace(
+        resolve_policy(LEGACY_POLICY_ID),
+        weight_increment=manager.validation_increment,
+        min_occurrences=manager.config.min_occurrences_for_gate,
+        min_trace=manager.config.min_trace_for_gate,
+        min_evidence=manager.config.min_evidence_for_gate,
     )
-    evidence_passed = seed.evidence_count >= manager.config.min_evidence_for_gate
+    snapshot = AuthoritySnapshot(
+        weight=seed.weight,
+        status=seed.status.value,
+        has_blocking_contradiction=contradiction_before.blocking,
+        evidence_count=seed.evidence_count,
+        occurrence_count=seed.occurrence_count,
+        trace=seed.trace,
+    )
+    proposal = policy.propose(signal_list, snapshot)
+
+    # The legacy result shape reports the individual gate conditions, so read
+    # them back from the same policy that just decided.
+    internal_passed = policy.internal_recognition(snapshot)
+    evidence_passed = policy.evidence_satisfied(snapshot)
     contradiction_free = (
         contradiction_signal is None and not contradiction_before.blocking
     )
@@ -176,8 +197,11 @@ def _submit_legacy_signals(
         decision = GateDecision.CONTRADICTED
         event_type = "contradicted"
         event_detail = {"weight_after": seed.weight}
-    elif internal_passed and evidence_passed and contradiction_free:
-        new_weight = min(1.0, seed.weight + manager.validation_increment)
+    elif (
+        proposal.verdict is ProposedVerdict.PROMOTE_OR_VALIDATE
+        and proposal.satisfied
+    ):
+        new_weight = min(1.0, seed.weight + proposal.weight_delta)
         new_status = (
             type(seed.status).PROMOTED
             if new_weight >= manager.promotion_threshold
@@ -368,8 +392,16 @@ def _compatibility_signals(
                 threshold=manager.config.min_occurrences_for_gate,
             ),
         )
+    # Suppress synthesis only when a verified external signal that actually
+    # *supports* is already present. Without the direction check a verified but
+    # NEUTRAL/OPPOSE signal would cancel the synthesized support while
+    # _verified_external() (which requires SUPPORT) still refuses to count it,
+    # silently turning external_evidence=True into a no-op.
     if external_evidence and not any(
-        signal.is_external_evidence and signal.verified for signal in collected
+        signal.is_external_evidence
+        and signal.direction is SignalDirection.SUPPORT
+        and signal.verified
+        for signal in collected
     ):
         collected.append(
             ValidationSignal(
