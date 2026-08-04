@@ -265,7 +265,7 @@ class SSLManager:
         legacy scalar as fallback). This is the value point-of-use decisions
         should consult rather than reading contradiction_score directly."""
 
-        return self._contradictions.state_for(self._seeds[seed_id]).blocking
+        return self._contradiction_state(self._seeds[seed_id]).blocking
 
 
     def _contradiction_state(self, seed: ShadowSeed) -> ContradictionState:
@@ -335,6 +335,7 @@ class SSLManager:
             superseded=superseded,
             withdrawn=withdrawn,
             resolved_at=self._now_iso,
+            open_records=self.open_contradictions(seed_id),
         )
         # If nothing blocking remains, clear the scalar so the point-of-use
         # contract and the policies stop treating the seed as contradicted.
@@ -369,7 +370,8 @@ class SSLManager:
 
         return self._contradictions.migrate_legacy(
             self._seeds.values(),
-            created_at=self._now_iso,
+            records_for=self.contradictions_for,
+            open_record=self._open_contradiction_record,
         )
 
 
@@ -1138,7 +1140,9 @@ class SSLManager:
             "event_log": [item.to_dict() for item in self.event_log],
             "feedback_log": [item.to_dict() for item in self.feedback_log],
             "gate_events": [item.to_dict() for item in self.gate_events],
-            "contradiction_records": self._contradictions.to_dicts(),
+            "contradiction_records": [
+                item.to_dict() for item in self.contradiction_records
+            ],
             "vector_constellation": (
                 self.vector_constellation.to_dict()
                 if self.vector_constellation is not None
