@@ -1,21 +1,7 @@
-"""Named Gate policies.
+"""Named Validation Gate policies.
 
-A policy reads the typed signals offered for a seed plus a small snapshot of the
-seed's current authority state and *proposes* a decision. Policies never mutate
-anything; the Gate applies (or rejects) the proposal (ADR-001, "Typed signals
-and policy profiles"; issue #10).
-
-Amendment (accepted second opinion, §1/§7): the ADR listed five illustrative
-profiles. This module ships the two whose semantics are concrete today —
-``exploratory`` and ``evidence_backed`` — plus an explicit, named default. The
-remaining profiles (``research``, ``creative``, ``high_impact``) are documented
-as examples in ``EXAMPLE_POLICY_IDS`` and are intentionally not implemented
-until their required signal combinations are justified. The default policy is
-never implicit: :func:`default_policy` and :data:`DEFAULT_POLICY_ID` name it
-explicitly and :func:`resolve_policy` raises on an unknown id.
-
-Thresholds here are explicit, documented constructor arguments with provisional
-defaults, not magic numbers scattered through the code.
+Policies inspect typed signals and propose authority changes. They never mutate
+seed state; the Gate applies every transition and records the resulting event.
 """
 
 from __future__ import annotations
@@ -39,20 +25,22 @@ class ProposedVerdict(str, Enum):
 
 @dataclass(frozen=True)
 class AuthoritySnapshot:
-    """Read-only view of the authority state a policy is allowed to consider.
-
-    Deliberately minimal: a policy sees enough to reason about the transition
-    but cannot reach in and change anything.
-    """
+    """Read-only authority state available to a policy."""
 
     weight: float = 0.0
     status: str = "NEW"
     has_blocking_contradiction: bool = False
+    # Accumulated seed facts a policy may reason about. They carry no thresholds
+    # of their own: a policy owns its thresholds and applies them to these facts,
+    # so the policy stays the single place where a verdict is decided.
+    evidence_count: int = 0
+    occurrence_count: int = 0
+    trace: float = 0.0
 
 
 @dataclass(frozen=True)
 class GateDecisionProposal:
-    """A policy's proposal. Advisory only; the Gate decides whether to apply it."""
+    """A policy proposal. The Gate remains the only transition writer."""
 
     policy_id: str
     verdict: ProposedVerdict
@@ -74,7 +62,21 @@ class GateDecisionProposal:
 
 @runtime_checkable
 class GatePolicy(Protocol):
-    """Interface every Gate policy implements."""
+    """Interface implemented by every concrete Gate policy.
+
+    A policy receives both inputs and may weigh either or both:
+
+    - ``signals`` — the typed observations offered in *this* call;
+    - ``authority`` — the seed's accumulated authority facts (weight, status,
+      blocking contradiction, evidence count, occurrence count, trace).
+
+    Policies legitimately differ in which of the two they read.
+    ``exploratory`` and ``evidence_backed`` decide from the offered signals,
+    while ``legacy_evidence_required`` reproduces historical thresholds and
+    therefore decides from the accumulated facts. Both are valid: every policy
+    gets the same two arguments, and none of them mutates anything — the Gate
+    applies the proposal.
+    """
 
     policy_id: str
 
@@ -87,36 +89,52 @@ class GatePolicy(Protocol):
 
 
 def _supporting(signals: Sequence[ValidationSignal]) -> list[ValidationSignal]:
-    return [s for s in signals if s.direction == SignalDirection.SUPPORT]
+    return [signal for signal in signals if signal.direction is SignalDirection.SUPPORT]
 
 
-def _has_open_contradiction(
+def _fresh_contradiction(signals: Sequence[ValidationSignal]) -> bool:
+    return any(
+        signal.kind is SignalKind.CONTRADICTION
+        and signal.direction is SignalDirection.OPPOSE
+        for signal in signals
+    )
+
+
+def _contradiction_proposal(
+    policy_id: str,
     signals: Sequence[ValidationSignal],
     authority: AuthoritySnapshot,
-) -> bool:
-    """A contradiction is in force if the seed already carries a blocking one and
-    no resolution signal is offered, or if a fresh contradiction signal arrives."""
-
-    fresh_contradiction = any(
-        s.kind == SignalKind.CONTRADICTION and s.direction == SignalDirection.OPPOSE
-        for s in signals
-    )
-    resolution = any(s.kind == SignalKind.CONTRADICTION_RESOLUTION for s in signals)
-    if fresh_contradiction:
-        return True
-    if authority.has_blocking_contradiction and not resolution:
-        return True
-    return False
+) -> GateDecisionProposal | None:
+    if _fresh_contradiction(signals):
+        return GateDecisionProposal(
+            policy_id,
+            ProposedVerdict.CONTRADICT,
+            reason="contradiction signal present",
+        )
+    # A blocking contradiction is lifted only by the authority snapshot, never
+    # by a signal offered in this call. Resolution is a separate, deliberate
+    # action (``SSLManager.resolve_contradiction``) that requires a recorded
+    # basis, closes the records, and produces its own Gate event; once it has
+    # run, ``has_blocking_contradiction`` is already False here. Accepting a
+    # bare CONTRADICTION_RESOLUTION signal instead would let a caller restore
+    # weight while the records are still open.
+    if authority.has_blocking_contradiction:
+        return GateDecisionProposal(
+            policy_id,
+            ProposedVerdict.BLOCK,
+            reason="unresolved blocking contradiction",
+            missing=("contradiction_resolution",),
+        )
+    return None
 
 
 @dataclass(frozen=True)
 class ExploratoryPolicy:
-    """Permissive policy: recurrence alone may promote, if uncontradicted.
+    """Permissive policy: recurrence may raise authority.
 
-    This is what keeps SSL exploratory. Strong recurrence (or any external
-    support) with no unresolved contradiction proposes a positive authority
-    change. Recurrence is used *as recurrence* — the proposal reason records
-    that explicitly and never calls it external evidence.
+    External support remains visible to the Gate but qualifies only when it is
+    explicitly verified. This keeps recurrence exploratory without treating an
+    unverified retrieval, SSOT proposal, or feedback signal as evidence.
     """
 
     policy_id: str = "exploratory"
@@ -128,45 +146,39 @@ class ExploratoryPolicy:
         signals: Sequence[ValidationSignal],
         authority: AuthoritySnapshot,
     ) -> GateDecisionProposal:
-        if any(s.kind == SignalKind.CONTRADICTION and s.direction == SignalDirection.OPPOSE for s in signals):
-            return GateDecisionProposal(
-                self.policy_id, ProposedVerdict.CONTRADICT,
-                reason="contradiction signal present",
-            )
-        if _has_open_contradiction(signals, authority):
-            return GateDecisionProposal(
-                self.policy_id, ProposedVerdict.BLOCK,
-                reason="unresolved blocking contradiction",
-                missing=("contradiction_resolution",),
-            )
+        contradiction = _contradiction_proposal(self.policy_id, signals, authority)
+        if contradiction is not None:
+            return contradiction
+
         support = _supporting(signals)
-        recurrence = [s for s in support if s.kind == SignalKind.RECURRENCE]
-        strong_recurrence = [s for s in recurrence if s.strength >= self.min_recurrence_strength]
-        if strong_recurrence or any(s.is_external_evidence for s in support):
-            basis = "recurrence" if strong_recurrence else "external_support"
+        recurrent = any(
+            signal.kind is SignalKind.RECURRENCE
+            and signal.strength >= self.min_recurrence_strength
+            for signal in support
+        )
+        verified_external = any(
+            signal.is_external_evidence and signal.verified for signal in support
+        )
+        if recurrent or verified_external:
+            basis = "recurrence" if recurrent else "verified_external_support"
             return GateDecisionProposal(
-                self.policy_id, ProposedVerdict.PROMOTE_OR_VALIDATE,
+                self.policy_id,
+                ProposedVerdict.PROMOTE_OR_VALIDATE,
                 weight_delta=self.weight_increment,
                 reason=f"exploratory support via {basis}",
                 satisfied=True,
             )
         return GateDecisionProposal(
-            self.policy_id, ProposedVerdict.BLOCK,
-            reason="no qualifying support signal",
-            missing=("recurrence_or_external_support",),
+            self.policy_id,
+            ProposedVerdict.BLOCK,
+            reason="no qualifying recurrence or verified external support",
+            missing=("recurrence_or_verified_external_support",),
         )
 
 
 @dataclass(frozen=True)
 class EvidenceBackedPolicy:
-    """Strict policy: requires verified external evidence; recurrence is not enough.
-
-    A verified external-evidence signal (SSOT, human feedback, or retrieval,
-    with ``verified=True``) and no unresolved contradiction proposes a positive
-    change. Recurrence may accompany the evidence but can never satisfy the
-    requirement on its own — the guarantee that recurrence is not double-counted
-    as external evidence.
-    """
+    """Strict policy: verified external evidence is required."""
 
     policy_id: str = "evidence_backed"
     weight_increment: float = 0.2
@@ -176,83 +188,136 @@ class EvidenceBackedPolicy:
         signals: Sequence[ValidationSignal],
         authority: AuthoritySnapshot,
     ) -> GateDecisionProposal:
-        if any(s.kind == SignalKind.CONTRADICTION and s.direction == SignalDirection.OPPOSE for s in signals):
-            return GateDecisionProposal(
-                self.policy_id, ProposedVerdict.CONTRADICT,
-                reason="contradiction signal present",
-            )
-        if _has_open_contradiction(signals, authority):
-            return GateDecisionProposal(
-                self.policy_id, ProposedVerdict.BLOCK,
-                reason="unresolved blocking contradiction",
-                missing=("contradiction_resolution",),
-            )
-        support = _supporting(signals)
-        verified_external = [
-            s for s in support if s.is_external_evidence and s.verified
-        ]
+        contradiction = _contradiction_proposal(self.policy_id, signals, authority)
+        if contradiction is not None:
+            return contradiction
+
+        verified_external = any(
+            signal.is_external_evidence and signal.verified
+            for signal in _supporting(signals)
+        )
         if verified_external:
             return GateDecisionProposal(
-                self.policy_id, ProposedVerdict.PROMOTE_OR_VALIDATE,
+                self.policy_id,
+                ProposedVerdict.PROMOTE_OR_VALIDATE,
                 weight_delta=self.weight_increment,
                 reason="verified external evidence present",
                 satisfied=True,
             )
         return GateDecisionProposal(
-            self.policy_id, ProposedVerdict.BLOCK,
+            self.policy_id,
+            ProposedVerdict.BLOCK,
             reason="no verified external evidence",
             missing=("verified_external_evidence",),
         )
 
 
-#: The default policy id. Never implicit: callers that do not name a policy get
-#: this one, and it is documented here and in the architecture docs.
-DEFAULT_POLICY_ID = "exploratory"
+@dataclass(frozen=True)
+class LegacyEvidenceRequiredPolicy:
+    """Compatibility policy reproducing the historical boolean Gate thresholds.
 
-#: Documented-but-unimplemented profiles from ADR-001. Naming them keeps the
-#: examples discoverable while making it explicit that they are not yet real
-#: policies. ``resolve_policy`` raises a clear error if one is requested.
+    This is the *only* implementation of the legacy semantics: internal
+    recognition (recurrence above the occurrence threshold with live trace) plus
+    accumulated verified evidence, with no unresolved contradiction. The
+    compatibility adapter resolves this policy and asks it for the proposal, so
+    an event attributed to ``legacy_evidence_required`` really was decided here.
+
+    The thresholds are fields rather than constants because they are
+    manager-configurable; the adapter rebuilds this policy from the manager's
+    config for each call via :func:`dataclasses.replace`, which keeps the class
+    (and therefore the decision logic) the single source.
+    """
+
+    policy_id: str = "legacy_evidence_required"
+    weight_increment: float = 0.2
+    min_occurrences: int = 3
+    min_trace: float = 0.5
+    min_evidence: int = 2
+
+    def internal_recognition(self, authority: AuthoritySnapshot) -> bool:
+        """Historical 'internal recognition' rule: enough recurrence, still alive."""
+
+        return (
+            authority.occurrence_count >= self.min_occurrences
+            and authority.trace > self.min_trace
+        )
+
+    def evidence_satisfied(self, authority: AuthoritySnapshot) -> bool:
+        """Historical accumulated-evidence rule (verified evidence only)."""
+
+        return authority.evidence_count >= self.min_evidence
+
+    def propose(
+        self,
+        signals: Sequence[ValidationSignal],
+        authority: AuthoritySnapshot,
+    ) -> GateDecisionProposal:
+        contradiction = _contradiction_proposal(self.policy_id, signals, authority)
+        if contradiction is not None:
+            return contradiction
+
+        recognized = self.internal_recognition(authority)
+        evidenced = self.evidence_satisfied(authority)
+        if recognized and evidenced:
+            return GateDecisionProposal(
+                self.policy_id,
+                ProposedVerdict.PROMOTE_OR_VALIDATE,
+                weight_delta=self.weight_increment,
+                reason="legacy compatibility requirements satisfied",
+                satisfied=True,
+            )
+
+        missing: list[str] = []
+        if not recognized:
+            missing.append("internal_recognition")
+        if not evidenced:
+            missing.append("accumulated_verified_evidence")
+        return GateDecisionProposal(
+            self.policy_id,
+            ProposedVerdict.BLOCK,
+            reason="legacy compatibility requirements not satisfied",
+            missing=tuple(missing),
+        )
+
+
+DEFAULT_POLICY_ID = "exploratory"
 EXAMPLE_POLICY_IDS: tuple[str, ...] = ("research", "creative", "high_impact")
 
-
-_REGISTRY: dict[str, GatePolicy] = {
+_PUBLIC_REGISTRY: dict[str, GatePolicy] = {
     ExploratoryPolicy().policy_id: ExploratoryPolicy(),
     EvidenceBackedPolicy().policy_id: EvidenceBackedPolicy(),
+}
+_COMPATIBILITY_REGISTRY: dict[str, GatePolicy] = {
+    LegacyEvidenceRequiredPolicy().policy_id: LegacyEvidenceRequiredPolicy(),
 }
 
 
 def default_policy() -> GatePolicy:
-    """Return the explicit default policy instance."""
+    """Return the explicit default policy."""
 
-    return _REGISTRY[DEFAULT_POLICY_ID]
+    return _PUBLIC_REGISTRY[DEFAULT_POLICY_ID]
 
 
 def resolve_policy(policy_id: str | None) -> GatePolicy:
-    """Resolve a policy by id.
-
-    ``None`` resolves to the explicit default. An id listed in
-    ``EXAMPLE_POLICY_IDS`` raises a distinct, actionable error so a caller does
-    not silently fall back to a different policy. Any other unknown id also
-    raises.
-    """
+    """Resolve public and compatibility policies with explicit failures."""
 
     if policy_id is None:
         return default_policy()
-    if policy_id in _REGISTRY:
-        return _REGISTRY[policy_id]
+    if policy_id in _PUBLIC_REGISTRY:
+        return _PUBLIC_REGISTRY[policy_id]
+    if policy_id in _COMPATIBILITY_REGISTRY:
+        return _COMPATIBILITY_REGISTRY[policy_id]
     if policy_id in EXAMPLE_POLICY_IDS:
         raise ValueError(
             f"Gate policy '{policy_id}' is a documented example profile that is "
             "not implemented yet. Use 'exploratory' or 'evidence_backed', or "
             "register a concrete policy."
         )
-    raise ValueError(
-        f"Unknown Gate policy '{policy_id}'. "
-        f"Known policies: {sorted(_REGISTRY)}."
-    )
+    known = sorted({*_PUBLIC_REGISTRY, *_COMPATIBILITY_REGISTRY})
+    raise ValueError(f"Unknown Gate policy '{policy_id}'. Known policies: {known}.")
 
 
 def available_policy_ids() -> list[str]:
-    """Ids of the concrete, registered policies."""
+    """Return user-selectable policy ids, excluding compatibility adapters."""
 
-    return sorted(_REGISTRY)
+    return sorted(_PUBLIC_REGISTRY)

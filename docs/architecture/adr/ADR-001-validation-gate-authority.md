@@ -163,11 +163,12 @@ The proposal was accepted **with material amendments** from an independent
 review. The amendments do not change the doctrine; they make it concrete and
 falsifiable:
 
-1. **Policy profiles.** Only the two profiles with concrete semantics ship as
-   real policies: `exploratory` (the explicit default) and `evidence_backed`.
-   `research`, `creative`, and `high_impact` are documented examples that raise
-   a clear error if requested, until their required signal combinations are
-   justified. The default policy is never implicit.
+1. **Policy profiles.** Two user-selectable profiles with concrete semantics
+   ship: `exploratory` (the explicit default) and `evidence_backed`. A third
+   profile, `legacy_evidence_required`, is resolvable only for compatibility with
+   the historical boolean API and is excluded from the public policy list.
+   `research`, `creative`, and `high_impact` remain documented examples that
+   raise a clear error if requested. The default policy is never implicit.
 2. **Decay and expiry.** Trace decay is a pure observation and stays outside the
    authority path. Expiry is the one lifecycle transition that also resets
    authority (it clears weight), so that reset is routed through the single
@@ -187,6 +188,13 @@ falsifiable:
    the original version). Explicit, clearly-named unsafe hooks remain available
    for tests and benchmarks — an unsupported escape hatch, not a claim that
    mutation is technically impossible for third parties.
+6. **One executable Gate path.** The historical boolean API is a translation and
+   return-shape adapter into `submit_signals`, not an alternative decision engine.
+   The policy id recorded in a `GateEvent` is the policy that made the decision.
+7. **Verification boundary.** External observations may be logged while
+   unverified, but only verified external support can authorize a transition or
+   increment the evidence counter. Recurrence remains a separate signal and may
+   authorize only under a policy that explicitly permits recurrence.
 
 ## Implementation status
 
@@ -203,6 +211,6 @@ Implemented and verified on the alignment branch (issues #10–#17):
 | English alignment + enforcement | core runtime, checker | `test_language_alignment` |
 | End-to-end invariants | — | `test_ssl_invariants` |
 
-The full suite passes (545 passed, 4 skipped), ruff is clean, the wheel builds,
-and the CLI runs. Umbrella issue #8 tracks final closure once this branch is
-merged.
+The standard CI matrix runs Ruff and the complete pytest suite on Python 3.10
+and 3.12. The wheel and CLI have separate repository checks. Umbrella issue #8
+tracks final closure once the alignment work is merged.

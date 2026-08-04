@@ -8,7 +8,6 @@ from .manager import (
     ShadowSeed,
     SSLManager,
 )
-
 __all__ = [
     "SSLManager",
     "ShadowSeed",
