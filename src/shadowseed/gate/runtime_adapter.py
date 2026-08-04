@@ -454,7 +454,16 @@ def run_validation_gate_detailed(
 
     from shadowseed.manager import ValidationGateResult
 
+    # Fallback for calls that produce no validation_log entry (notably an
+    # EXPIRED seed under an explicit public policy). It must carry the same
+    # audit meaning as the normal logging route, so the fields are derived from
+    # the signals that actually reached the Gate and from the seed's
+    # contradiction state — never from the decision alone. An expired seed can
+    # still hold an open contradiction record, and GateDecision.EXPIRED would
+    # otherwise report contradiction_free=True.
     seed = manager._seeds[seed_id]
+    submitted = list(event.signals)
+    verified_external = bool(_verified_external(submitted))
     return ValidationGateResult(
         seed_id=seed_id,
         status_before=event.status_before,
@@ -463,11 +472,14 @@ def run_validation_gate_detailed(
         weight_after=event.weight_after,
         occurrence_count=seed.occurrence_count,
         evidence_count=seed.evidence_count,
-        internal_recognition_passed=False,
-        external_evidence_passed=False,
-        contradiction_free=event.decision is not GateDecision.CONTRADICTED,
-        external_evidence_applied=False,
-        contradiction_applied=event.decision is GateDecision.CONTRADICTED,
+        internal_recognition_passed=_supporting_recurrence(submitted),
+        external_evidence_passed=verified_external,
+        contradiction_free=not manager._contradiction_state(seed).blocking,
+        external_evidence_applied=verified_external,
+        contradiction_applied=(
+            event.decision is GateDecision.CONTRADICTED
+            or _opposing_contradiction(submitted) is not None
+        ),
         promoted=event.decision is GateDecision.PROMOTED,
         verdict=event.decision.value,
     )

@@ -62,7 +62,21 @@ class GateDecisionProposal:
 
 @runtime_checkable
 class GatePolicy(Protocol):
-    """Interface implemented by every concrete Gate policy."""
+    """Interface implemented by every concrete Gate policy.
+
+    A policy receives both inputs and may weigh either or both:
+
+    - ``signals`` — the typed observations offered in *this* call;
+    - ``authority`` — the seed's accumulated authority facts (weight, status,
+      blocking contradiction, evidence count, occurrence count, trace).
+
+    Policies legitimately differ in which of the two they read.
+    ``exploratory`` and ``evidence_backed`` decide from the offered signals,
+    while ``legacy_evidence_required`` reproduces historical thresholds and
+    therefore decides from the accumulated facts. Both are valid: every policy
+    gets the same two arguments, and none of them mutates anything — the Gate
+    applies the proposal.
+    """
 
     policy_id: str
 

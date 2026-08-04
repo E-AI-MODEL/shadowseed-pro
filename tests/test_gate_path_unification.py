@@ -472,43 +472,67 @@ def test_blocked_by_open_contradiction_is_not_logged_as_contradiction_free():
     assert result.contradiction_free is False
 
 
-def test_legacy_verdict_is_produced_by_the_resolved_policy_object():
-    """The event's policy_id must name the object that actually decided: the
-    adapter's verdict has to follow LegacyEvidenceRequiredPolicy.propose()."""
+def test_adapter_must_follow_the_legacy_policy_proposal(monkeypatch):
+    """The adapter may not re-derive the legacy verdict. With the thresholds
+    demonstrably satisfied, a policy that proposes BLOCK must still block —
+    which the old second decision implementation would not have done."""
 
-    from dataclasses import replace as _replace
-
-    from shadowseed.gate.policies import AuthoritySnapshot, ProposedVerdict, resolve_policy
+    from shadowseed.gate.policies import (
+        GateDecisionProposal,
+        LegacyEvidenceRequiredPolicy,
+        ProposedVerdict,
+    )
 
     manager = _manager()
     seed_id = _recurrent_seed(manager)
-    manager.run_validation_gate_detailed(seed_id, external_evidence=True)
+    # Accumulate evidence so the historical thresholds are met on the next call;
+    # without the sentinel this call validates (pinned by the tests above).
     manager.run_validation_gate_detailed(seed_id, external_evidence=True)
 
-    seed = manager.get_seed(seed_id)
-    policy = _replace(
-        resolve_policy("legacy_evidence_required"),
-        weight_increment=manager.validation_increment,
-        min_occurrences=manager.config.min_occurrences_for_gate,
-        min_trace=manager.config.min_trace_for_gate,
-        min_evidence=manager.config.min_evidence_for_gate,
+    def _sentinel_block(self, signals, authority):
+        return GateDecisionProposal(
+            self.policy_id,
+            ProposedVerdict.BLOCK,
+            reason="sentinel refusal",
+        )
+
+    monkeypatch.setattr(LegacyEvidenceRequiredPolicy, "propose", _sentinel_block)
+    result = manager.run_validation_gate_detailed(seed_id, external_evidence=True)
+
+    # The thresholds themselves are still satisfied (these come from the same
+    # policy object, which is not patched) ...
+    assert result.internal_recognition_passed is True
+    assert result.external_evidence_passed is True
+    # ... yet the Gate blocked, because the policy's proposal is what decides.
+    assert result.verdict == "blocked"
+    assert manager.get_seed(seed_id).weight == 0.0
+    assert manager.gate_events[-1].policy_id == "legacy_evidence_required"
+
+
+def test_expired_seed_with_open_contradiction_reports_it_in_the_fallback_result():
+    """The fallback result (no validation_log entry) must not claim
+    contradiction_free while a record is still open."""
+
+    from shadowseed.manager import SeedStatus
+
+    manager = _manager()
+    seed_id = _recurrent_seed(manager)
+    manager.run_validation_gate_detailed(seed_id, contradiction=True)
+    assert manager._contradiction_state(manager.get_seed(seed_id)).blocking is True
+
+    # An EXPIRED seed under an explicit public policy takes the fallback path.
+    manager.get_seed(seed_id).unsafe_set_authority(status=SeedStatus.EXPIRED)
+    logged_before = len(manager.validation_log)
+    result = manager.run_validation_gate_detailed(
+        seed_id,
+        signals=[recurrence_signal(5, threshold=2)],
+        policy_id="exploratory",
     )
-    # Re-deciding the final state with the resolved policy reproduces the Gate's
-    # own verdict, so the recorded attribution is truthful.
-    proposal = policy.propose(
-        list(manager.gate_events[-1].signals),
-        AuthoritySnapshot(
-            weight=manager.gate_events[-1].weight_before,
-            status=manager.gate_events[-1].status_before,
-            has_blocking_contradiction=False,
-            evidence_count=seed.evidence_count,
-            occurrence_count=seed.occurrence_count,
-            trace=seed.trace,
-        ),
-    )
-    assert proposal.policy_id == manager.gate_events[-1].policy_id
-    assert proposal.verdict is ProposedVerdict.PROMOTE_OR_VALIDATE
-    assert proposal.weight_delta == manager.validation_increment
+
+    assert len(manager.validation_log) == logged_before  # fallback path taken
+    assert result.verdict == "expired"
+    assert result.contradiction_free is False
+    assert manager.get_seed(seed_id).weight == 0.0
 
 
 @pytest.mark.parametrize(

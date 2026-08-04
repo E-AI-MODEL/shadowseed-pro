@@ -36,6 +36,16 @@ relabeling in the chat runtime.
 A `GatePolicy` reads the offered signals plus a read-only `AuthoritySnapshot`
 and returns a `GateDecisionProposal`. Policies propose; only the Gate applies.
 
+A policy may weigh **either or both** of its two inputs: the typed observations
+offered in this call (`signals`), and the seed's accumulated authority facts
+(`authority` — weight, status, blocking contradiction, evidence count,
+occurrence count, trace). Policies legitimately differ here. `exploratory` and
+`evidence_backed` decide from the offered signals; `legacy_evidence_required`
+reproduces the historical accumulation thresholds and therefore decides from the
+accumulated facts. Every policy receives the same two arguments, and none of
+them mutates state — that difference is in what a policy *reads*, not in what it
+is allowed to do.
+
 Two public policies and one compatibility policy ship today:
 
 - **`exploratory`** (the default): qualifying recurrence *or verified* external
