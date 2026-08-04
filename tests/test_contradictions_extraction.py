@@ -67,6 +67,36 @@ def test_manager_resolution_preserves_the_open_query_facade() -> None:
     assert record.lifecycle_state is ContradictionStatus.OPEN
 
 
+def test_legacy_migration_preserves_the_open_record_facade() -> None:
+    manager = SSLManager(embedding_fn=_embedding)
+    seed_id = manager.add_or_update_seed("a seed")
+    manager.seeds[seed_id].unsafe_set_authority(contradiction_score=0.5)
+
+    opened: list[str] = []
+    original_open = manager._open_contradiction_record
+
+    def tracked_open(
+        seed: ShadowSeed,
+        *,
+        reason: str,
+        source_ref: str | None,
+        strength: float,
+    ) -> ContradictionRecord:
+        opened.append(seed.id)
+        return original_open(
+            seed,
+            reason=reason,
+            source_ref=source_ref,
+            strength=strength,
+        )
+
+    manager._open_contradiction_record = tracked_open
+    created = manager.migrate_legacy_contradictions()
+
+    assert opened == [seed_id]
+    assert created == manager.open_contradictions(seed_id)
+
+
 def test_domain_roundtrip_preserves_payload_and_identifier_sequence() -> None:
     domain = ContradictionDomain()
     seed = _seed()
