@@ -252,11 +252,18 @@ NEW -> ACTIVE -> DECAYING -> DORMANT -> EXPIRED
 
 The table below connects repository claims to current code. It is not a list of aspirations.
 
-The authority model — the single non-bypassable Validation Gate — is specified in [ADR-001](docs/architecture/adr/ADR-001-validation-gate-authority.md) and detailed under [`docs/architecture/`](docs/architecture/) ([gate contracts](docs/architecture/gate-contracts.md), [lifecycle and gate](docs/architecture/lifecycle-and-gate.md), [prompt boundary](docs/architecture/prompt-boundary.md)).
+The authority model centers on a single Validation Gate, specified in [ADR-001](docs/architecture/adr/ADR-001-validation-gate-authority.md) and detailed under [`docs/architecture/`](docs/architecture/) ([gate contracts](docs/architecture/gate-contracts.md), [lifecycle and gate](docs/architecture/lifecycle-and-gate.md), [prompt boundary](docs/architecture/prompt-boundary.md)).
+
+"Non-bypassable" is scoped to *new* runtime authority transitions on the supported public API: no normal caller, helper, probe, SSOT component, or integration is given a way to make a **new** authority decision outside the Gate, and a static test over `src/` enforces that runtime code never reaches for one. Two boundaries sit deliberately outside that statement:
+
+- **Restoration is a separate trusted boundary, not a new decision.** `ShadowSeed.from_dict` / `SSLManager.restore_seed` are supported public APIs that reinstate a previously Gate-produced snapshot — `weight`, `status`, `evidence_count`, `contradiction_score`, and `authority_version` — without running the Gate, and `restore_seed(..., replace_existing=True)` can replace a live seed. This is validated deserialization/migration (see [seed restoration](#assurance-boundaries)), not authority creation: it never mints authority a Gate did not previously produce.
+- **Explicit unsafe hooks exist.** It is **not** a claim that arbitrary in-process Python cannot mutate a seed — the clearly named `unsafe_set_authority` / `unsafe_install_seed` hooks exist for tests and benchmarks, and nothing stops third-party code from calling them.
+
+The guarantee is about *new authority decisions* on the public API surface, not the Python object model. See [Assurance boundaries](#assurance-boundaries) below.
 
 | Property | Runtime implementation | Tests or evaluation |
 |---|---|---|
-| Atomic candidate seeds | [`manager.py`](src/shadowseed/manager.py), [`seed_normalization.py`](src/shadowseed/seed_normalization.py) | [`test_atomic_seed_rules.py`](tests/test_atomic_seed_rules.py), [`test_seed_normalization.py`](tests/test_seed_normalization.py) |
+| Atomicity is a normalization target and tested heuristic, not a guarantee for every candidate | [`manager.py`](src/shadowseed/manager.py), [`seed_normalization.py`](src/shadowseed/seed_normalization.py) | [`test_atomic_seed_rules.py`](tests/test_atomic_seed_rules.py), [`test_seed_normalization.py`](tests/test_seed_normalization.py) |
 | New seeds start weightless, and authority is encapsulated | [`ShadowSeed`](src/shadowseed/manager.py) (authority fields are `init=False` and guarded; the seed registry is a read-only view) | [`test_authority_encapsulation.py`](tests/test_authority_encapsulation.py) |
 | Trace is separate from influence | [`manager.py`](src/shadowseed/manager.py) | [`test_manager_alignment.py`](tests/test_manager_alignment.py), [`test_lifecycle_ttl.py`](tests/test_lifecycle_ttl.py) |
 | TTL decay and terminal expiry | [`SSLManager.decay_traces`](src/shadowseed/manager.py) | [`test_lifecycle_ttl.py`](tests/test_lifecycle_ttl.py), [`test_bad_seed_dies_out.py`](tests/test_bad_seed_dies_out.py) |
@@ -265,13 +272,23 @@ The authority model — the single non-bypassable Validation Gate — is specifi
 | Recurrence is never relabeled or double-counted as external evidence | [`shadowseed.gate.signals`](src/shadowseed/gate/signals.py), [`chat.py`](src/shadowseed/chat.py) | [`test_gate_signal_routing.py`](tests/test_gate_signal_routing.py) |
 | Contradictions have an auditable lifecycle and Gate-controlled recovery | [`shadowseed.gate.contradictions`](src/shadowseed/gate/contradictions.py), [`SSLManager.resolve_contradiction`](src/shadowseed/manager.py) | [`test_contradiction_lifecycle.py`](tests/test_contradiction_lifecycle.py) |
 | Generated output is not trusted evidence | [`ssot.py`](src/shadowseed/ssot.py), [`agent_contract.py`](src/shadowseed_agent/agent_contract.py) | [`test_ssot_manager.py`](tests/test_ssot_manager.py), [`test_agent_safety_contract.py`](tests/test_agent_safety_contract.py) |
-| Influence is one atomic, replayable point-of-use decision | [`AgentSafetyContract.decide_and_record`](src/shadowseed_agent/agent_contract.py) | [`test_point_of_use.py`](tests/test_point_of_use.py) |
+| Influence requires one atomic point-of-use decision enforcing specific checks (weight > 0, promoted, live current-version Gate-event link; blocking-contradiction and logged-promotion checks on by default, both configurable) | [`AgentSafetyContract.decide_and_record`](src/shadowseed_agent/agent_contract.py) | [`test_point_of_use.py`](tests/test_point_of_use.py) |
 | Surfaced seeds are bounded, quoted candidate data (prompt boundary) | [`surfacing.py`](src/shadowseed/surfacing.py) | [`test_prompt_boundary.py`](tests/test_prompt_boundary.py) |
 | Live chat and benchmarks share surfacing logic | [`surfacing.py`](src/shadowseed/surfacing.py) | [`test_surfacing.py`](tests/test_surfacing.py), [`test_ssl_session_suite.py`](tests/test_ssl_session_suite.py) |
 | Baseline history remains uncontaminated | [`chat.py`](src/shadowseed/chat.py) | [`test_shadow_chat.py`](tests/test_shadow_chat.py) |
 | Retrieval probes report presence without declaring truth | [`retrieval_probe.py`](src/shadowseed/retrieval_probe.py), [`chat.py`](src/shadowseed/chat.py) | [`test_seed_retrieval_probe.py`](tests/test_seed_retrieval_probe.py), [`test_ssl_vs_rag_benchmark.py`](tests/test_ssl_vs_rag_benchmark.py) |
-| Every Gate decision and influence attempt is an immutable, replayable record | [`SSLManager.gate_events`](src/shadowseed/manager.py), [`audit_policy.py`](src/shadowseed_agent/audit_policy.py) | [`test_point_of_use.py`](tests/test_point_of_use.py), [`test_shadow_chat.py`](tests/test_shadow_chat.py) |
+| Every Gate decision and influence attempt is a frozen, replayable in-process record (durable, tamper-evident storage is a production gap) | [`SSLManager.gate_events`](src/shadowseed/manager.py), [`audit_policy.py`](src/shadowseed_agent/audit_policy.py) | [`test_point_of_use.py`](tests/test_point_of_use.py), [`test_shadow_chat.py`](tests/test_shadow_chat.py) |
 | Active runtime language is English (enforced) | core runtime + checker | [`test_language_alignment.py`](tests/test_language_alignment.py) |
+
+## Assurance boundaries
+
+These are the precise limits of the claims above, so a reviewer can tell an enforced property from an aspiration. Each points to code, a test, or a marked production gap.
+
+- **"Non-bypassable" is a public-API property over *new* authority decisions, not a Python-runtime one.** The Gate is the only path that makes a new authority decision on the supported API surface; direct assignment is blocked ([`test_direct_authority_assignment_is_blocked`](tests/test_authority_encapsulation.py)) and static checks over `src/` enforce that runtime code neither writes authority fields directly nor calls the unsafe hooks ([`test_no_direct_authority_mutation_in_non_benchmark_runtime`](tests/test_gate_signal_routing.py), [`test_no_unsafe_authority_hooks_in_runtime`](tests/test_gate_signal_routing.py)). Two things sit outside this by design: (1) **restoration** — `ShadowSeed.from_dict` / `SSLManager.restore_seed` reinstate a previously Gate-produced authority snapshot without the Gate (a validated deserialization/migration boundary, covered next), and `replace_existing=True` can replace a live seed; (2) the explicit `unsafe_set_authority` / `unsafe_install_seed` hooks, which remain available to tests and benchmarks and are not made technically impossible to call. Arbitrary in-process or third-party Python is out of scope for the guarantee.
+- **Restoration reinstates authority; it does not create it.** `ShadowSeed.from_dict` validates the snapshot before installing it and preserves the exact stored `authority_version`, produces no `GateEvent`, and counts as no new evidence ([`test_seed_restoration.py`](tests/test_seed_restoration.py)). It is a deliberate, supported trusted boundary for persisted state — not a way to mint authority a Gate never granted — and duplicate replacement is explicit (`replace_existing`, defaulting to no silent overwrite).
+- **"Atomic seed" is a normalization target and tested heuristic.** Normalization splits candidates toward one absence each ([`seed_normalization.py`](src/shadowseed/seed_normalization.py), [`test_atomic_seed_rules.py`](tests/test_atomic_seed_rules.py)), but a model-generated candidate can still be compound, vacuous, or mis-split. Atomicity makes a candidate *testable*; it is not a semantic guarantee for every input, and it does not make a candidate meaningful or important.
+- **Audit records are frozen and replayable in-process; durable integrity is a production gap.** [`GateEvent`](src/shadowseed/gate/events.py) and [`AgentInfluenceRecord`](src/shadowseed_agent/audit_policy.py) are immutable in memory and support deterministic replay ([`test_point_of_use.py`](tests/test_point_of_use.py)). They are **not** persisted to append-only, tamper-evident storage; there is no cryptographic chaining, external timestamping, or write-once medium. Durable, integrity-verified audit storage is listed under [production gaps](#work-still-required-for-production-use).
+- **The point-of-use contract enforces specific checks, not universal safety.** [`AgentSafetyContract.decide_and_record`](src/shadowseed_agent/agent_contract.py) always requires that the seed has `weight > 0`, is promoted, and links to a live Gate event of the seed's *current* `authority_version` (stale authorizations are rejected). In the **default configuration** it also blocks a seed with a blocking contradiction (`block_contradicted_seed=True`) and requires a logged promotion (`require_logged_promotion=True`) — but both are public opt-outs on the contract, so an integration that constructs, e.g., `AgentSafetyContract(block_contradicted_seed=False)` relaxes them. Every decision — allowed or denied — is recorded ([`test_point_of_use.py`](tests/test_point_of_use.py), [`test_agent_safety_contract.py`](tests/test_agent_safety_contract.py)). "Zero-trust at the agent boundary" names this specific gate under its default configuration; it does **not** imply complete policy enforcement, protection against every integration that ignores or reconfigures the contract, or safety against all prompt-injection or evidence-poisoning attacks (see [Not established](#not-established)).
 
 ## Seed origin metadata
 
@@ -686,7 +703,7 @@ Fresh model labels are not bit-reproducible by default. Preserve the verdict art
 | [`shadowseed.retrieval_probe`](src/shadowseed/retrieval_probe.py) | Seed-based retrieval probes that report presence without declaring truth |
 | [`shadowseed.recurrence_clustering`](src/shadowseed/recurrence_clustering.py) | Paraphrase-aware recurrence clustering |
 | [`shadowseed.vectorstore`](src/shadowseed/vectorstore/) | Memory, FAISS, and Chroma storage adapters |
-| [`shadowseed_agent.agent_contract`](src/shadowseed_agent/agent_contract.py) | Zero-trust influence decision at the agent boundary |
+| [`shadowseed_agent.agent_contract`](src/shadowseed_agent/agent_contract.py) | Point-of-use influence decision at the agent boundary (specific checks; see [Assurance boundaries](#assurance-boundaries)) |
 | [`shadowseed_agent.audit_policy`](src/shadowseed_agent/audit_policy.py) | Replay checks for weightless or otherwise forbidden influence |
 
 ## Evaluation and research modules
@@ -822,7 +839,7 @@ A strong README claim should point downward through this stack, not stop at pros
 
 ## Work still required for production use
 
-- durable seed, evidence, gate, and influence storage;
+- durable seed, evidence, gate, and influence storage — including append-only, tamper-evident audit persistence (today's `GateEvent` and influence records are frozen and replayable in memory only);
 - schema migrations and deterministic replay across versions;
 - versioned SSOT policies and source-governance rules;
 - privacy, retention, deletion, and access controls for seed and evidence text;
