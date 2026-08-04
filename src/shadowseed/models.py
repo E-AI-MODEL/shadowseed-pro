@@ -1,9 +1,8 @@
-"""Core Shadow Seed Learning domain models.
+"""Stable Shadow Seed Learning domain models.
 
-This module owns the stable data contracts used by :mod:`shadowseed.manager`.
-The manager re-exports these names for backward compatibility, but model
-construction, authority-state guarding, validation, and serialization live
-here so the orchestration layer can stay focused on transitions and workflows.
+These enums, dataclasses, authority guards, snapshot validators, and serialized
+contracts were extracted from :mod:`shadowseed.manager` without changing their
+behavior. ``shadowseed.manager`` re-exports the public names for compatibility.
 """
 
 from __future__ import annotations
@@ -46,7 +45,13 @@ class CandidateType(str, Enum):
 
 @dataclass
 class SeedOrigin:
-    """Optional, audit-only record of why a seed was generated."""
+    """Optional, audit-only record of *why* a seed was generated.
+
+    Purely descriptive provenance. It makes the conceptual origin of a seed
+    visible in the created-event and export, but carries no epistemic force:
+    a convincing rationale here must still leave ``weight`` at ``0.0``. Weight
+    can rise only through the Validation Gate, never from this metadata.
+    """
 
     candidate_type: CandidateType = CandidateType.UNSPECIFIED
     detection_basis: str = ""
@@ -60,29 +65,45 @@ class SeedOrigin:
         }
 
 
-# Only the Validation Gate transition path may change these fields during
-# production operation. ``authority_version`` is managed automatically by
-# ``ShadowSeed._write_authority``.
+# Authority fields: only the Validation Gate transition path (SSLManager) may
+# change these. They determine whether a seed can eventually influence behavior.
+# trace, occurrence_count, and turns_dormant are observation/lifecycle-support
+# fields and stay freely writable. authority_version is included so it cannot be
+# assigned externally; it is managed automatically by _write_authority.
 AUTHORITY_FIELDS: frozenset[str] = frozenset(
     {"weight", "status", "evidence_count", "contradiction_score", "authority_version"}
 )
 
+# The subset whose value actually changing marks an authority change (and bumps
+# the version). Status is handled separately: only crossing the PROMOTED
+# boundary counts, so ordinary lifecycle moves (ACTIVE/DORMANT/NEW) do not churn
+# the authority version.
 _VERSIONED_AUTHORITY_FIELDS: frozenset[str] = frozenset(
     {"weight", "contradiction_score", "evidence_count"}
 )
 
+# Authority range for a restored weight. Weight is clamped to [0.0, 1.0]
+# everywhere it is written (every Gate/probe/decay path uses
+# ``max(0.0, min(1.0, ...))``), so this is the invariant the current
+# implementation and policies already enforce — restoration must not silently
+# accept a snapshot claiming an out-of-range weight. Derived from that
+# invariant, not an independent threshold.
 WEIGHT_MIN: float = 0.0
 WEIGHT_MAX: float = 1.0
 
 
 def _is_int(value: Any) -> bool:
-    """Return whether ``value`` is a genuine integer, rejecting ``bool``."""
+    """True for a genuine integer, rejecting ``bool``.
+
+    ``bool`` is a subclass of ``int`` in Python, so ``isinstance(True, int)``
+    is ``True``. Persisted counters must not silently accept ``True``/``False``.
+    """
 
     return isinstance(value, int) and not isinstance(value, bool)
 
 
 def _is_real_number(value: Any) -> bool:
-    """Return whether ``value`` is a real non-complex number, rejecting bool."""
+    """True for a real (non-complex) number, rejecting ``bool``."""
 
     return isinstance(value, (int, float)) and not isinstance(value, bool)
 
@@ -90,13 +111,22 @@ def _is_real_number(value: Any) -> bool:
 def validate_seed_snapshot(data: Mapping[str, Any]) -> None:
     """Reject a malformed or internally inconsistent persisted seed snapshot.
 
-    This validates the deserialization boundary only. It does not run the Gate,
-    change authority, increment evidence, or bump ``authority_version``.
+    Defense-in-depth for the restoration boundary (deserialization/migration),
+    *not* an authority decision: it never changes weight, never runs the Gate,
+    never bumps the authority version, and never counts as evidence. It only
+    confirms that ``data`` is a structurally valid, finite, self-consistent
+    snapshot before ``from_dict`` reconstructs a seed from it.
+
+    Raises a field-specific :class:`ValueError` or :class:`TypeError` on the
+    first violation. Fields that ``from_dict`` supplies defaults for (counters,
+    scores, status, ``authority_version``) are only checked when present, so
+    legitimate legacy snapshots that omit them stay valid.
     """
 
     if not isinstance(data, Mapping):
         raise TypeError(f"seed snapshot must be a mapping, got {type(data).__name__}")
 
+    # --- id: required, non-empty string ---
     if "id" not in data:
         raise ValueError("seed snapshot is missing required field 'id'")
     seed_id = data["id"]
@@ -105,11 +135,13 @@ def validate_seed_snapshot(data: Mapping[str, Any]) -> None:
     if not seed_id:
         raise ValueError("seed 'id' must be a non-empty string")
 
+    # --- text: required, string ---
     if "text" not in data:
         raise ValueError("seed 'text' is missing")
     if not isinstance(data["text"], str):
         raise TypeError(f"seed 'text' must be a string, got {type(data['text']).__name__}")
 
+    # --- embedding: numeric, non-empty, all finite ---
     if "embedding" not in data:
         raise ValueError("seed 'embedding' is missing")
     try:
@@ -121,6 +153,7 @@ def validate_seed_snapshot(data: Mapping[str, Any]) -> None:
     if not np.all(np.isfinite(embedding)):
         raise ValueError("seed 'embedding' must contain only finite values (no NaN/inf)")
 
+    # --- trace: finite, non-negative ---
     if "trace" in data:
         trace = data["trace"]
         if not _is_real_number(trace):
@@ -130,6 +163,7 @@ def validate_seed_snapshot(data: Mapping[str, Any]) -> None:
         if trace < 0:
             raise ValueError(f"seed 'trace' must not be negative, got {trace}")
 
+    # --- integer counters: integer (not bool), non-negative ---
     for name in ("occurrence_count", "turns_dormant", "evidence_count", "authority_version"):
         if name in data:
             value = data[name]
@@ -141,6 +175,7 @@ def validate_seed_snapshot(data: Mapping[str, Any]) -> None:
             if value < 0:
                 raise ValueError(f"seed '{name}' must be non-negative, got {value}")
 
+    # --- weight: finite, within the authority range ---
     if "weight" in data:
         weight = data["weight"]
         if not _is_real_number(weight):
@@ -153,6 +188,7 @@ def validate_seed_snapshot(data: Mapping[str, Any]) -> None:
                 f"[{WEIGHT_MIN}, {WEIGHT_MAX}], got {weight}"
             )
 
+    # --- contradiction_score: finite, non-negative ---
     if "contradiction_score" in data:
         score = data["contradiction_score"]
         if not _is_real_number(score):
@@ -164,6 +200,7 @@ def validate_seed_snapshot(data: Mapping[str, Any]) -> None:
         if score < 0:
             raise ValueError(f"seed 'contradiction_score' must not be negative, got {score}")
 
+    # --- status: a valid SeedStatus ---
     status_value = data.get("status", SeedStatus.NEW.value)
     if isinstance(status_value, SeedStatus):
         status = status_value
@@ -173,6 +210,7 @@ def validate_seed_snapshot(data: Mapping[str, Any]) -> None:
         except ValueError as exc:
             raise ValueError(f"seed 'status' is not a valid SeedStatus: {status_value!r}") from exc
 
+    # --- origin: when present, a mapping with a valid CandidateType ---
     origin_data = data.get("origin")
     if origin_data is not None:
         if not isinstance(origin_data, Mapping):
@@ -202,6 +240,7 @@ def validate_seed_snapshot(data: Mapping[str, Any]) -> None:
                 f"got {type(context_ref).__name__}"
             )
 
+    # --- cross-field invariant: an EXPIRED seed is terminal with zero weight ---
     if status == SeedStatus.EXPIRED and "weight" in data and data["weight"] != 0:
         raise ValueError(
             f"an EXPIRED seed must have zero weight, got {data['weight']} "
@@ -221,14 +260,23 @@ class ShadowSeed:
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now().isoformat())
     origin: SeedOrigin | None = None
+    # Authority fields are init=False: they cannot be set through the
+    # constructor, closing the construction bypass. A seed is always born
+    # weightless; authority is reached only through the Gate, and tests use
+    # unsafe_set_authority(...).
     weight: float = field(default=0.0, init=False)
     evidence_count: int = field(default=0, init=False)
     contradiction_score: float = field(default=0.0, init=False)
     status: SeedStatus = field(default=SeedStatus.NEW, init=False)
+    # Monotonic counter stamped whenever authority (weight, evidence,
+    # contradiction, or promotion state) changes. A point-of-use decision
+    # references it so a stale authorization can be detected on replay.
     authority_version: int = field(default=0, init=False)
     _authority_sealed: bool = field(default=False, repr=False, compare=False, init=False)
 
     def __post_init__(self) -> None:
+        # Seal after construction so field defaults can be set during init, but
+        # later direct assignments are guarded.
         object.__setattr__(self, "_authority_sealed", True)
 
     def __setattr__(self, name: str, value: Any) -> None:
@@ -242,7 +290,15 @@ class ShadowSeed:
         object.__setattr__(self, name, value)
 
     def _write_authority(self, changes: dict[str, Any]) -> None:
-        """Apply an authority change and bump its version when it matters."""
+        """Apply an authority change and bump the version when it matters.
+
+        This is the single low-level writer. It bypasses the ``__setattr__``
+        guard on purpose; callers are the manager's transition path and the
+        explicit unsafe test hook. The version bumps only when an
+        authority-determining value actually changes (weight, evidence, or
+        contradiction score) or when the PROMOTED boundary is crossed — not on
+        an unchanged rewrite, and not on a pure lifecycle status move.
+        """
 
         promoted_before = self.status == SeedStatus.PROMOTED
         value_changed = False
@@ -262,11 +318,19 @@ class ShadowSeed:
         self,
         *,
         weight: float | None = None,
-        status: SeedStatus | None = None,
+        status: "SeedStatus | None" = None,
         evidence_count: int | None = None,
         contradiction_score: float | None = None,
     ) -> None:
-        """Explicit unsupported authority setter for tests and benchmarks."""
+        """Explicitly unsafe, unsupported authority setter for tests/benchmarks.
+
+        This is not a normal API and production code must never call it (a static
+        test enforces that for this repository). It exists so tests can construct
+        edge-case authority states without a full Gate run. It does not claim to
+        make mutation *technically* impossible for third-party callers — it is an
+        explicit, clearly-named escape hatch. It bumps the authority version like
+        any other change; use :meth:`from_dict` to restore a persisted version.
+        """
 
         changes: dict[str, Any] = {}
         if weight is not None:
@@ -285,10 +349,15 @@ class ShadowSeed:
         weight: float,
         evidence_count: int,
         contradiction_score: float,
-        status: SeedStatus,
+        status: "SeedStatus",
         authority_version: int,
     ) -> None:
-        """Restore a persisted authority snapshot exactly, version included."""
+        """Restore a persisted authority snapshot exactly, version included.
+
+        Used only by :meth:`from_dict`. Unlike a Gate transition this does not
+        recompute or increment the version — it reinstates the stored one — so a
+        round-trip is lossless. It is deserialization, not an authority decision.
+        """
 
         object.__setattr__(self, "weight", float(weight))
         object.__setattr__(self, "evidence_count", int(evidence_count))
@@ -305,8 +374,20 @@ class ShadowSeed:
         return data
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> ShadowSeed:
-        """Reconstruct a seed from its serialized form without a new transition."""
+    def from_dict(cls, data: dict[str, Any]) -> "ShadowSeed":
+        """Reconstruct a seed from its serialized form (deserialization/migration).
+
+        Restores the full authority snapshot — weight, evidence count,
+        contradiction score, status, and the original ``authority_version`` —
+        without treating the restoration as a new Gate transition. This is the
+        documented migration path required now that authority fields are
+        ``init=False``; ``ShadowSeed(**saved)`` intentionally no longer works.
+
+        The snapshot is validated first (see :func:`validate_seed_snapshot`), so
+        a malformed or internally inconsistent snapshot raises before any object
+        is constructed. Validation is defense-in-depth for deserialization; it
+        does not run the Gate, change authority, or bump the version.
+        """
 
         validate_seed_snapshot(data)
         origin_data = data.get("origin")
@@ -406,7 +487,13 @@ class ProbeType(str, Enum):
 
 
 class ProbeOutcome(str, Enum):
-    """Outcome of a probe evaluation."""
+    """Outcome of a probe evaluation.
+
+    Probe feedback is deliberately weaker than the Validation Gate. A probe may
+    nudge a seed's weight up or down, but it cannot promote a seed on its own.
+    It can demote a promoted seed back to ACTIVE when repeated poor outcomes
+    drive the weight back below the promotion threshold.
+    """
 
     REWARD = "reward"
     PENALTY = "penalty"
