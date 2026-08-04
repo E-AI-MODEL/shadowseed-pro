@@ -27,6 +27,7 @@ from typing import TYPE_CHECKING, Any, Callable, Iterable, Literal, Mapping
 
 import numpy as np
 
+from shadowseed.contradictions import ContradictionDomain as _ContradictionDomain
 from shadowseed.core_config import SSLCoreConfig
 from shadowseed.gate.contradictions import ContradictionRecord, ContradictionStatus
 from shadowseed.gate.events import (
@@ -68,6 +69,9 @@ if TYPE_CHECKING:
 
 
 DEFAULT_CONFIG = SSLCoreConfig()
+# Keep the historical manager wildcard-import surface without making the new
+# domain component another implicit manager export.
+_CONTRADICTION_STATUS_COMPAT = ContradictionStatus
 
 
 class SSLManager:
@@ -131,10 +135,9 @@ class SSLManager:
         # before/after authority state.
         self.gate_events: list[GateEvent] = []
         self._gate_sequence = 0
-        # Explicit contradiction records (#13). Blocking state is derived from
-        # unresolved records; contradiction_score is kept for compatibility.
-        self.contradiction_records: list[ContradictionRecord] = []
-        self._contradiction_sequence = 0
+        # Canonical contradiction collection and lifecycle workflows. Public
+        # manager attributes and methods below remain compatibility facades.
+        self._contradictions = _ContradictionDomain()
 
     @property
     def seeds(self) -> "Mapping[str, ShadowSeed]":
@@ -225,26 +228,45 @@ class SSLManager:
         if changes:
             seed._write_authority(changes)
 
+    @property
+    def contradiction_records(self) -> list[ContradictionRecord]:
+        """Historical mutable record list, backed by the canonical domain."""
+
+        return self._contradictions.records
+
+    @contradiction_records.setter
+    def contradiction_records(self, records: Iterable[ContradictionRecord]) -> None:
+        self._contradictions.replace_records(records)
+
+    @property
+    def _contradiction_sequence(self) -> int:
+        """Compatibility view of the domain-owned identifier sequence."""
+
+        return self._contradictions.sequence
+
+    @_contradiction_sequence.setter
+    def _contradiction_sequence(self, value: int) -> None:
+        self._contradictions.sequence = value
+
     def open_contradictions(self, seed_id: str) -> list[ContradictionRecord]:
         """Unresolved (blocking) contradiction records for a seed."""
 
-        return [
-            record
-            for record in self.contradiction_records
-            if record.seed_id == seed_id and record.is_blocking
-        ]
+        return self._contradictions.open_for(seed_id)
+    
 
     def contradictions_for(self, seed_id: str) -> list[ContradictionRecord]:
         """All contradiction records for a seed, in creation order."""
 
-        return [r for r in self.contradiction_records if r.seed_id == seed_id]
+        return self._contradictions.contradictions_for(seed_id)
+    
 
     def is_blocking_contradiction(self, seed_id: str) -> bool:
         """Canonical blocking state for a seed (derived from records, with the
         legacy scalar as fallback). This is the value point-of-use decisions
         should consult rather than reading contradiction_score directly."""
 
-        return self._contradiction_state(self._seeds[seed_id]).blocking
+        return self._contradictions.state_for(self._seeds[seed_id]).blocking
+    
 
     def _contradiction_state(self, seed: ShadowSeed) -> ContradictionState:
         """Derive the blocking-contradiction snapshot.
@@ -254,20 +276,8 @@ class SSLManager:
         one legacy open contradiction, so migration is lossless.
         """
 
-        records = self.contradictions_for(seed.id)
-        if records:
-            open_count = sum(1 for r in records if r.is_blocking)
-            return ContradictionState(
-                blocking=open_count > 0,
-                open_count=open_count,
-                score=seed.contradiction_score,
-            )
-        legacy_blocking = seed.contradiction_score > 0.0
-        return ContradictionState(
-            blocking=legacy_blocking,
-            open_count=1 if legacy_blocking else 0,
-            score=seed.contradiction_score,
-        )
+        return self._contradictions.state_for(seed)
+    
 
     def _open_contradiction_record(
         self,
@@ -277,18 +287,14 @@ class SSLManager:
         source_ref: str | None,
         strength: float,
     ) -> ContradictionRecord:
-        self._contradiction_sequence += 1
-        record = ContradictionRecord(
-            contradiction_id=f"contra::{seed.id}::{self._contradiction_sequence:06d}",
-            seed_id=seed.id,
+        return self._contradictions.open(
+            seed,
             reason=reason,
             source_ref=source_ref,
-            strength=max(0.0, min(1.0, strength)),
-            lifecycle_state=ContradictionStatus.OPEN,
+            strength=strength,
             created_at=self._now_iso(),
         )
-        self.contradiction_records.append(record)
-        return record
+    
 
     def resolve_contradiction(
         self,
@@ -315,23 +321,21 @@ class SSLManager:
 
         seed = self._seeds[seed_id]
         if seed.status == SeedStatus.EXPIRED:
-            raise ValueError("expired seeds cannot recover through contradiction resolution")
-        open_records = self.open_contradictions(seed_id)
-        if contradiction_id is not None:
-            open_records = [r for r in open_records if r.contradiction_id == contradiction_id]
-        if not open_records:
-            raise ValueError(f"no open contradiction to resolve for seed '{seed_id}'")
+            raise ValueError(
+                "expired seeds cannot recover through contradiction resolution"
+            )
 
         status_before = seed.status.value
         weight_before = seed.weight
         contradiction_before = self._contradiction_state(seed)
-        for record in open_records:
-            record.resolve(
-                basis,
-                superseded=superseded,
-                withdrawn=withdrawn,
-                resolved_at=self._now_iso(),
-            )
+        self._contradictions.resolve(
+            seed_id,
+            basis=basis,
+            contradiction_id=contradiction_id,
+            superseded=superseded,
+            withdrawn=withdrawn,
+            resolved_at=self._now_iso,
+        )
         # If nothing blocking remains, clear the scalar so the point-of-use
         # contract and the policies stop treating the seed as contradicted.
         if not self.open_contradictions(seed_id):
@@ -354,6 +358,7 @@ class SSLManager:
             contradiction_before=contradiction_before,
             reason=f"resolved by {resolver}: {basis}",
         )
+    
 
     def migrate_legacy_contradictions(self) -> list[ContradictionRecord]:
         """Create an open record for any seed with a legacy scalar but no records.
@@ -362,18 +367,11 @@ class SSLManager:
         the records created, for logging or tests.
         """
 
-        created: list[ContradictionRecord] = []
-        for seed in self._seeds.values():
-            if seed.contradiction_score > 0.0 and not self.contradictions_for(seed.id):
-                created.append(
-                    self._open_contradiction_record(
-                        seed,
-                        reason="migrated from legacy contradiction_score",
-                        source_ref="legacy_migration",
-                        strength=min(1.0, seed.contradiction_score),
-                    )
-                )
-        return created
+        return self._contradictions.migrate_legacy(
+            self._seeds.values(),
+            created_at=self._now_iso,
+        )
+    
 
     def _record_gate_event(
         self,
@@ -1140,7 +1138,7 @@ class SSLManager:
             "event_log": [item.to_dict() for item in self.event_log],
             "feedback_log": [item.to_dict() for item in self.feedback_log],
             "gate_events": [item.to_dict() for item in self.gate_events],
-            "contradiction_records": [item.to_dict() for item in self.contradiction_records],
+            "contradiction_records": self._contradictions.to_dicts(),
             "vector_constellation": (
                 self.vector_constellation.to_dict()
                 if self.vector_constellation is not None

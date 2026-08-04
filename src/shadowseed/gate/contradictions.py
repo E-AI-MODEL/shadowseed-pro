@@ -38,7 +38,8 @@ class ContradictionRecord:
     """One recorded contradiction against a seed.
 
     Mutable only through the lifecycle transitions on this class, which stamp
-    the resolution metadata. The manager owns creation and resolution.
+    the resolution metadata. The contradiction domain owns creation and
+    resolution; the manager exposes the compatibility facade.
     """
 
     contradiction_id: str
