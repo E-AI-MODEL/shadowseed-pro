@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import numpy as np
+import pytest
 
 import shadowseed.contradictions as contradiction_module
 from shadowseed import manager as manager_module
 from shadowseed.contradictions import ContradictionDomain
 from shadowseed.gate.contradictions import ContradictionRecord, ContradictionStatus
+from shadowseed.gate.events import ContradictionState
 from shadowseed.manager import SSLManager
 from shadowseed.models import ShadowSeed
 
@@ -25,6 +27,44 @@ def test_new_module_reexports_the_canonical_record_contract() -> None:
     assert contradiction_module.ContradictionStatus is ContradictionStatus
     assert manager_module.ContradictionRecord is ContradictionRecord
     assert manager_module.ContradictionStatus is ContradictionStatus
+
+
+def test_manager_blocking_query_preserves_the_state_facade() -> None:
+    manager = SSLManager(embedding_fn=_embedding)
+    seed_id = manager.add_or_update_seed("a seed")
+    manager._open_contradiction_record(
+        manager.seeds[seed_id],
+        reason="counterexample",
+        source_ref=None,
+        strength=1.0,
+    )
+    manager._contradiction_state = lambda _seed: ContradictionState(
+        blocking=False,
+        open_count=0,
+        score=0.0,
+    )
+
+    assert manager.is_blocking_contradiction(seed_id) is False
+
+
+def test_manager_resolution_preserves_the_open_query_facade() -> None:
+    manager = SSLManager(embedding_fn=_embedding)
+    seed_id = manager.add_or_update_seed("a seed")
+    record = manager._open_contradiction_record(
+        manager.seeds[seed_id],
+        reason="counterexample",
+        source_ref=None,
+        strength=1.0,
+    )
+    manager.open_contradictions = lambda _seed_id: []
+
+    with pytest.raises(
+        ValueError,
+        match=f"no open contradiction to resolve for seed '{seed_id}'",
+    ):
+        manager.resolve_contradiction(seed_id, basis="independent replication")
+
+    assert record.lifecycle_state is ContradictionStatus.OPEN
 
 
 def test_domain_roundtrip_preserves_payload_and_identifier_sequence() -> None:
