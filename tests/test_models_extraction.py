@@ -156,6 +156,8 @@ def test_enum_values_and_result_defaults_remain_stable():
 
 
 def test_manager_wildcard_import_surface_remains_backward_compatible():
+    # manager.py intentionally has no __all__: historical wildcard imports must
+    # continue to expose its existing non-private compatibility surface.
     namespace: dict[str, object] = {}
     exec("from shadowseed.manager import *", namespace)
 
@@ -163,4 +165,3 @@ def test_manager_wildcard_import_surface_remains_backward_compatible():
     assert namespace["ValidationSignal"] is manager.ValidationSignal
     assert namespace["ContradictionRecord"] is manager.ContradictionRecord
     assert namespace["DEFAULT_CONFIG"] is manager.DEFAULT_CONFIG
-
