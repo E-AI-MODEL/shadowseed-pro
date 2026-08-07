@@ -2,7 +2,7 @@
 
 ## Seed states
 
-The manager models the lifecycle with states such as `NEW`, `ACTIVE`, `DECAYING`, `DORMANT`, `PROMOTED`, and `EXPIRED`.
+`ShadowSeed` defines states such as `NEW`, `ACTIVE`, `DECAYING`, `DORMANT`, `PROMOTED`, and `EXPIRED`; `shadowseed.lifecycle` implements the mechanical TTL, dormancy, TrTL, and expiry transitions.
 
 State and influence are not interchangeable. A seed can be present without being allowed to steer.
 
@@ -14,7 +14,7 @@ Trace never grants influence by itself.
 
 ## Weight
 
-`weight` is steering power. New candidates start at `0.0`. The manager can raise weight only through a successful Validation Gate decision.
+`weight` is steering power. New candidates start at `0.0`. Gate-controlled increases are decided only inside the Validation Gate engine; explicit mechanical transitions may reduce or clear authority but do not validate a candidate.
 
 ## Authority encapsulation
 
@@ -131,8 +131,9 @@ semantics are not ordinary promotion-policy decisions.
 Mechanical intake/lifecycle transitions are a separate category: dedup activation,
 TTL decay/dormancy/expiry, TrTL reactivation, and vector-only expiry may update
 authority fields through `_set_authority` without representing a Gate policy
-decision. Their manager call sites are pinned by an exact invariant-test allowlist.
-The corresponding probe and contradiction-resolution methods on `SSLManager` are
+decision. Their canonical intake/lifecycle call sites are pinned by an exact
+invariant-test allowlist. The corresponding probe and contradiction-resolution
+methods on `SSLManager` are
 thin facades into the Gate engine, so no second Gate decision body exists behind
 the compatibility APIs.
 
@@ -170,7 +171,7 @@ separate, explicitly-recorded action.
 
 ## Point-of-use contract
 
-Promotion is necessary but not sufficient. `AgentSafetyContract` verifies the seed again before answer modification, retrieval, warnings, probes, or downstream action. It checks promotion state, positive weight, evidence suitability, and the presence of a logged promotion decision.
+Promotion is necessary but not sufficient. `AgentSafetyContract` applies specific eligibility checks, not universal safety, before answer modification, retrieval, warnings, probes, or downstream action. It always checks positive weight, `PROMOTED` status, and a live Gate-event link for the current `authority_version`. Blocking-contradiction and logged-promotion checks are enabled by default, but both public configuration options can relax them.
 
 Decisions are **atomic**: `AgentSafetyContract.decide_and_record(...)` decides and
 records in one call, so a decision cannot be used without being recorded. Each
@@ -232,3 +233,5 @@ A reviewable run should retain:
 - point-of-use influence action and decision;
 - surfaced seed identifiers and thresholds;
 - baseline and SSL outputs as separate fields.
+
+These records are immutable and replayable in process. The runtime does not yet persist them to append-only or tamper-evident storage, does not cryptographically chain them, and does not provide external timestamping. Durable audit integrity remains a production requirement rather than an implemented guarantee.

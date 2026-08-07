@@ -19,7 +19,7 @@
   <code>trace &gt; 0</code> means a candidate is remembered. <code>weight = 0</code> means it cannot steer.
 </p>
 
-Shadow Seed Learning, or SSL, treats a possible omission in a model answer as a **candidate for investigation**, not as hidden truth. The candidate is stored as an atomic shadow seed. It may recur, decay, reactivate, collect evidence, face contradiction, and be promoted. It may influence retrieval or an answer only after a logged Validation Gate decision and a second point-of-use safety check.
+Shadow Seed Learning, or SSL, treats a possible omission in a model answer as a **candidate for investigation**, not as hidden truth. Normalization tries to represent it as one small, testable shadow seed, but does not guarantee semantic atomicity. The seed may recur, decay, reactivate, collect evidence, face contradiction, and be promoted. It may influence retrieval or an answer only after a logged Validation Gate decision and a second point-of-use eligibility check.
 
 This repository contains the runtime, tests, benchmark harnesses, research instruments, evidence artifacts, and historical material used to examine that mechanism.
 
@@ -128,7 +128,7 @@ SSL applies that discipline to candidate absences in model output.
 
 ## What a seed is
 
-A seed is one atomic candidate absence.
+A seed is intended to represent one candidate absence. Atomicity is a normalization target and tested heuristic; a generated candidate can still be compound, vague, or poorly split.
 
 Good seed:
 
@@ -193,7 +193,7 @@ flowchart TD
     Q[User question] --> B[Generate uncontaminated baseline answer]
     B --> H[Store baseline in conversation history]
     B --> D[Detect candidate absences]
-    D --> N[Normalize into atomic seeds]
+    D --> N[Normalize toward one absence per seed]
     N --> S[Store seed: trace above zero, weight zero]
 
     S --> T[TTL decay]
@@ -263,14 +263,14 @@ The guarantee is about *new authority decisions* on the public API surface, not 
 
 | Property | Runtime implementation | Tests or evaluation |
 |---|---|---|
-| Atomicity is a normalization target and tested heuristic, not a guarantee for every candidate | [`manager.py`](src/shadowseed/manager.py), [`seed_normalization.py`](src/shadowseed/seed_normalization.py) | [`test_atomic_seed_rules.py`](tests/test_atomic_seed_rules.py), [`test_seed_normalization.py`](tests/test_seed_normalization.py) |
-| New seeds start weightless, and authority is encapsulated | [`ShadowSeed`](src/shadowseed/manager.py) (authority fields are `init=False` and guarded; the seed registry is a read-only view) | [`test_authority_encapsulation.py`](tests/test_authority_encapsulation.py) |
-| Trace is separate from influence | [`manager.py`](src/shadowseed/manager.py) | [`test_manager_alignment.py`](tests/test_manager_alignment.py), [`test_lifecycle_ttl.py`](tests/test_lifecycle_ttl.py) |
-| TTL decay and terminal expiry | [`SSLManager.decay_traces`](src/shadowseed/manager.py) | [`test_lifecycle_ttl.py`](tests/test_lifecycle_ttl.py), [`test_bad_seed_dies_out.py`](tests/test_bad_seed_dies_out.py) |
-| TrTL reactivation | [`SSLManager.reactivate_by_text`](src/shadowseed/manager.py) | [`test_lifecycle_ttl.py`](tests/test_lifecycle_ttl.py) |
-| Effects route through one Gate via typed signals and a named policy | [`SSLManager.submit_signals`](src/shadowseed/manager.py), [`shadowseed.gate`](src/shadowseed/gate/) | [`test_gate_contracts.py`](tests/test_gate_contracts.py), [`test_gate_signal_routing.py`](tests/test_gate_signal_routing.py), [`test_gate_path_unification.py`](tests/test_gate_path_unification.py) |
+| Atomicity is a normalization target and tested heuristic, not a guarantee for every candidate | [`intake.py`](src/shadowseed/intake.py), [`seed_normalization.py`](src/shadowseed/seed_normalization.py) | [`test_atomic_seed_rules.py`](tests/test_atomic_seed_rules.py), [`test_seed_normalization.py`](tests/test_seed_normalization.py), [`test_intake_extraction.py`](tests/test_intake_extraction.py) |
+| New seeds start weightless, and authority is encapsulated | [`ShadowSeed`](src/shadowseed/models.py), [`intake.py`](src/shadowseed/intake.py) (authority fields are `init=False` and guarded; the seed registry is a read-only view) | [`test_authority_encapsulation.py`](tests/test_authority_encapsulation.py), [`test_models_extraction.py`](tests/test_models_extraction.py) |
+| Trace is separate from influence | [`models.py`](src/shadowseed/models.py), [`lifecycle.py`](src/shadowseed/lifecycle.py) | [`test_manager_alignment.py`](tests/test_manager_alignment.py), [`test_lifecycle_ttl.py`](tests/test_lifecycle_ttl.py) |
+| TTL decay and terminal expiry | [`lifecycle.py`](src/shadowseed/lifecycle.py) through the `SSLManager` compatibility facade | [`test_lifecycle_ttl.py`](tests/test_lifecycle_ttl.py), [`test_bad_seed_dies_out.py`](tests/test_bad_seed_dies_out.py), [`test_lifecycle_extraction.py`](tests/test_lifecycle_extraction.py) |
+| TrTL reactivation | [`lifecycle.py`](src/shadowseed/lifecycle.py) through the `SSLManager` compatibility facade | [`test_lifecycle_ttl.py`](tests/test_lifecycle_ttl.py), [`test_lifecycle_extraction.py`](tests/test_lifecycle_extraction.py) |
+| Gate-controlled effects route through one engine via typed signals and a named policy | [`runtime_adapter.py`](src/shadowseed/gate/runtime_adapter.py), [`SSLManager.submit_signals`](src/shadowseed/manager.py) facade | [`test_gate_contracts.py`](tests/test_gate_contracts.py), [`test_gate_signal_routing.py`](tests/test_gate_signal_routing.py), [`test_gate_path_unification.py`](tests/test_gate_path_unification.py), [`test_gate_boundary_completion.py`](tests/test_gate_boundary_completion.py) |
 | Recurrence is never relabeled or double-counted as external evidence | [`shadowseed.gate.signals`](src/shadowseed/gate/signals.py), [`chat.py`](src/shadowseed/chat.py) | [`test_gate_signal_routing.py`](tests/test_gate_signal_routing.py) |
-| Contradictions have an auditable lifecycle and Gate-controlled recovery | [`shadowseed.gate.contradictions`](src/shadowseed/gate/contradictions.py), [`SSLManager.resolve_contradiction`](src/shadowseed/manager.py) | [`test_contradiction_lifecycle.py`](tests/test_contradiction_lifecycle.py) |
+| Contradictions have an auditable lifecycle and Gate-controlled recovery | [`contradictions.py`](src/shadowseed/contradictions.py), [`runtime_adapter.py`](src/shadowseed/gate/runtime_adapter.py), [`shadowseed.gate.contradictions`](src/shadowseed/gate/contradictions.py) | [`test_contradiction_lifecycle.py`](tests/test_contradiction_lifecycle.py), [`test_contradictions_extraction.py`](tests/test_contradictions_extraction.py) |
 | Generated output and unverified external observations are not trusted evidence | [`ssot.py`](src/shadowseed/ssot.py), [`shadowseed.gate`](src/shadowseed/gate/) | [`test_ssot_manager.py`](tests/test_ssot_manager.py), [`test_gate_path_unification.py`](tests/test_gate_path_unification.py) |
 | Influence requires one atomic point-of-use decision enforcing specific checks (weight > 0, promoted, live current-version Gate-event link; blocking-contradiction and logged-promotion checks on by default, both configurable) | [`AgentSafetyContract.decide_and_record`](src/shadowseed_agent/agent_contract.py) | [`test_point_of_use.py`](tests/test_point_of_use.py) |
 | Surfaced seeds are bounded, quoted candidate data (prompt boundary) | [`surfacing.py`](src/shadowseed/surfacing.py) | [`test_prompt_boundary.py`](tests/test_prompt_boundary.py) |
@@ -286,13 +286,13 @@ These are the precise limits of the claims above, so a reviewer can tell an enfo
 
 - **"Non-bypassable" is a public-API property over *new* authority decisions, not a Python-runtime one.** The Gate is the only path that makes a new authority decision on the supported API surface; direct assignment is blocked ([`test_direct_authority_assignment_is_blocked`](tests/test_authority_encapsulation.py)) and static checks over `src/` enforce that runtime code neither writes authority fields directly nor calls the unsafe hooks ([`test_no_direct_authority_mutation_in_non_benchmark_runtime`](tests/test_gate_signal_routing.py), [`test_no_unsafe_authority_hooks_in_runtime`](tests/test_gate_signal_routing.py)). Two things sit outside this by design: (1) **restoration** — `ShadowSeed.from_dict` / `SSLManager.restore_seed` reinstate a previously Gate-produced authority snapshot without the Gate (a validated deserialization/migration boundary, covered next), and `replace_existing=True` can replace a live seed; (2) the explicit `unsafe_set_authority` / `unsafe_install_seed` hooks, which remain available to tests and benchmarks and are not made technically impossible to call. Arbitrary in-process or third-party Python is out of scope for the guarantee.
 - **Restoration reinstates authority; it does not create it.** `ShadowSeed.from_dict` validates the snapshot before installing it and preserves the exact stored `authority_version`, produces no `GateEvent`, and counts as no new evidence ([`test_seed_restoration.py`](tests/test_seed_restoration.py)). It is a deliberate, supported trusted boundary for persisted state — not a way to mint authority a Gate never granted — and duplicate replacement is explicit (`replace_existing`, defaulting to no silent overwrite).
-- **"Atomic seed" is a normalization target and tested heuristic.** Normalization splits candidates toward one absence each ([`seed_normalization.py`](src/shadowseed/seed_normalization.py), [`test_atomic_seed_rules.py`](tests/test_atomic_seed_rules.py)), but a model-generated candidate can still be compound, vacuous, or mis-split. Atomicity makes a candidate *testable*; it is not a semantic guarantee for every input, and it does not make a candidate meaningful or important.
+- **"Atomic seed" is a normalization target and tested heuristic.** Normalization splits candidates toward one absence each ([`intake.py`](src/shadowseed/intake.py), [`seed_normalization.py`](src/shadowseed/seed_normalization.py), [`test_atomic_seed_rules.py`](tests/test_atomic_seed_rules.py)), but a model-generated candidate can still be compound, vacuous, or mis-split. Atomicity makes a candidate *testable*; it is not a semantic guarantee for every input, and it does not make a candidate meaningful or important.
 - **Audit records are frozen and replayable in-process; durable integrity is a production gap.** [`GateEvent`](src/shadowseed/gate/events.py) and [`AgentInfluenceRecord`](src/shadowseed_agent/audit_policy.py) are immutable in memory and support deterministic replay ([`test_point_of_use.py`](tests/test_point_of_use.py)). They are **not** persisted to append-only, tamper-evident storage; there is no cryptographic chaining, external timestamping, or write-once medium. Durable, integrity-verified audit storage is listed under [production gaps](#work-still-required-for-production-use).
 - **The point-of-use contract enforces specific checks, not universal safety.** [`AgentSafetyContract.decide_and_record`](src/shadowseed_agent/agent_contract.py) always requires that the seed has `weight > 0`, is promoted, and links to a live Gate event of the seed's *current* `authority_version` (stale authorizations are rejected). In the **default configuration** it also blocks a seed with a blocking contradiction (`block_contradicted_seed=True`) and requires a logged promotion (`require_logged_promotion=True`) — but both are public opt-outs on the contract, so an integration that constructs, e.g., `AgentSafetyContract(block_contradicted_seed=False)` relaxes them. Every decision — allowed or denied — is recorded ([`test_point_of_use.py`](tests/test_point_of_use.py), [`test_agent_safety_contract.py`](tests/test_agent_safety_contract.py)). "Zero-trust at the agent boundary" names this specific gate under its default configuration; it does **not** imply complete policy enforcement, protection against every integration that ignores or reconfigures the contract, or safety against all prompt-injection or evidence-poisoning attacks (see [Not established](#not-established)).
 
 ## Seed origin metadata
 
-[`SeedOrigin`](src/shadowseed/manager.py) records why a detector proposed a candidate, including its candidate type, detection basis, and optional context reference.
+[`SeedOrigin`](src/shadowseed/models.py) records why a detector proposed a candidate, including its candidate type, detection basis, and optional context reference.
 
 This metadata is audit-only. It does not count as evidence and cannot raise weight. A persuasive rationale still leaves a new seed at `weight = 0.0`.
 

@@ -4,7 +4,7 @@ Shadow Seed Learning separates detection, storage, validation, and influence. Th
 
 ## Runtime flow
 
-1. A detector proposes an atomic candidate absence.
+1. A detector proposes a candidate intended to represent one absence; normalization uses tested heuristics and can still produce a compound, vague, or weak candidate.
 2. `SSLManager` stores it with trace above zero and weight exactly zero.
 3. TTL reduces trace when the seed is not reinforced.
 4. TrTL can reactivate a dormant seed through a trigger or semantic match.
@@ -16,9 +16,10 @@ Shadow Seed Learning separates detection, storage, validation, and influence. Th
 
 ## Authority model
 
-Authority — whether a seed may eventually influence behavior — is governed by a
-single non-bypassable Validation Gate. The details live in dedicated documents;
-in summary:
+Authority — whether a seed may eventually influence behavior — is governed by one
+Gate-controlled decision engine on the supported runtime API. Restoration and
+explicitly unsafe test hooks remain outside that new-decision guarantee. The
+details live in dedicated documents; in summary:
 
 - **Signals and policies** ([gate-contracts.md](gate-contracts.md)): typed
   `ValidationSignal`s (recurrence, SSOT, human feedback, retrieval, dialectic,
@@ -28,8 +29,9 @@ in summary:
   evidence. Every Gate decision produces an immutable `GateEvent`.
 - **Encapsulation** ([lifecycle-and-gate.md](lifecycle-and-gate.md)): `weight`,
   `status`, `evidence_count`, `contradiction_score`, and `authority_version` are
-  guarded; the manager's single transition path is the only writer, and the seed
-  registry is a read-only view. Deserialization uses `ShadowSeed.from_dict` /
+  guarded; `SSLManager._set_authority` is the only runtime writer, while Gate
+  decisions and mechanical intake/lifecycle transitions remain distinct. The
+  seed registry is a read-only view. Deserialization uses `ShadowSeed.from_dict` /
   `SSLManager.restore_seed`.
 - **Contradictions** ([lifecycle-and-gate.md](lifecycle-and-gate.md)): explicit
   `ContradictionRecord`s with an `open`/`resolved`/`superseded`/`withdrawn`
@@ -61,7 +63,7 @@ in summary:
 | `shadowseed.recurrence_clustering` | Reusable recurrence clustering logic |
 | `shadowseed.ssot` | Trusted external rules and evidence interfaces |
 | `shadowseed.vectorstore` | Memory, FAISS, and Chroma storage adapters |
-| `shadowseed_agent.agent_contract` | Zero-trust point-of-use influence decision |
+| `shadowseed_agent.agent_contract` | Bounded point-of-use eligibility decision with explicit configurable checks |
 | `shadowseed.benchmark` | Evaluation harnesses, regression suites, and compatibility wrappers |
 
 ## Baseline isolation
