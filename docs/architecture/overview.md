@@ -46,7 +46,7 @@ in summary:
 
 | Module | Responsibility |
 |---|---|
-| `shadowseed.manager` | `SSLManager` configuration/state registry, audit logs, serialization, guarded authority mutation primitive, and compatibility facades |
+| `shadowseed.manager` | `SSLManager` runtime orchestration, configuration/state registry, audit logs, serialization, guarded authority mutation primitive, and compatibility facades |
 | `shadowseed.models` | Stable seed, lifecycle, validation-result, constellation, and probe data contracts |
 | `shadowseed.contradictions` | Contradiction record collection, identifier sequencing, blocking-state derivation, formal lifecycle workflows, and legacy migration |
 | `shadowseed.intake` | Embedding acquisition, atomicity heuristics, detector-candidate normalization, deduplication, and seed creation/update |
