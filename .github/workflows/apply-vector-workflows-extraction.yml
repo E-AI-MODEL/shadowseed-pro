@@ -1,0 +1,27 @@
+name: Render vector workflow extraction
+
+on:
+  push:
+    branches:
+      - refactor/extract-vector-workflows
+    paths:
+      - .github/scripts/apply_vector_workflows_extraction.py
+      - .github/workflows/apply-vector-workflows-extraction.yml
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: refactor/extract-vector-workflows
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Render vector workflow extraction
+        run: |
+          python .github/scripts/apply_vector_workflows_extraction.py
+          python -m compileall -q src tests
