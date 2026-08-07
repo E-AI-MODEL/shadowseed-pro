@@ -716,7 +716,7 @@ Fresh model labels are not bit-reproducible by default. Preserve the verdict art
 
 | Module | Responsibility |
 |---|---|
-| [`shadowseed.manager`](src/shadowseed/manager.py) | `SSLManager` orchestration, authority-transition facade, lifecycle, TTL, TrTL, Validation Gate facade, and feedback logs |
+| [`shadowseed.manager`](src/shadowseed/manager.py) | `SSLManager` configuration/state registry, audit logs, serialization, guarded authority mutation primitive, and compatibility facades |
 | [`shadowseed.models`](src/shadowseed/models.py) | Stable seed, lifecycle, validation-result, constellation, and probe data contracts |
 | [`shadowseed.contradictions`](src/shadowseed/contradictions.py) | Contradiction collection, blocking state, formal lifecycle workflows, identifier sequencing, and legacy migration |
 | [`shadowseed.intake`](src/shadowseed/intake.py) | Embedding acquisition, atomicity heuristics, detector-candidate normalization, deduplication, and seed creation/update |
