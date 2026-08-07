@@ -7,7 +7,6 @@ import pytest
 
 import shadowseed.contradictions as contradiction_module
 from shadowseed import manager as manager_module
-from shadowseed.contradictions import ContradictionDomain
 from shadowseed.gate.contradictions import ContradictionRecord, ContradictionStatus
 from shadowseed.gate.events import ContradictionState
 from shadowseed.manager import SSLManager
@@ -16,10 +15,6 @@ from shadowseed.models import ShadowSeed
 
 def _embedding(_text: str) -> np.ndarray:
     return np.array([1.0, 0.0, 0.0])
-
-
-def _seed(seed_id: str = "seed-1") -> ShadowSeed:
-    return ShadowSeed(id=seed_id, text="a seed", embedding=_embedding("a seed"))
 
 
 def test_new_module_reexports_the_canonical_record_contract() -> None:
@@ -95,40 +90,6 @@ def test_legacy_migration_preserves_the_open_record_facade() -> None:
 
     assert opened == [seed_id]
     assert created == manager.open_contradictions(seed_id)
-
-
-def test_domain_roundtrip_preserves_payload_and_identifier_sequence() -> None:
-    domain = ContradictionDomain()
-    seed = _seed()
-    first = domain.open(
-        seed,
-        reason="first",
-        source_ref="reviewer-a",
-        strength=0.25,
-        created_at="2026-08-01T00:00:00",
-    )
-    second = domain.open(
-        seed,
-        reason="second",
-        source_ref=None,
-        strength=0.75,
-        created_at="2026-08-02T00:00:00",
-    )
-    first.resolve("superseded evidence", resolved_at="2026-08-03T00:00:00")
-
-    payload = domain.to_dicts()
-    restored = ContradictionDomain.from_dicts(payload)
-    third = restored.open(
-        seed,
-        reason="third",
-        source_ref="reviewer-b",
-        strength=1.0,
-        created_at="2026-08-04T00:00:00",
-    )
-
-    assert restored.to_dicts()[:2] == payload
-    assert second.contradiction_id.endswith("000002")
-    assert third.contradiction_id.endswith("000003")
 
 
 def test_manager_facade_uses_one_canonical_record_collection() -> None:

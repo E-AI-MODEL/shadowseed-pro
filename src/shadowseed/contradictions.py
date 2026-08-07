@@ -9,8 +9,7 @@ orchestration.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable, Sequence
-from typing import Any
+from collections.abc import Callable, Iterable
 
 from shadowseed.gate.contradictions import ContradictionRecord, ContradictionStatus
 from shadowseed.gate.events import ContradictionState
@@ -100,7 +99,6 @@ class ContradictionDomain:
     ) -> ContradictionRecord:
         """Create and append one open contradiction record."""
 
-        self._sync_sequence()
         self._sequence += 1
         record = ContradictionRecord(
             contradiction_id=f"contra::{seed.id}::{self._sequence:06d}",
@@ -151,57 +149,28 @@ class ContradictionDomain:
         self,
         seeds: Iterable[ShadowSeed],
         *,
-        created_at: Callable[[], str] | None = None,
-        records_for: Callable[[str], Sequence[ContradictionRecord]] | None = None,
-        open_record: Callable[..., ContradictionRecord] | None = None,
+        open_record: Callable[..., ContradictionRecord],
     ) -> list[ContradictionRecord]:
         """Create records for positive legacy scalars that lack records.
 
-        Optional facade callbacks preserve historical manager override and
-        instrumentation points without duplicating the migration policy.
+        The manager supplies its historical ``_open_contradiction_record``
+        facade so the extraction preserves the existing call path without
+        introducing alternate migration or restore APIs.
         """
 
-        records_for = records_for or self.contradictions_for
         created: list[ContradictionRecord] = []
         for seed in seeds:
-            if seed.contradiction_score <= 0.0 or records_for(seed.id):
+            if seed.contradiction_score <= 0.0 or self.contradictions_for(seed.id):
                 continue
-            if open_record is not None:
-                created.append(
-                    open_record(
-                        seed,
-                        reason="migrated from legacy contradiction_score",
-                        source_ref="legacy_migration",
-                        strength=min(1.0, seed.contradiction_score),
-                    )
-                )
-                continue
-            if created_at is None:
-                raise TypeError("created_at is required without an open_record facade")
             created.append(
-                self.open(
+                open_record(
                     seed,
                     reason="migrated from legacy contradiction_score",
                     source_ref="legacy_migration",
                     strength=min(1.0, seed.contradiction_score),
-                    created_at=created_at(),
                 )
             )
         return created
-
-    def to_dicts(self) -> list[dict[str, Any]]:
-        """Serialize records without changing their historical shape."""
-
-        return [record.to_dict() for record in self.records]
-
-    @classmethod
-    def from_dicts(
-        cls,
-        data: Sequence[dict[str, Any]],
-    ) -> "ContradictionDomain":
-        """Restore records and continue identifiers after the highest sequence."""
-
-        return cls(ContradictionRecord.from_dict(item) for item in data)
 
 
 __all__ = [

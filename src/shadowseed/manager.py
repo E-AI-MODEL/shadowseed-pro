@@ -29,7 +29,10 @@ import numpy as np
 
 from shadowseed.contradictions import ContradictionDomain as _ContradictionDomain
 from shadowseed.core_config import SSLCoreConfig
-from shadowseed.gate.contradictions import ContradictionRecord, ContradictionStatus
+from shadowseed.gate.contradictions import (
+    ContradictionRecord,
+    ContradictionStatus,  # noqa: F401 - re-exported for compatibility
+)
 from shadowseed.gate.events import (
     ContradictionState,
     GateDecision,
@@ -69,9 +72,6 @@ if TYPE_CHECKING:
 
 
 DEFAULT_CONFIG = SSLCoreConfig()
-# Keep the historical manager wildcard-import surface without making the new
-# domain component another implicit manager export.
-_CONTRADICTION_STATUS_COMPAT = ContradictionStatus
 
 
 class SSLManager:
@@ -370,7 +370,6 @@ class SSLManager:
 
         return self._contradictions.migrate_legacy(
             self._seeds.values(),
-            records_for=self.contradictions_for,
             open_record=self._open_contradiction_record,
         )
 
