@@ -140,12 +140,13 @@ def _authority_calls(path: Path, class_name: str | None = None) -> dict[str, int
 def test_direct_authority_transitions_are_exactly_allowlisted() -> None:
     source_root = Path(__file__).resolve().parents[1] / "src/shadowseed"
 
-    assert _authority_calls(source_root / "manager.py", "SSLManager") == {
+    assert _authority_calls(source_root / "manager.py", "SSLManager") == {}
+    assert _authority_calls(source_root / "intake.py") == {
+        "activate_existing_seed": 1,
+    }
+    assert _authority_calls(source_root / "lifecycle.py") == {
         "decay_traces": 2,
         "reactivate_by_text": 1,
         "expire_vector_only_open_seeds": 1,
-    }
-    assert _authority_calls(source_root / "intake.py") == {
-        "activate_existing_seed": 1,
     }
 

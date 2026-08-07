@@ -20,7 +20,6 @@ from __future__ import annotations
 
 from dataclasses import replace
 from datetime import datetime
-import math
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Literal, Mapping
 
@@ -28,6 +27,7 @@ import numpy as np
 
 from shadowseed.contradictions import ContradictionDomain as _ContradictionDomain
 from shadowseed import intake as intake_engine
+from shadowseed import lifecycle as lifecycle_engine
 from shadowseed.core_config import SSLCoreConfig
 from shadowseed.gate.contradictions import (
     ContradictionRecord,
@@ -535,57 +535,14 @@ class SSLManager:
         )
 
     def _status_after_decay(self, seed: ShadowSeed) -> SeedStatus:
-        if seed.trace < self.dormant_threshold and seed.weight == 0.0:
-            return SeedStatus.DORMANT
-        if seed.trace < self.config.min_trace_for_gate and seed.status not in {
-            SeedStatus.PROMOTED,
-            SeedStatus.DORMANT,
-        }:
-            return SeedStatus.DECAYING
-        return seed.status
+        """Compatibility facade for lifecycle status derivation."""
+
+        return lifecycle_engine.status_after_decay(self, seed)
 
     def decay_traces(self, turns_passed: int = 1) -> None:
-        """TTL (Time-to-Live): decay every seed's trace and run the disappearance
-        clock. Trace fades exponentially without recognition; a seed that stays
-        DORMANT for ``dormant_ttl_turns`` without a TrTL trigger becomes EXPIRED.
-        This is the mirror of ``reactivate_by_text`` (TrTL), which keeps seeds
-        alive. EXPIRED seeds are terminal and skipped."""
-        for seed_id, seed in self._seeds.items():
-            if seed.status == SeedStatus.EXPIRED:
-                continue
+        """Compatibility facade for TTL decay, dormancy, and expiry."""
 
-            before_trace = seed.trace
-            seed.trace *= math.exp(-turns_passed / self.half_life_turns)
-            self._set_authority(seed, status=self._status_after_decay(seed))
-
-            # TTL to disappearance (4.5 §10): count consecutive dormant turns; a
-            # seed that stays DORMANT without a re-recognising trigger for
-            # dormant_ttl_turns becomes EXPIRED (dormant too long without a
-            # trigger). Expiry is a lifecycle-driven authority reset: it clears
-            # weight, so it is routed through the single authority path.
-            expired = False
-            if seed.status == SeedStatus.DORMANT:
-                seed.turns_dormant += turns_passed
-                if self.dormant_ttl_turns > 0 and seed.turns_dormant >= self.dormant_ttl_turns:
-                    self._set_authority(seed, status=SeedStatus.EXPIRED, weight=0.0)
-                    expired = True
-            else:
-                seed.turns_dormant = 0
-
-            self._touch_seed(seed)
-            self._record_and_sync(
-                "trace_decayed",
-                seed_id,
-                turns_passed=turns_passed,
-                trace_before=before_trace,
-                trace_after=seed.trace,
-                status=seed.status.value,
-                turns_dormant=seed.turns_dormant,
-            )
-            if expired:
-                self._record_event(
-                    "expired", seed_id, reason="dormant_ttl", turns_dormant=seed.turns_dormant
-                )
+        lifecycle_engine.decay_traces(self, turns_passed=turns_passed)
 
     def run_validation_gate_detailed(
         self,
@@ -655,55 +612,27 @@ class SSLManager:
             policy_id=policy_id,
         )
 
-    def reactivate_by_text(self, text: str, threshold: float = 0.65) -> list[str]:
-        """TrTL (Trigger-to-Live): scan new input for triggers of DORMANT seeds
-        and revive the matches. A dormant seed survives by contextual
-        recognition — cosine similarity above ``threshold`` or a trigger-keyword
-        hit — which bumps its trace, returns it to NEW and resets the dormancy
-        (TTL) clock. This is the mirror of ``decay_traces`` (TTL): recognition
-        keeps a seed alive, neglect lets it expire. EXPIRED seeds are terminal
-        and are never reactivated."""
-        query_emb = self.get_embedding(text)
-        reactivated: list[str] = []
+    def reactivate_by_text(
+        self, text: str, threshold: float = 0.65
+    ) -> list[str]:
+        """Compatibility facade for TrTL reactivation."""
 
-        for seed_id, seed in self._seeds.items():
-            if seed.status != SeedStatus.DORMANT:
-                continue
+        return lifecycle_engine.reactivate_by_text(
+            self,
+            text,
+            threshold=threshold,
+        )
 
-            similarity = float(np.dot(query_emb, seed.embedding))
-            keyword_hit = any(
-                keyword.lower() in text.lower() for keyword in seed.trigger_keywords
-            )
+    def scan_trtl_triggers(
+        self, text: str, threshold: float = 0.65
+    ) -> list[str]:
+        """Compatibility facade for the canonical TrTL name."""
 
-            if similarity >= threshold or keyword_hit:
-                seed.trace = min(seed.trace + self.reactivation_increment, self.max_trace)
-                self._set_authority(seed, status=SeedStatus.NEW)
-                seed.turns_dormant = 0
-                self._touch_seed(seed)
-                semantic_hit = similarity >= threshold
-                if semantic_hit and keyword_hit:
-                    basis = "semantic+keyword"
-                elif semantic_hit:
-                    basis = "semantic"
-                else:
-                    basis = "keyword"
-                self._record_and_sync(
-                    "reactivated",
-                    seed_id,
-                    similarity=similarity,
-                    keyword_hit=keyword_hit,
-                    basis=basis,
-                    trace=seed.trace,
-                )
-                reactivated.append(seed_id)
-
-        return reactivated
-
-    def scan_trtl_triggers(self, text: str, threshold: float = 0.65) -> list[str]:
-        """Canonical TrTL name for ``reactivate_by_text`` (4.5 §12.3
-        Trigger-matching). Same behaviour; kept so call sites can use the
-        doctrinal term."""
-        return self.reactivate_by_text(text, threshold=threshold)
+        return lifecycle_engine.scan_trtl_triggers(
+            self,
+            text,
+            threshold=threshold,
+        )
 
     def find_uncertain_region(
         self,
@@ -796,20 +725,15 @@ class SSLManager:
             )
         return updates
 
-    def expire_vector_only_open_seeds(self, max_age_days: int = 30) -> list[str]:
-        if self.vector_constellation is None:
-            return []
-        expired = self.vector_constellation.housekeeping(max_age_days=max_age_days)
-        for seed_id in expired:
-            if seed_id in self._seeds:
-                # Expiry is a terminal authority reset: clear weight too, matching
-                # TTL expiry, so an expired seed carries no residual authority.
-                self._set_authority(
-                    self._seeds[seed_id], status=SeedStatus.EXPIRED, weight=0.0
-                )
-                self._touch_seed(self._seeds[seed_id])
-                self._record_event("expired", seed_id, max_age_days=max_age_days)
-        return expired
+    def expire_vector_only_open_seeds(
+        self, max_age_days: int = 30
+    ) -> list[str]:
+        """Compatibility facade for vector-store-driven terminal expiry."""
+
+        return lifecycle_engine.expire_vector_only_open_seeds(
+            self,
+            max_age_days=max_age_days,
+        )
 
     @staticmethod
     def _constellation_label(cluster: list[ShadowSeed]) -> str:
