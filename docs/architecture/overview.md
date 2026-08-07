@@ -46,7 +46,9 @@ in summary:
 
 | Module | Responsibility |
 |---|---|
-| `shadowseed.manager` | Seed model, encapsulated authority, lifecycle, TTL, TrTL, Validation Gate, contradiction records, probe feedback |
+| `shadowseed.manager` | `SSLManager` orchestration, authority-transition facade, lifecycle, TTL, TrTL, Validation Gate facade, probe feedback |
+| `shadowseed.models` | Stable seed, lifecycle, validation-result, constellation, and probe data contracts |
+| `shadowseed.contradictions` | Contradiction record collection, identifier sequencing, blocking-state derivation, formal lifecycle workflows, and legacy migration |
 | `shadowseed.gate` | Typed validation signals, named Gate policies, and immutable Gate events / contradiction records |
 | `shadowseed.surfacing` | Shared cross-turn eligibility, thresholds, ranking, and resurface damping |
 | `shadowseed.chat` | Live sidecar session with uncontaminated baseline history |

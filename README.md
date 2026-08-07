@@ -716,7 +716,9 @@ Fresh model labels are not bit-reproducible by default. Preserve the verdict art
 
 | Module | Responsibility |
 |---|---|
-| [`shadowseed.manager`](src/shadowseed/manager.py) | Seed model, trace/weight separation, lifecycle, TTL, TrTL, Validation Gate, contradiction, feedback logs |
+| [`shadowseed.manager`](src/shadowseed/manager.py) | `SSLManager` orchestration, authority-transition facade, lifecycle, TTL, TrTL, Validation Gate facade, and feedback logs |
+| [`shadowseed.models`](src/shadowseed/models.py) | Stable seed, lifecycle, validation-result, constellation, and probe data contracts |
+| [`shadowseed.contradictions`](src/shadowseed/contradictions.py) | Contradiction collection, blocking state, formal lifecycle workflows, identifier sequencing, and legacy migration |
 | [`shadowseed.seed_normalization`](src/shadowseed/seed_normalization.py) | Candidate cleanup and atomic splitting |
 | [`shadowseed.surfacing`](src/shadowseed/surfacing.py) | Shared relevance thresholds, early-turn discipline, top-k selection, resurface damping |
 | [`shadowseed.chat`](src/shadowseed/chat.py) | Live sidecar session, baseline isolation, recurrence, point-of-use filtering, audit trail |
