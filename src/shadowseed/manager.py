@@ -21,13 +21,13 @@ from __future__ import annotations
 from dataclasses import replace
 from datetime import datetime
 import math
-import re
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Literal, Mapping
 
 import numpy as np
 
 from shadowseed.contradictions import ContradictionDomain as _ContradictionDomain
+from shadowseed import intake as intake_engine
 from shadowseed.core_config import SSLCoreConfig
 from shadowseed.gate.contradictions import (
     ContradictionRecord,
@@ -430,75 +430,26 @@ class SSLManager:
         self._sync_seed(seed_id)
 
     def _load_embedder(self):
-        if self._embedder is not None:
-            return self._embedder
-        try:
-            from sentence_transformers import SentenceTransformer
-        except ImportError as exc:
-            raise ImportError(
-                "Install sentence-transformers to use SSLManager: "
-                "pip install sentence-transformers"
-            ) from exc
-        self._embedder = SentenceTransformer(self.model_name)
-        return self._embedder
+        """Compatibility facade for the canonical intake backend loader."""
+
+        return intake_engine.load_embedder(self)
 
     def get_embedding(self, text: str) -> np.ndarray:
-        if self._embedding_fn is not None:
-            return self._normalize_embedding(self._embedding_fn(text))
-        embedder = self._load_embedder()
-        return embedder.encode(text, normalize_embeddings=True)
+        """Compatibility facade for canonical intake embedding."""
+
+        return intake_engine.get_embedding(self, text)
 
     @staticmethod
     def _normalize_embedding(embedding: np.ndarray) -> np.ndarray:
-        norm = np.linalg.norm(embedding)
-        if norm == 0:
-            return embedding
-        return embedding / norm
+        """Compatibility facade for historical callers and tests."""
+
+        return intake_engine.normalize_embedding(embedding)
 
     @staticmethod
     def is_atomic_seed(text: str, max_seed_words: int | None = None) -> bool:
-        """Heuristic filter for whether a candidate is a single atomic seed.
+        """Compatibility facade for the canonical atomicity heuristic."""
 
-        Human review is still needed. The separator/broad-term/category token
-        lists below include Dutch words (for example " en ", " of ", "zoals",
-        "analysekader", "ontbreekt"): these are retained, documented
-        input-language aliases for the historical Dutch research corpus. They are
-        matched as substrings and never surfaced to the user, so keeping them
-        does not change the repository's English-facing behavior; translating
-        them away would silently weaken detection on the existing corpus.
-        """
-
-        lowered = text.lower().strip()
-        # Dutch: " en "=and, " of "=or, "zoals"=such as, "bijvoorbeeld"=for example.
-        separators = [",", ";", " en ", " of ", "zoals", "bijvoorbeeld"]
-        # Dutch: analysekader=analysis framework, oorzaken=causes, gevolgen=effects,
-        # contexten=contexts, perspectieven=perspectives, meerdere=multiple.
-        broad_terms = [
-            "analysekader",
-            "complete",
-            "oorzaken",
-            "gevolgen",
-            "contexten",
-            "perspectieven",
-            "meerdere",
-        ]
-        # Dutch: schaalbaarheid=scalability, kolonialisme=colonialism.
-        generic_category_terms = {
-            "security",
-            "privacy",
-            "schaalbaarheid",
-            "kolonialisme",
-            "context",
-        }
-        word_limit = DEFAULT_CONFIG.max_seed_words if max_seed_words is None else max_seed_words
-        has_many_separators = sum(sep in lowered for sep in separators) >= 2
-        has_broad_terms = any(term in lowered for term in broad_terms)
-        word_count = len(re.findall(r"\w+", text))
-        if word_count <= 3 and any(term in lowered for term in generic_category_terms) and (
-            "ontbreekt" in lowered or "ontbreken" in lowered
-        ):
-            return False
-        return not has_many_separators and not has_broad_terms and word_count <= word_limit
+        return intake_engine.is_atomic_seed(text, max_seed_words=max_seed_words)
 
     def normalize_detection_candidates(
         self,
@@ -506,8 +457,10 @@ class SSLManager:
         expand_short_fragments: bool = True,
         split_broad: bool = True,
     ) -> list[str]:
-        return normalize_detection_candidates(
-            list(candidates),
+        """Compatibility facade for detector-candidate normalization."""
+
+        return intake_engine.normalize_detection_candidates(
+            candidates,
             expand_short_fragments=expand_short_fragments,
             split_broad=split_broad,
         )
@@ -522,79 +475,26 @@ class SSLManager:
         min_seed_words: int = 0,
         origin: SeedOrigin | None = None,
     ) -> dict[str, Any]:
-        raw_candidates = list(candidates)
-        normalized = self.normalize_detection_candidates(
-            raw_candidates,
+        """Compatibility facade for canonical candidate intake."""
+
+        return intake_engine.ingest_detection_candidates(
+            self,
+            candidates,
+            trigger_keywords=trigger_keywords,
             expand_short_fragments=expand_short_fragments,
             split_broad=split_broad,
+            deduplicate=deduplicate,
+            min_seed_words=min_seed_words,
+            origin=origin,
         )
-        accepted: list[dict[str, str]] = []
-        rejected: list[dict[str, str]] = []
-        seen_texts: set[str] = set()
-        accepted_ids: set[str] = set()
-        for candidate in normalized:
-            if min_seed_words and len(re.findall(r"\w+", candidate)) < min_seed_words:
-                rejected.append({"text": candidate, "reason": "too_vague"})
-                continue
-            key = candidate.strip().lower()
-            if key in seen_texts:
-                rejected.append({"text": candidate, "reason": "duplicate"})
-                continue
-            try:
-                seed_id = self.add_or_update_seed(
-                    candidate,
-                    trigger_keywords=trigger_keywords,
-                    deduplicate=deduplicate,
-                    origin=origin,
-                )
-            except ValueError:
-                rejected.append({"text": candidate, "reason": "not_atomic"})
-                continue
-            if seed_id in accepted_ids:
-                # Deduplication merged this candidate into a seed that was
-                # already accepted in this batch; emitting it again would
-                # produce a duplicate seed_id row. Record it as a duplicate
-                # instead of a second accepted seed under the same id.
-                rejected.append({"text": candidate, "reason": "duplicate"})
-                continue
-            accepted.append({"seed_id": seed_id, "text": candidate})
-            accepted_ids.add(seed_id)
-            seen_texts.add(key)
-        return {
-            "input_count": len(raw_candidates),
-            "normalized_candidates": normalized,
-            "accepted": accepted,
-            "rejected": rejected,
-        }
 
-    def _maybe_deduplicate_seed(self, new_embedding: np.ndarray) -> tuple[str, float] | None:
-        for seed_id, seed in self._seeds.items():
-            # EXPIRED is terminal (removed from shadow memory): a degraded
-            # seed must not be resurrected by a near-duplicate re-detection. Skip
-            # it so a new seed is created instead of reviving the dead one.
-            if seed.status == SeedStatus.EXPIRED:
-                continue
-            similarity = float(np.dot(new_embedding, seed.embedding))
-            if similarity >= self.dedup_threshold:
-                return seed_id, similarity
-        return None
+    def _maybe_deduplicate_seed(
+        self, new_embedding: np.ndarray
+    ) -> tuple[str, float] | None:
+        return intake_engine.maybe_deduplicate_seed(self, new_embedding)
 
     def _activate_existing_seed(self, seed_id: str, similarity: float) -> str:
-        seed = self._seeds[seed_id]
-        seed.occurrence_count += 1
-        seed.trace = min(seed.trace + 0.5, self.max_trace)
-        seed.turns_dormant = 0
-        if seed.status != SeedStatus.PROMOTED:
-            self._set_authority(seed, status=SeedStatus.ACTIVE)
-        self._touch_seed(seed)
-        self._record_and_sync(
-            "deduplicated",
-            seed_id,
-            similarity=similarity,
-            occurrence_count=seed.occurrence_count,
-            trace=seed.trace,
-        )
-        return seed_id
+        return intake_engine.activate_existing_seed(self, seed_id, similarity)
 
     def _create_seed(
         self,
@@ -603,22 +503,13 @@ class SSLManager:
         trigger_keywords: Iterable[str] | None,
         origin: SeedOrigin | None = None,
     ) -> str:
-        seed_id = f"ss_{len(self._seeds) + 1:03d}"
-        self._seeds[seed_id] = ShadowSeed(
-            id=seed_id,
-            text=text,
-            embedding=embedding,
-            trigger_keywords=list(trigger_keywords or []),
-            trace=self.config.trace_start,
+        return intake_engine.create_seed(
+            self,
+            text,
+            embedding,
+            trigger_keywords,
             origin=origin,
         )
-        self._record_and_sync(
-            "created",
-            seed_id,
-            text=text,
-            origin=origin.to_dict() if origin is not None else None,
-        )
-        return seed_id
 
     def add_or_update_seed(
         self,
@@ -627,20 +518,15 @@ class SSLManager:
         deduplicate: bool = True,
         origin: SeedOrigin | None = None,
     ) -> str:
-        if not self.is_atomic_seed(text, max_seed_words=self.config.max_seed_words):
-            raise ValueError("Seed appears too broad. Split it into atomic seeds first.")
+        """Compatibility facade for canonical seed intake and deduplication."""
 
-        new_embedding = self.get_embedding(text)
-        if deduplicate:
-            deduplicated = self._maybe_deduplicate_seed(new_embedding)
-            if deduplicated is not None:
-                # Origin records the first detection of a seed; a later
-                # near-duplicate re-detection reinforces the existing seed and
-                # does not overwrite its recorded origin.
-                seed_id, similarity = deduplicated
-                return self._activate_existing_seed(seed_id, similarity)
-
-        return self._create_seed(text, new_embedding, trigger_keywords, origin=origin)
+        return intake_engine.add_or_update_seed(
+            self,
+            text,
+            trigger_keywords=trigger_keywords,
+            deduplicate=deduplicate,
+            origin=origin,
+        )
 
     def _status_after_decay(self, seed: ShadowSeed) -> SeedStatus:
         if seed.trace < self.dormant_threshold and seed.weight == 0.0:

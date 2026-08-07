@@ -102,38 +102,50 @@ def test_formal_resolution_unblocks_without_restoring_authority() -> None:
     assert seed.weight == weight_before_resolution
     assert seed.status is not SeedStatus.PROMOTED
 
-def _direct_manager_authority_calls() -> dict[str, int]:
-    path = Path(__file__).resolve().parents[1] / "src/shadowseed/manager.py"
+
+def _authority_calls(path: Path, class_name: str | None = None) -> dict[str, int]:
     tree = ast.parse(path.read_text(encoding="utf-8"))
-    manager = next(
-        node
-        for node in tree.body
-        if isinstance(node, ast.ClassDef) and node.name == "SSLManager"
-    )
+    if class_name is None:
+        definitions = [
+            node
+            for node in tree.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        ]
+    else:
+        owner = next(
+            node
+            for node in tree.body
+            if isinstance(node, ast.ClassDef) and node.name == class_name
+        )
+        definitions = [
+            node
+            for node in owner.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        ]
+
     calls: dict[str, int] = {}
-    for method in manager.body:
-        if not isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            continue
+    for definition in definitions:
         count = sum(
             1
-            for call in ast.walk(method)
+            for call in ast.walk(definition)
             if isinstance(call, ast.Call)
             and isinstance(call.func, ast.Attribute)
             and call.func.attr == "_set_authority"
         )
         if count:
-            calls[method.name] = count
+            calls[definition.name] = count
     return calls
 
 
-def test_direct_manager_authority_transitions_are_exactly_allowlisted() -> None:
-    # These are mechanical intake/lifecycle transitions, not Gate policy
-    # decisions. Pin both the methods and call counts so a new manager-side
-    # authority path (or an extra call inside an allowed method) fails CI.
-    assert _direct_manager_authority_calls() == {
-        "_activate_existing_seed": 1,
+def test_direct_authority_transitions_are_exactly_allowlisted() -> None:
+    source_root = Path(__file__).resolve().parents[1] / "src/shadowseed"
+
+    assert _authority_calls(source_root / "manager.py", "SSLManager") == {
         "decay_traces": 2,
         "reactivate_by_text": 1,
         "expire_vector_only_open_seeds": 1,
+    }
+    assert _authority_calls(source_root / "intake.py") == {
+        "activate_existing_seed": 1,
     }
 
