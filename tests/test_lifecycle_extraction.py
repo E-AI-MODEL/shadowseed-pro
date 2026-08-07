@@ -149,6 +149,9 @@ def test_scan_trtl_keeps_reactivation_override_point() -> None:
 
 def test_vector_housekeeping_expiry_resets_authority() -> None:
     class FakeVectorConstellation:
+        def sync_seed(self, _seed) -> None:
+            return None
+
         def housekeeping(self, max_age_days: int) -> list[str]:
             assert max_age_days == 7
             return ["ss_001", "missing"]
