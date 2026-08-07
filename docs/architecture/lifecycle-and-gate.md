@@ -119,18 +119,22 @@ stored as a separate mutable field.
 
 ## Validation Gate
 
-Every authority decision is applied by the signal-native `submit_signals` engine
-and recorded as one `GateEvent`. Public callers may submit typed signals directly;
-the historical boolean methods are compatibility adapters into the same engine.
+Every **Gate-controlled** runtime authority decision is applied inside the
+canonical Gate engine in
+[`shadowseed.gate.runtime_adapter`](../../src/shadowseed/gate/runtime_adapter.py)
+and recorded as one `GateEvent`. Signal-native policy decisions enter through
+`submit_signals`; the historical boolean methods are compatibility adapters into
+that same engine. Bounded probe feedback and formal contradiction resolution are
+specialized typed-signal workflows in the same module because their historical
+semantics are not ordinary promotion-policy decisions.
 
-That engine has exactly one executable body, in
-[`shadowseed.gate.runtime_adapter`](../../src/shadowseed/gate/runtime_adapter.py).
-The Gate methods on `SSLManager` (`submit_signals`, `run_validation_gate`,
-`run_validation_gate_detailed`, and the historical private
-`_run_validation_gate_core`) are thin methods that delegate to it explicitly, so
-a reader of `manager.py` can follow one call into the code that actually runs.
-Nothing is installed or replaced on the class at import time, and no second
-decision path exists behind the boolean API.
+Mechanical intake/lifecycle transitions are a separate category: dedup activation,
+TTL decay/dormancy/expiry, TrTL reactivation, and vector-only expiry may update
+authority fields through `_set_authority` without representing a Gate policy
+decision. Their manager call sites are pinned by an exact invariant-test allowlist.
+The corresponding probe and contradiction-resolution methods on `SSLManager` are
+thin facades into the Gate engine, so no second Gate decision body exists behind
+the compatibility APIs.
 
 Policy semantics are explicit:
 

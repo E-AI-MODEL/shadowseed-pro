@@ -1,10 +1,11 @@
 """The one executable Validation Gate engine.
 
-This module holds the *only* implementation that decides authority changes.
-``SSLManager`` does not re-implement it: its Gate methods (``submit_signals``,
-``run_validation_gate``, ``run_validation_gate_detailed``) delegate here
-explicitly, so a reader of ``manager.py`` can follow one call into the real
-body. Nothing is installed onto the class at import time.
+This module holds the *only* implementation that decides Gate-controlled
+authority changes.
+``SSLManager`` does not re-implement them: its signal-native Gate methods and
+the bounded probe-feedback / contradiction-resolution authority workflows
+delegate here explicitly, so a reader of ``manager.py`` can follow one call
+into the real decision body. Nothing is installed onto the class at import time.
 
 The historical boolean API is retained as an input/output adapter only: it
 translates booleans into typed signals, runs this same engine, and translates
@@ -372,6 +373,192 @@ def submit_signals(
     )
     manager._sync_seed(seed_id)
     return event
+
+
+def resolve_contradiction(
+    manager: Any,
+    seed_id: str,
+    *,
+    basis: str,
+    contradiction_id: str | None = None,
+    superseded: bool = False,
+    withdrawn: bool = False,
+    resolver: str = "human",
+) -> GateEvent:
+    """Apply formal contradiction resolution at the authority boundary.
+
+    The contradiction domain owns record lifecycle mechanics. This Gate engine
+    owns the authority effect: the compatibility scalar clear, typed resolution
+    signal, and immutable Gate event occur in one bounded workflow. Resolution
+    only unblocks; it never restores weight or promotion.
+    """
+
+    from shadowseed.models import SeedStatus
+
+    seed = manager._seeds[seed_id]
+    if seed.status == SeedStatus.EXPIRED:
+        raise ValueError(
+            "expired seeds cannot recover through contradiction resolution"
+        )
+
+    status_before = seed.status.value
+    weight_before = seed.weight
+    contradiction_before = manager._contradiction_state(seed)
+    manager._contradictions.resolve(
+        seed_id,
+        basis=basis,
+        contradiction_id=contradiction_id,
+        superseded=superseded,
+        withdrawn=withdrawn,
+        resolved_at=manager._now_iso,
+        open_records=manager.open_contradictions(seed_id),
+    )
+    if not manager.open_contradictions(seed_id):
+        manager._set_authority(seed, contradiction_score=0.0)
+    manager._touch_seed(seed)
+    signal = ValidationSignal(
+        kind=SignalKind.CONTRADICTION_RESOLUTION,
+        direction=SignalDirection.SUPPORT,
+        strength=1.0,
+        source_ref=resolver,
+        reason=basis,
+    )
+    return manager._record_gate_event(
+        seed,
+        GateDecision.CONTRADICTION_RESOLVED,
+        [signal],
+        policy_id="contradiction_resolution",
+        status_before=status_before,
+        weight_before=weight_before,
+        contradiction_before=contradiction_before,
+        reason=f"resolved by {resolver}: {basis}",
+    )
+
+
+def apply_probe_feedback(
+    manager: Any,
+    seed_id: str,
+    outcome: Any,
+    probe_type: Any,
+):
+    """Apply bounded probe feedback at the canonical authority boundary.
+
+    ACTIVE and PROMOTED seeds accept bounded weight nudges. Rewards cannot
+    promote on their own; penalties may demote a promoted seed below the
+    configured threshold. Non-feedbackable states retain the historical skipped
+    result and do not create a Gate event.
+    """
+
+    from shadowseed.models import (
+        ProbeFeedbackResult,
+        ProbeOutcome,
+        ProbeType,
+        SeedStatus,
+    )
+
+    if seed_id not in manager._seeds:
+        raise KeyError(f"Seed '{seed_id}' does not exist.")
+
+    seed = manager._seeds[seed_id]
+    outcome_enum = ProbeOutcome(outcome)
+    probe_type_enum = ProbeType(probe_type)
+    status_before = seed.status.value
+    weight_before = seed.weight
+
+    feedbackable = {SeedStatus.ACTIVE, SeedStatus.PROMOTED}
+    if seed.status not in feedbackable:
+        result = ProbeFeedbackResult(
+            seed_id=seed_id,
+            probe_type=probe_type_enum.value,
+            outcome=outcome_enum.value,
+            weight_before=weight_before,
+            weight_after=weight_before,
+            delta_applied=0.0,
+            status_before=status_before,
+            status_after=status_before,
+            demoted=False,
+            skipped=True,
+            skip_reason=f"status '{seed.status.value}' does not accept feedback",
+        )
+        manager.feedback_log.append(result)
+        return result
+
+    delta_map = {
+        ProbeOutcome.REWARD: manager.reward_step,
+        ProbeOutcome.PENALTY: -manager.penalty_step,
+        ProbeOutcome.NEUTRAL: 0.0,
+    }
+    delta_requested = delta_map[outcome_enum]
+    new_weight = max(0.0, min(1.0, seed.weight + delta_requested))
+    demoted = (
+        seed.status == SeedStatus.PROMOTED
+        and new_weight < manager.promotion_threshold
+    )
+
+    manager._set_authority(
+        seed,
+        weight=new_weight,
+        status=SeedStatus.ACTIVE if demoted else None,
+    )
+    manager._touch_seed(seed)
+
+    delta_applied = seed.weight - weight_before
+    result = ProbeFeedbackResult(
+        seed_id=seed_id,
+        probe_type=probe_type_enum.value,
+        outcome=outcome_enum.value,
+        weight_before=weight_before,
+        weight_after=seed.weight,
+        delta_applied=delta_applied,
+        status_before=status_before,
+        status_after=seed.status.value,
+        demoted=demoted,
+        skipped=False,
+        skip_reason="",
+    )
+    manager.feedback_log.append(result)
+
+    probe_direction = {
+        ProbeOutcome.REWARD: SignalDirection.SUPPORT,
+        ProbeOutcome.PENALTY: SignalDirection.OPPOSE,
+        ProbeOutcome.NEUTRAL: SignalDirection.NEUTRAL,
+    }[outcome_enum]
+    if demoted:
+        decision = GateDecision.DEMOTED
+    elif delta_applied != 0.0:
+        decision = GateDecision.VALIDATED
+    else:
+        decision = GateDecision.NO_CHANGE
+    manager._record_gate_event(
+        seed,
+        decision,
+        [
+            ValidationSignal(
+                kind=SignalKind.PROBE,
+                direction=probe_direction,
+                strength=min(1.0, abs(delta_requested)),
+                source_ref=probe_type_enum.value,
+                reason=f"probe {outcome_enum.value} ({probe_type_enum.value})",
+            )
+        ],
+        policy_id="probe_feedback",
+        status_before=status_before,
+        weight_before=weight_before,
+        contradiction_before=manager._contradiction_state(seed),
+        reason=f"probe {outcome_enum.value}",
+    )
+    manager._record_and_sync(
+        "probe_feedback",
+        seed_id,
+        probe_type=probe_type_enum.value,
+        outcome=outcome_enum.value,
+        weight_before=weight_before,
+        weight_after=seed.weight,
+        delta_requested=delta_requested,
+        delta_applied=delta_applied,
+        demoted=demoted,
+    )
+    return result
 
 
 def _compatibility_signals(
