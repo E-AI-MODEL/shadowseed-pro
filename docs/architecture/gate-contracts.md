@@ -1,13 +1,20 @@
 # Validation Gate contracts
 
-This document describes the typed contracts every authority decision uses. They
+This document describes the typed contracts every Gate-controlled authority decision
+uses. They
 live in the `shadowseed.gate` package and implement Phase 1 of the Validation
 Gate alignment (issue #10) and the data model in
 [ADR-001](adr/ADR-001-validation-gate-authority.md).
 
-These contracts are wired into the runtime. `SSLManager.submit_signals` is
-the single executable authority-changing Gate engine; compatibility methods
-translate their inputs into these same contracts before delegating to it.
+These contracts are wired into the runtime.
+`shadowseed.gate.runtime_adapter` is the single executable **Gate-controlled**
+authority-decision engine. `SSLManager.submit_signals` is its signal-native policy
+entry point; compatibility methods and the bounded probe/resolution authority
+workflows delegate into the same engine rather than implementing Gate decisions
+in `manager.py`. Mechanical intake/lifecycle transitions (dedup activation, decay,
+dormancy/expiry, and TrTL reactivation) remain explicit non-Gate state transitions
+through `_set_authority`; invariant tests keep those call sites on an exact
+allowlist so a new manager-side authority path cannot appear silently.
 
 ## Signals (`shadowseed.gate.signals`)
 

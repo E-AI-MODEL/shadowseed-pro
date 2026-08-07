@@ -306,58 +306,16 @@ class SSLManager:
         withdrawn: bool = False,
         resolver: str = "human",
     ) -> GateEvent:
-        """Gate-controlled contradiction recovery.
+        """Resolve contradiction records through the canonical Gate boundary."""
 
-        Marks the seed's open contradiction record(s) as resolved (or superseded
-        / withdrawn) with a recorded ``basis``, then — if no blocking record
-        remains — clears the blocking scalar through the authority path. This
-        only *unblocks* the seed; authority is not restored here. Recovery still
-        requires revalidation (a subsequent signal submission) under the active
-        policy, which is what actually raises weight again.
-
-        Recurrence alone can never reach this method: resolution is an explicit,
-        separately-recorded action with a mandatory basis.
-        """
-
-        seed = self._seeds[seed_id]
-        if seed.status == SeedStatus.EXPIRED:
-            raise ValueError(
-                "expired seeds cannot recover through contradiction resolution"
-            )
-
-        status_before = seed.status.value
-        weight_before = seed.weight
-        contradiction_before = self._contradiction_state(seed)
-        self._contradictions.resolve(
+        return gate_engine.resolve_contradiction(
+            self,
             seed_id,
             basis=basis,
             contradiction_id=contradiction_id,
             superseded=superseded,
             withdrawn=withdrawn,
-            resolved_at=self._now_iso,
-            open_records=self.open_contradictions(seed_id),
-        )
-        # If nothing blocking remains, clear the scalar so the point-of-use
-        # contract and the policies stop treating the seed as contradicted.
-        if not self.open_contradictions(seed_id):
-            self._set_authority(seed, contradiction_score=0.0)
-        self._touch_seed(seed)
-        signal = ValidationSignal(
-            kind=SignalKind.CONTRADICTION_RESOLUTION,
-            direction=SignalDirection.SUPPORT,
-            strength=1.0,
-            source_ref=resolver,
-            reason=basis,
-        )
-        return self._record_gate_event(
-            seed,
-            GateDecision.CONTRADICTION_RESOLVED,
-            [signal],
-            policy_id="contradiction_resolution",
-            status_before=status_before,
-            weight_before=weight_before,
-            contradiction_before=contradiction_before,
-            reason=f"resolved by {resolver}: {basis}",
+            resolver=resolver,
         )
 
 
@@ -1013,122 +971,12 @@ class SSLManager:
         self,
         seed_id: str,
         outcome: ProbeOutcome | Literal["reward", "penalty", "neutral"],
-        probe_type: ProbeType | Literal["follow_up", "retrieval", "dialectic", "general"] = ProbeType.GENERAL,
+        probe_type: ProbeType
+        | Literal["follow_up", "retrieval", "dialectic", "general"] = ProbeType.GENERAL,
     ) -> ProbeFeedbackResult:
-        """Apply bounded probe feedback to an existing seed.
+        """Apply bounded probe feedback through the canonical Gate boundary."""
 
-        Probe feedback is a weaker signal than the Validation Gate. It can only
-        adjust weight for ACTIVE or PROMOTED seeds. It cannot promote a seed on
-        its own, but it can demote a PROMOTED seed back to ACTIVE when repeated
-        penalties push weight below the promotion threshold.
-        """
-        if seed_id not in self._seeds:
-            raise KeyError(f"Seed '{seed_id}' does not exist.")
-
-        seed = self._seeds[seed_id]
-        outcome_enum = ProbeOutcome(outcome)
-        probe_type_enum = ProbeType(probe_type)
-
-        status_before = seed.status.value
-        weight_before = seed.weight
-
-        feedbackable = {SeedStatus.ACTIVE, SeedStatus.PROMOTED}
-        if seed.status not in feedbackable:
-            result = ProbeFeedbackResult(
-                seed_id=seed_id,
-                probe_type=probe_type_enum.value,
-                outcome=outcome_enum.value,
-                weight_before=weight_before,
-                weight_after=weight_before,
-                delta_applied=0.0,
-                status_before=status_before,
-                status_after=status_before,
-                demoted=False,
-                skipped=True,
-                skip_reason=f"status '{seed.status.value}' does not accept feedback",
-            )
-            self.feedback_log.append(result)
-            return result
-
-        delta_map: dict[ProbeOutcome, float] = {
-            ProbeOutcome.REWARD: self.reward_step,
-            ProbeOutcome.PENALTY: -self.penalty_step,
-            ProbeOutcome.NEUTRAL: 0.0,
-        }
-        delta_requested = delta_map[outcome_enum]
-        new_weight = max(0.0, min(1.0, seed.weight + delta_requested))
-
-        demoted = (
-            seed.status == SeedStatus.PROMOTED
-            and new_weight < self.promotion_threshold
-        )
-
-        self._set_authority(
-            seed,
-            weight=new_weight,
-            status=SeedStatus.ACTIVE if demoted else None,
-        )
-        self._touch_seed(seed)
-
-        delta_applied = seed.weight - weight_before
-        result = ProbeFeedbackResult(
-            seed_id=seed_id,
-            probe_type=probe_type_enum.value,
-            outcome=outcome_enum.value,
-            weight_before=weight_before,
-            weight_after=seed.weight,
-            delta_applied=delta_applied,
-            status_before=status_before,
-            status_after=seed.status.value,
-            demoted=demoted,
-            skipped=False,
-            skip_reason="",
-        )
-        self.feedback_log.append(result)
-        # Record the probe effect as a typed probe signal on the Gate ledger, so
-        # the authority change is attributable even though probe feedback is a
-        # bounded nudge rather than a full promotion policy.
-        probe_direction = {
-            ProbeOutcome.REWARD: SignalDirection.SUPPORT,
-            ProbeOutcome.PENALTY: SignalDirection.OPPOSE,
-            ProbeOutcome.NEUTRAL: SignalDirection.NEUTRAL,
-        }[outcome_enum]
-        if demoted:
-            probe_decision = GateDecision.DEMOTED
-        elif delta_applied != 0.0:
-            probe_decision = GateDecision.VALIDATED
-        else:
-            probe_decision = GateDecision.NO_CHANGE
-        self._record_gate_event(
-            seed,
-            probe_decision,
-            [
-                ValidationSignal(
-                    kind=SignalKind.PROBE,
-                    direction=probe_direction,
-                    strength=min(1.0, abs(delta_requested)),
-                    source_ref=probe_type_enum.value,
-                    reason=f"probe {outcome_enum.value} ({probe_type_enum.value})",
-                )
-            ],
-            policy_id="probe_feedback",
-            status_before=status_before,
-            weight_before=weight_before,
-            contradiction_before=self._contradiction_state(seed),
-            reason=f"probe {outcome_enum.value}",
-        )
-        self._record_and_sync(
-            "probe_feedback",
-            seed_id,
-            probe_type=probe_type_enum.value,
-            outcome=outcome_enum.value,
-            weight_before=weight_before,
-            weight_after=seed.weight,
-            delta_requested=delta_requested,
-            delta_applied=delta_applied,
-            demoted=demoted,
-        )
-        return result
+        return gate_engine.apply_probe_feedback(self, seed_id, outcome, probe_type)
 
     def to_dict(self) -> dict[str, Any]:
         return {
