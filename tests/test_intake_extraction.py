@@ -107,11 +107,11 @@ def test_ingest_preserves_batch_duplicate_reporting() -> None:
 
     assert result["input_count"] == 3
     assert [item["text"] for item in result["accepted"]] == [
-        "alpha omission",
-        "beta omission",
+        "alpha omission.",
+        "beta omission.",
     ]
     assert result["rejected"] == [
-        {"text": "alpha omission", "reason": "duplicate"}
+        {"text": "alpha omission.", "reason": "duplicate"}
     ]
 
 

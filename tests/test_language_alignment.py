@@ -50,7 +50,7 @@ DUTCH_VOCAB = {
 
 # Documented Dutch input-language tokens, permitted ONLY in their own files.
 ALLOWED_LITERALS = {
-    "shadowseed/manager.py": {
+    "shadowseed/intake.py": {
         "zoals", "bijvoorbeeld", "analysekader", "oorzaken", "gevolgen",
         "contexten", "perspectieven", "meerdere", "schaalbaarheid",
         "kolonialisme", "ontbreekt", "ontbreken",
