@@ -106,6 +106,7 @@ def test_ingest_preserves_batch_duplicate_reporting() -> None:
     )
 
     assert result["input_count"] == 3
+    # Candidate normalization preserves the historical terminal punctuation.
     assert [item["text"] for item in result["accepted"]] == [
         "alpha omission.",
         "beta omission.",
@@ -183,4 +184,3 @@ def test_add_or_update_keeps_internal_manager_override_points() -> None:
     manager = HookedManager(embedding_fn=_embedding)
 
     assert manager.add_or_update_seed("candidate") == "hooked-result"
-
