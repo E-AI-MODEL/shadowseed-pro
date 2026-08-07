@@ -167,3 +167,58 @@ def test_manager_wildcard_import_compatibility_is_preserved() -> None:
     assert namespace["ContradictionStatus"] is ContradictionStatus
     assert namespace["GateDecision"] is manager_module.GateDecision
     assert "ContradictionDomain" not in namespace
+
+
+def test_assigned_record_list_keeps_caller_identity() -> None:
+    """The historical attribute *was* the caller's list.
+
+    Assigning a list and then appending through the caller's own reference must
+    stay visible to blocking queries and export; copying would silently drop
+    those records so a newly added open contradiction would not block.
+    """
+
+    manager = SSLManager(embedding_fn=_embedding)
+    seed_id = manager.add_or_update_seed("a seed")
+    first = ContradictionRecord(
+        contradiction_id=f"contra::{seed_id}::000001",
+        seed_id=seed_id,
+        reason="assigned",
+    )
+    caller_list = [first]
+
+    manager.contradiction_records = caller_list
+    assert manager.contradiction_records is caller_list
+
+    later = ContradictionRecord(
+        contradiction_id=f"contra::{seed_id}::000002",
+        seed_id=seed_id,
+        reason="appended after assignment",
+    )
+    caller_list.append(later)
+
+    assert manager.contradiction_records == [first, later]
+    assert manager.open_contradictions(seed_id) == [first, later]
+    assert manager.is_blocking_contradiction(seed_id) is True
+    assert manager.to_dict()["contradiction_records"] == [
+        first.to_dict(),
+        later.to_dict(),
+    ]
+
+
+def test_non_list_iterables_are_still_materialized() -> None:
+    """A generator must be consumed once into a stable list, not stored lazily."""
+
+    manager = SSLManager(embedding_fn=_embedding)
+    seed_id = manager.add_or_update_seed("a seed")
+    record = ContradictionRecord(
+        contradiction_id=f"contra::{seed_id}::000001",
+        seed_id=seed_id,
+        reason="from generator",
+    )
+
+    manager.contradiction_records = (r for r in [record])
+    assert isinstance(manager.contradiction_records, list)
+    assert manager.contradiction_records == [record]
+    # Reading twice must not exhaust anything.
+    assert manager.open_contradictions(seed_id) == [record]
+    assert manager.open_contradictions(seed_id) == [record]

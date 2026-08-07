@@ -53,7 +53,17 @@ class ContradictionDomain:
         self._sequence = max((self._sequence, *known))
 
     def replace_records(self, records: Iterable[ContradictionRecord]) -> None:
-        self.records = list(records)
+        """Install ``records`` as the canonical collection.
+
+        A list is adopted as-is rather than copied, because the historical
+        public attribute ``SSLManager.contradiction_records`` *was* the caller's
+        list: code that assigned a list and then appended to its own reference
+        expected those records to be visible to blocking queries and export.
+        Copying would silently drop such appends, so only non-list iterables are
+        materialized.
+        """
+
+        self.records = records if isinstance(records, list) else list(records)
         self._sync_sequence()
 
     def contradictions_for(self, seed_id: str) -> list[ContradictionRecord]:
