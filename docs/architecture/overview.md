@@ -50,6 +50,7 @@ in summary:
 | `shadowseed.models` | Stable seed, lifecycle, validation-result, constellation, and probe data contracts |
 | `shadowseed.contradictions` | Contradiction record collection, identifier sequencing, blocking-state derivation, formal lifecycle workflows, and legacy migration |
 | `shadowseed.intake` | Embedding acquisition, atomicity heuristics, detector-candidate normalization, deduplication, and seed creation/update |
+| `shadowseed.lifecycle` | TTL decay, dormancy, TrTL reactivation, and terminal expiry workflows |
 | `shadowseed.gate` | Typed validation signals, named Gate policies, and immutable Gate events / contradiction records |
 | `shadowseed.surfacing` | Shared cross-turn eligibility, thresholds, ranking, and resurface damping |
 | `shadowseed.chat` | Live sidecar session with uncontaminated baseline history |
