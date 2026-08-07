@@ -124,3 +124,63 @@ def test_embedding_normalization_stays_identical() -> None:
         manager._normalize_embedding(np.zeros(3)),
         intake.normalize_embedding(np.zeros(3)),
     )
+
+
+def test_get_embedding_keeps_the_historical_normalization_override_point() -> None:
+    class HookedManager(SSLManager):
+        @staticmethod
+        def _normalize_embedding(_embedding: np.ndarray) -> np.ndarray:
+            return np.array([9.0, 8.0, 7.0])
+
+    manager = HookedManager(embedding_fn=lambda _text: np.array([1.0, 2.0, 3.0]))
+
+    assert np.array_equal(
+        manager.get_embedding("candidate"), np.array([9.0, 8.0, 7.0])
+    )
+
+
+def test_ingest_keeps_normalization_and_add_override_points() -> None:
+    class HookedManager(SSLManager):
+        def normalize_detection_candidates(
+            self,
+            candidates,
+            expand_short_fragments: bool = True,
+            split_broad: bool = True,
+        ) -> list[str]:
+            del candidates, expand_short_fragments, split_broad
+            return ["hooked candidate"]
+
+        def add_or_update_seed(self, text, **_kwargs) -> str:
+            assert text == "hooked candidate"
+            return "hooked-id"
+
+    manager = HookedManager(embedding_fn=_embedding)
+
+    result = manager.ingest_detection_candidates(["raw candidate"])
+
+    assert result["accepted"] == [
+        {"seed_id": "hooked-id", "text": "hooked candidate"}
+    ]
+
+
+def test_add_or_update_keeps_internal_manager_override_points() -> None:
+    class HookedManager(SSLManager):
+        @staticmethod
+        def is_atomic_seed(_text: str, max_seed_words: int | None = None) -> bool:
+            assert max_seed_words is not None
+            return True
+
+        def get_embedding(self, _text: str) -> np.ndarray:
+            return np.array([1.0, 0.0, 0.0])
+
+        def _maybe_deduplicate_seed(self, _embedding: np.ndarray):
+            return "existing-id", 0.99
+
+        def _activate_existing_seed(self, seed_id: str, similarity: float) -> str:
+            assert (seed_id, similarity) == ("existing-id", 0.99)
+            return "hooked-result"
+
+    manager = HookedManager(embedding_fn=_embedding)
+
+    assert manager.add_or_update_seed("candidate") == "hooked-result"
+

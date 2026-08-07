@@ -44,8 +44,8 @@ def get_embedding(manager: Any, text: str) -> np.ndarray:
     """Return one normalized embedding through the configured backend."""
 
     if manager._embedding_fn is not None:
-        return normalize_embedding(manager._embedding_fn(text))
-    embedder = load_embedder(manager)
+        return manager._normalize_embedding(manager._embedding_fn(text))
+    embedder = manager._load_embedder()
     return embedder.encode(text, normalize_embeddings=True)
 
 
@@ -125,7 +125,7 @@ def ingest_detection_candidates(
     """Normalize, validate, deduplicate, and install detector candidates."""
 
     raw_candidates = list(candidates)
-    normalized = normalize_detection_candidates(
+    normalized = manager.normalize_detection_candidates(
         raw_candidates,
         expand_short_fragments=expand_short_fragments,
         split_broad=split_broad,
@@ -143,8 +143,7 @@ def ingest_detection_candidates(
             rejected.append({"text": candidate, "reason": "duplicate"})
             continue
         try:
-            seed_id = add_or_update_seed(
-                manager,
+            seed_id = manager.add_or_update_seed(
                 candidate,
                 trigger_keywords=trigger_keywords,
                 deduplicate=deduplicate,
@@ -237,18 +236,19 @@ def add_or_update_seed(
 ) -> str:
     """Validate and either create or mechanically reinforce one seed."""
 
-    if not is_atomic_seed(text, max_seed_words=manager.config.max_seed_words):
+    if not manager.is_atomic_seed(
+        text, max_seed_words=manager.config.max_seed_words
+    ):
         raise ValueError("Seed appears too broad. Split it into atomic seeds first.")
 
-    new_embedding = get_embedding(manager, text)
+    new_embedding = manager.get_embedding(text)
     if deduplicate:
-        deduplicated = maybe_deduplicate_seed(manager, new_embedding)
+        deduplicated = manager._maybe_deduplicate_seed(new_embedding)
         if deduplicated is not None:
             seed_id, similarity = deduplicated
-            return activate_existing_seed(manager, seed_id, similarity)
+            return manager._activate_existing_seed(seed_id, similarity)
 
-    return create_seed(
-        manager,
+    return manager._create_seed(
         text,
         new_embedding,
         trigger_keywords,

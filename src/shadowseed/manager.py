@@ -65,7 +65,6 @@ from shadowseed.models import (
     WEIGHT_MIN,
     validate_seed_snapshot,
 )
-from shadowseed.seed_normalization import normalize_detection_candidates
 
 if TYPE_CHECKING:
     from shadowseed.vector_constellation import VectorConstellation
@@ -449,7 +448,14 @@ class SSLManager:
     def is_atomic_seed(text: str, max_seed_words: int | None = None) -> bool:
         """Compatibility facade for the canonical atomicity heuristic."""
 
-        return intake_engine.is_atomic_seed(text, max_seed_words=max_seed_words)
+        effective_limit = (
+            DEFAULT_CONFIG.max_seed_words
+            if max_seed_words is None
+            else max_seed_words
+        )
+        return intake_engine.is_atomic_seed(
+            text, max_seed_words=effective_limit
+        )
 
     def normalize_detection_candidates(
         self,
