@@ -165,8 +165,8 @@ def test_checker_flags_arbitrary_dutch_sentence():
 
 def test_checker_allows_dutch_tokens_only_in_their_files():
     snippet = '# analysekader\n'
-    # Allowed inside manager.py, flagged elsewhere.
-    assert not _scan_text(snippet, rel="shadowseed/manager.py")
+    # Allowed inside intake.py, flagged elsewhere.
+    assert not _scan_text(snippet, rel="shadowseed/intake.py")
     assert _scan_text(snippet, rel="shadowseed/chat.py")
 
 
