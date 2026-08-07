@@ -1,0 +1,27 @@
+name: Render manager modularization cleanup
+
+on:
+  push:
+    branches:
+      - refactor/finalize-manager-modularization
+    paths:
+      - .github/scripts/finalize_manager_modularization.py
+      - .github/workflows/finalize-manager-modularization.yml
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: refactor/finalize-manager-modularization
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Render manager modularization cleanup
+        run: |
+          python .github/scripts/finalize_manager_modularization.py
+          python -m compileall -q src tests
