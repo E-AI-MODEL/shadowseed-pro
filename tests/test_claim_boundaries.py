@@ -12,6 +12,10 @@ LIFECYCLE = (ROOT / "docs/architecture/lifecycle-and-gate.md").read_text(
 CI = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
 
 
+def _compact(text: str) -> str:
+    return " ".join(text.split())
+
+
 def test_atomicity_is_never_presented_as_a_semantic_guarantee() -> None:
     assert "The candidate is stored as an atomic shadow seed." not in README
     assert "A seed is one atomic candidate absence." not in README
@@ -23,9 +27,14 @@ def test_atomicity_is_never_presented_as_a_semantic_guarantee() -> None:
 
 
 def test_non_bypassable_claim_is_scoped_to_supported_runtime_decisions() -> None:
-    assert "single non-bypassable Validation Gate" not in OVERVIEW
-    assert "supported runtime API" in OVERVIEW
-    assert "Restoration and explicitly unsafe test hooks remain outside" in OVERVIEW
+    compact_overview = _compact(OVERVIEW)
+
+    assert "single non-bypassable Validation Gate" not in compact_overview
+    assert "supported runtime API" in compact_overview
+    assert (
+        "Restoration and explicitly unsafe test hooks remain outside"
+        in compact_overview
+    )
     assert '"Non-bypassable" is a public-API property' in README
 
 
