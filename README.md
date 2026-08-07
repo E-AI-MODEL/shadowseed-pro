@@ -721,6 +721,7 @@ Fresh model labels are not bit-reproducible by default. Preserve the verdict art
 | [`shadowseed.contradictions`](src/shadowseed/contradictions.py) | Contradiction collection, blocking state, formal lifecycle workflows, identifier sequencing, and legacy migration |
 | [`shadowseed.intake`](src/shadowseed/intake.py) | Embedding acquisition, atomicity heuristics, detector-candidate normalization, deduplication, and seed creation/update |
 | [`shadowseed.lifecycle`](src/shadowseed/lifecycle.py) | TTL decay, dormancy, TrTL reactivation, and terminal expiry workflows |
+| [`shadowseed.vector_workflows`](src/shadowseed/vector_workflows.py) | Uncertain-region search, external-feedback routing, and in-memory constellation construction |
 | [`shadowseed.seed_normalization`](src/shadowseed/seed_normalization.py) | Candidate cleanup and atomic splitting |
 | [`shadowseed.surfacing`](src/shadowseed/surfacing.py) | Shared relevance thresholds, early-turn discipline, top-k selection, resurface damping |
 | [`shadowseed.chat`](src/shadowseed/chat.py) | Live sidecar session, baseline isolation, recurrence, point-of-use filtering, audit trail |

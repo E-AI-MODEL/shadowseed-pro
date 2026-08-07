@@ -28,6 +28,7 @@ import numpy as np
 from shadowseed.contradictions import ContradictionDomain as _ContradictionDomain
 from shadowseed import intake as intake_engine
 from shadowseed import lifecycle as lifecycle_engine
+from shadowseed import vector_workflows
 from shadowseed.core_config import SSLCoreConfig
 from shadowseed.gate.contradictions import (
     ContradictionRecord,
@@ -640,30 +641,14 @@ class SSLManager:
         threshold: float = 0.85,
         include_promoted: bool = False,
     ) -> list[dict[str, Any]]:
-        """Find vector-near seeds for a new prompt or context."""
-        if self.vector_constellation is None:
-            return []
-        query_emb = self.get_embedding(text)
-        matches = self.vector_constellation.search_similar_seeds(query_emb, threshold=threshold)
-        uncertain = []
-        for seed_id, score, metadata in matches:
-            seed = self._seeds.get(seed_id)
-            if seed is None:
-                continue
-            if not include_promoted and seed.status == SeedStatus.PROMOTED:
-                continue
-            if seed.weight == 0.0:
-                uncertain.append(
-                    {
-                        "seed_id": seed_id,
-                        "similarity": score,
-                        "text": seed.text,
-                        "status": seed.status.value,
-                        "weight": seed.weight,
-                        "metadata": metadata,
-                    }
-                )
-        return uncertain
+        """Compatibility facade for vector-near uncertain-region search."""
+
+        return vector_workflows.find_uncertain_region(
+            self,
+            text,
+            threshold=threshold,
+            include_promoted=include_promoted,
+        )
 
     def apply_external_feedback(
         self,
@@ -672,58 +657,15 @@ class SSLManager:
         positive: bool = True,
         threshold: float = 0.75,
     ) -> list[dict[str, Any]]:
-        if self.vector_constellation is None:
-            return []
-        feedback_emb = self.get_embedding(f"FEEDBACK: {feedback_text} ON: {context}")
-        matches = self.vector_constellation.search_similar_seeds(feedback_emb, threshold=threshold)
-        updates = []
-        for seed_id, score, _metadata in matches:
-            if seed_id not in self._seeds:
-                continue
-            if positive:
-                result = self.run_validation_gate(
-                    seed_id,
-                    external_evidence=True,
-                    signals=[
-                        ValidationSignal(
-                            kind=SignalKind.HUMAN_FEEDBACK,
-                            direction=SignalDirection.SUPPORT,
-                            strength=float(score),
-                            source_ref=context,
-                            verified=True,
-                            reason="external feedback (positive)",
-                        )
-                    ],
-                )
-            else:
-                result = self.run_validation_gate(
-                    seed_id,
-                    contradiction=True,
-                    signals=[
-                        ValidationSignal(
-                            kind=SignalKind.CONTRADICTION,
-                            direction=SignalDirection.OPPOSE,
-                            strength=float(score),
-                            source_ref=context,
-                            reason="external feedback (negative)",
-                        )
-                    ],
-                )
-            self.vector_constellation.record_feedback(
-                seed_id=seed_id,
-                feedback=feedback_text,
-                is_correction=positive,
-                similarity=score,
-            )
-            updates.append(
-                {
-                    "seed_id": seed_id,
-                    "similarity": score,
-                    "gate_result": result,
-                    "seed": self._seeds[seed_id].to_dict(),
-                }
-            )
-        return updates
+        """Compatibility facade for vector-matched external feedback."""
+
+        return vector_workflows.apply_external_feedback(
+            self,
+            feedback_text,
+            context,
+            positive=positive,
+            threshold=threshold,
+        )
 
     def expire_vector_only_open_seeds(
         self, max_age_days: int = 30
@@ -737,48 +679,20 @@ class SSLManager:
 
     @staticmethod
     def _constellation_label(cluster: list[ShadowSeed]) -> str:
-        for seed in cluster:
-            for keyword in seed.trigger_keywords:
-                clean = keyword.strip()
-                if clean:
-                    return f"Cluster around {clean}."
-        seed_text = cluster[0].text.strip().rstrip(".")
-        return f"Cluster around {seed_text[:48]}."
+        """Compatibility facade for historical constellation labels."""
+
+        return vector_workflows.constellation_label(cluster)
 
     def find_constellations(
         self, threshold: float = 0.70, min_members: int = 3
     ) -> list[Constellation]:
-        promoted = [
-            seed for seed in self._seeds.values() if seed.status == SeedStatus.PROMOTED
-        ]
-        constellations: list[Constellation] = []
-        seen: set[tuple[str, ...]] = set()
+        """Compatibility facade for in-memory constellation construction."""
 
-        for index, seed in enumerate(promoted):
-            cluster = [seed]
-            for other in promoted[index + 1 :]:
-                similarity = float(np.dot(seed.embedding, other.embedding))
-                if similarity >= threshold:
-                    cluster.append(other)
-
-            if len(cluster) >= min_members:
-                member_ids = tuple(sorted(item.id for item in cluster))
-                if member_ids in seen:
-                    continue
-                seen.add(member_ids)
-                centroid = np.mean([item.embedding for item in cluster], axis=0)
-                constellations.append(
-                    Constellation(
-                        members=list(member_ids),
-                        centroid=centroid.tolist(),
-                        combined_weight=float(np.mean([item.weight for item in cluster])),
-                        id=f"const_{len(constellations) + 1:03d}",
-                        label=self._constellation_label(cluster),
-                        probe_type="retrieval" if len(cluster) >= 5 else "socratic",
-                    )
-                )
-
-        return constellations
+        return vector_workflows.find_constellations(
+            self,
+            threshold=threshold,
+            min_members=min_members,
+        )
 
     def get_seed(self, seed_id: str) -> ShadowSeed:
         return self._seeds[seed_id]
