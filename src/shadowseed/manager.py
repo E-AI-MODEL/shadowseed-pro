@@ -1,19 +1,18 @@
-"""
-Shadow Seed Learning 4.6 core manager.
+"""Shadow Seed Learning 4.6 orchestration and compatibility facade.
 
-This manager is the canonical Niveau-1 core for SSL. The mechanical kernel is
-unchanged across 4.5 and 4.6 — see `docs/00_shadow_seed_learning_4_6.md` for
-the current canonical source. It keeps four ideas explicit:
+``SSLManager`` owns runtime configuration, the seed registry, audit logs,
+serialization, and the guarded authority-field mutation primitive. Focused
+canonical modules own the executable concerns that were formerly embedded here:
 
-- a seed is atomic;
-- trace measures presence;
-- weight measures influence;
-- promotion requires the Validation Gate.
+- :mod:`shadowseed.models` owns stable data contracts;
+- :mod:`shadowseed.intake` owns embedding, normalization, and deduplication;
+- :mod:`shadowseed.lifecycle` owns TTL, dormancy, TrTL, and expiry;
+- :mod:`shadowseed.contradictions` owns contradiction records and lifecycle;
+- :mod:`shadowseed.vector_workflows` owns vector search and constellations;
+- :mod:`shadowseed.gate.runtime_adapter` owns Gate-controlled decisions.
 
-The manager now also keeps explicit configuration, normalization results and
-validation-event logs so benchmark runs can be reconstructed more honestly.
-Stable data contracts live in :mod:`shadowseed.models` and are re-exported here
-for backward compatibility.
+Historical methods and model imports remain available through this module and
+delegate to those canonical implementations.
 """
 
 from __future__ import annotations
@@ -208,12 +207,12 @@ class SSLManager:
         evidence_count: int | None = None,
         contradiction_score: float | None = None,
     ) -> None:
-        """The single production authority-transition path.
+        """Guarded mutation primitive for seed authority fields.
 
-        Every runtime authority change (validation, contradiction, probe
-        feedback, decay/expiry, lifecycle status moves) goes through here. #12
-        migrates the callers to feed this from typed signals and a named policy;
-        #11 establishes that no runtime code writes authority fields directly.
+        Gate-controlled decisions are made in ``shadowseed.gate``. Explicit
+        mechanical intake and lifecycle transitions are made in their canonical
+        modules. Both categories apply the resulting field changes through this
+        primitive, so no runtime path writes guarded fields directly.
         """
 
         changes: dict[str, Any] = {}

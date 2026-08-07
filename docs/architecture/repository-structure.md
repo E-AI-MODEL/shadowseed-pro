@@ -31,9 +31,16 @@ the narrative companion to the machine-readable `repository-authority.yaml`.
 shadowseed-pro/
 ├── src/
 │   ├── shadowseed/                 RUNTIME_IMPLEMENTATION (canonical package)
-│   │   ├── *.py                    core runtime: chat, cli, manager, ssot,
-│   │   │                           recurrence, retrieval_probe, prompts,
-│   │   │                           seed_normalization, surfacing, …
+│   │   ├── manager.py              orchestration, registry, logs, serialization,
+│   │   │                           authority mutation primitive, compatibility facade
+│   │   ├── models.py               stable data contracts and authority guards
+│   │   ├── contradictions.py       contradiction collection and lifecycle
+│   │   ├── intake.py               embedding, normalization, dedup, seed creation
+│   │   ├── lifecycle.py            TTL, dormancy, TrTL, terminal expiry
+│   │   ├── vector_workflows.py     vector search, feedback routing, constellations
+│   │   ├── gate/                   typed signals/policies/events + Gate engine
+│   │   ├── *.py                    other core runtime: chat, cli, ssot,
+│   │   │                           retrieval_probe, prompts, surfacing, …
 │   │   ├── adapters/               model/service adapters (embedding, openai,
 │   │   │                           ollama, models)
 │   │   ├── detection/              open-set model detector
@@ -64,7 +71,14 @@ shadowseed-pro/
 
 | Area | Owns | Authority |
 |---|---|---|
-| `src/shadowseed/` top-level modules | Core SSL runtime, CLI, manager, SSOT | RUNTIME_IMPLEMENTATION |
+| `src/shadowseed/manager.py` | Runtime orchestration, state registry, logs, serialization, compatibility facade | RUNTIME_IMPLEMENTATION |
+| `src/shadowseed/models.py` | Stable data contracts and guarded authority fields | RUNTIME_IMPLEMENTATION |
+| `src/shadowseed/contradictions.py` | Contradiction collection, blocking state, formal resolution | RUNTIME_IMPLEMENTATION |
+| `src/shadowseed/intake.py` | Embedding, normalization, deduplication, seed creation/update | RUNTIME_IMPLEMENTATION |
+| `src/shadowseed/lifecycle.py` | TTL, dormancy, TrTL, terminal expiry | RUNTIME_IMPLEMENTATION |
+| `src/shadowseed/vector_workflows.py` | Vector search, feedback routing, constellation construction | RUNTIME_IMPLEMENTATION |
+| `src/shadowseed/gate/` | Typed Gate contracts, policies, logging, executable decision engine | RUNTIME_IMPLEMENTATION |
+| Other `src/shadowseed/*.py` modules | Chat, CLI, SSOT, surfacing, probes, prompts | RUNTIME_IMPLEMENTATION |
 | `src/shadowseed/adapters/` | Embedding + LLM service adapters | RUNTIME_IMPLEMENTATION |
 | `src/shadowseed/detection/` | Open-set model detector | RUNTIME_IMPLEMENTATION |
 | `src/shadowseed/analysis/` | Result analysis, artifact precedence | RUNTIME_IMPLEMENTATION |
@@ -107,31 +121,32 @@ When both exist, the canonical file wins. This is enforced in
 `shadowseed.analysis.ssl45_result_analyzer.analyze_results` and guarded by
 `tests/test_result_analyzer.py::test_result_analyzer_prefers_canonical_open_set_summary_over_legacy`.
 
-## Why no files were physically moved
+## Manager modularization
 
-The v0.3.0 rebuild already places responsibilities under clear packages
-(`adapters/`, `detection/`, `analysis/`, `vectorstore/`, `benchmark/`), and all
-active runtime code already imports canonical paths — no active module imports a
-compatibility facade. The remaining ambiguity was **authority legibility**, not
-physical location: it was hard to tell canonical from legacy from archive.
+The original `manager.py` combined data contracts, contradiction workflows,
+Gate execution, intake, lifecycle, vector search, constellation construction,
+and probe feedback. Those concerns were moved in bounded, behavior-preserving
+steps while `SSLManager` kept its historical methods as explicit facades:
 
-Physical moves would have risked packaging (package-data, console entry points,
-import identity) without improving that legibility. The chosen approach instead
-makes authority **explicit and testable**:
+1. `shadowseed.models` — stable data contracts;
+2. `shadowseed.contradictions` — contradiction state and record lifecycle;
+3. `shadowseed.intake` — embedding, normalization, deduplication, creation;
+4. `shadowseed.lifecycle` — TTL, dormancy, TrTL, expiry;
+5. `shadowseed.vector_workflows` — vector search, feedback, constellations;
+6. `shadowseed.gate.runtime_adapter` — Gate-controlled authority decisions.
 
-- `repository-authority.yaml` — machine-readable classification of every area;
-- explicit `COMPATIBILITY_ONLY` headers + `__all__` on all facades;
-- visible historical banners on archive documentation;
-- a canonical-first artifact-precedence guard.
-
-Public APIs, CLI entry points, packaging, and benchmark semantics are unchanged.
+`manager.py` now owns configuration, the live seed registry, audit collections,
+serialization, the guarded authority mutation primitive, and compatibility
+method routing. Contract tests pin delegation, import identity, authority
+boundaries, and a size ceiling so the former monolith cannot silently return.
 
 ## Packaging impact
 
-None. `pyproject.toml` discovers packages from `src/` only, so `archive/`,
-`benchmarks/`, `scripts/`, and `experiments/` are never packaged. Package-data
-(`shadowseed/data/*.json`) is unchanged. Editable install, wheel build, and the
-`shadowseed` console entry point all continue to work.
+The new modules are ordinary `src/shadowseed/*.py` runtime modules and are
+discovered automatically by the existing package configuration. Public manager
+imports, CLI entry points, package data, editable installation, and wheel
+installation remain unchanged. `archive/`, `benchmarks/`, `scripts/`, and
+`experiments/` remain outside the installed package.
 
 ## If you do move files later
 

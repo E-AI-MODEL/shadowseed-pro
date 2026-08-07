@@ -51,14 +51,69 @@ entries:
     notes: Build, packaging, and tool configuration authority.
 
   # --- Canonical runtime implementation ----------------------------------
+  - path: src/shadowseed/manager.py
+    authority: RUNTIME_IMPLEMENTATION
+    owner: core-orchestration
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: >
+      SSLManager configuration/state registry, audit logs, serialization,
+      guarded authority mutation primitive, and compatibility method facade.
+      Focused domain logic belongs in the explicit canonical modules below.
+
+  - path: src/shadowseed/models.py
+    authority: RUNTIME_IMPLEMENTATION
+    owner: data-contracts
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: Stable enums, dataclasses, serialization, and authority-field guards.
+
+  - path: src/shadowseed/contradictions.py
+    authority: RUNTIME_IMPLEMENTATION
+    owner: contradiction-domain
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: Contradiction record collection, blocking state, resolution, and migration.
+
+  - path: src/shadowseed/intake.py
+    authority: RUNTIME_IMPLEMENTATION
+    owner: intake
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: Embedding, atomicity heuristics, candidate normalization, deduplication, and creation.
+
+  - path: src/shadowseed/lifecycle.py
+    authority: RUNTIME_IMPLEMENTATION
+    owner: lifecycle
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: TTL decay, dormancy, TrTL reactivation, and terminal expiry.
+
+  - path: src/shadowseed/vector_workflows.py
+    authority: RUNTIME_IMPLEMENTATION
+    owner: vector-runtime
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: Uncertain-region search, external-feedback routing, and constellations.
+
+  - path: src/shadowseed/gate/**
+    authority: RUNTIME_IMPLEMENTATION
+    owner: validation-gate
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: >
+      Typed signals, policies, contradiction/event contracts, verified logging,
+      and the single executable Gate-controlled authority-decision engine.
+
   - path: src/shadowseed/*.py
     authority: RUNTIME_IMPLEMENTATION
     owner: core-runtime
     runtime_import_allowed: true
     modifications_allowed: true
     notes: >
-      Canonical top-level runtime modules (chat, cli, manager, ssot,
-      recurrence, retrieval_probe, prompts, seed_normalization, etc.).
+      Remaining canonical top-level runtime modules (chat, cli, ssot,
+      retrieval_probe, prompts, seed_normalization, surfacing, etc.).
+      Explicit domain entries above take precedence for ownership.
 
   - path: src/shadowseed/adapters/**
     authority: RUNTIME_IMPLEMENTATION

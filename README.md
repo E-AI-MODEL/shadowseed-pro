@@ -716,12 +716,13 @@ Fresh model labels are not bit-reproducible by default. Preserve the verdict art
 
 | Module | Responsibility |
 |---|---|
-| [`shadowseed.manager`](src/shadowseed/manager.py) | `SSLManager` orchestration, authority-transition facade, lifecycle, TTL, TrTL, Validation Gate facade, and feedback logs |
+| [`shadowseed.manager`](src/shadowseed/manager.py) | `SSLManager` runtime orchestration, configuration/state registry, audit logs, serialization, guarded authority mutation primitive, and compatibility facades |
 | [`shadowseed.models`](src/shadowseed/models.py) | Stable seed, lifecycle, validation-result, constellation, and probe data contracts |
 | [`shadowseed.contradictions`](src/shadowseed/contradictions.py) | Contradiction collection, blocking state, formal lifecycle workflows, identifier sequencing, and legacy migration |
 | [`shadowseed.intake`](src/shadowseed/intake.py) | Embedding acquisition, atomicity heuristics, detector-candidate normalization, deduplication, and seed creation/update |
 | [`shadowseed.lifecycle`](src/shadowseed/lifecycle.py) | TTL decay, dormancy, TrTL reactivation, and terminal expiry workflows |
 | [`shadowseed.vector_workflows`](src/shadowseed/vector_workflows.py) | Uncertain-region search, external-feedback routing, and in-memory constellation construction |
+| [`shadowseed.gate`](src/shadowseed/gate/) | Typed signals, named policies, immutable events, verified logging, and the executable Gate-controlled decision engine |
 | [`shadowseed.seed_normalization`](src/shadowseed/seed_normalization.py) | Candidate cleanup and atomic splitting |
 | [`shadowseed.surfacing`](src/shadowseed/surfacing.py) | Shared relevance thresholds, early-turn discipline, top-k selection, resurface damping |
 | [`shadowseed.chat`](src/shadowseed/chat.py) | Live sidecar session, baseline isolation, recurrence, point-of-use filtering, audit trail |
