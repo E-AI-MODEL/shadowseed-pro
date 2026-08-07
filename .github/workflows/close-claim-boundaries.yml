@@ -1,0 +1,27 @@
+name: Render claim-boundary assurance cleanup
+
+on:
+  push:
+    branches:
+      - assurance/close-claim-boundaries
+    paths:
+      - .github/scripts/close_claim_boundaries.py
+      - .github/workflows/close-claim-boundaries.yml
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: assurance/close-claim-boundaries
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Render claim-boundary cleanup
+        run: |
+          python .github/scripts/close_claim_boundaries.py
+          python -m compileall -q src tests
