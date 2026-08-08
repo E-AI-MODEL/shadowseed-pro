@@ -73,11 +73,11 @@ Documentation and CI hardening (issue #23). No runtime behavior change.
     called out as a production gap;
   - the point-of-use `AgentSafetyContract` is documented by its exact checks:
     weight above zero, promoted status, a logged promotion, and a live
-    current-version Gate-event link are always required; the blocking-
-    contradiction check is enabled by default and is the only configurable
-    relaxation. The compatibility-only `require_logged_promotion` field cannot
-    bypass the logged-promotion requirement. This replaces broader wording that
-    implied both checks were configurable opt-outs;
+    current-version Gate-event link are always required; the contradiction
+    check is enabled by default and is the only configurable relaxation. The
+    compatibility-only `require_logged_promotion` field cannot bypass the
+    logged-promotion requirement. This replaces broader wording that implied
+    both checks were configurable opt-outs;
     "zero-trust" wording bounded to the default configuration.
 - Expanded CI: added a `build` job that builds the wheel/sdist, installs it in a
   clean virtualenv, and runs the installed console entry point; added a CLI smoke
