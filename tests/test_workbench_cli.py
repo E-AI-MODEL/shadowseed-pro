@@ -29,4 +29,4 @@ def test_workbench_cli_contract_is_registered() -> None:
 def test_workbench_optional_dependency_is_declared() -> None:
     pyproject = Path("pyproject.toml").read_text(encoding="utf-8")
     assert "workbench = [" in pyproject
-    assert '"gradio>=5.0,<7"' in pyproject
+    assert '"gradio>=6.0,<7"' in pyproject
