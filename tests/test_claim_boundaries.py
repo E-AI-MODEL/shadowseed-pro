@@ -64,6 +64,17 @@ def test_claim_table_links_to_canonical_modules_after_modularization() -> None:
     assert "[`SeedOrigin`](src/shadowseed/manager.py)" not in README
 
 
+def test_readme_keeps_onboarding_visible_and_details_balanced() -> None:
+    first_screen = "\n".join(README.splitlines()[:100])
+
+    assert "## Quick start" in first_screen
+    assert "research-ready, not production-ready" in first_screen
+    assert "no open-source license" in first_screen
+    assert "```mermaid" in README
+    assert README.count("<details>") == README.count("</details>")
+    assert 1 <= README.count("<details>") <= 6
+
+
 def test_changelog_records_the_completed_modularization_contract() -> None:
     compact_changelog = _compact(CHANGELOG)
 
