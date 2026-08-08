@@ -5,6 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 README = (ROOT / "README.md").read_text(encoding="utf-8")
+CHANGELOG = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
 OVERVIEW = (ROOT / "docs/architecture/overview.md").read_text(encoding="utf-8")
 LIFECYCLE = (ROOT / "docs/architecture/lifecycle-and-gate.md").read_text(
     encoding="utf-8"
@@ -61,6 +62,25 @@ def test_claim_table_links_to_canonical_modules_after_modularization() -> None:
         assert target in README
     assert "[`ShadowSeed`](src/shadowseed/manager.py)" not in README
     assert "[`SeedOrigin`](src/shadowseed/manager.py)" not in README
+
+
+def test_changelog_records_the_completed_modularization_contract() -> None:
+    compact_changelog = _compact(CHANGELOG)
+
+    assert "Unreleased - Manager modularization and Gate boundary completion" in CHANGELOG
+    for module in (
+        "shadowseed.models",
+        "shadowseed.contradictions",
+        "shadowseed.intake",
+        "shadowseed.lifecycle",
+        "shadowseed.vector_workflows",
+        "shadowseed.gate.runtime_adapter",
+    ):
+        assert module in CHANGELOG
+
+    assert "from an instance attribute to a property" in compact_changelog
+    assert "has no effect on authorization" in compact_changelog
+    assert "both configurable opt-outs" not in compact_changelog
 
 
 def test_ci_assurance_choices_are_explicit() -> None:
