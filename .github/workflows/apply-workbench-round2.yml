@@ -1,0 +1,56 @@
+name: Apply Workbench Round 2
+
+on:
+  push:
+    branches:
+      - agent/workbench-ui
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/workbench-ui
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Inspect foundation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          required = [
+              Path('src/shadowseed/application'),
+              Path('src/shadowseed/storage'),
+              Path('src/shadowseed/chat.py'),
+          ]
+          missing = [str(path) for path in required if not path.exists()]
+          if missing:
+              raise SystemExit(f'Missing Round 1 foundation: {missing}')
+          PY
+      - name: Write Round 2 implementation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import textwrap
+
+          def write(path: str, content: str) -> None:
+              target = Path(path)
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_text(textwrap.dedent(content).lstrip(), encoding='utf-8')
+
+          # Placeholder. A follow-up commit replaces this workflow with the full
+          # implementation after the branch is confirmed against current main.
+          PY
+      - name: Remove one-shot workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/apply-workbench-round2.yml
+          git commit -m "Initialize Workbench Round 2 branch"
+          git push origin HEAD:agent/workbench-ui
