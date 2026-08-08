@@ -1,0 +1,54 @@
+name: Inspect Round 2 payload
+
+on:
+  push:
+    branches:
+      - agent/workbench-ui
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/workbench-ui
+      - name: Decode without executing
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .github/workbench-ui-payload/part* > /tmp/round2.b64
+          base64 --decode /tmp/round2.b64 > /tmp/round2.gz
+          gzip -t /tmp/round2.gz
+          gzip -dc /tmp/round2.gz > /tmp/round2.raw
+          echo "encoded_bytes=$(wc -c < /tmp/round2.b64)"
+          echo "gzip_bytes=$(wc -c < /tmp/round2.gz)"
+          echo "raw_bytes=$(wc -c < /tmp/round2.raw)"
+          sha256sum /tmp/round2.gz /tmp/round2.raw
+          file /tmp/round2.raw
+          python - <<'PY'
+          from pathlib import Path
+          import tarfile
+
+          path = Path('/tmp/round2.raw')
+          data = path.read_bytes()
+          print('prefix_hex=', data[:32].hex())
+          if tarfile.is_tarfile(path):
+              print('payload_kind=tar')
+              with tarfile.open(path, 'r:*') as archive:
+                  for member in archive.getmembers():
+                      print(f'{member.name}\t{member.size}\t{member.type!r}')
+          else:
+              print('payload_kind=non_tar')
+              try:
+                  text = data.decode('utf-8')
+              except UnicodeDecodeError:
+                  print('utf8=false')
+              else:
+                  print('utf8=true')
+                  print('--- first 4000 chars ---')
+                  print(text[:4000])
+                  print('--- end preview ---')
+          PY
