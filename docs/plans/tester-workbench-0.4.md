@@ -32,14 +32,19 @@ install
 
 ## Product boundaries
 
-- Local-first by default. The first release has no account, cloud database, or telemetry.
+- Local-first by default. The first release has no account, cloud database,
+  or telemetry.
 - The server binds to `127.0.0.1` unless the tester explicitly overrides it.
-- API keys and access tokens never enter SQLite, configuration files, reports, or support bundles.
+- Backend credentials are never accepted as persisted configuration and are
+  redacted from reports and support bundles. Tester-provided message content is
+  stored locally and may itself contain sensitive text.
 - The UI never writes seed authority fields directly.
-- Tester feedback is recorded only by default. Authority-changing feedback requires an explicit normal runtime route through the Gate.
+- Tester feedback is recorded only by default. Authority-changing feedback
+  requires an explicit normal runtime route through the Gate.
 - `trace` and `weight` remain separate and are displayed separately.
 - Promotion is permission to be considered, not an obligation to influence.
-- Every allowed influence remains linked to a current Gate event and a point-of-use decision.
+- Every allowed influence remains linked to a current Gate event and a
+  point-of-use decision.
 - Research and benchmark commands remain available, but they are not the primary tester interface.
 - The release remains research-ready and tester-oriented, not production-ready.
 
@@ -71,7 +76,8 @@ Deliverables:
 
 - application-level session, profile, health, and workspace contracts;
 - lossless `ShadowChatSession` snapshots and restoration;
-- transactional SQLite workspace with normalized turn, seed, audit, and feedback tables;
+- transactional SQLite workspace with normalized turn, seed, audit, and
+  feedback tables;
 - schema versioning, backup, restore, and safe deletion;
 - `shadowseed doctor`, `shadowseed init`, and `shadowseed workspace ...`;
 - regression tests for persistence, restart, audit replay, backup, and secret rejection.
@@ -118,7 +124,8 @@ Deliverables:
 - New storage writes are transactional and idempotent where stable identifiers exist.
 - Secrets are rejected or redacted before persistence and export.
 - Tests cover failure paths, not only successful examples.
-- Ruff, full pytest on Python 3.10 and 3.12, package build, clean-wheel install, and source/installed CLI smokes pass.
+- Ruff, full pytest on Python 3.10 and 3.12, package build, clean-wheel
+  install, and source/installed CLI smokes pass.
 - Open P1/P2 findings are resolved before merge.
 
 ## Definition of done
