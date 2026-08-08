@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.4.1 - 2026-08-08 - Workbench review follow-up
+
+Corrective patch for two P2 review findings that arrived after the 0.4.0
+Workbench pull requests had already merged.
+
+- Seed inspector timelines now interleave events across ledgers by the actual
+  timestamp instant, including ISO-8601 timezone offsets, instead of presenting
+  ledger grouping as chronology.
+- Scenario batches preserve the session id and completed progress when a backend
+  call fails part-way through.
+- Partial scenarios can resume at the failed question without replaying completed
+  hosted-model calls. Resume validates persisted turn count, completed question
+  prefix, profile, backend, and model before continuing.
+- The Workbench Scenario tab now reports partial batches as paused and exposes a
+  dedicated resume action.
+- The release workflow derives its tag and release notes from the project version
+  so patch releases use the same post-merge portability and checksum gates.
+
+`v0.4.0` remains immutable historical release evidence. This patch does not
+modify benchmark evidence or add scientific model-benefit claims.
+
 ## 0.4.0 - 2026-08-08 - Tester Workbench preview
 
 Adds a practical, local-first tester environment on top of the existing

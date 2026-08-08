@@ -1,7 +1,7 @@
 # Shadowseed Tester Workbench 0.4 Implementation Plan
 
-**Status:** Release candidate  
-**Target:** 0.4.0 Tester Preview  
+**Status:** 0.4.0 published; 0.4.1 patch candidate  
+**Target:** 0.4.x Tester Preview  
 **Owner:** E-AI-MODEL  
 **Created:** 2026-08-08  
 **Last updated:** 2026-08-08
@@ -164,6 +164,22 @@ Release completion additionally requires:
 - GitHub prerelease `v0.4.0` to be created at that exact `main` commit;
 - the published wheel, source distribution, and `SHA256SUMS` to be downloaded and
   checksum-verified by the release workflow.
+
+## Post-release patch 0.4.1
+
+Two P2 review threads were posted after PR #42 had already merged and were not
+present in the published `v0.4.0` tag. The corrective patch keeps that release
+immutable and addresses the findings in a new version:
+
+- chronological seed audit presentation across ledgers;
+- scenario failure isolation with explicit partial progress;
+- safe resume without replaying completed calls;
+- stale-position and scenario-prefix validation;
+- a visible Workbench resume action and partial-run status.
+
+The patch is complete only after the same full CI, Workbench CI,
+cross-platform portability, Docker, clean-wheel, export, checksum, and
+post-publication asset-verification gates pass for `v0.4.1`.
 
 ## Explicitly out of scope for 0.4
 
