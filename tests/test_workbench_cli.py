@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import json
-import tomllib
 from pathlib import Path
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10
+    import tomli as tomllib
 
 from shadowseed.application.sessions import service_for_workspace
 from shadowseed.cli import build_parser
