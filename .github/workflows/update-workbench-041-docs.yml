@@ -1,0 +1,74 @@
+name: Update Workbench 0.4.1 docs
+
+on:
+  push:
+    branches: [fix/workbench-0.4.1-review-followups]
+    paths: [.github/workflows/update-workbench-041-docs.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/workbench-0.4.1-review-followups
+          fetch-depth: 0
+      - name: Apply exact documentation patches
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              text = file.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected marker once, found {count}")
+              file.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          replace_once(
+              "README.md",
+              '<img alt="Repository version 0.4.0" src="https://img.shields.io/badge/repository-0.4.0-2f6f5e">',
+              '<img alt="Repository version 0.4.1" src="https://img.shields.io/badge/repository-0.4.1-2f6f5e">',
+          )
+
+          workbench = Path("docs/workbench/README.md")
+          text = workbench.read_text(encoding="utf-8")
+          count = text.count("shadowseed-workbench:0.4.0")
+          if count != 2:
+              raise SystemExit(f"docs/workbench/README.md: expected Docker tag twice, found {count}")
+          workbench.write_text(
+              text.replace("shadowseed-workbench:0.4.0", "shadowseed-workbench:0.4.1"),
+              encoding="utf-8",
+          )
+
+          changelog_section = '''## 0.4.1 - 2026-08-08 - Workbench review follow-up\n\nCorrective patch for two P2 review findings that arrived after the 0.4.0\nWorkbench pull requests had already merged.\n\n- Seed inspector timelines now interleave events across ledgers by the actual\n  timestamp instant, including ISO-8601 timezone offsets, instead of presenting\n  ledger grouping as chronology.\n- Scenario batches preserve the session id and completed progress when a backend\n  call fails part-way through.\n- Partial scenarios can resume at the failed question without replaying completed\n  hosted-model calls. Resume validates persisted turn count, completed question\n  prefix, profile, backend, and model before continuing.\n- The Workbench Scenario tab now reports partial batches as paused and exposes a\n  dedicated resume action.\n- The release workflow derives its tag and release notes from the project version\n  so patch releases use the same post-merge portability and checksum gates.\n\n`v0.4.0` remains immutable historical release evidence. This patch does not\nmodify benchmark evidence or add scientific model-benefit claims.\n\n'''
+          replace_once("CHANGELOG.md", "# Changelog\n\n", "# Changelog\n\n" + changelog_section)
+
+          replace_once(
+              "docs/plans/tester-workbench-0.4.md",
+              "**Status:** Release candidate  \n**Target:** 0.4.0 Tester Preview",
+              "**Status:** 0.4.0 published; 0.4.1 patch candidate  \n**Target:** 0.4.x Tester Preview",
+          )
+          patch_section = '''## Post-release patch 0.4.1\n\nTwo P2 review threads were posted after PR #42 had already merged and were not\npresent in the published `v0.4.0` tag. The corrective patch keeps that release\nimmutable and addresses the findings in a new version:\n\n- chronological seed audit presentation across ledgers;\n- scenario failure isolation with explicit partial progress;\n- safe resume without replaying completed calls;\n- stale-position and scenario-prefix validation;\n- a visible Workbench resume action and partial-run status.\n\nThe patch is complete only after the same full CI, Workbench CI,\ncross-platform portability, Docker, clean-wheel, export, checksum, and\npost-publication asset-verification gates pass for `v0.4.1`.\n\n'''
+          replace_once(
+              "docs/plans/tester-workbench-0.4.md",
+              "## Explicitly out of scope for 0.4\n",
+              patch_section + "## Explicitly out of scope for 0.4\n",
+          )
+          PY
+          rm .github/workflows/update-workbench-041-docs.yml
+      - name: Commit normal documentation state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md CHANGELOG.md docs/workbench/README.md docs/plans/tester-workbench-0.4.md .github/workflows/update-workbench-041-docs.yml
+          git commit -m "Document Workbench 0.4.1 patch candidate"
+          git push origin HEAD:fix/workbench-0.4.1-review-followups
