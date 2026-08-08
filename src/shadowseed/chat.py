@@ -34,6 +34,8 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+
 from shadowseed.adapters.embedding import make_embedding_fn
 from shadowseed.detection.model_detector import make_detector_backend
 from shadowseed.recurrence_clustering import (
@@ -42,7 +44,9 @@ from shadowseed.recurrence_clustering import (
 )
 from shadowseed.retrieval_probe import retrieval_probe_vs_question
 from shadowseed.adapters.models import make_backend
-from shadowseed.gate.events import GateDecision
+from shadowseed.core_config import SSLCoreConfig
+from shadowseed.gate.contradictions import ContradictionRecord
+from shadowseed.gate.events import GateDecision, GateEvent
 from shadowseed.gate.signals import recurrence_signal
 from shadowseed.recurrence import refresh_cluster_representative
 from shadowseed.surfacing import (
@@ -55,6 +59,7 @@ from shadowseed.surfacing import (
     select_cross_turn_seeds,
 )
 from shadowseed.manager import SSLManager, SeedStatus
+from shadowseed.models import ProbeFeedbackResult, SeedEvent, ValidationGateResult
 from shadowseed.vectorstore.memory import InMemoryVectorStore
 from shadowseed_agent import (
     AgentInfluenceRecord,
@@ -87,6 +92,15 @@ class ShadowChatSession:
         probe_corpus: str | None = None,
         probe_top_k: int = 3,
     ) -> None:
+        self.backend = backend
+        self.model_id = model_id
+        self.max_new_tokens = max_new_tokens
+        self.embedding_backend = embedding_backend
+        self.embedding_model = embedding_model
+        self.recurrence_mode = recurrence_mode
+        self.cluster_threshold = cluster_threshold
+        self.probe_corpus_path = probe_corpus
+
         embed_fn, _dim = make_embedding_fn(embedding_backend, embedding_model)
         self.model = make_backend(backend=backend, model_id=model_id, max_new_tokens=max_new_tokens)
         self.detector = make_detector_backend(
@@ -467,6 +481,133 @@ class ShadowChatSession:
             "seeds": seeds,
             "influence_records": [asdict(r) for r in self.influence_records],
         }
+
+    def to_state(self) -> dict[str, Any]:
+        """Serialize a live tester session without persisting backend secrets."""
+
+        cluster_state: dict[str, Any] | None = None
+        if self.clusterer is not None:
+            cluster_state = {
+                "threshold": self.clusterer.threshold,
+                "centroids": [centroid.tolist() for centroid in self.clusterer.centroids],
+                "centroid_counts": list(self.clusterer.centroid_counts),
+                "recurrence_counts": list(self.clusterer.recurrence_counts),
+                "members": [list(items) for items in self.clusterer.members],
+            }
+        return {
+            "schema_version": 1,
+            "session_config": {
+                "backend": self.backend,
+                "model_id": self.model_id,
+                "max_new_tokens": self.max_new_tokens,
+                "embedding_backend": self.embedding_backend,
+                "embedding_model": self.embedding_model,
+                "surface_threshold": self.surface_threshold,
+                "surface_top_k": self.surface_top_k,
+                "early_turn_margin": self.early_turn_margin,
+                "early_turn_history": self.early_turn_history,
+                "resurface_margin": self.resurface_margin,
+                "max_seeds_per_turn": self.max_seeds_per_turn,
+                "recurrence_mode": self.recurrence_mode,
+                "cluster_threshold": self.cluster_threshold,
+                "probe_corpus": self.probe_corpus_path,
+                "probe_top_k": self.probe_top_k,
+            },
+            "contract": asdict(self.contract),
+            "manager": self.manager.to_dict(),
+            "manager_gate_sequence": self.manager._gate_sequence,
+            "history": [
+                {"question": question, "baseline_answer": answer}
+                for question, answer in self.history
+            ],
+            "influence_records": [asdict(record) for record in self.influence_records],
+            "turn_reports": list(self.turn_reports),
+            "turn": self._turn,
+            "born_turn": dict(self.born_turn),
+            "last_surfaced": dict(self.last_surfaced),
+            "seed_to_cluster": dict(self.seed_to_cluster),
+            "cluster_rep": dict(self.cluster_rep),
+            "cluster_state": cluster_state,
+        }
+
+    @classmethod
+    def from_state(cls, state: dict[str, Any]) -> "ShadowChatSession":
+        """Restore a session snapshot without treating restoration as authority."""
+
+        if int(state.get("schema_version", 1)) != 1:
+            raise ValueError("unsupported ShadowChatSession state schema")
+        config = dict(state.get("session_config", {}))
+        contract = AgentSafetyContract(**dict(state.get("contract", {})))
+        session = cls(**config, contract=contract)
+        manager_data = dict(state.get("manager", {}))
+        core_config = SSLCoreConfig(**manager_data.get("config", {}))
+        embed_fn, _dimension = make_embedding_fn(
+            config.get("embedding_backend", "lexical"),
+            config.get("embedding_model"),
+        )
+        manager = SSLManager(embedding_fn=embed_fn, config=core_config)
+        for seed_data in manager_data.get("seeds", []):
+            manager.restore_seed(seed_data)
+        manager.validation_log = [
+            ValidationGateResult(**item) for item in manager_data.get("validation_log", [])
+        ]
+        manager.event_log = [SeedEvent(**item) for item in manager_data.get("event_log", [])]
+        manager.feedback_log = [
+            ProbeFeedbackResult(**item) for item in manager_data.get("feedback_log", [])
+        ]
+        manager.gate_events = [
+            GateEvent.from_dict(item) for item in manager_data.get("gate_events", [])
+        ]
+        manager._gate_sequence = int(
+            state.get("manager_gate_sequence", len(manager.gate_events))
+        )
+        manager.contradiction_records = [
+            ContradictionRecord.from_dict(item)
+            for item in manager_data.get("contradiction_records", [])
+        ]
+        session.manager = manager
+
+        history = state.get("history", [])
+        session.history = [
+            (str(item.get("question", "")), str(item.get("baseline_answer", "")))
+            if isinstance(item, dict)
+            else (str(item[0]), str(item[1]))
+            for item in history
+        ]
+        session.influence_records = [
+            AgentInfluenceRecord(**item) for item in state.get("influence_records", [])
+        ]
+        session.turn_reports = list(state.get("turn_reports", []))
+        session._turn = int(state.get("turn", len(session.turn_reports)))
+        session.born_turn = {str(key): int(value) for key, value in state.get("born_turn", {}).items()}
+        session.last_surfaced = {
+            str(key): int(value) for key, value in state.get("last_surfaced", {}).items()
+        }
+        session.seed_to_cluster = {
+            str(key): int(value) for key, value in state.get("seed_to_cluster", {}).items()
+        }
+        session.cluster_rep = {
+            int(key): str(value) for key, value in state.get("cluster_rep", {}).items()
+        }
+
+        cluster_state = state.get("cluster_state")
+        if cluster_state is not None:
+            clusterer = RecurrenceClusterer(
+                threshold=float(cluster_state.get("threshold", DEFAULT_CLUSTER_THRESHOLD))
+            )
+            clusterer.centroids = [
+                np.asarray(items, dtype=float) for items in cluster_state.get("centroids", [])
+            ]
+            clusterer.centroid_counts = [
+                int(item) for item in cluster_state.get("centroid_counts", [])
+            ]
+            clusterer.recurrence_counts = [
+                int(item) for item in cluster_state.get("recurrence_counts", [])
+            ]
+            clusterer.counts = clusterer.recurrence_counts
+            clusterer.members = [list(items) for items in cluster_state.get("members", [])]
+            session.clusterer = clusterer
+        return session
 
     def transcript(self) -> dict[str, Any]:
         return {

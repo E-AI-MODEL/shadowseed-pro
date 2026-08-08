@@ -610,6 +610,33 @@ def build_parser() -> argparse.ArgumentParser:
     nlp.add_argument("--input", default=_data_path("local_absencebench_sample.json"))
     nlp.add_argument("--output", default="absencebench_smoke.json")
 
+    doctor = subparsers.add_parser(
+        "doctor",
+        help="[workbench] check installation, workspace, and optional backends",
+    )
+    doctor.add_argument("--workspace", default=None, help="Override ~/.shadowseed.")
+    doctor.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
+
+    initialize = subparsers.add_parser(
+        "init",
+        help="[workbench] initialize a local tester workspace",
+    )
+    initialize.add_argument("--workspace", default=None, help="Override ~/.shadowseed.")
+
+    workspace = subparsers.add_parser(
+        "workspace",
+        help="[workbench] inspect, back up, restore, or delete a workspace",
+    )
+    workspace.add_argument("--workspace", default=None, help="Override ~/.shadowseed.")
+    workspace_actions = workspace.add_subparsers(dest="workspace_action", required=True)
+    workspace_actions.add_parser("info", help="Show workspace paths, schema, and counts.")
+    backup = workspace_actions.add_parser("backup", help="Create a consistent SQLite backup.")
+    backup.add_argument("--output", default=None)
+    restore = workspace_actions.add_parser("restore", help="Restore a workspace database.")
+    restore.add_argument("source")
+    delete = workspace_actions.add_parser("delete", help="Delete the complete local workspace.")
+    delete.add_argument("--yes", action="store_true", help="Confirm irreversible deletion.")
+
     return parser
 
 

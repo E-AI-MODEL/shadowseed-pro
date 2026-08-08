@@ -96,6 +96,24 @@ entries:
     modifications_allowed: true
     notes: Uncertain-region search, external-feedback routing, and constellations.
 
+  - path: src/shadowseed/application/**
+    authority: RUNTIME_IMPLEMENTATION
+    owner: tester-application
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: >
+      UI-independent tester workflows, profiles, workspace management,
+      health checks, and session orchestration over the canonical runtime.
+
+  - path: src/shadowseed/storage/**
+    authority: RUNTIME_IMPLEMENTATION
+    owner: tester-storage
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: >
+      Local workspace persistence, schema versioning, backup, restore, and
+      normalized tester audit storage. No authority decisions live here.
+
   - path: src/shadowseed/gate/**
     authority: RUNTIME_IMPLEMENTATION
     owner: validation-gate

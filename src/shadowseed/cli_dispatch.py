@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from collections.abc import Callable
 
 from shadowseed.analysis.ssl45_result_analyzer import analyze_results
@@ -334,6 +335,51 @@ def _analyze_results(args: argparse.Namespace) -> str:
     return analyze_results(args.results_dir, args.output_dir)
 
 
+def _doctor(args: argparse.Namespace) -> str:
+    from shadowseed.application.health import run_doctor
+
+    report = run_doctor(getattr(args, "workspace", None))
+    if getattr(args, "json", False):
+        return json.dumps(report.to_dict(), indent=2, ensure_ascii=False)
+    lines = ["Shadowseed doctor", ""]
+    for check in report.checks:
+        marker = {"ok": "OK", "warning": "WARN", "error": "ERROR"}[check.status]
+        lines.append(f"{check.name:24} {marker:5} {check.detail}")
+        if check.repair:
+            lines.append(f"{'':24}       {check.repair}")
+    lines.append("")
+    lines.append("Workbench can start." if report.ready else "Workbench is not ready.")
+    return "\n".join(lines)
+
+
+def _init_workspace(args: argparse.Namespace) -> str:
+    from shadowseed.application.workspace import WorkspaceService
+
+    paths = WorkspaceService(getattr(args, "workspace", None)).initialize()
+    return f"workspace initialized: {paths.root}"
+
+
+def _workspace(args: argparse.Namespace) -> str:
+    from shadowseed.application.workspace import WorkspaceService
+
+    service = WorkspaceService(getattr(args, "workspace", None))
+    action = args.workspace_action
+    if action == "info":
+        return json.dumps(service.info(), indent=2, ensure_ascii=False)
+    if action == "backup":
+        return f"workspace backup: {service.backup(getattr(args, 'output', None))}"
+    if action == "restore":
+        service.restore(args.source)
+        return f"workspace restored: {service.paths.root}"
+    if action == "delete":
+        if not getattr(args, "yes", False):
+            raise ValueError("workspace deletion requires --yes")
+        root = service.paths.root
+        service.delete()
+        return f"workspace deleted: {root}"
+    raise ValueError(f"unknown workspace action: {action}")
+
+
 COMMAND_HANDLERS: dict[str, CommandHandler] = {
     "prepare-absencebench-bundle": _prepare_absencebench_bundle,
     "run-absencebench-local": _run_absencebench_local,
@@ -364,6 +410,9 @@ COMMAND_HANDLERS: dict[str, CommandHandler] = {
     "run-retrieval-model-benchmark": _run_retrieval_model_benchmark,
     "analyze-results": _analyze_results,
     "run-absencebench-smoke": _run_absencebench_smoke,
+    "doctor": _doctor,
+    "init": _init_workspace,
+    "workspace": _workspace,
 }
 
 
