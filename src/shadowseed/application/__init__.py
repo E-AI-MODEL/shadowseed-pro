@@ -1,6 +1,7 @@
 """Application services for the local Shadowseed tester environment."""
 
 from shadowseed.application.models import (
+    DoctorReport,
     HealthCheck,
     SessionConfig,
     SessionSummary,
@@ -11,6 +12,7 @@ from shadowseed.application.sessions import SessionService
 from shadowseed.application.workspace import WorkspacePaths, WorkspaceService
 
 __all__ = [
+    "DoctorReport",
     "HealthCheck",
     "SessionConfig",
     "SessionService",
