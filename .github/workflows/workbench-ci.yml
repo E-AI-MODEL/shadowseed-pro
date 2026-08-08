@@ -11,7 +11,7 @@ on:
       - "pyproject.toml"
       - ".github/workflows/workbench-ci.yml"
   push:
-    branches: [main, feature/workbench-ui]
+    branches: [main]
     paths:
       - "src/shadowseed/application/**"
       - "src/shadowseed/workbench/**"
@@ -43,8 +43,8 @@ jobs:
           cache: pip
       - run: python -m pip install --upgrade pip
       - run: pip install -e ".[test,workbench]"
-      - run: ruff check src/shadowseed/application src/shadowseed/workbench tests/test_workbench_application.py tests/test_workbench_product_contract.py
-      - run: pytest -q tests/test_workbench_application.py tests/test_workbench_product_contract.py
+      - run: ruff check src/shadowseed/application src/shadowseed/workbench tests/test_workbench_*.py
+      - run: pytest -q tests/test_workbench_*.py
       - name: CLI contract
         run: |
           shadowseed workbench --help
