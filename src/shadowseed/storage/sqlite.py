@@ -296,8 +296,14 @@ class SQLiteWorkspaceRepository:
         temporary = target.with_suffix(target.suffix + ".tmp")
         if temporary.exists():
             temporary.unlink()
-        with self._connect() as source, sqlite3.connect(temporary) as destination_db:
+        source = self._connect()
+        destination_db = sqlite3.connect(temporary)
+        try:
             source.backup(destination_db)
+            destination_db.commit()
+        finally:
+            destination_db.close()
+            source.close()
         os.replace(temporary, target)
         return target
 
