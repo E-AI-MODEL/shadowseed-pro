@@ -1,0 +1,83 @@
+name: Apply Workbench CLI Round 2
+
+on:
+  push:
+    branches: [feature/workbench-ui]
+    paths: [.github/workflows/apply-workbench-cli-round2.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/workbench-ui
+          fetch-depth: 0
+      - name: Apply exact source patches
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              text = file.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected marker once, found {count}")
+              file.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          pyproject = Path("pyproject.toml")
+          text = pyproject.read_text(encoding="utf-8")
+          marker = "test = [\n"
+          if text.count(marker) != 1:
+              raise SystemExit("pyproject test-extra marker changed")
+          text = text.replace(
+              marker,
+              'workbench = [\n  "gradio>=5.0,<7",\n]\n' + marker,
+              1,
+          )
+          old_dev = 'dev = [\n  "shadowseed[test,models,vector,paper,openai]",\n]'
+          new_dev = 'dev = [\n  "shadowseed[test,models,vector,paper,openai,workbench]",\n]'
+          if old_dev not in text:
+              raise SystemExit("pyproject dev-extra marker changed")
+          pyproject.write_text(text.replace(old_dev, new_dev, 1), encoding="utf-8")
+
+          cli_block = '''    workbench = subparsers.add_parser(\n        "workbench",\n        help="[workbench] launch the local tester Workbench",\n    )\n    workbench.add_argument("--workspace", default=None, help="Override ~/.shadowseed.")\n    workbench.add_argument("--host", default="127.0.0.1", help="Server host (loopback by default).")\n    workbench.add_argument("--port", type=int, default=7860, help="Server port (default: 7860).")\n    workbench.add_argument(\n        "--allow-remote",\n        action="store_true",\n        help="Allow a non-loopback bind in a trusted environment; no auth is provided.",\n    )\n    workbench.add_argument(\n        "--no-browser",\n        action="store_true",\n        help="Do not open the Workbench in the default browser.",\n    )\n\n'''
+          replace_once(
+              "src/shadowseed/cli.py",
+              "    return parser\n\n\ndef main(argv: list[str] | None = None) -> int:\n",
+              cli_block + "    return parser\n\n\ndef main(argv: list[str] | None = None) -> int:\n",
+          )
+
+          dispatch_block = '''def _workbench(args: argparse.Namespace) -> str:\n    from shadowseed.workbench.app import launch_workbench\n\n    launch_workbench(\n        getattr(args, "workspace", None),\n        host=getattr(args, "host", "127.0.0.1"),\n        port=getattr(args, "port", 7860),\n        allow_remote=getattr(args, "allow_remote", False),\n        inbrowser=not getattr(args, "no_browser", False),\n    )\n    return "Workbench stopped."\n\n\n'''
+          replace_once(
+              "src/shadowseed/cli_dispatch.py",
+              "COMMAND_HANDLERS: dict[str, CommandHandler] = {\n",
+              dispatch_block + "COMMAND_HANDLERS: dict[str, CommandHandler] = {\n",
+          )
+          replace_once(
+              "src/shadowseed/cli_dispatch.py",
+              '    "workspace": _workspace,\n}',
+              '    "workspace": _workspace,\n    "workbench": _workbench,\n}',
+          )
+          PY
+      - name: Remove one-shot workflow and verify syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/apply-workbench-cli-round2.yml
+          python -m compileall -q src/shadowseed
+      - name: Commit normal source state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pyproject.toml src/shadowseed/cli.py src/shadowseed/cli_dispatch.py .github/workflows/apply-workbench-cli-round2.yml
+          git commit -m "Integrate Workbench UI into package and CLI"
+          git push origin HEAD:feature/workbench-ui
