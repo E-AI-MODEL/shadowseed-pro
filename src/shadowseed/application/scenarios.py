@@ -82,6 +82,52 @@ class ScenarioService:
     def parse(self, value: str | dict[str, Any]) -> ScenarioSpec:
         return parse_scenario(value)
 
+    @staticmethod
+    def _result(
+        *,
+        scenario: ScenarioSpec,
+        session_id: str,
+        reports: list[dict[str, Any]],
+        completed: int,
+        error: str | None,
+    ) -> dict[str, Any]:
+        return {
+            "session_id": session_id,
+            "scenario": scenario.to_dict(),
+            "turn_reports": reports,
+            "completed": completed,
+            "total": len(scenario.questions),
+            "complete": error is None and completed == len(scenario.questions),
+            "failed_at": None if error is None else completed,
+            "next_at": completed,
+            "error": error,
+        }
+
+    def _continue(
+        self,
+        scenario: ScenarioSpec,
+        session_id: str,
+        *,
+        start_at: int,
+    ) -> dict[str, Any]:
+        reports: list[dict[str, Any]] = []
+        completed = start_at
+        error: str | None = None
+        for position, question in enumerate(scenario.questions[start_at:], start=start_at):
+            try:
+                reports.append(self.sessions.run_turn(session_id, question))
+            except Exception as exc:  # backend/runtime failure becomes resumable batch state
+                error = f"{type(exc).__name__}: {exc}"
+                break
+            completed = position + 1
+        return self._result(
+            scenario=scenario,
+            session_id=session_id,
+            reports=reports,
+            completed=completed,
+            error=error,
+        )
+
     def run(self, scenario: ScenarioSpec) -> dict[str, Any]:
         session_id = self.sessions.create_session(
             title=scenario.title,
@@ -89,11 +135,38 @@ class ScenarioService:
             backend=scenario.backend,
             model_id=scenario.model_id,
         )
-        reports: list[dict[str, Any]] = []
-        for question in scenario.questions:
-            reports.append(self.sessions.run_turn(session_id, question))
-        return {
-            "session_id": session_id,
-            "scenario": scenario.to_dict(),
-            "turn_reports": reports,
-        }
+        return self._continue(scenario, session_id, start_at=0)
+
+    def resume(
+        self,
+        scenario: ScenarioSpec,
+        session_id: str,
+        start_at: int | None = None,
+    ) -> dict[str, Any]:
+        """Continue a partial scenario without replaying persisted turns.
+
+        Persisted progress is authoritative. The scenario prefix and an optional
+        caller-supplied position must match that progress, preventing stale UI
+        state from replaying already completed hosted-model calls or skipping
+        questions.
+        """
+
+        stored = self.sessions.load(session_id)
+        persisted_reports = list(stored["state"].get("turn_reports", []))
+        persisted_position = len(persisted_reports)
+        if persisted_position > len(scenario.questions):
+            raise ValueError("persisted session has more turns than the scenario")
+        persisted_questions = [str(report.get("question", "")) for report in persisted_reports]
+        expected_questions = list(scenario.questions[:persisted_position])
+        if persisted_questions != expected_questions:
+            raise ValueError("scenario questions do not match persisted session progress")
+        if start_at is None:
+            start_at = persisted_position
+        if start_at < 0 or start_at > len(scenario.questions):
+            raise ValueError("scenario resume position is outside the scenario")
+        if start_at != persisted_position:
+            raise ValueError(
+                "scenario resume position does not match persisted progress: "
+                f"requested {start_at}, persisted {persisted_position}"
+            )
+        return self._continue(scenario, session_id, start_at=start_at)

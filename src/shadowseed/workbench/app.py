@@ -202,6 +202,20 @@ def build_app(
         except Exception as exc:
             raise gr.Error(str(exc)) from exc
 
+    def scenario_status(result: dict[str, Any]) -> str:
+        session_id = str(result["session_id"])
+        if result.get("complete"):
+            return (
+                f"Scenario completed: **{result['completed']}/{result['total']}** questions "
+                f"in resumable session `{session_id}`."
+            )
+        return (
+            f"Scenario paused after **{result['completed']}/{result['total']}** completed "
+            f"questions. Failure: `{result.get('error') or 'unknown error'}`. "
+            f"Resume from index **{result['next_at']}** to retry the failed question without "
+            "replaying completed turns."
+        )
+
     def run_scenario(scenario_json: str, external_confirmed: bool):
         try:
             result = ctl.run_scenario(
@@ -211,8 +225,33 @@ def build_app(
             session_id = str(result["session_id"])
             return (
                 result,
-                f"Scenario completed into resumable session `{session_id}`.",
+                scenario_status(result),
                 dropdown_update(session_id),
+                int(result["next_at"]),
+            )
+        except Exception as exc:
+            raise gr.Error(str(exc)) from exc
+
+    def resume_scenario(
+        scenario_json: str,
+        session_id: str | None,
+        start_at: float,
+        external_confirmed: bool,
+    ):
+        if not session_id:
+            raise gr.Error("Select the partial scenario session first.")
+        try:
+            result = ctl.resume_scenario(
+                scenario_json,
+                session_id,
+                start_at=int(start_at),
+                external_confirmed=external_confirmed,
+            )
+            return (
+                result,
+                scenario_status(result),
+                dropdown_update(session_id),
+                int(result["next_at"]),
             )
         except Exception as exc:
             raise gr.Error(str(exc)) from exc
@@ -438,8 +477,9 @@ def build_app(
 
         with gr.Tab("Scenario"):
             gr.Markdown(
-                "Import a JSON scenario. Each imported run becomes a normal saved session that can "
-                "be resumed from the Session tab."
+                "Import a JSON scenario. A batch backend failure preserves completed turns and "
+                "returns the exact resume position, so retrying does not replay earlier calls. "
+                "The resulting session also remains available in the Session tab."
             )
             scenario_json = gr.Textbox(
                 label="Scenario JSON",
@@ -457,15 +497,42 @@ def build_app(
             )
             with gr.Row():
                 scenario_parse = gr.Button("Validate")
-                scenario_run = gr.Button("Run scenario", variant="primary")
+                scenario_run = gr.Button("Run new scenario", variant="primary")
+                scenario_resume = gr.Button("Resume partial scenario")
             scenario_result = gr.JSON(label="Scenario")
-            scenario_status = gr.Markdown()
-            scenario_session = gr.Dropdown(label="Created session", choices=initial_sessions)
+            scenario_status_output = gr.Markdown()
+            scenario_session = gr.Dropdown(label="Scenario session", choices=initial_sessions)
+            scenario_resume_at = gr.Number(
+                label="Resume index",
+                value=0,
+                precision=0,
+                info="Filled automatically after a partial run; persisted progress is authoritative.",
+            )
             scenario_parse.click(fn=parse_scenario, inputs=scenario_json, outputs=scenario_result)
             scenario_run.click(
                 fn=run_scenario,
                 inputs=[scenario_json, scenario_external_confirm],
-                outputs=[scenario_result, scenario_status, scenario_session],
+                outputs=[
+                    scenario_result,
+                    scenario_status_output,
+                    scenario_session,
+                    scenario_resume_at,
+                ],
+            )
+            scenario_resume.click(
+                fn=resume_scenario,
+                inputs=[
+                    scenario_json,
+                    scenario_session,
+                    scenario_resume_at,
+                    scenario_external_confirm,
+                ],
+                outputs=[
+                    scenario_result,
+                    scenario_status_output,
+                    scenario_session,
+                    scenario_resume_at,
+                ],
             )
 
     return app

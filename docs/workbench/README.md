@@ -97,11 +97,11 @@ The repository includes `Dockerfile.workbench` as an optional tester packaging
 path. Build it from the repository root:
 
 ```bash
-docker build -f Dockerfile.workbench -t shadowseed-workbench:0.4.0 .
+docker build -f Dockerfile.workbench -t shadowseed-workbench:0.4.1 .
 docker run --rm \
   -p 127.0.0.1:7860:7860 \
   -v shadowseed-data:/data \
-  shadowseed-workbench:0.4.0
+  shadowseed-workbench:0.4.1
 ```
 
 The container listens on `0.0.0.0` internally so the host can reach it, but the

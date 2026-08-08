@@ -7,6 +7,7 @@ permission, changes seed state, or calls the Validation Gate.
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Any
 
 from shadowseed.application.sessions import SessionService
@@ -40,6 +41,28 @@ def _references_seed(value: Any, seed_id: str) -> bool:
     if isinstance(value, (list, tuple)):
         return any(_references_seed(item, seed_id) for item in value)
     return False
+
+
+def _timestamp_sort_key(value: Any) -> tuple[int, float]:
+    """Return a stable chronological key for persisted ISO-8601 timestamps.
+
+    Missing or malformed timestamps sort before timestamped entries. Timestamped
+    values are normalized to UTC so different offsets are ordered by the actual
+    instant rather than by their textual representation.
+    """
+
+    if value in (None, ""):
+        return (0, 0.0)
+    text = str(value).strip()
+    if not text:
+        return (0, 0.0)
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        return (0, 0.0)
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return (1, parsed.astimezone(timezone.utc).timestamp())
 
 
 def explain_seed(seed: dict[str, Any], *, blocking: bool = False) -> str:
@@ -114,21 +137,26 @@ class InspectionService:
             ("probe_feedback", manager.get("feedback_log", [])),
             ("influence", state.get("influence_records", [])),
         )
-        timeline: list[dict[str, Any]] = []
-        sequence = 0
-        for event_type, items in sources:
-            for item in items:
+        collected: list[tuple[tuple[int, float], int, int, dict[str, Any]]] = []
+        for category_index, (event_type, items) in enumerate(sources):
+            for item_index, item in enumerate(items):
                 if not isinstance(item, dict) or not _references_seed(item, seed_id):
                     continue
-                timeline.append(
-                    {
-                        "sequence": sequence,
-                        "type": event_type,
-                        "timestamp": item.get("created_at")
-                        or item.get("timestamp")
-                        or item.get("at"),
-                        "payload": dict(item),
-                    }
+                timestamp = item.get("created_at") or item.get("timestamp") or item.get("at")
+                collected.append(
+                    (
+                        _timestamp_sort_key(timestamp),
+                        category_index,
+                        item_index,
+                        {
+                            "type": event_type,
+                            "timestamp": timestamp,
+                            "payload": dict(item),
+                        },
+                    )
                 )
-                sequence += 1
-        return timeline
+        collected.sort(key=lambda entry: (entry[0], entry[1], entry[2]))
+        return [
+            {"sequence": sequence, **entry[3]}
+            for sequence, entry in enumerate(collected)
+        ]
