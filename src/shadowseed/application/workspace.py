@@ -74,5 +74,15 @@ class WorkspaceService:
         self.repository.restore_from(source)
 
     def delete(self) -> None:
-        if self.paths.root.exists():
-            shutil.rmtree(self.paths.root)
+        root = self.paths.root
+        home = Path.home().resolve()
+        protected = {Path(root.anchor).resolve(), home, home.parent.resolve()}
+        if root in protected or len(root.parts) < 3:
+            raise ValueError(f"refusing to delete unsafe workspace path: {root}")
+        markers = (self.paths.database, self.paths.config)
+        if root.exists() and not any(path.exists() for path in markers):
+            raise ValueError(
+                f"refusing to delete a directory that is not a Shadowseed workspace: {root}"
+            )
+        if root.exists():
+            shutil.rmtree(root)
