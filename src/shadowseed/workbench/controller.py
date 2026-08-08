@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from shadowseed.application.comparison import ComparisonService
+from shadowseed.application.exports import ExportService, verify_workbench_export
 from shadowseed.application.feedback import FeedbackService
 from shadowseed.application.inspection import InspectionService
 from shadowseed.application.profiles import list_profiles
@@ -48,6 +49,10 @@ class WorkbenchController:
         self.feedback = FeedbackService(self.sessions)
         self.scenarios = ScenarioService(self.sessions)
         self.comparison = ComparisonService(self.sessions)
+        self.exports = ExportService(
+            self.sessions,
+            workspace_root=self.workspace.paths.root,
+        )
 
     @property
     def workspace_root(self) -> str:
@@ -170,6 +175,16 @@ class WorkbenchController:
         result = self.scenarios.run(scenario)
         result["session"] = self.inspection.session_view(result["session_id"])
         return result
+
+    def export_report(self, session_id: str, destination: str | Path) -> str:
+        return str(self.exports.export_report(session_id, destination))
+
+    def export_support_bundle(self, session_id: str, destination: str | Path) -> str:
+        return str(self.exports.export_support_bundle(session_id, destination))
+
+    @staticmethod
+    def verify_export(path: str | Path) -> dict[str, Any]:
+        return verify_workbench_export(path)
 
     @staticmethod
     def chat_messages(session_view: dict[str, Any]) -> list[dict[str, str]]:

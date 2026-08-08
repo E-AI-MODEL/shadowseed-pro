@@ -8,7 +8,7 @@
   <a href="https://github.com/E-AI-MODEL/shadowseed-pro/actions/workflows/ci.yml">
     <img alt="Continuous integration" src="https://github.com/E-AI-MODEL/shadowseed-pro/actions/workflows/ci.yml/badge.svg">
   </a>
-  <img alt="Repository version 0.3.0" src="https://img.shields.io/badge/repository-0.3.0-2f6f5e">
+  <img alt="Repository version 0.4.0" src="https://img.shields.io/badge/repository-0.4.0-2f6f5e">
   <img alt="Python 3.10 or higher" src="https://img.shields.io/badge/Python-3.10%2B-3776AB">
   <img alt="Research status research ready" src="https://img.shields.io/badge/status-research--ready-c88719">
   <img alt="Active repository language English" src="https://img.shields.io/badge/active_language-English-6f42c1">
@@ -34,6 +34,7 @@ Shadow Seed Learning, or SSL, records a possible omission as a **candidate for i
 | Goal | Start here |
 |---|---|
 | Run the deterministic demo | [Quick start](#quick-start) |
+| Use the practical tester environment | [Tester Workbench](#tester-workbench) |
 | Understand the idea | [The idea in plain language](#the-idea-in-plain-language) |
 | Audit the guarantees | [What the code enforces](#what-the-code-enforces) |
 | Review evidence and limits | [Research status](#research-status) |
@@ -64,6 +65,29 @@ shadowseed chat --backend fixture --show-shadow
 
 The fixture backend verifies pipeline mechanics. It is not evidence of real-model quality.
 
+### Tester Workbench
+
+The 0.4 tester preview adds a local, single-user Workbench for practical testing
+without writing Python code:
+
+```bash
+pip install -e ".[workbench]"
+shadowseed doctor
+shadowseed init
+shadowseed workbench
+```
+
+The supported native server binds to `127.0.0.1` by default. Testers can create
+or resume sessions, inspect stored seed decisions, record audit-only feedback,
+compare baseline and SSL-visible answers, import scenarios, and export verified
+reports or privacy-minimized support bundles. The Workbench is a tester product
+layer over the existing runtime; it is not a second Validation Gate and does not
+turn tester observations into scientific evidence.
+
+See [`docs/workbench/README.md`](docs/workbench/README.md) for the practical
+workflow and [`docs/workbench/limitations.md`](docs/workbench/limitations.md)
+before sharing data or changing the default network binding.
+
 For live-chat and core CLI guidance, see [`docs/usage/cli.md`](docs/usage/cli.md). Run `shadowseed --help` for the complete command list. Research-specific examples and reproducibility notes remain under [Activation-probe commands](#activation-probe-commands) and [Reproducibility rules](#reproducibility-rules).
 
 <details>
@@ -85,6 +109,7 @@ pip install -e ".[models]"          # Hugging Face, Sentence Transformers, Torch
 pip install -e ".[openai]"          # hosted OpenAI adapter
 pip install -e ".[vector]"          # FAISS and Chroma
 pip install -e ".[paper]"           # PDF paper pipeline
+pip install -e ".[workbench]"       # local tester Workbench (Gradio 6)
 pip install -e ".[dev]"             # all development extras
 ```
 

@@ -1,0 +1,82 @@
+# Workbench privacy guidance
+
+Shadowseed Workbench 0.4.0 is local-first, but local-first does not mean that
+all data is automatically non-sensitive. Testers remain responsible for the
+content they enter and for exports they choose to share.
+
+## Local workspace
+
+The Workbench stores sessions and audit data in the local SQLite workspace.
+That can include prompts, generated answers, seed text, model/backend metadata,
+Gate and influence records, and tester feedback.
+
+- Do not paste passwords, API keys, access tokens, private keys, or other
+  credentials into a tester conversation.
+- Do not use real personal or confidential data when synthetic or redacted test
+  material is sufficient.
+- Protect workspace backups like the source workspace; a backup is not a
+  privacy-minimized support artifact.
+- Use `shadowseed workspace delete --yes` only when you intentionally want to
+  remove the complete local workspace.
+
+## Backend transmission
+
+The fixture backend is deterministic and local. Ollama is intended for a local
+Ollama service. Hugging Face Transformers inference is local after model files
+are available, although obtaining a model can contact Hugging Face.
+
+The OpenAI backend is hosted. Prompts and generated context are sent to that
+provider only after the Workbench requires explicit hosted-provider
+confirmation. Provider-side handling is outside the local SQLite boundary and
+must be evaluated under the provider/account terms used by the tester.
+
+Credentials must be supplied through supported environment or local credential
+mechanisms. The Workbench does not accept backend credentials as persisted
+workspace configuration.
+
+## Full reports
+
+A full Workbench report is an intentional content-bearing export. It can contain
+session identity, prompts, answers, seed snapshots, Gate/influence records and
+free-text tester feedback.
+
+Treat a full report as sensitive unless you have inspected the session and know
+that its contents are safe to share.
+
+## Support bundles
+
+A support bundle is intentionally minimized for troubleshooting. It omits:
+
+- the free session title;
+- the direct session identifier;
+- prompts and generated answers;
+- seed text;
+- free-text tester notes.
+
+It can still contain backend/model choice, profile, platform/environment
+metadata, sanitized configuration and structural counts. The pseudonymous
+support identifier is stable for a given session identifier; it is useful for
+correlating repeated support bundles but must not be described as formal
+anonymization.
+
+## Redaction and verification
+
+Exported configuration is recursively checked for secret-like field names and
+local absolute paths. This is defense in depth, not a promise that arbitrary
+free text is safe. Full reports deliberately preserve session content.
+
+Every Workbench export includes a manifest with SHA-256 hashes and declared
+sizes. `shadowseed verify-workbench-export` checks integrity and defensive ZIP
+constraints before an export should be trusted as a Workbench-generated bundle.
+
+## Sharing checklist
+
+Before sharing an artifact:
+
+1. Prefer a support bundle for troubleshooting.
+2. Use a full report only when conversation/seed content is actually needed.
+3. Verify the ZIP with `shadowseed verify-workbench-export`.
+4. Inspect the intended artifact when the data is sensitive.
+5. Share through an appropriate channel for the data classification involved.
+
+The 0.4.0 tester preview has no telemetry or automatic cloud workspace upload.
