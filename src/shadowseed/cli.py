@@ -637,6 +637,24 @@ def build_parser() -> argparse.ArgumentParser:
     delete = workspace_actions.add_parser("delete", help="Delete the complete local workspace.")
     delete.add_argument("--yes", action="store_true", help="Confirm irreversible deletion.")
 
+    workbench = subparsers.add_parser(
+        "workbench",
+        help="[workbench] launch the local tester Workbench",
+    )
+    workbench.add_argument("--workspace", default=None, help="Override ~/.shadowseed.")
+    workbench.add_argument("--host", default="127.0.0.1", help="Server host (loopback by default).")
+    workbench.add_argument("--port", type=int, default=7860, help="Server port (default: 7860).")
+    workbench.add_argument(
+        "--allow-remote",
+        action="store_true",
+        help="Allow a non-loopback bind in a trusted environment; no auth is provided.",
+    )
+    workbench.add_argument(
+        "--no-browser",
+        action="store_true",
+        help="Do not open the Workbench in the default browser.",
+    )
+
     return parser
 
 

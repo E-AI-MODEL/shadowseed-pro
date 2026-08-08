@@ -380,6 +380,19 @@ def _workspace(args: argparse.Namespace) -> str:
     raise ValueError(f"unknown workspace action: {action}")
 
 
+def _workbench(args: argparse.Namespace) -> str:
+    from shadowseed.workbench.app import launch_workbench
+
+    launch_workbench(
+        getattr(args, "workspace", None),
+        host=getattr(args, "host", "127.0.0.1"),
+        port=getattr(args, "port", 7860),
+        allow_remote=getattr(args, "allow_remote", False),
+        inbrowser=not getattr(args, "no_browser", False),
+    )
+    return "Workbench stopped."
+
+
 COMMAND_HANDLERS: dict[str, CommandHandler] = {
     "prepare-absencebench-bundle": _prepare_absencebench_bundle,
     "run-absencebench-local": _run_absencebench_local,
@@ -413,6 +426,7 @@ COMMAND_HANDLERS: dict[str, CommandHandler] = {
     "doctor": _doctor,
     "init": _init_workspace,
     "workspace": _workspace,
+    "workbench": _workbench,
 }
 
 
