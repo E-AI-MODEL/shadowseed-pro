@@ -25,6 +25,7 @@ class SessionConfig:
     early_turn_margin: float = 0.10
     early_turn_history: int = 5
     resurface_margin: float = 0.15
+    max_seeds_per_turn: int = 5
     recurrence_mode: str = "cluster"
     cluster_threshold: float | None = None
     probe_corpus: str | None = None
