@@ -1,6 +1,6 @@
 # Shadowseed Tester Workbench 0.4 Implementation Plan
 
-**Status:** 0.4.0 published; 0.4.1 patch candidate  
+**Status:** Completed — v0.4.1 published  
 **Target:** 0.4.x Tester Preview  
 **Owner:** E-AI-MODEL  
 **Created:** 2026-08-08  
@@ -90,7 +90,7 @@ Delivered:
 
 ### Round 2: practical Workbench — complete
 
-Branch: `feature/workbench-ui`  
+Historical branch: `feature/workbench-ui`  
 Merged as PR #42. The earlier PR #40 was closed as an incomplete staging probe
 and is not part of the delivered product.
 
@@ -106,12 +106,13 @@ Delivered:
 - explicit hosted-provider confirmation and loopback-first server policy;
 - dedicated Workbench CI and clean-wheel Workbench-extra installation smoke.
 
-### Round 3: reports, privacy, and tester release — release candidate
+### Round 3: reports, privacy, and tester release — complete
 
-Branch: `feature/workbench-release`  
-PR #43.
+Historical branch: `feature/workbench-release`  
+Merged as PR #43. The first published Workbench release, `v0.4.0`, points to
+`676fd0af2c82fa3e3f661327a3f3fb62b9839b0a`.
 
-Delivered in the release candidate:
+Delivered:
 
 - standalone HTML reports plus JSON and CSV artifacts;
 - privacy-minimized support bundles;
@@ -141,7 +142,7 @@ telemetry, and fixture runs intentionally do not imply cost or performance data.
   install, and source/installed CLI smokes pass.
 - Open P1/P2 findings are resolved before merge.
 
-## Definition of done
+## Definition of done — achieved
 
 A tester on a clean machine can, without writing Python code:
 
@@ -156,30 +157,41 @@ A tester on a clean machine can, without writing Python code:
 9. export and verify a full report or minimized support bundle;
 10. back up and restore the workspace.
 
-Release completion additionally requires:
+Release completion was verified through:
 
-- the final PR head to pass full CI, Workbench CI, and portability checks;
-- PR #43 to merge into `main`;
-- the post-merge portability run on `main` to succeed;
-- GitHub prerelease `v0.4.0` to be created at that exact `main` commit;
-- the published wheel, source distribution, and `SHA256SUMS` to be downloaded and
-  checksum-verified by the release workflow.
+- full CI on Python 3.10 and 3.12;
+- Workbench CI and a clean built-wheel `[workbench]` installation;
+- Ubuntu, macOS, and Windows clean-install portability runs;
+- Docker build and installed CLI smoke;
+- post-merge portability on the exact release commit;
+- clean installed-package fixture, report, and support-bundle verification;
+- published wheel, source distribution, and `SHA256SUMS` downloaded and
+  checksum-verified after publication.
 
-## Post-release patch 0.4.1
+## Post-release patch 0.4.1 — complete
 
 Two P2 review threads were posted after PR #42 had already merged and were not
-present in the published `v0.4.0` tag. The corrective patch keeps that release
-immutable and addresses the findings in a new version:
+present in the published `v0.4.0` tag. PR #44 corrected them without rewriting
+that historical release.
 
-- chronological seed audit presentation across ledgers;
+Delivered in `v0.4.1`:
+
+- chronological seed audit presentation across ledgers using parsed timestamps
+  normalized to the actual UTC instant;
+- deterministic fallback ordering for missing or malformed timestamps;
 - scenario failure isolation with explicit partial progress;
-- safe resume without replaying completed calls;
-- stale-position and scenario-prefix validation;
-- a visible Workbench resume action and partial-run status.
+- safe resume at the failed question without replaying completed calls;
+- validation of persisted progress, completed scenario prefix, profile, backend,
+  and model before resume;
+- a visible Workbench resume action and partial-run status;
+- version-driven patch release automation using the same post-merge portability
+  and asset-verification gates.
 
-The patch is complete only after the same full CI, Workbench CI,
-cross-platform portability, Docker, clean-wheel, export, checksum, and
-post-publication asset-verification gates pass for `v0.4.1`.
+PR #44 merged to `79b949e97556697f7c599e094d4ada9e5d02338f`.
+GitHub prerelease `v0.4.1` points to that exact commit and contains the verified
+wheel, source distribution, and `SHA256SUMS`. The late P2 review threads are
+resolved. `v0.4.0` remains unchanged at
+`676fd0af2c82fa3e3f661327a3f3fb62b9839b0a`.
 
 ## Explicitly out of scope for 0.4
 
