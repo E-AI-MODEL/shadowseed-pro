@@ -1,0 +1,45 @@
+name: Apply Workbench foundation patch
+
+on:
+  push:
+    branches:
+      - agent/workbench-foundation
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/workbench-foundation
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Apply existing-file patch
+        run: |
+          git apply --check .github/workbench-foundation.patch
+          git apply .github/workbench-foundation.patch
+          rm .github/workbench-foundation.patch
+          rm .github/workflows/apply-workbench-foundation.yml
+      - name: Validate foundation
+        run: |
+          python -m pip install --upgrade pip build
+          pip install -e ".[test]"
+          ruff check .
+          pytest -q
+          python -m build
+          python -m shadowseed.cli --help
+      - name: Commit applied foundation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/usage/cli.md repository-authority.yaml src/shadowseed/chat.py src/shadowseed/cli.py src/shadowseed/cli_dispatch.py
+          git add -u .github
+          git commit -m "Complete Workbench foundation"
+          git push origin HEAD:agent/workbench-foundation
