@@ -41,3 +41,16 @@ shadowseed analyze-results
 ## Optional backends
 
 Real-model and vector commands require their matching extras and local credentials or services. API keys must be supplied through environment variables, never source files or workflow inputs.
+
+## Tester workspace foundation
+
+```bash
+shadowseed doctor
+shadowseed init
+shadowseed workspace info
+shadowseed workspace backup
+```
+
+The default local workspace is `~/.shadowseed`. Use `--workspace PATH` for an
+isolated workspace. `workspace delete` requires `--yes`. API keys remain in the
+process environment or an OS keyring and are never stored in the workspace.
