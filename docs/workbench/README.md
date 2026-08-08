@@ -6,6 +6,9 @@ statistics platform or a production multi-user service.
 
 The implementation plan is maintained in
 [`docs/plans/tester-workbench-0.4.md`](../plans/tester-workbench-0.4.md).
+Before external testing, also read the
+[privacy guidance](privacy.md), [tester guidelines](tester-guidelines.md), and
+[preview limitations](limitations.md).
 
 ## Install and start
 
@@ -48,7 +51,8 @@ Credentials are not accepted as persistent Workbench configuration. Use the
 backend's supported environment-variable or local credential mechanism.
 
 Session messages are stored locally, so testers should not paste credentials or
-unnecessary sensitive data into conversations.
+unnecessary sensitive data into conversations. See [privacy.md](privacy.md) for
+the full sharing and data-handling guidance.
 
 ## Exports
 
