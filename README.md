@@ -64,7 +64,7 @@ shadowseed chat --backend fixture --show-shadow
 
 The fixture backend verifies pipeline mechanics. It is not evidence of real-model quality.
 
-For the complete command list, optional backends, and reproducible research runs, see [`docs/usage/cli.md`](docs/usage/cli.md).
+For live-chat and core CLI guidance, see [`docs/usage/cli.md`](docs/usage/cli.md). Run `shadowseed --help` for the complete command list. Research-specific examples and reproducibility notes remain under [Activation-probe commands](#activation-probe-commands) and [Reproducibility rules](#reproducibility-rules).
 
 <details>
 <summary><strong>Common benchmark commands and optional dependencies</strong></summary>
@@ -476,6 +476,18 @@ shadowseed run-activation-probe \
   --dtype float32 \
   --output results/activation_probe.json
 ```
+
+Generate fresh external dialectical labels:
+
+```bash
+shadowseed run-dialectic-falsification \
+  --backend openai \
+  --model-id <model-id> \
+  --input src/shadowseed/data/dialectic_falsification_transfer_v3.json \
+  --output results/dialectic_verdicts.json
+```
+
+Pass the resulting verdict artifact to `run-activation-probe --verdicts`. Fresh model labels are not bit-reproducible by default, so preserve the artifact together with the model identifier and date.
 
 A reproducible comparison needs a fixed model revision, dependencies, labels, case data, random seeds, and a plan written before inspecting the strongest layer.
 

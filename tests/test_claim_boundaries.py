@@ -71,6 +71,9 @@ def test_readme_keeps_onboarding_visible_and_details_balanced() -> None:
     assert "research-ready, not production-ready" in first_screen
     assert "no open-source license" in first_screen
     assert "```mermaid" in README
+    assert "For the complete command list" not in README
+    assert "shadowseed --help" in README
+    assert "run-dialectic-falsification" in README
     assert README.count("<details>") == README.count("</details>")
     assert 1 <= README.count("<details>") <= 6
 
