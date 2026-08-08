@@ -1,5 +1,58 @@
 # Changelog
 
+## Unreleased - Manager modularization and Gate boundary completion
+
+`SSLManager` was reduced from 1,974 to 727 lines and now serves as the runtime
+orchestrator and compatibility facade. Executable concerns that were previously
+embedded in `manager.py` now have one canonical implementation:
+
+- `shadowseed.models` owns stable data contracts, authority guards, snapshot
+  validation, and serialization (#26).
+- `shadowseed.contradictions` owns contradiction-record collection,
+  blocking-state derivation, formal resolution, identifier sequencing, and
+  legacy migration (#27).
+- `shadowseed.intake` owns embedding acquisition, candidate normalization,
+  atomicity heuristics, deduplication, and seed creation/update (#30).
+- `shadowseed.lifecycle` owns TTL decay, dormancy, TrTL reactivation, and
+  terminal expiry (#31).
+- `shadowseed.vector_workflows` owns uncertain-region search,
+  external-feedback routing, labels, and in-memory constellation construction
+  (#32).
+- `shadowseed.gate.runtime_adapter` is the single executable Gate-controlled
+  authority-decision engine, including contradiction resolution and probe
+  feedback (#22, #29).
+- Canonical documentation and `repository-authority.yaml` now reflect the final
+  ownership boundaries. Structural tests cap `manager.py` and prevent extracted
+  implementation primitives from drifting back into it (#33, #35).
+
+Compatibility remains explicit:
+
+- Existing public manager methods remain available. Methods for extracted
+  concerns delegate to their canonical modules.
+- Historical model imports remain object-identical. For example,
+  `shadowseed.manager.ShadowSeed`, `shadowseed.models.ShadowSeed`, and
+  `shadowseed.ShadowSeed` are the same class. `manager.ContradictionRecord`
+  remains the Gate contract class, and the historical wildcard-import surface
+  is covered by regression tests.
+- `SSLManager.contradiction_records` changed from an instance attribute to a
+  property backed by the canonical contradiction domain. Normal reads,
+  mutation, and assignment remain compatible. An assigned `list` keeps its
+  identity, so later appends through the caller's own reference remain visible
+  to blocking queries and export. Code that inspects instance storage or
+  descriptor behavior may observe this structural change.
+- `AgentSafetyContract.require_logged_promotion` remains accepted by the
+  constructor for compatibility but has no effect on authorization. Point-of-use
+  authorization always requires a logged promotion and a live Gate event for
+  the current `authority_version`. Only the contradiction check remains
+  configurable (#35).
+
+Claim and assurance wording was synchronized with the final structure:
+`GateEvent` and `AgentInfluenceRecord` are frozen and support strict in-process
+replay; other retained event and result objects are mutable; durable,
+tamper-evident audit storage remains a production gap (#34, #35). No runtime
+policy threshold, serialized shape, or benchmark meaning was intentionally
+changed by the modularization series.
+
 ## Unreleased - Claim discipline and CI assurance
 
 Documentation and CI hardening (issue #23). No runtime behavior change.
@@ -18,10 +71,13 @@ Documentation and CI hardening (issue #23). No runtime behavior change.
   - in-process frozen/replayable `GateEvent` and influence records are
     distinguished from durable, append-only, tamper-evident storage, which is
     called out as a production gap;
-  - the point-of-use `AgentSafetyContract` is documented by its exact checks
-    (always: weight > 0, promoted, live current-version Gate-event link; and, in
-    the default configuration, no blocking contradiction and a logged promotion
-    — both configurable opt-outs) rather than implying universal safety;
+  - the point-of-use `AgentSafetyContract` is documented by its exact checks:
+    weight above zero, promoted status, a logged promotion, and a live
+    current-version Gate-event link are always required; the blocking-
+    contradiction check is enabled by default and is the only configurable
+    relaxation. The compatibility-only `require_logged_promotion` field cannot
+    bypass the logged-promotion requirement. This replaces broader wording that
+    implied both checks were configurable opt-outs;
     "zero-trust" wording bounded to the default configuration.
 - Expanded CI: added a `build` job that builds the wheel/sdist, installs it in a
   clean virtualenv, and runs the installed console entry point; added a CLI smoke
