@@ -150,6 +150,8 @@ class AgentSafetyContract:
     - an active contradiction score blocks influence by default.
     """
 
+    # Retained for constructor compatibility. Point-of-use authorization
+    # always requires a logged promotion and a live current-version GateEvent.
     require_logged_promotion: bool = True
     block_contradicted_seed: bool = True
 
@@ -186,7 +188,10 @@ class AgentSafetyContract:
         if self.block_contradicted_seed and contradiction_blocking:
             return InfluenceDecision(seed_id, action_value, False, "contradiction_present")
 
-        if self.require_logged_promotion and not has_logged_promotion(seed_id, gate_log):
+        # ``require_logged_promotion`` is retained for constructor compatibility,
+        # but it cannot disable this safety requirement. Actual authorization also
+        # requires a live current-version GateEvent link in ``decide_and_record``.
+        if not has_logged_promotion(seed_id, gate_log):
             return InfluenceDecision(seed_id, action_value, False, "missing_logged_promotion")
 
         return InfluenceDecision(seed_id, action_value, True, "allowed_promoted_gate_logged")
@@ -204,17 +209,36 @@ class AgentSafetyContract:
         Returns an :class:`InfluenceInspection` with ``blocking_reasons`` and no
         ``allowed`` verdict, so its result cannot be used to authorize influence.
         To let a seed influence an action, use :meth:`decide_and_record`, which
-        records the decision and links it to a Gate event.
+        records the decision and links it to a Gate event. Legacy
+        ``ValidationGateResult`` logs can show that a promotion occurred, but only
+        ``GateEvent`` entries carry enough information for inspection to diagnose a
+        stale current-version authorization.
 
         (The former public ``decide``/``can_influence`` methods were removed:
         they returned an allowed verdict that could be used to drive influence
         without recording, which the point-of-use contract forbids.)
         """
 
+        entries = list(gate_log)
         decision = self._decide(
-            seed, action, gate_log, contradiction_blocking=contradiction_blocking
+            seed, action, entries, contradiction_blocking=contradiction_blocking
         )
         reasons: tuple[str, ...] = () if decision.allowed else (decision.reason,)
+
+        # ValidationGateResult-style logs can show that a promotion happened, but
+        # only GateEvents can prove that the authorization is still current. When
+        # GateEvents are supplied, inspection reports the same stale-link problem
+        # that ``decide_and_record`` would enforce.
+        if decision.allowed and any(
+            _value(entry, "event_id", None) is not None for entry in entries
+        ):
+            current_version = _value(seed, "authority_version", None)
+            ref, event_version, _policy_id = self._link_gate_event(
+                decision.seed_id, entries, current_version
+            )
+            if ref is None or event_version != current_version:
+                reasons = ("stale_gate_authorization",)
+
         return InfluenceInspection(
             seed_id=decision.seed_id, action=decision.action, blocking_reasons=reasons
         )
@@ -239,6 +263,10 @@ class AgentSafetyContract:
         version is snapshotted so a stale authorization can be detected on
         replay. ``gate_events`` is consumed both for the promotion check and for
         the event linkage, so it should be the manager's ``gate_events`` ledger.
+
+        ``require_logged_promotion`` is retained as a constructor-compatible
+        field, but setting it to ``False`` never bypasses the logged-promotion or
+        current-version Gate-event requirements.
 
         Returns the recorded ``AgentInfluenceRecord``.
         """

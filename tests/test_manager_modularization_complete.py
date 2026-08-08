@@ -10,6 +10,43 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOT = ROOT / "src/shadowseed"
 MANAGER = SOURCE_ROOT / "manager.py"
 
+FORBIDDEN_CALL_PREFIXES = {
+    ("np", "dot"),
+    ("np", "mean"),
+    ("np", "linalg"),
+    ("math", "exp"),
+    ("re", "findall"),
+}
+
+
+def _attribute_chain(node: ast.AST) -> tuple[str, ...] | None:
+    """Return a complete dotted call target such as ``np.linalg.norm``."""
+
+    parts: list[str] = []
+    while isinstance(node, ast.Attribute):
+        parts.append(node.attr)
+        node = node.value
+    if not isinstance(node, ast.Name):
+        return None
+    return (node.id, *reversed(parts))
+
+
+def _forbidden_call_chains(source: str) -> set[tuple[str, ...]]:
+    tree = ast.parse(source)
+    found: set[tuple[str, ...]] = set()
+    for call in ast.walk(tree):
+        if not isinstance(call, ast.Call):
+            continue
+        chain = _attribute_chain(call.func)
+        if chain is None:
+            continue
+        if any(
+            chain[: len(prefix)] == prefix
+            for prefix in FORBIDDEN_CALL_PREFIXES
+        ):
+            found.add(chain)
+    return found
+
 
 def test_manager_stays_a_bounded_orchestration_facade() -> None:
     source = MANAGER.read_text(encoding="utf-8")
@@ -24,20 +61,18 @@ def test_manager_stays_a_bounded_orchestration_facade() -> None:
     }
     assert {"intake_engine", "lifecycle_engine", "vector_workflows"} <= imported_modules
 
-    forbidden_calls = {
-        ("np", "dot"),
-        ("np", "mean"),
-        ("np", "linalg"),
-        ("math", "exp"),
-        ("re", "findall"),
-    }
-    seen_calls: set[tuple[str, str]] = set()
-    for call in ast.walk(tree):
-        if not isinstance(call, ast.Call) or not isinstance(call.func, ast.Attribute):
-            continue
-        if isinstance(call.func.value, ast.Name):
-            seen_calls.add((call.func.value.id, call.func.attr))
-    assert forbidden_calls.isdisjoint(seen_calls)
+    assert not _forbidden_call_chains(source)
+
+
+def test_nested_numpy_attribute_chain_is_rejected() -> None:
+    source = "def normalize(vector):\n    return np.linalg.norm(vector)\n"
+    assert _forbidden_call_chains(source) == {("np", "linalg", "norm")}
+
+    facade = (
+        "def normalize(vector):\n"
+        "    return intake_engine.normalize_embedding(vector)\n"
+    )
+    assert not _forbidden_call_chains(facade)
 
 
 def test_modularized_runtime_has_explicit_authority_ownership() -> None:
