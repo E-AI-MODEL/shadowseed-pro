@@ -10,7 +10,6 @@ permissions:
 
 env:
   GRADIO_ANALYTICS_ENABLED: "False"
-  RELEASE_TAG: "v0.4.0"
 
 jobs:
   release:
@@ -38,26 +37,25 @@ jobs:
           git fetch origin main --tags --force
           test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
           git merge-base --is-ancestor "$RELEASE_SHA" origin/main
-          python - <<'PY'
-          import os
+          release_version="$(python - <<'PY'
           import tomllib
           from pathlib import Path
-
-          project = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))["project"]
-          expected = f"v{project['version']}"
-          actual = os.environ["RELEASE_TAG"]
-          if expected != actual:
-              raise SystemExit(f"release tag {actual!r} does not match project version {expected!r}")
-          if actual != "v0.4.0":
-              raise SystemExit("this release workflow is scoped to v0.4.0")
+          print(tomllib.loads(Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version'])
           PY
-          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            echo "Release $RELEASE_TAG already exists; no publication needed."
+          )"
+          release_tag="v${release_version}"
+          notes_file="docs/workbench/release-${release_version}.md"
+          test -f "$notes_file"
+          echo "release_version=$release_version" >> "$GITHUB_OUTPUT"
+          echo "release_tag=$release_tag" >> "$GITHUB_OUTPUT"
+          echo "notes_file=$notes_file" >> "$GITHUB_OUTPUT"
+          if gh release view "$release_tag" >/dev/null 2>&1; then
+            echo "Release $release_tag already exists; no publication needed."
             echo "should_release=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          if git show-ref --verify --quiet "refs/tags/$RELEASE_TAG"; then
-            echo "Tag $RELEASE_TAG exists without a published release; refusing ambiguous publication." >&2
+          if git show-ref --verify --quiet "refs/tags/$release_tag"; then
+            echo "Tag $release_tag exists without a published release; refusing ambiguous publication." >&2
             exit 1
           fi
           echo "should_release=true" >> "$GITHUB_OUTPUT"
@@ -121,6 +119,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
+          RELEASE_TAG: ${{ steps.preflight.outputs.release_tag }}
+          RELEASE_VERSION: ${{ steps.preflight.outputs.release_version }}
+          NOTES_FILE: ${{ steps.preflight.outputs.notes_file }}
         shell: bash
         run: |
           set -euo pipefail
@@ -129,13 +130,14 @@ jobs:
             --target "$RELEASE_SHA" \
             --prerelease \
             --latest=false \
-            --title "Shadowseed Workbench 0.4.0 Tester Preview" \
-            --notes-file docs/workbench/release-0.4.0.md
+            --title "Shadowseed Workbench ${RELEASE_VERSION} Tester Preview" \
+            --notes-file "$NOTES_FILE"
       - name: Verify published tag and assets
         if: steps.preflight.outputs.should_release == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
+          RELEASE_TAG: ${{ steps.preflight.outputs.release_tag }}
         shell: bash
         run: |
           set -euo pipefail
