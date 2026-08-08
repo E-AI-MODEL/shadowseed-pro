@@ -12,6 +12,7 @@ from shadowseed.application.profiles import get_profile, list_profiles
 from shadowseed.application.sessions import SessionService
 from shadowseed.application.workspace import WorkspaceService
 from shadowseed.chat import ShadowChatSession
+from shadowseed_agent import AgentSafetyContract
 from shadowseed.cli import build_parser
 from shadowseed.cli_dispatch import execute_command
 from shadowseed.storage.sqlite import SQLiteWorkspaceRepository, WorkspaceStorageError
@@ -34,13 +35,17 @@ def test_profiles_are_small_named_surfacing_configurations() -> None:
 
 
 def test_shadow_chat_state_roundtrip_preserves_audit_and_continues() -> None:
-    session = ShadowChatSession(backend="fixture")
+    session = ShadowChatSession(
+        backend="fixture",
+        contract=AgentSafetyContract(block_contradicted_seed=False),
+    )
     first = session.turn("What might be missing from this plan?")
     restored = ShadowChatSession.from_state(session.to_state())
 
     assert restored.transcript() == session.transcript()
     assert restored.manager.to_dict() == session.manager.to_dict()
     assert restored.audit() == session.audit()
+    assert restored.contract == session.contract
 
     second = restored.turn("What should be checked next?")
     assert second["turn"] == first["turn"] + 1
@@ -132,3 +137,21 @@ def test_doctor_and_workspace_cli_are_available(tmp_path: Path) -> None:
     doctor_args = Namespace(command="doctor", workspace=str(tmp_path / "cli"), json=True)
     doctor_payload = json.loads(execute_command(doctor_args))
     assert "checks" in doctor_payload
+
+
+def test_workspace_delete_rejects_unsafe_or_unowned_directories(tmp_path: Path) -> None:
+    unsafe = WorkspaceService(Path.home())
+    with pytest.raises(ValueError, match="unsafe workspace path"):
+        unsafe.delete()
+
+    unrelated = tmp_path / "unrelated"
+    unrelated.mkdir()
+    (unrelated / "keep.txt").write_text("keep", encoding="utf-8")
+    with pytest.raises(ValueError, match="not a Shadowseed workspace"):
+        WorkspaceService(unrelated).delete()
+    assert (unrelated / "keep.txt").exists()
+
+    owned = WorkspaceService(tmp_path / "owned")
+    owned.initialize()
+    owned.delete()
+    assert not owned.paths.root.exists()
