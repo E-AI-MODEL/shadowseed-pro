@@ -16,5 +16,7 @@ shadowseed workspace backup
 ```
 
 The default workspace is `~/.shadowseed`. Override it with `--workspace` for
-isolated test runs. Credentials stay in environment variables or an operating
-system keyring and are never written to the workspace database.
+isolated test runs. Backend credentials stay in environment variables or an
+operating-system keyring and are never written as workspace configuration.
+Session messages are stored locally, so testers should not paste secrets into
+conversations.
