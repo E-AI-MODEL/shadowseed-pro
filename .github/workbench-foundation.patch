@@ -1,0 +1,342 @@
+diff --git a/docs/usage/cli.md b/docs/usage/cli.md
+index cf3caf2..921cfa2 100644
+--- a/docs/usage/cli.md
++++ b/docs/usage/cli.md
+@@ -41,3 +41,16 @@ shadowseed analyze-results
+ ## Optional backends
+ 
+ Real-model and vector commands require their matching extras and local credentials or services. API keys must be supplied through environment variables, never source files or workflow inputs.
++
++## Tester workspace foundation
++
++```bash
++shadowseed doctor
++shadowseed init
++shadowseed workspace info
++shadowseed workspace backup
++```
++
++The default local workspace is `~/.shadowseed`. Use `--workspace PATH` for an
++isolated workspace. `workspace delete` requires `--yes`. API keys remain in the
++process environment or an OS keyring and are never stored in the workspace.
+diff --git a/repository-authority.yaml b/repository-authority.yaml
+index 3961223..3667c14 100644
+--- a/repository-authority.yaml
++++ b/repository-authority.yaml
+@@ -96,6 +96,24 @@ entries:
+     modifications_allowed: true
+     notes: Uncertain-region search, external-feedback routing, and constellations.
+ 
++  - path: src/shadowseed/application/**
++    authority: RUNTIME_IMPLEMENTATION
++    owner: tester-application
++    runtime_import_allowed: true
++    modifications_allowed: true
++    notes: >
++      UI-independent tester workflows, profiles, workspace management,
++      health checks, and session orchestration over the canonical runtime.
++
++  - path: src/shadowseed/storage/**
++    authority: RUNTIME_IMPLEMENTATION
++    owner: tester-storage
++    runtime_import_allowed: true
++    modifications_allowed: true
++    notes: >
++      Local workspace persistence, schema versioning, backup, restore, and
++      normalized tester audit storage. No authority decisions live here.
++
+   - path: src/shadowseed/gate/**
+     authority: RUNTIME_IMPLEMENTATION
+     owner: validation-gate
+diff --git a/src/shadowseed/chat.py b/src/shadowseed/chat.py
+index 83d05af..394f8da 100644
+--- a/src/shadowseed/chat.py
++++ b/src/shadowseed/chat.py
+@@ -34,6 +34,8 @@ from dataclasses import asdict
+ from pathlib import Path
+ from typing import Any
+ 
++import numpy as np
++
+ from shadowseed.adapters.embedding import make_embedding_fn
+ from shadowseed.detection.model_detector import make_detector_backend
+ from shadowseed.recurrence_clustering import (
+@@ -42,7 +44,9 @@ from shadowseed.recurrence_clustering import (
+ )
+ from shadowseed.retrieval_probe import retrieval_probe_vs_question
+ from shadowseed.adapters.models import make_backend
+-from shadowseed.gate.events import GateDecision
++from shadowseed.core_config import SSLCoreConfig
++from shadowseed.gate.contradictions import ContradictionRecord
++from shadowseed.gate.events import GateDecision, GateEvent
+ from shadowseed.gate.signals import recurrence_signal
+ from shadowseed.recurrence import refresh_cluster_representative
+ from shadowseed.surfacing import (
+@@ -55,6 +59,7 @@ from shadowseed.surfacing import (
+     select_cross_turn_seeds,
+ )
+ from shadowseed.manager import SSLManager, SeedStatus
++from shadowseed.models import ProbeFeedbackResult, SeedEvent, ValidationGateResult
+ from shadowseed.vectorstore.memory import InMemoryVectorStore
+ from shadowseed_agent import (
+     AgentInfluenceRecord,
+@@ -87,6 +92,15 @@ class ShadowChatSession:
+         probe_corpus: str | None = None,
+         probe_top_k: int = 3,
+     ) -> None:
++        self.backend = backend
++        self.model_id = model_id
++        self.max_new_tokens = max_new_tokens
++        self.embedding_backend = embedding_backend
++        self.embedding_model = embedding_model
++        self.recurrence_mode = recurrence_mode
++        self.cluster_threshold = cluster_threshold
++        self.probe_corpus_path = probe_corpus
++
+         embed_fn, _dim = make_embedding_fn(embedding_backend, embedding_model)
+         self.model = make_backend(backend=backend, model_id=model_id, max_new_tokens=max_new_tokens)
+         self.detector = make_detector_backend(
+@@ -468,6 +482,131 @@ class ShadowChatSession:
+             "influence_records": [asdict(r) for r in self.influence_records],
+         }
+ 
++    def to_state(self) -> dict[str, Any]:
++        """Serialize a live tester session without persisting backend secrets."""
++
++        cluster_state: dict[str, Any] | None = None
++        if self.clusterer is not None:
++            cluster_state = {
++                "threshold": self.clusterer.threshold,
++                "centroids": [centroid.tolist() for centroid in self.clusterer.centroids],
++                "centroid_counts": list(self.clusterer.centroid_counts),
++                "recurrence_counts": list(self.clusterer.recurrence_counts),
++                "members": [list(items) for items in self.clusterer.members],
++            }
++        return {
++            "schema_version": 1,
++            "session_config": {
++                "backend": self.backend,
++                "model_id": self.model_id,
++                "max_new_tokens": self.max_new_tokens,
++                "embedding_backend": self.embedding_backend,
++                "embedding_model": self.embedding_model,
++                "surface_threshold": self.surface_threshold,
++                "surface_top_k": self.surface_top_k,
++                "early_turn_margin": self.early_turn_margin,
++                "early_turn_history": self.early_turn_history,
++                "resurface_margin": self.resurface_margin,
++                "max_seeds_per_turn": self.max_seeds_per_turn,
++                "recurrence_mode": self.recurrence_mode,
++                "cluster_threshold": self.cluster_threshold,
++                "probe_corpus": self.probe_corpus_path,
++                "probe_top_k": self.probe_top_k,
++            },
++            "manager": self.manager.to_dict(),
++            "manager_gate_sequence": self.manager._gate_sequence,
++            "history": [
++                {"question": question, "baseline_answer": answer}
++                for question, answer in self.history
++            ],
++            "influence_records": [asdict(record) for record in self.influence_records],
++            "turn_reports": list(self.turn_reports),
++            "turn": self._turn,
++            "born_turn": dict(self.born_turn),
++            "last_surfaced": dict(self.last_surfaced),
++            "seed_to_cluster": dict(self.seed_to_cluster),
++            "cluster_rep": dict(self.cluster_rep),
++            "cluster_state": cluster_state,
++        }
++
++    @classmethod
++    def from_state(cls, state: dict[str, Any]) -> "ShadowChatSession":
++        """Restore a session snapshot without treating restoration as authority."""
++
++        if int(state.get("schema_version", 1)) != 1:
++            raise ValueError("unsupported ShadowChatSession state schema")
++        config = dict(state.get("session_config", {}))
++        session = cls(**config)
++        manager_data = dict(state.get("manager", {}))
++        core_config = SSLCoreConfig(**manager_data.get("config", {}))
++        embed_fn, _dimension = make_embedding_fn(
++            config.get("embedding_backend", "lexical"),
++            config.get("embedding_model"),
++        )
++        manager = SSLManager(embedding_fn=embed_fn, config=core_config)
++        for seed_data in manager_data.get("seeds", []):
++            manager.restore_seed(seed_data)
++        manager.validation_log = [
++            ValidationGateResult(**item) for item in manager_data.get("validation_log", [])
++        ]
++        manager.event_log = [SeedEvent(**item) for item in manager_data.get("event_log", [])]
++        manager.feedback_log = [
++            ProbeFeedbackResult(**item) for item in manager_data.get("feedback_log", [])
++        ]
++        manager.gate_events = [
++            GateEvent.from_dict(item) for item in manager_data.get("gate_events", [])
++        ]
++        manager._gate_sequence = int(
++            state.get("manager_gate_sequence", len(manager.gate_events))
++        )
++        manager.contradiction_records = [
++            ContradictionRecord.from_dict(item)
++            for item in manager_data.get("contradiction_records", [])
++        ]
++        session.manager = manager
++
++        history = state.get("history", [])
++        session.history = [
++            (str(item.get("question", "")), str(item.get("baseline_answer", "")))
++            if isinstance(item, dict)
++            else (str(item[0]), str(item[1]))
++            for item in history
++        ]
++        session.influence_records = [
++            AgentInfluenceRecord(**item) for item in state.get("influence_records", [])
++        ]
++        session.turn_reports = list(state.get("turn_reports", []))
++        session._turn = int(state.get("turn", len(session.turn_reports)))
++        session.born_turn = {str(key): int(value) for key, value in state.get("born_turn", {}).items()}
++        session.last_surfaced = {
++            str(key): int(value) for key, value in state.get("last_surfaced", {}).items()
++        }
++        session.seed_to_cluster = {
++            str(key): int(value) for key, value in state.get("seed_to_cluster", {}).items()
++        }
++        session.cluster_rep = {
++            int(key): str(value) for key, value in state.get("cluster_rep", {}).items()
++        }
++
++        cluster_state = state.get("cluster_state")
++        if cluster_state is not None:
++            clusterer = RecurrenceClusterer(
++                threshold=float(cluster_state.get("threshold", DEFAULT_CLUSTER_THRESHOLD))
++            )
++            clusterer.centroids = [
++                np.asarray(items, dtype=float) for items in cluster_state.get("centroids", [])
++            ]
++            clusterer.centroid_counts = [
++                int(item) for item in cluster_state.get("centroid_counts", [])
++            ]
++            clusterer.recurrence_counts = [
++                int(item) for item in cluster_state.get("recurrence_counts", [])
++            ]
++            clusterer.counts = clusterer.recurrence_counts
++            clusterer.members = [list(items) for items in cluster_state.get("members", [])]
++            session.clusterer = clusterer
++        return session
++
+     def transcript(self) -> dict[str, Any]:
+         return {
+             "artifact": "shadow_chat_transcript",
+diff --git a/src/shadowseed/cli.py b/src/shadowseed/cli.py
+index 83a9136..5374fa6 100644
+--- a/src/shadowseed/cli.py
++++ b/src/shadowseed/cli.py
+@@ -610,6 +610,33 @@ def build_parser() -> argparse.ArgumentParser:
+     nlp.add_argument("--input", default=_data_path("local_absencebench_sample.json"))
+     nlp.add_argument("--output", default="absencebench_smoke.json")
+ 
++    doctor = subparsers.add_parser(
++        "doctor",
++        help="[workbench] check installation, workspace, and optional backends",
++    )
++    doctor.add_argument("--workspace", default=None, help="Override ~/.shadowseed.")
++    doctor.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
++
++    initialize = subparsers.add_parser(
++        "init",
++        help="[workbench] initialize a local tester workspace",
++    )
++    initialize.add_argument("--workspace", default=None, help="Override ~/.shadowseed.")
++
++    workspace = subparsers.add_parser(
++        "workspace",
++        help="[workbench] inspect, back up, restore, or delete a workspace",
++    )
++    workspace.add_argument("--workspace", default=None, help="Override ~/.shadowseed.")
++    workspace_actions = workspace.add_subparsers(dest="workspace_action", required=True)
++    workspace_actions.add_parser("info", help="Show workspace paths, schema, and counts.")
++    backup = workspace_actions.add_parser("backup", help="Create a consistent SQLite backup.")
++    backup.add_argument("--output", default=None)
++    restore = workspace_actions.add_parser("restore", help="Restore a workspace database.")
++    restore.add_argument("source")
++    delete = workspace_actions.add_parser("delete", help="Delete the complete local workspace.")
++    delete.add_argument("--yes", action="store_true", help="Confirm irreversible deletion.")
++
+     return parser
+ 
+ 
+diff --git a/src/shadowseed/cli_dispatch.py b/src/shadowseed/cli_dispatch.py
+index b884a82..51135f2 100644
+--- a/src/shadowseed/cli_dispatch.py
++++ b/src/shadowseed/cli_dispatch.py
+@@ -3,6 +3,7 @@
+ from __future__ import annotations
+ 
+ import argparse
++import json
+ from collections.abc import Callable
+ 
+ from shadowseed.analysis.ssl45_result_analyzer import analyze_results
+@@ -334,6 +335,51 @@ def _analyze_results(args: argparse.Namespace) -> str:
+     return analyze_results(args.results_dir, args.output_dir)
+ 
+ 
++def _doctor(args: argparse.Namespace) -> str:
++    from shadowseed.application.health import run_doctor
++
++    report = run_doctor(getattr(args, "workspace", None))
++    if getattr(args, "json", False):
++        return json.dumps(report.to_dict(), indent=2, ensure_ascii=False)
++    lines = ["Shadowseed doctor", ""]
++    for check in report.checks:
++        marker = {"ok": "OK", "warning": "WARN", "error": "ERROR"}[check.status]
++        lines.append(f"{check.name:24} {marker:5} {check.detail}")
++        if check.repair:
++            lines.append(f"{'':24}       {check.repair}")
++    lines.append("")
++    lines.append("Workbench can start." if report.ready else "Workbench is not ready.")
++    return "\n".join(lines)
++
++
++def _init_workspace(args: argparse.Namespace) -> str:
++    from shadowseed.application.workspace import WorkspaceService
++
++    paths = WorkspaceService(getattr(args, "workspace", None)).initialize()
++    return f"workspace initialized: {paths.root}"
++
++
++def _workspace(args: argparse.Namespace) -> str:
++    from shadowseed.application.workspace import WorkspaceService
++
++    service = WorkspaceService(getattr(args, "workspace", None))
++    action = args.workspace_action
++    if action == "info":
++        return json.dumps(service.info(), indent=2, ensure_ascii=False)
++    if action == "backup":
++        return f"workspace backup: {service.backup(getattr(args, 'output', None))}"
++    if action == "restore":
++        service.restore(args.source)
++        return f"workspace restored: {service.paths.root}"
++    if action == "delete":
++        if not getattr(args, "yes", False):
++            raise ValueError("workspace deletion requires --yes")
++        root = service.paths.root
++        service.delete()
++        return f"workspace deleted: {root}"
++    raise ValueError(f"unknown workspace action: {action}")
++
++
+ COMMAND_HANDLERS: dict[str, CommandHandler] = {
+     "prepare-absencebench-bundle": _prepare_absencebench_bundle,
+     "run-absencebench-local": _run_absencebench_local,
+@@ -364,6 +410,9 @@ COMMAND_HANDLERS: dict[str, CommandHandler] = {
+     "run-retrieval-model-benchmark": _run_retrieval_model_benchmark,
+     "analyze-results": _analyze_results,
+     "run-absencebench-smoke": _run_absencebench_smoke,
++    "doctor": _doctor,
++    "init": _init_workspace,
++    "workspace": _workspace,
+ }
+ 
+ 
