@@ -176,6 +176,31 @@ class WorkbenchController:
         result["session"] = self.inspection.session_view(result["session_id"])
         return result
 
+    def resume_scenario(
+        self,
+        scenario_json: str,
+        session_id: str,
+        *,
+        start_at: int | None = None,
+        external_confirmed: bool = False,
+    ) -> dict[str, Any]:
+        scenario = self.scenarios.parse(scenario_json)
+        stored = self.sessions.load(session_id)
+        if scenario.profile_id != stored["profile_id"]:
+            raise ValueError("scenario profile does not match the persisted session")
+        if scenario.backend != stored["backend"]:
+            raise ValueError("scenario backend does not match the persisted session")
+        if (scenario.model_id or None) != (stored.get("model_id") or None):
+            raise ValueError("scenario model does not match the persisted session")
+        self._validate_backend(
+            str(stored["backend"]),
+            model_id=stored.get("model_id"),
+            external_confirmed=external_confirmed,
+        )
+        result = self.scenarios.resume(scenario, session_id, start_at=start_at)
+        result["session"] = self.inspection.session_view(session_id)
+        return result
+
     def export_report(self, session_id: str, destination: str | Path) -> str:
         return str(self.exports.export_report(session_id, destination))
 
