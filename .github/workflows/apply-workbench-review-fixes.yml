@@ -1,0 +1,45 @@
+name: Apply Workbench review fixes
+
+on:
+  push:
+    branches:
+      - agent/workbench-foundation
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/workbench-foundation
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Apply review hardening
+        run: |
+          git apply --check .github/workbench-review.patch
+          git apply .github/workbench-review.patch
+          rm .github/workbench-review.patch
+          rm .github/workflows/apply-workbench-review-fixes.yml
+      - name: Validate review fixes
+        run: |
+          python -m pip install --upgrade pip build
+          pip install -e ".[test]"
+          ruff check .
+          pytest -q
+          python -m build
+          python -m shadowseed.cli --help
+      - name: Commit review fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/shadowseed/chat.py
+          git add -u .github
+          git commit -m "Harden Workbench session restoration"
+          git push origin HEAD:agent/workbench-foundation
