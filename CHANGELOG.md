@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.4.0 - 2026-08-08 - Tester Workbench preview
+
+Adds a practical, local-first tester environment on top of the existing
+Shadowseed runtime without weakening Validation Gate or point-of-use authority.
+
+- Added application services and a versioned SQLite workspace for resumable
+  tester sessions, profiles, feedback, backup, restore, and diagnostics (#39).
+- Added the local Gradio Workbench, seed inspection, record-only tester feedback,
+  scenario import, and deterministic side-by-side/blind comparison (#42).
+- Added a real `[workbench]` package extra and `shadowseed workbench` CLI entry
+  point with loopback-only binding by default.
+- Added full session report ZIPs and privacy-minimized support bundles with
+  SHA-256 manifests, defensive ZIP validation, and atomic verified replacement.
+- Added report/support/verify CLI commands and an Export tab in the Workbench.
+- Added Linux, macOS, and Windows clean-install portability smokes plus optional
+  Docker packaging. Windows coverage exposed and fixed a SQLite backup-handle
+  lifetime bug before release.
+- Added release automation that publishes `v0.4.0` only after the post-merge
+  Workbench Portability workflow succeeds on `main`; the workflow re-verifies
+  the published wheel, source distribution, and `SHA256SUMS`.
+- Added practical tester, privacy/limitation, and release documentation.
+
+The Workbench remains local-first, single-user, research-ready, and not
+production-ready. Fixture and tester runs are product/evaluation artifacts, not
+new benchmark evidence and not proof of general model-quality improvement.
+
 ## Unreleased - Manager modularization and Gate boundary completion
 
 `SSLManager` was reduced from 1,974 to 727 lines and now serves as the runtime
