@@ -145,14 +145,21 @@ class ScenarioService:
     ) -> dict[str, Any]:
         """Continue a partial scenario without replaying persisted turns.
 
-        The persisted turn count is the authority for the next position. A caller
-        supplied position must match it, preventing stale UI state from replaying
-        already completed hosted-model calls or skipping questions.
+        Persisted progress is authoritative. The scenario prefix and an optional
+        caller-supplied position must match that progress, preventing stale UI
+        state from replaying already completed hosted-model calls or skipping
+        questions.
         """
 
         stored = self.sessions.load(session_id)
         persisted_reports = list(stored["state"].get("turn_reports", []))
         persisted_position = len(persisted_reports)
+        if persisted_position > len(scenario.questions):
+            raise ValueError("persisted session has more turns than the scenario")
+        persisted_questions = [str(report.get("question", "")) for report in persisted_reports]
+        expected_questions = list(scenario.questions[:persisted_position])
+        if persisted_questions != expected_questions:
+            raise ValueError("scenario questions do not match persisted session progress")
         if start_at is None:
             start_at = persisted_position
         if start_at < 0 or start_at > len(scenario.questions):
