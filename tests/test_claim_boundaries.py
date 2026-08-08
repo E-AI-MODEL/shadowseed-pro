@@ -42,7 +42,11 @@ def test_audit_and_point_of_use_claims_keep_their_limits_visible() -> None:
     assert "append-only, tamper-evident storage" in README
     assert "append-only or tamper-evident" in LIFECYCLE
     assert "specific eligibility checks, not universal safety" in LIFECYCLE
-    assert "both public configuration options" in LIFECYCLE
+    assert "ordinary mutable Python objects" in LIFECYCLE
+    assert "constructor field remains accepted for compatibility" in LIFECYCLE
+    assert "both public configuration options" not in LIFECYCLE
+    assert "both configurable" not in README
+    assert "both are public opt-outs" not in README
     assert "not production-ready" in README
 
 

@@ -171,7 +171,7 @@ separate, explicitly-recorded action.
 
 ## Point-of-use contract
 
-Promotion is necessary but not sufficient. `AgentSafetyContract` applies specific eligibility checks, not universal safety, before answer modification, retrieval, warnings, probes, or downstream action. It always checks positive weight, `PROMOTED` status, and a live Gate-event link for the current `authority_version`. Blocking-contradiction and logged-promotion checks are enabled by default, but both public configuration options can relax them.
+Promotion is necessary but not sufficient. `AgentSafetyContract` applies specific eligibility checks, not universal safety, before answer modification, retrieval, warnings, probes, or downstream action. Actual authorization through `decide_and_record` always checks positive weight, `PROMOTED` status, and a live Gate-event link for the current `authority_version`. `block_contradicted_seed=False` can relax the contradiction check. The legacy `require_logged_promotion` constructor field remains accepted for compatibility, but setting it to `False` does not disable the logged-promotion requirement. `inspect` also reports stale authorization when it receives GateEvents; legacy validation-result logs cannot prove current-version linkage and remain diagnostic only.
 
 Decisions are **atomic**: `AgentSafetyContract.decide_and_record(...)` decides and
 records in one call, so a decision cannot be used without being recorded. Each
@@ -234,4 +234,4 @@ A reviewable run should retain:
 - surfaced seed identifiers and thresholds;
 - baseline and SSL outputs as separate fields.
 
-These records are immutable and replayable in process. The runtime does not yet persist them to append-only or tamper-evident storage, does not cryptographically chain them, and does not provide external timestamping. Durable audit integrity remains a production requirement rather than an implemented guarantee.
+`GateEvent` and `AgentInfluenceRecord` are frozen and support strict in-process replay. Other retained logs, including `SeedEvent`, `ValidationGateResult`, and `ProbeFeedbackResult`, are ordinary mutable Python objects. None of these records is yet persisted to append-only or tamper-evident storage, cryptographically chained, or externally timestamped. Durable audit integrity remains a production requirement rather than an implemented guarantee.

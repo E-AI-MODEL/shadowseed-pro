@@ -63,7 +63,7 @@ details live in dedicated documents; in summary:
 | `shadowseed.recurrence_clustering` | Reusable recurrence clustering logic |
 | `shadowseed.ssot` | Trusted external rules and evidence interfaces |
 | `shadowseed.vectorstore` | Memory, FAISS, and Chroma storage adapters |
-| `shadowseed_agent.agent_contract` | Bounded point-of-use eligibility decision with explicit configurable checks |
+| `shadowseed_agent.agent_contract` | Bounded point-of-use eligibility decision with a mandatory current-version Gate-event link and a configurable contradiction check |
 | `shadowseed.benchmark` | Evaluation harnesses, regression suites, and compatibility wrappers |
 
 ## Baseline isolation

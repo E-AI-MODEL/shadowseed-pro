@@ -449,3 +449,46 @@ def test_influence_record_is_serializable():
     assert data["gate_event_ref"] is not None
     assert data["authority_version"] == manager.seeds[seed_id].authority_version
     assert data["decided_at"] == "2026-07-20T00:00:00"
+
+
+def test_logged_promotion_flag_cannot_bypass_point_of_use_link():
+    manager, seed_id = _promoted_manager()
+    contract = AgentSafetyContract(require_logged_promotion=False)
+    ledger: list = []
+
+    inspection = contract.inspect(
+        manager.seeds[seed_id],
+        InfluenceAction.ANSWER_MODIFICATION,
+        [],
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
+    )
+    record = contract.decide_and_record(
+        manager.seeds[seed_id],
+        InfluenceAction.ANSWER_MODIFICATION,
+        gate_events=[],
+        ledger=ledger,
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
+    )
+
+    assert inspection.blocking_reasons == ("missing_logged_promotion",)
+    assert record.allowed is False
+    assert record.reason == "missing_logged_promotion"
+
+
+def test_inspect_reports_stale_authorization_for_gate_event_ledgers():
+    manager, seed_id = _promoted_manager()
+    stale = _promotion_event(
+        seed_id,
+        version=manager.seeds[seed_id].authority_version - 1,
+    )
+
+    inspection = AgentSafetyContract(require_logged_promotion=False).inspect(
+        manager.seeds[seed_id],
+        InfluenceAction.ANSWER_MODIFICATION,
+        [stale],
+        contradiction_blocking=manager.is_blocking_contradiction(seed_id),
+    )
+
+    assert inspection.blocking_reasons == ("stale_gate_authorization",)
+    assert inspection.is_blocked is True
+
