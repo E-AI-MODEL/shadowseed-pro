@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import tomllib
 from pathlib import Path
 
 from shadowseed.application.sessions import service_for_workspace
@@ -28,11 +29,10 @@ def test_workbench_cli_contract_is_registered() -> None:
     assert "workbench" in COMMAND_HANDLERS
 
 
-def test_workbench_optional_dependency_and_version_are_declared() -> None:
-    pyproject = Path("pyproject.toml").read_text(encoding="utf-8")
-    assert 'version = "0.4.0"' in pyproject
-    assert "workbench = [" in pyproject
-    assert '"gradio>=6.0,<7"' in pyproject
+def test_workbench_optional_dependency_and_release_notes_are_declared() -> None:
+    project = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))["project"]
+    assert "gradio>=6.0,<7" in project["optional-dependencies"]["workbench"]
+    assert Path(f"docs/workbench/release-{project['version']}.md").is_file()
 
 
 def test_workbench_export_cli_roundtrip(tmp_path) -> None:
