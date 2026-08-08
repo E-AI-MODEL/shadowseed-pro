@@ -1,0 +1,82 @@
+name: Finalize Workbench Round 2
+
+on:
+  push:
+    branches:
+      - agent/workbench-ui
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/workbench-ui
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Clean temporary publication helpers
+        run: |
+          rm -f .github/workflows/export-round2-state.yml
+          rm -f .github/round2-upload-probe.txt
+      - name: Add Workbench CI contract
+        run: |
+          cat > .github/workflows/workbench.yml <<'YAML'
+          name: Workbench CI
+
+          on:
+            push:
+            pull_request:
+
+          jobs:
+            workbench:
+              runs-on: ubuntu-latest
+              steps:
+                - uses: actions/checkout@v4
+                - uses: actions/setup-python@v5
+                  with:
+                    python-version: '3.12'
+                    cache: pip
+                - run: python -m pip install --upgrade pip
+                - run: pip install -e '.[test,workbench]'
+                - run: ruff check .
+                - name: Workbench contract and integration tests
+                  run: pytest -q tests/test_workbench_product_contract.py tests/test_workbench*.py
+                - name: Installed command surface
+                  run: |
+                    shadowseed workbench --help
+                    python -c "import shadowseed.workbench.app; import shadowseed.workbench.controller"
+          YAML
+      - name: Validate complete branch
+        run: |
+          python -m pip install --upgrade pip build
+          pip install -e '.[test,workbench]'
+          ruff check .
+          pytest -q
+          python -m build
+          python -m venv /tmp/workbench-wheel-env
+          /tmp/workbench-wheel-env/bin/python -m pip install --upgrade pip
+          /tmp/workbench-wheel-env/bin/python -m pip install 'dist/'*.whl
+          cd /tmp
+          /tmp/workbench-wheel-env/bin/shadowseed --help
+          /tmp/workbench-wheel-env/bin/shadowseed workbench --help
+          /tmp/workbench-wheel-env/bin/python -c "import shadowseed; import shadowseed.workbench.app"
+      - name: Commit finalization and remove one-shot workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/finalize-workbench-round2.yml
+          git add .github/workflows/workbench.yml
+          git add -u
+          if git diff --cached --quiet; then
+            echo 'Nothing to commit'
+          else
+            git commit -m 'Finalize Workbench tester interface'
+            git push origin HEAD:agent/workbench-ui
+          fi
