@@ -36,7 +36,7 @@ vector = [
   "shadowseed[vector-faiss,vector-chroma]",
 ]
 workbench = [
-  "gradio>=5.0,<7",
+  "gradio>=6.0,<7",
 ]
 test = [
   "pytest>=8.0",
