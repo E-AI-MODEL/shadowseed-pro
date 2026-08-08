@@ -1,0 +1,80 @@
+name: Apply Workbench Export Integration
+
+on:
+  push:
+    branches: [feature/workbench-release]
+    paths: [.github/workflows/apply-workbench-exports-round3.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/workbench-release
+          fetch-depth: 0
+      - name: Apply exact integration patches
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              text = file.read_text(encoding="utf-8")
+              if text.count(old) != 1:
+                  raise SystemExit(f"{path}: expected marker once, found {text.count(old)}")
+              file.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          callbacks = '''    def export_report(session_id: str | None, destination: str):\n        if not session_id:\n            raise gr.Error("Select a session first.")\n        try:\n            target = ctl.export_report(\n                session_id,\n                destination.strip() or "shadowseed-workbench-report.zip",\n            )\n            return target, ctl.verify_export(target)\n        except Exception as exc:\n            raise gr.Error(str(exc)) from exc\n\n    def export_support(session_id: str | None, destination: str):\n        if not session_id:\n            raise gr.Error("Select a session first.")\n        try:\n            target = ctl.export_support_bundle(\n                session_id,\n                destination.strip() or "shadowseed-support-bundle.zip",\n            )\n            return target, ctl.verify_export(target)\n        except Exception as exc:\n            raise gr.Error(str(exc)) from exc\n\n    def verify_export(path: str):\n        try:\n            return ctl.verify_export(path.strip())\n        except Exception as exc:\n            raise gr.Error(str(exc)) from exc\n\n'''
+          replace_once(
+              "src/shadowseed/workbench/app.py",
+              "    def parse_scenario(scenario_json: str):\n",
+              callbacks + "    def parse_scenario(scenario_json: str):\n",
+          )
+
+          export_tab = '''        with gr.Tab("Export"):\n            gr.Markdown(\n                "A full report contains the selected session's conversation and seed snapshots. "\n                "A support bundle is privacy-minimized: no free session title, prompts, answers, "\n                "seed text, feedback notes, or direct session id are included."\n            )\n            export_session = gr.Dropdown(\n                label="Session",\n                choices=initial_sessions,\n                value=initial_session,\n            )\n            export_refresh = gr.Button("Refresh sessions")\n            full_output = gr.Textbox(\n                label="Full report ZIP",\n                value="shadowseed-workbench-report.zip",\n            )\n            support_output = gr.Textbox(\n                label="Support bundle ZIP",\n                value="shadowseed-support-bundle.zip",\n            )\n            with gr.Row():\n                export_full_button = gr.Button("Export full report", variant="primary")\n                export_support_button = gr.Button("Export support bundle")\n            export_path = gr.Textbox(label="Written export")\n            export_verification = gr.JSON(label="Verification")\n            gr.Markdown("### Verify an existing Workbench export")\n            verify_path = gr.Textbox(label="ZIP path")\n            verify_button = gr.Button("Verify")\n            verify_result = gr.JSON(label="Verification result")\n            export_refresh.click(fn=lambda: dropdown_update(), outputs=export_session)\n            export_full_button.click(\n                fn=export_report,\n                inputs=[export_session, full_output],\n                outputs=[export_path, export_verification],\n            )\n            export_support_button.click(\n                fn=export_support,\n                inputs=[export_session, support_output],\n                outputs=[export_path, export_verification],\n            )\n            verify_button.click(fn=verify_export, inputs=verify_path, outputs=verify_result)\n\n'''
+          replace_once(
+              "src/shadowseed/workbench/app.py",
+              '        with gr.Tab("Scenario"):\n',
+              export_tab + '        with gr.Tab("Scenario"):\n',
+          )
+
+          cli_block = '''    report_export = subparsers.add_parser(\n        "export-workbench-report",\n        help="[workbench] export one session as a self-contained verified report ZIP",\n    )\n    report_export.add_argument("session_id")\n    report_export.add_argument("--workspace", default=None, help="Override ~/.shadowseed.")\n    report_export.add_argument(\n        "--output", default="shadowseed-workbench-report.zip", help="Destination ZIP path."\n    )\n\n    support_export = subparsers.add_parser(\n        "export-support-bundle",\n        help="[workbench] export a privacy-minimized support ZIP for one session",\n    )\n    support_export.add_argument("session_id")\n    support_export.add_argument("--workspace", default=None, help="Override ~/.shadowseed.")\n    support_export.add_argument(\n        "--output", default="shadowseed-support-bundle.zip", help="Destination ZIP path."\n    )\n\n    verify_export = subparsers.add_parser(\n        "verify-workbench-export",\n        help="[workbench] verify hashes and safety constraints of a Workbench ZIP",\n    )\n    verify_export.add_argument("path")\n\n'''
+          replace_once(
+              "src/shadowseed/cli.py",
+              "    return parser\n\n\ndef main(argv: list[str] | None = None) -> int:\n",
+              cli_block + "    return parser\n\n\ndef main(argv: list[str] | None = None) -> int:\n",
+          )
+
+          handlers = '''def _export_workbench_report(args: argparse.Namespace) -> str:\n    from shadowseed.application.exports import service_for_workspace\n\n    service = service_for_workspace(getattr(args, "workspace", None))\n    return str(service.export_report(args.session_id, args.output))\n\n\ndef _export_support_bundle(args: argparse.Namespace) -> str:\n    from shadowseed.application.exports import service_for_workspace\n\n    service = service_for_workspace(getattr(args, "workspace", None))\n    return str(service.export_support_bundle(args.session_id, args.output))\n\n\ndef _verify_workbench_export(args: argparse.Namespace) -> str:\n    from shadowseed.application.exports import verify_workbench_export\n\n    return json.dumps(verify_workbench_export(args.path), indent=2, ensure_ascii=False)\n\n\n'''
+          replace_once(
+              "src/shadowseed/cli_dispatch.py",
+              "def _workbench(args: argparse.Namespace) -> str:\n",
+              handlers + "def _workbench(args: argparse.Namespace) -> str:\n",
+          )
+          replace_once(
+              "src/shadowseed/cli_dispatch.py",
+              '    "workbench": _workbench,\n}',
+              '    "workbench": _workbench,\n    "export-workbench-report": _export_workbench_report,\n    "export-support-bundle": _export_support_bundle,\n    "verify-workbench-export": _verify_workbench_export,\n}',
+          )
+          PY
+      - name: Remove one-shot workflow and verify syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/apply-workbench-exports-round3.yml
+          python -m compileall -q src/shadowseed
+      - name: Commit normal product state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/shadowseed/workbench/app.py src/shadowseed/cli.py src/shadowseed/cli_dispatch.py .github/workflows/apply-workbench-exports-round3.yml
+          git commit -m "Integrate verified exports into Workbench UI and CLI"
+          git push origin HEAD:feature/workbench-release
