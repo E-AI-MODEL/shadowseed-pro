@@ -235,7 +235,7 @@ def build_app(
                 )
                 create_button = gr.Button("Create session", variant="primary")
 
-            chatbot = gr.Chatbot(label="Conversation", type="messages", height=460)
+            chatbot = gr.Chatbot(label="Conversation", height=460)
             with gr.Row():
                 question = gr.Textbox(
                     label="Question",
