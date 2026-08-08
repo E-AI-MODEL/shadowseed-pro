@@ -513,6 +513,7 @@ class ShadowChatSession:
                 "probe_corpus": self.probe_corpus_path,
                 "probe_top_k": self.probe_top_k,
             },
+            "contract": asdict(self.contract),
             "manager": self.manager.to_dict(),
             "manager_gate_sequence": self.manager._gate_sequence,
             "history": [
@@ -536,7 +537,8 @@ class ShadowChatSession:
         if int(state.get("schema_version", 1)) != 1:
             raise ValueError("unsupported ShadowChatSession state schema")
         config = dict(state.get("session_config", {}))
-        session = cls(**config)
+        contract = AgentSafetyContract(**dict(state.get("contract", {})))
+        session = cls(**config, contract=contract)
         manager_data = dict(state.get("manager", {}))
         core_config = SSLCoreConfig(**manager_data.get("config", {}))
         embed_fn, _dimension = make_embedding_fn(
