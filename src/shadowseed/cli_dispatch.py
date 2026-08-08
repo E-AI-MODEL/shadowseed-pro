@@ -380,6 +380,26 @@ def _workspace(args: argparse.Namespace) -> str:
     raise ValueError(f"unknown workspace action: {action}")
 
 
+def _export_workbench_report(args: argparse.Namespace) -> str:
+    from shadowseed.application.exports import service_for_workspace
+
+    service = service_for_workspace(getattr(args, "workspace", None))
+    return str(service.export_report(args.session_id, args.output))
+
+
+def _export_support_bundle(args: argparse.Namespace) -> str:
+    from shadowseed.application.exports import service_for_workspace
+
+    service = service_for_workspace(getattr(args, "workspace", None))
+    return str(service.export_support_bundle(args.session_id, args.output))
+
+
+def _verify_workbench_export(args: argparse.Namespace) -> str:
+    from shadowseed.application.exports import verify_workbench_export
+
+    return json.dumps(verify_workbench_export(args.path), indent=2, ensure_ascii=False)
+
+
 def _workbench(args: argparse.Namespace) -> str:
     from shadowseed.workbench.app import launch_workbench
 
@@ -427,6 +447,9 @@ COMMAND_HANDLERS: dict[str, CommandHandler] = {
     "init": _init_workspace,
     "workspace": _workspace,
     "workbench": _workbench,
+    "export-workbench-report": _export_workbench_report,
+    "export-support-bundle": _export_support_bundle,
+    "verify-workbench-export": _verify_workbench_export,
 }
 
 

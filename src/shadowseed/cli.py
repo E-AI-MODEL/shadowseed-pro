@@ -655,6 +655,32 @@ def build_parser() -> argparse.ArgumentParser:
         help="Do not open the Workbench in the default browser.",
     )
 
+    report_export = subparsers.add_parser(
+        "export-workbench-report",
+        help="[workbench] export one session as a self-contained verified report ZIP",
+    )
+    report_export.add_argument("session_id")
+    report_export.add_argument("--workspace", default=None, help="Override ~/.shadowseed.")
+    report_export.add_argument(
+        "--output", default="shadowseed-workbench-report.zip", help="Destination ZIP path."
+    )
+
+    support_export = subparsers.add_parser(
+        "export-support-bundle",
+        help="[workbench] export a privacy-minimized support ZIP for one session",
+    )
+    support_export.add_argument("session_id")
+    support_export.add_argument("--workspace", default=None, help="Override ~/.shadowseed.")
+    support_export.add_argument(
+        "--output", default="shadowseed-support-bundle.zip", help="Destination ZIP path."
+    )
+
+    verify_export = subparsers.add_parser(
+        "verify-workbench-export",
+        help="[workbench] verify hashes and safety constraints of a Workbench ZIP",
+    )
+    verify_export.add_argument("path")
+
     return parser
 
 

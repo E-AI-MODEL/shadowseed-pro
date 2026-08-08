@@ -166,6 +166,36 @@ def build_app(
         except Exception as exc:
             raise gr.Error(str(exc)) from exc
 
+    def export_report(session_id: str | None, destination: str):
+        if not session_id:
+            raise gr.Error("Select a session first.")
+        try:
+            target = ctl.export_report(
+                session_id,
+                destination.strip() or "shadowseed-workbench-report.zip",
+            )
+            return target, ctl.verify_export(target)
+        except Exception as exc:
+            raise gr.Error(str(exc)) from exc
+
+    def export_support(session_id: str | None, destination: str):
+        if not session_id:
+            raise gr.Error("Select a session first.")
+        try:
+            target = ctl.export_support_bundle(
+                session_id,
+                destination.strip() or "shadowseed-support-bundle.zip",
+            )
+            return target, ctl.verify_export(target)
+        except Exception as exc:
+            raise gr.Error(str(exc)) from exc
+
+    def verify_export(path: str):
+        try:
+            return ctl.verify_export(path.strip())
+        except Exception as exc:
+            raise gr.Error(str(exc)) from exc
+
     def parse_scenario(scenario_json: str):
         try:
             return ctl.parse_scenario(scenario_json)
@@ -363,6 +393,48 @@ def build_app(
                 inputs=[compare_session, compare_turn_index, compare_blind, compare_reveal],
                 outputs=comparison_json,
             )
+
+        with gr.Tab("Export"):
+            gr.Markdown(
+                "A full report contains the selected session's conversation and seed snapshots. "
+                "A support bundle is privacy-minimized: no free session title, prompts, answers, "
+                "seed text, feedback notes, or direct session id are included."
+            )
+            export_session = gr.Dropdown(
+                label="Session",
+                choices=initial_sessions,
+                value=initial_session,
+            )
+            export_refresh = gr.Button("Refresh sessions")
+            full_output = gr.Textbox(
+                label="Full report ZIP",
+                value="shadowseed-workbench-report.zip",
+            )
+            support_output = gr.Textbox(
+                label="Support bundle ZIP",
+                value="shadowseed-support-bundle.zip",
+            )
+            with gr.Row():
+                export_full_button = gr.Button("Export full report", variant="primary")
+                export_support_button = gr.Button("Export support bundle")
+            export_path = gr.Textbox(label="Written export")
+            export_verification = gr.JSON(label="Verification")
+            gr.Markdown("### Verify an existing Workbench export")
+            verify_path = gr.Textbox(label="ZIP path")
+            verify_button = gr.Button("Verify")
+            verify_result = gr.JSON(label="Verification result")
+            export_refresh.click(fn=lambda: dropdown_update(), outputs=export_session)
+            export_full_button.click(
+                fn=export_report,
+                inputs=[export_session, full_output],
+                outputs=[export_path, export_verification],
+            )
+            export_support_button.click(
+                fn=export_support,
+                inputs=[export_session, support_output],
+                outputs=[export_path, export_verification],
+            )
+            verify_button.click(fn=verify_export, inputs=verify_path, outputs=verify_result)
 
         with gr.Tab("Scenario"):
             gr.Markdown(
