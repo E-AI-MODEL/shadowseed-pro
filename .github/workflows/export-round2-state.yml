@@ -1,0 +1,30 @@
+name: Export Round 2 State
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/workbench-ui
+      - name: Summarize branch
+        run: |
+          git status --short
+          git log --oneline -5
+          find src/shadowseed -maxdepth 3 -type f \( -path '*/workbench/*' -o -path '*/application/*' -o -path '*/storage/*' \) -print | sort
+      - uses: actions/upload-artifact@v4
+        with:
+          name: round2-branch-state
+          path: |
+            src/shadowseed/application
+            src/shadowseed/storage
+            src/shadowseed/workbench
+            tests
+            pyproject.toml
+            src/shadowseed/cli.py
