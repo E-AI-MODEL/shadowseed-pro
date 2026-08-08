@@ -1,0 +1,77 @@
+name: Update Workbench release docs
+
+on:
+  push:
+    branches: [feature/workbench-release]
+    paths: [.github/workflows/update-workbench-release-docs.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/workbench-release
+          fetch-depth: 0
+      - name: Apply exact documentation patches
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              text = file.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected marker once, found {count}")
+              file.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          replace_once(
+              "README.md",
+              '<img alt="Repository version 0.3.0" src="https://img.shields.io/badge/repository-0.3.0-2f6f5e">',
+              '<img alt="Repository version 0.4.0" src="https://img.shields.io/badge/repository-0.4.0-2f6f5e">',
+          )
+          replace_once(
+              "README.md",
+              "| Run the deterministic demo | [Quick start](#quick-start) |\n",
+              "| Run the deterministic demo | [Quick start](#quick-start) |\n"
+              "| Use the practical tester environment | [Tester Workbench](#tester-workbench) |\n",
+          )
+          workbench = '''### Tester Workbench\n\nThe 0.4 tester preview adds a local, single-user Workbench for practical testing\nwithout writing Python code:\n\n```bash\npip install -e ".[workbench]"\nshadowseed doctor\nshadowseed init\nshadowseed workbench\n```\n\nThe supported native server binds to `127.0.0.1` by default. Testers can create\nor resume sessions, inspect stored seed decisions, record audit-only feedback,\ncompare baseline and SSL-visible answers, import scenarios, and export verified\nreports or privacy-minimized support bundles. The Workbench is a tester product\nlayer over the existing runtime; it is not a second Validation Gate and does not\nturn tester observations into scientific evidence.\n\nSee [`docs/workbench/README.md`](docs/workbench/README.md) for the practical\nworkflow and [`docs/workbench/limitations.md`](docs/workbench/limitations.md)\nbefore sharing data or changing the default network binding.\n\n'''
+          replace_once(
+              "README.md",
+              "The fixture backend verifies pipeline mechanics. It is not evidence of real-model quality.\n\nFor live-chat and core CLI guidance",
+              "The fixture backend verifies pipeline mechanics. It is not evidence of real-model quality.\n\n"
+              + workbench
+              + "For live-chat and core CLI guidance",
+          )
+          replace_once(
+              "README.md",
+              'pip install -e ".[paper]"           # PDF paper pipeline\npip install -e ".[dev]"',
+              'pip install -e ".[paper]"           # PDF paper pipeline\n'
+              'pip install -e ".[workbench]"       # local tester Workbench (Gradio 6)\n'
+              'pip install -e ".[dev]"',
+          )
+
+          changelog_section = '''## 0.4.0 - 2026-08-08 - Tester Workbench preview\n\nAdds a practical, local-first tester environment on top of the existing\nShadowseed runtime without weakening Validation Gate or point-of-use authority.\n\n- Added application services and a versioned SQLite workspace for resumable\n  tester sessions, profiles, feedback, backup, restore, and diagnostics (#39).\n- Added the local Gradio Workbench, seed inspection, record-only tester feedback,\n  scenario import, and deterministic side-by-side/blind comparison (#42).\n- Added a real `[workbench]` package extra and `shadowseed workbench` CLI entry\n  point with loopback-only binding by default.\n- Added full session report ZIPs and privacy-minimized support bundles with\n  SHA-256 manifests, defensive ZIP validation, and atomic verified replacement.\n- Added report/support/verify CLI commands and an Export tab in the Workbench.\n- Added Linux, macOS, and Windows clean-install portability smokes plus optional\n  Docker packaging. Windows coverage exposed and fixed a SQLite backup-handle\n  lifetime bug before release.\n- Added release automation that publishes `v0.4.0` only after the post-merge\n  Workbench Portability workflow succeeds on `main`; the workflow re-verifies\n  the published wheel, source distribution, and `SHA256SUMS`.\n- Added practical tester, privacy/limitation, and release documentation.\n\nThe Workbench remains local-first, single-user, research-ready, and not\nproduction-ready. Fixture and tester runs are product/evaluation artifacts, not\nnew benchmark evidence and not proof of general model-quality improvement.\n\n'''
+          replace_once(
+              "CHANGELOG.md",
+              "# Changelog\n\n",
+              "# Changelog\n\n" + changelog_section,
+          )
+          PY
+          rm .github/workflows/update-workbench-release-docs.yml
+      - name: Commit normal documentation state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md CHANGELOG.md .github/workflows/update-workbench-release-docs.yml
+          git commit -m "Document Workbench 0.4 tester preview"
+          git push origin HEAD:feature/workbench-release
