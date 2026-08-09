@@ -56,12 +56,13 @@ def test_uncertain_region_and_feedback_flow_uses_validation_gate():
 
     manager.add_or_update_seed(seed_text)
     manager.add_or_update_seed(seed_text)
-    for _ in range(4):
+    for review_index in range(4):
         manager.apply_external_feedback(
             "Toepasselijk recht ontbreekt in deze grensoverschrijdende consumentenkoop.",
             context="Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
             positive=True,
             threshold=0.10,
+            source_ref=f"review::{review_index}",
         )
 
     assert manager.get_seed(seed_id).status == SeedStatus.PROMOTED
@@ -115,12 +116,13 @@ def test_feedback_prefix_change_matches_intended_seed_only():
     manager.add_or_update_seed(target_text)  # recurrence on the target
     manager.add_or_update_seed(target_text)  # reach the internal-recognition floor
 
-    for _ in range(4):
+    for review_index in range(4):
         updates = manager.apply_external_feedback(
             "Toepasselijk recht ontbreekt in deze grensoverschrijdende consumentenkoop.",
             context=target_text,
             positive=True,
             threshold=0.10,
+            source_ref=f"review::{review_index}",
         )
         touched = {u["seed_id"] for u in updates}
         assert unrelated_id not in touched

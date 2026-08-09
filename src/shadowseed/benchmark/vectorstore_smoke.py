@@ -46,13 +46,14 @@ def run_vectorstore_smoke(output_path: str, backend: str = "memory") -> Path:
     # 2-4 then validate at +0.2 each -> 0.6 >= promotion_threshold 0.5.
     feedback_threshold = 0.20 if backend != "chroma" else 0.05
     feedback_rounds = []
-    for _ in range(4):
+    for review_index in range(4):
         feedback_rounds.append(
             manager.apply_external_feedback(
                 "De casus mist toepasselijk recht voor een grensoverschrijdend consumentencontract.",
                 context="Nederlandse consument koopt defecte laptop bij Amerikaanse webwinkel.",
                 positive=True,
                 threshold=feedback_threshold,
+                source_ref=f"review::{review_index}",
             )
         )
 

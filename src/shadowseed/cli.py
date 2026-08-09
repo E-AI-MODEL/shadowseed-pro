@@ -92,7 +92,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=_data_path("ssl45_benefit_suite.json"),
     )
     benefit.add_argument("--output", default="results/ssl45_benefit_suite.json")
-    benefit.add_argument("--turns", type=int, default=3)
+    benefit.add_argument("--turns", type=int, default=4)
 
     model_benefit = subparsers.add_parser(
         "run-model-benefit-suite",
@@ -103,7 +103,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=_data_path("ssl45_model_benefit_suite.json"),
     )
     model_benefit.add_argument("--output", default="results/ssl45_model_benefit_suite.json")
-    model_benefit.add_argument("--turns", type=int, default=3)
+    model_benefit.add_argument("--turns", type=int, default=4)
     model_benefit.add_argument(
         "--backend",
         choices=MODEL_BACKENDS,

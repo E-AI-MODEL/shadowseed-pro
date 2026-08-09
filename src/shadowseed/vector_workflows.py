@@ -62,8 +62,14 @@ def apply_external_feedback(
     context: str,
     positive: bool = True,
     threshold: float = 0.75,
+    source_ref: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Route vector-matched external feedback through the manager Gate facade."""
+    """Route vector-matched external feedback through the manager Gate facade.
+
+    ``source_ref`` identifies the reviewer or evidence item for Gate
+    idempotency. The historical context value remains the fallback so existing
+    callers preserve their provenance semantics.
+    """
 
     if manager.vector_constellation is None:
         return []
@@ -85,7 +91,7 @@ def apply_external_feedback(
                         kind=SignalKind.HUMAN_FEEDBACK,
                         direction=SignalDirection.SUPPORT,
                         strength=float(score),
-                        source_ref=context,
+                        source_ref=source_ref or context,
                         verified=True,
                         reason="external feedback (positive)",
                     )
@@ -100,7 +106,7 @@ def apply_external_feedback(
                         kind=SignalKind.CONTRADICTION,
                         direction=SignalDirection.OPPOSE,
                         strength=float(score),
-                        source_ref=context,
+                        source_ref=source_ref or context,
                         reason="external feedback (negative)",
                     )
                 ],

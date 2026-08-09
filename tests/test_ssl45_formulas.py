@@ -72,9 +72,9 @@ def test_promotion_threshold_requires_repeated_gate_passes():
     manager.seeds[seed_id].occurrence_count = 3
     manager.seeds[seed_id].unsafe_set_authority(evidence_count=2)
 
-    manager.run_validation_gate(seed_id)
-    manager.run_validation_gate(seed_id)
-    manager.run_validation_gate(seed_id)
+    for count in (3, 4, 5):
+        manager.seeds[seed_id].occurrence_count = count
+        manager.run_validation_gate(seed_id)
 
     assert manager.get_seed(seed_id).weight == 0.6000000000000001
     assert manager.get_seed(seed_id).status == SeedStatus.PROMOTED

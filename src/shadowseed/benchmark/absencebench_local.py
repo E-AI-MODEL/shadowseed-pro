@@ -13,6 +13,7 @@ import re
 
 import numpy as np
 
+from shadowseed.gate.signals import SignalKind, ValidationSignal
 from shadowseed.hash_utils import stable_bucket_index
 from shadowseed.manager import SSLManager, SeedStatus
 from .result_writer import ResultWriter
@@ -128,8 +129,17 @@ def shadow_seed_detect(scenario: dict) -> tuple[bool, dict]:
         # AbsenceBench provides paired original/modified context. Treat the pair
         # itself as external evidence for the absence candidate.
         manager.seeds[seed_id].occurrence_count = max(manager.seeds[seed_id].occurrence_count, 3)
-        manager.run_validation_gate(seed_id, external_evidence=True)
-        manager.run_validation_gate(seed_id, external_evidence=True)
+        for source_ref in ("absencebench:original", "absencebench:modified"):
+            manager.run_validation_gate(
+                seed_id,
+                signals=[
+                    ValidationSignal(
+                        kind=SignalKind.SSOT,
+                        verified=True,
+                        source_ref=source_ref,
+                    )
+                ],
+            )
         if manager.seeds[seed_id].status == SeedStatus.PROMOTED:
             promoted.append(seed_id)
 

@@ -7,8 +7,8 @@ through the actual ``SSLManager``:
 - each turn the detector proposes gaps which are ingested as **weight-0 seeds**
   (``ingest_detection_candidates``); a recurring gap is deduped, bumping its
   occurrence_count (recurrence);
-- recurrence grants evidence and the **Validation Gate** decides promotion
-  (``run_validation_gate``) — only genuinely recurring, uncontradicted gaps reach
+- recurrence is submitted as its own typed signal and the **Validation Gate**
+  decides promotion — only genuinely recurring, uncontradicted gaps reach
   PROMOTED;
 - between turns ``decay_traces`` (TTL) ages seeds and ``scan_trtl_triggers``
   (TrTL) revives dormant ones the new turn re-recognises;
@@ -32,6 +32,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any
+
+from shadowseed.gate.events import GateDecision
+from shadowseed.gate.signals import recurrence_signal
 
 from shadowseed.adapters.embedding import make_embedding_fn
 from shadowseed.detection.model_detector import make_detector_backend
@@ -248,7 +251,7 @@ def run_ssl_session(
                             clusterer.recurrence(cid),
                         )
 
-            # --- recurrence -> evidence -> Validation Gate ---
+            # --- typed recurrence -> Validation Gate ---
             promoted_now: list[str] = []
             for sid, seed in manager.seeds.items():
                 if seed.status == SeedStatus.EXPIRED:
@@ -261,10 +264,15 @@ def run_ssl_session(
                     cid = seed_to_cluster.get(sid)
                     if cid is not None and cluster_rep.get(cid) != sid:
                         continue
-                # recurrence (seen >1 time) is treated as confirming evidence
-                ext = seed.occurrence_count >= 2
-                verdict = manager.run_validation_gate(sid, external_evidence=ext)
-                if verdict and seed.status == SeedStatus.PROMOTED:
+                event = manager.submit_signals(
+                    sid,
+                    [recurrence_signal(seed.occurrence_count, threshold=2)],
+                    policy_id="exploratory",
+                )
+                if (
+                    event.decision is GateDecision.PROMOTED
+                    and seed.status == SeedStatus.PROMOTED
+                ):
                     promoted_now.append(seed.text)
 
             history.append((q, baseline))

@@ -10,7 +10,7 @@ def test_model_benefit_fixture_improves_gap_coverage(tmp_path: Path):
     run_ssl45_model_benefit_suite(
         "src/shadowseed/data/ssl45_model_benefit_suite.json",
         str(output),
-        turns=3,
+        turns=4,
         backend="fixture",
     )
 

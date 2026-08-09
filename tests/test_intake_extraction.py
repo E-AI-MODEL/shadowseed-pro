@@ -84,6 +84,24 @@ def test_dedup_reinforces_existing_seed_without_overwriting_identity() -> None:
     assert len(manager.seeds) == 1
 
 
+def test_dedup_selects_most_similar_seed_not_first_inserted() -> None:
+    vectors = {
+        "first candidate": np.array([0.90, np.sqrt(0.19), 0.0]),
+        "best candidate": np.array([0.99, np.sqrt(0.0199), 0.0]),
+        "incoming candidate": np.array([1.0, 0.0, 0.0]),
+    }
+    manager = SSLManager(embedding_fn=lambda text: vectors[text])
+    first_id = manager.add_or_update_seed("first candidate", deduplicate=False)
+    best_id = manager.add_or_update_seed("best candidate", deduplicate=False)
+
+    matched_id = manager.add_or_update_seed("incoming candidate")
+
+    assert matched_id == best_id
+    assert matched_id != first_id
+    assert manager.seeds[best_id].occurrence_count == 2
+    assert manager.seeds[first_id].occurrence_count == 1
+
+
 def test_expired_seed_is_not_revived_by_deduplication() -> None:
     manager = SSLManager(embedding_fn=_embedding)
     first_id = manager.add_or_update_seed("alpha omission")

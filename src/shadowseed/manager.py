@@ -655,6 +655,7 @@ class SSLManager:
         context: str,
         positive: bool = True,
         threshold: float = 0.75,
+        source_ref: str | None = None,
     ) -> list[dict[str, Any]]:
         """Compatibility facade for vector-matched external feedback."""
 
@@ -664,6 +665,7 @@ class SSLManager:
             context,
             positive=positive,
             threshold=threshold,
+            source_ref=source_ref,
         )
 
     def expire_vector_only_open_seeds(

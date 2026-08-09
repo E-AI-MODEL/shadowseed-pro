@@ -1,5 +1,27 @@
 # Changelog
 
+## Unreleased - Authority and retrieval hardening
+
+- Validation Gate support is idempotent for recurrence observations and
+  verified evidence sources, including the legacy boolean adapter. Replaying
+  the same observation no longer raises weight or evidence count; the ignored
+  duplicate remains visible in the Gate event reason. Multiple independent
+  confirmations require typed signals with distinct `source_ref` values.
+- External feedback accepts an optional `source_ref`, so distinct reviewers or
+  evidence items can be credited without treating repeated feedback as new
+  authority.
+- Chat retrieval probes now pass every promoted candidate through the atomic
+  point-of-use contract and record retrieval decisions in the influence ledger.
+  Retrieval centroids contain authorized seeds only.
+- Intake deduplication selects the most similar eligible seed instead of the
+  first seed above the threshold.
+- Benchmark drivers no longer relabel recurrence as external evidence or use
+  unsafe authority setup for benefit promotion. Benefit fixtures now use four
+  observed turns, and adversarial positive controls carry explicit evidence
+  references.
+- CLI smoke tests write into pytest temporary directories. CI now gates branch
+  coverage at 80% and fails if the suite changes the checkout.
+
 ## 0.4.1 - 2026-08-08 - Workbench review follow-up
 
 Corrective patch for two P2 review findings that arrived after the 0.4.0

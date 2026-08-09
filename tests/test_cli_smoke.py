@@ -10,14 +10,16 @@ def test_cli_prepare(tmp_path):
         [sys.executable, "-m", "shadowseed.cli", "prepare-absencebench", "--output", "test.json"],
         capture_output=True,
         text=True,
+        cwd=tmp_path,
     )
     assert result.returncode == 0
+    assert (tmp_path / "benchmarks/results/test.json").exists()
 
 
 def test_cli_local(tmp_path):
     data = {"scenarios": [{"detected": True}, {"detected": False}]}
     input_file = tmp_path / "input.json"
-    input_file.write_text(json.dumps(data))
+    input_file.write_text(json.dumps(data), encoding="utf-8")
 
     result = subprocess.run(
         [
@@ -32,14 +34,16 @@ def test_cli_local(tmp_path):
         ],
         capture_output=True,
         text=True,
+        cwd=tmp_path,
     )
     assert result.returncode == 0
+    assert (tmp_path / "benchmarks/results/local.json").exists()
 
 
 def test_cli_absencebench_smoke(tmp_path):
     data = {"scenarios": [{"detected": True}, {"detected": False}]}
     input_file = tmp_path / "input.json"
-    input_file.write_text(json.dumps(data))
+    input_file.write_text(json.dumps(data), encoding="utf-8")
 
     result = subprocess.run(
         [
@@ -54,8 +58,10 @@ def test_cli_absencebench_smoke(tmp_path):
         ],
         capture_output=True,
         text=True,
+        cwd=tmp_path,
     )
     assert result.returncode == 0
+    assert (tmp_path / "benchmarks/results/smoke.json").exists()
 
 
 def test_cli_fetch_open_set_hf_batch_parser() -> None:

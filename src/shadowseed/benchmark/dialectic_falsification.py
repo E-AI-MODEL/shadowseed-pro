@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Any
 
 from shadowseed.text_similarity import lexical_embedding
+from shadowseed.gate.signals import recurrence_signal
 from shadowseed.manager import SSLManager
 
 VERDICT_WEERLEGD = "WEERLEGD"
@@ -185,11 +186,13 @@ def run_dialectic_probe(
 def _promote_via_gate(manager: SSLManager, seed_id: str) -> None:
     """Drive a fixture seed to PROMOTED through the real Gate (no shortcuts)."""
     seed = manager.seeds[seed_id]
-    for _ in range(8):
+    for count in range(2, 9):
         if seed.status.value == "PROMOTED":
             return
-        seed.occurrence_count += 1
-        manager.run_validation_gate(seed_id, external_evidence=True)
+        seed.occurrence_count = count
+        manager.submit_signals(
+            seed_id, [recurrence_signal(count, threshold=2)], "exploratory"
+        )
     raise RuntimeError(f"Fixture seed {seed_id} was not promoted through the Gate")
 
 

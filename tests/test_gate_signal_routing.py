@@ -8,7 +8,7 @@ import pathlib
 import numpy as np
 import pytest
 
-from shadowseed.gate.events import GateDecision
+from shadowseed.gate.events import GateDecision, GateEvent
 from shadowseed.gate.signals import (
     SignalDirection,
     SignalKind,
@@ -25,11 +25,11 @@ def fake_embedding(text: str) -> np.ndarray:
 
 
 def _promote_via_recurrence(manager: SSLManager, seed_id: str) -> None:
-    manager.seeds[seed_id].occurrence_count = 5
-    for _ in range(3):
+    for count in (3, 4, 5):
+        manager.seeds[seed_id].occurrence_count = count
         manager.submit_signals(
             seed_id,
-            [recurrence_signal(5, threshold=2)],
+            [recurrence_signal(count, threshold=2)],
             policy_id="exploratory",
         )
 
@@ -72,16 +72,65 @@ def test_evidence_backed_policy_rejects_recurrence_only():
 def test_evidence_backed_policy_promotes_on_verified_evidence():
     manager = SSLManager(embedding_fn=fake_embedding)
     seed_id = manager.add_or_update_seed("well supported seed")
-    for _ in range(3):
+    for source_index in range(3):
         manager.submit_signals(
             seed_id,
-            [ValidationSignal(kind=SignalKind.SSOT, verified=True, strength=0.9)],
+            [
+                ValidationSignal(
+                    kind=SignalKind.SSOT,
+                    verified=True,
+                    strength=0.9,
+                    source_ref=f"doc::{source_index}",
+                )
+            ],
             policy_id="evidence_backed",
         )
     seed = manager.seeds[seed_id]
     assert seed.status is SeedStatus.PROMOTED
     # Verified external evidence does increment the evidence counter.
     assert seed.evidence_count >= 1
+
+
+def test_repeated_recurrence_observation_is_idempotent():
+    manager = SSLManager(embedding_fn=fake_embedding)
+    seed_id = manager.add_or_update_seed("one recurrence observation")
+    manager.seeds[seed_id].occurrence_count = 2
+    signal = recurrence_signal(2, threshold=2)
+
+    first = manager.submit_signals(seed_id, [signal], policy_id="exploratory")
+    manager.gate_events = [
+        GateEvent.from_dict(event.to_dict()) for event in manager.gate_events
+    ]
+    second = manager.submit_signals(seed_id, [signal], policy_id="exploratory")
+
+    assert first.decision is GateDecision.VALIDATED
+    assert second.decision is GateDecision.BLOCKED
+    assert manager.seeds[seed_id].weight == pytest.approx(0.2)
+    assert "duplicate authority support ignored" in second.reason
+
+
+def test_same_external_source_cannot_accumulate_authority():
+    manager = SSLManager(embedding_fn=fake_embedding)
+    seed_id = manager.add_or_update_seed("one cited source")
+    signal = ValidationSignal(
+        kind=SignalKind.SSOT,
+        verified=True,
+        strength=0.9,
+        source_ref="doc::same",
+    )
+
+    decisions = [
+        manager.submit_signals(seed_id, [signal], policy_id="evidence_backed")
+        for _ in range(3)
+    ]
+
+    assert [event.decision for event in decisions] == [
+        GateDecision.VALIDATED,
+        GateDecision.BLOCKED,
+        GateDecision.BLOCKED,
+    ]
+    assert manager.seeds[seed_id].weight == pytest.approx(0.2)
+    assert manager.seeds[seed_id].evidence_count == 1
 
 
 def test_contradiction_signal_routes_through_gate():

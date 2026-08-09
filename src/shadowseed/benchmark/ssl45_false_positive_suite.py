@@ -15,10 +15,10 @@ would promote.
 from __future__ import annotations
 
 import json
-import math
 from pathlib import Path
 
 from shadowseed.benchmark.ssl45_gap_suite import detect_candidate_seeds, lexical_embedding, tokenize
+from shadowseed.gate.signals import SignalKind, ValidationSignal
 from shadowseed.manager import SSLManager, SeedStatus
 
 
@@ -79,8 +79,8 @@ def trace_without_contradiction_promotes(
 
 def _normalize_adversarial_candidate(
     candidate: str | dict,
-) -> tuple[str, str, bool, str | None]:
-    """Normalize a candidate entry into (text, expected_label, evidence_available, candidate_type).
+) -> tuple[str, str, bool, str | None, list[str]]:
+    """Normalize a candidate and its explicit evidence provenance.
 
     Bare strings are treated as legacy negative-control lures: expected_label
     ``not_gap``, no external evidence, no candidate_type. Dict form lets the
@@ -98,12 +98,13 @@ def _normalize_adversarial_candidate(
             )
         evidence_available = bool(candidate.get("evidence_available", False))
         candidate_type = candidate.get("candidate_type")
-        return text, expected_label, evidence_available, candidate_type
-    return str(candidate).strip(), "not_gap", False, None
+        evidence_refs = [str(item) for item in candidate.get("evidence_refs", [])]
+        return text, expected_label, evidence_available, candidate_type, evidence_refs
+    return str(candidate).strip(), "not_gap", False, None, []
 
 
 def evaluate_adversarial_candidate(candidate: str | dict, scenario: dict) -> dict:
-    text, expected_label, evidence_available, candidate_type = (
+    text, expected_label, evidence_available, candidate_type, evidence_refs = (
         _normalize_adversarial_candidate(candidate)
     )
     manager = SSLManager(embedding_fn=lexical_embedding)
@@ -119,30 +120,25 @@ def evaluate_adversarial_candidate(candidate: str | dict, scenario: dict) -> dic
         seed_id,
         contradiction,
     )
-    # Reaching PROMOTED requires (a) enough evidence calls to clear
-    # min_evidence_for_gate and (b) enough successful validations to lift
-    # weight to promotion_threshold. The first few Gate calls return
-    # verdict="blocked" while evidence accumulates; only afterwards do
-    # successful validations begin incrementing weight. The fixture therefore
-    # simulates this accumulation by calling the Gate until the seed promotes
-    # or a generous safety cap is reached. Negative controls (contradiction
-    # or no evidence) never promote because their validation flags fail every
-    # iteration.
-    weight_steps_needed = max(
-        1,
-        math.ceil(manager.promotion_threshold / manager.validation_increment),
-    )
-    max_iterations = manager.config.min_evidence_for_gate + weight_steps_needed + 2
+    evidence_signals = [
+        ValidationSignal(
+            kind=SignalKind.SSOT,
+            verified=True,
+            source_ref=source_ref,
+        )
+        for source_ref in evidence_refs
+    ]
+    first_signal = evidence_signals[:1] if evidence_available else []
     gate_result = manager.run_validation_gate_detailed(
         seed_id,
-        external_evidence=evidence_available,
+        signals=first_signal,
         contradiction=contradiction,
     )
     if not contradiction and evidence_available and not gate_result.promoted:
-        for _ in range(max_iterations - 1):
+        for signal in evidence_signals[1:]:
             gate_result = manager.run_validation_gate_detailed(
                 seed_id,
-                external_evidence=evidence_available,
+                signals=[signal],
                 contradiction=False,
             )
             if gate_result.promoted:
@@ -152,6 +148,7 @@ def evaluate_adversarial_candidate(candidate: str | dict, scenario: dict) -> dic
         "candidate": text,
         "expected_label": expected_label,
         "evidence_available": evidence_available,
+        "evidence_refs": evidence_refs,
         "candidate_type": candidate_type,
         "contradiction_detected": contradiction,
         "trace_only_promoted": baseline_trace_only,

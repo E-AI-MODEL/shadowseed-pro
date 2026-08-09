@@ -22,6 +22,7 @@ from shadowseed.benchmark.dialectic_falsification import (
     run_dialectic_falsification,
 )
 from shadowseed.benchmark.ssl45_gap_suite import lexical_embedding
+from shadowseed.gate.signals import recurrence_signal
 from shadowseed.manager import SSLManager, SeedStatus
 from shadowseed_agent import AgentSafetyContract, InfluenceAction
 
@@ -31,11 +32,13 @@ FIXTURE = Path("src/shadowseed/data/dialectic_falsification_fixture.json")
 def _promoted_seed(manager: SSLManager, text: str) -> str:
     sid = manager.ingest_detection_candidates([text])["accepted"][0]["seed_id"]
     seed = manager.seeds[sid]
-    for _ in range(8):
+    for count in range(2, 9):
         if seed.status == SeedStatus.PROMOTED:
             return sid
-        seed.occurrence_count += 1
-        manager.run_validation_gate(sid, external_evidence=True)
+        seed.occurrence_count = count
+        manager.submit_signals(
+            sid, [recurrence_signal(count, threshold=2)], "exploratory"
+        )
     raise AssertionError("seed promoveerde niet")
 
 
