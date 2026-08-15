@@ -5,10 +5,13 @@
 
 **Authors:** H. Visser, ChatGPT, Claude, Kimi, GLM
 
+[Read the compiled paper (PDF)](shadowseed-paper.pdf)
+
 This `paper/` directory is the canonical repository location for the manuscript source.
 
 ## Files
 
+- `shadowseed-paper.pdf` — compiled manuscript PDF
 - `main.tex` — complete manuscript draft
 - `references.bib` — bibliography based on primary paper/proceedings sources plus the frozen Shadowseed 0.4.2 software artifact
 
