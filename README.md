@@ -29,10 +29,18 @@ Shadow Seed Learning, or SSL, records a possible omission as a **candidate for i
 > [!CAUTION]
 > This repository has **no open-source license**. All rights are reserved. Public visibility is not permission for reuse. See [Rights and temporary licensing position](#rights-and-temporary-licensing-position).
 
+## Research paper
+
+**Shadowseed: Remembering Without Trusting**
+*A Validation-Gated Memory Architecture for Language Model Systems*
+
+[Read the paper (PDF)](paper/shadowseed-paper.pdf) · [LaTeX source](paper/main.tex) · [Bibliography](paper/references.bib)
+
 ## Start here
 
 | Goal | Start here |
 |---|---|
+| Read the research paper | [Paper PDF](paper/shadowseed-paper.pdf) |
 | Run the deterministic demo | [Quick start](#quick-start) |
 | Use the practical tester environment | [Tester Workbench](#tester-workbench) |
 | Understand the idea | [The idea in plain language](#the-idea-in-plain-language) |
@@ -383,6 +391,8 @@ The machine-readable source is [`repository-authority.yaml`](repository-authorit
 ---
 
 ## Research status
+
+The methods/systems manuscript for the current architecture is available in [`paper/`](paper/README.md), with the compiled version at [`paper/shadowseed-paper.pdf`](paper/shadowseed-paper.pdf). It describes the frozen 0.4.2 implementation and keeps the existing efficacy claim boundary unchanged.
 
 ### Implemented and testable
 
