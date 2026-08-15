@@ -1,0 +1,53 @@
+
+A seed can contain text that resembles a system instruction or prompt-injection payload. The prompt boundary quotes and bounds that text. The point-of-use contract controls whether the seed reaches the prompt. The model can still mishandle quoted adversarial content. The design reduces one authority ambiguity. Prompt injection remains possible. AgentDojo illustrates why external data and instructions cannot be assumed to remain cleanly separated by model behavior alone \citep{debenedetti2024agentdojo}.
+
+\subsection{Persistence boundary}
+
+Restoration bypasses new Gate decisions by design because it reconstructs prior state. The implementation validates snapshots and preserves their authority version. The persistence store remains a trust boundary. Production use would require stronger access control, schema migration guarantees, rollback, and durable audit integrity. The current immutable Gate and influence records are in-process data structures. Durable append-only and cryptographically chained audit guarantees are absent.
+
+\subsection{In-process escape hatches}
+
+Python permits callers with code execution to reach internals. The repository contains explicitly unsafe test hooks. The system's ``non-bypassable'' property is therefore scoped to supported public runtime paths for new authority decisions. The scope excludes sandboxing and arbitrary in-process code.
+
+\section{Discussion}
+\label{sec:discussion}
+
+The practical value of separating memory from authority is easiest to see in ambiguous cases. A system may notice the same candidate omission on three turns. Deleting it would discard a pattern worth investigating. Treating it as fact would overstate what recurrence can show. SSL allows a third state: remember the pattern, keep its epistemic status visible, and wait for a policy-relevant reason before permitting influence.
+
+The same distinction clarifies retrieval. A seed can be authorized to initiate a search without treating the search result as automatically true. Retrieved support retains its source identity and enters validation as a typed signal. If contradictory material appears later, the authority version changes and earlier point-of-use authorization becomes stale. This creates a chain that can be reconstructed from candidate to evidence to Gate event to action.
+
+The architecture also makes policy disagreement explicit. A research prototype may accept recurrence as enough reason to surface a candidate for exploration. A higher-risk system may require verified external support. Putting that difference into named policies is preferable to hiding it in a threshold whose semantics are unclear. Domain owners still choose the appropriate policy. The architecture constrains where that policy acts.
+
+There is a cost. More state means more bookkeeping, more failure modes, and more material to review. A Validation Gate that nobody inspects becomes ceremony. Provenance that identifies a source without measuring its credibility can give a false sense of rigor. Audit logs can also expose sensitive text. The architecture earns its complexity only where preserving uncertain context is useful enough to justify an explicit authority trail.
+
+\section{Limitations and empirical work still required}
+\label{sec:limitations}
+
+The strongest current limitation is empirical. General answer-quality improvement remains unestablished. Deterministic fixtures demonstrate wiring and state transitions. Contract tests establish executable invariants. Neither tells us how often real detectors propose useful absences, how often valid seeds improve a response, or how often surfacing distracts the model.
+
+A suitable next study should freeze the implementation and preregister the evaluation. At minimum, it should compare isolated baseline responses with SSL-assisted responses on tasks containing recoverable contextual omissions; include negative controls in which no meaningful omission is present; measure false influence as well as useful influence; and use blinded, independent assessment. The design should report effect sizes and uncertainty; win rates alone are insufficient. Ablations should separate candidate persistence, Gate validation, retrieval, and point-of-use checks. Such a study can test whether the architecture's control costs buy useful behavior.
+
+Generalization is also open. Evidence for seed quality across domains, languages, model families, and long deployments is currently absent. Weight represents steering authority and carries no calibrated probability of truth. The current implementation provides local persistence and a tester Workbench. It lacks the append-only audit storage, mature access control, privacy and retention policy, operational monitoring, rollback procedures, rate limiting, and independent security review expected of a production system.
+
+Security claims remain bounded. A malicious trusted source can still supply false evidence. Prompt-data quoting leaves residual instruction-following risk. The default contradiction block can be relaxed programmatically. Arbitrary Python code with access to unsupported internals is outside the public-API authority guarantee.
+
+These limits define the method's intended use. Shadowseed 0.4.2 is a research artifact for mechanism inspection, controlled experiments, and tester studies. High-impact deployment in healthcare, finance, employment, law, public administration, education decisions, or autonomous action falls outside that intended use.
+
+\section{Reproducibility and artifact statement}
+\label{sec:artifact}
+
+The paper describes Shadowseed Pro version 0.4.2, commit \commitsha \citep{shadowseed2026}. The repository records the architecture, contract tests, benchmark implementations, release metadata, and CI workflows used for the assurance claims in this paper. The release path verifies Python 3.10 and 3.12, package build, clean wheel installation, Workbench checks, cross-platform portability, and release assets.
+
+A reproduction should record the repository commit, Python and operating-system versions, dependency versions, backend and model identifiers, immutable model revisions where available, input hashes, prompt variants, random seeds, and output hashes. Real-model labels or reviews should be preserved as artifacts because hosted model outputs can vary across runs.
+
+The repository is publicly visible for inspection, research discussion, and evaluation. At the time of writing the repository carries no open-source license; the original content remains all rights reserved. Public visibility grants inspection access only under the repository's stated rights position.
+
+\section{Conclusion}
+
+A language-model system can benefit from remembering a suspicion before it is ready to trust it. That requires more than a memory store. The representation must preserve uncertainty after storage, validation must have an explicit authority boundary, and permission must still be current when the memory is used.
+
+Shadow Seed Learning implements that separation with weightless candidate omissions, a distinct trace signal, typed validation, provenance-bound evidence, explicit contradiction records, versioned Gate events, and atomic point-of-use decisions. The 0.4.2 reference implementation provides executable evidence that these contracts are wired into the supported runtime. General answer improvement remains an open empirical question for controlled evaluation. Further mechanism expansion cannot substitute for that study.
+
+\printbibliography
+
+\end{document}
