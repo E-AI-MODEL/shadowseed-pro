@@ -5,7 +5,7 @@ text = root.read_text(encoding="utf-8")
 
 paper_section = """## Research paper
 
-**Shadowseed: Remembering Without Trusting**  
+**Shadowseed: Remembering Without Trusting**
 *A Validation-Gated Memory Architecture for Language Model Systems*
 
 [Read the paper (PDF)](paper/shadowseed-paper.pdf) · [LaTeX source](paper/main.tex) · [Bibliography](paper/references.bib)
