@@ -41,18 +41,27 @@ jobs:
           PY
       - name: Apply guarded patch
         run: python .github/scripts/apply_live_runtime.py
-      - name: Complete fixture test import
+      - name: Complete test setup
         run: |
           python - <<'PY'
           from pathlib import Path
-          path = Path('tests/test_ssl_session_suite.py')
-          text = path.read_text(encoding='utf-8')
-          if 'import pytest\n' not in text:
+
+          fixture_path = Path('tests/test_ssl_session_suite.py')
+          fixture_text = fixture_path.read_text(encoding='utf-8')
+          if 'import pytest\n' not in fixture_text:
               marker = 'import numpy as np\n'
-              if marker not in text:
+              if marker not in fixture_text:
                   raise SystemExit('numpy import marker not found')
-              text = text.replace(marker, marker + 'import pytest\n', 1)
-              path.write_text(text, encoding='utf-8')
+              fixture_text = fixture_text.replace(marker, marker + 'import pytest\n', 1)
+              fixture_path.write_text(fixture_text, encoding='utf-8')
+
+          live_path = Path('tests/test_live_runtime.py')
+          live_text = live_path.read_text(encoding='utf-8')
+          old = '''    seed_id = session.manager.add_or_update_seed(seed_text)\n    for index in range(3):\n'''
+          new = '''    seed_id = session.manager.add_or_update_seed(seed_text)\n    session.born_turn[seed_id] = -1\n    for index in range(3):\n'''
+          if old not in live_text:
+              raise SystemExit('live test setup marker not found')
+          live_path.write_text(live_text.replace(old, new, 1), encoding='utf-8')
           PY
       - name: Static checks
         run: |
