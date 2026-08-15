@@ -38,9 +38,11 @@ def fake_embedding(text: str) -> np.ndarray:
 def _promoted_manager() -> tuple[SSLManager, str]:
     manager = SSLManager(embedding_fn=fake_embedding)
     seed_id = manager.add_or_update_seed("a promotable seed")
-    manager.seeds[seed_id].occurrence_count = 5
-    for _ in range(3):
-        manager.submit_signals(seed_id, [recurrence_signal(5, threshold=2)], "exploratory")
+    for count in (3, 4, 5):
+        manager.seeds[seed_id].occurrence_count = count
+        manager.submit_signals(
+            seed_id, [recurrence_signal(count, threshold=2)], "exploratory"
+        )
     assert manager.seeds[seed_id].status is SeedStatus.PROMOTED
     return manager, seed_id
 
@@ -491,4 +493,3 @@ def test_inspect_reports_stale_authorization_for_gate_event_ledgers():
 
     assert inspection.blocking_reasons == ("stale_gate_authorization",)
     assert inspection.is_blocked is True
-

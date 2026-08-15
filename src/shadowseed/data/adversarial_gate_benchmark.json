@@ -86,6 +86,7 @@
           "text": "Juridische status van bestaande gasaansluitingen bij gedwongen transitie.",
           "expected_label": "gap",
           "evidence_available": true,
+          "evidence_refs": ["gas:law", "gas:regulator", "gas:case", "gas:review"],
           "candidate_type": "positive-control-with-evidence"
         }
       ]
@@ -146,12 +147,14 @@
           "text": "Wettelijke bewaartermijn voor medische telemonitoringdata.",
           "expected_label": "gap",
           "evidence_available": true,
+          "evidence_refs": ["retention:law", "retention:regulator", "retention:case", "retention:review"],
           "candidate_type": "positive-control-with-evidence"
         },
         {
           "text": "Meldplicht bij datalekken voor verwerkers van medische data.",
           "expected_label": "gap",
           "evidence_available": true,
+          "evidence_refs": ["breach:law", "breach:regulator", "breach:case", "breach:review"],
           "candidate_type": "positive-control-with-evidence"
         }
       ]

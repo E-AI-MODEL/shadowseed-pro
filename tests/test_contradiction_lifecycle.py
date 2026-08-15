@@ -32,9 +32,11 @@ def _contradiction(reason: str = "counterexample") -> ValidationSignal:
 
 
 def _promote(manager: SSLManager, seed_id: str) -> None:
-    manager.seeds[seed_id].occurrence_count = 5
-    for _ in range(3):
-        manager.submit_signals(seed_id, [recurrence_signal(5, threshold=2)], "exploratory")
+    for count in (3, 4, 5):
+        manager.seeds[seed_id].occurrence_count = count
+        manager.submit_signals(
+            seed_id, [recurrence_signal(count, threshold=2)], "exploratory"
+        )
 
 
 # -- record model ------------------------------------------------------------
@@ -114,9 +116,11 @@ def test_recovery_requires_resolution_then_revalidation():
     assert manager.seeds[seed_id].contradiction_score == 0.0
 
     # Now revalidation under the policy can promote again.
-    manager.seeds[seed_id].occurrence_count = 5
-    for _ in range(3):
-        manager.submit_signals(seed_id, [recurrence_signal(5, threshold=2)], "exploratory")
+    for count in (3, 4, 5):
+        manager.seeds[seed_id].occurrence_count = count
+        manager.submit_signals(
+            seed_id, [recurrence_signal(count, threshold=2)], "exploratory"
+        )
     assert manager.seeds[seed_id].status is SeedStatus.PROMOTED
 
 

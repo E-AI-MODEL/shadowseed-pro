@@ -11,9 +11,8 @@ name: CI
 #     annotated, so a green mypy run would require either broad `ignore` pragmas or
 #     large annotation work. Adding it is tracked under issue #23; until then the
 #     tests are the behavioral contract.
-#   - Coverage is measured implicitly by the suite but is NOT gated on a threshold,
-#     to avoid a brittle number that fails unrelated PRs. Revisit alongside type
-#     checking.
+#   - Coverage: branch coverage is gated at 80% across both runtime packages.
+#     Raising the threshold remains separate from adding static type checking.
 #   - Optional backends (Hugging Face, Ollama, OpenAI, FAISS, Chroma) are exercised
 #     only through deterministic fixtures here; live-backend integration needs
 #     network/credentials and stays out of the default matrix by design.
@@ -37,9 +36,19 @@ jobs:
       - run: python -m pip install --upgrade pip
       - run: pip install -e ".[test]"
       - run: ruff check .
-      - run: pytest -q
+      - run: >-
+          pytest -q
+          --cov=shadowseed
+          --cov=shadowseed_agent
+          --cov-branch
+          --cov-report=term-missing
+          --cov-fail-under=80
       - name: CLI smoke (source tree)
         run: python -m shadowseed.cli --help
+      - name: Test suite leaves checkout clean
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
 
   build:
     runs-on: ubuntu-latest

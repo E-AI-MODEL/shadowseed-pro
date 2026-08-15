@@ -18,6 +18,7 @@ from shadowseed.benchmark.ssl45_gap_suite import (
     score_seed,
     tokenize,
 )
+from shadowseed.gate.signals import recurrence_signal
 from shadowseed.manager import SSLManager, SeedStatus
 
 
@@ -83,7 +84,7 @@ def build_ssl_revision(baseline_answer: str, promoted_seeds: list[str]) -> str:
     return f"{baseline_answer}\n\nSSL additions: {additions}"
 
 
-def run_ssl45_benefit_suite(input_path: str, output_path: str, turns: int = 3) -> Path:
+def run_ssl45_benefit_suite(input_path: str, output_path: str, turns: int = 4) -> Path:
     suite = json.loads(Path(input_path).read_text(encoding="utf-8"))
     results = []
 
@@ -126,9 +127,14 @@ def run_ssl45_benefit_suite(input_path: str, output_path: str, turns: int = 3) -
             scored = score_seed(seed.text, ground_truth)
             seed_scores.append(scored)
             if scored.score == 2:
-                seed.unsafe_set_authority(evidence_count=max(seed.evidence_count, 2))
-                for _ in range(3):
-                    manager.run_validation_gate(seed_id)
+                observed_count = seed.occurrence_count
+                for count in range(2, observed_count + 1):
+                    seed.occurrence_count = count
+                    manager.submit_signals(
+                        seed_id,
+                        [recurrence_signal(count, threshold=2)],
+                        policy_id="exploratory",
+                    )
             elif scored.score == 0:
                 manager.run_validation_gate(seed_id, contradiction=True)
 

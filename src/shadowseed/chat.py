@@ -66,6 +66,7 @@ from shadowseed_agent import (
     AgentSafetyContract,
     InfluenceAction,
     assert_influence_records_valid,
+    can_seed_trigger_retrieval,
 )
 
 
@@ -235,7 +236,7 @@ class ShadowChatSession:
         """
         if self.probe_store is None:
             return None
-        seed_texts: list[str] = []
+        authorized_seed_ids: list[str] = []
         for sid, seed in self.manager.seeds.items():
             if seed.status != SeedStatus.PROMOTED:
                 continue
@@ -243,18 +244,32 @@ class ShadowChatSession:
                 cid = self.seed_to_cluster.get(sid)
                 if cid is not None and self.cluster_rep.get(cid) != sid:
                     continue
-            seed_texts.append(seed.text)
-        if not seed_texts:
+            if can_seed_trigger_retrieval(
+                seed,
+                gate_events=self.manager.gate_events,
+                ledger=self.influence_records,
+                contradiction_blocking=self.manager.is_blocking_contradiction(sid),
+                contract=self.contract,
+                context_ref=f"turn:{self._turn}:retrieval_probe",
+            ):
+                authorized_seed_ids.append(sid)
+        if not authorized_seed_ids:
             return None
+        authorized = set(authorized_seed_ids)
+        seed_texts = [self.manager.seeds[sid].text for sid in authorized_seed_ids]
         retrieval_consts = [
             c for c in self.manager.find_constellations() if c.probe_type == "retrieval"
         ]
-        use_centroid = bool(retrieval_consts)
+        authorized_members: list[str] = []
+        for constellation in retrieval_consts:
+            authorized_members = [
+                sid for sid in constellation.members if sid in authorized
+            ]
+            if authorized_members:
+                break
+        use_centroid = bool(authorized_members)
         if use_centroid:
-            members = set(retrieval_consts[0].members)
-            seed_texts = [
-                self.manager.seeds[sid].text for sid in members if sid in self.manager.seeds
-            ] or seed_texts
+            seed_texts = [self.manager.seeds[sid].text for sid in authorized_members]
         res = retrieval_probe_vs_question(
             self.probe_store,
             question,

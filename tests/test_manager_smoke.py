@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from shadowseed.core_config import SSLCoreConfig
+from shadowseed.gate.signals import SignalKind, ValidationSignal
 from shadowseed.manager import SSLManager, SeedStatus
 
 
@@ -13,6 +14,14 @@ def fake_embedding(text: str) -> np.ndarray:
     if "Koloniale katoen" in text:
         return np.array([0.96, -0.28, 0.0])
     return np.array([0.0, 1.0, 0.0])
+
+
+def _verified_evidence(source_ref: str) -> ValidationSignal:
+    return ValidationSignal(
+        kind=SignalKind.SSOT,
+        verified=True,
+        source_ref=source_ref,
+    )
 
 
 def test_add_update_and_validation_gate_smoke():
@@ -31,9 +40,11 @@ def test_add_update_and_validation_gate_smoke():
     assert duplicate_seed_id == seed_id
 
     manager.seeds[seed_id].occurrence_count = 3
-    manager.run_validation_gate(seed_id, external_evidence=True)
-    manager.run_validation_gate(seed_id, external_evidence=True)
-    result = manager.run_validation_gate(seed_id, external_evidence=True)
+    manager.run_validation_gate(seed_id, signals=[_verified_evidence("source-1")])
+    manager.run_validation_gate(seed_id, signals=[_verified_evidence("source-2")])
+    result = manager.run_validation_gate(
+        seed_id, signals=[_verified_evidence("source-3")]
+    )
 
     assert result is True
     assert manager.seeds[seed_id].status == SeedStatus.PROMOTED
@@ -62,10 +73,13 @@ def test_detailed_validation_gate_records_reasoning():
     )
     manager.seeds[seed_id].occurrence_count = 3
 
-    first = manager.run_validation_gate_detailed(seed_id, external_evidence=True)
-    second = manager.run_validation_gate_detailed(seed_id, external_evidence=True)
-    third = manager.run_validation_gate_detailed(seed_id, external_evidence=True)
-    fourth = manager.run_validation_gate_detailed(seed_id, external_evidence=True)
+    results = [
+        manager.run_validation_gate_detailed(
+            seed_id, signals=[_verified_evidence(f"source-{index}")]
+        )
+        for index in range(4)
+    ]
+    first, second, third, fourth = results
 
     assert first.verdict == "blocked"
     assert first.external_evidence_passed is False
@@ -83,7 +97,9 @@ def test_blocked_validation_records_block_event():
     )
     manager.seeds[seed_id].occurrence_count = 3
 
-    result = manager.run_validation_gate_detailed(seed_id, external_evidence=True)
+    result = manager.run_validation_gate_detailed(
+        seed_id, signals=[_verified_evidence("source-1")]
+    )
 
     assert result.verdict == "blocked"
     assert result.status_before == SeedStatus.NEW.value

@@ -31,6 +31,123 @@ from shadowseed.gate.signals import (
 from shadowseed.gate.verified_logging import log_validation_from_signals
 
 LEGACY_POLICY_ID = "legacy_evidence_required"
+_AUTHORITY_CONFIRMING_DECISIONS = frozenset(
+    {GateDecision.VALIDATED, GateDecision.PROMOTED}
+)
+
+
+def _authority_signal_key(signal: ValidationSignal) -> str | None:
+    """Return the stable identity of support that may raise authority.
+
+    A recurrence count is one observation, even when a caller submits it more
+    than once. External evidence is one observation per source and kind. The
+    anonymous fallback is retained only so historical Gate events remain
+    replayable; new verified external support is rejected before this key is
+    computed unless it carries a ``source_ref``.
+    """
+
+    if signal.direction is not SignalDirection.SUPPORT:
+        return None
+    if signal.kind is SignalKind.RECURRENCE:
+        identity = signal.source_ref or signal.reason or "anonymous"
+        return f"recurrence:{identity}"
+    if signal.is_external_evidence and signal.verified:
+        identity = signal.source_ref or "anonymous"
+        return f"external:{signal.kind.value}:{identity}"
+    return None
+
+
+def _require_external_evidence_provenance(
+    signals: list[ValidationSignal],
+) -> None:
+    """Reject new authority-bearing external evidence without provenance.
+
+    This check deliberately runs only on signals offered to the current Gate
+    call. Historical anonymous signals may still be read while reconstructing
+    the immutable event ledger, so tightening the input contract does not make
+    old managers or serialized Gate events unreplayable.
+    """
+
+    for signal in signals:
+        source_ref = signal.source_ref
+        if (
+            signal.direction is SignalDirection.SUPPORT
+            and signal.is_external_evidence
+            and signal.verified
+            and (
+                not isinstance(source_ref, str)
+                or not source_ref.strip()
+            )
+        ):
+            raise ValueError(
+                "verified external evidence must carry a source_ref so "
+                "independent confirmations can be told apart; anonymous "
+                "evidence cannot raise authority"
+            )
+
+
+def _applied_authority_signal_keys(manager: Any, seed_id: str) -> set[str]:
+    """Reconstruct applied support from immutable Gate events.
+
+    Keeping this state in the event ledger makes idempotency survive manager
+    serialization and replay without a second mutable registry.
+    """
+
+    seed_events = [event for event in manager.gate_events if event.seed_id == seed_id]
+    last_contradiction_index = max(
+        (
+            index
+            for index, event in enumerate(seed_events)
+            if event.decision is GateDecision.CONTRADICTED
+        ),
+        default=-1,
+    )
+    applied: set[str] = set()
+    for index, event in enumerate(seed_events):
+        for signal in event.signals:
+            key = _authority_signal_key(signal)
+            if key is None:
+                continue
+            if signal.kind is SignalKind.RECURRENCE:
+                if (
+                    index > last_contradiction_index
+                    and event.decision in _AUTHORITY_CONFIRMING_DECISIONS
+                ):
+                    applied.add(key)
+            elif (
+                event.policy_id == LEGACY_POLICY_ID
+                or event.decision in _AUTHORITY_CONFIRMING_DECISIONS
+            ):
+                applied.add(key)
+    return applied
+
+
+def _deduplicate_authority_signals(
+    manager: Any,
+    seed_id: str,
+    signals: list[ValidationSignal],
+) -> tuple[list[ValidationSignal], tuple[str, ...]]:
+    """Filter repeated promotion support while retaining every audit input."""
+
+    seen = _applied_authority_signal_keys(manager, seed_id)
+    accepted: list[ValidationSignal] = []
+    duplicates: list[str] = []
+    for signal in signals:
+        key = _authority_signal_key(signal)
+        if key is not None and key in seen:
+            duplicates.append(key)
+            continue
+        accepted.append(signal)
+        if key is not None:
+            seen.add(key)
+    return accepted, tuple(duplicates)
+
+
+def _with_duplicate_reason(reason: str, duplicates: tuple[str, ...]) -> str:
+    if not duplicates:
+        return reason
+    identities = ", ".join(sorted(set(duplicates)))
+    return f"{reason}; duplicate authority support ignored: {identities}"
 
 
 def _supporting_recurrence(signals: list[ValidationSignal]) -> bool:
@@ -102,6 +219,9 @@ def _submit_legacy_signals(
     manager: Any,
     seed_id: str,
     signal_list: list[ValidationSignal],
+    *,
+    recorded_signals: list[ValidationSignal] | None = None,
+    duplicate_keys: tuple[str, ...] = (),
 ) -> GateEvent:
     """Apply historical threshold semantics through the unified Gate boundary."""
 
@@ -131,12 +251,12 @@ def _submit_legacy_signals(
         event = manager._record_gate_event(
             seed,
             GateDecision.EXPIRED,
-            signal_list,
+            recorded_signals or signal_list,
             policy_id=LEGACY_POLICY_ID,
             status_before=status_before,
             weight_before=weight_before,
             contradiction_before=contradiction_before,
-            reason="expired seed is terminal",
+            reason=_with_duplicate_reason("expired seed is terminal", duplicate_keys),
         )
         manager._sync_seed(seed_id)
         return event
@@ -201,6 +321,7 @@ def _submit_legacy_signals(
     elif (
         proposal.verdict is ProposedVerdict.PROMOTE_OR_VALIDATE
         and proposal.satisfied
+        and (_supporting_recurrence(signal_list) or bool(external_signals))
     ):
         new_weight = min(1.0, seed.weight + proposal.weight_delta)
         new_status = (
@@ -248,12 +369,14 @@ def _submit_legacy_signals(
     event = manager._record_gate_event(
         seed,
         decision,
-        signal_list,
+        recorded_signals or signal_list,
         policy_id=LEGACY_POLICY_ID,
         status_before=status_before,
         weight_before=weight_before,
         contradiction_before=contradiction_before,
-        reason=f"legacy compatibility verdict={verdict}",
+        reason=_with_duplicate_reason(
+            f"legacy compatibility verdict={verdict}", duplicate_keys
+        ),
     )
     manager._sync_seed(seed_id)
     return event
@@ -268,9 +391,20 @@ def submit_signals(
     """Apply one policy, one authority transition, and one Gate event."""
 
     signal_list = list(signals)
+    if manager._seeds[seed_id].status.value != "EXPIRED":
+        _require_external_evidence_provenance(signal_list)
+    effective_signals, duplicate_keys = _deduplicate_authority_signals(
+        manager, seed_id, signal_list
+    )
     selected_policy = policy_id or "exploratory"
     if selected_policy == LEGACY_POLICY_ID:
-        return _submit_legacy_signals(manager, seed_id, signal_list)
+        return _submit_legacy_signals(
+            manager,
+            seed_id,
+            effective_signals,
+            recorded_signals=signal_list,
+            duplicate_keys=duplicate_keys,
+        )
 
     seed = manager._seeds[seed_id]
     policy = resolve_policy(selected_policy)
@@ -291,7 +425,7 @@ def submit_signals(
         )
 
     proposal = policy.propose(
-        signal_list,
+        effective_signals,
         AuthoritySnapshot(
             weight=seed.weight,
             status=seed.status.value,
@@ -300,7 +434,7 @@ def submit_signals(
     )
 
     if proposal.verdict is ProposedVerdict.CONTRADICT:
-        contradiction_signal = _opposing_contradiction(signal_list)
+        contradiction_signal = _opposing_contradiction(effective_signals)
         manager._open_contradiction_record(
             seed,
             reason=(contradiction_signal.reason if contradiction_signal else "")
@@ -334,7 +468,7 @@ def submit_signals(
             if new_weight >= manager.promotion_threshold
             else type(seed.status).ACTIVE
         )
-        external_support = len(_verified_external(signal_list))
+        external_support = len(_verified_external(effective_signals))
         manager._set_authority(
             seed,
             weight=new_weight,
@@ -357,7 +491,7 @@ def submit_signals(
     manager._log_validation_from_signals(
         seed,
         decision,
-        signal_list,
+        effective_signals,
         status_before=status_before,
         weight_before=weight_before,
     )
@@ -369,7 +503,7 @@ def submit_signals(
         status_before=status_before,
         weight_before=weight_before,
         contradiction_before=contradiction_before,
-        reason=proposal.reason,
+        reason=_with_duplicate_reason(proposal.reason, duplicate_keys),
     )
     manager._sync_seed(seed_id)
     return event

@@ -35,9 +35,13 @@ def _manager() -> SSLManager:
 
 
 def _recur(manager, seed_id, policy="exploratory", n=3, count=5):
-    manager.seeds[seed_id].occurrence_count = count
-    for _ in range(n):
-        manager.submit_signals(seed_id, [recurrence_signal(count, threshold=2)], policy)
+    for current_count in range(count - n + 1, count + 1):
+        manager.seeds[seed_id].occurrence_count = current_count
+        manager.submit_signals(
+            seed_id,
+            [recurrence_signal(current_count, threshold=2)],
+            policy,
+        )
 
 
 # Invariant 1: detection never grants authority.

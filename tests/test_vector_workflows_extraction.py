@@ -130,6 +130,7 @@ def test_positive_external_feedback_uses_verified_support_signal() -> None:
         context="source-A",
         positive=True,
         threshold=0.8,
+        source_ref="reviewer-A::confirmation-1",
     )
 
     captured_id, kwargs = manager.captured_gate
@@ -139,7 +140,7 @@ def test_positive_external_feedback_uses_verified_support_signal() -> None:
     assert signal.kind is SignalKind.HUMAN_FEEDBACK
     assert signal.direction is SignalDirection.SUPPORT
     assert signal.verified is True
-    assert signal.source_ref == "source-A"
+    assert signal.source_ref == "reviewer-A::confirmation-1"
     assert updates[0]["gate_result"] is True
     assert vector.feedback_calls == [
         {

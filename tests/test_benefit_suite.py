@@ -10,7 +10,7 @@ def test_benefit_suite_improves_gap_coverage(tmp_path: Path):
     run_ssl45_benefit_suite(
         "src/shadowseed/data/ssl45_benefit_suite.json",
         str(output),
-        turns=3,
+        turns=4,
     )
 
     payload = json.loads(output.read_text(encoding="utf-8"))

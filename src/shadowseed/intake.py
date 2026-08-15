@@ -169,14 +169,17 @@ def ingest_detection_candidates(
 def maybe_deduplicate_seed(
     manager: Any, new_embedding: np.ndarray
 ) -> tuple[str, float] | None:
-    """Return the first non-expired seed at or above the dedup threshold."""
+    """Return the most similar non-expired seed above the dedup threshold."""
 
+    best_match: tuple[str, float] | None = None
     for seed_id, seed in manager._seeds.items():
         if seed.status == SeedStatus.EXPIRED:
             continue
         similarity = float(np.dot(new_embedding, seed.embedding))
-        if similarity >= manager.dedup_threshold:
-            return seed_id, similarity
+        if best_match is None or similarity > best_match[1]:
+            best_match = seed_id, similarity
+    if best_match is not None and best_match[1] >= manager.dedup_threshold:
+        return best_match
     return None
 
 

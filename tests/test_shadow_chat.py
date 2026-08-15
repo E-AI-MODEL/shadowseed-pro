@@ -16,6 +16,7 @@ import pytest
 
 import shadowseed.chat as chatmod
 from shadowseed.chat import ShadowChatSession, run_chat
+from shadowseed.manager import SeedStatus
 from shadowseed_agent import WeightlessInfluenceError, assert_no_weightless_influence
 from shadowseed_agent.audit_policy import AgentInfluenceRecord
 
@@ -193,7 +194,33 @@ def test_retrieval_probe_reports_presence_without_steering(tmp_path, monkeypatch
 
     # doctrine: gevonden != waar/sturend — retrieved text never enters a prompt
     assert all("archief" not in p for p in session.model.prompts)
-    session.audit()  # and the probe added no influence
+    retrieval_records = [
+        record for record in session.influence_records if record.action == "retrieval"
+    ]
+    assert retrieval_records and all(record.allowed for record in retrieval_records)
+    session.audit()
+
+
+def test_retrieval_probe_rejects_promoted_seed_without_gate_authorization(
+    tmp_path, monkeypatch
+):
+    corpus = tmp_path / "corpus.json"
+    corpus.write_text(
+        json.dumps([{"id": "doc_privacy", "text": "Privacy in het archief."}]),
+        encoding="utf-8",
+    )
+    session = _make_session(monkeypatch, probe_corpus=str(corpus), probe_top_k=1)
+    seed_id = session.manager.add_or_update_seed("Privacy van gebruikersdata.")
+    session.manager.seeds[seed_id].unsafe_set_authority(
+        weight=0.6, status=SeedStatus.PROMOTED
+    )
+
+    assert session._run_retrieval_probe("Wat betekent dit voor data?") is None
+    assert len(session.influence_records) == 1
+    decision = session.influence_records[0]
+    assert decision.action == "retrieval"
+    assert decision.allowed is False
+    assert decision.reason == "missing_logged_promotion"
 
 
 def test_probe_corpus_accepts_repo_retrieval_schema(tmp_path, monkeypatch):
