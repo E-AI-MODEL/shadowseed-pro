@@ -21,6 +21,7 @@ Shadowseed 0.4.2 publishes the authority and retrieval hardening already merged 
 - CI now enforces at least 80% branch coverage.
 - CI verifies that the test suite leaves the tracked checkout unchanged.
 - Package build, clean-wheel installation, installed CLI smoke, Python 3.10 and 3.12 tests, Workbench checks, portability checks, and release-asset verification remain part of the release path.
+- This release metadata change does not rewrite benchmark result artifacts.
 
 ## Claim boundary
 
