@@ -1,0 +1,70 @@
+A statement that reappears across turns may become salient simply because the detector repeats the same mistake. Recurrence records persistence. Correctness requires separate support.
+
+\paragraph{Retrieved material can be wrong or hostile.}
+RAG systems gain access to external knowledge at the cost of another trust boundary. PoisonedRAG demonstrates that a small number of maliciously inserted texts can steer answers in a retrieval system \citep{zou2025poisonedrag}. The security problem is broader for agents: AgentDojo shows how untrusted data returned by tools can contain instructions that interfere with the user's task \citep{debenedetti2024agentdojo}. A memory architecture should therefore preserve source identity and distinguish data from instructions.
+
+\paragraph{Past authorization can become stale.}
+A seed that was once supported can later receive contradictory evidence, lose authority, or change state. Caching an earlier ``allowed'' result would bypass the new state unless authorization is versioned.
+
+\paragraph{A gate at storage time is insufficient.}
+A promoted seed may be irrelevant to the current query. It may also become unsafe to use because a contradiction opened after promotion. Permission to remain in memory and permission to affect this action are separate decisions.
+
+These cases suggest a design requirement that is stronger than ``attach a confidence score.'' The system needs a traceable authority path whose inputs and state transitions can be inspected after the fact.
+
+\section{Related work}
+\label{sec:related}
+
+\subsection{Retrieval and external memory}
+
+REALM and RAG established influential patterns for combining language models with non-parametric stores \citep{guu2020realm,lewis2020rag}. Their main concern is access to external knowledge beyond the model's parameters. Later work makes retrieval conditional. Adaptive-RAG selects among no-retrieval, single-step retrieval, and iterative retrieval according to estimated query complexity \citep{jeong2024adaptiverag}. Self-RAG trains a model to retrieve and critique its own generations through special reflection signals \citep{asai2024selfrag}.
+
+SSL complements these methods. A seed may eventually trigger retrieval, and retrieved evidence may support or oppose it. The remaining question concerns the authority of the candidate that initiated the search after the result returns. A retrieved document enters validation as evidence input; its presence alone leaves the seed unconfirmed. Source conflict and poisoned stores make that distinction consequential \citep{zou2025poisonedrag}.
+
+\subsection{Long-term and reflective agent memory}
+
+MemGPT treats the context window as a constrained memory tier and moves information between fast and slow stores \citep{packer2023memgpt}. Reflexion retains verbal feedback in episodic memory so later trials can use lessons from earlier failures \citep{shinn2023reflexion}. These systems demonstrate that persistent text can change subsequent model behavior without updating model parameters.
+
+SSL focuses on a different object. A seed is born as a hypothesis about an omission, so retention contributes no evidence for its content. The architecture therefore gives the stored item two independent quantities: trace for presence and recurrence, and weight for steering authority. This is the main conceptual departure from memory mechanisms in which successful retrieval is already close to use.
+
+\subsection{Missing information and verification}
+
+AbsenceBench directly tests detection of omitted content and reports that strong language models remain substantially worse at finding absences than at retrieving inserted information \citep{fu2025absencebench}. QuestBench evaluates the ability to ask for a missing variable in underspecified reasoning problems and finds pronounced weaknesses on logic and planning tasks \citep{li2025questbench}. These benchmarks leave persistence unspecified. Together they motivate treating missing information as an explicit computational object.
+
+Verification work addresses a related trust problem after generation. Chain-of-Verification drafts an answer, generates verification questions, answers them separately, and produces a revised response \citep{dhuliawala2024cove}. SSL moves part of that discipline into persistent state: a candidate can survive between turns without being promoted, and its future use remains conditional on logged authority. The two approaches are compatible. A verification result can be represented as a validation signal, provided its provenance and trust status are explicit.
+
+\subsection{Uncertainty and authority}
+
+Semantic entropy measures uncertainty over meanings in sampled model outputs and can identify a class of confabulations \citep{farquhar2024semanticentropy}. Such uncertainty estimates answer a different question from SSL authority. A low-entropy candidate can be unsupported. A high-entropy candidate can still merit investigation. SSL keeps model confidence separate from steering permission. Authority is a system-level decision based on typed signals and policy.
+
+\section{Shadow Seed Learning}
+\label{sec:method}
+
+\subsection{State representation}
+
+Let a seed at time $t$ be
+\begin{equation}
+  s_t = (x,\tau_t,w_t,z_t,E_t,C_t,v_t),
+\end{equation}
+where $x$ is the candidate text, $\tau_t \geq 0$ is trace, $w_t \in [0,1]$ is steering weight, $z_t$ is lifecycle/authority status, $E_t$ is the set of accepted evidence identities, $C_t$ is the set of contradiction records, and $v_t \in \mathbb{N}_0$ is an authority version.
+
+Creation obeys two invariants:
+\begin{equation}
+  \tau_{t_0} > 0, \qquad w_{t_0}=0.
+\end{equation}
+Presence therefore carries no implication of influence:
+\begin{equation}
+  \tau_t>0 \;\not\Rightarrow\; w_t>0.
+\end{equation}
+
+The reference implementation uses the statuses \code{NEW}, \code{ACTIVE}, \code{DECAYING}, \code{DORMANT}, \code{PROMOTED}, and \code{EXPIRED}. Status mixes lifecycle and one authority boundary because \code{PROMOTED} is the state from which a seed may become eligible for influence. Eligibility remains derived from several fields; no free-standing mutable flag stores it.
+
+\subsection{Trace, decay, and reactivation}
+
+Trace records that a candidate exists in shadow memory and captures recurrence or reactivation. A time-to-live process reduces trace during periods without reinforcement. A dormant seed can return through trigger or semantic matching, a transition referred to as Triggered Recall Time-to-Live (TrTL) in the implementation. Expiry is terminal. An expired seed has no weight, and the lifecycle prevents automatic resurrection.
+
+The lifecycle deliberately permits a long-lived candidate with zero authority. A recurring suspicion may deserve continued observation without being allowed to shape the user's answer. A seed that once had authority can lose it through contradiction or expiry. Its historical record remains available for audit.
+
+\subsection{Typed validation signals}
+
+Validation uses typed signals. A generic confidence increment would erase distinctions among recurrence, external support, contradiction, and other evidence channels. A signal has a kind, direction, bounded strength, optional source reference, verification flag, independence flag, and reason. Implemented kinds include recurrence, trusted-source evidence, human feedback, retrieval, dialectic checks, probes, task outcomes, contradiction, and contradiction resolution \citep{shadowseed2026}.
+
