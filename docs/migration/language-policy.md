@@ -24,17 +24,19 @@ distinctive-Dutch vocabulary, and **path-specific** allowlists so a documented
 Dutch input-language token (for example `ontbreekt` or `analysekader`) is
 accepted only in the file that legitimately uses it, and flagged anywhere else.
 
-### Scope and honest limits
+### Scope and limits
 
 The automated strict scan covers the **core runtime**. It substantiates an
-English-core guarantee, not a whole-repository one. Explicitly **not** yet under
-the automated strict scan:
+English-core guarantee, not a whole-repository one. The following content is
+outside that strict scan:
 
 - benchmark suite Python prose (docstrings/comments), which references the
   legacy verdict tokens and historical Dutch scenario text;
 - JSON data fixtures and current result summaries;
 - Markdown documentation, CLI help text, workflows, and templates.
 
-These retain documented Dutch content so benchmark meaning and historical
-results are not altered. Extending the scan to benchmark Python prose and
-active Markdown is tracked as follow-up work.
+The active top-level and `docs/` Markdown is English. Historical review rounds,
+multilingual fixtures, and compatibility tokens retain their original language
+so benchmark meaning and artifact compatibility are not altered. Extending the
+strict scanner beyond the core runtime is optional hardening, not part of the
+current English-core guarantee.

@@ -269,7 +269,13 @@ NEW -> ACTIVE -> DECAYING -> DORMANT -> EXPIRED
 - **`evidence_backed`**: verified external support is required. Recurrence may accompany it but cannot replace it.
 - **`legacy_evidence_required`**: compatibility behavior for the historical boolean API.
 
-Unverified external observations remain visible in `GateEvent.signals` for audit but cannot authorize a seed or be counted as passed evidence.
+Verified external support must carry a non-empty `source_ref`. Reusing the same
+source is idempotent; independent confirmations need distinct source references.
+Because the deprecated boolean adapter cannot provide provenance, bare
+`external_evidence=True` raises `ValueError` before a Gate event or authority
+change. Historical anonymous events remain replayable. Unverified external
+observations remain visible in `GateEvent.signals` for audit but cannot authorize
+a seed or be counted as passed evidence.
 
 ### Seed origin metadata
 

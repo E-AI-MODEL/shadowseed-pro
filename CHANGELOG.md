@@ -24,6 +24,9 @@
   references.
 - CLI smoke tests write into pytest temporary directories. CI now gates branch
   coverage at 80% and fails if the suite changes the checkout.
+- Reconciled the README, architecture ADR and summaries, research status,
+  language policy, and completed alignment plan with the delivered runtime
+  contract and the final PR #46 provenance rules.
 
 ## 0.4.1 - 2026-08-08 - Workbench review follow-up
 

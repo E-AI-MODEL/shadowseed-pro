@@ -1,9 +1,9 @@
 # ADR-001: The Validation Gate Is the Sole Authority-Changing Boundary
 
-- Status: Accepted (with amendments — see "Amendments" and "Implementation status")
+- Status: Accepted and implemented (with amendments — see "Amendments" and "Implementation status")
 - Date: 2026-07-20
 - Accepted: 2026-07-20, after issue #17 verified runtime/test/documentation alignment
-- Related issue: #8
+- Related issue: #8 (closed by PR #18)
 
 ## Context
 
@@ -63,7 +63,8 @@ A separate point-of-use contract decides whether an authorised seed may affect a
 
 ## Typed signals and policy profiles
 
-The Gate should receive typed signals instead of overloaded booleans such as `external_evidence=True`.
+The Gate receives typed signals. Historical booleans such as
+`external_evidence=True` remain only as compatibility inputs to the same engine.
 
 Illustrative signal kinds include:
 
@@ -193,12 +194,16 @@ falsifiable:
    The policy id recorded in a `GateEvent` is the policy that made the decision.
 7. **Verification boundary.** External observations may be logged while
    unverified, but only verified external support can authorize a transition or
-   increment the evidence counter. Recurrence remains a separate signal and may
-   authorize only under a policy that explicitly permits recurrence.
+   increment the evidence counter. New verified external support must carry a
+   non-empty `source_ref`; repeated use of the same source is idempotent. A bare
+   `external_evidence=True` cannot supply provenance and fails before a Gate
+   event or authority change. Historical anonymous events remain replayable.
+   Recurrence remains a separate signal and may authorize only under a policy
+   that explicitly permits recurrence.
 
 ## Implementation status
 
-Implemented and verified on the alignment branch (issues #10–#17):
+Implemented on `main` by PR #18 (issues #10–#17) and hardened by PR #46:
 
 | ADR area | Where | Verified by |
 |---|---|---|
@@ -212,5 +217,7 @@ Implemented and verified on the alignment branch (issues #10–#17):
 | End-to-end invariants | — | `test_ssl_invariants` |
 
 The standard CI matrix runs Ruff and the complete pytest suite on Python 3.10
-and 3.12. The wheel and CLI have separate repository checks. Umbrella issue #8
-tracks final closure once the alignment work is merged.
+and 3.12. The wheel and CLI have separate repository checks. Issue #8 is closed.
+PR #46 added source-bound evidence idempotence, fail-closed provenance checks,
+point-of-use retrieval authorization, deterministic intake deduplication, and a
+clean-checkout CI guard without changing the recorded benchmark conclusions.
