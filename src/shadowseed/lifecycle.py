@@ -37,7 +37,9 @@ def decay_traces(manager: Any, turns_passed: int = 1) -> None:
             continue
 
         before_trace = seed.trace
-        seed.trace *= math.exp(-turns_passed / manager.half_life_turns)
+        seed.trace *= math.exp(
+            -math.log(2.0) * turns_passed / manager.half_life_turns
+        )
         manager._set_authority(seed, status=manager._status_after_decay(seed))
 
         expired = False

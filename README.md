@@ -73,6 +73,15 @@ shadowseed chat --backend fixture --show-shadow
 
 The fixture backend verifies pipeline mechanics. It is not evidence of real-model quality.
 
+`shadowseed chat` now defaults to the product-oriented `live` runtime. Live mode produces one visible model answer per turn, stores that same answer in conversation history, and defaults to the `evidence_backed` Gate policy. Non-fixture live sessions reject the toy lexical hash embedder unless `--allow-toy-embedder` is supplied explicitly. A local semantic setup can use:
+
+```bash
+pip install -e ".[models]"
+shadowseed chat --backend ollama --model-id <model> --embedding-backend sentence-transformers
+```
+
+Research A/B behavior remains available explicitly with `--runtime-mode evaluation`; that mode keeps the isolated baseline arm.
+
 ### Tester Workbench
 
 The 0.4 tester preview adds a local, single-user Workbench for practical testing
@@ -188,48 +197,35 @@ flowchart LR
     G -->|allowed| H[Optional influence and audit]
 ```
 
-The runtime keeps baseline generation, seed detection, validation, surfacing, and actual influence as separate steps.
+The conversation runtime has two explicit modes. `live` is product-oriented; `evaluation` retains the isolated baseline arm used by research comparisons. Seed validation, surfacing, point-of-use authorization, and actual influence remain separate concerns in both modes.
 
 <details>
-<summary><strong>Full runtime path, baseline isolation, and lifecycle</strong></summary>
+<summary><strong>Live runtime, evaluation isolation, and lifecycle</strong></summary>
+
+### Live runtime
 
 ```mermaid
 flowchart TD
-    Q[User question] --> B[Generate uncontaminated baseline answer]
-    B --> H[Store baseline in conversation history]
-    B --> D[Detect candidate absences]
-    D --> N[Normalize toward one absence per seed]
-    N --> S[Store seed: trace above zero, weight zero]
-
-    S --> T[TTL decay]
-    T --> X{Dormant too long?}
-    X -->|yes| E[EXPIRED]
-    X -->|no| R[TrTL reactivation by trigger or semantic match]
-
-    S --> C[Recurrence and clustering]
-    S --> O[Verified SSOT evidence]
-    S --> F[Dialectical falsification]
-    C --> G[Validation Gate]
-    O --> G
-    F --> G
-
-    G -->|blocked| W[Remain weightless or active]
-    G -->|contradicted| Z[Reduce or reset weight and log contradiction]
-    G -->|validated enough| P[PROMOTED]
-
-    P --> U[Shared surfacing policy]
-    U --> A[AgentSafetyContract]
-    A -->|blocked| L[Log denied influence]
-    A -->|allowed| I[Optional retrieval, probe, or answer influence]
-    I --> J[Log influence decision]
-
-    B --> V[Visible baseline or SSL-assisted answer]
-    I --> V
+    Q[User question] --> U[Select earlier promoted seeds]
+    U --> A[AgentSafetyContract at point of use]
+    A -->|allowed candidates| M[One model generation]
+    A -->|none allowed| M
+    M --> V[Visible answer]
+    V --> H[Store the same visible answer in history]
+    V --> D[Detect candidate absences]
+    D --> X[Suppress candidates attributable to surfaced SSL seeds]
+    X --> N[Ingest remaining candidates at weight zero]
+    N --> R[Record changed recurrence]
+    R --> G[Validation Gate: evidence_backed by default]
+    G -->|recurrence only| B[No authority gain]
+    G -->|verified external support| P[Authority may rise]
 ```
 
-### Baseline isolation
+Live mode avoids the hidden-history split: the answer the user reads is the answer carried into the next turn. Candidate detection runs on that visible answer. A conservative semantic attribution filter prevents a surfaced seed from immediately earning recurrence credit from text it helped introduce. Recurrence alone cannot raise authority under the live default policy.
 
-The live chat creates a baseline without seed influence, stores that baseline in conversation history, and keeps the SSL-assisted visible answer separate. This limits gap starvation and history contamination. The implementation is in [`src/shadowseed/chat.py`](src/shadowseed/chat.py) and [`src/shadowseed/surfacing.py`](src/shadowseed/surfacing.py).
+### Evaluation mode
+
+`--runtime-mode evaluation` preserves the historical research harness: an uncontaminated baseline is generated and stored separately from a possible SSL-assisted answer. This mode exists for controlled A/B measurement and benchmark reproducibility; it is not the default for `shadowseed chat`.
 
 ### Lifecycle
 
@@ -254,7 +250,7 @@ NEW -> ACTIVE -> DECAYING -> DORMANT -> EXPIRED
 | Open contradiction records block influence and recovery is explicit | [`shadowseed.contradictions`](src/shadowseed/contradictions.py), [`shadowseed.gate`](src/shadowseed/gate/) | [`test_contradiction_lifecycle.py`](tests/test_contradiction_lifecycle.py), [`test_contradictions_extraction.py`](tests/test_contradictions_extraction.py) |
 | Generated or unverified observations do not count as trusted evidence | [`shadowseed.ssot`](src/shadowseed/ssot.py), [`shadowseed.gate`](src/shadowseed/gate/) | [`test_ssot_manager.py`](tests/test_ssot_manager.py), [`test_gate_signal_routing.py`](tests/test_gate_signal_routing.py) |
 | Influence requires positive weight, promotion, and a live current-version Gate event | [`AgentSafetyContract.decide_and_record`](src/shadowseed_agent/agent_contract.py) | [`test_point_of_use.py`](tests/test_point_of_use.py), [`test_agent_safety_contract.py`](tests/test_agent_safety_contract.py) |
-| Baseline history stays separate from SSL-assisted output | [`shadowseed.chat`](src/shadowseed/chat.py) | [`test_shadow_chat.py`](tests/test_shadow_chat.py) |
+| Live history stores the visible answer; evaluation mode preserves baseline isolation | [`shadowseed.chat`](src/shadowseed/chat.py) | [`test_live_runtime.py`](tests/test_live_runtime.py), [`test_shadow_chat.py`](tests/test_shadow_chat.py) |
 | Gate decisions and influence attempts support strict in-process replay | [`GateEvent`](src/shadowseed/gate/events.py), [`AgentInfluenceRecord`](src/shadowseed_agent/audit_policy.py) | [`test_point_of_use.py`](tests/test_point_of_use.py) |
 
 > **"Non-bypassable" is a public-API property over new authority decisions, not a Python-runtime claim.** The supported runtime routes new Gate-controlled decisions through one engine. Restoration reinstates validated persisted state, and explicitly unsafe test hooks remain callable by arbitrary in-process Python.
@@ -273,8 +269,8 @@ NEW -> ACTIVE -> DECAYING -> DORMANT -> EXPIRED
 
 ### Gate policy profiles
 
-- **`exploratory`** (default): qualifying recurrence or verified external support may raise authority when no unresolved contradiction exists. Recurrence never increments `evidence_count`.
-- **`evidence_backed`**: verified external support is required. Recurrence may accompany it but cannot replace it.
+- **`exploratory`**: qualifying recurrence or verified external support may raise authority when no unresolved contradiction exists. Recurrence never increments `evidence_count`. This remains the evaluation/research default.
+- **`evidence_backed`**: verified external support is required. Recurrence may accompany it but cannot replace it. This is the `live` runtime default.
 - **`legacy_evidence_required`**: compatibility behavior for the historical boolean API.
 
 Verified external support must carry a non-empty `source_ref`. Reusing the same

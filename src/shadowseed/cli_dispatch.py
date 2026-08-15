@@ -225,6 +225,9 @@ def _run_chat(args: argparse.Namespace) -> str:
         show_shadow=getattr(args, "show_shadow", False),
         probe_corpus=getattr(args, "probe_corpus", None),
         probe_top_k=getattr(args, "probe_top_k", 3),
+        runtime_mode=getattr(args, "runtime_mode", "live"),
+        gate_policy_id=getattr(args, "gate_policy", None),
+        allow_toy_embedder=getattr(args, "allow_toy_embedder", False),
     )
     return str(out) if out else "chat session ended (audit OK)"
 
