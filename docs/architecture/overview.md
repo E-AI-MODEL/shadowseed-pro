@@ -26,7 +26,9 @@ details live in dedicated documents; in summary:
   probe, task outcome, contradiction, resolution) are offered to named policies
   (`exploratory` default, `evidence_backed`). Policies propose; only the Gate
   applies. Recurrence is a first-class signal and is never relabeled as external
-  evidence. Every Gate decision produces an immutable `GateEvent`.
+  evidence. Verified external support requires a non-empty `source_ref`; repeated
+  use of the same source is idempotent. Every Gate decision produces an immutable
+  `GateEvent`.
 - **Encapsulation** ([lifecycle-and-gate.md](lifecycle-and-gate.md)): `weight`,
   `status`, `evidence_count`, `contradiction_score`, and `authority_version` are
   guarded; `SSLManager._set_authority` is the only runtime writer, while Gate

@@ -144,9 +144,14 @@ Policy semantics are explicit:
 - `legacy_evidence_required` preserves the historical recurrence, trace, and
   accumulated verified-evidence thresholds for compatibility callers.
 
-Unverified external observations remain auditable inputs but cannot authorize,
-increment `evidence_count`, or be reported as passed evidence. Contradiction can
-block promotion, reduce influence, or reset a seed according to the active policy.
+Verified external support must carry a non-empty `source_ref`. Repeated use of
+the same source is idempotent, while independent confirmations require distinct
+source references. The deprecated boolean adapter cannot express provenance, so
+bare `external_evidence=True` fails before a Gate event or authority change.
+Historical anonymous events remain replayable. Unverified external observations
+remain auditable inputs but cannot authorize, increment `evidence_count`, or be
+reported as passed evidence. Contradiction can block promotion, reduce influence,
+or reset a seed according to the active policy.
 
 ## Contradictions
 

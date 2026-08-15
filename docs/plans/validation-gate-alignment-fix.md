@@ -1,19 +1,39 @@
 # Validation Gate Alignment Fix Plan
 
-- Status: Proposed
+- Status: Completed on 2026-07-21 by PR #18; hardened on 2026-08-15 by PR #46
 - Related ADR: `docs/architecture/adr/ADR-001-validation-gate-authority.md`
-- Related issue: #8
+- Related issue: #8 (closed)
+
+## Completion record
+
+PR #18 implemented the alignment plan through issues #10–#17. Later boundary
+and modularization work kept the same authority model. PR #46 closed the final
+evidence-provenance and retrieval-authorization gaps: verified external support
+now requires a non-empty `source_ref`, duplicate sources are idempotent, and
+retrieval candidates pass through the atomic point-of-use contract.
+
+Two accepted amendments define the delivered scope:
+
+- `exploratory` and `evidence_backed` are the public policy profiles;
+  `legacy_evidence_required` is compatibility-only. `research`, `creative`, and
+  `high_impact` remain illustrative profiles and fail explicitly if requested.
+- Typed signals are canonical. Historical boolean parameters remain as
+  translation and return-shape adapters into the same Gate engine. Bare
+  `external_evidence=True` fails because it cannot provide source provenance.
 
 ## Goal
 
-Refactor SSL so all authority-changing effects pass through the Validation Gate while keeping shadow learning permissive and SSOT optional.
+Refactor SSL so every Gate-controlled authority decision uses one Validation
+Gate engine while keeping shadow learning permissive and SSOT optional.
+Mechanical lifecycle transitions, validated restoration, and explicit unsafe
+test hooks remain separate, documented boundaries.
 
 ## Scope
 
 This plan covers:
 
 - typed support and contradiction signals;
-- a single non-bypassable authority mutation path;
+- a single guarded authority mutation path;
 - recurrence handling;
 - probe and feedback routing;
 - contradiction resolution;
@@ -58,13 +78,14 @@ Minimum signal kinds:
 
 Introduce a named policy interface that evaluates signal combinations and returns a decision proposal.
 
-Initial policies:
+Delivered policies:
 
 - exploratory;
-- research;
 - evidence-backed;
-- creative;
-- high-impact.
+- legacy-evidence-required (compatibility only).
+
+The accepted ADR retains research, creative, and high-impact profiles as design
+examples. They were not added to the public runtime policy list.
 
 The default policy must be explicit and documented.
 
@@ -82,7 +103,7 @@ Every Gate invocation must produce an immutable event containing:
 - decision and reason;
 - timestamp.
 
-## Phase 2: Make the Gate non-bypassable
+## Phase 2: Make Gate-controlled decisions non-bypassable on the supported API
 
 ### 4. Encapsulate authority fields
 
@@ -97,7 +118,7 @@ Use private storage, controlled transitions, or an authority-state object owned 
 
 Tests must no longer prepare scenarios by directly assigning authority fields unless they use an explicitly unsafe test fixture.
 
-### 5. Route all current mutation paths through the Gate
+### 5. Route all Gate-controlled effects through the Gate
 
 Refactor these paths so they create signals and invoke the Gate instead of changing authority directly:
 
@@ -111,11 +132,16 @@ Refactor these paths so they create signals and invoke the Gate instead of chang
 - re-promotion;
 - contradiction resolution.
 
-Trace decay and recurrence counting may remain outside the Gate as observations, provided they do not change authority fields.
+Trace decay and recurrence counting remain outside the Gate as observations.
+Expiry may mechanically clear weight through the shared guarded authority
+setter, but no lifecycle transition can grant authority.
 
-### 6. Remove overloaded evidence booleans
+### 6. Make typed signals canonical
 
-Replace `external_evidence: bool` and similar arguments with typed signals.
+Use typed signals for authority decisions. Retain historical boolean arguments
+only as compatibility adapters into the same Gate engine; they do not form a
+second decision path. A bare positive evidence boolean fails because verified
+support requires a source reference.
 
 Recurrence must be recorded as recurrence, not converted into external evidence.
 
@@ -228,19 +254,19 @@ Add or update tests proving:
 
 ## Acceptance criteria
 
-- [ ] The ADR is accepted and linked from the architecture documentation.
-- [ ] All authority mutations are reachable only through the Validation Gate.
-- [ ] Typed signals replace overloaded evidence booleans.
-- [ ] Gate policy is explicit for every authority decision.
-- [ ] Recurrence is not double-counted or relabelled as external evidence.
-- [ ] Probe, human, SSOT, dialectic, and contradiction effects route through the Gate.
-- [ ] Contradictions have a recorded lifecycle and recovery path.
-- [ ] Every influence decision is atomically decided and recorded.
-- [ ] Lightweight prompt-data separation has adversarial coverage.
-- [ ] Active repository content is English, excluding archive and documented legacy aliases.
-- [ ] Documentation, runtime behavior, and tests state the same invariants.
+- [x] The ADR is accepted and linked from the architecture documentation.
+- [x] Gate-controlled authority decisions use one executable Gate engine; mechanical lifecycle transitions, restoration, and unsafe test hooks are explicitly scoped.
+- [x] Typed signals are canonical; historical booleans are compatibility adapters and cannot introduce anonymous verified evidence.
+- [x] Gate policy is explicit for every authority decision.
+- [x] Recurrence is not double-counted or relabelled as external evidence.
+- [x] Probe, human, SSOT, dialectic, and contradiction effects route through the Gate.
+- [x] Contradictions have a recorded lifecycle and recovery path.
+- [x] Every influence decision is atomically decided and recorded.
+- [x] Lightweight prompt-data separation has adversarial coverage.
+- [x] Active repository content is English, excluding archive, historical research artifacts, multilingual fixtures, and documented legacy aliases.
+- [x] Documentation, runtime behavior, and tests state the same invariants.
 
-## Suggested implementation order
+## Delivered sequence
 
 1. typed signals and Gate events;
 2. policy interface;
