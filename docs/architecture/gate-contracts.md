@@ -101,13 +101,18 @@ Gate engine and append one event per call to `SSLManager.gate_events`:
   entry point. Helpers build `ValidationSignal`s and call here; the named policy
   proposes and the Gate applies through `_set_authority`. Recurrence can promote
   under `exploratory` without incrementing `evidence_count`. External support can
-  authorize or count as evidence only when `verified=True`.
+  authorize or count as evidence only when `verified=True` and accompanied by a
+  non-empty `source_ref`. New anonymous verified evidence raises `ValueError`
+  before a Gate event or authority change. Historical anonymous signals remain
+  readable during ledger replay.
 - **`run_validation_gate[_detailed](...)`** — a deprecated compatibility adapter.
   It translates the historical `external_evidence` / `contradiction` booleans
   into typed signals, selects `legacy_evidence_required` unless another policy is
   explicitly requested, delegates to `submit_signals`, and translates the event
-  back into the historical return shape. The old private core alias redirects to
-  this adapter; it is not a second decision engine.
+  back into the historical return shape. Because the boolean cannot identify a
+  source, bare `external_evidence=True` now fails loudly; callers must provide a
+  typed verified external signal with `source_ref`. The old private core alias
+  redirects to this adapter; it is not a second decision engine.
 
 Migrated callers:
 

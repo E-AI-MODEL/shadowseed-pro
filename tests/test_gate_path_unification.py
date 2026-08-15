@@ -37,12 +37,28 @@ def _verified_evidence(source_ref: str) -> ValidationSignal:
     )
 
 
-def test_legacy_boolean_api_is_idempotent_and_records_each_attempt():
+def test_legacy_boolean_external_evidence_fails_loudly_without_provenance():
     manager = _manager()
     seed_id = _recurrent_seed(manager)
 
-    first = manager.run_validation_gate_detailed(seed_id, external_evidence=True)
-    second = manager.run_validation_gate_detailed(seed_id, external_evidence=True)
+    with pytest.raises(
+        ValueError,
+        match="verified external evidence must carry a source_ref",
+    ):
+        manager.run_validation_gate_detailed(seed_id, external_evidence=True)
+
+    assert manager.get_seed(seed_id).evidence_count == 0
+    assert manager.gate_events == []
+    assert manager.validation_log == []
+
+
+def test_legacy_adapter_deduplicates_sourced_evidence_and_records_each_attempt():
+    manager = _manager()
+    seed_id = _recurrent_seed(manager)
+    signal = _verified_evidence("source-1")
+
+    first = manager.run_validation_gate_detailed(seed_id, signals=[signal])
+    second = manager.run_validation_gate_detailed(seed_id, signals=[signal])
 
     assert first.verdict == "blocked"
     assert second.verdict == "blocked"
@@ -54,17 +70,15 @@ def test_legacy_boolean_api_is_idempotent_and_records_each_attempt():
         event.policy_id == "legacy_evidence_required"
         for event in manager.gate_events
     )
-    assert {signal.kind for signal in manager.gate_events[-1].signals} == {
-        SignalKind.RECURRENCE,
-        SignalKind.SSOT,
-    }
 
 
 def test_legacy_policy_preserves_manager_validation_increment():
     manager = _manager(validation_increment=0.35, promotion_threshold=0.3)
     seed_id = _recurrent_seed(manager)
 
-    assert manager.run_validation_gate(seed_id, external_evidence=True) is None
+    assert manager.run_validation_gate(
+        seed_id, signals=[_verified_evidence("source-1")]
+    ) is None
     assert manager.run_validation_gate(
         seed_id, signals=[_verified_evidence("independent-source")]
     ) is True
@@ -118,7 +132,7 @@ def test_private_legacy_core_is_redirected_to_signal_gate():
 
     first = manager._run_validation_gate_core(
         seed_id,
-        external_evidence=True,
+        signals=[_verified_evidence("source-1")],
     )
     second = manager._run_validation_gate_core(
         seed_id,
@@ -175,7 +189,13 @@ def test_exploratory_policy_accepts_verified_external_support():
 
     event = manager.submit_signals(
         seed_id,
-        [ValidationSignal(kind=SignalKind.RETRIEVAL, verified=True)],
+        [
+            ValidationSignal(
+                kind=SignalKind.RETRIEVAL,
+                verified=True,
+                source_ref="retrieval::source-1",
+            )
+        ],
         policy_id="exploratory",
     )
 
@@ -195,7 +215,11 @@ def test_mixed_external_signals_count_only_verified_support():
         seed_id,
         [
             ValidationSignal(kind=SignalKind.SSOT, verified=False),
-            ValidationSignal(kind=SignalKind.RETRIEVAL, verified=True),
+            ValidationSignal(
+                kind=SignalKind.RETRIEVAL,
+                verified=True,
+                source_ref="retrieval::source-1",
+            ),
             ValidationSignal(kind=SignalKind.HUMAN_FEEDBACK, verified=False),
         ],
         policy_id="exploratory",
@@ -235,7 +259,6 @@ def test_contradiction_boolean_synthesizes_opposition_when_supplied_signal_is_no
 
     result = manager.run_validation_gate_detailed(
         seed_id,
-        external_evidence=True,
         contradiction=True,
         signals=[non_opposing],
     )
@@ -330,7 +353,6 @@ def test_non_opposing_contradiction_signal_does_not_suppress_synthesis(supplied,
 
     result = manager.run_validation_gate_detailed(
         seed_id,
-        external_evidence=True,
         contradiction=True,
         signals=[supplied],
     )
@@ -485,7 +507,11 @@ def test_resolution_signal_alone_cannot_lift_an_open_contradiction():
         [
             recurrence_signal(5, threshold=2),
             ValidationSignal(kind=SignalKind.CONTRADICTION_RESOLUTION, verified=True),
-            ValidationSignal(kind=SignalKind.SSOT, verified=True),
+            ValidationSignal(
+                kind=SignalKind.SSOT,
+                verified=True,
+                source_ref="doc::blocked-by-contradiction",
+            ),
         ],
         policy_id="exploratory",
     )
@@ -588,9 +614,8 @@ def test_expired_seed_with_open_contradiction_reports_it_in_the_fallback_result(
     [SignalDirection.NEUTRAL, SignalDirection.OPPOSE],
     ids=["neutral", "oppose"],
 )
-def test_external_evidence_boolean_survives_a_non_supporting_verified_signal(direction):
-    """A verified but non-supporting external signal must not cancel the
-    synthesized support that external_evidence=True asks for."""
+def test_external_evidence_boolean_rejects_missing_support_provenance(direction):
+    """A non-supporting signal cannot provide provenance for synthesized support."""
 
     manager = _manager()
     seed_id = _recurrent_seed(manager)
@@ -601,13 +626,13 @@ def test_external_evidence_boolean_survives_a_non_supporting_verified_signal(dir
         reason="verified but not supporting",
     )
 
-    manager.run_validation_gate_detailed(
-        seed_id, external_evidence=True, signals=[supplied]
-    )
-    manager.run_validation_gate_detailed(
-        seed_id, signals=[_verified_evidence("independent-source")]
-    )
+    with pytest.raises(
+        ValueError,
+        match="verified external evidence must carry a source_ref",
+    ):
+        manager.run_validation_gate_detailed(
+            seed_id, external_evidence=True, signals=[supplied]
+        )
 
-    # The boolean still had effect: evidence accumulated and the seed validated.
-    assert manager.get_seed(seed_id).evidence_count >= 2
-    assert manager.get_seed(seed_id).weight > 0.0
+    assert manager.get_seed(seed_id).evidence_count == 0
+    assert manager.get_seed(seed_id).weight == 0.0

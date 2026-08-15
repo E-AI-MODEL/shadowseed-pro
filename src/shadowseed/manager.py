@@ -378,7 +378,9 @@ class SSLManager:
 
         Recurrence signals contribute to promotion under the exploratory policy
         without ever incrementing ``evidence_count`` — external evidence and
-        recurrence stay distinct.
+        recurrence stay distinct. Verified external support must carry a
+        non-empty ``source_ref``; malformed evidence fails before any Gate event
+        or authority change is recorded.
 
         The decision body lives in :mod:`shadowseed.gate.runtime_adapter`, the
         single Gate engine; this method delegates to it explicitly so there is
@@ -554,10 +556,12 @@ class SSLManager:
     ) -> ValidationGateResult:
         """Boolean-compatible Validation Gate (compatibility adapter).
 
-        The ``external_evidence`` / ``contradiction`` booleans are retained for
-        backward compatibility; prefer :meth:`submit_signals` for new code. This
-        is an input/output adapter only: the arguments are translated into typed
-        signals, the single Gate engine decides under the
+        The ``external_evidence`` / ``contradiction`` booleans are retained as a
+        migration adapter; prefer :meth:`submit_signals` for new code. Verified
+        external support must be supplied as a typed signal with ``source_ref``.
+        A bare ``external_evidence=True`` now fails loudly instead of creating
+        anonymous authority. This is an input/output adapter only: the arguments
+        are translated into typed signals, the single Gate engine decides under the
         ``legacy_evidence_required`` policy, and the resulting event is
         translated back into the legacy result shape. One call still records
         exactly one ``GateEvent``, attributed to the policy that decided it, and

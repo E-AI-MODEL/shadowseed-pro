@@ -97,7 +97,9 @@ def test_blocked_validation_records_block_event():
     )
     manager.seeds[seed_id].occurrence_count = 3
 
-    result = manager.run_validation_gate_detailed(seed_id, external_evidence=True)
+    result = manager.run_validation_gate_detailed(
+        seed_id, signals=[_verified_evidence("source-1")]
+    )
 
     assert result.verdict == "blocked"
     assert result.status_before == SeedStatus.NEW.value

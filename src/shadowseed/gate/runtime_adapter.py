@@ -40,10 +40,10 @@ def _authority_signal_key(signal: ValidationSignal) -> str | None:
     """Return the stable identity of support that may raise authority.
 
     A recurrence count is one observation, even when a caller submits it more
-    than once. External evidence is one observation per source and kind. An
-    anonymous external signal remains supported for compatibility, but all
-    anonymous signals of the same kind share one identity; callers that have
-    independent sources must provide distinct ``source_ref`` values.
+    than once. External evidence is one observation per source and kind. The
+    anonymous fallback is retained only so historical Gate events remain
+    replayable; new verified external support is rejected before this key is
+    computed unless it carries a ``source_ref``.
     """
 
     if signal.direction is not SignalDirection.SUPPORT:
@@ -55,6 +55,35 @@ def _authority_signal_key(signal: ValidationSignal) -> str | None:
         identity = signal.source_ref or "anonymous"
         return f"external:{signal.kind.value}:{identity}"
     return None
+
+
+def _require_external_evidence_provenance(
+    signals: list[ValidationSignal],
+) -> None:
+    """Reject new authority-bearing external evidence without provenance.
+
+    This check deliberately runs only on signals offered to the current Gate
+    call. Historical anonymous signals may still be read while reconstructing
+    the immutable event ledger, so tightening the input contract does not make
+    old managers or serialized Gate events unreplayable.
+    """
+
+    for signal in signals:
+        source_ref = signal.source_ref
+        if (
+            signal.direction is SignalDirection.SUPPORT
+            and signal.is_external_evidence
+            and signal.verified
+            and (
+                not isinstance(source_ref, str)
+                or not source_ref.strip()
+            )
+        ):
+            raise ValueError(
+                "verified external evidence must carry a source_ref so "
+                "independent confirmations can be told apart; anonymous "
+                "evidence cannot raise authority"
+            )
 
 
 def _applied_authority_signal_keys(manager: Any, seed_id: str) -> set[str]:
@@ -362,6 +391,8 @@ def submit_signals(
     """Apply one policy, one authority transition, and one Gate event."""
 
     signal_list = list(signals)
+    if manager._seeds[seed_id].status.value != "EXPIRED":
+        _require_external_evidence_provenance(signal_list)
     effective_signals, duplicate_keys = _deduplicate_authority_signals(
         manager, seed_id, signal_list
     )

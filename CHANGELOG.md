@@ -6,7 +6,10 @@
   verified evidence sources, including the legacy boolean adapter. Replaying
   the same observation no longer raises weight or evidence count; the ignored
   duplicate remains visible in the Gate event reason. Multiple independent
-  confirmations require typed signals with distinct `source_ref` values.
+  confirmations require typed signals with distinct `source_ref` values. New
+  verified external support without `source_ref` now raises a clear error before
+  any Gate event or authority change; historical anonymous events remain
+  replayable.
 - External feedback accepts an optional `source_ref`, so distinct reviewers or
   evidence items can be credited without treating repeated feedback as new
   authority.

@@ -133,6 +133,66 @@ def test_same_external_source_cannot_accumulate_authority():
     assert manager.seeds[seed_id].evidence_count == 1
 
 
+@pytest.mark.parametrize("source_ref", [None, "", "   "])
+def test_verified_external_evidence_without_source_ref_fails_before_gate(source_ref):
+    manager = SSLManager(embedding_fn=fake_embedding)
+    seed_id = manager.add_or_update_seed("anonymous evidence")
+
+    with pytest.raises(
+        ValueError,
+        match="verified external evidence must carry a source_ref",
+    ):
+        manager.submit_signals(
+            seed_id,
+            [
+                ValidationSignal(
+                    kind=SignalKind.SSOT,
+                    verified=True,
+                    source_ref=source_ref,
+                )
+            ],
+            policy_id="evidence_backed",
+        )
+
+    assert manager.seeds[seed_id].weight == 0.0
+    assert manager.seeds[seed_id].evidence_count == 0
+    assert manager.gate_events == []
+
+
+def test_historical_anonymous_evidence_remains_replayable():
+    manager = SSLManager(embedding_fn=fake_embedding)
+    seed_id = manager.add_or_update_seed("historical anonymous evidence")
+    historical = GateEvent(
+        event_id=f"gate::{seed_id}::000001",
+        seed_id=seed_id,
+        policy_id="evidence_backed",
+        decision=GateDecision.VALIDATED,
+        signals=(ValidationSignal(kind=SignalKind.SSOT, verified=True),),
+        status_before="NEW",
+        status_after="ACTIVE",
+        weight_before=0.0,
+        weight_after=0.2,
+        authority_version=1,
+        reason="historical verified external evidence",
+    )
+    manager.gate_events = [GateEvent.from_dict(historical.to_dict())]
+
+    event = manager.submit_signals(
+        seed_id,
+        [
+            ValidationSignal(
+                kind=SignalKind.SSOT,
+                verified=True,
+                source_ref="doc::new",
+            )
+        ],
+        policy_id="evidence_backed",
+    )
+
+    assert event.decision is GateDecision.VALIDATED
+    assert manager.seeds[seed_id].evidence_count == 1
+
+
 def test_contradiction_signal_routes_through_gate():
     manager = SSLManager(embedding_fn=fake_embedding)
     seed_id = manager.add_or_update_seed("a seed to contradict")
@@ -158,16 +218,18 @@ def test_expired_seed_cannot_regain_authority_via_signals():
     assert manager.seeds[seed_id].weight == 0.0
 
 
-def test_boolean_gate_still_records_recurrence_not_evidence_in_event():
+def test_boolean_gate_rejects_anonymous_external_evidence():
     manager = SSLManager(embedding_fn=fake_embedding)
     seed_id = manager.add_or_update_seed("legacy path seed")
     manager.seeds[seed_id].occurrence_count = 3
-    manager.run_validation_gate(seed_id, external_evidence=True)
-    event = manager.gate_events[-1]
-    recurrence = [s for s in event.signals if s.kind is SignalKind.RECURRENCE]
-    external = [s for s in event.signals if s.is_external_evidence]
-    assert recurrence and not recurrence[0].is_external_evidence
-    assert external, "external_evidence=True should be recorded as an external signal"
+
+    with pytest.raises(
+        ValueError,
+        match="verified external evidence must carry a source_ref",
+    ):
+        manager.run_validation_gate(seed_id, external_evidence=True)
+
+    assert manager.gate_events == []
 
 
 def test_probe_feedback_records_a_gate_event():
