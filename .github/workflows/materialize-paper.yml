@@ -1,0 +1,37 @@
+name: Materialize paper sources
+
+on:
+  push:
+    branches:
+      - agent/add-shadowseed-paper
+    paths:
+      - .github/paper-src.b64
+      - .github/workflows/materialize-paper.yml
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Materialize canonical paper sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmpdir="$(mktemp -d)"
+          base64 --decode .github/paper-src.b64 | tar -xzf - -C "$tmpdir"
+          mkdir -p paper
+          install -m 0644 "$tmpdir/main.tex" paper/main.tex
+          install -m 0644 "$tmpdir/references.bib" paper/references.bib
+          install -m 0644 "$tmpdir/README.md" paper/README.md
+          rm -f .github/paper-src.b64 .github/workflows/materialize-paper.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add paper .github/paper-src.b64 .github/workflows/materialize-paper.yml
+          git diff --cached --check
+          git commit -m "Add Shadowseed paper sources"
+          git push origin HEAD:agent/add-shadowseed-paper
