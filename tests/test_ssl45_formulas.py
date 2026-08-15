@@ -31,8 +31,11 @@ def test_trace_decay_formula():
 
     manager.decay_traces(turns_passed=1)
 
-    expected = 2.0 * math.exp(-1 / 3)
-    assert manager.get_seed(seed_id).trace == expected
+    expected = 2.0 * math.exp(-math.log(2.0) / 3)
+    assert math.isclose(manager.get_seed(seed_id).trace, expected)
+
+    manager.decay_traces(turns_passed=2)
+    assert math.isclose(manager.get_seed(seed_id).trace, 1.0)
 
 
 def test_weight_does_not_increase_without_external_evidence():
