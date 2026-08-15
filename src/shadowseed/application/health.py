@@ -83,6 +83,14 @@ def run_doctor(workspace: str | Path | None = None) -> DoctorReport:
     checks.append(_ollama_check())
     checks.append(
         HealthCheck(
+            "live_embedding",
+            "warning",
+            "lexical hashing is demo/CI-only for live non-fixture sessions",
+            "Use sentence-transformers locally or OpenAI embeddings for live sessions.",
+        )
+    )
+    checks.append(
+        HealthCheck(
             "openai",
             "ok" if bool(os.getenv("OPENAI_API_KEY")) else "warning",
             "configured" if os.getenv("OPENAI_API_KEY") else "OPENAI_API_KEY is not set",

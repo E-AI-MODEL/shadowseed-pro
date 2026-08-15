@@ -59,7 +59,13 @@ from shadowseed.surfacing import (
     select_cross_turn_seeds,
 )
 from shadowseed.manager import SSLManager, SeedStatus
-from shadowseed.models import ProbeFeedbackResult, SeedEvent, ValidationGateResult
+from shadowseed.models import (
+    CandidateType,
+    ProbeFeedbackResult,
+    SeedEvent,
+    SeedOrigin,
+    ValidationGateResult,
+)
 from shadowseed.vectorstore.memory import InMemoryVectorStore
 from shadowseed_agent import (
     AgentInfluenceRecord,
@@ -92,6 +98,9 @@ class ShadowChatSession:
         contract: AgentSafetyContract | None = None,
         probe_corpus: str | None = None,
         probe_top_k: int = 3,
+        runtime_mode: str = "evaluation",
+        gate_policy_id: str | None = None,
+        allow_toy_embedder: bool = False,
     ) -> None:
         self.backend = backend
         self.model_id = model_id
@@ -101,6 +110,24 @@ class ShadowChatSession:
         self.recurrence_mode = recurrence_mode
         self.cluster_threshold = cluster_threshold
         self.probe_corpus_path = probe_corpus
+        if runtime_mode not in {"evaluation", "live"}:
+            raise ValueError("runtime_mode must be 'evaluation' or 'live'")
+        self.runtime_mode = runtime_mode
+        self.gate_policy_id = gate_policy_id or (
+            "evidence_backed" if runtime_mode == "live" else "exploratory"
+        )
+        self.allow_toy_embedder = allow_toy_embedder
+        if (
+            runtime_mode == "live"
+            and backend != "fixture"
+            and embedding_backend == "lexical"
+            and not allow_toy_embedder
+        ):
+            raise ValueError(
+                "live runtime requires a semantic embedding backend; "
+                "use sentence-transformers/openai or pass allow_toy_embedder=True "
+                "only for an explicit non-production experiment"
+            )
 
         embed_fn, _dim = make_embedding_fn(embedding_backend, embedding_model)
         self.model = make_backend(backend=backend, model_id=model_id, max_new_tokens=max_new_tokens)
@@ -292,7 +319,177 @@ class ShadowChatSession:
     # -- one live turn ---------------------------------------------------------
 
     def turn(self, question: str) -> dict[str, Any]:
-        """Run one turn while keeping baseline history isolated from SSL output."""
+        """Run one turn through the configured evaluation or live runtime."""
+        if self.runtime_mode == "live":
+            return self._turn_live(question)
+        return self._turn_evaluation(question)
+
+    def _filter_ssl_attributed_candidates(
+        self,
+        candidates: list[str],
+        surfaced_seed_ids: list[str],
+    ) -> tuple[list[str], list[str]]:
+        """Suppress candidates attributable to this turn's own SSL input."""
+        if not surfaced_seed_ids:
+            return list(candidates), []
+        threshold = self.manager.dedup_threshold
+        if self.clusterer is not None:
+            threshold = min(threshold, self.clusterer.threshold)
+        source_embeddings = [
+            self.manager.seeds[seed_id].embedding
+            for seed_id in surfaced_seed_ids
+            if seed_id in self.manager.seeds
+        ]
+        kept: list[str] = []
+        suppressed: list[str] = []
+        for candidate in candidates:
+            candidate_embedding = self.manager.get_embedding(candidate)
+            attributable = any(
+                float(np.dot(candidate_embedding, source_embedding)) >= threshold
+                for source_embedding in source_embeddings
+            )
+            (suppressed if attributable else kept).append(candidate)
+        return kept, suppressed
+
+    def _turn_live(self, question: str) -> dict[str, Any]:
+        """Production-oriented one-generation loop with visible-history continuity."""
+        turn = self._turn
+        if turn > 0:
+            self.manager.decay_traces(turns_passed=1)
+        reactivated = self.manager.scan_trtl_triggers(question)
+
+        def _is_cluster_representative(seed_id: str) -> bool:
+            if self.clusterer is None:
+                return True
+            cluster_id = self.seed_to_cluster.get(seed_id)
+            return cluster_id is None or self.cluster_rep.get(cluster_id) == seed_id
+
+        eligible = collect_eligible_promoted_seeds(
+            self.manager,
+            question,
+            turn=turn,
+            born_turn=self.born_turn,
+            last_surfaced=self.last_surfaced,
+            policy=self.surfacing_policy,
+            include_seed=_is_cluster_representative,
+        )
+        selected = select_cross_turn_seeds(eligible, self.surfacing_policy.surface_top_k)
+        allowed = self._contract_filter(selected)
+        surfaced = [text for _similarity, _seed_id, text in allowed]
+        surfaced_seed_ids = [seed_id for _similarity, seed_id, _text in allowed]
+        mark_surfaced(self.last_surfaced, allowed, turn)
+
+        fixture_answer = f"Fixture echo answer to: {question}"
+        final_answer = self.model.generate(
+            build_chat_prompt(self.history, question, surfaced),
+            {"question": question, "turn": turn, "baseline_answer": fixture_answer},
+            "ssl" if surfaced else "baseline",
+            surfaced,
+        )
+
+        raw_candidates = self.detector.detect_seeds(
+            {"text": final_answer}, max_seeds=self.max_seeds_per_turn
+        )
+        candidates, suppressed_self = self._filter_ssl_attributed_candidates(
+            raw_candidates, surfaced_seed_ids
+        )
+        occurrence_before = {
+            seed_id: seed.occurrence_count for seed_id, seed in self.manager.seeds.items()
+        }
+        origin = SeedOrigin(
+            candidate_type=CandidateType.POSSIBLE_COMPLETION,
+            detection_basis="visible_answer_non_ssl_attributed",
+            context_ref=f"turn:{turn}:visible_answer",
+        )
+        ingest = self.manager.ingest_detection_candidates(candidates, origin=origin)
+        born: list[str] = []
+        for accepted in ingest.get("accepted", []):
+            self.born_turn.setdefault(accepted["seed_id"], turn)
+            born.append(accepted["seed_id"])
+
+        if self.clusterer is not None:
+            for accepted in ingest.get("accepted", []):
+                seed_id = accepted["seed_id"]
+                seed = self.manager.seeds.get(seed_id)
+                if seed is None:
+                    continue
+                if seed_id not in self.seed_to_cluster:
+                    cluster_id = self.clusterer.add(seed.text, seed.embedding)
+                    had_representative = cluster_id in self.cluster_rep
+                    self.seed_to_cluster[seed_id] = cluster_id
+                    self.cluster_rep.setdefault(cluster_id, seed_id)
+                    representative_id = self.cluster_rep.get(cluster_id)
+                    if had_representative and representative_id is not None and representative_id != seed_id:
+                        representative = self.manager.seeds.get(representative_id)
+                        if representative is not None:
+                            refresh_cluster_representative(self.manager, representative, seed)
+                else:
+                    cluster_id = self.seed_to_cluster[seed_id]
+                    self.clusterer.bump(cluster_id)
+                    representative = self.manager.seeds.get(self.cluster_rep.get(cluster_id, ""))
+                    if representative is not None and representative is not seed:
+                        refresh_cluster_representative(self.manager, representative, seed)
+
+            for cluster_id, representative_id in self.cluster_rep.items():
+                if representative_id in self.manager.seeds:
+                    representative = self.manager.seeds[representative_id]
+                    representative.occurrence_count = max(
+                        representative.occurrence_count, self.clusterer.recurrence(cluster_id)
+                    )
+
+        changed_seed_ids = {
+            seed_id
+            for seed_id, seed in self.manager.seeds.items()
+            if occurrence_before.get(seed_id) != seed.occurrence_count
+        }
+        promoted_now: list[str] = []
+        recurrence_threshold = self.manager.config.min_occurrences_for_gate
+        for seed_id in sorted(changed_seed_ids):
+            seed = self.manager.seeds[seed_id]
+            if seed.status == SeedStatus.EXPIRED or seed.occurrence_count < recurrence_threshold:
+                continue
+            if self.clusterer is not None:
+                cluster_id = self.seed_to_cluster.get(seed_id)
+                if cluster_id is not None and self.cluster_rep.get(cluster_id) != seed_id:
+                    continue
+            event = self.manager.submit_signals(
+                seed_id,
+                [recurrence_signal(seed.occurrence_count, threshold=recurrence_threshold)],
+                policy_id=self.gate_policy_id,
+            )
+            if event.decision is GateDecision.PROMOTED and seed.status == SeedStatus.PROMOTED:
+                promoted_now.append(seed_id)
+
+        self.history.append((question, final_answer))
+        self._turn += 1
+        report = {
+            "runtime_mode": "live",
+            "turn": turn,
+            "question": question,
+            "answer": final_answer,
+            "baseline_answer": None,
+            "ssl_answer": final_answer if surfaced else None,
+            "surfaced_seeds": surfaced,
+            "surfaced_seed_ids": surfaced_seed_ids,
+            "selected_seed_ids": [seed_id for _sim, seed_id, _text in selected],
+            "influence_decisions": (
+                [record.__dict__.copy() for record in self.influence_records[-len(selected):]]
+                if selected else []
+            ),
+            "detected_candidates": raw_candidates,
+            "suppressed_self_attributed_candidates": suppressed_self,
+            "seeds_born_weightless": born,
+            "prompt_boundary_markers": apply_prompt_boundary(surfaced)[1] if surfaced else [],
+            "promoted_this_turn": promoted_now,
+            "reactivated_trtl": reactivated,
+            "shadow_size": len(self.manager.seeds),
+            "retrieval_probe": self._run_retrieval_probe(question),
+        }
+        self.turn_reports.append(report)
+        return report
+
+    def _turn_evaluation(self, question: str) -> dict[str, Any]:
+        """Run the research comparison loop with baseline history isolation."""
 
         turn = self._turn
         if turn > 0:
@@ -417,7 +614,10 @@ class ShadowChatSession:
                     continue
             event = self.manager.submit_signals(
                 seed_id,
-                [recurrence_signal(seed.occurrence_count, threshold=2)],
+                [recurrence_signal(
+                    seed.occurrence_count,
+                    threshold=self.manager.config.min_occurrences_for_gate,
+                )],
                 policy_id="exploratory",
             )
             if event.decision is GateDecision.PROMOTED and seed.status == SeedStatus.PROMOTED:
@@ -429,6 +629,7 @@ class ShadowChatSession:
         self._turn += 1
 
         report = {
+            "runtime_mode": "evaluation",
             "turn": turn,
             "question": question,
             "answer": final_answer,
@@ -492,6 +693,7 @@ class ShadowChatSession:
                 }
             )
         return {
+            "runtime_mode": self.runtime_mode,
             "turns": self._turn,
             "seeds": seeds,
             "influence_records": [asdict(r) for r in self.influence_records],
@@ -527,12 +729,19 @@ class ShadowChatSession:
                 "cluster_threshold": self.cluster_threshold,
                 "probe_corpus": self.probe_corpus_path,
                 "probe_top_k": self.probe_top_k,
+                "runtime_mode": self.runtime_mode,
+                "gate_policy_id": self.gate_policy_id,
+                "allow_toy_embedder": self.allow_toy_embedder,
             },
             "contract": asdict(self.contract),
             "manager": self.manager.to_dict(),
             "manager_gate_sequence": self.manager._gate_sequence,
             "history": [
-                {"question": question, "baseline_answer": answer}
+                {
+                    "question": question,
+                    "answer": answer,
+                    "baseline_answer": answer if self.runtime_mode == "evaluation" else None,
+                }
                 for question, answer in self.history
             ],
             "influence_records": [asdict(record) for record in self.influence_records],
@@ -584,7 +793,10 @@ class ShadowChatSession:
 
         history = state.get("history", [])
         session.history = [
-            (str(item.get("question", "")), str(item.get("baseline_answer", "")))
+            (
+                str(item.get("question", "")),
+                str(item.get("answer", item.get("baseline_answer", ""))),
+            )
             if isinstance(item, dict)
             else (str(item[0]), str(item[1]))
             for item in history
@@ -655,6 +867,9 @@ def run_chat(
     show_shadow: bool = False,
     probe_corpus: str | None = None,
     probe_top_k: int = 3,
+    runtime_mode: str = "live",
+    gate_policy_id: str | None = None,
+    allow_toy_embedder: bool = False,
 ) -> Path | None:
     """CLI entrypoint: interactive REPL, or scripted turns via --script."""
     session = ShadowChatSession(
@@ -671,6 +886,9 @@ def run_chat(
         recurrence_mode=recurrence_mode,
         probe_corpus=probe_corpus,
         probe_top_k=probe_top_k,
+        runtime_mode=runtime_mode,
+        gate_policy_id=gate_policy_id,
+        allow_toy_embedder=allow_toy_embedder,
     )
 
     def _emit(report: dict[str, Any]) -> None:

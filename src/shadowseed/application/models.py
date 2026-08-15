@@ -30,6 +30,9 @@ class SessionConfig:
     cluster_threshold: float | None = None
     probe_corpus: str | None = None
     probe_top_k: int = 3
+    runtime_mode: str = "evaluation"
+    gate_policy_id: str | None = None
+    allow_toy_embedder: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

@@ -477,12 +477,33 @@ def build_parser() -> argparse.ArgumentParser:
 
     chat = subparsers.add_parser(
         "chat",
-        help="[demo] interactive SSL shadow layer (manager, Gate, TTL/TrTL, agent contract)",
+        help="[live] SSL conversation runtime; use --runtime-mode evaluation for research A/B",
     )
     chat.add_argument("--backend", choices=MODEL_BACKENDS, default="fixture")
     chat.add_argument("--model-id", default=None)
     chat.add_argument("--max-new-tokens", type=int, default=700)
-    chat.add_argument("--embedding-backend", choices=["lexical", "openai"], default="lexical")
+    chat.add_argument(
+        "--embedding-backend",
+        choices=["lexical", "sentence-transformers", "openai"],
+        default="lexical",
+    )
+    chat.add_argument(
+        "--runtime-mode",
+        choices=["live", "evaluation"],
+        default="live",
+        help="live uses one visible generation; evaluation keeps the isolated A/B baseline arm.",
+    )
+    chat.add_argument(
+        "--gate-policy",
+        choices=["exploratory", "evidence_backed"],
+        default=None,
+        help="Override the runtime policy. live defaults to evidence_backed.",
+    )
+    chat.add_argument(
+        "--allow-toy-embedder",
+        action="store_true",
+        help="Explicitly allow lexical hash embeddings in live non-fixture sessions.",
+    )
     chat.add_argument("--embedding-model", default=None)
     chat.add_argument("--surface-threshold", type=float, default=0.30)
     chat.add_argument(

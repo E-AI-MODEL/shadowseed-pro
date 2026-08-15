@@ -24,7 +24,11 @@ from shadowseed.text_similarity import lexical_embedding
 
 EmbedFn = Callable[[str], np.ndarray]
 
-SUPPORTED_EMBEDDING_BACKENDS: tuple[str, ...] = ("lexical", "openai")
+SUPPORTED_EMBEDDING_BACKENDS: tuple[str, ...] = (
+    "lexical",
+    "sentence-transformers",
+    "openai",
+)
 
 # Output widths for common OpenAI embedding models; if a model is not listed we
 # probe it once (one embedding call) to discover its dimension.
@@ -56,6 +60,22 @@ def make_embedding_fn(
             return lexical_embedding(text, dimensions=dim)
 
         return lexical_embed, dim
+
+    if backend == "sentence-transformers":
+        try:
+            from sentence_transformers import SentenceTransformer
+        except ImportError as exc:
+            raise RuntimeError(
+                "Install shadowseed[models] to use sentence-transformers embeddings"
+            ) from exc
+        model = model_id or "sentence-transformers/all-MiniLM-L6-v2"
+        encoder = SentenceTransformer(model)
+        dimension = int(encoder.get_sentence_embedding_dimension())
+
+        def sentence_transformer_embed(text: str) -> np.ndarray:
+            return np.asarray(encoder.encode(text, normalize_embeddings=True), dtype=float)
+
+        return sentence_transformer_embed, dimension
 
     if backend == "openai":
         from shadowseed.adapters.openai_client import DEFAULT_EMBEDDING_MODEL, OpenAIClient

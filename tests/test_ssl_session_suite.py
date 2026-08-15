@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from shadowseed.benchmark import ssl_session_suite as sess
 from shadowseed.benchmark.ssl_session_suite import run_ssl_session
@@ -38,38 +39,46 @@ def test_chat_prompt_compactness_applies_to_both_arms():
     assert "previously identified" not in baseline
 
 
-def test_transfer_suite_runs_through_pipeline(tmp_path: Path):
-    # W10: the doctrine-transfer dataset (new domains) must run through the same
-    # pipeline. Fixture backend -> deterministic, no model/secret needed.
+def test_transfer_suite_fixture_refuses_question_only_input(tmp_path: Path):
     out = tmp_path / "t.json"
-    run_ssl_session(
-        "src/shadowseed/data/ssl_session_transfer_suite.json", str(out), backend="fixture"
-    )
-    payload = json.loads(out.read_text(encoding="utf-8"))
-    assert payload["summary"]["artifact"] == "ssl_session_suite"
-    assert payload["summary"]["conversation_count"] == 3
-    domains = {c["domain"] for c in payload["conversations"]}
-    assert domains == {"onderwijs", "publieke gezondheid", "beleid"}
+    with pytest.raises(ValueError, match="requires authored baseline_answer"):
+        run_ssl_session(
+            "src/shadowseed/data/ssl_session_transfer_suite.json", str(out), backend="fixture"
+        )
 
 
 def test_surface_settings_recorded(tmp_path: Path):
-    out = tmp_path / "s.json"
-    run_ssl_session(
-        "src/shadowseed/data/ssl_session_suite.json", str(out), backend="fixture", surface_top_k=1
+    inp = tmp_path / "input.json"
+    inp.write_text(
+        json.dumps(
+            {
+                "version": "t",
+                "conversations": [
+                    {
+                        "id": "C",
+                        "domain": "d",
+                        "turns": [
+                            {"question": "Q1?", "baseline_answer": "Fixture baseline."}
+                        ],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
     )
+    out = tmp_path / "s.json"
+    run_ssl_session(str(inp), str(out), backend="fixture", surface_top_k=1)
     appl = json.loads(out.read_text(encoding="utf-8"))["conversations"][0]["applied_thresholds"]
     assert appl["surface_top_k"] == 1
     assert "surface_threshold" in appl
 
 
-def test_fixture_smoke_runs(tmp_path: Path):
+def test_fixture_refuses_dead_question_only_session_run(tmp_path: Path):
     out = tmp_path / "s.json"
-    run_ssl_session(
-        "src/shadowseed/data/ssl_session_suite.json", str(out), backend="fixture"
-    )
-    payload = json.loads(out.read_text(encoding="utf-8"))
-    assert payload["summary"]["artifact"] == "ssl_session_suite"
-    assert payload["summary"]["conversation_count"] == 3
+    with pytest.raises(ValueError, match="requires authored baseline_answer"):
+        run_ssl_session(
+            "src/shadowseed/data/ssl_session_suite.json", str(out), backend="fixture"
+        )
 
 
 def test_per_topic_thresholds_override_run_level(tmp_path: Path):
@@ -78,8 +87,14 @@ def test_per_topic_thresholds_override_run_level(tmp_path: Path):
         "version": "t",
         "conversations": [
             {"id": "A", "domain": "d", "dedup_threshold": 0.55, "min_occurrences": 2,
-             "turns": [{"question": "Q1?"}, {"question": "Q2?"}]},
-            {"id": "B", "domain": "d", "turns": [{"question": "Q1?"}, {"question": "Q2?"}]},
+             "turns": [
+                 {"question": "Q1?", "baseline_answer": "Fixture A1."},
+                 {"question": "Q2?", "baseline_answer": "Fixture A2."},
+             ]},
+            {"id": "B", "domain": "d", "turns": [
+                {"question": "Q1?", "baseline_answer": "Fixture B1."},
+                {"question": "Q2?", "baseline_answer": "Fixture B2."},
+            ]},
         ],
     }
     inp = tmp_path / "in.json"

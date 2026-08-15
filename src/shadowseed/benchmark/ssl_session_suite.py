@@ -74,6 +74,20 @@ def run_ssl_session(
     auto_calibrate: bool = False,
 ) -> Path:
     data = json.loads(Path(input_path).read_text(encoding="utf-8"))
+    if backend == "fixture":
+        missing = [
+            f"{conv.get('id', 'conversation')}:{index}"
+            for conv in data.get("conversations", [])
+            for index, turn in enumerate(conv.get("turns", []))
+            if not str(turn.get("baseline_answer", "")).strip()
+        ]
+        if missing:
+            preview = ", ".join(missing[:5])
+            raise ValueError(
+                "fixture backend requires authored baseline_answer text for every "
+                f"session turn; missing: {preview}. Use a real model backend for "
+                "question-only session suites."
+            )
     embed_fn, _dim = make_embedding_fn(embedding_backend, embedding_model)
     model = make_backend(backend=backend, model_id=model_id, max_new_tokens=max_new_tokens)
     detector = make_detector_backend(
@@ -266,7 +280,10 @@ def run_ssl_session(
                         continue
                 event = manager.submit_signals(
                     sid,
-                    [recurrence_signal(seed.occurrence_count, threshold=2)],
+                    [recurrence_signal(
+                        seed.occurrence_count,
+                        threshold=manager.config.min_occurrences_for_gate,
+                    )],
                     policy_id="exploratory",
                 )
                 if (
