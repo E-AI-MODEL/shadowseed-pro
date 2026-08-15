@@ -1,6 +1,6 @@
 [project]
 name = "shadowseed"
-version = "0.4.1"
+version = "0.4.2"
 description = "Auditable research implementation of Shadow Seed Learning"
 readme = "README.md"
 requires-python = ">=3.10"

@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased - Authority and retrieval hardening
+## 0.4.2 - 2026-08-15 - Authority and retrieval hardening
 
 - Validation Gate support is idempotent for recurrence observations and exact
   verified evidence source-and-kind pairs. Replaying the same observation no
