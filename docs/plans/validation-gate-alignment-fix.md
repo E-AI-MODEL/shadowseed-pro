@@ -9,8 +9,9 @@
 PR #18 implemented the alignment plan through issues #10–#17. Later boundary
 and modularization work kept the same authority model. PR #46 closed the final
 evidence-provenance and retrieval-authorization gaps: verified external support
-now requires a non-empty `source_ref`, duplicate sources are idempotent, and
-retrieval candidates pass through the atomic point-of-use contract.
+now requires a non-empty `source_ref`, duplicate source-and-kind pairs are
+idempotent, and retrieval candidates pass through the atomic point-of-use
+contract.
 
 Two accepted amendments define the delivered scope:
 
@@ -19,7 +20,8 @@ Two accepted amendments define the delivered scope:
   `high_impact` remain illustrative profiles and fail explicitly if requested.
 - Typed signals are canonical. Historical boolean parameters remain as
   translation and return-shape adapters into the same Gate engine. Bare
-  `external_evidence=True` fails because it cannot provide source provenance.
+  `external_evidence=True` fails for non-expired seeds because it cannot provide
+  source provenance. Expired seeds record a terminal no-authority decision.
 
 ## Goal
 
@@ -141,7 +143,8 @@ setter, but no lifecycle transition can grant authority.
 Use typed signals for authority decisions. Retain historical boolean arguments
 only as compatibility adapters into the same Gate engine; they do not form a
 second decision path. A bare positive evidence boolean fails because verified
-support requires a source reference.
+support requires a source reference, except that expired seeds short-circuit to
+a terminal `EXPIRED` event without applying the synthesized evidence.
 
 Recurrence must be recorded as recurrence, not converted into external evidence.
 
@@ -256,7 +259,7 @@ Add or update tests proving:
 
 - [x] The ADR is accepted and linked from the architecture documentation.
 - [x] Gate-controlled authority decisions use one executable Gate engine; mechanical lifecycle transitions, restoration, and unsafe test hooks are explicitly scoped.
-- [x] Typed signals are canonical; historical booleans are compatibility adapters and cannot introduce anonymous verified evidence.
+- [x] Typed signals are canonical; historical booleans are compatibility adapters and cannot introduce anonymous authority-bearing evidence.
 - [x] Gate policy is explicit for every authority decision.
 - [x] Recurrence is not double-counted or relabelled as external evidence.
 - [x] Probe, human, SSOT, dialectic, and contradiction effects route through the Gate.
