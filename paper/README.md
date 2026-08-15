@@ -5,6 +5,8 @@
 
 **Authors:** H. Visser, ChatGPT, Claude, Kimi, GLM
 
+This `paper/` directory is the canonical repository location for the manuscript source.
+
 ## Files
 
 - `main.tex` — complete manuscript draft
