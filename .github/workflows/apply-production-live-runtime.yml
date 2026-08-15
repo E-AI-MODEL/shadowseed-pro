@@ -19,6 +19,26 @@ jobs:
           cache: pip
       - run: python -m pip install --upgrade pip
       - run: pip install -e ".[test]"
+      - name: Repair unique evaluation report marker
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('.github/scripts/apply_live_runtime.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''replace_once(
+              path,
+              "            \\"turn\\": turn,\\n            \\"question\\": question,\\n",
+              "            \\"runtime_mode\\": \\"evaluation\\",\\n            \\"turn\\": turn,\\n            \\"question\\": question,\\n",
+          )'''
+          new = '''replace_once(
+              path,
+              "        report = {\\n            \\"turn\\": turn,\\n            \\"question\\": question,\\n",
+              "        report = {\\n            \\"runtime_mode\\": \\"evaluation\\",\\n            \\"turn\\": turn,\\n            \\"question\\": question,\\n",
+          )'''
+          if old not in text:
+              raise SystemExit('expected patcher marker not found')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
       - name: Apply guarded patch
         run: python .github/scripts/apply_live_runtime.py
       - name: Static checks
