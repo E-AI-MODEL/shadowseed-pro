@@ -1,0 +1,70 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xurl}
+\usepackage{hyperref}
+\usepackage[backend=biber,style=numeric-comp,sorting=none,natbib=true]{biblatex}
+\addbibresource{references.bib}
+\usepackage{xcolor}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=blue,
+  pdfauthor={H. Visser, ChatGPT, Claude, Kimi, GLM},
+  pdftitle={Shadowseed: Remembering Without Trusting}
+}
+
+\newcommand{\ssl}{Shadow Seed Learning}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\seed}{\mathcal{S}}
+\newcommand{\commitsha}{\nolinkurl{18039196549e68936d1976b74eb8e6aac3eac98e}}
+
+\title{\textbf{Shadowseed: Remembering Without Trusting}\\[0.45em]
+\large A Validation-Gated Memory Architecture for Language Model Systems}
+\author{H. Visser, ChatGPT, Claude, Kimi, and GLM\\[0.3em]\small E-AI-MODEL}
+\date{August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Memory is easy to add to a language-model system. Deciding when a remembered item deserves influence is harder. Existing systems retrieve documents, retain conversational facts, store reflections, or adapt retrieval to the current query. A narrower case remains awkward: the system suspects that something is missing from an answer or context without any warrant to treat that suspicion as true. Shadow Seed Learning (SSL) addresses that case by storing candidate omissions as explicitly untrusted memory. A seed can remain present with no steering authority: its trace may be positive at weight zero. Authority changes pass through a typed Validation Gate. Verified external support carries provenance; repeated evidence is idempotent at a defined source-and-signal boundary; unresolved contradictions block use; and a second, current-version authorization check is required when a seed is about to affect retrieval or generation. The architecture also separates baseline generation from SSL-assisted output and records both allowed and denied influence attempts. We describe the state model, lifecycle, evidence rules, contradiction handling, point-of-use contract, and prompt-data boundary. Evaluation of the reference implementation focuses on assurance of these contracts. Answer quality is outside the present evaluation. Release 0.4.2 passes 721 tests with 82.04\% branch coverage under its Python 3.12 CI run, alongside Python 3.10, build, clean-install, Workbench, portability, and release checks. These results establish implementation contracts; general answer improvement, semantic correctness of proposed omissions, universal security, and production readiness remain outside their evidential scope. SSL is therefore presented as a research-ready architecture for retaining uncertain candidate context without granting it automatic authority.
+\end{abstract}
+
+\section{Introduction}
+
+Fluent language-model answers can omit a dependency, a qualification, a causal boundary, a stakeholder, or a question that would change their interpretation. Reliable detection of such absences remains unresolved. AbsenceBench shows a marked gap between retrieving information that is present and identifying information that has been deliberately removed from a context \citep{fu2025absencebench}. QuestBench reaches the same problem from another direction: even strong models can struggle to identify the missing variable that must be requested before an underspecified reasoning task becomes solvable \citep{li2025questbench}. Long-term interaction adds another difficulty. LongMemEval finds substantial degradation when assistants must retrieve, update, and reason over information distributed across sessions \citep{wu2025longmemeval}.
+
+A tempting response is to save every plausible omission and put it back into later prompts. That solves persistence by creating a different problem. A model-generated suspicion has crossed an epistemic boundary merely because it was written to memory. Repetition can then make a weak hypothesis more available, retrieval can amplify it, and a later model may read the stored text with little indication of how uncertain it was when created.
+
+SSL starts from a stricter premise: \emph{remembered} and \emph{authorized to influence} are different states. A detector may propose a candidate omission. The system may keep that candidate, recognize it later, compare it with external material, or record that it recurs. Keeping, recognizing, comparing, or counting a candidate leaves steering power unchanged. In the reference implementation, a newly created seed has positive trace and exactly zero weight. A Validation Gate controls authority changes. A point-of-use contract checks the current authorization again when the seed is about to affect retrieval, a probe, a warning, an answer, or another downstream action \citep{shadowseed2026}.
+
+This separation changes the role of memory. Memory becomes a place where uncertain hypotheses can remain available for testing without carrying an endorsement. Several failure cases then become visible in the data model. A candidate may be present with little authority. Recurrence may support it when external evidence is absent. An earlier promotion may have gone stale. The candidate may be contradicted, expired, or simply irrelevant to the current turn.
+
+The contribution of this paper is the architecture and its executable authority contracts. It formalizes candidate-omission memory as a stateful process with separate persistence and influence variables; routes new authority through typed, policy-bound Gate decisions; attaches provenance and identity to external support; treats contradiction as an explicit blocking record; and requires a current authorization at the moment of use. The accompanying software artifact implements these rules in a testable Python runtime and exposes the decision trail for inspection \citep{shadowseed2026}. We evaluate whether those contracts are enforced. Open-ended answer quality lies outside the claims supported by the present artifact. That empirical question requires a separate evaluation with fixed tasks, blinded comparison, independent review, and a frozen implementation.
+
+\section{Problem setting}
+\label{sec:problem}
+
+\subsection{Candidate omissions are hypotheses}
+
+Consider an answer that reports an association and then moves directly to a recommendation. A detector may propose the candidate omission: ``The answer does not establish whether the association is causal.'' The proposal can be useful even when it is wrong. It points to a specific absence that can be checked. Treating the sentence as a fact would collapse detection and validation into one operation.
+
+SSL calls such a proposal a \emph{seed}. A seed is intended to express one testable candidate absence. Atomicity is a design target with no semantic guarantee. Model-generated candidates can still be vague, compound, redundant, or based on a poor reading of the source. The architecture therefore grants no authority on the strength of a convincing formulation alone.
+
+This choice differs from conventional memory tasks. Long-term conversational memory often asks whether a stored fact can be retrieved after many interactions \citep{wu2025longmemeval}. Retrieval-augmented generation asks which external documents should be brought into context \citep{lewis2020rag,guu2020realm}. Reflective agents store linguistic feedback that can guide later attempts \citep{shinn2023reflexion}. In SSL, the stored object is uncertain by construction. The central problem is the controlled transition from a remembered hypothesis to bounded permission to influence.
+
+\subsection{Failure modes of unqualified memory}
+
+Four failure modes motivate the design.
+
+\paragraph{Persistence can masquerade as confidence.}
