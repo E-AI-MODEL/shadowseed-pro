@@ -270,12 +270,15 @@ NEW -> ACTIVE -> DECAYING -> DORMANT -> EXPIRED
 - **`legacy_evidence_required`**: compatibility behavior for the historical boolean API.
 
 Verified external support must carry a non-empty `source_ref`. Reusing the same
-source is idempotent; independent confirmations need distinct source references.
-Because the deprecated boolean adapter cannot provide provenance, bare
-`external_evidence=True` raises `ValueError` before a Gate event or authority
-change. Historical anonymous events remain replayable. Unverified external
-observations remain visible in `GateEvent.signals` for audit but cannot authorize
-a seed or be counted as passed evidence.
+source within the same signal kind is idempotent; the same reference under a
+different signal kind is treated as distinct support. Independent confirmations
+within one kind need distinct source references. Because the deprecated boolean
+adapter cannot provide provenance, bare `external_evidence=True` on a
+non-expired seed raises `ValueError` before a Gate event or authority change. An
+expired seed instead records a terminal `EXPIRED` Gate event without applying
+evidence or authority. Historical anonymous events remain replayable. Unverified
+external observations remain visible in `GateEvent.signals` for audit but cannot
+authorize a seed or be counted as passed evidence.
 
 ### Seed origin metadata
 

@@ -145,13 +145,16 @@ Policy semantics are explicit:
   accumulated verified-evidence thresholds for compatibility callers.
 
 Verified external support must carry a non-empty `source_ref`. Repeated use of
-the same source is idempotent, while independent confirmations require distinct
-source references. The deprecated boolean adapter cannot express provenance, so
-bare `external_evidence=True` fails before a Gate event or authority change.
-Historical anonymous events remain replayable. Unverified external observations
-remain auditable inputs but cannot authorize, increment `evidence_count`, or be
-reported as passed evidence. Contradiction can block promotion, reduce influence,
-or reset a seed according to the active policy.
+the same source-and-kind pair is idempotent, while the same reference under a
+different signal kind is distinct support. Independent confirmations within one
+kind require distinct source references. The deprecated boolean adapter cannot
+express provenance, so bare `external_evidence=True` on a non-expired seed fails
+before a Gate event or authority change. An expired seed instead records a
+terminal `EXPIRED` Gate event without applying evidence or authority. Historical
+anonymous events remain replayable. Unverified external observations remain
+auditable inputs but cannot authorize, increment `evidence_count`, or be reported
+as passed evidence. Contradiction can block promotion, reduce influence, or reset
+a seed according to the active policy.
 
 ## Contradictions
 

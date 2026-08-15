@@ -102,17 +102,22 @@ Gate engine and append one event per call to `SSLManager.gate_events`:
   proposes and the Gate applies through `_set_authority`. Recurrence can promote
   under `exploratory` without incrementing `evidence_count`. External support can
   authorize or count as evidence only when `verified=True` and accompanied by a
-  non-empty `source_ref`. New anonymous verified evidence raises `ValueError`
-  before a Gate event or authority change. Historical anonymous signals remain
-  readable during ledger replay.
+  non-empty `source_ref`. Evidence identity is the source-and-kind pair, so the
+  same `source_ref` under a different external signal kind is distinct support.
+  For non-expired seeds, new anonymous verified evidence raises `ValueError`
+  before a Gate event or authority change. Expired seeds short-circuit to a
+  terminal `EXPIRED` event without applying evidence or authority. Historical
+  anonymous signals remain readable during ledger replay.
 - **`run_validation_gate[_detailed](...)`** — a deprecated compatibility adapter.
   It translates the historical `external_evidence` / `contradiction` booleans
   into typed signals, selects `legacy_evidence_required` unless another policy is
   explicitly requested, delegates to `submit_signals`, and translates the event
   back into the historical return shape. Because the boolean cannot identify a
-  source, bare `external_evidence=True` now fails loudly; callers must provide a
-  typed verified external signal with `source_ref`. The old private core alias
-  redirects to this adapter; it is not a second decision engine.
+  source, bare `external_evidence=True` now fails loudly for a non-expired seed;
+  callers must provide a typed verified external signal with `source_ref`.
+  Expired seeds remain terminal and record `EXPIRED` without applying the
+  synthesized evidence. The old private core alias redirects to this adapter; it
+  is not a second decision engine.
 
 Migrated callers:
 

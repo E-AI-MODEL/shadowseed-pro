@@ -10,7 +10,8 @@ The repository is **research-ready**. Core mechanics, benchmark harnesses, and a
 - New seeds begin weightless.
 - TTL decay and TrTL reactivation are implemented and tested.
 - The Validation Gate controls promotion and records decisions.
-- Verified external support is provenance-bound and idempotent per source.
+- Verified external support is provenance-bound and idempotent per
+  source-and-kind pair.
 - The agent contract blocks unapproved point-of-use influence.
 - Live chat and session benchmarks share the same surfacing rules.
 - Fixture runs demonstrate harness behavior, not real-model quality.
