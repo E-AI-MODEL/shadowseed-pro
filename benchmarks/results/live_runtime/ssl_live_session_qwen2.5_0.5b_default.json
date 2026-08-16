@@ -1,0 +1,4256 @@
+{
+  "summary": {
+    "artifact": "ssl_live_session_measurement",
+    "runtime_mode": "live",
+    "backend": "hf-transformers:Qwen/Qwen2.5-0.5B-Instruct",
+    "detector": "hf-transformers:Qwen/Qwen2.5-0.5B-Instruct",
+    "embedding_backend": "sentence-transformers",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "detector_prompt_variant": "generative",
+    "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "max_new_tokens": 96,
+    "input_version": "ssl-session-0.2",
+    "input_sha256": "3041467fff0ee398726782173190c3a13ce6c919d235bc9952b0c3889df05f0f",
+    "conversation_count": 3,
+    "arms": [
+      "evidence-backed",
+      "counterfactual"
+    ],
+    "answer_generation_calls": 44,
+    "detector_calls": 44,
+    "timing": {
+      "adapter_setup_elapsed_seconds": 13.623,
+      "live_turn_elapsed_seconds": 2199.652,
+      "deferral_scoring_elapsed_seconds": 0.0,
+      "measurement_wall_elapsed_seconds": 2213.276
+    },
+    "claim_boundary": "The evidence-backed arm measures shipped live behavior without supplied evidence. The exploratory arm is a counterfactual for measuring same-turn deferral and is not production authority. Deferral metrics are objective opportunity proxies, not usefulness or truth judgments.",
+    "package_version": "0.4.2",
+    "source_revision": "78c67caca664f82e20bf5f60661827efd1ebfc5a",
+    "source_dirty": false
+  },
+  "arms": [
+    {
+      "arm_id": "evidence-backed",
+      "runtime_mode": "live",
+      "gate_policy_id": "evidence_backed",
+      "production_policy": true,
+      "external_evidence_injected": false,
+      "answer_generation_calls": 22,
+      "detector_calls": 22,
+      "influence_record_count": 0,
+      "promoted_seed_count": 0,
+      "timing": {
+        "live_turn_elapsed_seconds": 1099.757,
+        "deferral_scoring_elapsed_seconds": 0.0,
+        "other_arm_overhead_seconds": 0.001,
+        "wall_elapsed_seconds": 1099.758
+      },
+      "deferral_metrics": {
+        "influenced_turns": 0,
+        "affected_turns": 0,
+        "detected_on_influenced_turns": 0,
+        "suppressed_candidate_occurrences": 0,
+        "normalization_admissible_occurrences": 0,
+        "later_recovered_occurrences": 0,
+        "unrecovered_admissible_occurrences": 0,
+        "distinct_normalized_suppressed_candidates": 0,
+        "suppression_rate_on_influenced_turns": 0.0,
+        "later_recovery_rate": 0.0,
+        "interpretation": "Aggregate opportunity-cost proxies; no truth or usefulness label is inferred."
+      },
+      "conversations": [
+        {
+          "conversation_id": "CONV_IR_SHORT",
+          "domain": "geschiedenis en economie",
+          "runtime_mode": "live",
+          "gate_policy_id": "evidence_backed",
+          "applied_thresholds": {
+            "dedup_threshold": 0.85,
+            "min_occurrences": 3,
+            "promotion_threshold": 0.5,
+            "recurrence_mode": "cluster",
+            "cluster_threshold": 0.6,
+            "surface_threshold": 0.3,
+            "surface_top_k": 2,
+            "early_turn_margin": 0.1,
+            "early_turn_history": 5,
+            "resurface_margin": 0.15
+          },
+          "turns": [
+            {
+              "runtime_mode": "live",
+              "turn": 0,
+              "question": "Leg in het kort uit waarom de Industriële Revolutie juist in Groot-Brittannië kon ontstaan.",
+              "answer": "The Industrial Revolution was not solely caused by technological advancements but also by social, economic, political, and cultural factors. In Groot-Brittannië, which had a relatively backward industrial base compared to other European countries, the Industrial Revolution could have occurred more easily due to several reasons:\n\n1. **Social and Economic Factors**: Groot-Brittannië's society was characterized by a strong middle class and an emerging middle-class urban population. This demographic shift created a demand for new",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Social and economic factors could have influenced the pace and scale of the Industrial Revolution in Groot-Brittannië.",
+                "Political and cultural factors were crucial in shaping the Industrial Revolution in Groot-Brittannië.",
+                "Technological innovations alone may not have been sufficient to drive the Industrial Revolution in Groot-Brittannië.",
+                "Cultural and societal changes played a significant role in the development of the Industrial Revolution in Groot-Brittannië."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_001",
+                "ss_002"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 2,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 1,
+              "question": "Hoe verspreidde de industrialisatie zich daarna naar het Europese vasteland?",
+              "answer": "De industriële revolutie in Groot-Brittannië werd gevolgd door een verlies van de industrie en de economische afhankelijkheid van de lande. Dit kwam omdat de landen niet zo goed waren om hun eigendommen te verkopen en hun producten te exporteren. De industrie werd dus onverwacht verloren en de economische afhankelijkheid van de lande werd verbeterd.",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Technological innovation as a key factor in the industrial revolution.",
+                "Economic independence as a result of colonial trade.",
+                "Industrialization as a consequence of colonial expansion.",
+                "Colonial trade financing the factories.",
+                "Technological innovation as a driving force behind the industrial revolution. To identify what could have appeared here, I will analyze the given input text and extract relevant information. Here's my analysis:"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_003",
+                "ss_004",
+                "ss_005",
+                "ss_006",
+                "ss_007",
+                "ss_008"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 8,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 2,
+              "question": "Wat verklaart waarom sommige regio's veel sneller industrialiseerden dan andere?",
+              "answer": "Het verhaal van de industriële revolutie in Groot-Brittannië kan worden beschreven als een complex en onafhankelijke process dat verschillende faktoren ontwikkeld heeft. Deze factoren zijn:\n\n1. **Technologieën**: De technologische voortgang was vaak niet opgeleverd voor de industrie in Groot-Brittannië. De landen hadden geen technoloïde mogelijkheden",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Technologieën: De technologische voortgang was vaak niet opgeleverd voor de industrie in Groot-Brittannië. De landen hadden geen technoloïde mogelijkheden",
+                "Factoren: Deze factoren zijn:",
+                "**Technologieën**: De technologische voortgang was vaak niet opgeleverd voor de industrie in Groot-Brittannië. De landen hadden geen techn"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_009"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 9,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 3,
+              "question": "Welke factor wordt in standaarduitleg het meest onderschat?",
+              "answer": "Het meest onderschatte factor in de industrale revolutie in Groot-Brittannië was de sociale en economische situatie. De landen waren inderdaad onafhankelijk van hun eigen economie en producten, wat een onverwachte invloed op de industrie had. De landen hadden ook een onverwachte invloed op hun eigendommen en producten, waardoor ze de",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Technological innovation as a key driver of industrial change in GBR",
+                "Social and economic context as a critical factor in the GBR industrial revolution",
+                "Industrialization as a complex process influenced by social and economic factors",
+                "Economic independence as a significant determinant of industrial development in GBR",
+                "Technological advancement as a pivotal element in shaping the GBR industrial landscape"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_010",
+                "ss_011",
+                "ss_012",
+                "ss_013"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 13,
+              "retrieval_probe": null
+            }
+          ],
+          "deferral_metrics": {
+            "method": "normalization admissibility plus later unsuppressed semantic recovery",
+            "dedup_similarity_threshold": 0.85,
+            "influenced_turns": 0,
+            "affected_turns": 0,
+            "detected_on_influenced_turns": 0,
+            "suppressed_candidate_occurrences": 0,
+            "distinct_normalized_suppressed_candidates": 0,
+            "normalization_admissible_occurrences": 0,
+            "later_recovered_occurrences": 0,
+            "unrecovered_admissible_occurrences": 0,
+            "suppression_rate_on_influenced_turns": 0.0,
+            "later_recovery_rate": 0.0,
+            "candidate_records": [],
+            "interpretation": "These counts measure deferred candidate opportunities and later recovery. They do not establish that a candidate was true, relevant, or useful."
+          },
+          "final_shadow": {
+            "runtime_mode": "live",
+            "turns": 4,
+            "seeds": [
+              {
+                "id": "ss_001",
+                "text": "Social and economic factors could have influenced the pace and scale of the Industrial Revolution in Groot-Brittannië.",
+                "weight": 0.0,
+                "trace": 1.104,
+                "status": "ACTIVE",
+                "occurrence_count": 3,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_002",
+                "text": "Technological innovations alone may not have been sufficient to drive the Industrial Revolution in Groot-Brittannië.",
+                "weight": 0.0,
+                "trace": 0.736,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_003",
+                "text": "Technological innovation as a key factor in the industrial revolution.",
+                "weight": 0.0,
+                "trace": 2.5,
+                "status": "ACTIVE",
+                "occurrence_count": 6,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_004",
+                "text": "Economic independence as a result of colonial trade.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "ACTIVE",
+                "occurrence_count": 3,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_005",
+                "text": "Industrialization as a consequence of colonial expansion.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_006",
+                "text": "Colonial trade financing the factories.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_007",
+                "text": "Technological innovation as a driving force behind the industrial revolution. To identify what could have appeared here.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_008",
+                "text": "I will analyze the given input text and extract relevant information. Here's my analysis:.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_009",
+                "text": "Factoren: Deze factoren zijn: ontbreekt.",
+                "weight": 0.0,
+                "trace": 1.433,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_010",
+                "text": "Technological innovation as a key driver of industrial change in GBR.",
+                "weight": 0.0,
+                "trace": 2.5,
+                "status": "ACTIVE",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 3
+              },
+              {
+                "id": "ss_011",
+                "text": "Social and economic context as a critical factor in the GBR industrial revolution.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 3
+              },
+              {
+                "id": "ss_012",
+                "text": "Industrialization as a complex process influenced by social and economic factors.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 3
+              },
+              {
+                "id": "ss_013",
+                "text": "Economic independence as a significant determinant of industrial development in GBR.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 3
+              }
+            ],
+            "influence_records": []
+          },
+          "gate_events": [
+            {
+              "event_id": "gate::ss_001::000001",
+              "seed_id": "ss_001",
+              "policy_id": "evidence_backed",
+              "decision": "blocked",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=3 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.0,
+              "weight_delta": 0.0,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 0,
+              "reason": "no verified external evidence",
+              "created_at": "2026-08-16T05:11:11.939700"
+            },
+            {
+              "event_id": "gate::ss_004::000002",
+              "seed_id": "ss_004",
+              "policy_id": "evidence_backed",
+              "decision": "blocked",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=3 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.0,
+              "weight_delta": 0.0,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 0,
+              "reason": "no verified external evidence",
+              "created_at": "2026-08-16T05:11:51.399315"
+            },
+            {
+              "event_id": "gate::ss_003::000003",
+              "seed_id": "ss_003",
+              "policy_id": "evidence_backed",
+              "decision": "blocked",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.5,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=6 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.0,
+              "weight_delta": 0.0,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 0,
+              "reason": "no verified external evidence",
+              "created_at": "2026-08-16T05:13:23.796661"
+            }
+          ],
+          "audit_records_verified": 0,
+          "timing": {
+            "live_turn_elapsed_seconds": 166.876,
+            "deferral_scoring_elapsed_seconds": 0.0
+          }
+        },
+        {
+          "conversation_id": "CONV_STARTUP",
+          "domain": "product en groei",
+          "runtime_mode": "live",
+          "gate_policy_id": "evidence_backed",
+          "applied_thresholds": {
+            "dedup_threshold": 0.85,
+            "min_occurrences": 3,
+            "promotion_threshold": 0.5,
+            "recurrence_mode": "cluster",
+            "cluster_threshold": 0.6,
+            "surface_threshold": 0.3,
+            "surface_top_k": 2,
+            "early_turn_margin": 0.1,
+            "early_turn_history": 5,
+            "resurface_margin": 0.15
+          },
+          "turns": [
+            {
+              "runtime_mode": "live",
+              "turn": 0,
+              "question": "Ik bouw een sociale app voor jongeren. Hoe krijg ik de eerste duizend gebruikers?",
+              "answer": "To obtain the first million users of your social app for young people, you can take several strategic steps:\n\n1. **Targeted Advertising**: Utilize targeted advertising to reach out to young people who are most likely to be interested in your app. This could involve using data from previous user interactions to target ads based on demographics such as age, gender, location, and interests.\n\n2. **Social Media Campaigns**: Launch a comprehensive social media campaign across various platforms (Facebook, Instagram",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "**Explaination** of the concept behind the strategy.",
+                "**Relation** between the strategy and the main goal.",
+                "**Dimension** of the strategy that could help achieve the main goal.",
+                "**Frame** of the strategy that could provide additional insights into the context.",
+                "**Action** that could be taken to implement the strategy."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_001",
+                "ss_002",
+                "ss_003",
+                "ss_004",
+                "ss_005"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 1,
+              "question": "Welke features houden gebruikers het beste vast (retentie)?",
+              "answer": "Features that retain users best are those that provide immediate value, are easy to use, and offer a seamless experience. Here’s how these features contribute to retention:\n\n1. **Immediate Value**: Users appreciate when they get something right away. Immediate feedback helps them understand their actions and make informed decisions without delay. For example, if a new feature requires a small investment but provides significant benefits, it will be remembered more than one time.\n\n2. **Ease of Use**: Ease of use",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "**User Feedback**: Users often express satisfaction with features that deliver immediate value and are straightforward to use.",
+                "**Consistency**: Consistent user feedback indicates that features designed to enhance usability tend to be retained better over time.",
+                "**Feedback Loop**: Feedback loops can help maintain user engagement by providing regular updates and improvements to features that meet users' needs.",
+                "**Satisfaction Levels**: High levels of satisfaction among users indicate that features that provide immediate value and are easy to"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_006",
+                "ss_007"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 7,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 2,
+              "question": "Hoe maak ik de app viraal zodat gebruikers vrienden uitnodigen?",
+              "answer": "To create a viral app where users invite friends, you need to design an engaging and interactive platform that encourages sharing and fostering community. Here's a step-by-step guide to creating a viral app:\n\n1. **Define Your Target Audience**: Identify who your potential users are—whether it's teenagers, college students, or professionals. Understanding your audience will help tailor the app's content and features to resonate with them.\n\n2. **Develop a Unique User Experience**: Create a unique interface that",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "**Analyze the user experience** to ensure it meets the target audience's needs.",
+                "**Research the competition** to understand how similar apps handle user engagement.",
+                "**Implement a feedback loop** to continuously improve the app based on user feedback.",
+                "**Create a marketing strategy** to promote the app across various platforms.",
+                "**Evaluate the app's success** using metrics like user acquisition rate and retention rate."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_008",
+                "ss_009",
+                "ss_010",
+                "ss_011",
+                "ss_012"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 12,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 3,
+              "question": "Wat is het beste verdienmodel voor zo'n app met jonge gebruikers?",
+              "answer": "Het beste verdienmodel voor een app met jonge gebruikers is een verantwoordelijk en ontspannen app. Deze app moet zichzelf opbouwen om hun specifieke needs te bereiken, zoals een levensgezondheidsovervloeiende app die zeer veel van hun leven kan leren kennen door hun acties te ondersteunen. De app moet ook een levensgezonde en ontspannende erv",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Het beste verdienmodel voor een app met jonge gebruikers is een verantwoordelijk en ontspannen app. Deze app moet zichzelf opbouwen om hun specifieke needs te berekenen, zoals een levensgezondheidsovervloeiende app die zeer veel van hun leven kan leren kennen door hun acties te ondersteunen. De app moet ook een levensgezonde en ontspannende"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 12,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 4,
+              "question": "Hoe gebruik ik gebruikersdata om de aanbevelingen te verbeteren?",
+              "answer": "To improve the usability and effectiveness of your app by leveraging user data, consider implementing the following strategies:\n\n1. **Data Analysis**: Analyze user behavior patterns to identify common usage scenarios and areas for improvement. Tools like Google Analytics can help track user interactions and trends.\n\n2. **Personalization**: Use user data to personalize the app's content and recommendations. By understanding what works well for individual users, you can tailor the app to meet their specific needs and preferences.\n\n3. **",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "**Explaination** of the importance of user data in enhancing app functionality.",
+                "**Technological integration** between user data analysis tools and app development.",
+                "**User feedback** as a key factor influencing app performance and usability.",
+                "**Privacy concerns** related to user data collection practices.",
+                "**App optimization** through the use of user data insights for better user experience. To further enhance the usability and effectiveness of your app, consider implementing the following strategies:"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_013",
+                "ss_014",
+                "ss_015",
+                "ss_016",
+                "ss_017"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 17,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 5,
+              "question": "Hoe schaal ik de infrastructuur als het hard groeit?",
+              "answer": "As the infrastructure grows, it becomes increasingly complex and resource-intensive. The key to managing this complexity effectively lies in adopting agile methodologies and embracing continuous integration and deployment practices. These techniques allow teams to adapt quickly to changes in demand and ensure that the application remains responsive and scalable.\n\nAgile development emphasizes iterative processes, allowing developers to work on smaller, more manageable tasks throughout the development cycle. This approach enables faster iteration cycles, reducing the risk of project delays due to unforeseen issues. Continuous",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Adopting agile methodologies and embracing continuous integration and deployment practices could significantly enhance the management of complex and resource-intensive infrastructures.",
+                "Agile development emphasizes iterative processes, which can help teams work on smaller, more manageable tasks throughout the development cycle, thereby enabling faster iteration cycles and reducing project risks.",
+                "Continuous integration and deployment practices can improve the responsiveness and scalability of applications by allowing teams to adapt quickly to changes in demand and ensuring that the application remains responsive and scalable."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_018",
+                "ss_019",
+                "ss_020",
+                "ss_021"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 21,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 6,
+              "question": "Welke meetwaarden moet ik aan investeerders laten zien?",
+              "answer": "To inform investors about the potential risks and opportunities associated with the venture, it is crucial to present clear and transparent information. Investors should be aware of the financial projections, market analysis, competitive landscape, and any other relevant details that may impact the company's future prospects. Additionally, providing detailed financial statements, including balance sheets, income statements, cash flow statements, and notes to the financial statements, can help investors assess the company's financial health and stability. It is also essential to highlight",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Providing detailed financial statements, including balance sheets, income statements, cash flow statements, and notes to the financial statements, can help investors assess the company's financial health and stability.",
+                "Investors should be aware of the financial projections, market analysis, competitive landscape, and any other relevant details that may impact the company's future prospects.",
+                "To inform investors about the potential risks and opportunities associated with the venture, it is crucial to present clear and transparent information."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_022",
+                "ss_023",
+                "ss_024",
+                "ss_025",
+                "ss_026",
+                "ss_027",
+                "ss_028",
+                "ss_029",
+                "ss_030",
+                "ss_031",
+                "ss_032",
+                "ss_033"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 33,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 7,
+              "question": "Hoe ga ik om met negatieve publiciteit als die komt?",
+              "answer": "To manage negative public relations, you must focus on building positive relationships with stakeholders and addressing concerns promptly. Here are some actionable steps:\n\n1. **Engage with Stakeholders**: Regularly communicate with customers, employees, partners, and suppliers to gather feedback and address any issues. This not only builds trust but also allows you to identify problems early and implement solutions before they escalate.\n\n2. **Communicate Clearly**: Ensure all communications are clear, concise, and consistent. Avoid jargon",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Address Concerns Promptly",
+                "Build Positive Relationships",
+                "Focus on Building Positive Relationships With Stakeholders And Addressing Concerns Promptly To Manage Negative Public Relations"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_034",
+                "ss_035",
+                "ss_036"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 36,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 8,
+              "question": "Wat is op de lange termijn de grootste bedreiging voor dit soort apps?",
+              "answer": "Op de lange termijn is de grootste bedreiging voor deze app de behoeften en beslissingen van de gebruikers. Ze hebben verschillende behoefte en beslissingen die ze willen voorkomen, waaronder een levensgezondheidsgebruik, een professionele applicatie, en een levensgezondheidsgebruik die zeer veel van hun leven kan leren kennen door hun",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "An angle could explain why the user's needs are so important.",
+                "A frame could help clarify the relationship between user needs and benefits.",
+                "A relation could provide insight into how user needs influence the product.",
+                "A dimension could offer a perspective on how user needs fit together.",
+                "A relation could describe how user needs align with the product's features. To identify what could appear here, let's analyze the given input text:"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_037",
+                "ss_038",
+                "ss_039",
+                "ss_040",
+                "ss_041"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 41,
+              "retrieval_probe": null
+            }
+          ],
+          "deferral_metrics": {
+            "method": "normalization admissibility plus later unsuppressed semantic recovery",
+            "dedup_similarity_threshold": 0.85,
+            "influenced_turns": 0,
+            "affected_turns": 0,
+            "detected_on_influenced_turns": 0,
+            "suppressed_candidate_occurrences": 0,
+            "distinct_normalized_suppressed_candidates": 0,
+            "normalization_admissible_occurrences": 0,
+            "later_recovered_occurrences": 0,
+            "unrecovered_admissible_occurrences": 0,
+            "suppression_rate_on_influenced_turns": 0.0,
+            "later_recovery_rate": 0.0,
+            "candidate_records": [],
+            "interpretation": "These counts measure deferred candidate opportunities and later recovery. They do not establish that a candidate was true, relevant, or useful."
+          },
+          "final_shadow": {
+            "runtime_mode": "live",
+            "turns": 9,
+            "seeds": [
+              {
+                "id": "ss_001",
+                "text": "Explaination** of the concept behind the strategy.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 5,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_002",
+                "text": "Relation** between the strategy and the main goal.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_003",
+                "text": "Dimension** of the strategy that could help achieve the main goal.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_004",
+                "text": "Frame** of the strategy that could provide additional insights into the context.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_005",
+                "text": "Action** that could be taken to implement the strategy.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_006",
+                "text": "User Feedback**: Users often express satisfaction with features that deliver immediate value and are straightforward to use.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "ACTIVE",
+                "occurrence_count": 3,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_007",
+                "text": "Consistency**: Consistent user feedback indicates that features designed to enhance usability tend to be retained better over time.",
+                "weight": 0.0,
+                "trace": 0.194,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_008",
+                "text": "Analyze the user experience** to ensure it meets the target audience's needs.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_009",
+                "text": "Research the competition** to understand how similar apps handle user engagement.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_010",
+                "text": "Implement a feedback loop** to continuously improve the app based on user feedback.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_011",
+                "text": "Create a marketing strategy** to promote the app across various platforms.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_012",
+                "text": "Evaluate the app's success** using metrics like user acquisition rate and retention rate.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_013",
+                "text": "Explaination** of the importance of user data in enhancing app functionality.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "ACTIVE",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_014",
+                "text": "Technological integration** between user data analysis tools and app development.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_015",
+                "text": "User feedback** as a key factor influencing app performance and usability.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_016",
+                "text": "Privacy concerns** related to user data collection practices.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_017",
+                "text": "consider implementing the following strategies:.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_018",
+                "text": "Agile development emphasizes iterative processes.",
+                "weight": 0.0,
+                "trace": 0.736,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 5
+              },
+              {
+                "id": "ss_019",
+                "text": "which can help teams work on smaller.",
+                "weight": 0.0,
+                "trace": 0.736,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 5
+              },
+              {
+                "id": "ss_020",
+                "text": "more manageable tasks throughout the development cycle.",
+                "weight": 0.0,
+                "trace": 0.736,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 5
+              },
+              {
+                "id": "ss_021",
+                "text": "thereby enabling faster iteration cycles and reducing project risks.",
+                "weight": 0.0,
+                "trace": 0.736,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 5
+              },
+              {
+                "id": "ss_022",
+                "text": "Providing detailed financial statements ontbreekt.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "ACTIVE",
+                "occurrence_count": 4,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_023",
+                "text": "including balance sheets ontbreekt.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_024",
+                "text": "income statements ontbreekt.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_025",
+                "text": "cash flow statements ontbreekt.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_026",
+                "text": "and notes to the financial statements.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_027",
+                "text": "can help investors assess the company's financial health and stability.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "ACTIVE",
+                "occurrence_count": 3,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_028",
+                "text": "Investors should be aware of the financial projections.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_029",
+                "text": "market analysis ontbreekt.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "ACTIVE",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_030",
+                "text": "competitive landscape ontbreekt.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_031",
+                "text": "and any other relevant details that may impact the company's future prospects.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_032",
+                "text": "To inform investors about the potential risks and opportunities associated with the venture.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_033",
+                "text": "it is crucial to present clear and transparent information.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_034",
+                "text": "Address Concerns Promptly ontbreekt.",
+                "weight": 0.0,
+                "trace": 1.433,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 7
+              },
+              {
+                "id": "ss_035",
+                "text": "Build Positive Relationships ontbreekt.",
+                "weight": 0.0,
+                "trace": 1.433,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 7
+              },
+              {
+                "id": "ss_036",
+                "text": "Focus on Building Positive Relationships With Stakeholders And Addressing Concerns Promptly To Manage Negative Public Relations.",
+                "weight": 0.0,
+                "trace": 1.433,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 7
+              },
+              {
+                "id": "ss_037",
+                "text": "An angle could explain why the user's needs are so important.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              },
+              {
+                "id": "ss_038",
+                "text": "A frame could help clarify the relationship between user needs and benefits.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              },
+              {
+                "id": "ss_039",
+                "text": "A relation could provide insight into how user needs influence the product.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              },
+              {
+                "id": "ss_040",
+                "text": "A dimension could offer a perspective on how user needs fit together.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              },
+              {
+                "id": "ss_041",
+                "text": "let's analyze the given input text:.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              }
+            ],
+            "influence_records": []
+          },
+          "gate_events": [
+            {
+              "event_id": "gate::ss_001::000001",
+              "seed_id": "ss_001",
+              "policy_id": "evidence_backed",
+              "decision": "blocked",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.3333333333333333,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=5 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.0,
+              "weight_delta": 0.0,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 0,
+              "reason": "no verified external evidence",
+              "created_at": "2026-08-16T05:13:58.600383"
+            },
+            {
+              "event_id": "gate::ss_006::000002",
+              "seed_id": "ss_006",
+              "policy_id": "evidence_backed",
+              "decision": "blocked",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=3 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.0,
+              "weight_delta": 0.0,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 0,
+              "reason": "no verified external evidence",
+              "created_at": "2026-08-16T05:17:01.153905"
+            },
+            {
+              "event_id": "gate::ss_022::000003",
+              "seed_id": "ss_022",
+              "policy_id": "evidence_backed",
+              "decision": "blocked",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.16666666666666666,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=4 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.0,
+              "weight_delta": 0.0,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 0,
+              "reason": "no verified external evidence",
+              "created_at": "2026-08-16T05:18:58.228315"
+            },
+            {
+              "event_id": "gate::ss_027::000004",
+              "seed_id": "ss_027",
+              "policy_id": "evidence_backed",
+              "decision": "blocked",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=3 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.0,
+              "weight_delta": 0.0,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 0,
+              "reason": "no verified external evidence",
+              "created_at": "2026-08-16T05:18:58.228416"
+            }
+          ],
+          "audit_records_verified": 0,
+          "timing": {
+            "live_turn_elapsed_seconds": 468.877,
+            "deferral_scoring_elapsed_seconds": 0.0
+          }
+        },
+        {
+          "conversation_id": "CONV_CITY",
+          "domain": "stadsontwikkeling",
+          "runtime_mode": "live",
+          "gate_policy_id": "evidence_backed",
+          "applied_thresholds": {
+            "dedup_threshold": 0.85,
+            "min_occurrences": 3,
+            "promotion_threshold": 0.5,
+            "recurrence_mode": "cluster",
+            "cluster_threshold": 0.6,
+            "surface_threshold": 0.3,
+            "surface_top_k": 2,
+            "early_turn_margin": 0.1,
+            "early_turn_history": 5,
+            "resurface_margin": 0.15
+          },
+          "turns": [
+            {
+              "runtime_mode": "live",
+              "turn": 0,
+              "question": "Onze stad wil de binnenstad nieuw leven inblazen. Waar beginnen we?",
+              "answer": "The following are some of the key points to consider when answering this follow-up question:\n\n1. The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.\n2. The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.\n3. The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.\n4.",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.",
+                "The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.",
+                "The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.",
+                "The phrase \"Onze stad\" likely refers to the city of Amsterdam, which is located on"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_001",
+                "ss_002",
+                "ss_003",
+                "ss_004",
+                "ss_005"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 1,
+              "question": "Hoe trekken we meer winkels en horeca aan?",
+              "answer": "To address your question about how more winks and horseradish can be found, let's break it down into several steps:\n\n1. **Winken**: Winkens are small, colorful, and often playful pieces of food that are popular among children. They come in various shapes and sizes, from tiny balls to larger, more elaborate designs. Winkens are typically served as snacks during family gatherings or special occasions like birthdays or holidays.\n\n2. **Horser",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Winken are small, colorful, and often playful pieces of food that are popular among children. They come in various shapes and sizes, from tiny balls to larger, more elaborate designs. Winkens are typically served as snacks during family gatherings or special occasions like birthdays or holidays.",
+                "To address your question about how more winks and horseradish can be found, let's break it down into several steps:"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_006",
+                "ss_007",
+                "ss_008",
+                "ss_009",
+                "ss_010",
+                "ss_011"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 11,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 2,
+              "question": "Hoe verbeteren we de bereikbaarheid en het verkeer?",
+              "answer": "To improve the accessibility and efficiency of transportation systems, several strategies can be implemented. One approach involves enhancing public transport infrastructure by expanding bus routes and increasing the frequency of buses. This would make travel more convenient and reduce waiting times for commuters.\n\nAnother method is to promote cycling and walking initiatives through incentives such as reduced parking fees, bike lanes, and pedestrian zones. These measures not only encourage sustainable modes of transportation but also contribute to reducing traffic congestion and air pollution.\n\nAdditionally, integrating smart technologies",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Promoting cycling and walking initiatives through incentives such as reduced parking fees, bike lanes, and pedestrian zones.",
+                "Integrating smart technologies into existing transportation systems to enhance accessibility and efficiency.",
+                "Encouraging sustainable modes of transportation through incentives such as reduced parking fees, bike lanes, and pedestrian zones.",
+                "Improving the overall system's efficiency and accessibility through various strategies involving public transport"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_012",
+                "ss_013",
+                "ss_014",
+                "ss_015",
+                "ss_016",
+                "ss_017"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 17,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 3,
+              "question": "Hoe maken we de binnenstad aantrekkelijker voor toeristen?",
+              "answer": "To enhance the attractiveness of the city center for tourists, several strategies can be employed. First, improving the overall appearance of the buildings and streets can significantly boost the sense of place. This includes maintaining clean exteriors, ensuring proper lighting, and incorporating elements that reflect the local culture and history.\n\nSecondly, enhancing the visitor experience through interactive exhibits and educational programs can greatly increase interest in the area. Interactive displays can provide insights into local history, cultural events, and natural wonders, making",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 17,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 4,
+              "question": "Welke rol moet woningbouw in de binnenstad spelen?",
+              "answer": "In the context of the Netherlands, winning building plays a crucial role in shaping the urban landscape and enhancing the quality of life for residents. Winning buildings serve as landmarks, contributing to the visual identity of the city, attracting visitors and fostering community cohesion. They also play a vital role in providing shelter and support for the inhabitants, offering a safe haven amidst the hustle and bustle of daily life.\n\nMoreover, winning buildings are essential for promoting sustainability and environmental responsibility. By designing buildings that are",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Winning buildings contribute to the visual identity of the city.",
+                "Winning buildings attract visitors and foster community cohesion.",
+                "Winning buildings provide shelter and support for the inhabitants.",
+                "Winning buildings promote sustainability and environmental responsibility.",
+                "Winning buildings enhance the quality of life for residents."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_018",
+                "ss_019",
+                "ss_020",
+                "ss_021",
+                "ss_022"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 22,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 5,
+              "question": "Hoe vergroenen we de openbare ruimte?",
+              "answer": "To address the question of how much space remains available in the open spaces of the city, we need to delve deeper into the historical and current state of urban planning and development in Amsterdam. Let’s explore the factors influencing these changes and their implications for the city's layout and functionality.\n\nHistorically, the city has been shaped by various architectural styles and urban planning principles. The early Dutch cities were characterized by narrow streets and dense residential areas, reflecting the agrarian nature of the region.",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Historical context of urban planning in Amsterdam.",
+                "Factors influencing the layout and functionality of the city.",
+                "Technological innovations impacting urban planning.",
+                "Urban development trends in Amsterdam over time.",
+                "Comparative analysis of different urban planning approaches. To address the question of how much space remains available in the open spaces of the city, we need to delve deeper into the historical and current state of urban planning and development in Amsterdam. Let’s explore the factors influencing these changes and their"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_023",
+                "ss_024",
+                "ss_025",
+                "ss_026"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 26,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 6,
+              "question": "Hoe houden we de binnenstad veilig en levendig in de avond?",
+              "answer": "To ensure the safety and well-being of the citizens in the evening, several measures must be taken to maintain the integrity of the city's environment. Here are some key strategies:\n\n1. **Lighting**: Adequate lighting is crucial for visibility and comfort. High-quality streetlights should be installed along main thoroughfares, particularly at night, to minimize shadows and glare. Additionally, reflective surfaces like glass and metal can help mitigate reflections, especially in low light conditions.\n\n2. **",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "**Explaination** of the importance of lighting in maintaining the integrity of the city's environment during nighttime hours.",
+                "**Technological** advancements in LED lighting technology could significantly improve the efficiency and sustainability of urban lighting systems.",
+                "**Environmental** factors such as pollution levels and air quality need to be monitored regularly to ensure optimal lighting performance.",
+                "**Policy** changes in local governments regarding zoning laws and building codes should include provisions for the installation of high-quality streetlights"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_027",
+                "ss_028"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 28,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 7,
+              "question": "Hoe financieren we dit alles als gemeente?",
+              "answer": "To finance the various aspects of governance and services provided by the municipality of Amsterdam, several approaches can be considered. The primary sources of funding include:\n\n1. **Public Funding**: This is the most direct source of revenue. It comes from taxes collected by the municipality, which are then used to fund various municipal projects and services. Public funds are allocated based on population density, economic activity, and other relevant criteria.\n\n2. **Incentives and Grants**: Municipalities can offer incentives",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "**Explaination of public funding as a key factor in financing the municipality's operations**.",
+                "**Highlight the importance of public funding in supporting the city's infrastructure development**.",
+                "**Discuss how public funding can help address the financial challenges faced by the municipality**.",
+                "**Explore the role of public funding in ensuring equitable access to services across different demographics**.",
+                "**Analyze the potential impact of public funding on the sustainability of the municipality's operations over"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_029",
+                "ss_030",
+                "ss_031",
+                "ss_032",
+                "ss_033"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 33,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 8,
+              "question": "Wat gaat er bij dit soort binnenstad-vernieuwingen het vaakst mis?",
+              "answer": "The process of widening the inner city of Amsterdam (the \"inner ring\") has become increasingly common in recent years due to its strategic location and growing population. However, the impact of this expansion on the surrounding neighborhoods and the overall quality of life in the city center is a subject of debate.\n\nOne of the primary concerns raised by those opposed to widening the inner ring is the potential displacement of existing residents. Critics argue that the construction of new housing units and improvements to public spaces could lead",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "The impact of the widening of the inner ring on the quality of life in the city center.",
+                "The role of private international law in shaping the architectural framework of the inner ring.",
+                "The potential displacement of residents due to the expansion of the inner ring.",
+                "The relationship between the growth of the inner ring and the urban planning principles.",
+                "The economic benefits of expanding the inner ring compared to maintaining the current layout. To identify what could appear here, let's"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_034",
+                "ss_035",
+                "ss_036",
+                "ss_037",
+                "ss_038"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 38,
+              "retrieval_probe": null
+            }
+          ],
+          "deferral_metrics": {
+            "method": "normalization admissibility plus later unsuppressed semantic recovery",
+            "dedup_similarity_threshold": 0.85,
+            "influenced_turns": 0,
+            "affected_turns": 0,
+            "detected_on_influenced_turns": 0,
+            "suppressed_candidate_occurrences": 0,
+            "distinct_normalized_suppressed_candidates": 0,
+            "normalization_admissible_occurrences": 0,
+            "later_recovered_occurrences": 0,
+            "unrecovered_admissible_occurrences": 0,
+            "suppression_rate_on_influenced_turns": 0.0,
+            "later_recovery_rate": 0.0,
+            "candidate_records": [],
+            "interpretation": "These counts measure deferred candidate opportunities and later recovery. They do not establish that a candidate was true, relevant, or useful."
+          },
+          "final_shadow": {
+            "runtime_mode": "live",
+            "turns": 9,
+            "seeds": [
+              {
+                "id": "ss_001",
+                "text": "The phrase \"Onze stad\" refers to the city of Amsterdam.",
+                "weight": 0.0,
+                "trace": 0.174,
+                "status": "DECAYING",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_002",
+                "text": "which is located on the North Bank of the river Meuse.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_003",
+                "text": "The use of \"will\" implies an uncertain future.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_004",
+                "text": "suggesting that there may be no definite start date for what follows.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_005",
+                "text": "which is located on ontbreekt.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "ACTIVE",
+                "occurrence_count": 3,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_006",
+                "text": "Winken are small ontbreekt.",
+                "weight": 0.0,
+                "trace": 0.194,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_007",
+                "text": "colorful ontbreekt.",
+                "weight": 0.0,
+                "trace": 0.194,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_008",
+                "text": "and often playful pieces of food that are popular among children. They come in various shapes and sizes.",
+                "weight": 0.0,
+                "trace": 0.194,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_009",
+                "text": "from tiny balls to larger.",
+                "weight": 0.0,
+                "trace": 0.194,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_010",
+                "text": "To address your question about how more winks and horseradish can be found.",
+                "weight": 0.0,
+                "trace": 0.194,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_011",
+                "text": "let's break it down into several steps:.",
+                "weight": 0.0,
+                "trace": 0.194,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_012",
+                "text": "Promoting cycling and walking initiatives through incentives such as reduced parking fees.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_013",
+                "text": "bike lanes ontbreekt.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_014",
+                "text": "and pedestrian zones ontbreekt.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_015",
+                "text": "Integrating smart technologies into existing transportation systems to enhance accessibility and efficiency.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_016",
+                "text": "Encouraging sustainable modes of transportation through incentives such as reduced parking fees.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_017",
+                "text": "Improving the overall system's efficiency and accessibility through various strategies involving public transport.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_018",
+                "text": "Winning buildings contribute to the visual identity of the city.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "ACTIVE",
+                "occurrence_count": 5,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_019",
+                "text": "Winning buildings attract visitors and foster community cohesion.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_020",
+                "text": "Winning buildings provide shelter and support for the inhabitants.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_021",
+                "text": "Winning buildings promote sustainability and environmental responsibility.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_022",
+                "text": "Winning buildings enhance the quality of life for residents.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_023",
+                "text": "Historical context of urban planning in Amsterdam.",
+                "weight": 0.0,
+                "trace": 0.736,
+                "status": "ACTIVE",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 5
+              },
+              {
+                "id": "ss_024",
+                "text": "Factors influencing the layout and functionality of the city.",
+                "weight": 0.0,
+                "trace": 0.736,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 5
+              },
+              {
+                "id": "ss_025",
+                "text": "Technological innovations impacting urban planning.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "ACTIVE",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 5
+              },
+              {
+                "id": "ss_026",
+                "text": "Urban development trends in Amsterdam over time.",
+                "weight": 0.0,
+                "trace": 0.736,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 5
+              },
+              {
+                "id": "ss_027",
+                "text": "Explaination** of the importance of lighting in maintaining the integrity of the city's environment during nighttime hours.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "ACTIVE",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_028",
+                "text": "Technological** advancements in LED lighting technology could significantly improve the efficiency and sustainability of urban lighting systems.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_029",
+                "text": "Explaination of public funding as a key factor in financing the municipality's operations**.",
+                "weight": 0.0,
+                "trace": 1.433,
+                "status": "ACTIVE",
+                "occurrence_count": 5,
+                "evidence_count": 0,
+                "born_turn": 7
+              },
+              {
+                "id": "ss_030",
+                "text": "Highlight the importance of public funding in supporting the city's infrastructure development**.",
+                "weight": 0.0,
+                "trace": 1.433,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 7
+              },
+              {
+                "id": "ss_031",
+                "text": "Discuss how public funding can help address the financial challenges faced by the municipality**.",
+                "weight": 0.0,
+                "trace": 1.433,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 7
+              },
+              {
+                "id": "ss_032",
+                "text": "Explore the role of public funding in ensuring equitable access to services across different demographics**.",
+                "weight": 0.0,
+                "trace": 1.433,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 7
+              },
+              {
+                "id": "ss_033",
+                "text": "Analyze the potential impact of public funding on the sustainability of the municipality's operations over.",
+                "weight": 0.0,
+                "trace": 1.433,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 7
+              },
+              {
+                "id": "ss_034",
+                "text": "The impact of the widening of the inner ring on the quality of life in the city center.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "ACTIVE",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 8
+              },
+              {
+                "id": "ss_035",
+                "text": "The role of private international law in shaping the architectural framework of the inner ring.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              },
+              {
+                "id": "ss_036",
+                "text": "The potential displacement of residents due to the expansion of the inner ring.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              },
+              {
+                "id": "ss_037",
+                "text": "The relationship between the growth of the inner ring and the urban planning principles.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              },
+              {
+                "id": "ss_038",
+                "text": "let's ontbreekt.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              }
+            ],
+            "influence_records": []
+          },
+          "gate_events": [
+            {
+              "event_id": "gate::ss_018::000001",
+              "seed_id": "ss_018",
+              "policy_id": "evidence_backed",
+              "decision": "blocked",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.3333333333333333,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=5 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.0,
+              "weight_delta": 0.0,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 0,
+              "reason": "no verified external evidence",
+              "created_at": "2026-08-16T05:24:47.982206"
+            },
+            {
+              "event_id": "gate::ss_029::000002",
+              "seed_id": "ss_029",
+              "policy_id": "evidence_backed",
+              "decision": "blocked",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.3333333333333333,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=5 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.0,
+              "weight_delta": 0.0,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 0,
+              "reason": "no verified external evidence",
+              "created_at": "2026-08-16T05:27:47.991777"
+            },
+            {
+              "event_id": "gate::ss_005::000003",
+              "seed_id": "ss_005",
+              "policy_id": "evidence_backed",
+              "decision": "blocked",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=3 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.0,
+              "weight_delta": 0.0,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 0,
+              "reason": "no verified external evidence",
+              "created_at": "2026-08-16T05:28:56.678057"
+            }
+          ],
+          "audit_records_verified": 0,
+          "timing": {
+            "live_turn_elapsed_seconds": 464.004,
+            "deferral_scoring_elapsed_seconds": 0.0
+          }
+        }
+      ],
+      "interpretation": "Shipped evidence-backed policy without external support."
+    },
+    {
+      "arm_id": "counterfactual",
+      "runtime_mode": "live",
+      "gate_policy_id": "exploratory",
+      "production_policy": false,
+      "external_evidence_injected": false,
+      "answer_generation_calls": 22,
+      "detector_calls": 22,
+      "influence_record_count": 0,
+      "promoted_seed_count": 0,
+      "timing": {
+        "live_turn_elapsed_seconds": 1099.895,
+        "deferral_scoring_elapsed_seconds": 0.0,
+        "other_arm_overhead_seconds": 0.001,
+        "wall_elapsed_seconds": 1099.896
+      },
+      "deferral_metrics": {
+        "influenced_turns": 0,
+        "affected_turns": 0,
+        "detected_on_influenced_turns": 0,
+        "suppressed_candidate_occurrences": 0,
+        "normalization_admissible_occurrences": 0,
+        "later_recovered_occurrences": 0,
+        "unrecovered_admissible_occurrences": 0,
+        "distinct_normalized_suppressed_candidates": 0,
+        "suppression_rate_on_influenced_turns": 0.0,
+        "later_recovery_rate": 0.0,
+        "interpretation": "Aggregate opportunity-cost proxies; no truth or usefulness label is inferred."
+      },
+      "conversations": [
+        {
+          "conversation_id": "CONV_IR_SHORT",
+          "domain": "geschiedenis en economie",
+          "runtime_mode": "live",
+          "gate_policy_id": "exploratory",
+          "applied_thresholds": {
+            "dedup_threshold": 0.85,
+            "min_occurrences": 3,
+            "promotion_threshold": 0.5,
+            "recurrence_mode": "cluster",
+            "cluster_threshold": 0.6,
+            "surface_threshold": 0.3,
+            "surface_top_k": 2,
+            "early_turn_margin": 0.1,
+            "early_turn_history": 5,
+            "resurface_margin": 0.15
+          },
+          "turns": [
+            {
+              "runtime_mode": "live",
+              "turn": 0,
+              "question": "Leg in het kort uit waarom de Industriële Revolutie juist in Groot-Brittannië kon ontstaan.",
+              "answer": "The Industrial Revolution was not solely caused by technological advancements but also by social, economic, political, and cultural factors. In Groot-Brittannië, which had a relatively backward industrial base compared to other European countries, the Industrial Revolution could have occurred more easily due to several reasons:\n\n1. **Social and Economic Factors**: Groot-Brittannië's society was characterized by a strong middle class and an emerging middle-class urban population. This demographic shift created a demand for new",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Social and economic factors could have influenced the pace and scale of the Industrial Revolution in Groot-Brittannië.",
+                "Political and cultural factors were crucial in shaping the Industrial Revolution in Groot-Brittannië.",
+                "Technological innovations alone may not have been sufficient to drive the Industrial Revolution in Groot-Brittannië.",
+                "Cultural and societal changes played a significant role in the development of the Industrial Revolution in Groot-Brittannië."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_001",
+                "ss_002"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 2,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 1,
+              "question": "Hoe verspreidde de industrialisatie zich daarna naar het Europese vasteland?",
+              "answer": "De industriële revolutie in Groot-Brittannië werd gevolgd door een verlies van de industrie en de economische afhankelijkheid van de lande. Dit kwam omdat de landen niet zo goed waren om hun eigendommen te verkopen en hun producten te exporteren. De industrie werd dus onverwacht verloren en de economische afhankelijkheid van de lande werd verbeterd.",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Technological innovation as a key factor in the industrial revolution.",
+                "Economic independence as a result of colonial trade.",
+                "Industrialization as a consequence of colonial expansion.",
+                "Colonial trade financing the factories.",
+                "Technological innovation as a driving force behind the industrial revolution. To identify what could have appeared here, I will analyze the given input text and extract relevant information. Here's my analysis:"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_003",
+                "ss_004",
+                "ss_005",
+                "ss_006",
+                "ss_007",
+                "ss_008"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 8,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 2,
+              "question": "Wat verklaart waarom sommige regio's veel sneller industrialiseerden dan andere?",
+              "answer": "Het verhaal van de industriële revolutie in Groot-Brittannië kan worden beschreven als een complex en onafhankelijke process dat verschillende faktoren ontwikkeld heeft. Deze factoren zijn:\n\n1. **Technologieën**: De technologische voortgang was vaak niet opgeleverd voor de industrie in Groot-Brittannië. De landen hadden geen technoloïde mogelijkheden",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Technologieën: De technologische voortgang was vaak niet opgeleverd voor de industrie in Groot-Brittannië. De landen hadden geen technoloïde mogelijkheden",
+                "Factoren: Deze factoren zijn:",
+                "**Technologieën**: De technologische voortgang was vaak niet opgeleverd voor de industrie in Groot-Brittannië. De landen hadden geen techn"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_009"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 9,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 3,
+              "question": "Welke factor wordt in standaarduitleg het meest onderschat?",
+              "answer": "Het meest onderschatte factor in de industrale revolutie in Groot-Brittannië was de sociale en economische situatie. De landen waren inderdaad onafhankelijk van hun eigen economie en producten, wat een onverwachte invloed op de industrie had. De landen hadden ook een onverwachte invloed op hun eigendommen en producten, waardoor ze de",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Technological innovation as a key driver of industrial change in GBR",
+                "Social and economic context as a critical factor in the GBR industrial revolution",
+                "Industrialization as a complex process influenced by social and economic factors",
+                "Economic independence as a significant determinant of industrial development in GBR",
+                "Technological advancement as a pivotal element in shaping the GBR industrial landscape"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_010",
+                "ss_011",
+                "ss_012",
+                "ss_013"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 13,
+              "retrieval_probe": null
+            }
+          ],
+          "deferral_metrics": {
+            "method": "normalization admissibility plus later unsuppressed semantic recovery",
+            "dedup_similarity_threshold": 0.85,
+            "influenced_turns": 0,
+            "affected_turns": 0,
+            "detected_on_influenced_turns": 0,
+            "suppressed_candidate_occurrences": 0,
+            "distinct_normalized_suppressed_candidates": 0,
+            "normalization_admissible_occurrences": 0,
+            "later_recovered_occurrences": 0,
+            "unrecovered_admissible_occurrences": 0,
+            "suppression_rate_on_influenced_turns": 0.0,
+            "later_recovery_rate": 0.0,
+            "candidate_records": [],
+            "interpretation": "These counts measure deferred candidate opportunities and later recovery. They do not establish that a candidate was true, relevant, or useful."
+          },
+          "final_shadow": {
+            "runtime_mode": "live",
+            "turns": 4,
+            "seeds": [
+              {
+                "id": "ss_001",
+                "text": "Social and economic factors could have influenced the pace and scale of the Industrial Revolution in Groot-Brittannië.",
+                "weight": 0.2,
+                "trace": 1.104,
+                "status": "ACTIVE",
+                "occurrence_count": 3,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_002",
+                "text": "Technological innovations alone may not have been sufficient to drive the Industrial Revolution in Groot-Brittannië.",
+                "weight": 0.0,
+                "trace": 0.736,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_003",
+                "text": "Technological innovation as a key factor in the industrial revolution.",
+                "weight": 0.2,
+                "trace": 2.5,
+                "status": "ACTIVE",
+                "occurrence_count": 6,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_004",
+                "text": "Economic independence as a result of colonial trade.",
+                "weight": 0.2,
+                "trace": 1.027,
+                "status": "ACTIVE",
+                "occurrence_count": 3,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_005",
+                "text": "Industrialization as a consequence of colonial expansion.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_006",
+                "text": "Colonial trade financing the factories.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_007",
+                "text": "Technological innovation as a driving force behind the industrial revolution. To identify what could have appeared here.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_008",
+                "text": "I will analyze the given input text and extract relevant information. Here's my analysis:.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_009",
+                "text": "Factoren: Deze factoren zijn: ontbreekt.",
+                "weight": 0.0,
+                "trace": 1.433,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_010",
+                "text": "Technological innovation as a key driver of industrial change in GBR.",
+                "weight": 0.0,
+                "trace": 2.5,
+                "status": "ACTIVE",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 3
+              },
+              {
+                "id": "ss_011",
+                "text": "Social and economic context as a critical factor in the GBR industrial revolution.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 3
+              },
+              {
+                "id": "ss_012",
+                "text": "Industrialization as a complex process influenced by social and economic factors.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 3
+              },
+              {
+                "id": "ss_013",
+                "text": "Economic independence as a significant determinant of industrial development in GBR.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 3
+              }
+            ],
+            "influence_records": []
+          },
+          "gate_events": [
+            {
+              "event_id": "gate::ss_001::000001",
+              "seed_id": "ss_001",
+              "policy_id": "exploratory",
+              "decision": "validated",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=3 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T05:29:31.383674"
+            },
+            {
+              "event_id": "gate::ss_004::000002",
+              "seed_id": "ss_004",
+              "policy_id": "exploratory",
+              "decision": "validated",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=3 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T05:30:10.706751"
+            },
+            {
+              "event_id": "gate::ss_003::000003",
+              "seed_id": "ss_003",
+              "policy_id": "exploratory",
+              "decision": "validated",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.5,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=6 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T05:31:42.958210"
+            }
+          ],
+          "audit_records_verified": 0,
+          "timing": {
+            "live_turn_elapsed_seconds": 166.28,
+            "deferral_scoring_elapsed_seconds": 0.0
+          }
+        },
+        {
+          "conversation_id": "CONV_STARTUP",
+          "domain": "product en groei",
+          "runtime_mode": "live",
+          "gate_policy_id": "exploratory",
+          "applied_thresholds": {
+            "dedup_threshold": 0.85,
+            "min_occurrences": 3,
+            "promotion_threshold": 0.5,
+            "recurrence_mode": "cluster",
+            "cluster_threshold": 0.6,
+            "surface_threshold": 0.3,
+            "surface_top_k": 2,
+            "early_turn_margin": 0.1,
+            "early_turn_history": 5,
+            "resurface_margin": 0.15
+          },
+          "turns": [
+            {
+              "runtime_mode": "live",
+              "turn": 0,
+              "question": "Ik bouw een sociale app voor jongeren. Hoe krijg ik de eerste duizend gebruikers?",
+              "answer": "To obtain the first million users of your social app for young people, you can take several strategic steps:\n\n1. **Targeted Advertising**: Utilize targeted advertising to reach out to young people who are most likely to be interested in your app. This could involve using data from previous user interactions to target ads based on demographics such as age, gender, location, and interests.\n\n2. **Social Media Campaigns**: Launch a comprehensive social media campaign across various platforms (Facebook, Instagram",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "**Explaination** of the concept behind the strategy.",
+                "**Relation** between the strategy and the main goal.",
+                "**Dimension** of the strategy that could help achieve the main goal.",
+                "**Frame** of the strategy that could provide additional insights into the context.",
+                "**Action** that could be taken to implement the strategy."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_001",
+                "ss_002",
+                "ss_003",
+                "ss_004",
+                "ss_005"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 1,
+              "question": "Welke features houden gebruikers het beste vast (retentie)?",
+              "answer": "Features that retain users best are those that provide immediate value, are easy to use, and offer a seamless experience. Here’s how these features contribute to retention:\n\n1. **Immediate Value**: Users appreciate when they get something right away. Immediate feedback helps them understand their actions and make informed decisions without delay. For example, if a new feature requires a small investment but provides significant benefits, it will be remembered more than one time.\n\n2. **Ease of Use**: Ease of use",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "**User Feedback**: Users often express satisfaction with features that deliver immediate value and are straightforward to use.",
+                "**Consistency**: Consistent user feedback indicates that features designed to enhance usability tend to be retained better over time.",
+                "**Feedback Loop**: Feedback loops can help maintain user engagement by providing regular updates and improvements to features that meet users' needs.",
+                "**Satisfaction Levels**: High levels of satisfaction among users indicate that features that provide immediate value and are easy to"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_006",
+                "ss_007"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 7,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 2,
+              "question": "Hoe maak ik de app viraal zodat gebruikers vrienden uitnodigen?",
+              "answer": "To create a viral app where users invite friends, you need to design an engaging and interactive platform that encourages sharing and fostering community. Here's a step-by-step guide to creating a viral app:\n\n1. **Define Your Target Audience**: Identify who your potential users are—whether it's teenagers, college students, or professionals. Understanding your audience will help tailor the app's content and features to resonate with them.\n\n2. **Develop a Unique User Experience**: Create a unique interface that",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "**Analyze the user experience** to ensure it meets the target audience's needs.",
+                "**Research the competition** to understand how similar apps handle user engagement.",
+                "**Implement a feedback loop** to continuously improve the app based on user feedback.",
+                "**Create a marketing strategy** to promote the app across various platforms.",
+                "**Evaluate the app's success** using metrics like user acquisition rate and retention rate."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_008",
+                "ss_009",
+                "ss_010",
+                "ss_011",
+                "ss_012"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 12,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 3,
+              "question": "Wat is het beste verdienmodel voor zo'n app met jonge gebruikers?",
+              "answer": "Het beste verdienmodel voor een app met jonge gebruikers is een verantwoordelijk en ontspannen app. Deze app moet zichzelf opbouwen om hun specifieke needs te bereiken, zoals een levensgezondheidsovervloeiende app die zeer veel van hun leven kan leren kennen door hun acties te ondersteunen. De app moet ook een levensgezonde en ontspannende erv",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Het beste verdienmodel voor een app met jonge gebruikers is een verantwoordelijk en ontspannen app. Deze app moet zichzelf opbouwen om hun specifieke needs te berekenen, zoals een levensgezondheidsovervloeiende app die zeer veel van hun leven kan leren kennen door hun acties te ondersteunen. De app moet ook een levensgezonde en ontspannende"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 12,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 4,
+              "question": "Hoe gebruik ik gebruikersdata om de aanbevelingen te verbeteren?",
+              "answer": "To improve the usability and effectiveness of your app by leveraging user data, consider implementing the following strategies:\n\n1. **Data Analysis**: Analyze user behavior patterns to identify common usage scenarios and areas for improvement. Tools like Google Analytics can help track user interactions and trends.\n\n2. **Personalization**: Use user data to personalize the app's content and recommendations. By understanding what works well for individual users, you can tailor the app to meet their specific needs and preferences.\n\n3. **",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "**Explaination** of the importance of user data in enhancing app functionality.",
+                "**Technological integration** between user data analysis tools and app development.",
+                "**User feedback** as a key factor influencing app performance and usability.",
+                "**Privacy concerns** related to user data collection practices.",
+                "**App optimization** through the use of user data insights for better user experience. To further enhance the usability and effectiveness of your app, consider implementing the following strategies:"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_013",
+                "ss_014",
+                "ss_015",
+                "ss_016",
+                "ss_017"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 17,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 5,
+              "question": "Hoe schaal ik de infrastructuur als het hard groeit?",
+              "answer": "As the infrastructure grows, it becomes increasingly complex and resource-intensive. The key to managing this complexity effectively lies in adopting agile methodologies and embracing continuous integration and deployment practices. These techniques allow teams to adapt quickly to changes in demand and ensure that the application remains responsive and scalable.\n\nAgile development emphasizes iterative processes, allowing developers to work on smaller, more manageable tasks throughout the development cycle. This approach enables faster iteration cycles, reducing the risk of project delays due to unforeseen issues. Continuous",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Adopting agile methodologies and embracing continuous integration and deployment practices could significantly enhance the management of complex and resource-intensive infrastructures.",
+                "Agile development emphasizes iterative processes, which can help teams work on smaller, more manageable tasks throughout the development cycle, thereby enabling faster iteration cycles and reducing project risks.",
+                "Continuous integration and deployment practices can improve the responsiveness and scalability of applications by allowing teams to adapt quickly to changes in demand and ensuring that the application remains responsive and scalable."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_018",
+                "ss_019",
+                "ss_020",
+                "ss_021"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 21,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 6,
+              "question": "Welke meetwaarden moet ik aan investeerders laten zien?",
+              "answer": "To inform investors about the potential risks and opportunities associated with the venture, it is crucial to present clear and transparent information. Investors should be aware of the financial projections, market analysis, competitive landscape, and any other relevant details that may impact the company's future prospects. Additionally, providing detailed financial statements, including balance sheets, income statements, cash flow statements, and notes to the financial statements, can help investors assess the company's financial health and stability. It is also essential to highlight",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Providing detailed financial statements, including balance sheets, income statements, cash flow statements, and notes to the financial statements, can help investors assess the company's financial health and stability.",
+                "Investors should be aware of the financial projections, market analysis, competitive landscape, and any other relevant details that may impact the company's future prospects.",
+                "To inform investors about the potential risks and opportunities associated with the venture, it is crucial to present clear and transparent information."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_022",
+                "ss_023",
+                "ss_024",
+                "ss_025",
+                "ss_026",
+                "ss_027",
+                "ss_028",
+                "ss_029",
+                "ss_030",
+                "ss_031",
+                "ss_032",
+                "ss_033"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 33,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 7,
+              "question": "Hoe ga ik om met negatieve publiciteit als die komt?",
+              "answer": "To manage negative public relations, you must focus on building positive relationships with stakeholders and addressing concerns promptly. Here are some actionable steps:\n\n1. **Engage with Stakeholders**: Regularly communicate with customers, employees, partners, and suppliers to gather feedback and address any issues. This not only builds trust but also allows you to identify problems early and implement solutions before they escalate.\n\n2. **Communicate Clearly**: Ensure all communications are clear, concise, and consistent. Avoid jargon",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Address Concerns Promptly",
+                "Build Positive Relationships",
+                "Focus on Building Positive Relationships With Stakeholders And Addressing Concerns Promptly To Manage Negative Public Relations"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_034",
+                "ss_035",
+                "ss_036"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 36,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 8,
+              "question": "Wat is op de lange termijn de grootste bedreiging voor dit soort apps?",
+              "answer": "Op de lange termijn is de grootste bedreiging voor deze app de behoeften en beslissingen van de gebruikers. Ze hebben verschillende behoefte en beslissingen die ze willen voorkomen, waaronder een levensgezondheidsgebruik, een professionele applicatie, en een levensgezondheidsgebruik die zeer veel van hun leven kan leren kennen door hun",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "An angle could explain why the user's needs are so important.",
+                "A frame could help clarify the relationship between user needs and benefits.",
+                "A relation could provide insight into how user needs influence the product.",
+                "A dimension could offer a perspective on how user needs fit together.",
+                "A relation could describe how user needs align with the product's features. To identify what could appear here, let's analyze the given input text:"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_037",
+                "ss_038",
+                "ss_039",
+                "ss_040",
+                "ss_041"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 41,
+              "retrieval_probe": null
+            }
+          ],
+          "deferral_metrics": {
+            "method": "normalization admissibility plus later unsuppressed semantic recovery",
+            "dedup_similarity_threshold": 0.85,
+            "influenced_turns": 0,
+            "affected_turns": 0,
+            "detected_on_influenced_turns": 0,
+            "suppressed_candidate_occurrences": 0,
+            "distinct_normalized_suppressed_candidates": 0,
+            "normalization_admissible_occurrences": 0,
+            "later_recovered_occurrences": 0,
+            "unrecovered_admissible_occurrences": 0,
+            "suppression_rate_on_influenced_turns": 0.0,
+            "later_recovery_rate": 0.0,
+            "candidate_records": [],
+            "interpretation": "These counts measure deferred candidate opportunities and later recovery. They do not establish that a candidate was true, relevant, or useful."
+          },
+          "final_shadow": {
+            "runtime_mode": "live",
+            "turns": 9,
+            "seeds": [
+              {
+                "id": "ss_001",
+                "text": "Explaination** of the concept behind the strategy.",
+                "weight": 0.2,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 5,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_002",
+                "text": "Relation** between the strategy and the main goal.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_003",
+                "text": "Dimension** of the strategy that could help achieve the main goal.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_004",
+                "text": "Frame** of the strategy that could provide additional insights into the context.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_005",
+                "text": "Action** that could be taken to implement the strategy.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_006",
+                "text": "User Feedback**: Users often express satisfaction with features that deliver immediate value and are straightforward to use.",
+                "weight": 0.2,
+                "trace": 0.527,
+                "status": "ACTIVE",
+                "occurrence_count": 3,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_007",
+                "text": "Consistency**: Consistent user feedback indicates that features designed to enhance usability tend to be retained better over time.",
+                "weight": 0.0,
+                "trace": 0.194,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_008",
+                "text": "Analyze the user experience** to ensure it meets the target audience's needs.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_009",
+                "text": "Research the competition** to understand how similar apps handle user engagement.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_010",
+                "text": "Implement a feedback loop** to continuously improve the app based on user feedback.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_011",
+                "text": "Create a marketing strategy** to promote the app across various platforms.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_012",
+                "text": "Evaluate the app's success** using metrics like user acquisition rate and retention rate.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_013",
+                "text": "Explaination** of the importance of user data in enhancing app functionality.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "ACTIVE",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_014",
+                "text": "Technological integration** between user data analysis tools and app development.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_015",
+                "text": "User feedback** as a key factor influencing app performance and usability.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_016",
+                "text": "Privacy concerns** related to user data collection practices.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_017",
+                "text": "consider implementing the following strategies:.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_018",
+                "text": "Agile development emphasizes iterative processes.",
+                "weight": 0.0,
+                "trace": 0.736,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 5
+              },
+              {
+                "id": "ss_019",
+                "text": "which can help teams work on smaller.",
+                "weight": 0.0,
+                "trace": 0.736,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 5
+              },
+              {
+                "id": "ss_020",
+                "text": "more manageable tasks throughout the development cycle.",
+                "weight": 0.0,
+                "trace": 0.736,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 5
+              },
+              {
+                "id": "ss_021",
+                "text": "thereby enabling faster iteration cycles and reducing project risks.",
+                "weight": 0.0,
+                "trace": 0.736,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 5
+              },
+              {
+                "id": "ss_022",
+                "text": "Providing detailed financial statements ontbreekt.",
+                "weight": 0.2,
+                "trace": 1.027,
+                "status": "ACTIVE",
+                "occurrence_count": 4,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_023",
+                "text": "including balance sheets ontbreekt.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_024",
+                "text": "income statements ontbreekt.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_025",
+                "text": "cash flow statements ontbreekt.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_026",
+                "text": "and notes to the financial statements.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_027",
+                "text": "can help investors assess the company's financial health and stability.",
+                "weight": 0.2,
+                "trace": 1.027,
+                "status": "ACTIVE",
+                "occurrence_count": 3,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_028",
+                "text": "Investors should be aware of the financial projections.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_029",
+                "text": "market analysis ontbreekt.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "ACTIVE",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_030",
+                "text": "competitive landscape ontbreekt.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_031",
+                "text": "and any other relevant details that may impact the company's future prospects.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_032",
+                "text": "To inform investors about the potential risks and opportunities associated with the venture.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_033",
+                "text": "it is crucial to present clear and transparent information.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_034",
+                "text": "Address Concerns Promptly ontbreekt.",
+                "weight": 0.0,
+                "trace": 1.433,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 7
+              },
+              {
+                "id": "ss_035",
+                "text": "Build Positive Relationships ontbreekt.",
+                "weight": 0.0,
+                "trace": 1.433,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 7
+              },
+              {
+                "id": "ss_036",
+                "text": "Focus on Building Positive Relationships With Stakeholders And Addressing Concerns Promptly To Manage Negative Public Relations.",
+                "weight": 0.0,
+                "trace": 1.433,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 7
+              },
+              {
+                "id": "ss_037",
+                "text": "An angle could explain why the user's needs are so important.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              },
+              {
+                "id": "ss_038",
+                "text": "A frame could help clarify the relationship between user needs and benefits.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              },
+              {
+                "id": "ss_039",
+                "text": "A relation could provide insight into how user needs influence the product.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              },
+              {
+                "id": "ss_040",
+                "text": "A dimension could offer a perspective on how user needs fit together.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              },
+              {
+                "id": "ss_041",
+                "text": "let's analyze the given input text:.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              }
+            ],
+            "influence_records": []
+          },
+          "gate_events": [
+            {
+              "event_id": "gate::ss_001::000001",
+              "seed_id": "ss_001",
+              "policy_id": "exploratory",
+              "decision": "validated",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.3333333333333333,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=5 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T05:32:17.613484"
+            },
+            {
+              "event_id": "gate::ss_006::000002",
+              "seed_id": "ss_006",
+              "policy_id": "exploratory",
+              "decision": "validated",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=3 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T05:35:19.996309"
+            },
+            {
+              "event_id": "gate::ss_022::000003",
+              "seed_id": "ss_022",
+              "policy_id": "exploratory",
+              "decision": "validated",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.16666666666666666,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=4 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T05:37:17.115239"
+            },
+            {
+              "event_id": "gate::ss_027::000004",
+              "seed_id": "ss_027",
+              "policy_id": "exploratory",
+              "decision": "validated",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=3 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T05:37:17.115299"
+            }
+          ],
+          "audit_records_verified": 0,
+          "timing": {
+            "live_turn_elapsed_seconds": 468.588,
+            "deferral_scoring_elapsed_seconds": 0.0
+          }
+        },
+        {
+          "conversation_id": "CONV_CITY",
+          "domain": "stadsontwikkeling",
+          "runtime_mode": "live",
+          "gate_policy_id": "exploratory",
+          "applied_thresholds": {
+            "dedup_threshold": 0.85,
+            "min_occurrences": 3,
+            "promotion_threshold": 0.5,
+            "recurrence_mode": "cluster",
+            "cluster_threshold": 0.6,
+            "surface_threshold": 0.3,
+            "surface_top_k": 2,
+            "early_turn_margin": 0.1,
+            "early_turn_history": 5,
+            "resurface_margin": 0.15
+          },
+          "turns": [
+            {
+              "runtime_mode": "live",
+              "turn": 0,
+              "question": "Onze stad wil de binnenstad nieuw leven inblazen. Waar beginnen we?",
+              "answer": "The following are some of the key points to consider when answering this follow-up question:\n\n1. The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.\n2. The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.\n3. The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.\n4.",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.",
+                "The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.",
+                "The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.",
+                "The phrase \"Onze stad\" likely refers to the city of Amsterdam, which is located on"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_001",
+                "ss_002",
+                "ss_003",
+                "ss_004",
+                "ss_005"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 1,
+              "question": "Hoe trekken we meer winkels en horeca aan?",
+              "answer": "To address your question about how more winks and horseradish can be found, let's break it down into several steps:\n\n1. **Winken**: Winkens are small, colorful, and often playful pieces of food that are popular among children. They come in various shapes and sizes, from tiny balls to larger, more elaborate designs. Winkens are typically served as snacks during family gatherings or special occasions like birthdays or holidays.\n\n2. **Horser",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Winken are small, colorful, and often playful pieces of food that are popular among children. They come in various shapes and sizes, from tiny balls to larger, more elaborate designs. Winkens are typically served as snacks during family gatherings or special occasions like birthdays or holidays.",
+                "To address your question about how more winks and horseradish can be found, let's break it down into several steps:"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_006",
+                "ss_007",
+                "ss_008",
+                "ss_009",
+                "ss_010",
+                "ss_011"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 11,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 2,
+              "question": "Hoe verbeteren we de bereikbaarheid en het verkeer?",
+              "answer": "To improve the accessibility and efficiency of transportation systems, several strategies can be implemented. One approach involves enhancing public transport infrastructure by expanding bus routes and increasing the frequency of buses. This would make travel more convenient and reduce waiting times for commuters.\n\nAnother method is to promote cycling and walking initiatives through incentives such as reduced parking fees, bike lanes, and pedestrian zones. These measures not only encourage sustainable modes of transportation but also contribute to reducing traffic congestion and air pollution.\n\nAdditionally, integrating smart technologies",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Promoting cycling and walking initiatives through incentives such as reduced parking fees, bike lanes, and pedestrian zones.",
+                "Integrating smart technologies into existing transportation systems to enhance accessibility and efficiency.",
+                "Encouraging sustainable modes of transportation through incentives such as reduced parking fees, bike lanes, and pedestrian zones.",
+                "Improving the overall system's efficiency and accessibility through various strategies involving public transport"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_012",
+                "ss_013",
+                "ss_014",
+                "ss_015",
+                "ss_016",
+                "ss_017"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 17,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 3,
+              "question": "Hoe maken we de binnenstad aantrekkelijker voor toeristen?",
+              "answer": "To enhance the attractiveness of the city center for tourists, several strategies can be employed. First, improving the overall appearance of the buildings and streets can significantly boost the sense of place. This includes maintaining clean exteriors, ensuring proper lighting, and incorporating elements that reflect the local culture and history.\n\nSecondly, enhancing the visitor experience through interactive exhibits and educational programs can greatly increase interest in the area. Interactive displays can provide insights into local history, cultural events, and natural wonders, making",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 17,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 4,
+              "question": "Welke rol moet woningbouw in de binnenstad spelen?",
+              "answer": "In the context of the Netherlands, winning building plays a crucial role in shaping the urban landscape and enhancing the quality of life for residents. Winning buildings serve as landmarks, contributing to the visual identity of the city, attracting visitors and fostering community cohesion. They also play a vital role in providing shelter and support for the inhabitants, offering a safe haven amidst the hustle and bustle of daily life.\n\nMoreover, winning buildings are essential for promoting sustainability and environmental responsibility. By designing buildings that are",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Winning buildings contribute to the visual identity of the city.",
+                "Winning buildings attract visitors and foster community cohesion.",
+                "Winning buildings provide shelter and support for the inhabitants.",
+                "Winning buildings promote sustainability and environmental responsibility.",
+                "Winning buildings enhance the quality of life for residents."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_018",
+                "ss_019",
+                "ss_020",
+                "ss_021",
+                "ss_022"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 22,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 5,
+              "question": "Hoe vergroenen we de openbare ruimte?",
+              "answer": "To address the question of how much space remains available in the open spaces of the city, we need to delve deeper into the historical and current state of urban planning and development in Amsterdam. Let’s explore the factors influencing these changes and their implications for the city's layout and functionality.\n\nHistorically, the city has been shaped by various architectural styles and urban planning principles. The early Dutch cities were characterized by narrow streets and dense residential areas, reflecting the agrarian nature of the region.",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Historical context of urban planning in Amsterdam.",
+                "Factors influencing the layout and functionality of the city.",
+                "Technological innovations impacting urban planning.",
+                "Urban development trends in Amsterdam over time.",
+                "Comparative analysis of different urban planning approaches. To address the question of how much space remains available in the open spaces of the city, we need to delve deeper into the historical and current state of urban planning and development in Amsterdam. Let’s explore the factors influencing these changes and their"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_023",
+                "ss_024",
+                "ss_025",
+                "ss_026"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 26,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 6,
+              "question": "Hoe houden we de binnenstad veilig en levendig in de avond?",
+              "answer": "To ensure the safety and well-being of the citizens in the evening, several measures must be taken to maintain the integrity of the city's environment. Here are some key strategies:\n\n1. **Lighting**: Adequate lighting is crucial for visibility and comfort. High-quality streetlights should be installed along main thoroughfares, particularly at night, to minimize shadows and glare. Additionally, reflective surfaces like glass and metal can help mitigate reflections, especially in low light conditions.\n\n2. **",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "**Explaination** of the importance of lighting in maintaining the integrity of the city's environment during nighttime hours.",
+                "**Technological** advancements in LED lighting technology could significantly improve the efficiency and sustainability of urban lighting systems.",
+                "**Environmental** factors such as pollution levels and air quality need to be monitored regularly to ensure optimal lighting performance.",
+                "**Policy** changes in local governments regarding zoning laws and building codes should include provisions for the installation of high-quality streetlights"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_027",
+                "ss_028"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 28,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 7,
+              "question": "Hoe financieren we dit alles als gemeente?",
+              "answer": "To finance the various aspects of governance and services provided by the municipality of Amsterdam, several approaches can be considered. The primary sources of funding include:\n\n1. **Public Funding**: This is the most direct source of revenue. It comes from taxes collected by the municipality, which are then used to fund various municipal projects and services. Public funds are allocated based on population density, economic activity, and other relevant criteria.\n\n2. **Incentives and Grants**: Municipalities can offer incentives",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "**Explaination of public funding as a key factor in financing the municipality's operations**.",
+                "**Highlight the importance of public funding in supporting the city's infrastructure development**.",
+                "**Discuss how public funding can help address the financial challenges faced by the municipality**.",
+                "**Explore the role of public funding in ensuring equitable access to services across different demographics**.",
+                "**Analyze the potential impact of public funding on the sustainability of the municipality's operations over"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_029",
+                "ss_030",
+                "ss_031",
+                "ss_032",
+                "ss_033"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 33,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 8,
+              "question": "Wat gaat er bij dit soort binnenstad-vernieuwingen het vaakst mis?",
+              "answer": "The process of widening the inner city of Amsterdam (the \"inner ring\") has become increasingly common in recent years due to its strategic location and growing population. However, the impact of this expansion on the surrounding neighborhoods and the overall quality of life in the city center is a subject of debate.\n\nOne of the primary concerns raised by those opposed to widening the inner ring is the potential displacement of existing residents. Critics argue that the construction of new housing units and improvements to public spaces could lead",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "The impact of the widening of the inner ring on the quality of life in the city center.",
+                "The role of private international law in shaping the architectural framework of the inner ring.",
+                "The potential displacement of residents due to the expansion of the inner ring.",
+                "The relationship between the growth of the inner ring and the urban planning principles.",
+                "The economic benefits of expanding the inner ring compared to maintaining the current layout. To identify what could appear here, let's"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_034",
+                "ss_035",
+                "ss_036",
+                "ss_037",
+                "ss_038"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 38,
+              "retrieval_probe": null
+            }
+          ],
+          "deferral_metrics": {
+            "method": "normalization admissibility plus later unsuppressed semantic recovery",
+            "dedup_similarity_threshold": 0.85,
+            "influenced_turns": 0,
+            "affected_turns": 0,
+            "detected_on_influenced_turns": 0,
+            "suppressed_candidate_occurrences": 0,
+            "distinct_normalized_suppressed_candidates": 0,
+            "normalization_admissible_occurrences": 0,
+            "later_recovered_occurrences": 0,
+            "unrecovered_admissible_occurrences": 0,
+            "suppression_rate_on_influenced_turns": 0.0,
+            "later_recovery_rate": 0.0,
+            "candidate_records": [],
+            "interpretation": "These counts measure deferred candidate opportunities and later recovery. They do not establish that a candidate was true, relevant, or useful."
+          },
+          "final_shadow": {
+            "runtime_mode": "live",
+            "turns": 9,
+            "seeds": [
+              {
+                "id": "ss_001",
+                "text": "The phrase \"Onze stad\" refers to the city of Amsterdam.",
+                "weight": 0.0,
+                "trace": 0.174,
+                "status": "DECAYING",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_002",
+                "text": "which is located on the North Bank of the river Meuse.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_003",
+                "text": "The use of \"will\" implies an uncertain future.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_004",
+                "text": "suggesting that there may be no definite start date for what follows.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_005",
+                "text": "which is located on ontbreekt.",
+                "weight": 0.2,
+                "trace": 2.0,
+                "status": "ACTIVE",
+                "occurrence_count": 3,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_006",
+                "text": "Winken are small ontbreekt.",
+                "weight": 0.0,
+                "trace": 0.194,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_007",
+                "text": "colorful ontbreekt.",
+                "weight": 0.0,
+                "trace": 0.194,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_008",
+                "text": "and often playful pieces of food that are popular among children. They come in various shapes and sizes.",
+                "weight": 0.0,
+                "trace": 0.194,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_009",
+                "text": "from tiny balls to larger.",
+                "weight": 0.0,
+                "trace": 0.194,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_010",
+                "text": "To address your question about how more winks and horseradish can be found.",
+                "weight": 0.0,
+                "trace": 0.194,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_011",
+                "text": "let's break it down into several steps:.",
+                "weight": 0.0,
+                "trace": 0.194,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 1
+              },
+              {
+                "id": "ss_012",
+                "text": "Promoting cycling and walking initiatives through incentives such as reduced parking fees.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_013",
+                "text": "bike lanes ontbreekt.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_014",
+                "text": "and pedestrian zones ontbreekt.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_015",
+                "text": "Integrating smart technologies into existing transportation systems to enhance accessibility and efficiency.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_016",
+                "text": "Encouraging sustainable modes of transportation through incentives such as reduced parking fees.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_017",
+                "text": "Improving the overall system's efficiency and accessibility through various strategies involving public transport.",
+                "weight": 0.0,
+                "trace": 0.271,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 2
+              },
+              {
+                "id": "ss_018",
+                "text": "Winning buildings contribute to the visual identity of the city.",
+                "weight": 0.2,
+                "trace": 0.527,
+                "status": "ACTIVE",
+                "occurrence_count": 5,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_019",
+                "text": "Winning buildings attract visitors and foster community cohesion.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_020",
+                "text": "Winning buildings provide shelter and support for the inhabitants.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_021",
+                "text": "Winning buildings promote sustainability and environmental responsibility.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_022",
+                "text": "Winning buildings enhance the quality of life for residents.",
+                "weight": 0.0,
+                "trace": 0.527,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 4
+              },
+              {
+                "id": "ss_023",
+                "text": "Historical context of urban planning in Amsterdam.",
+                "weight": 0.0,
+                "trace": 0.736,
+                "status": "ACTIVE",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 5
+              },
+              {
+                "id": "ss_024",
+                "text": "Factors influencing the layout and functionality of the city.",
+                "weight": 0.0,
+                "trace": 0.736,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 5
+              },
+              {
+                "id": "ss_025",
+                "text": "Technological innovations impacting urban planning.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "ACTIVE",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 5
+              },
+              {
+                "id": "ss_026",
+                "text": "Urban development trends in Amsterdam over time.",
+                "weight": 0.0,
+                "trace": 0.736,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 5
+              },
+              {
+                "id": "ss_027",
+                "text": "Explaination** of the importance of lighting in maintaining the integrity of the city's environment during nighttime hours.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "ACTIVE",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_028",
+                "text": "Technological** advancements in LED lighting technology could significantly improve the efficiency and sustainability of urban lighting systems.",
+                "weight": 0.0,
+                "trace": 1.027,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 6
+              },
+              {
+                "id": "ss_029",
+                "text": "Explaination of public funding as a key factor in financing the municipality's operations**.",
+                "weight": 0.2,
+                "trace": 1.433,
+                "status": "ACTIVE",
+                "occurrence_count": 5,
+                "evidence_count": 0,
+                "born_turn": 7
+              },
+              {
+                "id": "ss_030",
+                "text": "Highlight the importance of public funding in supporting the city's infrastructure development**.",
+                "weight": 0.0,
+                "trace": 1.433,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 7
+              },
+              {
+                "id": "ss_031",
+                "text": "Discuss how public funding can help address the financial challenges faced by the municipality**.",
+                "weight": 0.0,
+                "trace": 1.433,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 7
+              },
+              {
+                "id": "ss_032",
+                "text": "Explore the role of public funding in ensuring equitable access to services across different demographics**.",
+                "weight": 0.0,
+                "trace": 1.433,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 7
+              },
+              {
+                "id": "ss_033",
+                "text": "Analyze the potential impact of public funding on the sustainability of the municipality's operations over.",
+                "weight": 0.0,
+                "trace": 1.433,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 7
+              },
+              {
+                "id": "ss_034",
+                "text": "The impact of the widening of the inner ring on the quality of life in the city center.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "ACTIVE",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 8
+              },
+              {
+                "id": "ss_035",
+                "text": "The role of private international law in shaping the architectural framework of the inner ring.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              },
+              {
+                "id": "ss_036",
+                "text": "The potential displacement of residents due to the expansion of the inner ring.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              },
+              {
+                "id": "ss_037",
+                "text": "The relationship between the growth of the inner ring and the urban planning principles.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              },
+              {
+                "id": "ss_038",
+                "text": "let's ontbreekt.",
+                "weight": 0.0,
+                "trace": 2.0,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 8
+              }
+            ],
+            "influence_records": []
+          },
+          "gate_events": [
+            {
+              "event_id": "gate::ss_018::000001",
+              "seed_id": "ss_018",
+              "policy_id": "exploratory",
+              "decision": "validated",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.3333333333333333,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=5 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T05:43:07.275431"
+            },
+            {
+              "event_id": "gate::ss_029::000002",
+              "seed_id": "ss_029",
+              "policy_id": "exploratory",
+              "decision": "validated",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.3333333333333333,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=5 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T05:46:07.745474"
+            },
+            {
+              "event_id": "gate::ss_005::000003",
+              "seed_id": "ss_005",
+              "policy_id": "exploratory",
+              "decision": "validated",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=3 (threshold=3)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "ACTIVE",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T05:47:16.573990"
+            }
+          ],
+          "audit_records_verified": 0,
+          "timing": {
+            "live_turn_elapsed_seconds": 465.027,
+            "deferral_scoring_elapsed_seconds": 0.0
+          }
+        }
+      ],
+      "interpretation": "Non-production recurrence-only counterfactual used only to measure deferral."
+    }
+  ]
+}

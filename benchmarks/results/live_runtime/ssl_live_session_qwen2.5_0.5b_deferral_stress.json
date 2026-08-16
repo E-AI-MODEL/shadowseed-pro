@@ -1,0 +1,2852 @@
+{
+  "summary": {
+    "artifact": "ssl_live_session_measurement",
+    "runtime_mode": "live",
+    "backend": "hf-transformers:Qwen/Qwen2.5-0.5B-Instruct",
+    "detector": "hf-transformers:Qwen/Qwen2.5-0.5B-Instruct",
+    "embedding_backend": "sentence-transformers",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "detector_prompt_variant": "generative",
+    "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "max_new_tokens": 96,
+    "input_version": "ssl-session-0.2",
+    "input_sha256": "3041467fff0ee398726782173190c3a13ce6c919d235bc9952b0c3889df05f0f",
+    "conversation_count": 3,
+    "arms": [
+      "counterfactual"
+    ],
+    "answer_generation_calls": 22,
+    "detector_calls": 22,
+    "timing": {
+      "adapter_setup_elapsed_seconds": 6.387,
+      "live_turn_elapsed_seconds": 1208.287,
+      "deferral_scoring_elapsed_seconds": 0.003,
+      "measurement_wall_elapsed_seconds": 1214.679
+    },
+    "claim_boundary": "The evidence-backed arm measures shipped live behavior without supplied evidence. The exploratory arm is a counterfactual for measuring same-turn deferral and is not production authority. Deferral metrics are objective opportunity proxies, not usefulness or truth judgments.",
+    "package_version": "0.4.2",
+    "source_revision": "78c67caca664f82e20bf5f60661827efd1ebfc5a",
+    "source_dirty": false
+  },
+  "arms": [
+    {
+      "arm_id": "counterfactual",
+      "runtime_mode": "live",
+      "gate_policy_id": "exploratory",
+      "production_policy": false,
+      "external_evidence_injected": false,
+      "answer_generation_calls": 22,
+      "detector_calls": 22,
+      "influence_record_count": 27,
+      "promoted_seed_count": 7,
+      "timing": {
+        "live_turn_elapsed_seconds": 1208.287,
+        "deferral_scoring_elapsed_seconds": 0.003,
+        "other_arm_overhead_seconds": 0.001,
+        "wall_elapsed_seconds": 1208.291
+      },
+      "deferral_metrics": {
+        "influenced_turns": 19,
+        "affected_turns": 18,
+        "detected_on_influenced_turns": 69,
+        "suppressed_candidate_occurrences": 69,
+        "normalization_admissible_occurrences": 58,
+        "later_recovered_occurrences": 0,
+        "unrecovered_admissible_occurrences": 58,
+        "distinct_normalized_suppressed_candidates": 77,
+        "suppression_rate_on_influenced_turns": 1.0,
+        "later_recovery_rate": 0.0,
+        "interpretation": "Aggregate opportunity-cost proxies; no truth or usefulness label is inferred."
+      },
+      "conversations": [
+        {
+          "conversation_id": "CONV_IR_SHORT",
+          "domain": "geschiedenis en economie",
+          "runtime_mode": "live",
+          "gate_policy_id": "exploratory",
+          "applied_thresholds": {
+            "dedup_threshold": 0.85,
+            "min_occurrences": 1,
+            "promotion_threshold": 0.2,
+            "recurrence_mode": "cluster",
+            "cluster_threshold": 0.6,
+            "surface_threshold": 0.0,
+            "surface_top_k": 2,
+            "early_turn_margin": 0.0,
+            "early_turn_history": 5,
+            "resurface_margin": 0.0
+          },
+          "turns": [
+            {
+              "runtime_mode": "live",
+              "turn": 0,
+              "question": "Leg in het kort uit waarom de Industriële Revolutie juist in Groot-Brittannië kon ontstaan.",
+              "answer": "The Industrial Revolution was not solely caused by technological advancements but also by social, economic, political, and cultural factors. In Groot-Brittannië, which had a relatively backward industrial base compared to other European countries, the Industrial Revolution could have occurred more easily due to several reasons:\n\n1. **Social and Economic Factors**: Groot-Brittannië's society was characterized by a strong middle class and an emerging middle-class urban population. This demographic shift created a demand for new",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "Social and economic factors could have influenced the pace and scale of the Industrial Revolution in Groot-Brittannië.",
+                "Political and cultural factors were crucial in shaping the Industrial Revolution in Groot-Brittannië.",
+                "Technological innovations alone may not have been sufficient to drive the Industrial Revolution in Groot-Brittannië.",
+                "Cultural and societal changes played a significant role in the development of the Industrial Revolution in Groot-Brittannië."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_001",
+                "ss_002"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [
+                "ss_001"
+              ],
+              "reactivated_trtl": [],
+              "shadow_size": 2,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 1,
+              "question": "Hoe verspreidde de industrialisatie zich daarna naar het Europese vasteland?",
+              "answer": "The Industrial Revolution in Groot-Brittannië, a country with a relatively backward industrial base, could have been accelerated through various social, economic, and political factors. These include:\n\n1. **Middle Class Development**: The emergence of a middle-class urban population in Groot-Brittannië provided a demographic base for the growth of industry. This demographic shift led to increased investment in infrastructure, technology, and education, fostering a culture of innovation and entrepreneurship.\n\n2. **Urban",
+              "baseline_answer": null,
+              "ssl_answer": "The Industrial Revolution in Groot-Brittannië, a country with a relatively backward industrial base, could have been accelerated through various social, economic, and political factors. These include:\n\n1. **Middle Class Development**: The emergence of a middle-class urban population in Groot-Brittannië provided a demographic base for the growth of industry. This demographic shift led to increased investment in infrastructure, technology, and education, fostering a culture of innovation and entrepreneurship.\n\n2. **Urban",
+              "surfaced_seeds": [
+                "Social and economic factors could have influenced the pace and scale of the Industrial Revolution in Groot-Brittannië."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:1",
+                  "decided_at": "2026-08-16T05:47:58.718999"
+                }
+              ],
+              "detected_candidates": [
+                "**Explaination of the Industrial Revolution's acceleration**",
+                "**Impact on the Industrial Base**",
+                "**Factors Contributing to Accelerated Growth**",
+                "**Social Factors Influencing the Industrial Revolution**",
+                "**Economic Factors Driving the Industrial Revolution**"
+              ],
+              "suppressed_self_attributed_candidates": [
+                "**Explaination of the Industrial Revolution's acceleration**",
+                "**Impact on the Industrial Base**",
+                "**Factors Contributing to Accelerated Growth**",
+                "**Social Factors Influencing the Industrial Revolution**",
+                "**Economic Factors Driving the Industrial Revolution**"
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 2,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 2,
+              "question": "Wat verklaart waarom sommige regio's veel sneller industrialiseerden dan andere?",
+              "answer": "Some regions in Europe experienced faster industrialization than others due to various socio-economic conditions. For instance, some parts of Germany, particularly the Ruhr region, were known for their rapid industrial development during the late 19th century. This region's location along the Rhine River facilitated easy access to raw materials and skilled labor, contributing to its rapid industrial growth. Similarly, the United States, especially the Midwest, saw significant industrial expansion during the early 20th century,",
+              "baseline_answer": null,
+              "ssl_answer": "Some regions in Europe experienced faster industrialization than others due to various socio-economic conditions. For instance, some parts of Germany, particularly the Ruhr region, were known for their rapid industrial development during the late 19th century. This region's location along the Rhine River facilitated easy access to raw materials and skilled labor, contributing to its rapid industrial growth. Similarly, the United States, especially the Midwest, saw significant industrial expansion during the early 20th century,",
+              "surfaced_seeds": [
+                "Social and economic factors could have influenced the pace and scale of the Industrial Revolution in Groot-Brittannië."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:2",
+                  "decided_at": "2026-08-16T05:48:44.003626"
+                }
+              ],
+              "detected_candidates": [
+                "The Ruhr region was known for its rapid industrial development during the late 19th century.",
+                "The economic factors contributed to the rapid industrial growth in these regions. To identify potential"
+              ],
+              "suppressed_self_attributed_candidates": [
+                "The Ruhr region was known for its rapid industrial development during the late 19th century.",
+                "The economic factors contributed to the rapid industrial growth in these regions. To identify potential"
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 2,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 3,
+              "question": "Welke factor wordt in standaarduitleg het meest onderschat?",
+              "answer": "Based on the information provided, the most significant factor influencing the pace and scale of the Industrial Revolution in Groot-Brittannië was the combination of a relatively backward industrial base and a growing middle-class urban population. This demographic shift, combined with the availability of raw materials and skilled labor, allowed for the rapid growth of industries such as textiles, iron production, and shipbuilding. Additionally, the presence of a well-developed transportation network facilitated the movement of goods and people across the",
+              "baseline_answer": null,
+              "ssl_answer": "Based on the information provided, the most significant factor influencing the pace and scale of the Industrial Revolution in Groot-Brittannië was the combination of a relatively backward industrial base and a growing middle-class urban population. This demographic shift, combined with the availability of raw materials and skilled labor, allowed for the rapid growth of industries such as textiles, iron production, and shipbuilding. Additionally, the presence of a well-developed transportation network facilitated the movement of goods and people across the",
+              "surfaced_seeds": [
+                "Social and economic factors could have influenced the pace and scale of the Industrial Revolution in Groot-Brittannië."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:3",
+                  "decided_at": "2026-08-16T05:49:33.840462"
+                }
+              ],
+              "detected_candidates": [
+                "**Colonial capital as an explanatory frame alongside technological innovation**",
+                "**Privacy by design as a principle affecting the entire architecture**",
+                "**Private international law as a framing dimension for this consumer case**",
+                "**Colonial trade financed the factories**"
+              ],
+              "suppressed_self_attributed_candidates": [
+                "**Colonial capital as an explanatory frame alongside technological innovation**",
+                "**Privacy by design as a principle affecting the entire architecture**",
+                "**Private international law as a framing dimension for this consumer case**",
+                "**Colonial trade financed the factories**"
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 2,
+              "retrieval_probe": null
+            }
+          ],
+          "deferral_metrics": {
+            "method": "normalization admissibility plus later unsuppressed semantic recovery",
+            "dedup_similarity_threshold": 0.85,
+            "influenced_turns": 3,
+            "affected_turns": 3,
+            "detected_on_influenced_turns": 11,
+            "suppressed_candidate_occurrences": 11,
+            "distinct_normalized_suppressed_candidates": 11,
+            "normalization_admissible_occurrences": 11,
+            "later_recovered_occurrences": 0,
+            "unrecovered_admissible_occurrences": 11,
+            "suppression_rate_on_influenced_turns": 1.0,
+            "later_recovery_rate": 0.0,
+            "candidate_records": [
+              {
+                "turn": 1,
+                "candidate": "**Explaination of the Industrial Revolution's acceleration**",
+                "normalized_candidates": [
+                  "Explaination of the Industrial Revolution's acceleration**."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 1,
+                "candidate": "**Impact on the Industrial Base**",
+                "normalized_candidates": [
+                  "Impact on the Industrial Base**."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 1,
+                "candidate": "**Factors Contributing to Accelerated Growth**",
+                "normalized_candidates": [
+                  "Factors Contributing to Accelerated Growth**."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 1,
+                "candidate": "**Social Factors Influencing the Industrial Revolution**",
+                "normalized_candidates": [
+                  "Social Factors Influencing the Industrial Revolution**."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 1,
+                "candidate": "**Economic Factors Driving the Industrial Revolution**",
+                "normalized_candidates": [
+                  "Economic Factors Driving the Industrial Revolution**."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 2,
+                "candidate": "The Ruhr region was known for its rapid industrial development during the late 19th century.",
+                "normalized_candidates": [
+                  "The Ruhr region was known for its rapid industrial development during the late 19th century."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 2,
+                "candidate": "The economic factors contributed to the rapid industrial growth in these regions. To identify potential",
+                "normalized_candidates": [
+                  "The economic factors contributed to the rapid industrial growth in these regions. To identify potential."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 3,
+                "candidate": "**Colonial capital as an explanatory frame alongside technological innovation**",
+                "normalized_candidates": [
+                  "Colonial capital as an explanatory frame alongside technological innovation**."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 3,
+                "candidate": "**Privacy by design as a principle affecting the entire architecture**",
+                "normalized_candidates": [
+                  "Privacy by design as a principle affecting the entire architecture**."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 3,
+                "candidate": "**Private international law as a framing dimension for this consumer case**",
+                "normalized_candidates": [
+                  "Private international law as a framing dimension for this consumer case**."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 3,
+                "candidate": "**Colonial trade financed the factories**",
+                "normalized_candidates": [
+                  "Colonial trade financed the factories**."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              }
+            ],
+            "interpretation": "These counts measure deferred candidate opportunities and later recovery. They do not establish that a candidate was true, relevant, or useful."
+          },
+          "final_shadow": {
+            "runtime_mode": "live",
+            "turns": 4,
+            "seeds": [
+              {
+                "id": "ss_001",
+                "text": "Social and economic factors could have influenced the pace and scale of the Industrial Revolution in Groot-Brittannië.",
+                "weight": 0.2,
+                "trace": 1.104,
+                "status": "PROMOTED",
+                "occurrence_count": 3,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_002",
+                "text": "Technological innovations alone may not have been sufficient to drive the Industrial Revolution in Groot-Brittannië.",
+                "weight": 0.0,
+                "trace": 0.736,
+                "status": "NEW",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              }
+            ],
+            "influence_records": [
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:1",
+                "decided_at": "2026-08-16T05:47:58.718999"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:2",
+                "decided_at": "2026-08-16T05:48:44.003626"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:3",
+                "decided_at": "2026-08-16T05:49:33.840462"
+              }
+            ]
+          },
+          "gate_events": [
+            {
+              "event_id": "gate::ss_001::000001",
+              "seed_id": "ss_001",
+              "policy_id": "exploratory",
+              "decision": "promoted",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 1.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=3 (threshold=1)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "PROMOTED",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T05:47:58.694894"
+            }
+          ],
+          "audit_records_verified": 3,
+          "timing": {
+            "live_turn_elapsed_seconds": 184.049,
+            "deferral_scoring_elapsed_seconds": 0.0
+          }
+        },
+        {
+          "conversation_id": "CONV_STARTUP",
+          "domain": "product en groei",
+          "runtime_mode": "live",
+          "gate_policy_id": "exploratory",
+          "applied_thresholds": {
+            "dedup_threshold": 0.85,
+            "min_occurrences": 1,
+            "promotion_threshold": 0.2,
+            "recurrence_mode": "cluster",
+            "cluster_threshold": 0.6,
+            "surface_threshold": 0.0,
+            "surface_top_k": 2,
+            "early_turn_margin": 0.0,
+            "early_turn_history": 5,
+            "resurface_margin": 0.0
+          },
+          "turns": [
+            {
+              "runtime_mode": "live",
+              "turn": 0,
+              "question": "Ik bouw een sociale app voor jongeren. Hoe krijg ik de eerste duizend gebruikers?",
+              "answer": "To obtain the first million users of your social app for young people, you can take several strategic steps:\n\n1. **Targeted Advertising**: Utilize targeted advertising to reach out to young people who are most likely to be interested in your app. This could involve using data from previous user interactions to target ads based on demographics such as age, gender, location, and interests.\n\n2. **Social Media Campaigns**: Launch a comprehensive social media campaign across various platforms (Facebook, Instagram",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "**Explaination** of the concept behind the strategy.",
+                "**Relation** between the strategy and the main goal.",
+                "**Dimension** of the strategy that could help achieve the main goal.",
+                "**Frame** of the strategy that could provide additional insights into the context.",
+                "**Action** that could be taken to implement the strategy."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_001",
+                "ss_002",
+                "ss_003",
+                "ss_004",
+                "ss_005"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [
+                "ss_001"
+              ],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 1,
+              "question": "Welke features houden gebruikers het beste vast (retentie)?",
+              "answer": "Een van de belangrijkste manieren om de retentie te behalen bij een sociale app voor jongeren is via de sociale media. Deze platformen bieden een echte kans op verbeteringen en ontwikkeling van de app, waardoor de gebruiker zichzelf aanpassen kan en zichzelf versterkt. De sociale media kunnen ook helpen om de app te veranderen door de gebruikers te laten zien hoe ze hun eigensch",
+              "baseline_answer": null,
+              "ssl_answer": "Een van de belangrijkste manieren om de retentie te behalen bij een sociale app voor jongeren is via de sociale media. Deze platformen bieden een echte kans op verbeteringen en ontwikkeling van de app, waardoor de gebruiker zichzelf aanpassen kan en zichzelf versterkt. De sociale media kunnen ook helpen om de app te veranderen door de gebruikers te laten zien hoe ze hun eigensch",
+              "surfaced_seeds": [
+                "Explaination** of the concept behind the strategy."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:1",
+                  "decided_at": "2026-08-16T05:51:02.571713"
+                }
+              ],
+              "detected_candidates": [
+                "**Explanatory Frame**: Social Media Platforms as a Tool for Enhancing User Experience in a Social App for Young People",
+                "**Dimension**: User Engagement on Social Media Platforms",
+                "**Relation**: Social Media Platforms as a Facilitator for User Development",
+                "**Explanatory Frame**: Social Media Platforms as a Tool for Improving User Retention in a Social App for Young People",
+                "**Dimension**: User Feedback on Social Media Platforms"
+              ],
+              "suppressed_self_attributed_candidates": [
+                "**Explanatory Frame**: Social Media Platforms as a Tool for Enhancing User Experience in a Social App for Young People",
+                "**Dimension**: User Engagement on Social Media Platforms",
+                "**Relation**: Social Media Platforms as a Facilitator for User Development",
+                "**Explanatory Frame**: Social Media Platforms as a Tool for Improving User Retention in a Social App for Young People",
+                "**Dimension**: User Feedback on Social Media Platforms"
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 2,
+              "question": "Hoe maak ik de app viraal zodat gebruikers vrienden uitnodigen?",
+              "answer": "Het concept behind the strategy is to create a sense of community among the users by inviting them to become friends with each other through the app. This approach allows users to interact with each other more frequently and provides opportunities for them to share their experiences and ideas. By making the app accessible to all users, we aim to make it easy for them to connect with others and build relationships within the app. Additionally, the app's design should be visually appealing and engaging, which will encourage users",
+              "baseline_answer": null,
+              "ssl_answer": "Het concept behind the strategy is to create a sense of community among the users by inviting them to become friends with each other through the app. This approach allows users to interact with each other more frequently and provides opportunities for them to share their experiences and ideas. By making the app accessible to all users, we aim to make it easy for them to connect with others and build relationships within the app. Additionally, the app's design should be visually appealing and engaging, which will encourage users",
+              "surfaced_seeds": [
+                "Explaination** of the concept behind the strategy."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:2",
+                  "decided_at": "2026-08-16T05:51:47.022511"
+                }
+              ],
+              "detected_candidates": [
+                "**Explaination** of the user interaction between the app and the community.",
+                "**Relation** between the app and the user experience.",
+                "**Dimension** of the app's design that enhances user engagement.",
+                "**Frame** of the app's features that promote social connections.",
+                "**Explanatory Frame** of the app's purpose and benefits. To identify what could appear here, let's analyze the given input text:"
+              ],
+              "suppressed_self_attributed_candidates": [
+                "**Explaination** of the user interaction between the app and the community.",
+                "**Relation** between the app and the user experience.",
+                "**Dimension** of the app's design that enhances user engagement.",
+                "**Frame** of the app's features that promote social connections.",
+                "**Explanatory Frame** of the app's purpose and benefits. To identify what could appear here, let's analyze the given input text:"
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 3,
+              "question": "Wat is het beste verdienmodel voor zo'n app met jonge gebruikers?",
+              "answer": "Het beste verdienmodel voor een sociale app met jonge gebruikers is een verantwoordelijk systeem dat de gebruiker zelf aanpassen en versterkt. Dit systeem moet zijn om de app te veranderen en te verbeteren door de gebruikers te laten zien hoe ze hun eigenschappen en ervaringen voelen. De verantwoordelijke systeem moet ook zijn om de app te versterken door nieuwe functies",
+              "baseline_answer": null,
+              "ssl_answer": "Het beste verdienmodel voor een sociale app met jonge gebruikers is een verantwoordelijk systeem dat de gebruiker zelf aanpassen en versterkt. Dit systeem moet zijn om de app te veranderen en te verbeteren door de gebruikers te laten zien hoe ze hun eigenschappen en ervaringen voelen. De verantwoordelijke systeem moet ook zijn om de app te versterken door nieuwe functies",
+              "surfaced_seeds": [
+                "Explaination** of the concept behind the strategy."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:3",
+                  "decided_at": "2026-08-16T05:52:35.867797"
+                }
+              ],
+              "detected_candidates": [
+                "Het beste verdienmodel voor een sociale app met jonge gebruikers is een verantwoordelijk systeem dat de gebruiker zelf aanpassen en versterkt. Dit systeem moet zijn om de app te veranderen en te verbeteren door de gebruikers te laten zien hoe ze hun eigenschappen en ervaringen voelen. De verantwoordelijke systeem moet ook zijn om de app te versterken door nieuwe functies"
+              ],
+              "suppressed_self_attributed_candidates": [
+                "Het beste verdienmodel voor een sociale app met jonge gebruikers is een verantwoordelijk systeem dat de gebruiker zelf aanpassen en versterkt. Dit systeem moet zijn om de app te veranderen en te verbeteren door de gebruikers te laten zien hoe ze hun eigenschappen en ervaringen voelen. De verantwoordelijke systeem moet ook zijn om de app te versterken door nieuwe functies"
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 4,
+              "question": "Hoe gebruik ik gebruikersdata om de aanbevelingen te verbeteren?",
+              "answer": "Deze strategie wordt geïntegreerd met de gebruikersdata om de aanbevelingen te verbeteren. De gebruikersdata biedt informatie over hun eigenschappen en ervaringen die kunnen worden gebruikt om de app te verbeteren. Door deze informatie te gebruiken, kunnen we specifieke aspecten van de app bepalen waarom mensen de app willen gebruiken en wat ze willen doen. Dit kan helpen om de",
+              "baseline_answer": null,
+              "ssl_answer": "Deze strategie wordt geïntegreerd met de gebruikersdata om de aanbevelingen te verbeteren. De gebruikersdata biedt informatie over hun eigenschappen en ervaringen die kunnen worden gebruikt om de app te verbeteren. Door deze informatie te gebruiken, kunnen we specifieke aspecten van de app bepalen waarom mensen de app willen gebruiken en wat ze willen doen. Dit kan helpen om de",
+              "surfaced_seeds": [
+                "Explaination** of the concept behind the strategy."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:4",
+                  "decided_at": "2026-08-16T05:53:28.981248"
+                }
+              ],
+              "detected_candidates": [
+                "Gebruikergegevens als een onderdeel van het implementeren van aanbiedingen.",
+                "Een persoonlijke perspectief op de gebruikersdata.",
+                "Een verantwoordelijkheid voor de implementatie van aanbiedingen.",
+                "Een ontwikkelingsproces die de aanbiedingen bevat.",
+                "Een persoonlijk antwoord op hoe de gebruikersdata beperkt de implementatie van aanbied"
+              ],
+              "suppressed_self_attributed_candidates": [
+                "Gebruikergegevens als een onderdeel van het implementeren van aanbiedingen.",
+                "Een persoonlijke perspectief op de gebruikersdata.",
+                "Een verantwoordelijkheid voor de implementatie van aanbiedingen.",
+                "Een ontwikkelingsproces die de aanbiedingen bevat.",
+                "Een persoonlijk antwoord op hoe de gebruikersdata beperkt de implementatie van aanbied"
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 5,
+              "question": "Hoe schaal ik de infrastructuur als het hard groeit?",
+              "answer": "To effectively scale an infrastructure as it grows, it is crucial to adopt a structured approach that includes planning, monitoring, and continuous improvement. Here’s how you can structure your infrastructure development process:\n\n### Planning Phase\n1. **Define Objectives**: Clearly define what you want to achieve with the new infrastructure. This might include increasing capacity, reducing downtime, improving performance, or enhancing security.\n2. **Assess Current State**: Conduct a thorough assessment of the existing infrastructure to identify bott",
+              "baseline_answer": null,
+              "ssl_answer": "To effectively scale an infrastructure as it grows, it is crucial to adopt a structured approach that includes planning, monitoring, and continuous improvement. Here’s how you can structure your infrastructure development process:\n\n### Planning Phase\n1. **Define Objectives**: Clearly define what you want to achieve with the new infrastructure. This might include increasing capacity, reducing downtime, improving performance, or enhancing security.\n2. **Assess Current State**: Conduct a thorough assessment of the existing infrastructure to identify bott",
+              "surfaced_seeds": [
+                "Explaination** of the concept behind the strategy."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:5",
+                  "decided_at": "2026-08-16T05:54:26.506120"
+                }
+              ],
+              "detected_candidates": [],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 6,
+              "question": "Welke meetwaarden moet ik aan investeerders laten zien?",
+              "answer": "To effectively communicate the benefits of investing in the infrastructure, it is essential to provide clear, concise, and compelling information. This can be achieved through the following strategies:\n\n1. **Use Clear and Concise Language**: Employ simple, straightforward language to ensure that the message is easily understood by stakeholders. Avoid jargon and technical terms unless necessary to convey the intended message.\n\n2. **Highlight Key Benefits**: Identify and emphasize the key benefits of investing in the infrastructure. These benefits should be",
+              "baseline_answer": null,
+              "ssl_answer": "To effectively communicate the benefits of investing in the infrastructure, it is essential to provide clear, concise, and compelling information. This can be achieved through the following strategies:\n\n1. **Use Clear and Concise Language**: Employ simple, straightforward language to ensure that the message is easily understood by stakeholders. Avoid jargon and technical terms unless necessary to convey the intended message.\n\n2. **Highlight Key Benefits**: Identify and emphasize the key benefits of investing in the infrastructure. These benefits should be",
+              "surfaced_seeds": [
+                "Explaination** of the concept behind the strategy."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:6",
+                  "decided_at": "2026-08-16T05:55:28.254584"
+                }
+              ],
+              "detected_candidates": [
+                "**Provide clear, concise, and compelling information** on the benefits of investing in the infrastructure.",
+                "**Use clear and concise language** to ensure easy understanding.",
+                "**Highlight key benefits** of investing in the infrastructure.",
+                "**Emphasize the importance of effective communication** in conveying these benefits.",
+                "**Implement a strategy** to effectively communicate the benefits of investing in the infrastructure. To effectively communicate the benefits of investing in the infrastructure, it is essential to"
+              ],
+              "suppressed_self_attributed_candidates": [
+                "**Provide clear, concise, and compelling information** on the benefits of investing in the infrastructure.",
+                "**Use clear and concise language** to ensure easy understanding.",
+                "**Highlight key benefits** of investing in the infrastructure.",
+                "**Emphasize the importance of effective communication** in conveying these benefits.",
+                "**Implement a strategy** to effectively communicate the benefits of investing in the infrastructure. To effectively communicate the benefits of investing in the infrastructure, it is essential to"
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 7,
+              "question": "Hoe ga ik om met negatieve publiciteit als die komt?",
+              "answer": "To address the issue of negative public relations, I propose the following approach:\n\n1. **Identify Negative Publicity Sources**: First, it is crucial to understand where negative publicity originates. This involves conducting market research to identify potential sources of criticism and negativity towards the company or product being promoted.\n\n2. **Conduct Thorough Analysis**: Once the negative publicity sources have been identified, conduct a thorough analysis of each source. This analysis should cover factors such as the frequency of the criticism",
+              "baseline_answer": null,
+              "ssl_answer": "To address the issue of negative public relations, I propose the following approach:\n\n1. **Identify Negative Publicity Sources**: First, it is crucial to understand where negative publicity originates. This involves conducting market research to identify potential sources of criticism and negativity towards the company or product being promoted.\n\n2. **Conduct Thorough Analysis**: Once the negative publicity sources have been identified, conduct a thorough analysis of each source. This analysis should cover factors such as the frequency of the criticism",
+              "surfaced_seeds": [
+                "Explaination** of the concept behind the strategy."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:7",
+                  "decided_at": "2026-08-16T05:56:34.430739"
+                }
+              ],
+              "detected_candidates": [
+                "Conduct Thorough Analysis of Negative Publicity Sources",
+                "Analyze Negative Publicity Sources"
+              ],
+              "suppressed_self_attributed_candidates": [
+                "Conduct Thorough Analysis of Negative Publicity Sources",
+                "Analyze Negative Publicity Sources"
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 8,
+              "question": "Wat is op de lange termijn de grootste bedreiging voor dit soort apps?",
+              "answer": "Based on the provided candidates, the largest threat to the success of a social app for young people lies in the lack of engagement and interest among the target audience. This can be attributed to several factors including the app's perceived value proposition, the quality of the content, and the overall user experience. \n\nTo mitigate this risk, the app needs to enhance its core functionality and user interface to better engage users. This can be achieved through the implementation of interactive elements, personalized recommendations, and",
+              "baseline_answer": null,
+              "ssl_answer": "Based on the provided candidates, the largest threat to the success of a social app for young people lies in the lack of engagement and interest among the target audience. This can be attributed to several factors including the app's perceived value proposition, the quality of the content, and the overall user experience. \n\nTo mitigate this risk, the app needs to enhance its core functionality and user interface to better engage users. This can be achieved through the implementation of interactive elements, personalized recommendations, and",
+              "surfaced_seeds": [
+                "Explaination** of the concept behind the strategy."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:8",
+                  "decided_at": "2026-08-16T05:57:44.834580"
+                }
+              ],
+              "detected_candidates": [
+                "**Enhance** the **user interface** to make the app more engaging and appealing to the target audience.",
+                "**Implement** **interactive elements** such as quizzes and polls to increase user engagement.",
+                "**Personalize** the **recommendations** based on the user's interests and behavior to improve user satisfaction.",
+                "**Improve** the **content quality** to ensure that the app provides valuable and relevant information to the target audience."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "**Enhance** the **user interface** to make the app more engaging and appealing to the target audience.",
+                "**Implement** **interactive elements** such as quizzes and polls to increase user engagement.",
+                "**Personalize** the **recommendations** based on the user's interests and behavior to improve user satisfaction.",
+                "**Improve** the **content quality** to ensure that the app provides valuable and relevant information to the target audience."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            }
+          ],
+          "deferral_metrics": {
+            "method": "normalization admissibility plus later unsuppressed semantic recovery",
+            "dedup_similarity_threshold": 0.85,
+            "influenced_turns": 8,
+            "affected_turns": 7,
+            "detected_on_influenced_turns": 27,
+            "suppressed_candidate_occurrences": 27,
+            "distinct_normalized_suppressed_candidates": 27,
+            "normalization_admissible_occurrences": 24,
+            "later_recovered_occurrences": 0,
+            "unrecovered_admissible_occurrences": 24,
+            "suppression_rate_on_influenced_turns": 1.0,
+            "later_recovery_rate": 0.0,
+            "candidate_records": [
+              {
+                "turn": 1,
+                "candidate": "**Explanatory Frame**: Social Media Platforms as a Tool for Enhancing User Experience in a Social App for Young People",
+                "normalized_candidates": [],
+                "normalization_admissible": false,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 1,
+                "candidate": "**Dimension**: User Engagement on Social Media Platforms",
+                "normalized_candidates": [
+                  "Dimension**: User Engagement on Social Media Platforms."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 1,
+                "candidate": "**Relation**: Social Media Platforms as a Facilitator for User Development",
+                "normalized_candidates": [
+                  "Relation**: Social Media Platforms as a Facilitator for User Development."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 1,
+                "candidate": "**Explanatory Frame**: Social Media Platforms as a Tool for Improving User Retention in a Social App for Young People",
+                "normalized_candidates": [],
+                "normalization_admissible": false,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 1,
+                "candidate": "**Dimension**: User Feedback on Social Media Platforms",
+                "normalized_candidates": [
+                  "Dimension**: User Feedback on Social Media Platforms."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 2,
+                "candidate": "**Explaination** of the user interaction between the app and the community.",
+                "normalized_candidates": [
+                  "Explaination** of the user interaction between the app and the community."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 2,
+                "candidate": "**Relation** between the app and the user experience.",
+                "normalized_candidates": [
+                  "Relation** between the app and the user experience."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 2,
+                "candidate": "**Dimension** of the app's design that enhances user engagement.",
+                "normalized_candidates": [
+                  "Dimension** of the app's design that enhances user engagement."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 2,
+                "candidate": "**Frame** of the app's features that promote social connections.",
+                "normalized_candidates": [
+                  "Frame** of the app's features that promote social connections."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 2,
+                "candidate": "**Explanatory Frame** of the app's purpose and benefits. To identify what could appear here, let's analyze the given input text:",
+                "normalized_candidates": [
+                  "Explanatory Frame** of the app's purpose and benefits. To identify what could appear here.",
+                  "let's analyze the given input text:."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 3,
+                "candidate": "Het beste verdienmodel voor een sociale app met jonge gebruikers is een verantwoordelijk systeem dat de gebruiker zelf aanpassen en versterkt. Dit systeem moet zijn om de app te veranderen en te verbeteren door de gebruikers te laten zien hoe ze hun eigenschappen en ervaringen voelen. De verantwoordelijke systeem moet ook zijn om de app te versterken door nieuwe functies",
+                "normalized_candidates": [],
+                "normalization_admissible": false,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 4,
+                "candidate": "Gebruikergegevens als een onderdeel van het implementeren van aanbiedingen.",
+                "normalized_candidates": [
+                  "Gebruikergegevens als een onderdeel van het implementeren van aanbiedingen."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 4,
+                "candidate": "Een persoonlijke perspectief op de gebruikersdata.",
+                "normalized_candidates": [
+                  "Een persoonlijke perspectief op de gebruikersdata."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 4,
+                "candidate": "Een verantwoordelijkheid voor de implementatie van aanbiedingen.",
+                "normalized_candidates": [
+                  "Een verantwoordelijkheid voor de implementatie van aanbiedingen."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 4,
+                "candidate": "Een ontwikkelingsproces die de aanbiedingen bevat.",
+                "normalized_candidates": [
+                  "Een ontwikkelingsproces die de aanbiedingen bevat."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 4,
+                "candidate": "Een persoonlijk antwoord op hoe de gebruikersdata beperkt de implementatie van aanbied",
+                "normalized_candidates": [
+                  "Een persoonlijk antwoord op hoe de gebruikersdata beperkt de implementatie van aanbied."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 6,
+                "candidate": "**Provide clear, concise, and compelling information** on the benefits of investing in the infrastructure.",
+                "normalized_candidates": [
+                  "Provide clear ontbreekt.",
+                  "concise ontbreekt.",
+                  "and compelling information** on the benefits of investing in the infrastructure."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 6,
+                "candidate": "**Use clear and concise language** to ensure easy understanding.",
+                "normalized_candidates": [
+                  "Use clear and concise language** to ensure easy understanding."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 6,
+                "candidate": "**Highlight key benefits** of investing in the infrastructure.",
+                "normalized_candidates": [
+                  "Highlight key benefits** of investing in the infrastructure."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 6,
+                "candidate": "**Emphasize the importance of effective communication** in conveying these benefits.",
+                "normalized_candidates": [
+                  "Emphasize the importance of effective communication** in conveying these benefits."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 6,
+                "candidate": "**Implement a strategy** to effectively communicate the benefits of investing in the infrastructure. To effectively communicate the benefits of investing in the infrastructure, it is essential to",
+                "normalized_candidates": [
+                  "it is essential to ontbreekt."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 7,
+                "candidate": "Conduct Thorough Analysis of Negative Publicity Sources",
+                "normalized_candidates": [
+                  "Conduct Thorough Analysis of Negative Publicity Sources."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 7,
+                "candidate": "Analyze Negative Publicity Sources",
+                "normalized_candidates": [
+                  "Analyze Negative Publicity Sources ontbreekt."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 8,
+                "candidate": "**Enhance** the **user interface** to make the app more engaging and appealing to the target audience.",
+                "normalized_candidates": [
+                  "Enhance** the **user interface** to make the app more engaging and appealing to the target audience."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 8,
+                "candidate": "**Implement** **interactive elements** such as quizzes and polls to increase user engagement.",
+                "normalized_candidates": [
+                  "Implement** **interactive elements** such as quizzes and polls to increase user engagement."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 8,
+                "candidate": "**Personalize** the **recommendations** based on the user's interests and behavior to improve user satisfaction.",
+                "normalized_candidates": [
+                  "Personalize** the **recommendations** based on the user's interests and behavior to improve user satisfaction."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 8,
+                "candidate": "**Improve** the **content quality** to ensure that the app provides valuable and relevant information to the target audience.",
+                "normalized_candidates": [
+                  "Improve** the **content quality** to ensure that the app provides valuable and relevant information to the target audience."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              }
+            ],
+            "interpretation": "These counts measure deferred candidate opportunities and later recovery. They do not establish that a candidate was true, relevant, or useful."
+          },
+          "final_shadow": {
+            "runtime_mode": "live",
+            "turns": 9,
+            "seeds": [
+              {
+                "id": "ss_001",
+                "text": "Explaination** of the concept behind the strategy.",
+                "weight": 0.2,
+                "trace": 0.139,
+                "status": "PROMOTED",
+                "occurrence_count": 5,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_002",
+                "text": "Relation** between the strategy and the main goal.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_003",
+                "text": "Dimension** of the strategy that could help achieve the main goal.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_004",
+                "text": "Frame** of the strategy that could provide additional insights into the context.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_005",
+                "text": "Action** that could be taken to implement the strategy.",
+                "weight": 0.0,
+                "trace": 0.139,
+                "status": "DECAYING",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              }
+            ],
+            "influence_records": [
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:1",
+                "decided_at": "2026-08-16T05:51:02.571713"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:2",
+                "decided_at": "2026-08-16T05:51:47.022511"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:3",
+                "decided_at": "2026-08-16T05:52:35.867797"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:4",
+                "decided_at": "2026-08-16T05:53:28.981248"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:5",
+                "decided_at": "2026-08-16T05:54:26.506120"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:6",
+                "decided_at": "2026-08-16T05:55:28.254584"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:7",
+                "decided_at": "2026-08-16T05:56:34.430739"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:8",
+                "decided_at": "2026-08-16T05:57:44.834580"
+              }
+            ]
+          },
+          "gate_events": [
+            {
+              "event_id": "gate::ss_001::000001",
+              "seed_id": "ss_001",
+              "policy_id": "exploratory",
+              "decision": "promoted",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 1.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=5 (threshold=1)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "PROMOTED",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T05:51:02.548303"
+            }
+          ],
+          "audit_records_verified": 8,
+          "timing": {
+            "live_turn_elapsed_seconds": 511.668,
+            "deferral_scoring_elapsed_seconds": 0.001
+          }
+        },
+        {
+          "conversation_id": "CONV_CITY",
+          "domain": "stadsontwikkeling",
+          "runtime_mode": "live",
+          "gate_policy_id": "exploratory",
+          "applied_thresholds": {
+            "dedup_threshold": 0.85,
+            "min_occurrences": 1,
+            "promotion_threshold": 0.2,
+            "recurrence_mode": "cluster",
+            "cluster_threshold": 0.6,
+            "surface_threshold": 0.0,
+            "surface_top_k": 2,
+            "early_turn_margin": 0.0,
+            "early_turn_history": 5,
+            "resurface_margin": 0.0
+          },
+          "turns": [
+            {
+              "runtime_mode": "live",
+              "turn": 0,
+              "question": "Onze stad wil de binnenstad nieuw leven inblazen. Waar beginnen we?",
+              "answer": "The following are some of the key points to consider when answering this follow-up question:\n\n1. The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.\n2. The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.\n3. The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.\n4.",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.",
+                "The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.",
+                "The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.",
+                "The phrase \"Onze stad\" likely refers to the city of Amsterdam, which is located on"
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_001",
+                "ss_002",
+                "ss_003",
+                "ss_004",
+                "ss_005"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [
+                "ss_001",
+                "ss_002",
+                "ss_003",
+                "ss_004",
+                "ss_005"
+              ],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 1,
+              "question": "Hoe trekken we meer winkels en horeca aan?",
+              "answer": "The following are some of the key points to consider when answering this follow-up question:\n\n1. The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.\n2. The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.\n3. The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.\n4",
+              "baseline_answer": null,
+              "ssl_answer": "The following are some of the key points to consider when answering this follow-up question:\n\n1. The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.\n2. The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.\n3. The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.\n4",
+              "surfaced_seeds": [
+                "The phrase \"Onze stad\" refers to the city of Amsterdam.",
+                "which is located on ontbreekt."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001",
+                "ss_005"
+              ],
+              "selected_seed_ids": [
+                "ss_001",
+                "ss_005"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:1",
+                  "decided_at": "2026-08-16T05:59:34.034565"
+                },
+                {
+                  "seed_id": "ss_005",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_005::000005",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:1",
+                  "decided_at": "2026-08-16T05:59:34.034622"
+                }
+              ],
+              "detected_candidates": [
+                "The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.",
+                "The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.",
+                "The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.",
+                "The phrase \"Onze stad\" could refer to the city of Amsterdam, but it's also"
+              ],
+              "suppressed_self_attributed_candidates": [
+                "The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.",
+                "The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.",
+                "The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.",
+                "The phrase \"Onze stad\" could refer to the city of Amsterdam, but it's also"
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 2,
+              "question": "Hoe verbeteren we de bereikbaarheid en het verkeer?",
+              "answer": "The following are some of the key points to consider when answering this follow-up question:\n\n1. The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.\n2. The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.\n3. The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.\n4.",
+              "baseline_answer": null,
+              "ssl_answer": "The following are some of the key points to consider when answering this follow-up question:\n\n1. The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.\n2. The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.\n3. The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.\n4.",
+              "surfaced_seeds": [
+                "The phrase \"Onze stad\" refers to the city of Amsterdam.",
+                "which is located on ontbreekt."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001",
+                "ss_005"
+              ],
+              "selected_seed_ids": [
+                "ss_001",
+                "ss_005"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:2",
+                  "decided_at": "2026-08-16T06:00:18.663452"
+                },
+                {
+                  "seed_id": "ss_005",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_005::000005",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:2",
+                  "decided_at": "2026-08-16T06:00:18.663510"
+                }
+              ],
+              "detected_candidates": [
+                "The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.",
+                "The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.",
+                "The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.",
+                "The phrase \"Onze stad\" likely refers to the city of Amsterdam, which is located on"
+              ],
+              "suppressed_self_attributed_candidates": [
+                "The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.",
+                "The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.",
+                "The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.",
+                "The phrase \"Onze stad\" likely refers to the city of Amsterdam, which is located on"
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 3,
+              "question": "Hoe maken we de binnenstad aantrekkelijker voor toeristen?",
+              "answer": "Based on the information provided, the city of Amsterdam has several factors that contribute to making it more attractive for tourists. One significant factor is its location on the North Bank of the river Meuse. This geographical feature provides easy access to the city's attractions, such as the canals, parks, and museums, all within walking distance from the city center. Additionally, the city offers a variety of transportation options, including public transport, bike rentals, and car-sharing services, which make",
+              "baseline_answer": null,
+              "ssl_answer": "Based on the information provided, the city of Amsterdam has several factors that contribute to making it more attractive for tourists. One significant factor is its location on the North Bank of the river Meuse. This geographical feature provides easy access to the city's attractions, such as the canals, parks, and museums, all within walking distance from the city center. Additionally, the city offers a variety of transportation options, including public transport, bike rentals, and car-sharing services, which make",
+              "surfaced_seeds": [
+                "The phrase \"Onze stad\" refers to the city of Amsterdam.",
+                "which is located on ontbreekt."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001",
+                "ss_005"
+              ],
+              "selected_seed_ids": [
+                "ss_001",
+                "ss_005"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:3",
+                  "decided_at": "2026-08-16T06:01:07.721321"
+                },
+                {
+                  "seed_id": "ss_005",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_005::000005",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:3",
+                  "decided_at": "2026-08-16T06:01:07.721404"
+                }
+              ],
+              "detected_candidates": [
+                "The city of Amsterdam's location on the North Bank of the river Meuse contributes to its attractiveness for tourists.",
+                "The geographic feature of the city's location on the North Bank of the river Meuse makes it more attractive for tourists.",
+                "The city of Amsterdam's location on the North Bank of the river Meuse is a key factor contributing to its attractiveness for tourists.",
+                "The city of Amsterdam's location on the North Bank of the river Meuse is a crucial"
+              ],
+              "suppressed_self_attributed_candidates": [
+                "The city of Amsterdam's location on the North Bank of the river Meuse contributes to its attractiveness for tourists.",
+                "The geographic feature of the city's location on the North Bank of the river Meuse makes it more attractive for tourists.",
+                "The city of Amsterdam's location on the North Bank of the river Meuse is a key factor contributing to its attractiveness for tourists.",
+                "The city of Amsterdam's location on the North Bank of the river Meuse is a crucial"
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 4,
+              "question": "Welke rol moet woningbouw in de binnenstad spelen?",
+              "answer": "In order to fully understand the role of winning building in the city of Amsterdam, it is essential to examine the various aspects of the city's development and growth. The city's history and architecture have played a crucial role in shaping its identity and attracting visitors. The city's layout, characterized by its central park and canal system, has made it a popular destination for both locals and tourists alike. The city's cultural offerings, including museums, galleries, and theaters, have also contributed significantly",
+              "baseline_answer": null,
+              "ssl_answer": "In order to fully understand the role of winning building in the city of Amsterdam, it is essential to examine the various aspects of the city's development and growth. The city's history and architecture have played a crucial role in shaping its identity and attracting visitors. The city's layout, characterized by its central park and canal system, has made it a popular destination for both locals and tourists alike. The city's cultural offerings, including museums, galleries, and theaters, have also contributed significantly",
+              "surfaced_seeds": [
+                "which is located on ontbreekt.",
+                "The phrase \"Onze stad\" refers to the city of Amsterdam."
+              ],
+              "surfaced_seed_ids": [
+                "ss_005",
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_005",
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_005",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_005::000005",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:4",
+                  "decided_at": "2026-08-16T06:02:01.103105"
+                },
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:4",
+                  "decided_at": "2026-08-16T06:02:01.103163"
+                }
+              ],
+              "detected_candidates": [
+                "**Explaination** of the importance of the city's layout in the context of the city's development and growth.",
+                "**Relation** between the city's layout and its cultural offerings.",
+                "**Dimension** of the city's layout that contributes to its popularity among visitors.",
+                "**Frame** of the city's layout that highlights its significance in shaping the city's identity.",
+                "**Explanatory Frame** of the city's layout alongside its cultural offerings."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "**Explaination** of the importance of the city's layout in the context of the city's development and growth.",
+                "**Relation** between the city's layout and its cultural offerings.",
+                "**Dimension** of the city's layout that contributes to its popularity among visitors.",
+                "**Frame** of the city's layout that highlights its significance in shaping the city's identity.",
+                "**Explanatory Frame** of the city's layout alongside its cultural offerings."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 5,
+              "question": "Hoe vergroenen we de openbare ruimte?",
+              "answer": "The following are some of the key points to consider when answering this follow-up question:\n\n1. The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.\n2. The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.\n3. The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.\n4.",
+              "baseline_answer": null,
+              "ssl_answer": "The following are some of the key points to consider when answering this follow-up question:\n\n1. The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.\n2. The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.\n3. The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.\n4.",
+              "surfaced_seeds": [
+                "The phrase \"Onze stad\" refers to the city of Amsterdam.",
+                "which is located on ontbreekt."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001",
+                "ss_005"
+              ],
+              "selected_seed_ids": [
+                "ss_001",
+                "ss_005"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:5",
+                  "decided_at": "2026-08-16T06:02:58.699427"
+                },
+                {
+                  "seed_id": "ss_005",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_005::000005",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:5",
+                  "decided_at": "2026-08-16T06:02:58.699484"
+                }
+              ],
+              "detected_candidates": [
+                "The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.",
+                "The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.",
+                "The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.",
+                "The phrase \"Onze stad\" likely refers to the city of Amsterdam, which is located on"
+              ],
+              "suppressed_self_attributed_candidates": [
+                "The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.",
+                "The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.",
+                "The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.",
+                "The phrase \"Onze stad\" likely refers to the city of Amsterdam, which is located on"
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 6,
+              "question": "Hoe houden we de binnenstad veilig en levendig in de avond?",
+              "answer": "The city of Amsterdam, situated on the North Bank of the river Meuse, is renowned for its unique blend of historical charm and modern amenities. The city's layout, featuring a central park and canal system, makes it a popular destination for both locals and tourists alike. The city's cultural offerings, including museums, galleries, and theaters, have also contributed significantly to its appeal. Despite its size, Amsterdam maintains a sense of calm and tranquility, thanks to its extensive network of",
+              "baseline_answer": null,
+              "ssl_answer": "The city of Amsterdam, situated on the North Bank of the river Meuse, is renowned for its unique blend of historical charm and modern amenities. The city's layout, featuring a central park and canal system, makes it a popular destination for both locals and tourists alike. The city's cultural offerings, including museums, galleries, and theaters, have also contributed significantly to its appeal. Despite its size, Amsterdam maintains a sense of calm and tranquility, thanks to its extensive network of",
+              "surfaced_seeds": [
+                "The phrase \"Onze stad\" refers to the city of Amsterdam.",
+                "which is located on ontbreekt."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001",
+                "ss_005"
+              ],
+              "selected_seed_ids": [
+                "ss_001",
+                "ss_005"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:6",
+                  "decided_at": "2026-08-16T06:04:00.480135"
+                },
+                {
+                  "seed_id": "ss_005",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_005::000005",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:6",
+                  "decided_at": "2026-08-16T06:04:00.480189"
+                }
+              ],
+              "detected_candidates": [
+                "The city of Amsterdam, situated on the North Bank of the river Meuse, is renowned for its unique blend of historical charm and modern amenities. The city's layout, featuring a central park and canal system, makes it a popular destination for both locals and tourists alike. The city's cultural offerings, including museums, galleries, and theaters, have also contributed significantly to its appeal. Despite its size, Amsterdam maintains a sense of calm and tranquility, thanks to its extensive network of"
+              ],
+              "suppressed_self_attributed_candidates": [
+                "The city of Amsterdam, situated on the North Bank of the river Meuse, is renowned for its unique blend of historical charm and modern amenities. The city's layout, featuring a central park and canal system, makes it a popular destination for both locals and tourists alike. The city's cultural offerings, including museums, galleries, and theaters, have also contributed significantly to its appeal. Despite its size, Amsterdam maintains a sense of calm and tranquility, thanks to its extensive network of"
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 7,
+              "question": "Hoe financieren we dit alles als gemeente?",
+              "answer": "To finance the city of Amsterdam, the government of the Netherlands plays a critical role. The Dutch government has invested heavily in infrastructure projects, including the construction of new roads, bridges, and public transportation systems. These investments have helped to create a more connected and accessible urban environment, making it easier for residents to move around the city and access essential services like hospitals, schools, and shopping centers. Furthermore, the government has implemented policies aimed at reducing waste and promoting sustainability, which has contributed",
+              "baseline_answer": null,
+              "ssl_answer": "To finance the city of Amsterdam, the government of the Netherlands plays a critical role. The Dutch government has invested heavily in infrastructure projects, including the construction of new roads, bridges, and public transportation systems. These investments have helped to create a more connected and accessible urban environment, making it easier for residents to move around the city and access essential services like hospitals, schools, and shopping centers. Furthermore, the government has implemented policies aimed at reducing waste and promoting sustainability, which has contributed",
+              "surfaced_seeds": [
+                "The phrase \"Onze stad\" refers to the city of Amsterdam.",
+                "The use of \"will\" implies an uncertain future."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001",
+                "ss_003"
+              ],
+              "selected_seed_ids": [
+                "ss_001",
+                "ss_003"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:7",
+                  "decided_at": "2026-08-16T06:05:06.825038"
+                },
+                {
+                  "seed_id": "ss_003",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_003::000003",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:7",
+                  "decided_at": "2026-08-16T06:05:06.825094"
+                }
+              ],
+              "detected_candidates": [
+                "An angle could be the importance of infrastructure development in creating a more connected and accessible urban environment.",
+                "A frame could be the role of the Dutch government in financing the city of Amsterdam.",
+                "A relation could be the impact of investment on the quality of life for residents.",
+                "A dimension could be the policy measures taken by the Dutch government to promote sustainability.",
+                "A relation could be the relationship between infrastructure development and the reduction of waste. To finance the city of"
+              ],
+              "suppressed_self_attributed_candidates": [
+                "An angle could be the importance of infrastructure development in creating a more connected and accessible urban environment.",
+                "A frame could be the role of the Dutch government in financing the city of Amsterdam.",
+                "A relation could be the impact of investment on the quality of life for residents.",
+                "A dimension could be the policy measures taken by the Dutch government to promote sustainability.",
+                "A relation could be the relationship between infrastructure development and the reduction of waste. To finance the city of"
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 8,
+              "question": "Wat gaat er bij dit soort binnenstad-vernieuwingen het vaakst mis?",
+              "answer": "Based on the information provided, the city of Amsterdam, located on the North Bank of the river Meuse, is known for its unique blend of historical charm and modern amenities. The city's layout, featuring a central park and canal system, makes it a popular destination for both locals and tourists alike. The city's cultural offerings, including museums, galleries, and theaters, have also contributed significantly to its appeal. Despite its size, Amsterdam maintains a sense of calm and tranquility,",
+              "baseline_answer": null,
+              "ssl_answer": "Based on the information provided, the city of Amsterdam, located on the North Bank of the river Meuse, is known for its unique blend of historical charm and modern amenities. The city's layout, featuring a central park and canal system, makes it a popular destination for both locals and tourists alike. The city's cultural offerings, including museums, galleries, and theaters, have also contributed significantly to its appeal. Despite its size, Amsterdam maintains a sense of calm and tranquility,",
+              "surfaced_seeds": [
+                "which is located on ontbreekt.",
+                "The phrase \"Onze stad\" refers to the city of Amsterdam."
+              ],
+              "surfaced_seed_ids": [
+                "ss_005",
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_005",
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_005",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_005::000005",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:8",
+                  "decided_at": "2026-08-16T06:06:17.357742"
+                },
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:8",
+                  "decided_at": "2026-08-16T06:06:17.357799"
+                }
+              ],
+              "detected_candidates": [
+                "**Explaination** of the city's layout and its significance in the context of Amsterdam's popularity.",
+                "**Cultural** aspects of the city, such as its museums and theaters, which contribute to its appeal.",
+                "**Historical** elements of the city, like its history and landmarks, that make it unique.",
+                "**Technological** advancements in the city, such as its modern amenities and technology, that enhance its appeal."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "**Explaination** of the city's layout and its significance in the context of Amsterdam's popularity.",
+                "**Cultural** aspects of the city, such as its museums and theaters, which contribute to its appeal.",
+                "**Historical** elements of the city, like its history and landmarks, that make it unique.",
+                "**Technological** advancements in the city, such as its modern amenities and technology, that enhance its appeal."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 5,
+              "retrieval_probe": null
+            }
+          ],
+          "deferral_metrics": {
+            "method": "normalization admissibility plus later unsuppressed semantic recovery",
+            "dedup_similarity_threshold": 0.85,
+            "influenced_turns": 8,
+            "affected_turns": 8,
+            "detected_on_influenced_turns": 31,
+            "suppressed_candidate_occurrences": 31,
+            "distinct_normalized_suppressed_candidates": 39,
+            "normalization_admissible_occurrences": 23,
+            "later_recovered_occurrences": 0,
+            "unrecovered_admissible_occurrences": 23,
+            "suppression_rate_on_influenced_turns": 1.0,
+            "later_recovery_rate": 0.0,
+            "candidate_records": [
+              {
+                "turn": 1,
+                "candidate": "The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.",
+                "normalized_candidates": [
+                  "The phrase \"Onze stad\" refers to the city of Amsterdam.",
+                  "which is located on the North Bank of the river Meuse."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 1,
+                "candidate": "The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.",
+                "normalized_candidates": [],
+                "normalization_admissible": false,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 1,
+                "candidate": "The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.",
+                "normalized_candidates": [
+                  "The use of \"will\" implies an uncertain future.",
+                  "suggesting that there may be no definite start date for what follows."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 1,
+                "candidate": "The phrase \"Onze stad\" could refer to the city of Amsterdam, but it's also",
+                "normalized_candidates": [
+                  "The phrase \"Onze stad\" could refer to the city of Amsterdam.",
+                  "but it's also ontbreekt."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 2,
+                "candidate": "The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.",
+                "normalized_candidates": [
+                  "The phrase \"Onze stad\" refers to the city of Amsterdam.",
+                  "which is located on the North Bank of the river Meuse."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 2,
+                "candidate": "The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.",
+                "normalized_candidates": [],
+                "normalization_admissible": false,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 2,
+                "candidate": "The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.",
+                "normalized_candidates": [
+                  "The use of \"will\" implies an uncertain future.",
+                  "suggesting that there may be no definite start date for what follows."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 2,
+                "candidate": "The phrase \"Onze stad\" likely refers to the city of Amsterdam, which is located on",
+                "normalized_candidates": [
+                  "The phrase \"Onze stad\" likely refers to the city of Amsterdam.",
+                  "which is located on ontbreekt."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 3,
+                "candidate": "The city of Amsterdam's location on the North Bank of the river Meuse contributes to its attractiveness for tourists.",
+                "normalized_candidates": [],
+                "normalization_admissible": false,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 3,
+                "candidate": "The geographic feature of the city's location on the North Bank of the river Meuse makes it more attractive for tourists.",
+                "normalized_candidates": [],
+                "normalization_admissible": false,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 3,
+                "candidate": "The city of Amsterdam's location on the North Bank of the river Meuse is a key factor contributing to its attractiveness for tourists.",
+                "normalized_candidates": [],
+                "normalization_admissible": false,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 3,
+                "candidate": "The city of Amsterdam's location on the North Bank of the river Meuse is a crucial",
+                "normalized_candidates": [
+                  "The city of Amsterdam's location on the North Bank of the river Meuse is a crucial."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 4,
+                "candidate": "**Explaination** of the importance of the city's layout in the context of the city's development and growth.",
+                "normalized_candidates": [],
+                "normalization_admissible": false,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 4,
+                "candidate": "**Relation** between the city's layout and its cultural offerings.",
+                "normalized_candidates": [
+                  "Relation** between the city's layout and its cultural offerings."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 4,
+                "candidate": "**Dimension** of the city's layout that contributes to its popularity among visitors.",
+                "normalized_candidates": [
+                  "Dimension** of the city's layout that contributes to its popularity among visitors."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 4,
+                "candidate": "**Frame** of the city's layout that highlights its significance in shaping the city's identity.",
+                "normalized_candidates": [
+                  "Frame** of the city's layout that highlights its significance in shaping the city's identity."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 4,
+                "candidate": "**Explanatory Frame** of the city's layout alongside its cultural offerings.",
+                "normalized_candidates": [
+                  "Explanatory Frame** of the city's layout alongside its cultural offerings."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 5,
+                "candidate": "The phrase \"Onze stad\" refers to the city of Amsterdam, which is located on the North Bank of the river Meuse.",
+                "normalized_candidates": [
+                  "The phrase \"Onze stad\" refers to the city of Amsterdam.",
+                  "which is located on the North Bank of the river Meuse."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 5,
+                "candidate": "The sentence structure suggests that the question is asking about the beginning of something that will happen in Amsterdam.",
+                "normalized_candidates": [],
+                "normalization_admissible": false,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 5,
+                "candidate": "The use of \"will\" implies an uncertain future, suggesting that there may be no definite start date for what follows.",
+                "normalized_candidates": [
+                  "The use of \"will\" implies an uncertain future.",
+                  "suggesting that there may be no definite start date for what follows."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 5,
+                "candidate": "The phrase \"Onze stad\" likely refers to the city of Amsterdam, which is located on",
+                "normalized_candidates": [
+                  "The phrase \"Onze stad\" likely refers to the city of Amsterdam.",
+                  "which is located on ontbreekt."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 6,
+                "candidate": "The city of Amsterdam, situated on the North Bank of the river Meuse, is renowned for its unique blend of historical charm and modern amenities. The city's layout, featuring a central park and canal system, makes it a popular destination for both locals and tourists alike. The city's cultural offerings, including museums, galleries, and theaters, have also contributed significantly to its appeal. Despite its size, Amsterdam maintains a sense of calm and tranquility, thanks to its extensive network of",
+                "normalized_candidates": [
+                  "The city ontbreekt.",
+                  "Amsterdam ontbreekt.",
+                  "situated on the North Bank of the river Meuse.",
+                  "is renowned for its unique blend of historical charm and modern amenities. The city's layout.",
+                  "featuring a central park and canal system.",
+                  "makes it a popular destination for both locals and tourists alike. The city's cultural offerings.",
+                  "including museums ontbreekt.",
+                  "galleries ontbreekt.",
+                  "and theaters ontbreekt.",
+                  "have also contributed significantly to its appeal. Despite its size.",
+                  "Amsterdam maintains a sense of calm and tranquility.",
+                  "thanks to its extensive network of."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 7,
+                "candidate": "An angle could be the importance of infrastructure development in creating a more connected and accessible urban environment.",
+                "normalized_candidates": [
+                  "An angle could be the importance of infrastructure development in creating a more connected and accessible urban environment."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 7,
+                "candidate": "A frame could be the role of the Dutch government in financing the city of Amsterdam.",
+                "normalized_candidates": [
+                  "A frame could be the role of the Dutch government in financing the city of Amsterdam."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 7,
+                "candidate": "A relation could be the impact of investment on the quality of life for residents.",
+                "normalized_candidates": [
+                  "A relation could be the impact of investment on the quality of life for residents."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 7,
+                "candidate": "A dimension could be the policy measures taken by the Dutch government to promote sustainability.",
+                "normalized_candidates": [
+                  "A dimension could be the policy measures taken by the Dutch government to promote sustainability."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 7,
+                "candidate": "A relation could be the relationship between infrastructure development and the reduction of waste. To finance the city of",
+                "normalized_candidates": [],
+                "normalization_admissible": false,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 8,
+                "candidate": "**Explaination** of the city's layout and its significance in the context of Amsterdam's popularity.",
+                "normalized_candidates": [
+                  "Explaination** of the city's layout and its significance in the context of Amsterdam's popularity."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 8,
+                "candidate": "**Cultural** aspects of the city, such as its museums and theaters, which contribute to its appeal.",
+                "normalized_candidates": [
+                  "Cultural** aspects of the city.",
+                  "such as its museums and theaters.",
+                  "which contribute to its appeal."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 8,
+                "candidate": "**Historical** elements of the city, like its history and landmarks, that make it unique.",
+                "normalized_candidates": [
+                  "Historical** elements of the city.",
+                  "like its history and landmarks.",
+                  "that make it unique ontbreekt."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 8,
+                "candidate": "**Technological** advancements in the city, such as its modern amenities and technology, that enhance its appeal.",
+                "normalized_candidates": [
+                  "Technological** advancements in the city.",
+                  "such as its modern amenities and technology.",
+                  "that enhance its appeal ontbreekt."
+                ],
+                "normalization_admissible": true,
+                "later_recovered": false,
+                "recovery_match": null
+              }
+            ],
+            "interpretation": "These counts measure deferred candidate opportunities and later recovery. They do not establish that a candidate was true, relevant, or useful."
+          },
+          "final_shadow": {
+            "runtime_mode": "live",
+            "turns": 9,
+            "seeds": [
+              {
+                "id": "ss_001",
+                "text": "The phrase \"Onze stad\" refers to the city of Amsterdam.",
+                "weight": 0.2,
+                "trace": 0.174,
+                "status": "PROMOTED",
+                "occurrence_count": 2,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_002",
+                "text": "which is located on the North Bank of the river Meuse.",
+                "weight": 0.2,
+                "trace": 0.139,
+                "status": "PROMOTED",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_003",
+                "text": "The use of \"will\" implies an uncertain future.",
+                "weight": 0.2,
+                "trace": 0.139,
+                "status": "PROMOTED",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_004",
+                "text": "suggesting that there may be no definite start date for what follows.",
+                "weight": 0.2,
+                "trace": 0.139,
+                "status": "PROMOTED",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_005",
+                "text": "which is located on ontbreekt.",
+                "weight": 0.2,
+                "trace": 0.139,
+                "status": "PROMOTED",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              }
+            ],
+            "influence_records": [
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:1",
+                "decided_at": "2026-08-16T05:59:34.034565"
+              },
+              {
+                "seed_id": "ss_005",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_005::000005",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:1",
+                "decided_at": "2026-08-16T05:59:34.034622"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:2",
+                "decided_at": "2026-08-16T06:00:18.663452"
+              },
+              {
+                "seed_id": "ss_005",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_005::000005",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:2",
+                "decided_at": "2026-08-16T06:00:18.663510"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:3",
+                "decided_at": "2026-08-16T06:01:07.721321"
+              },
+              {
+                "seed_id": "ss_005",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_005::000005",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:3",
+                "decided_at": "2026-08-16T06:01:07.721404"
+              },
+              {
+                "seed_id": "ss_005",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_005::000005",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:4",
+                "decided_at": "2026-08-16T06:02:01.103105"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:4",
+                "decided_at": "2026-08-16T06:02:01.103163"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:5",
+                "decided_at": "2026-08-16T06:02:58.699427"
+              },
+              {
+                "seed_id": "ss_005",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_005::000005",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:5",
+                "decided_at": "2026-08-16T06:02:58.699484"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:6",
+                "decided_at": "2026-08-16T06:04:00.480135"
+              },
+              {
+                "seed_id": "ss_005",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_005::000005",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:6",
+                "decided_at": "2026-08-16T06:04:00.480189"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:7",
+                "decided_at": "2026-08-16T06:05:06.825038"
+              },
+              {
+                "seed_id": "ss_003",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_003::000003",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:7",
+                "decided_at": "2026-08-16T06:05:06.825094"
+              },
+              {
+                "seed_id": "ss_005",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_005::000005",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:8",
+                "decided_at": "2026-08-16T06:06:17.357742"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:8",
+                "decided_at": "2026-08-16T06:06:17.357799"
+              }
+            ]
+          },
+          "gate_events": [
+            {
+              "event_id": "gate::ss_001::000001",
+              "seed_id": "ss_001",
+              "policy_id": "exploratory",
+              "decision": "promoted",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.5,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=2 (threshold=1)"
+                }
+              ],
+              "status_before": "ACTIVE",
+              "status_after": "PROMOTED",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T05:59:34.012896"
+            },
+            {
+              "event_id": "gate::ss_002::000002",
+              "seed_id": "ss_002",
+              "policy_id": "exploratory",
+              "decision": "promoted",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=1 (threshold=1)"
+                }
+              ],
+              "status_before": "NEW",
+              "status_after": "PROMOTED",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T05:59:34.012963"
+            },
+            {
+              "event_id": "gate::ss_003::000003",
+              "seed_id": "ss_003",
+              "policy_id": "exploratory",
+              "decision": "promoted",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=1 (threshold=1)"
+                }
+              ],
+              "status_before": "NEW",
+              "status_after": "PROMOTED",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T05:59:34.013017"
+            },
+            {
+              "event_id": "gate::ss_004::000004",
+              "seed_id": "ss_004",
+              "policy_id": "exploratory",
+              "decision": "promoted",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=1 (threshold=1)"
+                }
+              ],
+              "status_before": "NEW",
+              "status_after": "PROMOTED",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T05:59:34.013076"
+            },
+            {
+              "event_id": "gate::ss_005::000005",
+              "seed_id": "ss_005",
+              "policy_id": "exploratory",
+              "decision": "promoted",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=1 (threshold=1)"
+                }
+              ],
+              "status_before": "NEW",
+              "status_after": "PROMOTED",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T05:59:34.013125"
+            }
+          ],
+          "audit_records_verified": 16,
+          "timing": {
+            "live_turn_elapsed_seconds": 512.57,
+            "deferral_scoring_elapsed_seconds": 0.002
+          }
+        }
+      ],
+      "interpretation": "Non-production recurrence-only counterfactual used only to measure deferral."
+    }
+  ]
+}
