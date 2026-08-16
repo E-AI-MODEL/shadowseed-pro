@@ -1,0 +1,192 @@
+name: Research - Qwen 7B live evidence measurement
+
+on:
+  push:
+    branches:
+      - agent/evidence-quality-qwen7b
+    paths:
+      - .github/workflows/evidence-quality-qwen7b.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: evidence-quality-qwen7b
+  cancel-in-progress: false
+
+env:
+  MODEL_ID: qwen2.5:7b-instruct-q4_K_M
+  RESULT_DIR: benchmarks/results/live_runtime
+  DEFAULT_RESULT: benchmarks/results/live_runtime/ssl_live_session_qwen2.5_7b_q4km_default.json
+  STRESS_RESULT: benchmarks/results/live_runtime/ssl_live_session_qwen2.5_7b_q4km_deferral_stress.json
+  MANIFEST: benchmarks/results/live_runtime/ssl_live_session_qwen2.5_7b_q4km_manifest.json
+
+jobs:
+  live-measurement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+
+    steps:
+      - name: Check out measurement branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/evidence-quality-qwen7b
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Shadowseed and semantic embedding dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[models]"
+          pip install sentence-transformers
+
+      - name: Install and start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve > /tmp/ollama.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then
+              break
+            fi
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
+          ollama --version
+
+      - name: Pull pinned Qwen 2.5 7B quantization
+        run: |
+          ollama pull "$MODEL_ID"
+          ollama list
+          ollama show "$MODEL_ID" --modelfile > /tmp/qwen7b.modelfile
+
+      - name: Build a two-turn English smoke suite
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          source = Path("src/shadowseed/data/ssl_session_suite.json")
+          data = json.loads(source.read_text(encoding="utf-8"))
+          conversation = dict(data["conversations"][0])
+          conversation["turns"] = conversation["turns"][:2]
+          smoke = {
+              "version": "ssl-session-qwen7b-smoke-0.1",
+              "language": "en",
+              "description": "Two-turn live-runtime smoke test before the full Qwen 7B measurement.",
+              "conversations": [conversation],
+          }
+          Path("/tmp/ssl_session_qwen7b_smoke.json").write_text(
+              json.dumps(smoke, indent=2) + "\n", encoding="utf-8"
+          )
+          PY
+
+      - name: Smoke-test the corrected English live path
+        run: |
+          shadowseed run-ssl-session \
+            --input /tmp/ssl_session_qwen7b_smoke.json \
+            --output /tmp/ssl_session_qwen7b_smoke_result.json \
+            --runtime-mode live \
+            --live-arms evidence-backed \
+            --backend ollama \
+            --model-id "$MODEL_ID" \
+            --max-new-tokens 220 \
+            --embedding-backend sentence-transformers
+
+      - name: Run evidence-backed and recurrence counterfactual arms
+        run: |
+          mkdir -p "$RESULT_DIR"
+          shadowseed run-ssl-session \
+            --input src/shadowseed/data/ssl_session_suite.json \
+            --output "$DEFAULT_RESULT" \
+            --runtime-mode live \
+            --live-arms both \
+            --backend ollama \
+            --model-id "$MODEL_ID" \
+            --max-new-tokens 220 \
+            --embedding-backend sentence-transformers
+
+      - name: Run explicit non-production deferral stress profile
+        run: |
+          shadowseed run-ssl-session \
+            --input src/shadowseed/data/ssl_session_suite.json \
+            --output "$STRESS_RESULT" \
+            --runtime-mode live \
+            --live-arms counterfactual \
+            --backend ollama \
+            --model-id "$MODEL_ID" \
+            --max-new-tokens 220 \
+            --embedding-backend sentence-transformers \
+            --min-occurrences 1 \
+            --promotion-threshold 0.2 \
+            --surface-threshold 0.0 \
+            --early-turn-margin 0.0 \
+            --resurface-margin 0.0
+
+      - name: Write provenance manifest
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import platform
+          import subprocess
+          from pathlib import Path
+
+          result_paths = [Path(os.environ["DEFAULT_RESULT"]), Path(os.environ["STRESS_RESULT"])]
+          hashes = {
+              str(path): hashlib.sha256(path.read_bytes()).hexdigest()
+              for path in result_paths
+          }
+          suite = Path("src/shadowseed/data/ssl_session_suite.json")
+          model_list = subprocess.run(
+              ["ollama", "list"], check=True, capture_output=True, text=True
+          ).stdout
+          modelfile = Path("/tmp/qwen7b.modelfile").read_text(encoding="utf-8")
+          manifest = {
+              "status": "new_evidence_quality_measurement",
+              "claim_boundary": (
+                  "Real-model live-runtime evidence. Counterfactual and stress authority are "
+                  "non-production and recurrence is not external evidence. Candidate quality "
+                  "still requires separate evaluation."
+              ),
+              "source_revision": os.environ["GITHUB_SHA"],
+              "workflow_run_id": os.environ["GITHUB_RUN_ID"],
+              "workflow_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "model_id": os.environ["MODEL_ID"],
+              "model_inventory": model_list,
+              "ollama_modelfile_sha256": hashlib.sha256(modelfile.encode()).hexdigest(),
+              "input": str(suite),
+              "input_sha256": hashlib.sha256(suite.read_bytes()).hexdigest(),
+              "python": platform.python_version(),
+              "platform": platform.platform(),
+              "max_new_tokens": 220,
+              "embedding_backend": "sentence-transformers",
+              "results": hashes,
+          }
+          Path(os.environ["MANIFEST"]).write_text(
+              json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+          )
+          PY
+
+      - name: Commit immutable run artifacts to the measurement branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$DEFAULT_RESULT" "$STRESS_RESULT" "$MANIFEST"
+          git diff --cached --check
+          git commit -m "Record Qwen 7B live evidence measurement"
+          git push origin HEAD:agent/evidence-quality-qwen7b
+
+      - name: Upload run artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: qwen2.5-7b-live-evidence
+          path: |
+            ${{ env.DEFAULT_RESULT }}
+            ${{ env.STRESS_RESULT }}
+            ${{ env.MANIFEST }}
