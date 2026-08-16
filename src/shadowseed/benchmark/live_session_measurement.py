@@ -15,9 +15,9 @@ Two arms are available:
 
 ``counterfactual``
     An explicitly non-production recurrence-only policy. It creates organic
-    surfacing opportunities so the conservative same-turn deferral rule can be
-    measured. Its promotions are not evidence and must not be interpreted as
-    product behavior.
+    surfacing opportunities when recurrence reaches the configured thresholds;
+    it does not guarantee promotion. Its promotions are not evidence and must
+    not be interpreted as product behavior.
 """
 
 from __future__ import annotations

@@ -137,9 +137,10 @@ arms:
 
 - `evidence-backed` is the shipped policy. The runner supplies no external evidence, so
   it measures detection and memory without silently granting authority.
-- `counterfactual` uses recurrence-only exploratory authority solely to create surfacing
-  turns on which fail-closed candidate deferral can be measured. It is not a production
-  result and is labelled that way in the artifact.
+- `counterfactual` uses recurrence-only exploratory authority to make organic surfacing
+  possible. It does not guarantee promotion or influence. When no turn is influenced, zero
+  suppressed candidates means deferral was not observed, not that it had no cost. This is
+  not a production result and is labelled that way in the artifact.
 
 The artifact pins the input digest, package version, Git revision and dirty-worktree state.
 It also records answer-generation and detector-call counts, suppressed candidate
@@ -151,6 +152,11 @@ latency. These are automated opportunity-cost proxies. They do not establish tha
 candidate is true, relevant, or useful, and the counterfactual does not turn recurrence
 into evidence. Use `--live-arms evidence-backed` when only the shipped no-evidence behavior
 is needed and the second set of model calls is not justified.
+
+The first reviewed real-model run and a separate non-production stress measurement are in
+[`benchmarks/results/live_runtime/`](../../benchmarks/results/live_runtime/). The stress run
+lowers Gate and surfacing thresholds explicitly to ensure that deferral is exercised; its
+authority and influence counts must not be presented as product behavior.
 
 ## Optional backends
 

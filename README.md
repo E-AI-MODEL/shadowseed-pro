@@ -94,11 +94,14 @@ shadowseed run-ssl-session \
 ```
 
 This runs the shipped evidence-backed policy without fabricated support and a separately
-labelled recurrence-only counterfactual that creates surfacing turns for measurement. The
-artifact reports suppressed candidates and later semantic recovery automatically. Those
-figures are opportunity-cost proxies, not truth or usefulness labels. Fixture and lexical
-backends are rejected for this live measurement route. See
-[`docs/usage/cli.md`](docs/usage/cli.md) for the arm and call-count semantics.
+labelled recurrence-only counterfactual that makes organic surfacing possible. It does not
+guarantee a promotion: when no turn is influenced, a zero suppression count means deferral
+was not observed rather than that it was free. The artifact reports suppressed candidates
+and later semantic recovery automatically. Those figures are opportunity-cost proxies, not
+truth or usefulness labels. Fixture and lexical backends are rejected for this live
+measurement route. See [`docs/usage/cli.md`](docs/usage/cli.md) for the arm and call-count
+semantics and [`benchmarks/results/live_runtime/`](benchmarks/results/live_runtime/) for the
+first reviewed real-model run plus a separately labelled deferral stress measurement.
 
 ### Tester Workbench
 
