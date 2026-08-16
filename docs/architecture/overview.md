@@ -24,8 +24,8 @@ details live in dedicated documents; in summary:
 - **Signals and policies** ([gate-contracts.md](gate-contracts.md)): typed
   `ValidationSignal`s (recurrence, SSOT, human feedback, retrieval, dialectic,
   probe, task outcome, contradiction, resolution) are offered to named policies
-  (`exploratory` default, `evidence_backed`). Policies propose; only the Gate
-  applies. Recurrence is a first-class signal and is never relabeled as external
+  (`exploratory` manager/evaluation default, `evidence_backed` live default).
+  Policies propose; only the Gate applies. Recurrence is a first-class signal and is never relabeled as external
   evidence. Verified external support requires a non-empty `source_ref`; repeated
   use of the same source-and-kind pair is idempotent. The same reference under a
   different signal kind is distinct support. Every Gate decision produces an
@@ -71,17 +71,21 @@ details live in dedicated documents; in summary:
 
 ## Conversation modes
 
-The product-oriented `live` mode selects previously authorized seeds, applies the
+The product-oriented `live` mode is the direct session and CLI default. It selects previously authorized seeds, applies the
 point-of-use contract, and performs one model generation. The visible answer is
-stored in history and inspected for new candidate gaps. Candidates attributable
-to seeds surfaced on the same turn are suppressed before intake, so a seed cannot
-immediately earn recurrence credit from text it helped introduce.
+stored in history and inspected for new candidate gaps. If any seed surfaced,
+all candidates detected in that same answer are deferred before intake. This
+fail-closed rule is deliberately broader than semantic matching because a
+differently worded consequence can still originate from SSL-supplied context.
+Verified external support enters through the explicit session evidence API and
+must carry a stable source reference.
 
 The research-oriented `evaluation` mode retains the isolated baseline arm. It
 generates and stores an answer without seeds, then optionally generates a separate
 SSL-assisted answer for comparison. This isolation prevents gap starvation and
-history contamination in controlled A/B measurements. It is not the default CLI
-conversation path.
+history contamination in controlled A/B measurements. It is not the default
+direct-session or CLI conversation path; the Workbench selects it explicitly for
+its comparison workflow.
 
 ## Shared surfacing implementation
 

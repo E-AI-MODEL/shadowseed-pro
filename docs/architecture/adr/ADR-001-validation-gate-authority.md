@@ -165,7 +165,8 @@ review. The amendments do not change the doctrine; they make it concrete and
 falsifiable:
 
 1. **Policy profiles.** Two user-selectable profiles with concrete semantics
-   ship: `exploratory` (the explicit default) and `evidence_backed`. A third
+   ship: `exploratory` (the explicit manager/evaluation default) and
+   `evidence_backed` (the live conversation default). A third
    profile, `legacy_evidence_required`, is resolvable only for compatibility with
    the historical boolean API and is excluded from the public policy list.
    `research`, `creative`, and `high_impact` remain documented examples that
