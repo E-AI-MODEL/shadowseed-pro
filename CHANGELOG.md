@@ -13,8 +13,11 @@
   independent.
 - The corrected half-life formula keeps true half-life semantics while migrating
   the default to `3*ln(2)` turns, preserving the historical `exp(-t/3)` decay
-  curve and its default dormant/expiry horizon. Version-1 session snapshots are
-  migrated on restore so existing Workbench sessions retain the same curve too.
+  curve and its default dormant/expiry horizon. Pre-live version-1 session
+  snapshots are migrated on restore while later version-1 snapshots, which
+  already used true half-life semantics, remain unchanged. Legacy snapshots also
+  resume explicitly in evaluation mode instead of inheriting the new live
+  default.
 - Evaluation sessions now apply the configured Gate policy instead of silently
   forcing `exploratory` recurrence decisions.
 - Fixture session benchmarks reject missing, blank, and non-string
@@ -27,7 +30,8 @@
   invalid fixture baselines.
 - Updated the README, architecture, usage documentation, and manuscript to
   distinguish the live one-generation path from the baseline-isolated evaluation
-  path and to document the live evidence boundary.
+  path and to document the live evidence boundary. The operator or host
+  application is explicitly identified as the trust anchor behind `verified=True`.
 
 ## 0.4.2 - 2026-08-15 - Authority and retrieval hardening
 

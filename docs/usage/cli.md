@@ -40,6 +40,12 @@ text, anonymous support, recurrence, and unverified observations are rejected by
 `ShadowChatSession.submit_evidence(...)` boundary. The command is an explicit trust action,
 not an automatic conversion of chat output into evidence.
 
+The boundary validates the signal kind, support direction, `verified` marker, and stable
+provenance. It cannot establish that a source is authentic or correct. The operator behind
+`/support`, or the host application calling `submit_evidence`, is the trust anchor and must
+perform that verification before setting `verified=True`. Integrations must not hard-code
+that flag or derive it from model output, recurrence, or an untrusted retrieval result.
+
 For a local model with semantic embeddings:
 
 ```bash
@@ -62,7 +68,9 @@ shadowseed chat \
 
 Live non-fixture sessions reject the deterministic `lexical` hash embedder because it is
 a CI/demo scaffold, not a production semantic retriever. `--allow-toy-embedder` exists
-only as an explicit escape hatch for controlled experiments.
+only as an explicit escape hatch for controlled experiments. The fixture backend retains
+the lexical default so its offline mechanics tests stay deterministic; `shadowseed doctor`
+reports this production limitation explicitly.
 
 Surfacing controls:
 
