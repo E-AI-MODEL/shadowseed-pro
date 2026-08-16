@@ -27,6 +27,7 @@ from shadowseed.benchmark.ssl45_gap_suite import (
     score_seed,
     tokenize,
 )
+from shadowseed.core_config import SSLCoreConfig
 from shadowseed.gate.signals import recurrence_signal
 from shadowseed.manager import SSLManager, SeedStatus
 
@@ -162,7 +163,8 @@ def promoted_ssl_seeds(scenario: dict, baseline_answer: str, turns: int) -> tupl
         embedding_fn=lambda text: __import__(
             "shadowseed.benchmark.ssl45_gap_suite",
             fromlist=["lexical_embedding"],
-        ).lexical_embedding(text)
+        ).lexical_embedding(text),
+        config=SSLCoreConfig(min_occurrences_for_gate=2),
     )
     detected_by_turn: list[list[str]] = []
 
@@ -188,7 +190,10 @@ def promoted_ssl_seeds(scenario: dict, baseline_answer: str, turns: int) -> tupl
                 seed.occurrence_count = count
                 manager.submit_signals(
                     seed_id,
-                    [recurrence_signal(count, threshold=2)],
+                    [recurrence_signal(
+                        count,
+                        threshold=manager.config.min_occurrences_for_gate,
+                    )],
                     policy_id="exploratory",
                 )
         elif scored.score == 0:

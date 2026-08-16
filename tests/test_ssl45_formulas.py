@@ -38,6 +38,27 @@ def test_trace_decay_formula():
     assert math.isclose(manager.get_seed(seed_id).trace, 1.0)
 
 
+def test_default_decay_horizon_is_preserved_after_half_life_semantics_fix():
+    manager = SSLManager(embedding_fn=fake_embedding)
+    seed_id = manager.add_or_update_seed(
+        "Colonial capital as a funding source for British factory investment."
+    )
+
+    dormant_turn = None
+    expired_turn = None
+    for turn in range(1, 25):
+        manager.decay_traces(turns_passed=1)
+        status = manager.get_seed(seed_id).status
+        if status is SeedStatus.DORMANT and dormant_turn is None:
+            dormant_turn = turn
+        if status is SeedStatus.EXPIRED:
+            expired_turn = turn
+            break
+
+    assert dormant_turn == 12
+    assert expired_turn == 16
+
+
 def test_weight_does_not_increase_without_external_evidence():
     manager = SSLManager(embedding_fn=fake_embedding)
     seed_id = manager.add_or_update_seed(

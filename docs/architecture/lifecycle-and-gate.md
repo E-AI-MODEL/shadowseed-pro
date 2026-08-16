@@ -8,7 +8,13 @@ State and influence are not interchangeable. A seed can be present without being
 
 ## Trace
 
-`trace` records presence, recurrence, and reactivation. It decays through TTL. A dormant seed may regain trace through TrTL when later text matches its trigger or embedding.
+`trace` records presence, recurrence, and reactivation. It decays through TTL as
+`trace *= exp(-ln(2) * turns / half_life_turns)`, so the configuration field has
+true half-life semantics. The default is `3*ln(2)` turns, which preserves the
+historical `exp(-turns/3)` curve and its calibrated dormant/expiry horizon.
+Version-1 `ShadowChatSession` snapshots are converted on restore for the same
+reason. A dormant seed may regain trace through TrTL when later text matches its
+trigger or embedding.
 
 Trace never grants influence by itself.
 
@@ -240,6 +246,7 @@ A reviewable run should retain:
 - gate inputs, flags, result, and reason;
 - point-of-use influence action and decision;
 - surfaced seed identifiers and thresholds;
-- baseline and SSL outputs as separate fields.
+- the visible output and runtime mode; evaluation runs additionally retain the
+  baseline and SSL outputs as separate fields.
 
 `GateEvent` and `AgentInfluenceRecord` are frozen and support strict in-process replay. Other retained logs, including `SeedEvent`, `ValidationGateResult`, and `ProbeFeedbackResult`, are ordinary mutable Python objects. None of these records is yet persisted to append-only or tamper-evident storage, cryptographically chained, or externally timestamped. Durable audit integrity remains a production requirement rather than an implemented guarantee.

@@ -8,7 +8,8 @@ pip install -e ".[test]"
 
 ## Live chat
 
-`shadowseed chat` defaults to the product-oriented `live` runtime:
+`shadowseed chat` and `ShadowChatSession` default to the product-oriented `live`
+runtime:
 
 ```bash
 shadowseed chat --backend fixture
@@ -17,13 +18,27 @@ shadowseed chat --backend fixture
 The fixture backend is deterministic and is intended for mechanics and smoke tests. In
 `live` mode Shadowseed selects already-authorized seeds before generation, performs one
 model generation per turn, stores the same visible answer in conversation history, and
-detects new candidate gaps on that visible answer. Candidates attributable to seeds that
-surfaced on the same turn are suppressed before intake so SSL cannot immediately give
-itself recurrence credit.
+detects new candidate gaps on that visible answer. When a seed surfaced, every candidate
+detected in that same answer is deferred. This conservative rule is intentional: vector
+similarity can recognize paraphrases but cannot prove that a differently worded candidate
+was not caused by the supplied SSL context.
 
 The `live` runtime defaults to the `evidence_backed` Gate policy. Recurrence remains an
 observation but cannot by itself increase steering authority. Use `--gate-policy` only
 when a different policy is a deliberate experiment.
+
+Inspect the live shadow and submit verified operator support with stable provenance:
+
+```text
+/shadow
+/support <seed_id> <source_ref>
+```
+
+Each distinct source reference is offered as one verified `human_feedback` signal through
+the normal Validation Gate. Reusing the same reference is idempotent. Generated model
+text, anonymous support, recurrence, and unverified observations are rejected by the
+`ShadowChatSession.submit_evidence(...)` boundary. The command is an explicit trust action,
+not an automatic conversion of chat output into evidence.
 
 For a local model with semantic embeddings:
 
@@ -111,5 +126,6 @@ isolated workspace. `workspace delete` requires `--yes`. API keys remain in the
 process environment or an OS keyring and are never stored in the workspace.
 
 The current tester Workbench keeps the evaluation-oriented session configuration so its
-baseline/SSL comparison tools remain reproducible. The production-oriented `live` path
-is available through `ShadowChatSession(runtime_mode="live")` and `shadowseed chat`.
+baseline/SSL comparison tools remain reproducible. Direct `ShadowChatSession()` use and
+`shadowseed chat` default to `live`; pass `runtime_mode="evaluation"` explicitly for a
+research comparison session.

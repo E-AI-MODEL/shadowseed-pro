@@ -6,6 +6,7 @@ manager, benchmark runners and future evaluators can stay aligned.
 
 from __future__ import annotations
 
+import math
 from dataclasses import asdict, dataclass
 from typing import Any
 
@@ -15,7 +16,10 @@ class SSLCoreConfig:
     """Canonical defaults for the SSL 4.5 core lifecycle."""
 
     trace_start: float = 2.0
-    half_life_turns: float = 3.0
+    # The old exp(-t/3) default had an actual half-life of 3*ln(2). Keep that
+    # calibrated decay curve while giving explicit values true half-life
+    # semantics under exp(-ln(2)*t/h).
+    half_life_turns: float = 3.0 * math.log(2.0)
     dedup_threshold: float = 0.85
     promotion_threshold: float = 0.5
     dormant_threshold: float = 0.05

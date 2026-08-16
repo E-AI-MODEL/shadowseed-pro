@@ -18,6 +18,7 @@ from shadowseed.benchmark.ssl45_gap_suite import (
     score_seed,
     tokenize,
 )
+from shadowseed.core_config import SSLCoreConfig
 from shadowseed.gate.signals import recurrence_signal
 from shadowseed.manager import SSLManager, SeedStatus
 
@@ -98,10 +99,13 @@ def run_ssl45_benefit_suite(input_path: str, output_path: str, turns: int = 4) -
         baseline_answer = scenario["baseline_answer"]
         expected_additions = scenario["expected_ssl_additions"]
 
-        manager = SSLManager(embedding_fn=lambda text: __import__(
-            "shadowseed.benchmark.ssl45_gap_suite",
-            fromlist=["lexical_embedding"],
-        ).lexical_embedding(text))
+        manager = SSLManager(
+            embedding_fn=lambda text: __import__(
+                "shadowseed.benchmark.ssl45_gap_suite",
+                fromlist=["lexical_embedding"],
+            ).lexical_embedding(text),
+            config=SSLCoreConfig(min_occurrences_for_gate=2),
+        )
 
         detected_by_turn = []
         for _turn in range(turns):
@@ -132,7 +136,10 @@ def run_ssl45_benefit_suite(input_path: str, output_path: str, turns: int = 4) -
                     seed.occurrence_count = count
                     manager.submit_signals(
                         seed_id,
-                        [recurrence_signal(count, threshold=2)],
+                        [recurrence_signal(
+                            count,
+                            threshold=manager.config.min_occurrences_for_gate,
+                        )],
                         policy_id="exploratory",
                     )
             elif scored.score == 0:

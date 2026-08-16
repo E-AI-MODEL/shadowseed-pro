@@ -86,6 +86,7 @@ def _make_session(monkeypatch, **kw) -> ShadowChatSession:
     monkeypatch.setattr(chatmod, "make_backend", lambda **k: _Model())
     monkeypatch.setattr(chatmod, "make_detector_backend", lambda *a, **k: _Detector())
     monkeypatch.setattr(chatmod, "make_embedding_fn", _emb_factory)
+    kw.setdefault("runtime_mode", "evaluation")
     return ShadowChatSession(backend="openai", recurrence_mode="cluster", **kw)
 
 

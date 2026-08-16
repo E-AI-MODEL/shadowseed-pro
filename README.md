@@ -73,7 +73,7 @@ shadowseed chat --backend fixture --show-shadow
 
 The fixture backend verifies pipeline mechanics. It is not evidence of real-model quality.
 
-`shadowseed chat` now defaults to the product-oriented `live` runtime. Live mode produces one visible model answer per turn, stores that same answer in conversation history, and defaults to the `evidence_backed` Gate policy. Non-fixture live sessions reject the toy lexical hash embedder unless `--allow-toy-embedder` is supplied explicitly. A local semantic setup can use:
+`shadowseed chat` and the `ShadowChatSession` API default to the product-oriented `live` runtime. Live mode produces one visible model answer per turn, stores that same answer in conversation history, and defaults to the `evidence_backed` Gate policy. Detected recurrence remains observable but cannot raise authority on its own. Verified external support enters through `ShadowChatSession.submit_evidence(...)`; the interactive command is `/support <seed_id> <source_ref>`. Non-fixture live sessions reject the toy lexical hash embedder unless `--allow-toy-embedder` is supplied explicitly. A local semantic setup can use:
 
 ```bash
 pip install -e ".[models]"
@@ -213,15 +213,16 @@ flowchart TD
     M --> V[Visible answer]
     V --> H[Store the same visible answer in history]
     V --> D[Detect candidate absences]
-    D --> X[Suppress candidates attributable to surfaced SSL seeds]
+    D --> X[If SSL surfaced, defer all detected candidates]
     X --> N[Ingest remaining candidates at weight zero]
     N --> R[Record changed recurrence]
     R --> G[Validation Gate: evidence_backed by default]
+    E[Explicit verified evidence] --> G
     G -->|recurrence only| B[No authority gain]
     G -->|verified external support| P[Authority may rise]
 ```
 
-Live mode avoids the hidden-history split: the answer the user reads is the answer carried into the next turn. Candidate detection runs on that visible answer. A conservative semantic attribution filter prevents a surfaced seed from immediately earning recurrence credit from text it helped introduce. Recurrence alone cannot raise authority under the live default policy.
+Live mode avoids the hidden-history split: the answer the user reads is the answer carried into the next turn. Candidate detection runs on that visible answer. If a seed influenced the generation, all candidates detected in that same answer are deferred because embedding similarity cannot prove causal provenance. This fail-closed rule prevents both close paraphrases and differently worded consequences from earning self-recurrence credit. Recurrence alone cannot raise authority under the live default policy; verified support must enter through the explicit evidence boundary with a stable source reference.
 
 ### Evaluation mode
 
@@ -388,7 +389,7 @@ The machine-readable source is [`repository-authority.yaml`](repository-authorit
 
 ## Research status
 
-The methods/systems manuscript for the current architecture is available in [`paper/`](paper/README.md), with the compiled version at [`paper/shadowseed-paper.pdf`](paper/shadowseed-paper.pdf). It describes the frozen 0.4.2 implementation and keeps the existing efficacy claim boundary unchanged.
+The methods/systems manuscript for the current architecture is available in [`paper/`](paper/README.md), with the compiled version at [`paper/shadowseed-paper.pdf`](paper/shadowseed-paper.pdf). It identifies the reviewed implementation commit separately from the 0.4.2 release artifact and keeps the existing efficacy claim boundary unchanged.
 
 ### Implemented and testable
 
@@ -398,7 +399,7 @@ The methods/systems manuscript for the current architecture is available in [`pa
 - typed Validation Gate signals and named policies;
 - explicit contradiction records and resolution;
 - verified SSOT evidence separated from generated proposals;
-- shared surfacing and baseline isolation;
+- a one-generation live loop plus a separately baseline-isolated evaluation loop;
 - point-of-use eligibility with current-version Gate-event linkage;
 - audit and strict in-process replay for Gate and influence decisions;
 - deterministic fixtures plus optional Hugging Face, Ollama, OpenAI, FAISS, and Chroma routes;
@@ -444,7 +445,7 @@ Method limits include fixture dependence, small human review sets, model-generat
 
 | Tension | Current choice | Open question |
 |---|---|---|
-| Memory versus contamination | Weightless seeds and baseline isolation | What useful context is lost? |
+| Memory versus contamination | Visible history in live mode; baseline isolation in evaluation mode; same-turn candidate deferral after SSL influence | What useful candidates are deferred by the conservative live rule? |
 | Persistence versus forgetting | TTL, TrTL, and expiry | How should decay vary by domain and risk? |
 | Exploration versus distraction | Relevance thresholds and top-k | Can usefulness be predicted before generation? |
 | Recurrence versus bias | Recurrence is distinct from evidence | How should correlated detector errors be measured? |

@@ -13,6 +13,11 @@ This `paper/` directory is the canonical repository location for the manuscript 
 
 - `shadowseed-paper.pdf` — compiled manuscript PDF
 - `main.tex` — complete manuscript draft
-- `references.bib` — bibliography based on primary paper/proceedings sources plus the frozen Shadowseed 0.4.2 software artifact
+- `references.bib` — bibliography based on primary paper/proceedings sources plus the published Shadowseed 0.4.2 software artifact
 
-The manuscript is written as a methods/systems paper. Its evidential scope is deliberately narrow: the current tests and CI establish executable implementation contracts. General answer-quality improvement, universal security, and production readiness remain open empirical or operational questions.
+The manuscript is written as a methods/systems paper. It identifies the reviewed
+implementation commit independently from the published 0.4.2 release citation so
+the architecture description cannot silently lag the code. Its evidential scope is
+deliberately narrow: tests and CI establish executable implementation contracts.
+General answer-quality improvement, universal security, and production readiness
+remain open empirical or operational questions.

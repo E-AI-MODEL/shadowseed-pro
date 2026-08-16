@@ -1,5 +1,34 @@
 # Changelog
 
+## Unreleased - Live runtime review follow-up
+
+- Live sessions and the direct `ShadowChatSession` API now default to the
+  `evidence_backed` product path and expose an explicit `submit_evidence` trust
+  boundary. Verified external support must be supporting, provenance-bearing,
+  and externally typed; the interactive chat exposes the same path through
+  `/support <seed_id> <source_ref>`.
+- A live turn that surfaced SSL context defers every candidate detected in that
+  answer. This closes same-turn self-credit for both paraphrases and semantically
+  different consequences, which an embedding threshold could not prove
+  independent.
+- The corrected half-life formula keeps true half-life semantics while migrating
+  the default to `3*ln(2)` turns, preserving the historical `exp(-t/3)` decay
+  curve and its default dormant/expiry horizon. Version-1 session snapshots are
+  migrated on restore so existing Workbench sessions retain the same curve too.
+- Evaluation sessions now apply the configured Gate policy instead of silently
+  forcing `exploratory` recurrence decisions.
+- Fixture session benchmarks reject missing, blank, and non-string
+  `baseline_answer` values with the same actionable validation error.
+- Recurrence-driven benchmarks take their signal threshold from
+  `SSLCoreConfig`; the fixed benefit fixtures declare their historical
+  two-occurrence benchmark setting in that config.
+- Added direct contracts for configured recurrence thresholds, changed-signal
+  Gate events, evaluation isolation and policy selection, live persistence, and
+  invalid fixture baselines.
+- Updated the README, architecture, usage documentation, and manuscript to
+  distinguish the live one-generation path from the baseline-isolated evaluation
+  path and to document the live evidence boundary.
+
 ## 0.4.2 - 2026-08-15 - Authority and retrieval hardening
 
 - Validation Gate support is idempotent for recurrence observations and exact

@@ -24,8 +24,8 @@ details live in dedicated documents; in summary:
 - **Signals and policies** ([gate-contracts.md](gate-contracts.md)): typed
   `ValidationSignal`s (recurrence, SSOT, human feedback, retrieval, dialectic,
   probe, task outcome, contradiction, resolution) are offered to named policies
-  (`exploratory` default, `evidence_backed`). Policies propose; only the Gate
-  applies. Recurrence is a first-class signal and is never relabeled as external
+  (`exploratory` manager/evaluation default, `evidence_backed` live default).
+  Policies propose; only the Gate applies. Recurrence is a first-class signal and is never relabeled as external
   evidence. Verified external support requires a non-empty `source_ref`; repeated
   use of the same source-and-kind pair is idempotent. The same reference under a
   different signal kind is distinct support. Every Gate decision produces an
@@ -59,7 +59,7 @@ details live in dedicated documents; in summary:
 | `shadowseed.vector_workflows` | Uncertain-region search, external-feedback routing, and in-memory constellation construction |
 | `shadowseed.gate` | Typed validation signals, named Gate policies, and immutable Gate events / contradiction records |
 | `shadowseed.surfacing` | Shared cross-turn eligibility, thresholds, ranking, and resurface damping |
-| `shadowseed.chat` | Live sidecar session with uncontaminated baseline history |
+| `shadowseed.chat` | Dual-mode conversation session: one-generation live runtime and isolated evaluation A/B loop |
 | `shadowseed.detection.model_detector` | Model-backed open-set candidate generation |
 | `shadowseed.adapters` | Model, embedding, Ollama, and OpenAI runtime adapters |
 | `shadowseed.retrieval_probe` | Retrieval probe execution outside the benchmark namespace |
@@ -69,12 +69,23 @@ details live in dedicated documents; in summary:
 | `shadowseed_agent.agent_contract` | Bounded point-of-use eligibility decision with a mandatory current-version Gate-event link and a configurable contradiction check |
 | `shadowseed.benchmark` | Evaluation harnesses, regression suites, and compatibility wrappers |
 
-## Baseline isolation
+## Conversation modes
 
-The live session first generates a baseline answer without seeds. Gap detection runs on that baseline, and the baseline is what enters conversation history. The SSL answer is a sidecar output. This avoids two feedback loops:
+The product-oriented `live` mode is the direct session and CLI default. It selects previously authorized seeds, applies the
+point-of-use contract, and performs one model generation. The visible answer is
+stored in history and inspected for new candidate gaps. If any seed surfaced,
+all candidates detected in that same answer are deferred before intake. This
+fail-closed rule is deliberately broader than semantic matching because a
+differently worded consequence can still originate from SSL-supplied context.
+Verified external support enters through the explicit session evidence API and
+must carry a stable source reference.
 
-- gap starvation, where an SSL-improved answer hides the absence that should be detected;
-- history contamination, where previous SSL additions become indistinguishable from the model's original context.
+The research-oriented `evaluation` mode retains the isolated baseline arm. It
+generates and stores an answer without seeds, then optionally generates a separate
+SSL-assisted answer for comparison. This isolation prevents gap starvation and
+history contamination in controlled A/B measurements. It is not the default
+direct-session or CLI conversation path; the Workbench selects it explicitly for
+its comparison workflow.
 
 ## Shared surfacing implementation
 

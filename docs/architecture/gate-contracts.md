@@ -55,18 +55,21 @@ is allowed to do.
 
 Two public policies and one compatibility policy ship today:
 
-- **`exploratory`** (the default): qualifying recurrence *or verified* external
+- **`exploratory`** (the manager and evaluation default): qualifying recurrence *or verified* external
   support, with no unresolved contradiction, proposes a positive change. This
   keeps SSL permissive — recurrence alone can promote, but an unverified external
   observation cannot.
-- **`evidence_backed`**: requires a verified external-evidence signal. Recurrence
-  may accompany it but can never satisfy the requirement alone.
+- **`evidence_backed`** (the live conversation default): requires a verified
+  external-evidence signal. Recurrence may accompany it but can never satisfy
+  the requirement alone.
 - **`legacy_evidence_required`**: compatibility-only behavior for the historical
   boolean API. It preserves the configured recurrence, trace, accumulated
   evidence, and weight thresholds while using the same signal-native Gate engine.
 
-The default policy is **explicit**: `DEFAULT_POLICY_ID` names it, `default_policy()`
-returns it, and `resolve_policy(None)` resolves to it. `resolve_policy` raises on
+The manager-level default policy is **explicit**: `DEFAULT_POLICY_ID` names it,
+`default_policy()` returns it, and `resolve_policy(None)` resolves to it. The live
+session selects `evidence_backed` unless its caller explicitly chooses another policy.
+`resolve_policy` raises on
 an unknown id and raises a distinct, actionable error for the documented-but-not-
 implemented example profiles (`research`, `creative`, `high_impact` in
 `EXAMPLE_POLICY_IDS`) rather than silently falling back.
@@ -121,9 +124,12 @@ Gate engine and append one event per call to `SSLManager.gate_events`:
 
 Migrated callers:
 
-- **chat** submits a recurrence signal under the `exploratory` policy. This
-  replaces the previous `external_evidence = occurrence_count >= 2` relabeling —
-  recurrence now promotes as recurrence.
+- **chat** submits changed recurrence under the selected session policy. The
+  evaluation default remains `exploratory`; the live default is `evidence_backed`,
+  so recurrence alone cannot raise live authority. Live callers offer verified
+  external support through `ShadowChatSession.submit_evidence`, which rejects
+  non-evidence kinds, opposition, unverified input, and missing `source_ref`
+  before invoking the Gate.
 - **SSOT** (`validate_open_seeds_against_ssot`) passes a verified `ssot` signal
   carrying the source chunk id.
 - **external feedback** (`apply_external_feedback`) passes a `human_feedback`

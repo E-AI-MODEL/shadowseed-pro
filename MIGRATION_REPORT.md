@@ -1,10 +1,13 @@
 # Shadowseed repository rebuild report
 
+This report records the initial archive rebuild. Test counts below are historical;
+the README, architecture documentation, and current CI describe the active runtime.
+
 ## Result
 
 A new English-language, installable Git repository was built from the supplied archive.
 
-## Verified state
+## Verified state at rebuild completion
 
 - 506 source files individually mapped in `docs/migration/file-manifest.csv`
 - 375 tests passing
@@ -22,7 +25,7 @@ A new English-language, installable Git repository was built from the supplied a
 - model and embedding backends moved to `shadowseed.adapters`
 - model detector moved to `shadowseed.detection`
 - retrieval probes, recurrence clustering, and text similarity moved out of the benchmark namespace
-- live chat now stores uncontaminated baseline history and applies the same surfacing rules as the session benchmark
+- `shadowseed.chat` now exposes a one-generation `live` product path and a separate baseline-isolated `evaluation` path
 - contract-blocked seeds are not recorded as surfaced
 - active code, CLI text, workflows, templates, and documentation are English
 - historical source material remains under `archive/`
@@ -33,6 +36,5 @@ The repository is research-ready, not production-ready. Production use still nee
 
 ## Publication note
 
-No source license was present. Select a license before public distribution or third-party reuse.
-
-No GitHub remote is configured in this package. A repository owner and repository name are required before pushing it to GitHub.
+No source license was present in the supplied archive, and the rebuilt repository
+still does not declare one. Select a license before third-party reuse.
