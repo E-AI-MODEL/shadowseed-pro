@@ -87,6 +87,11 @@ class InspectionService:
     def session_view(self, session_id: str) -> dict[str, Any]:
         stored = self.sessions.load(session_id)
         state = dict(stored["state"])
+        session_config = dict(state.get("session_config", {}))
+        persisted_config = dict(stored.get("config", {}))
+        runtime_mode = session_config.get("runtime_mode") or persisted_config.get(
+            "runtime_mode", "evaluation"
+        )
         manager = dict(state.get("manager", {}))
         seeds = [dict(seed) for seed in manager.get("seeds", [])]
         blocking_ids = {
@@ -109,6 +114,7 @@ class InspectionService:
             "profile_id": stored["profile_id"],
             "backend": stored["backend"],
             "model_id": stored["model_id"],
+            "runtime_mode": runtime_mode,
             "created_at": stored["created_at"],
             "updated_at": stored["updated_at"],
             "turn": int(state.get("turn", len(state.get("turn_reports", [])))),

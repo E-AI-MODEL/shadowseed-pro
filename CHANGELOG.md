@@ -2,6 +2,9 @@
 
 ## Unreleased - Live runtime review follow-up
 
+- Workbench session views and load/create status text now expose the persisted
+  runtime mode. Legacy Workbench snapshots without runtime metadata are shown as
+  evaluation sessions.
 - Live sessions and the direct `ShadowChatSession` API now default to the
   `evidence_backed` product path and expose an explicit `submit_evidence` trust
   boundary. Verified external support must be supporting, provenance-bearing,

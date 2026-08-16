@@ -70,7 +70,8 @@ def build_app(
             view = ctl.session_view(session_id)
             return (
                 dropdown_update(session_id),
-                f"Created `{session_id}` in `{ctl.workspace_root}`.",
+                f"Created `{session_id}` in **{view['runtime_mode']}** mode "
+                f"at `{ctl.workspace_root}`.",
                 ctl.chat_messages(view),
                 view,
                 seed_update(session_id),
@@ -87,7 +88,8 @@ def build_app(
                 ctl.chat_messages(view),
                 view,
                 seed_update(session_id),
-                f"Loaded **{view['title']}** · {view['turn']} turns · {len(view['seeds'])} seeds.",
+                f"Loaded **{view['title']}** · **{view['runtime_mode']}** mode · "
+                f"{view['turn']} turns · {len(view['seeds'])} seeds.",
             )
         except Exception as exc:
             raise gr.Error(str(exc)) from exc
