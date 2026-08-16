@@ -180,7 +180,13 @@ class ShadowChatSession:
         self.resurface_margin = self.surfacing_policy.resurface_margin
         self.max_seeds_per_turn = max_seeds_per_turn
         self.clusterer = (
-            RecurrenceClusterer(threshold=cluster_threshold or DEFAULT_CLUSTER_THRESHOLD)
+            RecurrenceClusterer(
+                threshold=(
+                    DEFAULT_CLUSTER_THRESHOLD
+                    if cluster_threshold is None
+                    else cluster_threshold
+                )
+            )
             if recurrence_mode == "cluster"
             else None
         )

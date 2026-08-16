@@ -10,6 +10,7 @@ import pytest
 
 from shadowseed.benchmark import live_session_measurement as live_measurement
 from shadowseed.benchmark.ssl_session_suite import run_ssl_session
+from shadowseed.chat import ShadowChatSession
 from shadowseed.cli import build_parser
 
 
@@ -189,6 +190,23 @@ def test_live_measurement_reuses_expensive_adapters_across_conversations(
     )
 
     assert calls == {"model": 1, "detector": 1, "embedding": 1}
+
+
+def test_live_session_preserves_explicit_zero_cluster_threshold() -> None:
+    embed, _dimension = _semantic_embedder("sentence-transformers")
+    session = ShadowChatSession(
+        backend="fixture",
+        embedding_backend="sentence-transformers",
+        runtime_mode="live",
+        recurrence_mode="cluster",
+        cluster_threshold=0.0,
+        model_backend=_Model(),
+        detector_backend=_Detector(),
+        embedding_fn=embed,
+    )
+
+    assert session.clusterer is not None
+    assert session.clusterer.threshold == 0.0
 
 
 def test_live_measurement_rejects_fixture_and_toy_embeddings(tmp_path: Path) -> None:

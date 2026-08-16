@@ -12,6 +12,8 @@
   so scoring embeddings cannot inflate live-runtime latency. The artifact also
   pins its input digest, package version, Git revision, and dirty-worktree state.
   Live measurement rejects fixture generation and lexical hash embeddings.
+- `ShadowChatSession` now preserves an explicitly configured zero recurrence
+  cluster threshold instead of replacing it with the default value.
 - Workbench evidence submission now clears the operator-attestation checkbox
   after every successful Gate call, so each authority-bearing source requires a
   fresh confirmation. Compare applies the same evaluation fallback as session
