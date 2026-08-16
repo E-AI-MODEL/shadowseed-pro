@@ -54,6 +54,7 @@ def _suite(tmp_path: Path, *, turns: int = 9) -> Path:
         json.dumps(
             {
                 "version": "test",
+                "language": "en",
                 "conversations": [
                     {
                         "id": "live-conversation",
@@ -101,6 +102,8 @@ def test_live_measurement_runs_real_session_arms_and_scores_deferral(
     assert payload["summary"]["artifact"] == "ssl_live_session_measurement"
     assert payload["summary"]["runtime_mode"] == "live"
     assert payload["summary"]["model_id"] == "fake"
+    assert payload["summary"]["language"] == "en"
+    assert payload["summary"]["response_language"] == "English"
     assert (
         payload["summary"]["embedding_model"]
         == "sentence-transformers/all-MiniLM-L6-v2"
@@ -245,6 +248,71 @@ def test_live_measurement_cli_exposes_runtime_arms_and_semantic_embedder() -> No
     assert args.live_arms == "counterfactual"
     assert args.embedding_backend == "sentence-transformers"
     assert args.recurrence_mode is None
+
+
+def test_live_measurement_requires_explicit_english_suite(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    suite = _suite(tmp_path, turns=1)
+    payload = json.loads(suite.read_text(encoding="utf-8"))
+    payload.pop("language")
+    suite.write_text(json.dumps(payload), encoding="utf-8")
+    monkeypatch.setattr(live_measurement, "make_backend", lambda **kwargs: _Model())
+    monkeypatch.setattr(
+        live_measurement, "make_detector_backend", lambda *args, **kwargs: _Detector()
+    )
+    monkeypatch.setattr(live_measurement, "make_embedding_fn", _semantic_embedder)
+
+    with pytest.raises(ValueError, match="English suite"):
+        run_ssl_session(
+            str(suite),
+            str(tmp_path / "out.json"),
+            backend="openai",
+            model_id="fake",
+            embedding_backend="sentence-transformers",
+            runtime_mode="live",
+        )
+
+
+def test_deferral_recovery_is_null_without_later_uninfluenced_window() -> None:
+    embed, _dimension = _semantic_embedder("sentence-transformers")
+    session = ShadowChatSession(
+        backend="fixture",
+        embedding_backend="sentence-transformers",
+        runtime_mode="live",
+        recurrence_mode="pairwise",
+        model_backend=_Model(),
+        detector_backend=_Detector(),
+        embedding_fn=embed,
+    )
+    turns = [
+        {
+            "turn": 0,
+            "surfaced_seed_ids": ["seed-a"],
+            "detected_candidates": ["Recurring causal mechanism omitted from the answer."],
+            "suppressed_self_attributed_candidates": [
+                "Recurring causal mechanism omitted from the answer."
+            ],
+        },
+        {
+            "turn": 1,
+            "surfaced_seed_ids": ["seed-a"],
+            "detected_candidates": ["Recurring causal mechanism omitted from the answer."],
+            "suppressed_self_attributed_candidates": [
+                "Recurring causal mechanism omitted from the answer."
+            ],
+        },
+    ]
+    metrics = live_measurement._deferral_metrics(session, turns)
+    assert metrics["normalization_admissible_occurrences"] == 2
+    assert metrics["recovery_evaluable_occurrences"] == 0
+    assert metrics["recovery_not_evaluable_occurrences"] == 2
+    assert metrics["later_recovery_rate"] is None
+    assert all(
+        record["later_uninfluenced_turn_count"] == 0
+        for record in metrics["candidate_records"]
+    )
+
 
 
 @pytest.mark.parametrize(

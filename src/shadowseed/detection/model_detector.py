@@ -106,6 +106,7 @@ Rules:
 - Do not copy sentences or long fragments from the input.
 - Do not return isolated words, names, or acronyms without a relation.
 - Do not combine multiple analytical frames or lists in one candidate.
+- Return plain text after each number. Do not use Markdown headings, bold, italics, bullets, or labels.
 - Do not use vague meta-categories without a concrete relation.
 
 The examples below come from OTHER texts and domains. They demonstrate form
@@ -143,17 +144,19 @@ _ACRONYM_ONLY = re.compile(r"^[A-Z][A-Z0-9.&;<>\-]{1,8}$")
 
 
 def _normalize_for_match(text: str) -> str:
-    return re.sub(r"\s+", " ", text).strip(" .,:;-").lower()
+    return re.sub(r"\s+", " ", text).strip(" .,:;-*_`#>").lower()
 
 
 def _token_set(text: str) -> set[str]:
     return {t for t in re.findall(r"[a-zà-ÿ0-9]+", text.lower()) if len(t) > 2}
 
 
+_ALL_FEWSHOT_EXAMPLES = _FEWSHOT_GOOD + _FEWSHOT_GOOD_GENERATIVE + _FEWSHOT_BAD
+
 _FEWSHOT_NORMALIZED = frozenset(
-    _normalize_for_match(example) for example in (_FEWSHOT_GOOD + _FEWSHOT_BAD)
+    _normalize_for_match(example) for example in _ALL_FEWSHOT_EXAMPLES
 )
-_FEWSHOT_TOKEN_SETS = tuple(_token_set(example) for example in (_FEWSHOT_GOOD + _FEWSHOT_BAD))
+_FEWSHOT_TOKEN_SETS = tuple(_token_set(example) for example in _ALL_FEWSHOT_EXAMPLES)
 
 
 def _looks_like_fewshot_leak(seed: str, threshold: float = 0.7) -> bool:
@@ -280,6 +283,7 @@ Rules:
   Do not assign a seed, evidence, validation, promotion, or status label.
 - Do not copy complete phrases from the input.
 - Do not combine several frames or lists in one candidate.
+- Return plain text after each number. Do not use Markdown headings, bold, italics, bullets, or labels.
 - Do not return isolated words or acronyms without a relation.
 
 The examples below come from OTHER texts and domains. They demonstrate form and

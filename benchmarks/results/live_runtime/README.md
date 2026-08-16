@@ -1,8 +1,10 @@
 # Live runtime real-model measurements
 
-This directory records the first intentional real-model measurement of the
-one-generation live runtime. The run used the complete packaged session suite
-and calculated fail-closed deferral metrics without manual candidate counting.
+This directory preserves the first intentional real-model pipeline run of the
+one-generation live runtime. Treat it as diagnostic evidence, not an efficacy result.
+It exposed model-language drift, a generative few-shot leakage bug, and a recovery
+metric that was not identifiable under sustained surfacing. The raw JSON artifacts
+are preserved unchanged as historical evidence of that run.
 
 ## Environment and provenance
 
@@ -26,6 +28,22 @@ package version, call counts, thresholds, and dirty-worktree state. The Hugging
 Face model revisions and the complete dependency set were not pinned in the
 command, so the run is traceable but not guaranteed to be bit-for-bit
 reproducible after upstream model or package changes.
+
+
+## Diagnostic status
+
+`Qwen/Qwen2.5-0.5B-Instruct` did not follow the Dutch input language reliably, so
+answer and detector language drift contaminated the run. The generative detector also
+echoed prompt examples because `_FEWSHOT_GOOD_GENERATIVE` was missing from the
+few-shot leak blocklist. The stress run influenced 19 of 22 turns, leaving no later
+uninfluenced observation window for most suppressed candidates. Its recorded
+`later_recovery_rate = 0.0` is therefore not evidence of permanent loss.
+
+The follow-up runtime fixes all three measurement problems. New live measurements use
+an English suite, request English responses explicitly, block all prompt few-shots, and
+report recovery as `null` when no later uninfluenced observation window exists. An
+evidence-quality rerun should use a materially stronger instruction model; the 0.5B
+artifact remains useful only as a pipeline/regression diagnostic.
 
 ## Results
 

@@ -10,10 +10,10 @@ the ``tokenize`` module. It applies:
 
 Scope note: the automated strict scan covers the core runtime packages
 (``shadowseed`` excluding ``benchmark/`` and ``data/``, plus ``shadowseed_agent``).
-Benchmark suites and JSON fixtures retain documented Dutch content so benchmark
-meaning and historical results are not altered — see
-``docs/migration/language-policy.md``. This test therefore substantiates an
-English-core claim, not a whole-repository one.
+Active session suites are English. Frozen historical artifacts and explicitly
+multilingual detector fixtures may retain source-language content — see
+``docs/migration/language-policy.md``. This test substantiates the core-runtime
+English guarantee; active measurement inputs have their own English contract.
 """
 
 from __future__ import annotations

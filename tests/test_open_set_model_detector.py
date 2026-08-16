@@ -200,6 +200,18 @@ def test_parse_numbered_seeds_drops_near_verbatim_fewshot_leak() -> None:
     ]
 
 
+def test_parse_numbered_seeds_drops_generative_fewshot_leaks_with_markdown() -> None:
+    raw = """
+1. **Colonial capital as an explanatory frame alongside technological innovation.**
+2. Privacy by design as a principle affecting the entire architecture.
+3. **Private international law as a framing dimension for this consumer case.**
+4. Supply-chain concentration as a risk to the announced expansion.
+""".strip()
+    assert parse_numbered_seeds(raw) == [
+        "Supply-chain concentration as a risk to the announced expansion."
+    ]
+
+
 def test_parse_numbered_seeds_keeps_legitimate_seed_sharing_a_few_common_words() -> None:
     """A real seed that happens to share a couple of common words with a
     few-shot example must NOT be dropped (no over-eager leak filtering)."""

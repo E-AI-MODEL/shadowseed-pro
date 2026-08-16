@@ -114,6 +114,10 @@ def _validate_suite(data: dict[str, Any]) -> list[dict[str, Any]]:
                     "live session measurement requires a non-empty question for every turn; "
                     f"invalid: {conversation.get('id', conversation_index)}:{turn_index}"
                 )
+    if data.get("language") != "en":
+        raise ValueError(
+            "live session measurement requires an English suite with language='en'"
+        )
     return conversations
 
 
@@ -177,12 +181,12 @@ def _deferral_metrics(
     session: ShadowChatSession,
     turns: list[dict[str, Any]],
 ) -> dict[str, Any]:
-    """Build objective opportunity-cost proxies for fail-closed deferral.
+    """Measure deferral and recovery only where recovery is observable.
 
-    A suppressed candidate is marked as recovered when a semantically matching
-    candidate appears on a later turn that had no SSL-attributed suppression.
-    Matching uses the same embedder and dedup threshold as the measured session.
-    This is deliberately not called a usefulness judgment.
+    A suppressed candidate can be scored for later recovery only when at least
+    one later turn was generated without surfaced SSL context. Continuous
+    surfacing therefore yields a null recovery rate instead of a misleading
+    zero. Matching uses the measured session's embedder and dedup threshold.
     """
 
     records: list[dict[str, Any]] = []
@@ -192,51 +196,47 @@ def _deferral_metrics(
         for turn in turns
         if turn.get("surfaced_seed_ids")
     )
-
-    later_candidates: list[tuple[int, str]] = []
-    for later_turn in turns:
-        if later_turn.get("suppressed_self_attributed_candidates"):
-            continue
-        later_candidates.extend(
-            (int(later_turn["turn"]), str(candidate))
-            for candidate in later_turn.get("detected_candidates", [])
-        )
-
     embedding_cache: dict[str, np.ndarray] = {}
 
-    def _embedding(text: str) -> np.ndarray:
-        if text not in embedding_cache:
-            embedding_cache[text] = session.manager.get_embedding(text)
-        return embedding_cache[text]
+    def _embedding(value: str) -> np.ndarray:
+        if value not in embedding_cache:
+            embedding_cache[value] = session.manager.get_embedding(value)
+        return embedding_cache[value]
 
     max_words = session.manager.config.max_seed_words
     threshold = session.manager.config.dedup_threshold
     for turn in turns:
         suppressed_turn = int(turn["turn"])
+        later_clean_turns = [
+            later_turn
+            for later_turn in turns
+            if int(later_turn["turn"]) > suppressed_turn
+            and not later_turn.get("surfaced_seed_ids")
+        ]
         for raw_candidate in turn.get("suppressed_self_attributed_candidates", []):
             normalized = _normalized_candidates(str(raw_candidate), max_words)
+            evaluable = bool(normalized) and bool(later_clean_turns)
             best_match: dict[str, Any] | None = None
             best_similarity = float("-inf")
-            for later_turn, later_raw in later_candidates:
-                if later_turn <= suppressed_turn:
-                    continue
-                later_normalized = _normalized_candidates(later_raw, max_words)
-                for candidate in normalized:
-                    for later_candidate in later_normalized:
-                        similarity = _cosine(
-                            _embedding(candidate),
-                            _embedding(later_candidate),
-                        )
-                        if similarity > best_similarity:
-                            best_similarity = similarity
-                            best_match = {
-                                "turn": later_turn,
-                                "candidate": later_raw,
-                                "normalized_candidate": later_candidate,
-                                "similarity": round(similarity, 6),
-                            }
+            if evaluable:
+                for later_turn in later_clean_turns:
+                    for later_raw in later_turn.get("detected_candidates", []):
+                        later_normalized = _normalized_candidates(str(later_raw), max_words)
+                        for candidate in normalized:
+                            for later_candidate in later_normalized:
+                                similarity = _cosine(
+                                    _embedding(candidate), _embedding(later_candidate)
+                                )
+                                if similarity > best_similarity:
+                                    best_similarity = similarity
+                                    best_match = {
+                                        "turn": int(later_turn["turn"]),
+                                        "candidate": str(later_raw),
+                                        "normalized_candidate": later_candidate,
+                                        "similarity": round(similarity, 6),
+                                    }
             recovered = bool(
-                best_match is not None and best_similarity >= threshold
+                evaluable and best_match is not None and best_similarity >= threshold
             )
             records.append(
                 {
@@ -244,6 +244,8 @@ def _deferral_metrics(
                     "candidate": str(raw_candidate),
                     "normalized_candidates": normalized,
                     "normalization_admissible": bool(normalized),
+                    "recovery_evaluable": evaluable,
+                    "later_uninfluenced_turn_count": len(later_clean_turns),
                     "later_recovered": recovered,
                     "recovery_match": best_match if recovered else None,
                 }
@@ -251,9 +253,14 @@ def _deferral_metrics(
 
     suppressed_count = len(records)
     admissible_count = sum(record["normalization_admissible"] for record in records)
+    evaluable_count = sum(record["recovery_evaluable"] for record in records)
+    not_evaluable_count = sum(
+        record["normalization_admissible"] and not record["recovery_evaluable"]
+        for record in records
+    )
     recovered_count = sum(record["later_recovered"] for record in records)
-    unrecovered_admissible_count = sum(
-        record["normalization_admissible"] and not record["later_recovered"]
+    unrecovered_evaluable_count = sum(
+        record["recovery_evaluable"] and not record["later_recovered"]
         for record in records
     )
     affected_turns = len({record["turn"] for record in records})
@@ -261,7 +268,7 @@ def _deferral_metrics(
         {candidate.casefold() for record in records for candidate in record["normalized_candidates"]}
     )
     return {
-        "method": "normalization admissibility plus later unsuppressed semantic recovery",
+        "method": "normalization admissibility plus recovery on later uninfluenced turns",
         "dedup_similarity_threshold": threshold,
         "influenced_turns": influenced_turns,
         "affected_turns": affected_turns,
@@ -269,20 +276,24 @@ def _deferral_metrics(
         "suppressed_candidate_occurrences": suppressed_count,
         "distinct_normalized_suppressed_candidates": distinct_candidates,
         "normalization_admissible_occurrences": admissible_count,
+        "recovery_evaluable_occurrences": evaluable_count,
+        "recovery_not_evaluable_occurrences": not_evaluable_count,
         "later_recovered_occurrences": recovered_count,
-        "unrecovered_admissible_occurrences": unrecovered_admissible_count,
+        "unrecovered_evaluable_occurrences": unrecovered_evaluable_count,
+        "unrecovered_admissible_occurrences": unrecovered_evaluable_count,
         "suppression_rate_on_influenced_turns": (
             round(suppressed_count / detected_on_influenced_turns, 6)
             if detected_on_influenced_turns
             else 0.0
         ),
         "later_recovery_rate": (
-            round(recovered_count / admissible_count, 6) if admissible_count else 0.0
+            round(recovered_count / evaluable_count, 6) if evaluable_count else None
         ),
         "candidate_records": records,
         "interpretation": (
-            "These counts measure deferred candidate opportunities and later recovery. "
-            "They do not establish that a candidate was true, relevant, or useful."
+            "These counts measure deferred candidate opportunities and observable later "
+            "recovery. A null recovery rate means that no later uninfluenced observation "
+            "window existed; it is not zero recovery. No truth or usefulness label is inferred."
         ),
     }
 
@@ -295,10 +306,13 @@ def _aggregate_deferrals(conversations: list[dict[str, Any]]) -> dict[str, Any]:
         "detected_on_influenced_turns",
         "suppressed_candidate_occurrences",
         "normalization_admissible_occurrences",
+        "recovery_evaluable_occurrences",
+        "recovery_not_evaluable_occurrences",
         "later_recovered_occurrences",
-        "unrecovered_admissible_occurrences",
+        "unrecovered_evaluable_occurrences",
     )
     totals = {key: sum(int(metric[key]) for metric in metrics) for key in additive}
+    totals["unrecovered_admissible_occurrences"] = totals["unrecovered_evaluable_occurrences"]
     unique_candidates = {
         candidate.casefold()
         for metric in metrics
@@ -307,22 +321,23 @@ def _aggregate_deferrals(conversations: list[dict[str, Any]]) -> dict[str, Any]:
     }
     totals["distinct_normalized_suppressed_candidates"] = len(unique_candidates)
     detected = totals["detected_on_influenced_turns"]
-    admissible = totals["normalization_admissible_occurrences"]
+    evaluable = totals["recovery_evaluable_occurrences"]
     totals["suppression_rate_on_influenced_turns"] = (
         round(totals["suppressed_candidate_occurrences"] / detected, 6)
         if detected
         else 0.0
     )
     totals["later_recovery_rate"] = (
-        round(totals["later_recovered_occurrences"] / admissible, 6)
-        if admissible
-        else 0.0
+        round(totals["later_recovered_occurrences"] / evaluable, 6)
+        if evaluable
+        else None
     )
     totals["interpretation"] = (
-        "Aggregate opportunity-cost proxies; no truth or usefulness label is inferred."
+        "Aggregate opportunity-cost proxies. Recovery uses only candidates with a later "
+        "uninfluenced observation window; null means not observable, not zero. No truth or "
+        "usefulness label is inferred."
     )
     return totals
-
 
 def run_live_session_measurement(
     data: dict[str, Any],
@@ -542,6 +557,8 @@ def run_live_session_measurement(
             "model_id": model_id,
             "max_new_tokens": max_new_tokens,
             "input_version": data.get("version"),
+            "language": data.get("language"),
+            "response_language": "English",
             "input_sha256": suite_digest,
             "conversation_count": len(suite_conversations),
             "arms": arms,

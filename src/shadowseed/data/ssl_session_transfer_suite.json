@@ -1,44 +1,87 @@
 {
-  "version": "ssl-session-transfer-0.1",
-  "description": "W10 doctrine-transfer set: the SAME SSL session pipeline (weight-0 seeding, recurrence dedup, Validation Gate across turns, TTL/TrTL, cluster recurrence, representative promotion, use-time surface cap + potential-not-must) on domains and tasks OUTSIDE the existing fixture (product/stadsontwikkeling/geschiedenis). Three new domains x task types: onderwijs (lesontwerp), publieke gezondheid (campagne/advies, non-clinical), beleid (beleidsontwerp). Each conversation is theme-RETURNING (>=7 turns) so a latent cross-turn angle CAN recur 3x+ and promote on its own merit, ending on a 'wat gaat vaak mis' turn where a carried seed can pay off. Topics author-chosen so a stable gap CAN recur; whether it does, promotes, and pays off is left to the pipeline + model. Report PER DOMEIN, no totaalscore.",
+  "version": "ssl-session-transfer-0.2",
+  "language": "en",
+  "description": "Doctrine-transfer conversations for the same SSL session pipeline in domains outside the primary suite. Each conversation returns to its theme across at least seven turns so a candidate can recur and earn promotion without a planted signal. Results are reported per domain rather than collapsed into one score.",
   "conversations": [
     {
       "id": "CONV_EDU",
-      "domain": "onderwijs",
+      "domain": "education",
       "turns": [
-        {"question": "Ik ontwerp een nieuwe module 'digitale geletterdheid' voor de onderbouw van het voortgezet onderwijs. Waar begin ik?"},
-        {"question": "Hoe houd ik rekening met grote verschillen in voorkennis tussen leerlingen?"},
-        {"question": "Welke werkvormen werken het best voor dit onderwerp?"},
-        {"question": "Hoe toets ik of leerlingen het echt begrijpen in plaats van het napraten?"},
-        {"question": "Hoe betrek ik leerlingen die thuis weinig digitale ondersteuning hebben?"},
-        {"question": "Hoe zorg ik dat collega's de module ook echt gaan gebruiken?"},
-        {"question": "Wat gaat er bij dit soort curriculumvernieuwingen het vaakst mis?"}
+        {
+          "question": "I am designing a new digital literacy module for lower-secondary students. Where should I start?"
+        },
+        {
+          "question": "How should I handle large differences in students' prior knowledge?"
+        },
+        {
+          "question": "Which learning activities work best for this topic?"
+        },
+        {
+          "question": "How do I assess whether students genuinely understand it instead of merely repeating it?"
+        },
+        {
+          "question": "How do I include students who have little digital support at home?"
+        },
+        {
+          "question": "How do I make sure colleagues actually adopt the module?"
+        },
+        {
+          "question": "What most often goes wrong in curriculum renewal projects like this?"
+        }
       ]
     },
     {
       "id": "CONV_HEALTH",
-      "domain": "publieke gezondheid",
+      "domain": "public health",
       "turns": [
-        {"question": "We willen jongeren stimuleren minder energiedrank te drinken. Hoe pakken we zo'n campagne aan?"},
-        {"question": "Welke boodschap werkt beter dan alleen 'het is ongezond'?"},
-        {"question": "Via welke kanalen bereiken we deze groep echt?"},
-        {"question": "Hoe meten we of de campagne effect heeft?"},
-        {"question": "Hoe voorkomen we dat we vooral de toch al gezonde jongeren bereiken?"},
-        {"question": "Welke rol spelen scholen en ouders hierin?"},
-        {"question": "Wat gaat er bij dit soort leefstijlcampagnes meestal mis?"}
+        {
+          "question": "We want to encourage teenagers to drink fewer energy drinks. How should we design the campaign?"
+        },
+        {
+          "question": "Which message works better than simply saying that energy drinks are unhealthy?"
+        },
+        {
+          "question": "Which channels actually reach this group?"
+        },
+        {
+          "question": "How do we measure whether the campaign works?"
+        },
+        {
+          "question": "How do we avoid reaching mainly the teenagers who are already health-conscious?"
+        },
+        {
+          "question": "What role should schools and parents play?"
+        },
+        {
+          "question": "What most often goes wrong in lifestyle campaigns like this?"
+        }
       ]
     },
     {
       "id": "CONV_POLICY",
-      "domain": "beleid",
+      "domain": "policy",
       "turns": [
-        {"question": "Onze gemeente wil een klimaatadaptatieplan tegen wateroverlast. Waar beginnen we?"},
-        {"question": "Welke maatregelen geven het meeste effect per euro?"},
-        {"question": "Hoe betrekken we bewoners bij de keuzes?"},
-        {"question": "Hoe financieren we dit over meerdere jaren?"},
-        {"question": "Wie draagt de lasten en wie plukt de baten van deze maatregelen?"},
-        {"question": "Hoe houden we het plan houdbaar bij wisselende gemeentebesturen?"},
-        {"question": "Wat gaat er bij dit soort adaptatieplannen het vaakst mis?"}
+        {
+          "question": "Our municipality wants a climate-adaptation plan for heavy rainfall and flooding. Where should we start?"
+        },
+        {
+          "question": "Which measures provide the most impact per euro?"
+        },
+        {
+          "question": "How should we involve residents in the choices?"
+        },
+        {
+          "question": "How do we finance the plan over several years?"
+        },
+        {
+          "question": "Who bears the costs and who receives the benefits of these measures?"
+        },
+        {
+          "question": "How do we keep the plan durable across changes in local government?"
+        },
+        {
+          "question": "What most often goes wrong in adaptation plans like this?"
+        }
       ]
     }
   ]

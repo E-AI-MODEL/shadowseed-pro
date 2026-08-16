@@ -5,7 +5,7 @@ prose (comments, docstrings, exceptions, messages) is English and is enforced
 automatically (see Enforcement below). New code and documentation must be
 written in English.
 
-Some content remains in its source language for a technical reason:
+Active runtime and session-measurement inputs are English. Some frozen or explicitly multilingual content remains in its source language for a technical reason:
 
 - multilingual detector inputs and normalization patterns test language coverage;
 - historical open-review rounds are immutable research artifacts and regression fixtures;
@@ -32,11 +32,12 @@ outside that strict scan:
 
 - benchmark suite Python prose (docstrings/comments), which references the
   legacy verdict tokens and historical Dutch scenario text;
-- JSON data fixtures and current result summaries;
+- explicitly multilingual detector fixtures and frozen historical result artifacts;
 - Markdown documentation, CLI help text, workflows, and templates.
 
-The active top-level and `docs/` Markdown is English. Historical review rounds,
-multilingual fixtures, and compatibility tokens retain their original language
-so benchmark meaning and artifact compatibility are not altered. Extending the
+The active top-level and `docs/` Markdown is English. Historical review rounds, multilingual fixtures, and compatibility tokens retain their
+original language so artifact compatibility is not altered. The canonical SSL session
+suites used for new live measurements are English and declare `language: en`; live
+measurement fails closed on suites that do not declare that contract. Extending the
 strict scanner beyond the core runtime is optional hardening, not part of the
 current English-core guarantee.
