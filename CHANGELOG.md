@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased - Live runtime review follow-up
+
+- Evaluation sessions now apply the configured Gate policy instead of silently
+  forcing `exploratory` recurrence decisions.
+- Fixture session benchmarks reject missing, blank, and non-string
+  `baseline_answer` values with the same actionable validation error.
+- Recurrence-driven benchmarks take their signal threshold from
+  `SSLCoreConfig`; the fixed benefit fixtures declare their historical
+  two-occurrence benchmark setting in that config.
+- Added direct contracts for configured recurrence thresholds, changed-signal
+  Gate events, evaluation isolation and policy selection, live persistence, and
+  invalid fixture baselines.
+- Updated the architecture and migration documents to distinguish the live
+  one-generation path from the baseline-isolated evaluation path.
+
 ## 0.4.2 - 2026-08-15 - Authority and retrieval hardening
 
 - Validation Gate support is idempotent for recurrence observations and exact

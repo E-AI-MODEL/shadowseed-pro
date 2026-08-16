@@ -59,7 +59,7 @@ details live in dedicated documents; in summary:
 | `shadowseed.vector_workflows` | Uncertain-region search, external-feedback routing, and in-memory constellation construction |
 | `shadowseed.gate` | Typed validation signals, named Gate policies, and immutable Gate events / contradiction records |
 | `shadowseed.surfacing` | Shared cross-turn eligibility, thresholds, ranking, and resurface damping |
-| `shadowseed.chat` | Live sidecar session with uncontaminated baseline history |
+| `shadowseed.chat` | Dual-mode conversation session: one-generation live runtime and isolated evaluation A/B loop |
 | `shadowseed.detection.model_detector` | Model-backed open-set candidate generation |
 | `shadowseed.adapters` | Model, embedding, Ollama, and OpenAI runtime adapters |
 | `shadowseed.retrieval_probe` | Retrieval probe execution outside the benchmark namespace |
@@ -69,12 +69,19 @@ details live in dedicated documents; in summary:
 | `shadowseed_agent.agent_contract` | Bounded point-of-use eligibility decision with a mandatory current-version Gate-event link and a configurable contradiction check |
 | `shadowseed.benchmark` | Evaluation harnesses, regression suites, and compatibility wrappers |
 
-## Baseline isolation
+## Conversation modes
 
-The live session first generates a baseline answer without seeds. Gap detection runs on that baseline, and the baseline is what enters conversation history. The SSL answer is a sidecar output. This avoids two feedback loops:
+The product-oriented `live` mode selects previously authorized seeds, applies the
+point-of-use contract, and performs one model generation. The visible answer is
+stored in history and inspected for new candidate gaps. Candidates attributable
+to seeds surfaced on the same turn are suppressed before intake, so a seed cannot
+immediately earn recurrence credit from text it helped introduce.
 
-- gap starvation, where an SSL-improved answer hides the absence that should be detected;
-- history contamination, where previous SSL additions become indistinguishable from the model's original context.
+The research-oriented `evaluation` mode retains the isolated baseline arm. It
+generates and stores an answer without seeds, then optionally generates a separate
+SSL-assisted answer for comparison. This isolation prevents gap starvation and
+history contamination in controlled A/B measurements. It is not the default CLI
+conversation path.
 
 ## Shared surfacing implementation
 

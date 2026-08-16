@@ -79,7 +79,8 @@ def run_ssl_session(
             f"{conv.get('id', 'conversation')}:{index}"
             for conv in data.get("conversations", [])
             for index, turn in enumerate(conv.get("turns", []))
-            if not str(turn.get("baseline_answer", "")).strip()
+            if not isinstance(turn.get("baseline_answer"), str)
+            or not turn["baseline_answer"].strip()
         ]
         if missing:
             preview = ", ".join(missing[:5])

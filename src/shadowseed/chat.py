@@ -618,7 +618,7 @@ class ShadowChatSession:
                     seed.occurrence_count,
                     threshold=self.manager.config.min_occurrences_for_gate,
                 )],
-                policy_id="exploratory",
+                policy_id=self.gate_policy_id,
             )
             if event.decision is GateDecision.PROMOTED and seed.status == SeedStatus.PROMOTED:
                 promoted_now.append(seed_id)

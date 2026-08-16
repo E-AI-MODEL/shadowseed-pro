@@ -81,6 +81,37 @@ def test_fixture_refuses_dead_question_only_session_run(tmp_path: Path):
         )
 
 
+@pytest.mark.parametrize("baseline_answer", [None, 7, [], {}])
+def test_fixture_refuses_non_string_baseline(
+    tmp_path: Path,
+    baseline_answer: object,
+):
+    inp = tmp_path / "invalid.json"
+    inp.write_text(
+        json.dumps(
+            {
+                "version": "t",
+                "conversations": [
+                    {
+                        "id": "invalid-baseline",
+                        "domain": "d",
+                        "turns": [
+                            {
+                                "question": "Q1?",
+                                "baseline_answer": baseline_answer,
+                            }
+                        ],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="requires authored baseline_answer"):
+        run_ssl_session(str(inp), str(tmp_path / "out.json"), backend="fixture")
+
+
 def test_per_topic_thresholds_override_run_level(tmp_path: Path):
     # one conversation carries its own thresholds; they must win over run-level
     conv = {

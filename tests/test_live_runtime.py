@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import replace
+
 import numpy as np
 import pytest
 
@@ -19,6 +21,12 @@ class RecordingModel:
     def generate(self, prompt, scenario, mode, seeds):
         self.calls.append((prompt, mode, list(seeds)))
         return self.answer
+
+
+class ModeRecordingModel(RecordingModel):
+    def generate(self, prompt, scenario, mode, seeds):
+        self.calls.append((prompt, mode, list(seeds)))
+        return "Baseline answer." if mode == "baseline" else "SSL answer."
 
 
 class StaticDetector:
@@ -82,6 +90,42 @@ def test_live_recurrence_alone_never_grants_authority(monkeypatch):
     assert all(event.decision.value == "blocked" for event in session.manager.gate_events)
 
 
+def test_live_uses_configured_recurrence_threshold(monkeypatch):
+    session, _model = _session(
+        monkeypatch,
+        detector_seed="Privacy as a missing decision boundary.",
+        answer="Answer about data.",
+    )
+    session.manager.config = replace(
+        session.manager.config,
+        min_occurrences_for_gate=5,
+    )
+
+    for index in range(4):
+        session.turn(f"Question about data {index}?")
+    assert session.manager.gate_events == []
+
+    session.turn("Question about data 4?")
+    assert len(session.manager.gate_events) == 1
+    assert "threshold=5" in session.manager.gate_events[0].signals[0].reason
+
+
+def test_live_submits_gate_event_only_for_changed_recurrence(monkeypatch):
+    session, _model = _session(
+        monkeypatch,
+        detector_seed="Privacy as a missing decision boundary.",
+        answer="Answer about data.",
+    )
+    for index in range(session.manager.config.min_occurrences_for_gate):
+        session.turn(f"Question about data {index}?")
+    before = len(session.manager.gate_events)
+    assert before == 1
+
+    session.detector.seed = None
+    session.turn("A turn without a detected candidate.")
+    assert len(session.manager.gate_events) == before
+
+
 def test_live_suppresses_self_attributed_recurrence(monkeypatch):
     seed_text = "Privacy as a missing decision boundary."
     session, _model = _session(
@@ -113,13 +157,69 @@ def test_live_non_fixture_rejects_lexical_embedder(monkeypatch):
         ShadowChatSession(backend="openai", embedding_backend="lexical", runtime_mode="live")
 
 
-def test_evaluation_mode_remains_available(monkeypatch):
-    session, model = _session(monkeypatch, detector_seed=None)
-    session.runtime_mode = "evaluation"
-    session.gate_policy_id = "exploratory"
-    report = session.turn("Question?")
+def test_evaluation_mode_keeps_baseline_history_isolation(monkeypatch):
+    model = ModeRecordingModel()
+    monkeypatch.setattr(chatmod, "make_backend", lambda **kw: model)
+    monkeypatch.setattr(chatmod, "make_detector_backend", lambda *a, **kw: StaticDetector(None))
+    monkeypatch.setattr(chatmod, "make_embedding_fn", _emb_factory)
+    session = ShadowChatSession(
+        backend="openai",
+        embedding_backend="openai",
+        runtime_mode="evaluation",
+        recurrence_mode="pairwise",
+    )
+    seed_id = session.manager.add_or_update_seed("Privacy as a missing decision boundary.")
+    session.born_turn[seed_id] = -1
+    for index in range(3):
+        session.manager.submit_signals(
+            seed_id,
+            [ValidationSignal(kind=SignalKind.SSOT, verified=True, source_ref=f"source:{index}")],
+            policy_id="evidence_backed",
+        )
+
+    report = session.turn("What about privacy and data?")
     assert report["runtime_mode"] == "evaluation"
-    assert len(model.calls) == 1
+    assert [mode for _prompt, mode, _seeds in model.calls] == ["baseline", "ssl"]
+    assert report["answer"] == "SSL answer."
+    assert report["baseline_answer"] == "Baseline answer."
+    assert session.history == [("What about privacy and data?", "Baseline answer.")]
+
+
+def test_evaluation_mode_applies_selected_gate_policy(monkeypatch):
+    session, _model = _session(
+        monkeypatch,
+        detector_seed="Privacy as a missing decision boundary.",
+        answer="Answer about data.",
+    )
+    session.runtime_mode = "evaluation"
+    session.gate_policy_id = "evidence_backed"
+
+    for index in range(5):
+        session.turn(f"Question about data {index}?")
+
+    seed = next(iter(session.manager.seeds.values()))
+    assert seed.weight == 0.0
+    assert seed.status is not SeedStatus.PROMOTED
+    assert session.manager.gate_events
+    assert all(event.policy_id == "evidence_backed" for event in session.manager.gate_events)
+
+
+def test_live_state_roundtrip_preserves_mode_policy_and_visible_history(monkeypatch):
+    session, _model = _session(
+        monkeypatch,
+        detector_seed=None,
+        answer="First visible answer.",
+    )
+    session.turn("First question?")
+
+    restored = ShadowChatSession.from_state(session.to_state())
+    assert restored.runtime_mode == "live"
+    assert restored.gate_policy_id == "evidence_backed"
+    assert restored.history == [("First question?", "First visible answer.")]
+
+    restored.model.answer = "Second visible answer."
+    restored.turn("Second question?")
+    assert restored.history[-1] == ("Second question?", "Second visible answer.")
 
 
 def test_half_life_turns_is_a_real_half_life(monkeypatch):

@@ -191,7 +191,12 @@ def _promote_via_gate(manager: SSLManager, seed_id: str) -> None:
             return
         seed.occurrence_count = count
         manager.submit_signals(
-            seed_id, [recurrence_signal(count, threshold=2)], "exploratory"
+            seed_id,
+            [recurrence_signal(
+                count,
+                threshold=manager.config.min_occurrences_for_gate,
+            )],
+            "exploratory",
         )
     raise RuntimeError(f"Fixture seed {seed_id} was not promoted through the Gate")
 
