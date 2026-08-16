@@ -29,7 +29,6 @@ Face model revisions and the complete dependency set were not pinned in the
 command, so the run is traceable but not guaranteed to be bit-for-bit
 reproducible after upstream model or package changes.
 
-
 ## Diagnostic status
 
 `Qwen/Qwen2.5-0.5B-Instruct` did not follow the Dutch input language reliably, so
@@ -44,6 +43,10 @@ an English suite, request English responses explicitly, block all prompt few-sho
 report recovery as `null` when no later uninfluenced observation window exists. An
 evidence-quality rerun should use a materially stronger instruction model; the 0.5B
 artifact remains useful only as a pipeline/regression diagnostic.
+
+Do not compare the historical `later_recovery_rate` numerically with a new artifact
+without accounting for the changed denominator: new runs include only suppressed
+candidates that have a later uninfluenced observation window.
 
 ## Results
 
@@ -74,7 +77,7 @@ evidence of permanent loss under normal product settings.
 ## Timing
 
 | Artifact | Adapter setup | Live turn loop | Deferral scoring | Wall time |
-|---|---:|---:|---:|---:|
+|---|---:|---:|---:|
 | Default, two arms | 13.623 s | 2199.652 s | 0.000 s | 2213.276 s |
 | Stress, one arm | 6.387 s | 1208.287 s | 0.003 s | 1214.679 s |
 
@@ -86,4 +89,3 @@ run; it is not an Ollama or production latency claim.
 
 - [`ssl_live_session_qwen2.5_0.5b_default.json`](ssl_live_session_qwen2.5_0.5b_default.json), SHA-256 `8fa2776669bca01d98ad6d144bfdad1dfe1fe13351aad9d570f73f79ff2e2e0c`
 - [`ssl_live_session_qwen2.5_0.5b_deferral_stress.json`](ssl_live_session_qwen2.5_0.5b_deferral_stress.json), SHA-256 `945267dcc2bd9d3648168f9202ee5b46386a03aa616b57f7d04c17cbee3e2c22`
-
