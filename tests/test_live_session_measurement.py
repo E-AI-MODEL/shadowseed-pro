@@ -107,6 +107,13 @@ def test_live_measurement_runs_real_session_arms_and_scores_deferral(
     assert payload["summary"]["detector_prompt_variant"] == "generative"
     assert len(payload["summary"]["input_sha256"]) == 64
     assert payload["summary"]["source_revision"]
+    assert "elapsed_seconds" not in payload["summary"]
+    assert set(payload["summary"]["timing"]) == {
+        "adapter_setup_elapsed_seconds",
+        "live_turn_elapsed_seconds",
+        "deferral_scoring_elapsed_seconds",
+        "measurement_wall_elapsed_seconds",
+    }
     assert payload["summary"]["answer_generation_calls"] == 18
     assert payload["summary"]["detector_calls"] == 18
     assert model.calls == 18
@@ -117,6 +124,9 @@ def test_live_measurement_runs_real_session_arms_and_scores_deferral(
     assert evidence["external_evidence_injected"] is False
     assert evidence["promoted_seed_count"] == 0
     assert evidence["influence_record_count"] == 0
+    assert "elapsed_seconds" not in evidence
+    assert evidence["timing"]["live_turn_elapsed_seconds"] >= 0
+    assert evidence["timing"]["deferral_scoring_elapsed_seconds"] >= 0
 
     counterfactual = arms["counterfactual"]
     assert counterfactual["production_policy"] is False
@@ -136,6 +146,8 @@ def test_live_measurement_runs_real_session_arms_and_scores_deferral(
         turn["suppressed_self_attributed_candidates"]
         for turn in conversation["turns"]
     )
+    assert conversation["timing"]["live_turn_elapsed_seconds"] >= 0
+    assert conversation["timing"]["deferral_scoring_elapsed_seconds"] >= 0
 
 
 def test_live_measurement_reuses_expensive_adapters_across_conversations(

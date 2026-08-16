@@ -361,6 +361,8 @@ def run_live_session_measurement(
 
     arms = _requested_arms(live_arms)
     suite_conversations = _validate_suite(data)
+    artifact_started = time.perf_counter()
+    adapter_setup_started = time.perf_counter()
     embed_fn, _dimension = make_embedding_fn(embedding_backend, embedding_model)
     model = make_backend(
         backend=backend,
@@ -373,7 +375,7 @@ def run_live_session_measurement(
         max_new_tokens=max_new_tokens,
         prompt_variant="generative",
     )
-    artifact_started = time.perf_counter()
+    adapter_setup_elapsed = time.perf_counter() - adapter_setup_started
     suite_digest = sha256(
         json.dumps(data, sort_keys=True, ensure_ascii=False).encode("utf-8")
     ).hexdigest()
@@ -381,6 +383,8 @@ def run_live_session_measurement(
 
     for arm_id in arms:
         arm_started = time.perf_counter()
+        arm_live_turn_elapsed = 0.0
+        arm_deferral_scoring_elapsed = 0.0
         gate_policy_id = LIVE_ARM_POLICIES[arm_id]
         conversations: list[dict[str, Any]] = []
         for conversation in suite_conversations:
@@ -416,9 +420,15 @@ def run_live_session_measurement(
                 embedding_fn=embed_fn,
                 core_config=config,
             )
+            live_turn_started = time.perf_counter()
             turn_reports = [session.turn(turn["question"]) for turn in conversation["turns"]]
+            live_turn_elapsed = time.perf_counter() - live_turn_started
+            arm_live_turn_elapsed += live_turn_elapsed
             verified_records = session.audit()
+            deferral_scoring_started = time.perf_counter()
             deferrals = _deferral_metrics(session, turn_reports)
+            deferral_scoring_elapsed = time.perf_counter() - deferral_scoring_started
+            arm_deferral_scoring_elapsed += deferral_scoring_elapsed
             conversations.append(
                 {
                     "conversation_id": conversation.get("id", "conversation"),
@@ -450,6 +460,12 @@ def run_live_session_measurement(
                     "final_shadow": session.shadow_report(),
                     "gate_events": [event.to_dict() for event in session.manager.gate_events],
                     "audit_records_verified": verified_records,
+                    "timing": {
+                        "live_turn_elapsed_seconds": round(live_turn_elapsed, 3),
+                        "deferral_scoring_elapsed_seconds": round(
+                            deferral_scoring_elapsed, 3
+                        ),
+                    },
                 }
             )
 
@@ -467,6 +483,7 @@ def run_live_session_measurement(
             )
             for item in conversations
         )
+        arm_wall_elapsed = time.perf_counter() - arm_started
         arm_results.append(
             {
                 "arm_id": arm_id,
@@ -478,7 +495,22 @@ def run_live_session_measurement(
                 "detector_calls": total_turns,
                 "influence_record_count": authority_events,
                 "promoted_seed_count": promoted_seed_count,
-                "elapsed_seconds": round(time.perf_counter() - arm_started, 3),
+                "timing": {
+                    "live_turn_elapsed_seconds": round(arm_live_turn_elapsed, 3),
+                    "deferral_scoring_elapsed_seconds": round(
+                        arm_deferral_scoring_elapsed, 3
+                    ),
+                    "other_arm_overhead_seconds": round(
+                        max(
+                            0.0,
+                            arm_wall_elapsed
+                            - arm_live_turn_elapsed
+                            - arm_deferral_scoring_elapsed,
+                        ),
+                        3,
+                    ),
+                    "wall_elapsed_seconds": round(arm_wall_elapsed, 3),
+                },
                 "deferral_metrics": _aggregate_deferrals(conversations),
                 "conversations": conversations,
                 "interpretation": (
@@ -490,6 +522,12 @@ def run_live_session_measurement(
         )
 
     total_turns = sum(arm["answer_generation_calls"] for arm in arm_results)
+    total_live_turn_elapsed = sum(
+        arm["timing"]["live_turn_elapsed_seconds"] for arm in arm_results
+    )
+    total_deferral_scoring_elapsed = sum(
+        arm["timing"]["deferral_scoring_elapsed_seconds"] for arm in arm_results
+    )
     payload = {
         "summary": {
             "artifact": "ssl_live_session_measurement",
@@ -509,7 +547,16 @@ def run_live_session_measurement(
             "arms": arms,
             "answer_generation_calls": total_turns,
             "detector_calls": total_turns,
-            "elapsed_seconds": round(time.perf_counter() - artifact_started, 3),
+            "timing": {
+                "adapter_setup_elapsed_seconds": round(adapter_setup_elapsed, 3),
+                "live_turn_elapsed_seconds": round(total_live_turn_elapsed, 3),
+                "deferral_scoring_elapsed_seconds": round(
+                    total_deferral_scoring_elapsed, 3
+                ),
+                "measurement_wall_elapsed_seconds": round(
+                    time.perf_counter() - artifact_started, 3
+                ),
+            },
             "claim_boundary": (
                 "The evidence-backed arm measures shipped live behavior without supplied "
                 "evidence. The exploratory arm is a counterfactual for measuring same-turn "

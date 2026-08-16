@@ -142,13 +142,15 @@ arms:
   result and is labelled that way in the artifact.
 
 The artifact pins the input digest, package version, Git revision and dirty-worktree state.
-It also records answer-generation and detector-call counts, elapsed time, suppressed
-candidate occurrences, normalized candidates that pass the atomicity heuristic, and how
-many return semantically on a later unsuppressed turn. These are automated opportunity-cost
-proxies. They do not establish that a candidate is true, relevant, or useful, and the
-counterfactual does not turn recurrence into evidence. Use `--live-arms evidence-backed`
-when only the shipped no-evidence behavior is needed and the second set of model calls is
-not justified.
+It also records answer-generation and detector-call counts, suppressed candidate
+occurrences, normalized candidates that pass the atomicity heuristic, and how many return
+semantically on a later unsuppressed turn. Timing is split into adapter setup, the live
+turn-loop, deferral scoring, other arm overhead, and total measurement wall time. Extra
+embedding calls made during semantic recovery scoring therefore never count as live-runtime
+latency. These are automated opportunity-cost proxies. They do not establish that a
+candidate is true, relevant, or useful, and the counterfactual does not turn recurrence
+into evidence. Use `--live-arms evidence-backed` when only the shipped no-evidence behavior
+is needed and the second set of model calls is not justified.
 
 ## Optional backends
 
