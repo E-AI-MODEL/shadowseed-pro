@@ -30,6 +30,7 @@ evidence layer. Claim boundaries in the research docs are unchanged.
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any
@@ -47,7 +48,12 @@ from shadowseed.adapters.models import make_backend
 from shadowseed.core_config import SSLCoreConfig
 from shadowseed.gate.contradictions import ContradictionRecord
 from shadowseed.gate.events import GateDecision, GateEvent
-from shadowseed.gate.signals import recurrence_signal
+from shadowseed.gate.signals import (
+    SignalDirection,
+    SignalKind,
+    ValidationSignal,
+    recurrence_signal,
+)
 from shadowseed.recurrence import refresh_cluster_representative
 from shadowseed.surfacing import (
     SurfacingCandidate,
@@ -75,9 +81,11 @@ from shadowseed_agent import (
     can_seed_trigger_retrieval,
 )
 
+SESSION_STATE_SCHEMA_VERSION = 2
+
 
 class ShadowChatSession:
-    """One live conversation with a shadow layer of weightless seeds."""
+    """One conversation with an explicit live or evaluation SSL runtime."""
 
     def __init__(
         self,
@@ -98,7 +106,7 @@ class ShadowChatSession:
         contract: AgentSafetyContract | None = None,
         probe_corpus: str | None = None,
         probe_top_k: int = 3,
-        runtime_mode: str = "evaluation",
+        runtime_mode: str = "live",
         gate_policy_id: str | None = None,
         allow_toy_embedder: bool = False,
     ) -> None:
@@ -329,27 +337,18 @@ class ShadowChatSession:
         candidates: list[str],
         surfaced_seed_ids: list[str],
     ) -> tuple[list[str], list[str]]:
-        """Suppress candidates attributable to this turn's own SSL input."""
+        """Fail closed on same-turn recurrence after SSL influenced generation.
+
+        Once a surfaced seed is present in the prompt, provenance applies to the
+        whole generated answer. Embedding similarity can identify close
+        paraphrases but cannot prove that a semantically different candidate was
+        not derived from that seed. Live mode therefore defers every detected
+        candidate on such a turn. The next answer generated without surfaced SSL
+        context can establish recurrence independently.
+        """
         if not surfaced_seed_ids:
             return list(candidates), []
-        threshold = self.manager.dedup_threshold
-        if self.clusterer is not None:
-            threshold = min(threshold, self.clusterer.threshold)
-        source_embeddings = [
-            self.manager.seeds[seed_id].embedding
-            for seed_id in surfaced_seed_ids
-            if seed_id in self.manager.seeds
-        ]
-        kept: list[str] = []
-        suppressed: list[str] = []
-        for candidate in candidates:
-            candidate_embedding = self.manager.get_embedding(candidate)
-            attributable = any(
-                float(np.dot(candidate_embedding, source_embedding)) >= threshold
-                for source_embedding in source_embeddings
-            )
-            (suppressed if attributable else kept).append(candidate)
-        return kept, suppressed
+        return [], list(candidates)
 
     def _turn_live(self, question: str) -> dict[str, Any]:
         """Production-oriented one-generation loop with visible-history continuity."""
@@ -653,7 +652,47 @@ class ShadowChatSession:
         self.turn_reports.append(report)
         return report
 
-    # -- user-driven falsification (the dialectic, made operable) -------------
+    # -- explicit evidence and falsification -----------------------------------
+
+    def submit_evidence(
+        self,
+        seed_id: str,
+        signal: ValidationSignal,
+    ) -> dict[str, Any]:
+        """Offer trusted external support to the configured Validation Gate.
+
+        This is the live runtime's explicit trust boundary. The caller must
+        provide a verified external-evidence signal with a stable ``source_ref``;
+        model output, recurrence, probes, and anonymous claims are rejected.
+        Distinct confirmations must use distinct source references, and the Gate
+        remains responsible for deduplication and every authority transition.
+        """
+        if seed_id not in self.manager.seeds:
+            raise KeyError(f"Unknown seed id: {seed_id}")
+        if not signal.is_external_evidence:
+            raise ValueError("live evidence must use an external evidence signal kind")
+        if signal.direction is not SignalDirection.SUPPORT:
+            raise ValueError("live evidence must be a supporting signal")
+        if not signal.verified:
+            raise ValueError("live evidence must be explicitly verified")
+        if not isinstance(signal.source_ref, str) or not signal.source_ref.strip():
+            raise ValueError("live evidence must carry a non-empty source_ref")
+
+        event = self.manager.submit_signals(
+            seed_id,
+            [signal],
+            policy_id=self.gate_policy_id,
+        )
+        seed = self.manager.seeds[seed_id]
+        return {
+            "seed_id": seed_id,
+            "decision": event.decision.value,
+            "policy_id": event.policy_id,
+            "weight_after": seed.weight,
+            "status_after": seed.status.value,
+            "evidence_count": seed.evidence_count,
+            "gate_event": event.to_dict(),
+        }
 
     def falsify(self, seed_id: str) -> dict[str, Any]:
         """User contradicts a seed: weight drops, trace decays, contract blocks it."""
@@ -689,6 +728,7 @@ class ShadowChatSession:
                     "trace": round(seed.trace, 3),
                     "status": seed.status.value,
                     "occurrence_count": seed.occurrence_count,
+                    "evidence_count": seed.evidence_count,
                     "born_turn": self.born_turn.get(sid),
                 }
             )
@@ -712,7 +752,7 @@ class ShadowChatSession:
                 "members": [list(items) for items in self.clusterer.members],
             }
         return {
-            "schema_version": 1,
+            "schema_version": SESSION_STATE_SCHEMA_VERSION,
             "session_config": {
                 "backend": self.backend,
                 "model_id": self.model_id,
@@ -758,13 +798,23 @@ class ShadowChatSession:
     def from_state(cls, state: dict[str, Any]) -> "ShadowChatSession":
         """Restore a session snapshot without treating restoration as authority."""
 
-        if int(state.get("schema_version", 1)) != 1:
+        schema_version = int(state.get("schema_version", 1))
+        if schema_version not in {1, SESSION_STATE_SCHEMA_VERSION}:
             raise ValueError("unsupported ShadowChatSession state schema")
         config = dict(state.get("session_config", {}))
         contract = AgentSafetyContract(**dict(state.get("contract", {})))
         session = cls(**config, contract=contract)
         manager_data = dict(state.get("manager", {}))
-        core_config = SSLCoreConfig(**manager_data.get("config", {}))
+        core_config_data = dict(manager_data.get("config", {}))
+        if schema_version == 1 and "half_life_turns" in core_config_data:
+            # Version 1 serialized the parameter while decay still used
+            # exp(-t/h), so h was an e-folding time despite its name. Version 2
+            # uses true half-life semantics. Convert the persisted value to
+            # retain exactly the same decay curve after restoration.
+            core_config_data["half_life_turns"] = (
+                float(core_config_data["half_life_turns"]) * math.log(2.0)
+            )
+        core_config = SSLCoreConfig(**core_config_data)
         embed_fn, _dimension = make_embedding_fn(
             config.get("embedding_backend", "lexical"),
             config.get("embedding_model"),
@@ -923,7 +973,7 @@ def run_chat(
     else:  # pragma: no cover - interactive path
         print(
             "shadowseed chat - live shadow layer. Commands: /shadow, /audit, "
-            "/falsify <seed_id>, /quit"
+            "/support <seed_id> <source_ref>, /falsify <seed_id>, /quit"
         )
         while True:
             try:
@@ -940,6 +990,28 @@ def run_chat(
             if line == "/audit":
                 count = session.audit()
                 print(f"audit OK: {count} influence decisions replayed; no weightless influence.")
+                continue
+            if line.startswith("/support "):
+                parts = line.split(None, 2)
+                if len(parts) != 3:
+                    print("usage: /support <seed_id> <source_ref>")
+                    continue
+                try:
+                    result = session.submit_evidence(
+                        parts[1],
+                        ValidationSignal(
+                            kind=SignalKind.HUMAN_FEEDBACK,
+                            direction=SignalDirection.SUPPORT,
+                            strength=1.0,
+                            source_ref=parts[2],
+                            verified=True,
+                            independent=True,
+                            reason="explicit operator support",
+                        ),
+                    )
+                    print(json.dumps(result, indent=2, ensure_ascii=False))
+                except (KeyError, ValueError) as exc:
+                    print(str(exc))
                 continue
             if line.startswith("/falsify "):
                 try:

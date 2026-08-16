@@ -7,7 +7,12 @@ import pytest
 
 import shadowseed.chat as chatmod
 from shadowseed.chat import ShadowChatSession
-from shadowseed.gate.signals import SignalKind, ValidationSignal
+from shadowseed.gate.signals import (
+    SignalDirection,
+    SignalKind,
+    ValidationSignal,
+    recurrence_signal,
+)
 from shadowseed.manager import SeedStatus
 
 
@@ -71,6 +76,20 @@ def test_live_turn_uses_one_generation_and_stores_visible_answer(monkeypatch):
     assert report["answer"] == "What the user read."
     assert report["baseline_answer"] is None
     assert session.history == [("Question?", "What the user read.")]
+
+
+def test_session_api_defaults_to_live_runtime(monkeypatch):
+    model = RecordingModel()
+    monkeypatch.setattr(chatmod, "make_backend", lambda **kw: model)
+    monkeypatch.setattr(chatmod, "make_detector_backend", lambda *a, **kw: StaticDetector(None))
+    monkeypatch.setattr(chatmod, "make_embedding_fn", _emb_factory)
+    session = ShadowChatSession(
+        backend="openai",
+        embedding_backend="openai",
+        recurrence_mode="pairwise",
+    )
+    assert session.runtime_mode == "live"
+    assert session.gate_policy_id == "evidence_backed"
 
 
 def test_live_recurrence_alone_never_grants_authority(monkeypatch):
@@ -150,6 +169,95 @@ def test_live_suppresses_self_attributed_recurrence(monkeypatch):
     assert session.manager.seeds[seed_id].occurrence_count == before
 
 
+def test_live_suppresses_semantically_distinct_candidate_after_ssl_influence(monkeypatch):
+    seed_text = "Privacy as a missing decision boundary."
+    derived_text = "A downstream fairness implication."
+    session, _model = _session(
+        monkeypatch,
+        detector_seed=derived_text,
+        answer="The surfaced privacy concern implies a separate fairness risk.",
+    )
+    seed_id = session.manager.add_or_update_seed(seed_text)
+    derived_id = session.manager.add_or_update_seed(derived_text)
+    session.born_turn[seed_id] = -1
+    for index in range(3):
+        session.submit_evidence(
+            seed_id,
+            ValidationSignal(
+                kind=SignalKind.SSOT,
+                verified=True,
+                source_ref=f"source:{index}",
+            ),
+        )
+
+    before = session.manager.seeds[derived_id].occurrence_count
+    report = session.turn("What about privacy and data?")
+    assert seed_id in report["surfaced_seed_ids"]
+    assert report["suppressed_self_attributed_candidates"] == [derived_text]
+    assert session.manager.seeds[derived_id].occurrence_count == before
+
+
+def test_live_explicit_evidence_route_promotes_and_enables_later_use(monkeypatch):
+    session, _model = _session(monkeypatch, detector_seed=None, answer="Visible answer.")
+    seed_id = session.manager.add_or_update_seed("Privacy as a missing decision boundary.")
+    session.born_turn[seed_id] = -1
+
+    decisions = []
+    for index in range(3):
+        result = session.submit_evidence(
+            seed_id,
+            ValidationSignal(
+                kind=SignalKind.HUMAN_FEEDBACK,
+                direction=SignalDirection.SUPPORT,
+                verified=True,
+                independent=True,
+                source_ref=f"reviewer:{index}",
+                reason="verified operator support",
+            ),
+        )
+        decisions.append(result["decision"])
+
+    seed = session.manager.seeds[seed_id]
+    assert decisions == ["validated", "validated", "promoted"]
+    assert seed.evidence_count == 3
+    assert seed.status is SeedStatus.PROMOTED
+    report = session.turn("What about privacy and data?")
+    assert seed_id in report["surfaced_seed_ids"]
+    assert any(record.allowed for record in session.influence_records)
+
+
+@pytest.mark.parametrize(
+    "signal, message",
+    [
+        (recurrence_signal(4, threshold=3), "external evidence"),
+        (
+            ValidationSignal(kind=SignalKind.SSOT, verified=False, source_ref="ssot:1"),
+            "explicitly verified",
+        ),
+        (
+            ValidationSignal(kind=SignalKind.SSOT, verified=True),
+            "source_ref",
+        ),
+        (
+            ValidationSignal(
+                kind=SignalKind.SSOT,
+                direction=SignalDirection.OPPOSE,
+                verified=True,
+                source_ref="ssot:2",
+            ),
+            "supporting signal",
+        ),
+    ],
+)
+def test_live_evidence_route_rejects_untrusted_inputs(monkeypatch, signal, message):
+    session, _model = _session(monkeypatch, detector_seed=None)
+    seed_id = session.manager.add_or_update_seed("Privacy as a missing decision boundary.")
+    with pytest.raises(ValueError, match=message):
+        session.submit_evidence(seed_id, signal)
+    assert session.manager.seeds[seed_id].weight == 0.0
+    assert session.manager.gate_events == []
+
+
 def test_live_non_fixture_rejects_lexical_embedder(monkeypatch):
     monkeypatch.setattr(chatmod, "make_backend", lambda **kw: RecordingModel())
     monkeypatch.setattr(chatmod, "make_detector_backend", lambda *a, **kw: StaticDetector(None))
@@ -220,6 +328,20 @@ def test_live_state_roundtrip_preserves_mode_policy_and_visible_history(monkeypa
     restored.model.answer = "Second visible answer."
     restored.turn("Second question?")
     assert restored.history[-1] == ("Second question?", "Second visible answer.")
+
+
+def test_version_one_state_migrates_legacy_decay_curve(monkeypatch):
+    session, _model = _session(monkeypatch, detector_seed=None)
+    state = session.to_state()
+    state["schema_version"] = 1
+    state["manager"]["config"]["half_life_turns"] = 3.0
+
+    restored = ShadowChatSession.from_state(state)
+
+    assert restored.manager.half_life_turns == pytest.approx(3.0 * np.log(2.0))
+    seed_id = restored.manager.add_or_update_seed("Privacy as a lifecycle test case.")
+    restored.manager.decay_traces(turns_passed=1)
+    assert restored.manager.seeds[seed_id].trace == pytest.approx(2.0 * np.exp(-1.0 / 3.0))
 
 
 def test_half_life_turns_is_a_real_half_life(monkeypatch):

@@ -37,6 +37,7 @@ def test_profiles_are_small_named_surfacing_configurations() -> None:
 def test_shadow_chat_state_roundtrip_preserves_audit_and_continues() -> None:
     session = ShadowChatSession(
         backend="fixture",
+        runtime_mode="evaluation",
         contract=AgentSafetyContract(block_contradicted_seed=False),
     )
     first = session.turn("What might be missing from this plan?")
