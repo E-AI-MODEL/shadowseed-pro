@@ -77,7 +77,7 @@ evidence of permanent loss under normal product settings.
 ## Timing
 
 | Artifact | Adapter setup | Live turn loop | Deferral scoring | Wall time |
-|---|---:|---:|---:|
+|---|---:|---:|---:|---:|
 | Default, two arms | 13.623 s | 2199.652 s | 0.000 s | 2213.276 s |
 | Stress, one arm | 6.387 s | 1208.287 s | 0.003 s | 1214.679 s |
 
