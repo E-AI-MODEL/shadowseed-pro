@@ -116,6 +116,42 @@ Fixture session turns must contain an authored `baseline_answer`; otherwise the 
 fails closed instead of producing a successful but behaviorally empty run. Use a real
 model backend for question-only session suites.
 
+The command defaults to the historical `evaluation` benchmark. To measure the actual
+one-generation live runtime with a local model:
+
+```bash
+pip install -e ".[models]"
+shadowseed run-ssl-session \
+  --runtime-mode live \
+  --live-arms both \
+  --backend ollama \
+  --model-id <model> \
+  --embedding-backend sentence-transformers \
+  --output results/ssl_live_session.json
+```
+
+Live measurement rejects the fixture backend and lexical hash embeddings. It constructs
+fresh `ShadowChatSession` state for every conversation while reusing the loaded model,
+detector, and semantic embedder. The default `both` setting runs two clearly separated
+arms:
+
+- `evidence-backed` is the shipped policy. The runner supplies no external evidence, so
+  it measures detection and memory without silently granting authority.
+- `counterfactual` uses recurrence-only exploratory authority solely to create surfacing
+  turns on which fail-closed candidate deferral can be measured. It is not a production
+  result and is labelled that way in the artifact.
+
+The artifact pins the input digest, package version, Git revision and dirty-worktree state.
+It also records answer-generation and detector-call counts, suppressed candidate
+occurrences, normalized candidates that pass the atomicity heuristic, and how many return
+semantically on a later unsuppressed turn. Timing is split into adapter setup, the live
+turn-loop, deferral scoring, other arm overhead, and total measurement wall time. Extra
+embedding calls made during semantic recovery scoring therefore never count as live-runtime
+latency. These are automated opportunity-cost proxies. They do not establish that a
+candidate is true, relevant, or useful, and the counterfactual does not turn recurrence
+into evidence. Use `--live-arms evidence-backed` when only the shipped no-evidence behavior
+is needed and the second set of model calls is not justified.
+
 ## Optional backends
 
 Real-model and vector commands require their matching extras and local credentials or services. API keys must be supplied through environment variables, never source files or workflow inputs.

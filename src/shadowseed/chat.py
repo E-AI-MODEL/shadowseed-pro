@@ -37,14 +37,14 @@ from typing import Any
 
 import numpy as np
 
-from shadowseed.adapters.embedding import make_embedding_fn
-from shadowseed.detection.model_detector import make_detector_backend
+from shadowseed.adapters.embedding import EmbedFn, make_embedding_fn
+from shadowseed.detection.model_detector import DetectorBackend, make_detector_backend
 from shadowseed.recurrence_clustering import (
     DEFAULT_CLUSTER_THRESHOLD,
     RecurrenceClusterer,
 )
 from shadowseed.retrieval_probe import retrieval_probe_vs_question
-from shadowseed.adapters.models import make_backend
+from shadowseed.adapters.models import ModelBackend, make_backend
 from shadowseed.core_config import SSLCoreConfig
 from shadowseed.gate.contradictions import ContradictionRecord
 from shadowseed.gate.events import GateDecision, GateEvent
@@ -109,6 +109,10 @@ class ShadowChatSession:
         runtime_mode: str = "live",
         gate_policy_id: str | None = None,
         allow_toy_embedder: bool = False,
+        model_backend: ModelBackend | None = None,
+        detector_backend: DetectorBackend | None = None,
+        embedding_fn: EmbedFn | None = None,
+        core_config: SSLCoreConfig | None = None,
     ) -> None:
         self.backend = backend
         self.model_id = model_id
@@ -137,12 +141,29 @@ class ShadowChatSession:
                 "only for an explicit non-production experiment"
             )
 
-        embed_fn, _dim = make_embedding_fn(embedding_backend, embedding_model)
-        self.model = make_backend(backend=backend, model_id=model_id, max_new_tokens=max_new_tokens)
-        self.detector = make_detector_backend(
-            backend, model_id=model_id, max_new_tokens=max_new_tokens, prompt_variant="generative"
+        embed_fn = embedding_fn
+        if embed_fn is None:
+            embed_fn, _dim = make_embedding_fn(embedding_backend, embedding_model)
+        self.model = (
+            model_backend
+            if model_backend is not None
+            else make_backend(
+                backend=backend,
+                model_id=model_id,
+                max_new_tokens=max_new_tokens,
+            )
         )
-        self.manager = SSLManager(embedding_fn=embed_fn)
+        self.detector = (
+            detector_backend
+            if detector_backend is not None
+            else make_detector_backend(
+                backend,
+                model_id=model_id,
+                max_new_tokens=max_new_tokens,
+                prompt_variant="generative",
+            )
+        )
+        self.manager = SSLManager(embedding_fn=embed_fn, config=core_config)
         self.contract = contract or AgentSafetyContract()
         self.surfacing_policy = SurfacingPolicy(
             surface_threshold=surface_threshold,
@@ -159,7 +180,13 @@ class ShadowChatSession:
         self.resurface_margin = self.surfacing_policy.resurface_margin
         self.max_seeds_per_turn = max_seeds_per_turn
         self.clusterer = (
-            RecurrenceClusterer(threshold=cluster_threshold or DEFAULT_CLUSTER_THRESHOLD)
+            RecurrenceClusterer(
+                threshold=(
+                    DEFAULT_CLUSTER_THRESHOLD
+                    if cluster_threshold is None
+                    else cluster_threshold
+                )
+            )
             if recurrence_mode == "cluster"
             else None
         )

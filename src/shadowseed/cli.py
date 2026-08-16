@@ -553,9 +553,29 @@ def build_parser() -> argparse.ArgumentParser:
     ssl_session.add_argument("--model-id", default=None)
     ssl_session.add_argument("--max-new-tokens", type=int, default=400)
     ssl_session.add_argument(
-        "--embedding-backend", choices=["lexical", "openai"], default="lexical"
+        "--embedding-backend",
+        choices=["lexical", "sentence-transformers", "openai"],
+        default="lexical",
     )
     ssl_session.add_argument("--embedding-model", default=None)
+    ssl_session.add_argument(
+        "--runtime-mode",
+        choices=["evaluation", "live"],
+        default="evaluation",
+        help=(
+            "evaluation preserves the historical isolated A/B loop; live measures "
+            "the one-generation ShadowChatSession runtime"
+        ),
+    )
+    ssl_session.add_argument(
+        "--live-arms",
+        choices=["evidence-backed", "counterfactual", "both"],
+        default="both",
+        help=(
+            "Live only: run the shipped evidence-backed arm, the explicitly "
+            "non-production deferral counterfactual, or both."
+        ),
+    )
     ssl_session.add_argument(
         "--surface-threshold",
         type=float,
@@ -607,8 +627,11 @@ def build_parser() -> argparse.ArgumentParser:
     ssl_session.add_argument(
         "--recurrence-mode",
         choices=["pairwise", "cluster"],
-        default="pairwise",
-        help="cluster mode counts paraphrastic gaps together for recurrence without weakening strict storage deduplication.",
+        default=None,
+        help=(
+            "cluster mode counts paraphrastic gaps together without weakening strict "
+            "storage deduplication. Defaults to pairwise in evaluation and cluster in live."
+        ),
     )
     ssl_session.add_argument("--cluster-threshold", type=float, default=None,
         help="Cosine threshold for recurrence clustering; used only in cluster mode.")

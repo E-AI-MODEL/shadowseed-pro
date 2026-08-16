@@ -69,11 +69,43 @@ def run_ssl_session(
     dedup_threshold: float | None = None,
     min_occurrences: int | None = None,
     promotion_threshold: float | None = None,
-    recurrence_mode: str = "pairwise",
+    recurrence_mode: str | None = None,
     cluster_threshold: float | None = None,
     auto_calibrate: bool = False,
+    runtime_mode: str = "evaluation",
+    live_arms: str = "both",
 ) -> Path:
     data = json.loads(Path(input_path).read_text(encoding="utf-8"))
+    if runtime_mode == "live":
+        from shadowseed.benchmark.live_session_measurement import (
+            run_live_session_measurement,
+        )
+
+        return run_live_session_measurement(
+            data,
+            output_path,
+            backend=backend,
+            model_id=model_id,
+            max_new_tokens=max_new_tokens,
+            embedding_backend=embedding_backend,
+            embedding_model=embedding_model,
+            surface_threshold=surface_threshold,
+            surface_top_k=surface_top_k,
+            early_turn_margin=early_turn_margin,
+            early_turn_history=early_turn_history,
+            resurface_margin=resurface_margin,
+            max_seeds_per_turn=max_seeds_per_turn,
+            dedup_threshold=dedup_threshold,
+            min_occurrences=min_occurrences,
+            promotion_threshold=promotion_threshold,
+            recurrence_mode=recurrence_mode or "cluster",
+            cluster_threshold=cluster_threshold,
+            auto_calibrate=auto_calibrate,
+            live_arms=live_arms,
+        )
+    if runtime_mode != "evaluation":
+        raise ValueError("runtime_mode must be 'evaluation' or 'live'")
+    recurrence_mode = recurrence_mode or "pairwise"
     if backend == "fixture":
         missing = [
             f"{conv.get('id', 'conversation')}:{index}"
