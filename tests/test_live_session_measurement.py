@@ -100,6 +100,11 @@ def test_live_measurement_runs_real_session_arms_and_scores_deferral(
     assert payload["summary"]["artifact"] == "ssl_live_session_measurement"
     assert payload["summary"]["runtime_mode"] == "live"
     assert payload["summary"]["model_id"] == "fake"
+    assert (
+        payload["summary"]["embedding_model"]
+        == "sentence-transformers/all-MiniLM-L6-v2"
+    )
+    assert payload["summary"]["detector_prompt_variant"] == "generative"
     assert len(payload["summary"]["input_sha256"]) == 64
     assert payload["summary"]["source_revision"]
     assert payload["summary"]["answer_generation_calls"] == 18

@@ -161,6 +161,18 @@ def _cosine(left: np.ndarray, right: np.ndarray) -> float:
     return float(np.dot(left, right) / (left_norm * right_norm))
 
 
+def _resolved_embedding_model(backend: str, model_id: str | None) -> str | None:
+    if model_id:
+        return model_id
+    if backend == "sentence-transformers":
+        return "sentence-transformers/all-MiniLM-L6-v2"
+    if backend == "openai":
+        from shadowseed.adapters.openai_client import DEFAULT_EMBEDDING_MODEL
+
+        return DEFAULT_EMBEDDING_MODEL
+    return None
+
+
 def _deferral_metrics(
     session: ShadowChatSession,
     turns: list[dict[str, Any]],
@@ -204,6 +216,7 @@ def _deferral_metrics(
         for raw_candidate in turn.get("suppressed_self_attributed_candidates", []):
             normalized = _normalized_candidates(str(raw_candidate), max_words)
             best_match: dict[str, Any] | None = None
+            best_similarity = float("-inf")
             for later_turn, later_raw in later_candidates:
                 if later_turn <= suppressed_turn:
                     continue
@@ -214,7 +227,8 @@ def _deferral_metrics(
                             _embedding(candidate),
                             _embedding(later_candidate),
                         )
-                        if best_match is None or similarity > best_match["similarity"]:
+                        if similarity > best_similarity:
+                            best_similarity = similarity
                             best_match = {
                                 "turn": later_turn,
                                 "candidate": later_raw,
@@ -222,7 +236,7 @@ def _deferral_metrics(
                                 "similarity": round(similarity, 6),
                             }
             recovered = bool(
-                best_match is not None and best_match["similarity"] >= threshold
+                best_match is not None and best_similarity >= threshold
             )
             records.append(
                 {
@@ -483,7 +497,10 @@ def run_live_session_measurement(
             "backend": getattr(model, "name", backend),
             "detector": getattr(detector, "name", backend),
             "embedding_backend": embedding_backend,
-            "embedding_model": embedding_model,
+            "embedding_model": _resolved_embedding_model(
+                embedding_backend, embedding_model
+            ),
+            "detector_prompt_variant": "generative",
             "model_id": model_id,
             "max_new_tokens": max_new_tokens,
             "input_version": data.get("version"),
