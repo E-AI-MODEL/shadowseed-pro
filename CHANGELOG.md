@@ -2,6 +2,15 @@
 
 ## Unreleased - Live runtime review follow-up
 
+- Workbench session creation now offers explicit live/evaluation and embedding
+  backend choices. Session lists display the selected mode, and imported
+  scenarios persist the same runtime configuration.
+- Live Workbench sessions expose an operator-attested evidence action that sends
+  provenance-bearing human support through the existing Validation Gate. The UI
+  cannot set weights or promotion status directly, and duplicate sources remain
+  idempotent.
+- Baseline comparison now rejects live turns with an actionable explanation
+  instead of rendering their intentionally absent baseline as `None`.
 - Workbench session views and load/create status text now expose the persisted
   runtime mode. Legacy Workbench snapshots without runtime metadata are shown as
   evaluation sessions.

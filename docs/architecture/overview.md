@@ -84,8 +84,9 @@ The research-oriented `evaluation` mode retains the isolated baseline arm. It
 generates and stores an answer without seeds, then optionally generates a separate
 SSL-assisted answer for comparison. This isolation prevents gap starvation and
 history contamination in controlled A/B measurements. It is not the default
-direct-session or CLI conversation path; the Workbench selects it explicitly for
-its comparison workflow.
+direct-session or CLI conversation path. The Workbench exposes both modes at
+session creation and limits its baseline comparison workflow to evaluation
+sessions.
 
 ## Shared surfacing implementation
 

@@ -52,11 +52,32 @@ def build_app(
         notes = {item["backend"]: item["note"] for item in ctl.backends()}
         return notes.get(backend, "")
 
+    def runtime_note(runtime_mode: str, backend: str, embedding_backend: str) -> str:
+        if runtime_mode == "evaluation":
+            return (
+                "**Evaluation:** preserves the isolated baseline/SSL comparison. "
+                "Lexical embeddings are permitted for deterministic tester runs."
+            )
+        note = (
+            "**Live:** performs one visible generation and uses the evidence-backed Gate. "
+            "Verified operator support can be submitted after a seed is detected."
+        )
+        if backend != "fixture" and embedding_backend == "lexical":
+            note += (
+                " Choose sentence-transformers or OpenAI embeddings for a normal live run, "
+                "or explicitly enable the toy override for a test-only run."
+            )
+        return note
+
     def create_session(
         title: str,
         profile_id: str,
         backend: str,
         model_id: str,
+        runtime_mode: str,
+        embedding_backend: str,
+        embedding_model: str,
+        allow_toy_embedder: bool,
         external_confirmed: bool,
     ):
         try:
@@ -65,6 +86,10 @@ def build_app(
                 profile_id=profile_id,
                 backend=backend,
                 model_id=model_id or None,
+                runtime_mode=runtime_mode,
+                embedding_backend=embedding_backend,
+                embedding_model=embedding_model or None,
+                allow_toy_embedder=allow_toy_embedder,
                 external_confirmed=external_confirmed,
             )
             view = ctl.session_view(session_id)
@@ -75,6 +100,38 @@ def build_app(
                 ctl.chat_messages(view),
                 view,
                 seed_update(session_id),
+            )
+        except Exception as exc:
+            raise gr.Error(str(exc)) from exc
+
+    def submit_verified_evidence(
+        session_id: str | None,
+        seed_id: str | None,
+        source_ref: str,
+        note: str,
+        operator_verified: bool,
+    ):
+        if not session_id or not seed_id:
+            raise gr.Error("Select a live session and seed first.")
+        try:
+            result = ctl.submit_verified_evidence(
+                session_id,
+                seed_id,
+                source_ref=source_ref,
+                note=note,
+                operator_verified=operator_verified,
+            )
+            view = ctl.session_view(session_id)
+            return (
+                result,
+                view,
+                seed_update(session_id, seed_id),
+                (
+                    f"Gate decision: **{result['decision']}** · "
+                    f"status: **{result['status_after']}** · "
+                    f"evidence: **{result['evidence_count']}**."
+                ),
+                "",
             )
         except Exception as exc:
             raise gr.Error(str(exc)) from exc
@@ -299,9 +356,31 @@ def build_app(
                     label="Model id",
                     info="Required for Hugging Face, Ollama, and OpenAI backends.",
                 )
+                with gr.Row():
+                    new_runtime_mode = gr.Dropdown(
+                        label="Runtime mode",
+                        choices=list(ctl.runtime_modes()),
+                        value="evaluation",
+                    )
+                    new_embedding_backend = gr.Dropdown(
+                        label="Embedding backend",
+                        choices=list(ctl.embedding_backends()),
+                        value="lexical",
+                    )
+                    new_embedding_model = gr.Textbox(
+                        label="Embedding model (optional)",
+                    )
+                allow_toy_embedder = gr.Checkbox(
+                    label="Allow lexical toy embeddings in a live non-fixture test",
+                    value=False,
+                )
                 backend_info = gr.Markdown(backend_note("fixture"))
+                runtime_info = gr.Markdown(runtime_note("evaluation", "fixture", "lexical"))
                 external_confirm = gr.Checkbox(
-                    label="I understand when the selected backend sends prompts to an external provider.",
+                    label=(
+                        "I understand that the selected model or embedding backend may send "
+                        "content to an external provider."
+                    ),
                     value=False,
                 )
                 create_button = gr.Button("Create session", variant="primary")
@@ -316,18 +395,63 @@ def build_app(
                 )
                 send_button = gr.Button("Send", variant="primary", scale=1)
             send_external_confirm = gr.Checkbox(
-                label="Confirm external-provider transmission for this turn (only required for hosted backends).",
+                label=(
+                    "Confirm external-provider transmission for this turn when the session "
+                    "uses a hosted model or embedding backend."
+                ),
                 value=False,
             )
             turn_report = gr.JSON(label="Latest turn report")
             session_json = gr.JSON(label="Persisted session view")
             session_seed_select = gr.Dropdown(label="Seeds in current session", choices=[])
+            with gr.Accordion("Submit verified support for a live seed", open=False):
+                gr.Markdown(
+                    "This is an explicit trust action. Confirm only support that you checked "
+                    "outside the model output. Reusing a source reference does not add authority."
+                )
+                evidence_source_ref = gr.Textbox(
+                    label="Source reference",
+                    placeholder="reviewer:alice:case-17 or ssot:policy:4.2",
+                )
+                evidence_note = gr.Textbox(label="Verification note", lines=2)
+                evidence_verified = gr.Checkbox(
+                    label="I verified this independent source and attest that it supports the seed.",
+                    value=False,
+                )
+                evidence_button = gr.Button("Submit verified support")
+                evidence_result = gr.JSON(label="Gate result")
+                evidence_status = gr.Markdown()
 
             refresh_sessions.click(fn=lambda: dropdown_update(), outputs=session_select)
             new_backend.change(fn=backend_note, inputs=new_backend, outputs=backend_info)
+            new_backend.change(
+                fn=runtime_note,
+                inputs=[new_runtime_mode, new_backend, new_embedding_backend],
+                outputs=runtime_info,
+            )
+            new_runtime_mode.change(
+                fn=runtime_note,
+                inputs=[new_runtime_mode, new_backend, new_embedding_backend],
+                outputs=runtime_info,
+            )
+            new_embedding_backend.change(
+                fn=runtime_note,
+                inputs=[new_runtime_mode, new_backend, new_embedding_backend],
+                outputs=runtime_info,
+            )
             create_button.click(
                 fn=create_session,
-                inputs=[new_title, new_profile, new_backend, new_model, external_confirm],
+                inputs=[
+                    new_title,
+                    new_profile,
+                    new_backend,
+                    new_model,
+                    new_runtime_mode,
+                    new_embedding_backend,
+                    new_embedding_model,
+                    allow_toy_embedder,
+                    external_confirm,
+                ],
                 outputs=[session_select, session_status, chatbot, session_json, session_seed_select],
             )
             load_session_button.click(
@@ -339,6 +463,23 @@ def build_app(
                 fn=send_turn,
                 inputs=[session_select, question, send_external_confirm],
                 outputs=[chatbot, turn_report, session_json, session_seed_select, question],
+            )
+            evidence_button.click(
+                fn=submit_verified_evidence,
+                inputs=[
+                    session_select,
+                    session_seed_select,
+                    evidence_source_ref,
+                    evidence_note,
+                    evidence_verified,
+                ],
+                outputs=[
+                    evidence_result,
+                    session_json,
+                    session_seed_select,
+                    evidence_status,
+                    evidence_source_ref,
+                ],
             )
             question.submit(
                 fn=send_turn,
@@ -415,7 +556,9 @@ def build_app(
         with gr.Tab("Compare"):
             gr.Markdown(
                 "Compare the uncontaminated baseline answer with the answer visible after the "
-                "Shadowseed path. No automatic quality score is inferred."
+                "Shadowseed path in an **evaluation** session. Live sessions intentionally "
+                "perform one generation and cannot be compared here. No automatic quality "
+                "score is inferred."
             )
             compare_session = gr.Dropdown(
                 label="Session",
@@ -490,11 +633,16 @@ def build_app(
                     '{\n  "title": "Example scenario",\n  "questions": [\n'
                     '    "What is the main uncertainty?",\n'
                     '    "What evidence would change the answer?"\n'
-                    '  ],\n  "profile_id": "balanced",\n  "backend": "fixture"\n}'
+                    '  ],\n  "profile_id": "balanced",\n  "backend": "fixture",\n'
+                    '  "runtime_mode": "evaluation",\n'
+                    '  "embedding_backend": "lexical"\n}'
                 ),
             )
             scenario_external_confirm = gr.Checkbox(
-                label="Confirm external-provider transmission when this scenario uses a hosted backend.",
+                label=(
+                    "Confirm external-provider transmission when this scenario uses a hosted "
+                    "model or embedding backend."
+                ),
                 value=False,
             )
             with gr.Row():

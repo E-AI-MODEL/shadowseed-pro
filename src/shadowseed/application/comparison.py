@@ -28,7 +28,8 @@ class ComparisonService:
         reveal: bool = False,
     ) -> dict[str, Any]:
         stored = self.sessions.load(session_id)
-        reports = list(stored["state"].get("turn_reports", []))
+        state = dict(stored["state"])
+        reports = list(state.get("turn_reports", []))
         report = next(
             (
                 item
@@ -39,7 +40,22 @@ class ComparisonService:
         )
         if report is None:
             raise ValueError(f"turn {turn_index} does not exist in session {session_id}")
-        baseline = str(report.get("baseline_answer", ""))
+        state_config = dict(state.get("session_config", {}))
+        persisted_config = dict(stored.get("config", {}))
+        runtime_mode = (
+            report.get("runtime_mode")
+            or state_config.get("runtime_mode")
+            or persisted_config.get("runtime_mode", "evaluation")
+        )
+        if runtime_mode != "evaluation":
+            raise ValueError(
+                "baseline comparison is available only for evaluation sessions; "
+                "live sessions intentionally perform one visible generation"
+            )
+        baseline_value = report.get("baseline_answer")
+        if baseline_value is None:
+            raise ValueError("evaluation turn does not contain a baseline answer")
+        baseline = str(baseline_value)
         ssl_answer = str(report.get("ssl_answer", report.get("answer", "")))
         # Stable ordering makes a blinded comparison reproducible without
         # persisting additional hidden state.

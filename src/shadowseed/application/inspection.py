@@ -92,6 +92,8 @@ class InspectionService:
         runtime_mode = session_config.get("runtime_mode") or persisted_config.get(
             "runtime_mode", "evaluation"
         )
+        if runtime_mode not in {"evaluation", "live"}:
+            runtime_mode = "evaluation"
         manager = dict(state.get("manager", {}))
         seeds = [dict(seed) for seed in manager.get("seeds", [])]
         blocking_ids = {
