@@ -664,6 +664,8 @@ class ShadowChatSession:
         This is the live runtime's explicit trust boundary. The caller must
         provide a verified external-evidence signal with a stable ``source_ref``;
         model output, recurrence, probes, and anonymous claims are rejected.
+        Verification is an attestation by the operator or host application;
+        this method validates its shape and provenance, not source truth.
         Distinct confirmations must use distinct source references, and the Gate
         remains responsible for deduplication and every authority transition.
         """
@@ -802,15 +804,25 @@ class ShadowChatSession:
         if schema_version not in {1, SESSION_STATE_SCHEMA_VERSION}:
             raise ValueError("unsupported ShadowChatSession state schema")
         config = dict(state.get("session_config", {}))
+        has_v1_runtime_metadata = "runtime_mode" in config
+        if schema_version == 1 and not has_v1_runtime_metadata:
+            # Snapshots written before the live/evaluation split used the
+            # evaluation loop. Preserve that behavior instead of applying the
+            # current live default during restoration.
+            config["runtime_mode"] = "evaluation"
         contract = AgentSafetyContract(**dict(state.get("contract", {})))
         session = cls(**config, contract=contract)
         manager_data = dict(state.get("manager", {}))
         core_config_data = dict(manager_data.get("config", {}))
-        if schema_version == 1 and "half_life_turns" in core_config_data:
-            # Version 1 serialized the parameter while decay still used
-            # exp(-t/h), so h was an e-folding time despite its name. Version 2
-            # uses true half-life semantics. Convert the persisted value to
-            # retain exactly the same decay curve after restoration.
+        if (
+            schema_version == 1
+            and not has_v1_runtime_metadata
+            and "half_life_turns" in core_config_data
+        ):
+            # Pre-runtime-metadata version-1 snapshots used exp(-t/h), so h was
+            # an e-folding time despite its name. Later version-1 snapshots
+            # already used true half-life decay and serialized runtime_mode.
+            # Convert only the older shape to preserve both historical curves.
             core_config_data["half_life_turns"] = (
                 float(core_config_data["half_life_turns"]) * math.log(2.0)
             )

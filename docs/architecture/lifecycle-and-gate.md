@@ -12,9 +12,11 @@ State and influence are not interchangeable. A seed can be present without being
 `trace *= exp(-ln(2) * turns / half_life_turns)`, so the configuration field has
 true half-life semantics. The default is `3*ln(2)` turns, which preserves the
 historical `exp(-turns/3)` curve and its calibrated dormant/expiry horizon.
-Version-1 `ShadowChatSession` snapshots are converted on restore for the same
-reason. A dormant seed may regain trace through TrTL when later text matches its
-trigger or embedding.
+Pre-live version-1 `ShadowChatSession` snapshots, identifiable because they lack
+serialized runtime metadata, are converted on restore for the same reason and
+remain in evaluation mode. Later version-1 snapshots already used true half-life
+semantics and keep their stored value and runtime mode unchanged. A dormant seed
+may regain trace through TrTL when later text matches its trigger or embedding.
 
 Trace never grants influence by itself.
 

@@ -12,6 +12,9 @@
 \usepackage{hyperref}
 \usepackage[backend=biber,style=numeric-comp,sorting=none,natbib=true]{biblatex}
 \addbibresource{references.bib}
+\setcounter{biburlnumpenalty}{100}
+\setcounter{biburlucpenalty}{100}
+\setcounter{biburllcpenalty}{100}
 \usepackage{xcolor}
 
 \hypersetup{
@@ -280,7 +283,7 @@ Repeated detection may reflect a real unresolved issue. It may equally reflect a
 
 \subsection{Evidence poisoning}
 
-Provenance makes evidence inspectable while source trust remains a separate problem. PoisonedRAG shows that retrieval stores can be attacked directly \citep{zou2025poisonedrag}. A compromised trusted source can therefore produce well-formed, provenance-carrying evidence that is still false. Deployment in consequential domains would need source authentication, trust policies, conflicting-source handling, and review outside the current artifact.
+Provenance makes evidence inspectable while source trust remains a separate problem. The live evidence API validates signal type, support direction, a caller-supplied verification marker, and source identity; it does not authenticate the source or establish truth. The operator or host application is therefore the trust anchor and must verify a source before setting the marker. Hard-coding it would collapse the intended distinction between observed recurrence and external support. PoisonedRAG shows that retrieval stores can be attacked directly \citep{zou2025poisonedrag}. A compromised trusted source can therefore produce well-formed, provenance-carrying evidence that is still false. Deployment in consequential domains would need source authentication, trust policies, conflicting-source handling, and review outside the current artifact.
 
 \subsection{Instruction-like seed text}
 

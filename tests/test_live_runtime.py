@@ -247,6 +247,14 @@ def test_live_explicit_evidence_route_promotes_and_enables_later_use(monkeypatch
             ),
             "supporting signal",
         ),
+        (
+            ValidationSignal(
+                kind=SignalKind.PROBE,
+                verified=True,
+                source_ref="probe:1",
+            ),
+            "external evidence",
+        ),
     ],
 )
 def test_live_evidence_route_rejects_untrusted_inputs(monkeypatch, signal, message):
@@ -256,6 +264,38 @@ def test_live_evidence_route_rejects_untrusted_inputs(monkeypatch, signal, messa
         session.submit_evidence(seed_id, signal)
     assert session.manager.seeds[seed_id].weight == 0.0
     assert session.manager.gate_events == []
+
+
+def test_live_evidence_route_rejects_unknown_seed(monkeypatch):
+    session, _model = _session(monkeypatch, detector_seed=None)
+    signal = ValidationSignal(
+        kind=SignalKind.SSOT,
+        verified=True,
+        source_ref="ssot:unknown",
+    )
+
+    with pytest.raises(KeyError, match="Unknown seed id"):
+        session.submit_evidence("missing-seed", signal)
+
+    assert session.manager.gate_events == []
+
+
+def test_live_evidence_route_deduplicates_same_source(monkeypatch):
+    session, _model = _session(monkeypatch, detector_seed=None)
+    seed_id = session.manager.add_or_update_seed("Privacy as a missing decision boundary.")
+    signal = ValidationSignal(
+        kind=SignalKind.SSOT,
+        verified=True,
+        source_ref="ssot:stable-source",
+    )
+
+    first = session.submit_evidence(seed_id, signal)
+    second = session.submit_evidence(seed_id, signal)
+
+    assert first["decision"] == "validated"
+    assert second["decision"] == "blocked"
+    assert session.manager.seeds[seed_id].weight == pytest.approx(0.2)
+    assert session.manager.seeds[seed_id].evidence_count == 1
 
 
 def test_live_non_fixture_rejects_lexical_embedder(monkeypatch):
@@ -330,7 +370,27 @@ def test_live_state_roundtrip_preserves_mode_policy_and_visible_history(monkeypa
     assert restored.history[-1] == ("Second question?", "Second visible answer.")
 
 
-def test_version_one_state_migrates_legacy_decay_curve(monkeypatch):
+def test_legacy_version_one_state_preserves_evaluation_and_decay(monkeypatch):
+    session, _model = _session(monkeypatch, detector_seed=None)
+    state = session.to_state()
+    state["schema_version"] = 1
+    state["session_config"]["embedding_backend"] = "lexical"
+    state["session_config"].pop("runtime_mode")
+    state["session_config"].pop("gate_policy_id")
+    state["session_config"].pop("allow_toy_embedder")
+    state["manager"]["config"]["half_life_turns"] = 3.0
+
+    restored = ShadowChatSession.from_state(state)
+
+    assert restored.runtime_mode == "evaluation"
+    assert restored.gate_policy_id == "exploratory"
+    assert restored.manager.half_life_turns == pytest.approx(3.0 * np.log(2.0))
+    seed_id = restored.manager.add_or_update_seed("Privacy as a lifecycle test case.")
+    restored.manager.decay_traces(turns_passed=1)
+    assert restored.manager.seeds[seed_id].trace == pytest.approx(2.0 * np.exp(-1.0 / 3.0))
+
+
+def test_later_version_one_state_keeps_true_half_life_and_runtime(monkeypatch):
     session, _model = _session(monkeypatch, detector_seed=None)
     state = session.to_state()
     state["schema_version"] = 1
@@ -338,10 +398,12 @@ def test_version_one_state_migrates_legacy_decay_curve(monkeypatch):
 
     restored = ShadowChatSession.from_state(state)
 
-    assert restored.manager.half_life_turns == pytest.approx(3.0 * np.log(2.0))
+    assert restored.runtime_mode == "live"
+    assert restored.gate_policy_id == "evidence_backed"
+    assert restored.manager.half_life_turns == pytest.approx(3.0)
     seed_id = restored.manager.add_or_update_seed("Privacy as a lifecycle test case.")
-    restored.manager.decay_traces(turns_passed=1)
-    assert restored.manager.seeds[seed_id].trace == pytest.approx(2.0 * np.exp(-1.0 / 3.0))
+    restored.manager.decay_traces(turns_passed=3)
+    assert restored.manager.seeds[seed_id].trace == pytest.approx(1.0)
 
 
 def test_half_life_turns_is_a_real_half_life(monkeypatch):

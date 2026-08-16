@@ -129,7 +129,10 @@ Migrated callers:
   so recurrence alone cannot raise live authority. Live callers offer verified
   external support through `ShadowChatSession.submit_evidence`, which rejects
   non-evidence kinds, opposition, unverified input, and missing `source_ref`
-  before invoking the Gate.
+  before invoking the Gate. This boundary validates the attestation shape, not
+  the underlying source: the operator or host application must authenticate and
+  verify the source before setting `verified=True`. Treating every input as
+  verified would bypass the intended evidence-backed distinction.
 - **SSOT** (`validate_open_seeds_against_ssot`) passes a verified `ssot` signal
   carrying the source chunk id.
 - **external feedback** (`apply_external_feedback`) passes a `human_feedback`
