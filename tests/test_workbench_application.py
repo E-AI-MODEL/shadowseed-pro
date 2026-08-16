@@ -7,6 +7,7 @@ import pytest
 from shadowseed.application.comparison import ComparisonService
 from shadowseed.application.feedback import FeedbackService
 from shadowseed.application.inspection import InspectionService
+from shadowseed.application.models import SessionConfig
 from shadowseed.application.scenarios import parse_scenario
 from shadowseed.application.sessions import service_for_workspace
 from shadowseed.workbench.controller import WorkbenchController
@@ -73,9 +74,41 @@ def test_inspection_is_read_only_and_explains_seed_state(tmp_path) -> None:
     after = sessions.load(session_id)["state"]
 
     assert view["turn"] == 1
+    assert view["runtime_mode"] == "evaluation"
     assert before == after
     for seed in view["seeds"]:
         assert seed["plain_explanation"]
+
+
+@pytest.mark.parametrize("runtime_mode", ["evaluation", "live"])
+def test_inspection_exposes_persisted_runtime_mode(tmp_path, runtime_mode: str) -> None:
+    sessions = service_for_workspace(tmp_path / runtime_mode)
+    session_id = sessions.create_session(
+        title=f"Inspect {runtime_mode}",
+        profile_id="demo",
+        config=SessionConfig(runtime_mode=runtime_mode),
+    )
+
+    view = InspectionService(sessions).session_view(session_id)
+
+    assert view["runtime_mode"] == runtime_mode
+
+
+def test_inspection_defaults_legacy_session_view_to_evaluation(tmp_path, monkeypatch) -> None:
+    sessions = service_for_workspace(tmp_path / "legacy")
+    session_id = sessions.create_session(title="Legacy inspect", profile_id="demo")
+    stored = sessions.load(session_id)
+    state = dict(stored["state"])
+    state["session_config"] = dict(state["session_config"])
+    state["session_config"].pop("runtime_mode")
+    persisted_config = dict(stored["config"])
+    persisted_config.pop("runtime_mode")
+    stored = {**stored, "state": state, "config": persisted_config}
+    monkeypatch.setattr(sessions, "load", lambda _session_id: stored)
+
+    view = InspectionService(sessions).session_view(session_id)
+
+    assert view["runtime_mode"] == "evaluation"
 
 
 def test_scenario_parser_and_run_create_resumable_session(tmp_path) -> None:
