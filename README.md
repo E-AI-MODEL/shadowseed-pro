@@ -82,6 +82,24 @@ shadowseed chat --backend ollama --model-id <model> --embedding-backend sentence
 
 Research A/B behavior remains available explicitly with `--runtime-mode evaluation`; that mode keeps the isolated baseline arm.
 
+The multi-turn session suite can also execute the real live loop and calculate
+same-turn deferral costs without manual counting:
+
+```bash
+shadowseed run-ssl-session \
+  --runtime-mode live --live-arms both \
+  --backend ollama --model-id <model> \
+  --embedding-backend sentence-transformers \
+  --output results/ssl_live_session.json
+```
+
+This runs the shipped evidence-backed policy without fabricated support and a separately
+labelled recurrence-only counterfactual that creates surfacing turns for measurement. The
+artifact reports suppressed candidates and later semantic recovery automatically. Those
+figures are opportunity-cost proxies, not truth or usefulness labels. Fixture and lexical
+backends are rejected for this live measurement route. See
+[`docs/usage/cli.md`](docs/usage/cli.md) for the arm and call-count semantics.
+
 ### Tester Workbench
 
 The 0.4 tester preview adds a local, single-user Workbench for practical testing
@@ -448,7 +466,7 @@ Method limits include fixture dependence, small human review sets, model-generat
 
 | Tension | Current choice | Open question |
 |---|---|---|
-| Memory versus contamination | Visible history in live mode; baseline isolation in evaluation mode; same-turn candidate deferral after SSL influence | What useful candidates are deferred by the conservative live rule? |
+| Memory versus contamination | Visible history in live mode; baseline isolation in evaluation mode; same-turn candidate deferral after SSL influence; automated deferral and later-recovery measurement | Which deferred candidates are genuinely useful across models and domains? |
 | Persistence versus forgetting | TTL, TrTL, and expiry | How should decay vary by domain and risk? |
 | Exploration versus distraction | Relevance thresholds and top-k | Can usefulness be predicted before generation? |
 | Recurrence versus bias | Recurrence is distinct from evidence | How should correlated detector errors be measured? |

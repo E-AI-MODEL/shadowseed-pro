@@ -2,6 +2,14 @@
 
 ## Unreleased - Live runtime review follow-up
 
+- `run-ssl-session` can now execute the real one-generation live runtime with
+  `--runtime-mode live`. Its default live measurement runs the shipped
+  evidence-backed policy without fabricated evidence plus a clearly labelled,
+  non-production recurrence counterfactual. The result artifact automatically
+  counts same-turn deferrals, normalization-admissible candidates, later
+  semantic recovery, model/detector calls, and elapsed time, and pins its input
+  digest, package version, Git revision, and dirty-worktree state. Live
+  measurement rejects fixture generation and lexical hash embeddings.
 - Workbench evidence submission now clears the operator-attestation checkbox
   after every successful Gate call, so each authority-bearing source requires a
   fresh confirmation. Compare applies the same evaluation fallback as session
