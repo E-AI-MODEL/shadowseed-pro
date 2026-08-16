@@ -10,6 +10,7 @@ from uuid import uuid4
 from shadowseed.application.models import SessionConfig, SessionSummary, TesterFeedback
 from shadowseed.application.profiles import get_profile
 from shadowseed.chat import ShadowChatSession
+from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal
 from shadowseed.storage.sqlite import SQLiteWorkspaceRepository
 
 
@@ -59,6 +60,46 @@ class SessionService:
         stored = self.repository.load_session(session_id)
         session = ShadowChatSession.from_state(stored["state"])
         result = session.falsify(seed_id)
+        self.repository.save_session(
+            session_id,
+            session.to_state(),
+            updated_at=datetime.now().isoformat(),
+        )
+        return result
+
+    def submit_verified_evidence(
+        self,
+        session_id: str,
+        seed_id: str,
+        *,
+        source_ref: str,
+        note: str = "",
+        operator_verified: bool = False,
+    ) -> dict[str, Any]:
+        """Persist explicit operator-attested support through the runtime Gate."""
+
+        if not operator_verified:
+            raise ValueError("operator verification must be explicitly confirmed")
+        if not isinstance(source_ref, str):
+            raise ValueError("source_ref must be a string")
+        normalized_source = source_ref.strip()
+        if not normalized_source:
+            raise ValueError("source_ref must not be empty")
+        stored = self.repository.load_session(session_id)
+        session = ShadowChatSession.from_state(stored["state"])
+        if session.runtime_mode != "live":
+            raise ValueError("verified evidence entry is available only for live sessions")
+        result = session.submit_evidence(
+            seed_id,
+            ValidationSignal(
+                kind=SignalKind.HUMAN_FEEDBACK,
+                direction=SignalDirection.SUPPORT,
+                verified=True,
+                independent=True,
+                source_ref=normalized_source,
+                reason=note.strip() or "verified Workbench operator support",
+            ),
+        )
         self.repository.save_session(
             session_id,
             session.to_state(),

@@ -15,6 +15,7 @@ from shadowseed.application.comparison import ComparisonService
 from shadowseed.application.exports import ExportService, verify_workbench_export
 from shadowseed.application.feedback import FeedbackService
 from shadowseed.application.inspection import InspectionService
+from shadowseed.application.models import SessionConfig
 from shadowseed.application.profiles import list_profiles
 from shadowseed.application.scenarios import ScenarioService, ScenarioSpec
 from shadowseed.application.sessions import SessionService
@@ -22,6 +23,8 @@ from shadowseed.application.workspace import WorkspaceService
 
 
 BACKENDS = ("fixture", "hf-transformers", "ollama", "openai")
+EMBEDDING_BACKENDS = ("lexical", "sentence-transformers", "openai")
+RUNTIME_MODES = ("evaluation", "live")
 _EXTERNAL_PROMPT_BACKENDS = {"openai"}
 
 _BACKEND_NOTES = {
@@ -74,6 +77,14 @@ class WorkbenchController:
             for backend in BACKENDS
         ]
 
+    @staticmethod
+    def embedding_backends() -> tuple[str, ...]:
+        return EMBEDDING_BACKENDS
+
+    @staticmethod
+    def runtime_modes() -> tuple[str, ...]:
+        return RUNTIME_MODES
+
     def list_sessions(self) -> list[dict[str, Any]]:
         return [asdict(item) for item in self.sessions.list_sessions()]
 
@@ -84,16 +95,29 @@ class WorkbenchController:
         profile_id: str,
         backend: str,
         model_id: str | None = None,
+        runtime_mode: str = "evaluation",
+        embedding_backend: str = "lexical",
+        embedding_model: str | None = None,
+        allow_toy_embedder: bool = False,
         external_confirmed: bool = False,
     ) -> str:
         self._validate_backend(
             backend,
             model_id=model_id,
+            runtime_mode=runtime_mode,
+            embedding_backend=embedding_backend,
+            allow_toy_embedder=allow_toy_embedder,
             external_confirmed=external_confirmed,
         )
         return self.sessions.create_session(
             title=title,
             profile_id=profile_id,
+            config=SessionConfig(
+                runtime_mode=runtime_mode,
+                embedding_backend=embedding_backend,
+                embedding_model=embedding_model or None,
+                allow_toy_embedder=allow_toy_embedder,
+            ),
             backend=backend,
             model_id=model_id or None,
         )
@@ -106,9 +130,13 @@ class WorkbenchController:
         external_confirmed: bool = False,
     ) -> dict[str, Any]:
         stored = self.sessions.load(session_id)
+        config = dict(stored.get("config", {}))
         self._validate_backend(
             str(stored["backend"]),
             model_id=stored.get("model_id"),
+            runtime_mode=str(config.get("runtime_mode", "evaluation")),
+            embedding_backend=str(config.get("embedding_backend", "lexical")),
+            allow_toy_embedder=bool(config.get("allow_toy_embedder", False)),
             external_confirmed=external_confirmed,
         )
         report = self.sessions.run_turn(session_id, question)
@@ -119,6 +147,23 @@ class WorkbenchController:
 
     def session_view(self, session_id: str) -> dict[str, Any]:
         return self.inspection.session_view(session_id)
+
+    def submit_verified_evidence(
+        self,
+        session_id: str,
+        seed_id: str,
+        *,
+        source_ref: str,
+        note: str = "",
+        operator_verified: bool = False,
+    ) -> dict[str, Any]:
+        return self.sessions.submit_verified_evidence(
+            session_id,
+            seed_id,
+            source_ref=source_ref,
+            note=note,
+            operator_verified=operator_verified,
+        )
 
     def seed_view(self, session_id: str, seed_id: str) -> dict[str, Any]:
         return self.inspection.seed_view(session_id, seed_id)
@@ -170,6 +215,9 @@ class WorkbenchController:
         self._validate_backend(
             scenario.backend,
             model_id=scenario.model_id,
+            runtime_mode=scenario.runtime_mode,
+            embedding_backend=scenario.embedding_backend,
+            allow_toy_embedder=scenario.allow_toy_embedder,
             external_confirmed=external_confirmed,
         )
         result = self.scenarios.run(scenario)
@@ -192,9 +240,28 @@ class WorkbenchController:
             raise ValueError("scenario backend does not match the persisted session")
         if (scenario.model_id or None) != (stored.get("model_id") or None):
             raise ValueError("scenario model does not match the persisted session")
+        config = dict(stored.get("config", {}))
+        expected_config = {
+            "runtime_mode": scenario.runtime_mode,
+            "embedding_backend": scenario.embedding_backend,
+            "embedding_model": scenario.embedding_model,
+            "allow_toy_embedder": scenario.allow_toy_embedder,
+        }
+        legacy_defaults = {
+            "runtime_mode": "evaluation",
+            "embedding_backend": "lexical",
+            "embedding_model": None,
+            "allow_toy_embedder": False,
+        }
+        for key, expected in expected_config.items():
+            if config.get(key, legacy_defaults[key]) != expected:
+                raise ValueError(f"scenario {key} does not match the persisted session")
         self._validate_backend(
             str(stored["backend"]),
             model_id=stored.get("model_id"),
+            runtime_mode=scenario.runtime_mode,
+            embedding_backend=scenario.embedding_backend,
+            allow_toy_embedder=scenario.allow_toy_embedder,
             external_confirmed=external_confirmed,
         )
         result = self.scenarios.resume(scenario, session_id, start_at=start_at)
@@ -223,7 +290,8 @@ class WorkbenchController:
     def session_choices(summaries: list[dict[str, Any]]) -> list[tuple[str, str]]:
         return [
             (
-                f"{item['title']} · {item['backend']} · {item['turn_count']} turns",
+                f"{item['title']} · {item.get('runtime_mode', 'evaluation')} · "
+                f"{item['backend']} · {item['turn_count']} turns",
                 str(item["session_id"]),
             )
             for item in summaries
@@ -244,14 +312,34 @@ class WorkbenchController:
         backend: str,
         *,
         model_id: str | None,
+        runtime_mode: str = "evaluation",
+        embedding_backend: str = "lexical",
+        allow_toy_embedder: bool = False,
         external_confirmed: bool,
     ) -> None:
         if backend not in BACKENDS:
             raise ValueError(f"unsupported Workbench backend: {backend}")
+        if runtime_mode not in RUNTIME_MODES:
+            raise ValueError(f"unsupported Workbench runtime mode: {runtime_mode}")
+        if embedding_backend not in EMBEDDING_BACKENDS:
+            raise ValueError(f"unsupported Workbench embedding backend: {embedding_backend}")
         if backend != "fixture" and not str(model_id or "").strip():
             raise ValueError(f"backend {backend!r} requires a model id")
-        if backend in _EXTERNAL_PROMPT_BACKENDS and not external_confirmed:
+        if (
+            runtime_mode == "live"
+            and backend != "fixture"
+            and embedding_backend == "lexical"
+            and not allow_toy_embedder
+        ):
             raise ValueError(
-                "this backend sends prompts to an external provider; check the explicit "
+                "live non-fixture sessions require sentence-transformers or openai "
+                "embeddings; enable the toy override only for an explicit test"
+            )
+        uses_external_provider = (
+            backend in _EXTERNAL_PROMPT_BACKENDS or embedding_backend == "openai"
+        )
+        if uses_external_provider and not external_confirmed:
+            raise ValueError(
+                "this runtime sends content to an external provider; check the explicit "
                 "external-provider confirmation before continuing"
             )

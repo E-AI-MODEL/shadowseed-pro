@@ -189,6 +189,13 @@ class SQLiteWorkspaceRepository:
         summaries: list[SessionSummary] = []
         for row in rows:
             state = json.loads(row["state_json"])
+            config = json.loads(row["config_json"])
+            state_config = dict(state.get("session_config", {}))
+            runtime_mode = state_config.get("runtime_mode") or config.get(
+                "runtime_mode", "evaluation"
+            )
+            if runtime_mode not in {"evaluation", "live"}:
+                runtime_mode = "evaluation"
             summaries.append(
                 SessionSummary(
                     session_id=row["session_id"],
@@ -200,6 +207,7 @@ class SQLiteWorkspaceRepository:
                     seed_count=len(state.get("manager", {}).get("seeds", [])),
                     created_at=row["created_at"],
                     updated_at=row["updated_at"],
+                    runtime_mode=runtime_mode,
                 )
             )
         return summaries

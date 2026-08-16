@@ -133,7 +133,10 @@ The default local workspace is `~/.shadowseed`. Use `--workspace PATH` for an
 isolated workspace. `workspace delete` requires `--yes`. API keys remain in the
 process environment or an OS keyring and are never stored in the workspace.
 
-The current tester Workbench keeps the evaluation-oriented session configuration so its
-baseline/SSL comparison tools remain reproducible. Direct `ShadowChatSession()` use and
-`shadowseed chat` default to `live`; pass `runtime_mode="evaluation"` explicitly for a
-research comparison session.
+The tester Workbench stores the selected runtime mode when a session is created
+and defaults its form to `evaluation`. Evaluation sessions retain the
+isolated baseline/SSL comparison. Live sessions use one visible generation and
+offer a separate, operator-attested evidence action; they cannot use the A/B
+Compare tab. Direct `ShadowChatSession()` use and `shadowseed chat` default to
+`live`; pass `runtime_mode="evaluation"` explicitly for a research comparison
+session.

@@ -95,11 +95,14 @@ shadowseed workbench
 ```
 
 The supported native server binds to `127.0.0.1` by default. Testers can create
-or resume sessions, inspect stored seed decisions, record audit-only feedback,
-compare baseline and SSL-visible answers, import scenarios, and export verified
-reports or privacy-minimized support bundles. The Workbench is a tester product
-layer over the existing runtime; it is not a second Validation Gate and does not
-turn tester observations into scientific evidence.
+live or evaluation sessions, choose an embedding backend, inspect stored seed
+decisions, submit explicitly verified support to the existing Validation Gate,
+record separate audit-only feedback, import scenarios, and export verified
+reports or privacy-minimized support bundles. Baseline/SSL comparison is limited
+to evaluation sessions because live mode intentionally performs one generation.
+The Workbench is a tester product layer over the existing runtime; it is not a
+second Validation Gate and does not turn ordinary tester observations into
+scientific evidence.
 
 See [`docs/workbench/README.md`](docs/workbench/README.md) for the practical
 workflow and [`docs/workbench/limitations.md`](docs/workbench/limitations.md)

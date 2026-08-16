@@ -6,6 +6,7 @@ import json
 from dataclasses import asdict, dataclass
 from typing import Any
 
+from shadowseed.application.models import SessionConfig
 from shadowseed.application.sessions import SessionService
 from shadowseed.application.profiles import get_profile
 
@@ -17,6 +18,10 @@ class ScenarioSpec:
     profile_id: str = "balanced"
     backend: str = "fixture"
     model_id: str | None = None
+    runtime_mode: str = "evaluation"
+    embedding_backend: str = "lexical"
+    embedding_model: str | None = None
+    allow_toy_embedder: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         data = asdict(self)
@@ -34,7 +39,11 @@ def parse_scenario(value: str | dict[str, Any]) -> ScenarioSpec:
           "questions": ["First prompt", "Second prompt"],
           "profile_id": "balanced",
           "backend": "fixture",
-          "model_id": null
+          "model_id": null,
+          "runtime_mode": "evaluation",
+          "embedding_backend": "lexical",
+          "embedding_model": null,
+          "allow_toy_embedder": false
         }
     """
 
@@ -64,12 +73,33 @@ def parse_scenario(value: str | dict[str, Any]) -> ScenarioSpec:
     model_id = str(model_id_raw).strip() if model_id_raw not in (None, "") else None
     if backend != "fixture" and not model_id:
         raise ValueError(f"backend {backend!r} requires model_id")
+    runtime_mode = str(data.get("runtime_mode", "evaluation"))
+    if runtime_mode not in {"evaluation", "live"}:
+        raise ValueError("scenario.runtime_mode must be 'evaluation' or 'live'")
+    embedding_backend = str(data.get("embedding_backend", "lexical"))
+    if embedding_backend not in {"lexical", "sentence-transformers", "openai"}:
+        raise ValueError(
+            "scenario.embedding_backend must be lexical, sentence-transformers, or openai"
+        )
+    embedding_model_raw = data.get("embedding_model")
+    embedding_model = (
+        str(embedding_model_raw).strip()
+        if embedding_model_raw not in (None, "")
+        else None
+    )
+    allow_toy_embedder = data.get("allow_toy_embedder", False)
+    if not isinstance(allow_toy_embedder, bool):
+        raise ValueError("scenario.allow_toy_embedder must be a boolean")
     return ScenarioSpec(
         title=str(data.get("title", "Imported scenario")).strip() or "Imported scenario",
         questions=questions,
         profile_id=profile_id,
         backend=backend,
         model_id=model_id,
+        runtime_mode=runtime_mode,
+        embedding_backend=embedding_backend,
+        embedding_model=embedding_model,
+        allow_toy_embedder=allow_toy_embedder,
     )
 
 
@@ -132,6 +162,12 @@ class ScenarioService:
         session_id = self.sessions.create_session(
             title=scenario.title,
             profile_id=scenario.profile_id,
+            config=SessionConfig(
+                runtime_mode=scenario.runtime_mode,
+                embedding_backend=scenario.embedding_backend,
+                embedding_model=scenario.embedding_model,
+                allow_toy_embedder=scenario.allow_toy_embedder,
+            ),
             backend=scenario.backend,
             model_id=scenario.model_id,
         )

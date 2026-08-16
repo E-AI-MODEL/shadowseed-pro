@@ -9,6 +9,7 @@ Useful tester questions include:
 
 - Can a new tester install and start the Workbench without Python coding?
 - Is it clear which backend/profile is active?
+- Is the selected live/evaluation mode visible in saved-session lists and status?
 - Can a session be closed and resumed without losing turns or audit state?
 - Are seed status and plain-language explanations understandable?
 - Does the baseline-vs-Shadowseed comparison make sense without implying an
@@ -33,6 +34,11 @@ Workbench feedback is `record_only` by default. A tester rating or note is an
 observation, not new evidence for a seed and not permission to change seed
 weight/status.
 
+The live verified-support action is separate from ordinary feedback. Use it only
+for independently checked support, give each source a stable reference, and do
+not treat model output or recurrence as verification. The operator attestation
+is part of the trust boundary and is recorded in the Gate ledger.
+
 When reporting an issue, include:
 
 - what you were trying to do;
@@ -47,7 +53,9 @@ When reporting an issue, include:
 
 Blind A/B mode hides which candidate is the clean baseline and which is the
 Shadowseed-visible answer until reveal. Judge the content before revealing the
-mapping when possible.
+mapping when possible. This workflow applies only to evaluation sessions. Live
+sessions intentionally produce one visible answer and cannot be opened in the
+Compare tab.
 
 Do not interpret one preference as a scientific result. Repeated tester
 preferences can motivate a later controlled evaluation, but the Workbench does
@@ -64,10 +72,11 @@ evidence.
 
 ## Authority boundary
 
-The Workbench is not an authority editor. Testers should never need to directly
-set seed weight, promotion status, contradiction state, or Gate decisions.
-Unexpected UI behavior that appears to bypass those existing runtime boundaries
-should be treated as a high-priority defect.
+The Workbench is not an authority editor. Testers cannot directly set seed
+weight, promotion status, contradiction state, or Gate decisions. Verified
+support is an input to the Gate, not a direct state edit. Unexpected UI behavior
+that appears to bypass those runtime boundaries should be treated as a
+high-priority defect.
 
 ## Evidence discipline
 

@@ -30,6 +30,12 @@ scientific evidence generator by itself.
 - The Workbench has no direct weight, status, promotion or contradiction-state
   editor.
 - Tester feedback is `record_only` by default.
+- Live sessions provide a separate verified-support action. It submits an
+  operator-attested, provenance-bearing signal to the existing Validation Gate;
+  it cannot directly choose a Gate decision or final weight.
+- The operator or host application is the trust anchor for that attestation.
+  The Workbench validates required fields and deduplication identity, not source
+  truth.
 - Seed authority remains governed by the existing Validation Gate and
   point-of-use checks.
 - A promoted seed is only eligible for consideration; promotion does not force
@@ -38,8 +44,9 @@ scientific evidence generator by itself.
 ## Evaluation limits
 
 - Side-by-side and blind comparison presents baseline and Shadowseed-visible
-  answers for human review; it does not infer statistical significance or
-  scientific validity.
+  answers from evaluation sessions for human review; live sessions intentionally
+  have no isolated baseline. The Workbench does not infer statistical
+  significance or scientific validity.
 - Fixture runs are deterministic product smokes, not model-effect evidence.
 - Workbench tests and exports must not be represented as new benchmark evidence.
 - `benchmarks/results/**` remains a separately governed evidence area.

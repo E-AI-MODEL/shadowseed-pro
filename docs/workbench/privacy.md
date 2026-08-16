@@ -8,10 +8,13 @@ content they enter and for exports they choose to share.
 
 The Workbench stores sessions and audit data in the local SQLite workspace.
 That can include prompts, generated answers, seed text, model/backend metadata,
-Gate and influence records, and tester feedback.
+Gate and influence records, verified-support source references and notes, and
+tester feedback.
 
 - Do not paste passwords, API keys, access tokens, private keys, or other
   credentials into a tester conversation.
+- Do not place credentials or unnecessary personal data in evidence source
+  references or verification notes.
 - Do not use real personal or confidential data when synthetic or redacted test
   material is sufficient.
 - Protect workspace backups like the source workspace; a backup is not a
@@ -25,10 +28,11 @@ The fixture backend is deterministic and local. Ollama is intended for a local
 Ollama service. Hugging Face Transformers inference is local after model files
 are available, although obtaining a model can contact Hugging Face.
 
-The OpenAI backend is hosted. Prompts and generated context are sent to that
-provider only after the Workbench requires explicit hosted-provider
-confirmation. Provider-side handling is outside the local SQLite boundary and
-must be evaluated under the provider/account terms used by the tester.
+The OpenAI model and embedding backends are hosted. Prompts, generated context,
+seed text, or query text are sent to that provider only after the Workbench
+requires explicit hosted-provider confirmation. Provider-side handling is
+outside the local SQLite boundary and must be evaluated under the
+provider/account terms used by the tester.
 
 Credentials must be supplied through supported environment or local credential
 mechanisms. The Workbench does not accept backend credentials as persisted

@@ -29,14 +29,45 @@ multi-user authentication layer. Do not expose it to an untrusted network.
 1. Run `shadowseed doctor` and resolve reported setup errors.
 2. Run `shadowseed init` to create the local SQLite workspace.
 3. Start `shadowseed workbench`.
-4. Create or resume a session and choose a profile/backend.
-5. Inspect seed snapshots and their audit timeline when useful.
-6. Record tester feedback. The default Workbench feedback action is
+4. Create or resume a session and choose a runtime mode, profile, model backend,
+   and embedding backend.
+5. In a live session, submit verified support only after checking an independent
+   source and assigning it a stable source reference.
+6. Inspect seed snapshots and their audit timeline when useful.
+7. Record tester feedback. The default Workbench feedback action is
    `record_only`; it does not change seed authority.
-7. Use Compare for side-by-side or blinded baseline-vs-Shadowseed review.
-8. Export a full report for deliberate session sharing, or a minimized support
+8. Use Compare for side-by-side or blinded baseline-vs-Shadowseed review in an
+   evaluation session.
+9. Export a full report for deliberate session sharing, or a minimized support
    bundle for troubleshooting.
-9. Back up the workspace with `shadowseed workspace backup`.
+10. Back up the workspace with `shadowseed workspace backup`.
+
+## Runtime modes and evidence
+
+`evaluation` remains the Workbench form default. It preserves the isolated
+baseline and optional SSL-assisted answer used by the Compare tab.
+
+`live` performs one visible generation and stores that answer in conversation
+history. For non-fixture live sessions, choose Sentence Transformers or OpenAI
+embeddings. Lexical hash embeddings are available only behind the explicit toy
+override. Fixture live sessions may use lexical embeddings for deterministic UI
+and persistence tests.
+
+Live recurrence alone does not grant steering authority. The verified-support
+action creates a provenance-bearing human-feedback signal and submits it to the
+existing `evidence_backed` Validation Gate. The tester must confirm that the
+support was checked outside the model output. The Workbench validates the
+attestation and source-reference shape, not whether the source is true. Reusing
+the same source reference is audited but does not add authority again.
+
+Runtime mode and profile are separate settings. Profiles tune surfacing; they do
+not switch the conversation loop.
+
+Imported scenarios accept `runtime_mode`, `embedding_backend`,
+`embedding_model`, and `allow_toy_embedder` alongside the existing session
+fields. Missing fields retain the backward-compatible evaluation, lexical, and
+no-override defaults. Resume rejects a scenario whose runtime configuration no
+longer matches its persisted session.
 
 ## Backends and privacy
 
@@ -46,6 +77,11 @@ multi-user authentication layer. Do not expose it to an untrusted network.
   available; an initial model download may contact Hugging Face.
 - **OpenAI**: hosted inference. Prompts and generated context are transmitted to
   the provider only after the Workbench's explicit hosted-provider confirmation.
+
+Embedding choices are lexical, Sentence Transformers, and OpenAI. OpenAI
+embeddings also send seed and query text to the hosted provider and require the
+same explicit confirmation. Sentence Transformers runs locally after model
+material is available; obtaining that material may contact Hugging Face.
 
 Credentials are not accepted as persistent Workbench configuration. Use the
 backend's supported environment-variable or local credential mechanism.
