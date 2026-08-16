@@ -2,6 +2,10 @@
 
 ## Unreleased - Live runtime review follow-up
 
+- Live measurement now requires an English suite and live generation explicitly requests English output. The canonical primary and transfer session suites are English.
+- The detector leak filter now covers generative few-shot examples as well as absence examples, including Markdown-wrapped echoes. Detector prompts also require plain-text candidates.
+- Deferral recovery is now scored only when a later uninfluenced observation window exists. Runs with continuous surfacing report a null recovery rate instead of conflating unobservability with zero recovery.
+- The recorded Qwen2.5-0.5B live run is explicitly classified as diagnostic pipeline evidence rather than efficacy evidence; its raw artifacts remain unchanged.
 - `run-ssl-session` can now execute the real one-generation live runtime with
   `--runtime-mode live`. Its default live measurement runs the shipped
   evidence-backed policy without fabricated evidence plus a clearly labelled,

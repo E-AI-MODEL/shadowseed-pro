@@ -132,6 +132,7 @@ def build_chat_prompt(
     question: str,
     surfaced: list[str],
     boundary: PromptBoundary = DEFAULT_PROMPT_BOUNDARY,
+    response_language: str | None = None,
 ) -> str:
     """Build the shared baseline or SSL prompt.
 
@@ -142,8 +143,12 @@ def build_chat_prompt(
     question remains leading.
     """
 
+    language_instruction = (
+        f"Respond in {response_language} only.\n\n" if response_language else ""
+    )
     prompt = (
         _history_block(history)
+        + language_instruction
         + f"Answer this follow-up question thoroughly and insightfully.\n\nQuestion: {question}\n\n"
         + "Keep the answer compact, at roughly 450 words or fewer. Prefer a few "
         "substantive sections over many incomplete ones. End with a short closing "

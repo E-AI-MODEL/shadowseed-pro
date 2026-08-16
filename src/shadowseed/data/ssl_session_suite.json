@@ -1,45 +1,90 @@
 {
-  "version": "ssl-session-0.2",
-  "description": "Multi-turn conversations to test SSL through the REAL pipeline (SSLManager): weight-0 seeding, recurrence dedup, the Validation Gate across turns, TTL decay + TrTL reactivation, and only pipeline-PROMOTED seeds (born in an earlier turn) may shape a later answer. v0.2 adds long, theme-RETURNING conversations (>=9 turns) so a genuinely recurring gap can recur 3x+ and promote on its own merit -- giving SSL's 'not-yet-an-answer-now-can-become-one-later' property a fair chance. Topics author-chosen so a stable gap CAN recur; whether it does, promotes, and pays off is left to the pipeline + model. Seeds detector-produced.",
+  "version": "ssl-session-0.3",
+  "language": "en",
+  "description": "Multi-turn conversations for the real SSL session pipeline: weight-zero seeding, recurrence deduplication, Validation Gate decisions across turns, TTL/TrTL lifecycle, and cross-turn surfacing only after promotion. The conversations deliberately return to themes so recurrence can emerge without planted answers. Whether a candidate recurs, promotes, and adds value is left to the pipeline and model.",
   "conversations": [
     {
       "id": "CONV_IR_SHORT",
-      "domain": "geschiedenis en economie",
+      "domain": "history and economics",
       "turns": [
-        {"question": "Leg in het kort uit waarom de Industriële Revolutie juist in Groot-Brittannië kon ontstaan."},
-        {"question": "Hoe verspreidde de industrialisatie zich daarna naar het Europese vasteland?"},
-        {"question": "Wat verklaart waarom sommige regio's veel sneller industrialiseerden dan andere?"},
-        {"question": "Welke factor wordt in standaarduitleg het meest onderschat?"}
+        {
+          "question": "Briefly explain why the Industrial Revolution began in Great Britain."
+        },
+        {
+          "question": "How did industrialization then spread to continental Europe?"
+        },
+        {
+          "question": "What explains why some regions industrialized much faster than others?"
+        },
+        {
+          "question": "Which factor is most often underestimated in standard explanations?"
+        }
       ]
     },
     {
       "id": "CONV_STARTUP",
-      "domain": "product en groei",
+      "domain": "product and growth",
       "turns": [
-        {"question": "Ik bouw een sociale app voor jongeren. Hoe krijg ik de eerste duizend gebruikers?"},
-        {"question": "Welke features houden gebruikers het beste vast (retentie)?"},
-        {"question": "Hoe maak ik de app viraal zodat gebruikers vrienden uitnodigen?"},
-        {"question": "Wat is het beste verdienmodel voor zo'n app met jonge gebruikers?"},
-        {"question": "Hoe gebruik ik gebruikersdata om de aanbevelingen te verbeteren?"},
-        {"question": "Hoe schaal ik de infrastructuur als het hard groeit?"},
-        {"question": "Welke meetwaarden moet ik aan investeerders laten zien?"},
-        {"question": "Hoe ga ik om met negatieve publiciteit als die komt?"},
-        {"question": "Wat is op de lange termijn de grootste bedreiging voor dit soort apps?"}
+        {
+          "question": "I am building a social app for teenagers. How do I get the first thousand users?"
+        },
+        {
+          "question": "Which features are most effective at retaining users?"
+        },
+        {
+          "question": "How do I make the app viral so users invite their friends?"
+        },
+        {
+          "question": "What is the best business model for an app aimed at young users?"
+        },
+        {
+          "question": "How should I use user data to improve recommendations?"
+        },
+        {
+          "question": "How do I scale the infrastructure if growth accelerates?"
+        },
+        {
+          "question": "Which metrics should I show investors?"
+        },
+        {
+          "question": "How should I handle negative publicity if it occurs?"
+        },
+        {
+          "question": "What is the biggest long-term threat to this kind of app?"
+        }
       ]
     },
     {
       "id": "CONV_CITY",
-      "domain": "stadsontwikkeling",
+      "domain": "urban development",
       "turns": [
-        {"question": "Onze stad wil de binnenstad nieuw leven inblazen. Waar beginnen we?"},
-        {"question": "Hoe trekken we meer winkels en horeca aan?"},
-        {"question": "Hoe verbeteren we de bereikbaarheid en het verkeer?"},
-        {"question": "Hoe maken we de binnenstad aantrekkelijker voor toeristen?"},
-        {"question": "Welke rol moet woningbouw in de binnenstad spelen?"},
-        {"question": "Hoe vergroenen we de openbare ruimte?"},
-        {"question": "Hoe houden we de binnenstad veilig en levendig in de avond?"},
-        {"question": "Hoe financieren we dit alles als gemeente?"},
-        {"question": "Wat gaat er bij dit soort binnenstad-vernieuwingen het vaakst mis?"}
+        {
+          "question": "Our city wants to revitalize the downtown area. Where should we start?"
+        },
+        {
+          "question": "How can we attract more shops, restaurants, and cafes?"
+        },
+        {
+          "question": "How should we improve accessibility and traffic?"
+        },
+        {
+          "question": "How can we make downtown more attractive to tourists?"
+        },
+        {
+          "question": "What role should housing development play in the city center?"
+        },
+        {
+          "question": "How should we add more green public space?"
+        },
+        {
+          "question": "How do we keep downtown safe and lively in the evening?"
+        },
+        {
+          "question": "How can the municipality finance all of this?"
+        },
+        {
+          "question": "What most often goes wrong in downtown revitalization projects?"
+        }
       ]
     }
   ]
