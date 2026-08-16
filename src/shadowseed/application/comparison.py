@@ -47,6 +47,8 @@ class ComparisonService:
             or state_config.get("runtime_mode")
             or persisted_config.get("runtime_mode", "evaluation")
         )
+        if runtime_mode not in {"evaluation", "live"}:
+            runtime_mode = "evaluation"
         if runtime_mode != "evaluation":
             raise ValueError(
                 "baseline comparison is available only for evaluation sessions; "

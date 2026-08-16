@@ -80,11 +80,16 @@ jobs:
           wheel="$(ls dist/*.whl)"
           python -m venv "${RUNNER_TEMP}/workbench-wheel"
           "${RUNNER_TEMP}/workbench-wheel/bin/pip" install --upgrade pip
+          "${RUNNER_TEMP}/workbench-wheel/bin/pip" install "httpx[socks]==0.27.2"
           "${RUNNER_TEMP}/workbench-wheel/bin/pip" install "${wheel}[workbench]"
           cd "${RUNNER_TEMP}"
           "${RUNNER_TEMP}/workbench-wheel/bin/shadowseed" workbench --help
-          "${RUNNER_TEMP}/workbench-wheel/bin/python" - <<'PY'
+          ALL_PROXY="socks5h://127.0.0.1:9" \
+            "${RUNNER_TEMP}/workbench-wheel/bin/python" - <<'PY'
           import gradio
+          import httpx
+          from packaging.version import Version
           from shadowseed.workbench.app import build_app
-          print("installed Workbench import OK", gradio.__version__)
+          assert Version(httpx.__version__) >= Version("0.28.0")
+          print("installed Workbench SOCKS-proxy import OK", gradio.__version__)
           PY

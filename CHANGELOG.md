@@ -2,6 +2,13 @@
 
 ## Unreleased - Live runtime review follow-up
 
+- Workbench evidence submission now clears the operator-attestation checkbox
+  after every successful Gate call, so each authority-bearing source requires a
+  fresh confirmation. Compare applies the same evaluation fallback as session
+  inspection to malformed legacy runtime metadata.
+- The Workbench extra now installs HTTPX SOCKS support. Gradio can start in
+  environments that configure a SOCKS proxy without disabling or bypassing the
+  user's proxy settings.
 - Workbench session creation now offers explicit live/evaluation and embedding
   backend choices. Session lists display the selected mode, and imported
   scenarios persist the same runtime configuration.

@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from shadowseed.workbench.app import launch_workbench
+from shadowseed.workbench.controller import WorkbenchController
 
 
 REQUIRED_PRODUCT_FILES = (
@@ -63,3 +64,34 @@ def test_gradio_app_builds_when_optional_dependency_is_installed(tmp_path) -> No
 
     app = build_app(tmp_path / "workspace")
     assert app is not None
+
+
+def test_gradio_evidence_submission_resets_operator_attestation(tmp_path) -> None:
+    pytest.importorskip("gradio")
+    from shadowseed.workbench.app import build_app
+
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Evidence reset",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+    )
+    result = controller.send_turn(session_id, "What is missing from this privacy plan?")
+    seed_id = result["session"]["seeds"][0]["id"]
+    app = build_app(controller=controller)
+    callback = next(
+        dependency.fn
+        for dependency in app.fns.values()
+        if getattr(dependency.fn, "__name__", "") == "submit_verified_evidence"
+    )
+
+    outputs = callback(
+        session_id,
+        seed_id,
+        "reviewer:one",
+        "Checked against an independent source.",
+        True,
+    )
+
+    assert outputs[-2:] == ("", False)
