@@ -34,6 +34,11 @@ requires explicit hosted-provider confirmation. Provider-side handling is
 outside the local SQLite boundary and must be evaluated under the
 provider/account terms used by the tester.
 
+HTTPX honors standard proxy environment variables. The Workbench extra includes
+HTTPX's optional SOCKS transport so an existing `ALL_PROXY`, `HTTP_PROXY`, or
+`HTTPS_PROXY` configuration can be used rather than silently disabled. The
+Workbench does not create or select a proxy itself.
+
 Credentials must be supplied through supported environment or local credential
 mechanisms. The Workbench does not accept backend credentials as persisted
 workspace configuration.

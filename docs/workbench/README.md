@@ -24,6 +24,11 @@ shadowseed workbench
 The supported server binds to `127.0.0.1` by default. The preview has no
 multi-user authentication layer. Do not expose it to an untrusted network.
 
+The Workbench extra includes HTTPX's optional SOCKS transport. Environments
+that already set `ALL_PROXY`, `HTTP_PROXY`, or `HTTPS_PROXY` can therefore
+start Gradio without disabling those settings. Shadowseed does not configure a
+proxy itself.
+
 ## Tester workflow
 
 1. Run `shadowseed doctor` and resolve reported setup errors.

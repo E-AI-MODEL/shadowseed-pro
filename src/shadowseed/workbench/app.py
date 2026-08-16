@@ -132,6 +132,7 @@ def build_app(
                     f"evidence: **{result['evidence_count']}**."
                 ),
                 "",
+                False,
             )
         except Exception as exc:
             raise gr.Error(str(exc)) from exc
@@ -479,6 +480,7 @@ def build_app(
                     session_seed_select,
                     evidence_status,
                     evidence_source_ref,
+                    evidence_verified,
                 ],
             )
             question.submit(

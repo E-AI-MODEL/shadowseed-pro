@@ -37,6 +37,7 @@ vector = [
 ]
 workbench = [
   "gradio>=6.0,<7",
+  "httpx[socks]>=0.24.1,<1",
 ]
 test = [
   "pytest>=8.0",

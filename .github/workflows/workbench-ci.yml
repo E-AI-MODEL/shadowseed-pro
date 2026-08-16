@@ -83,8 +83,9 @@ jobs:
           "${RUNNER_TEMP}/workbench-wheel/bin/pip" install "${wheel}[workbench]"
           cd "${RUNNER_TEMP}"
           "${RUNNER_TEMP}/workbench-wheel/bin/shadowseed" workbench --help
-          "${RUNNER_TEMP}/workbench-wheel/bin/python" - <<'PY'
+          ALL_PROXY="socks5h://127.0.0.1:9" \
+            "${RUNNER_TEMP}/workbench-wheel/bin/python" - <<'PY'
           import gradio
           from shadowseed.workbench.app import build_app
-          print("installed Workbench import OK", gradio.__version__)
+          print("installed Workbench SOCKS-proxy import OK", gradio.__version__)
           PY

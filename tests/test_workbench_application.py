@@ -246,6 +246,37 @@ def test_live_session_rejects_baseline_comparison(tmp_path) -> None:
         ComparisonService(sessions).compare_turn(session_id, 0)
 
 
+@pytest.mark.parametrize("malformed_mode", [None, "unknown"])
+def test_legacy_comparison_normalizes_malformed_runtime_mode(
+    tmp_path, monkeypatch, malformed_mode
+) -> None:
+    sessions = service_for_workspace(tmp_path / "workspace")
+    session_id = sessions.create_session(title="Legacy compare", profile_id="demo")
+    sessions.run_turn(session_id, "Question")
+    stored = sessions.load(session_id)
+    state = dict(stored["state"])
+    reports = [dict(report) for report in state["turn_reports"]]
+    reports[0].pop("runtime_mode", None)
+    state["turn_reports"] = reports
+    state_config = dict(state.get("session_config", {}))
+    state_config["runtime_mode"] = malformed_mode
+    state["session_config"] = state_config
+    persisted_config = dict(stored.get("config", {}))
+    persisted_config["runtime_mode"] = malformed_mode
+    legacy_stored = {
+        **stored,
+        "state": state,
+        "config": persisted_config,
+    }
+    monkeypatch.setattr(sessions, "load", lambda requested_id: legacy_stored)
+
+    result = ComparisonService(sessions).compare_turn(session_id, 0)
+
+    assert result["turn"] == 0
+    assert result["candidate_a"]
+    assert result["candidate_b"]
+
+
 def test_live_verified_evidence_persists_and_enables_later_use(tmp_path) -> None:
     controller = WorkbenchController(tmp_path / "workspace")
     session_id = controller.create_session(

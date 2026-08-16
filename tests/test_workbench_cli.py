@@ -36,6 +36,7 @@ def test_workbench_cli_contract_is_registered() -> None:
 def test_workbench_optional_dependency_and_release_notes_are_declared() -> None:
     project = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))["project"]
     assert "gradio>=6.0,<7" in project["optional-dependencies"]["workbench"]
+    assert "httpx[socks]>=0.24.1,<1" in project["optional-dependencies"]["workbench"]
     assert Path(f"docs/workbench/release-{project['version']}.md").is_file()
 
 
