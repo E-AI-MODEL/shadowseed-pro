@@ -1,0 +1,1891 @@
+{
+  "summary": {
+    "artifact": "ssl_live_session_measurement",
+    "runtime_mode": "live",
+    "backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+    "detector": "ollama:qwen2.5:7b-instruct-q4_K_M",
+    "embedding_backend": "sentence-transformers",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "detector_prompt_variant": "generative",
+    "model_id": "qwen2.5:7b-instruct-q4_K_M",
+    "max_new_tokens": 220,
+    "input_version": "ssl-session-0.3",
+    "language": "en",
+    "response_language": "English",
+    "input_sha256": "734a12429a9e7f5b28180c500bd054e44ee276ecc233ffa9ede7761ff4cec2d1",
+    "conversation_count": 3,
+    "arms": [
+      "counterfactual"
+    ],
+    "answer_generation_calls": 22,
+    "detector_calls": 22,
+    "timing": {
+      "adapter_setup_elapsed_seconds": 5.374,
+      "live_turn_elapsed_seconds": 2081.722,
+      "deferral_scoring_elapsed_seconds": 0.057,
+      "measurement_wall_elapsed_seconds": 2087.155
+    },
+    "claim_boundary": "The evidence-backed arm measures shipped live behavior without supplied evidence. The exploratory arm is a counterfactual for measuring same-turn deferral and is not production authority. Deferral metrics are objective opportunity proxies, not usefulness or truth judgments.",
+    "package_version": "0.4.2",
+    "source_revision": "35ce6691b15766a59c73633c5f7b37f6f12a44e3",
+    "source_dirty": true
+  },
+  "arms": [
+    {
+      "arm_id": "counterfactual",
+      "runtime_mode": "live",
+      "gate_policy_id": "exploratory",
+      "production_policy": false,
+      "external_evidence_injected": false,
+      "answer_generation_calls": 22,
+      "detector_calls": 22,
+      "influence_record_count": 21,
+      "promoted_seed_count": 4,
+      "timing": {
+        "live_turn_elapsed_seconds": 2081.722,
+        "deferral_scoring_elapsed_seconds": 0.057,
+        "other_arm_overhead_seconds": 0.001,
+        "wall_elapsed_seconds": 2081.781
+      },
+      "deferral_metrics": {
+        "influenced_turns": 18,
+        "affected_turns": 18,
+        "detected_on_influenced_turns": 18,
+        "suppressed_candidate_occurrences": 18,
+        "normalization_admissible_occurrences": 18,
+        "recovery_evaluable_occurrences": 4,
+        "recovery_not_evaluable_occurrences": 14,
+        "later_recovered_occurrences": 0,
+        "unrecovered_evaluable_occurrences": 4,
+        "unrecovered_admissible_occurrences": 4,
+        "distinct_normalized_suppressed_candidates": 18,
+        "suppression_rate_on_influenced_turns": 1.0,
+        "later_recovery_rate": 0.0,
+        "interpretation": "Aggregate opportunity-cost proxies. Recovery uses only candidates with a later uninfluenced observation window; null means not observable, not zero. No truth or usefulness label is inferred."
+      },
+      "conversations": [
+        {
+          "conversation_id": "CONV_IR_SHORT",
+          "domain": "history and economics",
+          "runtime_mode": "live",
+          "gate_policy_id": "exploratory",
+          "applied_thresholds": {
+            "dedup_threshold": 0.85,
+            "min_occurrences": 1,
+            "promotion_threshold": 0.2,
+            "recurrence_mode": "cluster",
+            "cluster_threshold": 0.6,
+            "surface_threshold": 0.0,
+            "surface_top_k": 2,
+            "early_turn_margin": 0.0,
+            "early_turn_history": 5,
+            "resurface_margin": 0.0
+          },
+          "turns": [
+            {
+              "runtime_mode": "live",
+              "turn": 0,
+              "question": "Briefly explain why the Industrial Revolution began in Great Britain.",
+              "answer": "The Industrial Revolution began in Great Britain for several interconnected reasons. Firstly, Britain's geographical and political stability provided a conducive environment for economic growth. The country's location facilitated trade and the establishment of a robust maritime network, crucial for importing raw materials and exporting manufactured goods. Additionally, Britain's political stability, marked by the Glorious Revolution of 1688, established a framework that encouraged investment and innovation.\n\nSecondly, Britain's abundant natural resources, including coal and iron, were key. The country's coal deposits were vast and easily accessible, providing the energy needed for new machinery. Iron ore was also plentiful, essential for the production of tools, machines, and infrastructure. The availability of these resources, coupled with efficient transportation networks, such as canals and later railways, enabled the mass production and distribution of goods.\n\nThirdly, Britain's agricultural advancements played a significant role. The Enclosure Movement, which began in the 16th century, transformed the agricultural landscape by consolidating land and improving farming techniques. This led to a surplus of food and a reduction in the rural population,",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "1. Social stratification as a dimension influencing technological adoption and economic disparity."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_001"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [
+                "ss_001"
+              ],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 1,
+              "question": "How did industrialization then spread to continental Europe?",
+              "answer": "The spread of industrialization to continental Europe was influenced by several factors, including economic, technological, and social dynamics.\n\nFirstly, economic incentives played a crucial role. Britain's industrial success demonstrated the potential for increased productivity and wealth, attracting investors and entrepreneurs from other European countries. The desire to replicate Britain's economic model and gain a competitive edge in global trade drove many nations to industrialize.\n\nSecondly, technological transfer was facilitated through various means. British engineers, scientists, and manufacturers traveled to other countries, sharing their knowledge and expertise. Additionally, the import of British machinery and the export of European innovations created a cycle of technological exchange. For instance, the French engineer Marc Isambard Brunel and his son Isambard Kingdom Brunel played significant roles in introducing and adapting British engineering techniques in continental Europe.\n\nThirdly, political and economic policies encouraged industrialization. Many European countries, particularly France and Germany, implemented policies to support industrial growth, such as providing subsidies, establishing trade unions, and improving infrastructure. The French government, for example, invested heavily in railroads, which were crucial for the",
+              "baseline_answer": null,
+              "ssl_answer": "The spread of industrialization to continental Europe was influenced by several factors, including economic, technological, and social dynamics.\n\nFirstly, economic incentives played a crucial role. Britain's industrial success demonstrated the potential for increased productivity and wealth, attracting investors and entrepreneurs from other European countries. The desire to replicate Britain's economic model and gain a competitive edge in global trade drove many nations to industrialize.\n\nSecondly, technological transfer was facilitated through various means. British engineers, scientists, and manufacturers traveled to other countries, sharing their knowledge and expertise. Additionally, the import of British machinery and the export of European innovations created a cycle of technological exchange. For instance, the French engineer Marc Isambard Brunel and his son Isambard Kingdom Brunel played significant roles in introducing and adapting British engineering techniques in continental Europe.\n\nThirdly, political and economic policies encouraged industrialization. Many European countries, particularly France and Germany, implemented policies to support industrial growth, such as providing subsidies, establishing trade unions, and improving infrastructure. The French government, for example, invested heavily in railroads, which were crucial for the",
+              "surfaced_seeds": [
+                "Social stratification as a dimension influencing technological adoption and economic disparity."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:1",
+                  "decided_at": "2026-08-16T13:48:32.485836"
+                }
+              ],
+              "detected_candidates": [
+                "1. International labor migration as a dimension of workforce dynamics and skill transfer."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. International labor migration as a dimension of workforce dynamics and skill transfer."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 2,
+              "question": "What explains why some regions industrialized much faster than others?",
+              "answer": "The speed of industrialization in different regions was influenced by a combination of economic, political, and social factors. Firstly, economic conditions played a significant role. Regions with established agricultural surpluses and a labor force willing to work in factories had a better foundation for industrialization. For instance, the surplus of food and reduction in the rural population in Britain due to the Enclosure Movement facilitated the shift to industrial labor.\n\nSecondly, political and economic policies were crucial. Countries that implemented supportive policies, such as subsidies, infrastructure improvements, and the establishment of trade unions, saw faster industrial growth. For example, France's investment in railroads was pivotal for the spread of industrialization. Additionally, the political stability and the establishment of a framework for investment and innovation, as seen in Britain, were essential for the spread of industrial practices.\n\nThirdly, social and cultural factors influenced the pace of industrialization. Regions with a more open and flexible social structure, where social stratification did not overly restrict technological adoption, were more likely to embrace industrialization. In contrast, regions with rigid social hierarchies might",
+              "baseline_answer": null,
+              "ssl_answer": "The speed of industrialization in different regions was influenced by a combination of economic, political, and social factors. Firstly, economic conditions played a significant role. Regions with established agricultural surpluses and a labor force willing to work in factories had a better foundation for industrialization. For instance, the surplus of food and reduction in the rural population in Britain due to the Enclosure Movement facilitated the shift to industrial labor.\n\nSecondly, political and economic policies were crucial. Countries that implemented supportive policies, such as subsidies, infrastructure improvements, and the establishment of trade unions, saw faster industrial growth. For example, France's investment in railroads was pivotal for the spread of industrialization. Additionally, the political stability and the establishment of a framework for investment and innovation, as seen in Britain, were essential for the spread of industrial practices.\n\nThirdly, social and cultural factors influenced the pace of industrialization. Regions with a more open and flexible social structure, where social stratification did not overly restrict technological adoption, were more likely to embrace industrialization. In contrast, regions with rigid social hierarchies might",
+              "surfaced_seeds": [
+                "Social stratification as a dimension influencing technological adoption and economic disparity."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:2",
+                  "decided_at": "2026-08-16T13:49:51.183043"
+                }
+              ],
+              "detected_candidates": [
+                "1. Technological diffusion networks as a dimension affecting the spread of industrial practices."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. Technological diffusion networks as a dimension affecting the spread of industrial practices."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 3,
+              "question": "Which factor is most often underestimated in standard explanations?",
+              "answer": "One factor that is often underestimated in standard explanations of industrialization is the role of social stratification. While economic and political factors are frequently highlighted, the rigid social structures in some regions can significantly impede the spread of industrialization. Social stratification can create barriers to technological adoption and innovation, as it may limit access to education, capital, and new ideas. In societies where social mobility is restricted, the elite classes may resist changes that threaten their status, thereby slowing down the pace of industrialization.\n\nMoreover, social stratification can lead to economic disparities, where the benefits of industrialization are unevenly distributed. This can result in a lack of demand for manufactured goods among the lower classes, hindering the growth of industries. In regions with more flexible social structures, the middle and lower classes might have greater access to education and capital, fostering a more inclusive industrial revolution.\n\nAnother aspect of social stratification is the cultural resistance to change. In societies where traditional values and practices are deeply ingrained, the transition to industrialization can face significant opposition. This cultural resistance can manifest in various forms, such as",
+              "baseline_answer": null,
+              "ssl_answer": "One factor that is often underestimated in standard explanations of industrialization is the role of social stratification. While economic and political factors are frequently highlighted, the rigid social structures in some regions can significantly impede the spread of industrialization. Social stratification can create barriers to technological adoption and innovation, as it may limit access to education, capital, and new ideas. In societies where social mobility is restricted, the elite classes may resist changes that threaten their status, thereby slowing down the pace of industrialization.\n\nMoreover, social stratification can lead to economic disparities, where the benefits of industrialization are unevenly distributed. This can result in a lack of demand for manufactured goods among the lower classes, hindering the growth of industries. In regions with more flexible social structures, the middle and lower classes might have greater access to education and capital, fostering a more inclusive industrial revolution.\n\nAnother aspect of social stratification is the cultural resistance to change. In societies where traditional values and practices are deeply ingrained, the transition to industrialization can face significant opposition. This cultural resistance can manifest in various forms, such as",
+              "surfaced_seeds": [
+                "Social stratification as a dimension influencing technological adoption and economic disparity."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:3",
+                  "decided_at": "2026-08-16T13:51:29.698569"
+                }
+              ],
+              "detected_candidates": [
+                "1. Elite resistance as a dynamic dimension influencing industrialization pace."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. Elite resistance as a dynamic dimension influencing industrialization pace."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            }
+          ],
+          "deferral_metrics": {
+            "method": "normalization admissibility plus recovery on later uninfluenced turns",
+            "dedup_similarity_threshold": 0.85,
+            "influenced_turns": 3,
+            "affected_turns": 3,
+            "detected_on_influenced_turns": 3,
+            "suppressed_candidate_occurrences": 3,
+            "distinct_normalized_suppressed_candidates": 3,
+            "normalization_admissible_occurrences": 3,
+            "recovery_evaluable_occurrences": 0,
+            "recovery_not_evaluable_occurrences": 3,
+            "later_recovered_occurrences": 0,
+            "unrecovered_evaluable_occurrences": 0,
+            "unrecovered_admissible_occurrences": 0,
+            "suppression_rate_on_influenced_turns": 1.0,
+            "later_recovery_rate": null,
+            "candidate_records": [
+              {
+                "turn": 1,
+                "candidate": "1. International labor migration as a dimension of workforce dynamics and skill transfer.",
+                "normalized_candidates": [
+                  "International labor migration as a dimension of workforce dynamics and skill transfer."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": false,
+                "later_uninfluenced_turn_count": 0,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 2,
+                "candidate": "1. Technological diffusion networks as a dimension affecting the spread of industrial practices.",
+                "normalized_candidates": [
+                  "Technological diffusion networks as a dimension affecting the spread of industrial practices."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": false,
+                "later_uninfluenced_turn_count": 0,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 3,
+                "candidate": "1. Elite resistance as a dynamic dimension influencing industrialization pace.",
+                "normalized_candidates": [
+                  "Elite resistance as a dynamic dimension influencing industrialization pace."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": false,
+                "later_uninfluenced_turn_count": 0,
+                "later_recovered": false,
+                "recovery_match": null
+              }
+            ],
+            "interpretation": "These counts measure deferred candidate opportunities and observable later recovery. A null recovery rate means that no later uninfluenced observation window existed; it is not zero recovery. No truth or usefulness label is inferred."
+          },
+          "final_shadow": {
+            "runtime_mode": "live",
+            "turns": 4,
+            "seeds": [
+              {
+                "id": "ss_001",
+                "text": "Social stratification as a dimension influencing technological adoption and economic disparity.",
+                "weight": 0.2,
+                "trace": 0.736,
+                "status": "PROMOTED",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              }
+            ],
+            "influence_records": [
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:1",
+                "decided_at": "2026-08-16T13:48:32.485836"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:2",
+                "decided_at": "2026-08-16T13:49:51.183043"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:3",
+                "decided_at": "2026-08-16T13:51:29.698569"
+              }
+            ]
+          },
+          "gate_events": [
+            {
+              "event_id": "gate::ss_001::000001",
+              "seed_id": "ss_001",
+              "policy_id": "exploratory",
+              "decision": "promoted",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=1 (threshold=1)"
+                }
+              ],
+              "status_before": "NEW",
+              "status_after": "PROMOTED",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T13:48:32.462955"
+            }
+          ],
+          "audit_records_verified": 3,
+          "timing": {
+            "live_turn_elapsed_seconds": 334.544,
+            "deferral_scoring_elapsed_seconds": 0.0
+          }
+        },
+        {
+          "conversation_id": "CONV_STARTUP",
+          "domain": "product and growth",
+          "runtime_mode": "live",
+          "gate_policy_id": "exploratory",
+          "applied_thresholds": {
+            "dedup_threshold": 0.85,
+            "min_occurrences": 1,
+            "promotion_threshold": 0.2,
+            "recurrence_mode": "cluster",
+            "cluster_threshold": 0.6,
+            "surface_threshold": 0.0,
+            "surface_top_k": 2,
+            "early_turn_margin": 0.0,
+            "early_turn_history": 5,
+            "resurface_margin": 0.0
+          },
+          "turns": [
+            {
+              "runtime_mode": "live",
+              "turn": 0,
+              "question": "I am building a social app for teenagers. How do I get the first thousand users?",
+              "answer": "To attract the first thousand users for your social app targeting teenagers, a multi-faceted approach is essential. Start by understanding your target audience's preferences and behaviors. Teenagers are often tech-savvy and value privacy, authenticity, and fun. Leverage this knowledge to tailor your app’s features and marketing strategy.\n\n1. **Leverage Social Media and Influencers**: Use platforms like TikTok, Instagram, and Snapchat where teenagers are most active. Collaborate with influencers who resonate with your target demographic. They can help spread the word and attract genuine interest. Consider hosting a contest or giveaway to engage users and encourage sharing.\n\n2. **School Partnerships**: Partner with schools and educational institutions. Offer your app as a tool for student projects, clubs, or events. This not only provides a natural user base but also builds credibility and trust. Schools can also help in spreading the word among students.\n\n3. **Beta Testing and Feedback**: Launch a beta version of your app and invite a select group of teenagers to test it. Use their feedback to refine and improve the app. This not",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "1. Psychological triggers and motivations as a dimension influencing user engagement and retention."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_001"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [
+                "ss_001"
+              ],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 1,
+              "question": "Which features are most effective at retaining users?",
+              "answer": "To effectively retain users in a social app for teenagers, focus on several key features that address their psychological triggers and motivations:\n\n1. **Privacy and Safety**: Teenagers are highly sensitive to privacy concerns. Implement robust privacy settings and ensure the app is secure. Transparency in data handling and clear privacy policies can build trust and keep users engaged.\n\n2. **Personalization and Customization**: Allow users to personalize their profiles and experiences. This can include customizable avatars, themes, and content filters. Personalization makes the app more engaging and relevant to each user.\n\n3. **Interactive and Fun Features**: Incorporate interactive elements such as quizzes, games, and challenges. These features can increase user engagement and provide a fun, rewarding experience. For example, a trivia game related to pop culture or a scavenger hunt within the app can keep users coming back.\n\n4. **Community and Social Interaction**: Foster a strong sense of community. Implement features that encourage interaction, such as group chats, forums, and collaborative projects. Social validation through likes, comments, and followers can also boost user engagement.\n\n5. **",
+              "baseline_answer": null,
+              "ssl_answer": "To effectively retain users in a social app for teenagers, focus on several key features that address their psychological triggers and motivations:\n\n1. **Privacy and Safety**: Teenagers are highly sensitive to privacy concerns. Implement robust privacy settings and ensure the app is secure. Transparency in data handling and clear privacy policies can build trust and keep users engaged.\n\n2. **Personalization and Customization**: Allow users to personalize their profiles and experiences. This can include customizable avatars, themes, and content filters. Personalization makes the app more engaging and relevant to each user.\n\n3. **Interactive and Fun Features**: Incorporate interactive elements such as quizzes, games, and challenges. These features can increase user engagement and provide a fun, rewarding experience. For example, a trivia game related to pop culture or a scavenger hunt within the app can keep users coming back.\n\n4. **Community and Social Interaction**: Foster a strong sense of community. Implement features that encourage interaction, such as group chats, forums, and collaborative projects. Social validation through likes, comments, and followers can also boost user engagement.\n\n5. **",
+              "surfaced_seeds": [
+                "Psychological triggers and motivations as a dimension influencing user engagement and retention."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:1",
+                  "decided_at": "2026-08-16T13:54:04.984617"
+                }
+              ],
+              "detected_candidates": [
+                "1. Psychological triggers as a multidisciplinary approach integrating cognitive behavioral theory and developmental psychology."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. Psychological triggers as a multidisciplinary approach integrating cognitive behavioral theory and developmental psychology."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 2,
+              "question": "How do I make the app viral so users invite their friends?",
+              "answer": "To make your social app viral and encourage users to invite their friends, focus on leveraging psychological triggers and motivations that resonate with teenagers. Here are key strategies:\n\n1. **Create a Sense of Belonging**: Teenagers often seek validation and acceptance. Design features that allow users to connect with others who share similar interests. Implement a recommendation system that suggests friends based on mutual connections or shared interests. This can foster a sense of community and encourage users to invite friends to join.\n\n2. **Gamification and Rewards**: Introduce gamified elements that make the app more engaging. For example, users can earn badges, points, or virtual currency for inviting friends or participating in app activities. These rewards can be used to unlock new features or customize their profiles, providing a sense of accomplishment and motivation to share the app.\n\n3. **Social Proof and FOMO**: Highlight the number of users on the app and the activities happening within it. Display leaderboards or social proof elements that show how many friends a user has invited or how active they are. This can create a sense of FOMO (",
+              "baseline_answer": null,
+              "ssl_answer": "To make your social app viral and encourage users to invite their friends, focus on leveraging psychological triggers and motivations that resonate with teenagers. Here are key strategies:\n\n1. **Create a Sense of Belonging**: Teenagers often seek validation and acceptance. Design features that allow users to connect with others who share similar interests. Implement a recommendation system that suggests friends based on mutual connections or shared interests. This can foster a sense of community and encourage users to invite friends to join.\n\n2. **Gamification and Rewards**: Introduce gamified elements that make the app more engaging. For example, users can earn badges, points, or virtual currency for inviting friends or participating in app activities. These rewards can be used to unlock new features or customize their profiles, providing a sense of accomplishment and motivation to share the app.\n\n3. **Social Proof and FOMO**: Highlight the number of users on the app and the activities happening within it. Display leaderboards or social proof elements that show how many friends a user has invited or how active they are. This can create a sense of FOMO (",
+              "surfaced_seeds": [
+                "Psychological triggers and motivations as a dimension influencing user engagement and retention."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:2",
+                  "decided_at": "2026-08-16T13:55:41.485307"
+                }
+              ],
+              "detected_candidates": [
+                "1. Psychological triggers in app design as a dimension of adolescent social behavior."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. Psychological triggers in app design as a dimension of adolescent social behavior."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 3,
+              "question": "What is the best business model for an app aimed at young users?",
+              "answer": "The best business model for an app aimed at young users should leverage a combination of freemium, in-app purchases, and targeted advertising, while also considering subscription-based models. Here’s a breakdown of these strategies:\n\n1. **Freemium Model**: Offer the core features of the app for free, but include premium features that users can unlock through in-app purchases. This model allows users to try the app and see its value before committing to a paid version. For example, users might pay for additional storage, premium filters, or exclusive content.\n\n2. **In-App Purchases**: Introduce in-app purchases for items that enhance the user experience, such as virtual currency, premium stickers, or exclusive badges. These purchases can be tied to gamification elements, encouraging users to engage more deeply with the app.\n\n3. **Targeted Advertising**: Given the high value of young users as a demographic, targeted advertising can be a significant revenue stream. However, it’s crucial to maintain user trust by being transparent about ad placement and ensuring ads are not intrusive. Implementing ad formats that blend seamlessly",
+              "baseline_answer": null,
+              "ssl_answer": "The best business model for an app aimed at young users should leverage a combination of freemium, in-app purchases, and targeted advertising, while also considering subscription-based models. Here’s a breakdown of these strategies:\n\n1. **Freemium Model**: Offer the core features of the app for free, but include premium features that users can unlock through in-app purchases. This model allows users to try the app and see its value before committing to a paid version. For example, users might pay for additional storage, premium filters, or exclusive content.\n\n2. **In-App Purchases**: Introduce in-app purchases for items that enhance the user experience, such as virtual currency, premium stickers, or exclusive badges. These purchases can be tied to gamification elements, encouraging users to engage more deeply with the app.\n\n3. **Targeted Advertising**: Given the high value of young users as a demographic, targeted advertising can be a significant revenue stream. However, it’s crucial to maintain user trust by being transparent about ad placement and ensuring ads are not intrusive. Implementing ad formats that blend seamlessly",
+              "surfaced_seeds": [
+                "Psychological triggers and motivations as a dimension influencing user engagement and retention."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:3",
+                  "decided_at": "2026-08-16T13:57:18.621751"
+                }
+              ],
+              "detected_candidates": [
+                "1. User behavior analytics as a dimension to optimize app engagement and monetization strategies."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. User behavior analytics as a dimension to optimize app engagement and monetization strategies."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 4,
+              "question": "How should I use user data to improve recommendations?",
+              "answer": "To effectively use user data to improve recommendations in your social app for teenagers, focus on leveraging their psychological triggers and motivations. Here’s how you can do it:\n\n1. **Analyze User Interests and Behaviors**: Collect and analyze data on user interactions, preferences, and behaviors within the app. Use this data to understand what content, features, or activities resonate most with your users. For instance, if data shows that users frequently engage with certain types of content, tailor recommendations to include more of that.\n\n2. **Personalized Recommendations**: Implement a recommendation engine that suggests content, friends, or activities based on user data. For example, if a user frequently interacts with posts about music, recommend similar content or connect them with users who share the same interest. Personalization can significantly enhance user satisfaction and engagement.\n\n3. **Feedback Loops**: Create a feedback loop where users can rate or provide direct feedback on recommended content. Use this feedback to refine and improve future recommendations. This not only improves the accuracy of recommendations but also makes users feel heard and valued.\n\n4. **Contextual Recommendations**:",
+              "baseline_answer": null,
+              "ssl_answer": "To effectively use user data to improve recommendations in your social app for teenagers, focus on leveraging their psychological triggers and motivations. Here’s how you can do it:\n\n1. **Analyze User Interests and Behaviors**: Collect and analyze data on user interactions, preferences, and behaviors within the app. Use this data to understand what content, features, or activities resonate most with your users. For instance, if data shows that users frequently engage with certain types of content, tailor recommendations to include more of that.\n\n2. **Personalized Recommendations**: Implement a recommendation engine that suggests content, friends, or activities based on user data. For example, if a user frequently interacts with posts about music, recommend similar content or connect them with users who share the same interest. Personalization can significantly enhance user satisfaction and engagement.\n\n3. **Feedback Loops**: Create a feedback loop where users can rate or provide direct feedback on recommended content. Use this feedback to refine and improve future recommendations. This not only improves the accuracy of recommendations but also makes users feel heard and valued.\n\n4. **Contextual Recommendations**:",
+              "surfaced_seeds": [
+                "Psychological triggers and motivations as a dimension influencing user engagement and retention."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:4",
+                  "decided_at": "2026-08-16T13:58:59.895438"
+                }
+              ],
+              "detected_candidates": [
+                "1. Psychological and sociological factors as a multidimensional frame for user engagement and recommendation accuracy."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. Psychological and sociological factors as a multidimensional frame for user engagement and recommendation accuracy."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 5,
+              "question": "How do I scale the infrastructure if growth accelerates?",
+              "answer": "Scaling the infrastructure for a social app, especially when growth accelerates, requires a strategic and proactive approach. Here are key steps to ensure smooth scaling:\n\n1. **Cloud Infrastructure**: Leverage cloud services like AWS, Google Cloud, or Azure. These platforms offer scalable resources that can be easily adjusted based on demand. Use auto-scaling features to automatically increase or decrease resources as needed, ensuring performance remains consistent even during peak usage.\n\n2. **Database Optimization**: Optimize your database to handle increased load. Consider using NoSQL databases for unstructured data and traditional SQL databases for structured data. Implement caching strategies to reduce database load. For instance, use Redis for caching frequently accessed data to speed up read operations.\n\n3. **Load Balancing**: Implement load balancers to distribute traffic evenly across servers. This prevents any single server from becoming a bottleneck and ensures that the app remains responsive. Use advanced load balancing techniques like round-robin, least connections, or IP hash to optimize distribution.\n\n4. **Content Delivery Network (CDN)**: Deploy a CDN to cache static content and reduce latency. This",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "1. User behavior analytics as a dimension to inform dynamic scaling strategies."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_002"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [
+                "ss_002"
+              ],
+              "reactivated_trtl": [],
+              "shadow_size": 2,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 6,
+              "question": "Which metrics should I show investors?",
+              "answer": "When presenting to investors, it's crucial to highlight metrics that demonstrate the app's growth, user engagement, and potential for revenue. Here are key metrics to focus on:\n\n1. **User Acquisition and Retention**:\n   - **Daily Active Users (DAU)** and **Monthly Active Users (MAU)**: These metrics show the number of users engaging with the app daily and monthly, respectively. A steady increase in these numbers indicates growing popularity.\n   - **User Retention Rate**: This measures the percentage of users who continue to use the app over time. High retention rates suggest a strong user base and a positive user experience.\n\n2. **Engagement Metrics**:\n   - **Session Duration**: The average time users spend on the app. Longer session durations indicate higher user engagement.\n   - **Frequency of Use**: How often users return to the app. This can be measured by the number of sessions per user per day or week.\n   - **Activity Levels**: Track specific actions like posting, commenting, or sharing. Higher activity levels indicate more engaged users.\n\n3. **Monet",
+              "baseline_answer": null,
+              "ssl_answer": "When presenting to investors, it's crucial to highlight metrics that demonstrate the app's growth, user engagement, and potential for revenue. Here are key metrics to focus on:\n\n1. **User Acquisition and Retention**:\n   - **Daily Active Users (DAU)** and **Monthly Active Users (MAU)**: These metrics show the number of users engaging with the app daily and monthly, respectively. A steady increase in these numbers indicates growing popularity.\n   - **User Retention Rate**: This measures the percentage of users who continue to use the app over time. High retention rates suggest a strong user base and a positive user experience.\n\n2. **Engagement Metrics**:\n   - **Session Duration**: The average time users spend on the app. Longer session durations indicate higher user engagement.\n   - **Frequency of Use**: How often users return to the app. This can be measured by the number of sessions per user per day or week.\n   - **Activity Levels**: Track specific actions like posting, commenting, or sharing. Higher activity levels indicate more engaged users.\n\n3. **Monet",
+              "surfaced_seeds": [
+                "User behavior analytics as a dimension to inform dynamic scaling strategies.",
+                "Psychological triggers and motivations as a dimension influencing user engagement and retention."
+              ],
+              "surfaced_seed_ids": [
+                "ss_002",
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_002",
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_002",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_002::000002",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:6",
+                  "decided_at": "2026-08-16T14:02:12.686698"
+                },
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:6",
+                  "decided_at": "2026-08-16T14:02:12.686765"
+                }
+              ],
+              "detected_candidates": [
+                "1. Psychological factors influencing user behavior as a dimension alongside engagement metrics."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. Psychological factors influencing user behavior as a dimension alongside engagement metrics."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 2,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 7,
+              "question": "How should I handle negative publicity if it occurs?",
+              "answer": "Handling negative publicity requires a strategic and timely response to maintain user trust and protect the app's reputation. Here are key steps to manage negative publicity effectively:\n\n1. **Immediate Response**: Address the issue promptly. Delayed responses can exacerbate the situation. Acknowledge the issue publicly and assure users that you are taking steps to resolve it.\n\n2. **Transparency and Honesty**: Be open about the situation, even if the full details are not immediately clear. Transparency builds trust and shows that you are committed to resolving the issue. Regular updates can keep users informed and engaged.\n\n3. **Customer Support**: Ensure that customer support is readily available to address user concerns. Provide clear instructions on how to contact support and ensure that responses are prompt and helpful.\n\n4. **Internal Review and Improvement**: Use the negative publicity as an opportunity to review and improve the app. Identify the root causes of the issue and implement changes to prevent similar incidents in the future. Share these improvements with users to demonstrate your commitment to their satisfaction.\n\n5. **Engage with the Community**: Engage with users who have shared their",
+              "baseline_answer": null,
+              "ssl_answer": "Handling negative publicity requires a strategic and timely response to maintain user trust and protect the app's reputation. Here are key steps to manage negative publicity effectively:\n\n1. **Immediate Response**: Address the issue promptly. Delayed responses can exacerbate the situation. Acknowledge the issue publicly and assure users that you are taking steps to resolve it.\n\n2. **Transparency and Honesty**: Be open about the situation, even if the full details are not immediately clear. Transparency builds trust and shows that you are committed to resolving the issue. Regular updates can keep users informed and engaged.\n\n3. **Customer Support**: Ensure that customer support is readily available to address user concerns. Provide clear instructions on how to contact support and ensure that responses are prompt and helpful.\n\n4. **Internal Review and Improvement**: Use the negative publicity as an opportunity to review and improve the app. Identify the root causes of the issue and implement changes to prevent similar incidents in the future. Share these improvements with users to demonstrate your commitment to their satisfaction.\n\n5. **Engage with the Community**: Engage with users who have shared their",
+              "surfaced_seeds": [
+                "Psychological triggers and motivations as a dimension influencing user engagement and retention.",
+                "User behavior analytics as a dimension to inform dynamic scaling strategies."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001",
+                "ss_002"
+              ],
+              "selected_seed_ids": [
+                "ss_001",
+                "ss_002"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:7",
+                  "decided_at": "2026-08-16T14:03:58.294778"
+                },
+                {
+                  "seed_id": "ss_002",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_002::000002",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:7",
+                  "decided_at": "2026-08-16T14:03:58.294832"
+                }
+              ],
+              "detected_candidates": [
+                "1. Psychological impact on users as a dimension of trust and reputation management."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. Psychological impact on users as a dimension of trust and reputation management."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 2,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 8,
+              "question": "What is the biggest long-term threat to this kind of app?",
+              "answer": "The biggest long-term threat to a social app for teenagers is regulatory and privacy concerns. As the app gains popularity, it will face increasing scrutiny from regulatory bodies, especially concerning data privacy and user safety. Teenagers' data is highly valuable, and mishandling it can lead to severe legal and reputational damage. For instance, the General Data Protection Regulation (GDPR) in Europe and similar laws in other regions impose strict requirements on data collection and usage. Non-compliance can result in hefty fines and damage to the app's reputation.\n\nAnother significant threat is the evolving landscape of social media and technology. New apps and platforms may emerge, offering innovative features and user experiences that could quickly surpass the current app. Staying ahead requires continuous innovation and adaptation, which can be resource-intensive.\n\nAdditionally, maintaining user trust is crucial. Negative publicity, even if managed well, can erode trust over time. Ensuring a positive user experience, addressing bugs and security issues promptly, and being transparent about data usage and privacy policies are essential to retaining user trust.\n\nIn summary, regulatory compliance, staying ahead of technological",
+              "baseline_answer": null,
+              "ssl_answer": "The biggest long-term threat to a social app for teenagers is regulatory and privacy concerns. As the app gains popularity, it will face increasing scrutiny from regulatory bodies, especially concerning data privacy and user safety. Teenagers' data is highly valuable, and mishandling it can lead to severe legal and reputational damage. For instance, the General Data Protection Regulation (GDPR) in Europe and similar laws in other regions impose strict requirements on data collection and usage. Non-compliance can result in hefty fines and damage to the app's reputation.\n\nAnother significant threat is the evolving landscape of social media and technology. New apps and platforms may emerge, offering innovative features and user experiences that could quickly surpass the current app. Staying ahead requires continuous innovation and adaptation, which can be resource-intensive.\n\nAdditionally, maintaining user trust is crucial. Negative publicity, even if managed well, can erode trust over time. Ensuring a positive user experience, addressing bugs and security issues promptly, and being transparent about data usage and privacy policies are essential to retaining user trust.\n\nIn summary, regulatory compliance, staying ahead of technological",
+              "surfaced_seeds": [
+                "Psychological triggers and motivations as a dimension influencing user engagement and retention.",
+                "User behavior analytics as a dimension to inform dynamic scaling strategies."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001",
+                "ss_002"
+              ],
+              "selected_seed_ids": [
+                "ss_001",
+                "ss_002"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:8",
+                  "decided_at": "2026-08-16T14:05:47.146810"
+                },
+                {
+                  "seed_id": "ss_002",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_002::000002",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:8",
+                  "decided_at": "2026-08-16T14:05:47.146866"
+                }
+              ],
+              "detected_candidates": [
+                "1. Technological determinism as a lens for understanding the app's competitive landscape."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. Technological determinism as a lens for understanding the app's competitive landscape."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 2,
+              "retrieval_probe": null
+            }
+          ],
+          "deferral_metrics": {
+            "method": "normalization admissibility plus recovery on later uninfluenced turns",
+            "dedup_similarity_threshold": 0.85,
+            "influenced_turns": 7,
+            "affected_turns": 7,
+            "detected_on_influenced_turns": 7,
+            "suppressed_candidate_occurrences": 7,
+            "distinct_normalized_suppressed_candidates": 7,
+            "normalization_admissible_occurrences": 7,
+            "recovery_evaluable_occurrences": 4,
+            "recovery_not_evaluable_occurrences": 3,
+            "later_recovered_occurrences": 0,
+            "unrecovered_evaluable_occurrences": 4,
+            "unrecovered_admissible_occurrences": 4,
+            "suppression_rate_on_influenced_turns": 1.0,
+            "later_recovery_rate": 0.0,
+            "candidate_records": [
+              {
+                "turn": 1,
+                "candidate": "1. Psychological triggers as a multidisciplinary approach integrating cognitive behavioral theory and developmental psychology.",
+                "normalized_candidates": [
+                  "Psychological triggers as a multidisciplinary approach integrating cognitive behavioral theory and developmental psychology."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": true,
+                "later_uninfluenced_turn_count": 1,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 2,
+                "candidate": "1. Psychological triggers in app design as a dimension of adolescent social behavior.",
+                "normalized_candidates": [
+                  "Psychological triggers in app design as a dimension of adolescent social behavior."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": true,
+                "later_uninfluenced_turn_count": 1,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 3,
+                "candidate": "1. User behavior analytics as a dimension to optimize app engagement and monetization strategies.",
+                "normalized_candidates": [
+                  "User behavior analytics as a dimension to optimize app engagement and monetization strategies."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": true,
+                "later_uninfluenced_turn_count": 1,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 4,
+                "candidate": "1. Psychological and sociological factors as a multidimensional frame for user engagement and recommendation accuracy.",
+                "normalized_candidates": [
+                  "Psychological and sociological factors as a multidimensional frame for user engagement and recommendation accuracy."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": true,
+                "later_uninfluenced_turn_count": 1,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 6,
+                "candidate": "1. Psychological factors influencing user behavior as a dimension alongside engagement metrics.",
+                "normalized_candidates": [
+                  "Psychological factors influencing user behavior as a dimension alongside engagement metrics."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": false,
+                "later_uninfluenced_turn_count": 0,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 7,
+                "candidate": "1. Psychological impact on users as a dimension of trust and reputation management.",
+                "normalized_candidates": [
+                  "Psychological impact on users as a dimension of trust and reputation management."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": false,
+                "later_uninfluenced_turn_count": 0,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 8,
+                "candidate": "1. Technological determinism as a lens for understanding the app's competitive landscape.",
+                "normalized_candidates": [
+                  "Technological determinism as a lens for understanding the app's competitive landscape."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": false,
+                "later_uninfluenced_turn_count": 0,
+                "later_recovered": false,
+                "recovery_match": null
+              }
+            ],
+            "interpretation": "These counts measure deferred candidate opportunities and observable later recovery. A null recovery rate means that no later uninfluenced observation window existed; it is not zero recovery. No truth or usefulness label is inferred."
+          },
+          "final_shadow": {
+            "runtime_mode": "live",
+            "turns": 9,
+            "seeds": [
+              {
+                "id": "ss_001",
+                "text": "Psychological triggers and motivations as a dimension influencing user engagement and retention.",
+                "weight": 0.2,
+                "trace": 0.139,
+                "status": "PROMOTED",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              },
+              {
+                "id": "ss_002",
+                "text": "User behavior analytics as a dimension to inform dynamic scaling strategies.",
+                "weight": 0.2,
+                "trace": 0.736,
+                "status": "PROMOTED",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 5
+              }
+            ],
+            "influence_records": [
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:1",
+                "decided_at": "2026-08-16T13:54:04.984617"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:2",
+                "decided_at": "2026-08-16T13:55:41.485307"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:3",
+                "decided_at": "2026-08-16T13:57:18.621751"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:4",
+                "decided_at": "2026-08-16T13:58:59.895438"
+              },
+              {
+                "seed_id": "ss_002",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_002::000002",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:6",
+                "decided_at": "2026-08-16T14:02:12.686698"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:6",
+                "decided_at": "2026-08-16T14:02:12.686765"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:7",
+                "decided_at": "2026-08-16T14:03:58.294778"
+              },
+              {
+                "seed_id": "ss_002",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_002::000002",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:7",
+                "decided_at": "2026-08-16T14:03:58.294832"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:8",
+                "decided_at": "2026-08-16T14:05:47.146810"
+              },
+              {
+                "seed_id": "ss_002",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_002::000002",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:8",
+                "decided_at": "2026-08-16T14:05:47.146866"
+              }
+            ]
+          },
+          "gate_events": [
+            {
+              "event_id": "gate::ss_001::000001",
+              "seed_id": "ss_001",
+              "policy_id": "exploratory",
+              "decision": "promoted",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=1 (threshold=1)"
+                }
+              ],
+              "status_before": "NEW",
+              "status_after": "PROMOTED",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T13:54:04.963663"
+            },
+            {
+              "event_id": "gate::ss_002::000002",
+              "seed_id": "ss_002",
+              "policy_id": "exploratory",
+              "decision": "promoted",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=1 (threshold=1)"
+                }
+              ],
+              "status_before": "NEW",
+              "status_after": "PROMOTED",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T14:02:12.665827"
+            }
+          ],
+          "audit_records_verified": 10,
+          "timing": {
+            "live_turn_elapsed_seconds": 868.335,
+            "deferral_scoring_elapsed_seconds": 0.057
+          }
+        },
+        {
+          "conversation_id": "CONV_CITY",
+          "domain": "urban development",
+          "runtime_mode": "live",
+          "gate_policy_id": "exploratory",
+          "applied_thresholds": {
+            "dedup_threshold": 0.85,
+            "min_occurrences": 1,
+            "promotion_threshold": 0.2,
+            "recurrence_mode": "cluster",
+            "cluster_threshold": 0.6,
+            "surface_threshold": 0.0,
+            "surface_top_k": 2,
+            "early_turn_margin": 0.0,
+            "early_turn_history": 5,
+            "resurface_margin": 0.0
+          },
+          "turns": [
+            {
+              "runtime_mode": "live",
+              "turn": 0,
+              "question": "Our city wants to revitalize the downtown area. Where should we start?",
+              "answer": "To revitalize the downtown area of your city, a strategic approach is essential. Begin by conducting a comprehensive assessment of the current state of the downtown area, including its infrastructure, demographics, and economic conditions. This will provide a clear picture of the challenges and opportunities. Here are key steps to consider:\n\n1. **Community Engagement and Visioning**: Engage the community in the planning process. Organize town hall meetings, surveys, and focus groups to gather input from residents, business owners, and visitors. This will help in creating a shared vision for the downtown area. The vision should reflect the community's values and aspirations, ensuring that the revitalization efforts are inclusive and resonate with the local population.\n\n2. **Infrastructure Improvements**: Focus on enhancing the physical infrastructure. This includes upgrading public spaces, improving transportation links, and ensuring accessibility. For instance, installing pedestrian-friendly walkways, enhancing public transportation, and creating bike lanes can make the area more attractive and functional. Additionally, consider the aesthetic appeal of the downtown area by planting trees, installing public art, and beautifying public spaces.\n\n3.",
+              "baseline_answer": null,
+              "ssl_answer": null,
+              "surfaced_seeds": [],
+              "surfaced_seed_ids": [],
+              "selected_seed_ids": [],
+              "influence_decisions": [],
+              "detected_candidates": [
+                "1. Socioeconomic disparities as a dimension affecting community engagement and visioning."
+              ],
+              "suppressed_self_attributed_candidates": [],
+              "seeds_born_weightless": [
+                "ss_001"
+              ],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [
+                "ss_001"
+              ],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 1,
+              "question": "How can we attract more shops, restaurants, and cafes?",
+              "answer": "To attract more shops, restaurants, and cafes to the downtown area, consider the following strategies:\n\n1. **Create a Diverse and Attractive Offer**: Develop a mix of retail, dining, and entertainment options that cater to a wide range of tastes and preferences. This could include local artisan shops, gourmet cafes, and ethnic restaurants. By offering a diverse range of businesses, you can attract a broader customer base and create a vibrant, lively atmosphere.\n\n2. **Promote the Area**: Utilize marketing and promotional campaigns to highlight the unique features of the downtown area. This could involve creating a strong brand identity, organizing events, and leveraging social media to showcase the area's attractions. Consider hosting festivals, cultural events, and seasonal promotions to draw in visitors and encourage repeat visits.\n\n3. **Offer Incentives to Businesses**: Provide financial incentives or support to businesses that are willing to relocate or open in the downtown area. This could include tax breaks, grants, or low-interest loans. Additionally, offer assistance with site selection, permitting, and other administrative tasks to make the process smoother for new businesses",
+              "baseline_answer": null,
+              "ssl_answer": "To attract more shops, restaurants, and cafes to the downtown area, consider the following strategies:\n\n1. **Create a Diverse and Attractive Offer**: Develop a mix of retail, dining, and entertainment options that cater to a wide range of tastes and preferences. This could include local artisan shops, gourmet cafes, and ethnic restaurants. By offering a diverse range of businesses, you can attract a broader customer base and create a vibrant, lively atmosphere.\n\n2. **Promote the Area**: Utilize marketing and promotional campaigns to highlight the unique features of the downtown area. This could involve creating a strong brand identity, organizing events, and leveraging social media to showcase the area's attractions. Consider hosting festivals, cultural events, and seasonal promotions to draw in visitors and encourage repeat visits.\n\n3. **Offer Incentives to Businesses**: Provide financial incentives or support to businesses that are willing to relocate or open in the downtown area. This could include tax breaks, grants, or low-interest loans. Additionally, offer assistance with site selection, permitting, and other administrative tasks to make the process smoother for new businesses",
+              "surfaced_seeds": [
+                "Socioeconomic disparities as a dimension affecting community engagement and visioning."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:1",
+                  "decided_at": "2026-08-16T14:08:33.333074"
+                }
+              ],
+              "detected_candidates": [
+                "1. Public-private partnerships as a collaborative framework for implementation."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. Public-private partnerships as a collaborative framework for implementation."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 2,
+              "question": "How should we improve accessibility and traffic?",
+              "answer": "Improving accessibility and traffic in the downtown area is crucial for its revitalization. Here are key strategies to consider:\n\n1. **Enhance Public Transportation**: Improve the connectivity of the downtown area with the broader city by enhancing public transportation services. This could involve increasing the frequency of buses and trains, extending operating hours, and integrating multiple modes of transport. Consider implementing a smart transit system that provides real-time information to users, making travel more efficient and convenient.\n\n2. **Pedestrian and Bicycle Infrastructure**: Develop a network of safe and accessible pedestrian and bicycle paths. This not only reduces traffic congestion but also promotes a healthier lifestyle and reduces carbon emissions. Ensure that these paths are well-lit, have clear signage, and are connected to key destinations within the downtown area.\n\n3. **Smart Traffic Management**: Implement smart traffic management systems that can dynamically adjust traffic signals based on real-time traffic conditions. This can help reduce congestion and improve traffic flow. Additionally, consider the use of technology to manage parking, such as mobile apps that provide real-time parking availability information and help drivers find open spots more efficiently.",
+              "baseline_answer": null,
+              "ssl_answer": "Improving accessibility and traffic in the downtown area is crucial for its revitalization. Here are key strategies to consider:\n\n1. **Enhance Public Transportation**: Improve the connectivity of the downtown area with the broader city by enhancing public transportation services. This could involve increasing the frequency of buses and trains, extending operating hours, and integrating multiple modes of transport. Consider implementing a smart transit system that provides real-time information to users, making travel more efficient and convenient.\n\n2. **Pedestrian and Bicycle Infrastructure**: Develop a network of safe and accessible pedestrian and bicycle paths. This not only reduces traffic congestion but also promotes a healthier lifestyle and reduces carbon emissions. Ensure that these paths are well-lit, have clear signage, and are connected to key destinations within the downtown area.\n\n3. **Smart Traffic Management**: Implement smart traffic management systems that can dynamically adjust traffic signals based on real-time traffic conditions. This can help reduce congestion and improve traffic flow. Additionally, consider the use of technology to manage parking, such as mobile apps that provide real-time parking availability information and help drivers find open spots more efficiently.",
+              "surfaced_seeds": [
+                "Socioeconomic disparities as a dimension affecting community engagement and visioning."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:2",
+                  "decided_at": "2026-08-16T14:10:09.815971"
+                }
+              ],
+              "detected_candidates": [
+                "1. Economic disparity as a dimension affecting the implementation and benefit of proposed strategies."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. Economic disparity as a dimension affecting the implementation and benefit of proposed strategies."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 3,
+              "question": "How can we make downtown more attractive to tourists?",
+              "answer": "To make the downtown area more attractive to tourists, focus on creating a welcoming and engaging environment that highlights the unique character and attractions of the area. Here are key strategies:\n\n1. **Enhance Tourism Infrastructure**: Develop or improve facilities that cater to tourists, such as visitor centers, information kiosks, and public restrooms. Ensure these are well-maintained and accessible. Install clear and informative signage that guides visitors to key attractions and points of interest.\n\n2. **Promote Local Culture and Heritage**: Leverage the area's cultural and historical assets to create a memorable experience for tourists. Organize guided tours, cultural events, and festivals that showcase local traditions and heritage. Partner with local artists, artisans, and performers to create a vibrant and authentic atmosphere.\n\n3. **Develop Tourist-Friendly Amenities**: Offer a range of amenities that cater to tourists, such as cafes, restaurants, and shops that serve local and international cuisine. Ensure that these establishments are clean, well-maintained, and offer a welcoming atmosphere. Consider implementing a loyalty program or discounts for tourists to encourage repeat visits",
+              "baseline_answer": null,
+              "ssl_answer": "To make the downtown area more attractive to tourists, focus on creating a welcoming and engaging environment that highlights the unique character and attractions of the area. Here are key strategies:\n\n1. **Enhance Tourism Infrastructure**: Develop or improve facilities that cater to tourists, such as visitor centers, information kiosks, and public restrooms. Ensure these are well-maintained and accessible. Install clear and informative signage that guides visitors to key attractions and points of interest.\n\n2. **Promote Local Culture and Heritage**: Leverage the area's cultural and historical assets to create a memorable experience for tourists. Organize guided tours, cultural events, and festivals that showcase local traditions and heritage. Partner with local artists, artisans, and performers to create a vibrant and authentic atmosphere.\n\n3. **Develop Tourist-Friendly Amenities**: Offer a range of amenities that cater to tourists, such as cafes, restaurants, and shops that serve local and international cuisine. Ensure that these establishments are clean, well-maintained, and offer a welcoming atmosphere. Consider implementing a loyalty program or discounts for tourists to encourage repeat visits",
+              "surfaced_seeds": [
+                "Socioeconomic disparities as a dimension affecting community engagement and visioning."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:3",
+                  "decided_at": "2026-08-16T14:11:47.789338"
+                }
+              ],
+              "detected_candidates": [
+                "1. Economic impact analysis as a dimension for evaluating the effectiveness of tourism strategies."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. Economic impact analysis as a dimension for evaluating the effectiveness of tourism strategies."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 4,
+              "question": "What role should housing development play in the city center?",
+              "answer": "Housing development in the city center plays a crucial role in revitalizing the downtown area and enhancing its overall appeal. Well-planned housing projects can contribute to a vibrant and diverse community, which is essential for the long-term success of the downtown area. Here are key aspects to consider:\n\n1. **Affordable Housing**: Develop a mix of housing options, including affordable units, to ensure that a diverse range of residents can live in the downtown area. This can help reduce socioeconomic disparities and foster a more inclusive community. By providing affordable housing, the city can attract a broader demographic, including young professionals, families, and students, which can boost the local economy and increase foot traffic.\n\n2. **Mixed-Use Developments**: Encourage mixed-use developments that combine residential, commercial, and recreational spaces. This approach can create a more vibrant and lively environment, making the downtown area more attractive to both residents and visitors. Mixed-use developments can also enhance the walkability of the area, as residents and visitors can easily access shops, restaurants, and other amenities without relying on cars.\n\n3. **Sustainable",
+              "baseline_answer": null,
+              "ssl_answer": "Housing development in the city center plays a crucial role in revitalizing the downtown area and enhancing its overall appeal. Well-planned housing projects can contribute to a vibrant and diverse community, which is essential for the long-term success of the downtown area. Here are key aspects to consider:\n\n1. **Affordable Housing**: Develop a mix of housing options, including affordable units, to ensure that a diverse range of residents can live in the downtown area. This can help reduce socioeconomic disparities and foster a more inclusive community. By providing affordable housing, the city can attract a broader demographic, including young professionals, families, and students, which can boost the local economy and increase foot traffic.\n\n2. **Mixed-Use Developments**: Encourage mixed-use developments that combine residential, commercial, and recreational spaces. This approach can create a more vibrant and lively environment, making the downtown area more attractive to both residents and visitors. Mixed-use developments can also enhance the walkability of the area, as residents and visitors can easily access shops, restaurants, and other amenities without relying on cars.\n\n3. **Sustainable",
+              "surfaced_seeds": [
+                "Socioeconomic disparities as a dimension affecting community engagement and visioning."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:4",
+                  "decided_at": "2026-08-16T14:13:28.812791"
+                }
+              ],
+              "detected_candidates": [
+                "1. Environmental justice as a dimension in the distribution of affordable housing projects."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. Environmental justice as a dimension in the distribution of affordable housing projects."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 5,
+              "question": "How should we add more green public space?",
+              "answer": "To add more green public space in the downtown area, focus on creating a network of parks, gardens, and green corridors that enhance the quality of life for residents and visitors. Here are key strategies:\n\n1. **Parks and Gardens**: Develop or expand public parks and gardens that offer a variety of spaces for recreation, relaxation, and social interaction. These green spaces should be accessible to all residents, including those with disabilities, and should be designed with diverse amenities such as playgrounds, sports facilities, and quiet areas for reading or meditation. Consider integrating native plant species to support local wildlife and reduce maintenance costs.\n\n2. **Green Corridors and Streetscapes**: Transform underutilized streets and alleys into green corridors by planting trees, installing green walls, and creating pedestrian-friendly zones. This not only improves the aesthetic appeal of the area but also helps to mitigate the urban heat island effect and improve air quality. Green corridors can also serve as natural buffers between busy streets and residential areas, enhancing the overall livability of the downtown.\n\n3. **Urban Agriculture**: Incorporate urban agriculture into the",
+              "baseline_answer": null,
+              "ssl_answer": "To add more green public space in the downtown area, focus on creating a network of parks, gardens, and green corridors that enhance the quality of life for residents and visitors. Here are key strategies:\n\n1. **Parks and Gardens**: Develop or expand public parks and gardens that offer a variety of spaces for recreation, relaxation, and social interaction. These green spaces should be accessible to all residents, including those with disabilities, and should be designed with diverse amenities such as playgrounds, sports facilities, and quiet areas for reading or meditation. Consider integrating native plant species to support local wildlife and reduce maintenance costs.\n\n2. **Green Corridors and Streetscapes**: Transform underutilized streets and alleys into green corridors by planting trees, installing green walls, and creating pedestrian-friendly zones. This not only improves the aesthetic appeal of the area but also helps to mitigate the urban heat island effect and improve air quality. Green corridors can also serve as natural buffers between busy streets and residential areas, enhancing the overall livability of the downtown.\n\n3. **Urban Agriculture**: Incorporate urban agriculture into the",
+              "surfaced_seeds": [
+                "Socioeconomic disparities as a dimension affecting community engagement and visioning."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:5",
+                  "decided_at": "2026-08-16T14:15:12.352824"
+                }
+              ],
+              "detected_candidates": [
+                "1. Socioeconomic disparities as a dimension influencing access to and benefit from green spaces."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. Socioeconomic disparities as a dimension influencing access to and benefit from green spaces."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 6,
+              "question": "How do we keep downtown safe and lively in the evening?",
+              "answer": "To keep the downtown area safe and lively in the evening, a multifaceted approach is necessary. Here are key strategies to consider:\n\n1. **Enhance Lighting and Visibility**: Install well-lit pathways, streets, and public spaces to deter crime and ensure visibility. Proper lighting not only enhances safety but also makes the area more inviting and pleasant for evening activities. Consider using energy-efficient LED lights that provide adequate illumination without excessive glare.\n\n2. **Increase Police Presence and Community Policing**: Work with local law enforcement to increase patrols in the downtown area during evening hours. Community policing initiatives, such as neighborhood watch programs and regular meetings with local officers, can foster a sense of safety and security among residents and visitors. Engage community members in these efforts to build trust and cooperation.\n\n3. **Promote Safe and Accessible Transportation**: Encourage the use of safe and accessible transportation options, such as designated bike lanes, pedestrian-friendly walkways, and well-lit public transit stops. This can reduce the risk of accidents and make the area more appealing for evening activities. Consider implementing a bike-sharing program",
+              "baseline_answer": null,
+              "ssl_answer": "To keep the downtown area safe and lively in the evening, a multifaceted approach is necessary. Here are key strategies to consider:\n\n1. **Enhance Lighting and Visibility**: Install well-lit pathways, streets, and public spaces to deter crime and ensure visibility. Proper lighting not only enhances safety but also makes the area more inviting and pleasant for evening activities. Consider using energy-efficient LED lights that provide adequate illumination without excessive glare.\n\n2. **Increase Police Presence and Community Policing**: Work with local law enforcement to increase patrols in the downtown area during evening hours. Community policing initiatives, such as neighborhood watch programs and regular meetings with local officers, can foster a sense of safety and security among residents and visitors. Engage community members in these efforts to build trust and cooperation.\n\n3. **Promote Safe and Accessible Transportation**: Encourage the use of safe and accessible transportation options, such as designated bike lanes, pedestrian-friendly walkways, and well-lit public transit stops. This can reduce the risk of accidents and make the area more appealing for evening activities. Consider implementing a bike-sharing program",
+              "surfaced_seeds": [
+                "Socioeconomic disparities as a dimension affecting community engagement and visioning."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:6",
+                  "decided_at": "2026-08-16T14:16:56.485255"
+                }
+              ],
+              "detected_candidates": [
+                "1. Economic impact of evening activities as a dimension alongside safety measures."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. Economic impact of evening activities as a dimension alongside safety measures."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 7,
+              "question": "How can the municipality finance all of this?",
+              "answer": "Financing the revitalization of the downtown area to make it safe, lively, and attractive involves a combination of public and private funding strategies. Here are key approaches:\n\n1. **Public Funding**: The municipality can allocate a portion of its budget to the revitalization project. This can be done through the city council's annual budget process or by setting aside specific funds for urban development. Additionally, the city can apply for grants from state and federal agencies that support community development and infrastructure projects. These grants often come with specific requirements and deadlines, so it's important to start the application process early.\n\n2. **Public-Private Partnerships (PPPs)**: Engaging private sector partners can provide additional funding and expertise. PPPs can involve private investors in the development of public spaces, such as parks and plazas, in exchange for naming rights, advertising opportunities, or other benefits. This approach can also bring in private capital for infrastructure improvements, such as public transportation and parking facilities.\n\n3. **Tax Increment Financing (TIF)**: TIF is a financing mechanism where a portion of the increased",
+              "baseline_answer": null,
+              "ssl_answer": "Financing the revitalization of the downtown area to make it safe, lively, and attractive involves a combination of public and private funding strategies. Here are key approaches:\n\n1. **Public Funding**: The municipality can allocate a portion of its budget to the revitalization project. This can be done through the city council's annual budget process or by setting aside specific funds for urban development. Additionally, the city can apply for grants from state and federal agencies that support community development and infrastructure projects. These grants often come with specific requirements and deadlines, so it's important to start the application process early.\n\n2. **Public-Private Partnerships (PPPs)**: Engaging private sector partners can provide additional funding and expertise. PPPs can involve private investors in the development of public spaces, such as parks and plazas, in exchange for naming rights, advertising opportunities, or other benefits. This approach can also bring in private capital for infrastructure improvements, such as public transportation and parking facilities.\n\n3. **Tax Increment Financing (TIF)**: TIF is a financing mechanism where a portion of the increased",
+              "surfaced_seeds": [
+                "Socioeconomic disparities as a dimension affecting community engagement and visioning."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:7",
+                  "decided_at": "2026-08-16T14:18:42.213279"
+                }
+              ],
+              "detected_candidates": [
+                "1. Community engagement as a relational dimension alongside public and private funding strategies."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. Community engagement as a relational dimension alongside public and private funding strategies."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            },
+            {
+              "runtime_mode": "live",
+              "turn": 8,
+              "question": "What most often goes wrong in downtown revitalization projects?",
+              "answer": "Several common pitfalls can undermine the success of downtown revitalization projects. One of the most significant issues is the failure to adequately engage the community in the planning process. Without meaningful input from residents, business owners, and other stakeholders, the revitalization efforts may not align with the community's values and needs, leading to a lack of support and participation. This can result in projects that do not resonate with the local population, potentially causing resentment and resistance.\n\nAnother common challenge is the lack of a clear and comprehensive vision. Without a well-defined plan that addresses both short-term and long-term goals, revitalization projects can become disjointed and ineffective. A lack of coordination among various stakeholders, including government agencies, private developers, and community organizations, can also lead to inefficiencies and conflicts.\n\nAdditionally, financial mismanagement is a frequent issue. Projects may underestimate costs or fail to secure adequate funding, leading to delays, cutbacks, or even project failure. Poor financial planning can also result in unsustainable projects that rely heavily on public subsidies, which may not be available in the long term.\n\nLastly, overemphasis on aesthetics",
+              "baseline_answer": null,
+              "ssl_answer": "Several common pitfalls can undermine the success of downtown revitalization projects. One of the most significant issues is the failure to adequately engage the community in the planning process. Without meaningful input from residents, business owners, and other stakeholders, the revitalization efforts may not align with the community's values and needs, leading to a lack of support and participation. This can result in projects that do not resonate with the local population, potentially causing resentment and resistance.\n\nAnother common challenge is the lack of a clear and comprehensive vision. Without a well-defined plan that addresses both short-term and long-term goals, revitalization projects can become disjointed and ineffective. A lack of coordination among various stakeholders, including government agencies, private developers, and community organizations, can also lead to inefficiencies and conflicts.\n\nAdditionally, financial mismanagement is a frequent issue. Projects may underestimate costs or fail to secure adequate funding, leading to delays, cutbacks, or even project failure. Poor financial planning can also result in unsustainable projects that rely heavily on public subsidies, which may not be available in the long term.\n\nLastly, overemphasis on aesthetics",
+              "surfaced_seeds": [
+                "Socioeconomic disparities as a dimension affecting community engagement and visioning."
+              ],
+              "surfaced_seed_ids": [
+                "ss_001"
+              ],
+              "selected_seed_ids": [
+                "ss_001"
+              ],
+              "influence_decisions": [
+                {
+                  "seed_id": "ss_001",
+                  "action": "answer_modification",
+                  "seed_weight": 0.2,
+                  "seed_status": "PROMOTED",
+                  "allowed": true,
+                  "reason": "allowed_promoted_gate_logged",
+                  "gate_event_ref": "gate::ss_001::000001",
+                  "authority_version": 1,
+                  "contradiction_blocking": false,
+                  "policy_id": "exploratory",
+                  "context_ref": "turn:8",
+                  "decided_at": "2026-08-16T14:20:28.394501"
+                }
+              ],
+              "detected_candidates": [
+                "1. Community participation as a relational dimension in stakeholder theory."
+              ],
+              "suppressed_self_attributed_candidates": [
+                "1. Community participation as a relational dimension in stakeholder theory."
+              ],
+              "seeds_born_weightless": [],
+              "prompt_boundary_markers": [],
+              "promoted_this_turn": [],
+              "reactivated_trtl": [],
+              "shadow_size": 1,
+              "retrieval_probe": null
+            }
+          ],
+          "deferral_metrics": {
+            "method": "normalization admissibility plus recovery on later uninfluenced turns",
+            "dedup_similarity_threshold": 0.85,
+            "influenced_turns": 8,
+            "affected_turns": 8,
+            "detected_on_influenced_turns": 8,
+            "suppressed_candidate_occurrences": 8,
+            "distinct_normalized_suppressed_candidates": 8,
+            "normalization_admissible_occurrences": 8,
+            "recovery_evaluable_occurrences": 0,
+            "recovery_not_evaluable_occurrences": 8,
+            "later_recovered_occurrences": 0,
+            "unrecovered_evaluable_occurrences": 0,
+            "unrecovered_admissible_occurrences": 0,
+            "suppression_rate_on_influenced_turns": 1.0,
+            "later_recovery_rate": null,
+            "candidate_records": [
+              {
+                "turn": 1,
+                "candidate": "1. Public-private partnerships as a collaborative framework for implementation.",
+                "normalized_candidates": [
+                  "Public-private partnerships as a collaborative framework for implementation."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": false,
+                "later_uninfluenced_turn_count": 0,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 2,
+                "candidate": "1. Economic disparity as a dimension affecting the implementation and benefit of proposed strategies.",
+                "normalized_candidates": [
+                  "Economic disparity as a dimension affecting the implementation and benefit of proposed strategies."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": false,
+                "later_uninfluenced_turn_count": 0,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 3,
+                "candidate": "1. Economic impact analysis as a dimension for evaluating the effectiveness of tourism strategies.",
+                "normalized_candidates": [
+                  "Economic impact analysis as a dimension for evaluating the effectiveness of tourism strategies."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": false,
+                "later_uninfluenced_turn_count": 0,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 4,
+                "candidate": "1. Environmental justice as a dimension in the distribution of affordable housing projects.",
+                "normalized_candidates": [
+                  "Environmental justice as a dimension in the distribution of affordable housing projects."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": false,
+                "later_uninfluenced_turn_count": 0,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 5,
+                "candidate": "1. Socioeconomic disparities as a dimension influencing access to and benefit from green spaces.",
+                "normalized_candidates": [
+                  "Socioeconomic disparities as a dimension influencing access to and benefit from green spaces."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": false,
+                "later_uninfluenced_turn_count": 0,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 6,
+                "candidate": "1. Economic impact of evening activities as a dimension alongside safety measures.",
+                "normalized_candidates": [
+                  "Economic impact of evening activities as a dimension alongside safety measures."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": false,
+                "later_uninfluenced_turn_count": 0,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 7,
+                "candidate": "1. Community engagement as a relational dimension alongside public and private funding strategies.",
+                "normalized_candidates": [
+                  "Community engagement as a relational dimension alongside public and private funding strategies."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": false,
+                "later_uninfluenced_turn_count": 0,
+                "later_recovered": false,
+                "recovery_match": null
+              },
+              {
+                "turn": 8,
+                "candidate": "1. Community participation as a relational dimension in stakeholder theory.",
+                "normalized_candidates": [
+                  "Community participation as a relational dimension in stakeholder theory."
+                ],
+                "normalization_admissible": true,
+                "recovery_evaluable": false,
+                "later_uninfluenced_turn_count": 0,
+                "later_recovered": false,
+                "recovery_match": null
+              }
+            ],
+            "interpretation": "These counts measure deferred candidate opportunities and observable later recovery. A null recovery rate means that no later uninfluenced observation window existed; it is not zero recovery. No truth or usefulness label is inferred."
+          },
+          "final_shadow": {
+            "runtime_mode": "live",
+            "turns": 9,
+            "seeds": [
+              {
+                "id": "ss_001",
+                "text": "Socioeconomic disparities as a dimension affecting community engagement and visioning.",
+                "weight": 0.2,
+                "trace": 0.139,
+                "status": "PROMOTED",
+                "occurrence_count": 1,
+                "evidence_count": 0,
+                "born_turn": 0
+              }
+            ],
+            "influence_records": [
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:1",
+                "decided_at": "2026-08-16T14:08:33.333074"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:2",
+                "decided_at": "2026-08-16T14:10:09.815971"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:3",
+                "decided_at": "2026-08-16T14:11:47.789338"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:4",
+                "decided_at": "2026-08-16T14:13:28.812791"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:5",
+                "decided_at": "2026-08-16T14:15:12.352824"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:6",
+                "decided_at": "2026-08-16T14:16:56.485255"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:7",
+                "decided_at": "2026-08-16T14:18:42.213279"
+              },
+              {
+                "seed_id": "ss_001",
+                "action": "answer_modification",
+                "seed_weight": 0.2,
+                "seed_status": "PROMOTED",
+                "allowed": true,
+                "reason": "allowed_promoted_gate_logged",
+                "gate_event_ref": "gate::ss_001::000001",
+                "authority_version": 1,
+                "contradiction_blocking": false,
+                "policy_id": "exploratory",
+                "context_ref": "turn:8",
+                "decided_at": "2026-08-16T14:20:28.394501"
+              }
+            ]
+          },
+          "gate_events": [
+            {
+              "event_id": "gate::ss_001::000001",
+              "seed_id": "ss_001",
+              "policy_id": "exploratory",
+              "decision": "promoted",
+              "signals": [
+                {
+                  "kind": "recurrence",
+                  "direction": "support",
+                  "strength": 0.0,
+                  "source_ref": null,
+                  "verified": false,
+                  "independent": false,
+                  "reason": "occurrence_count=1 (threshold=1)"
+                }
+              ],
+              "status_before": "NEW",
+              "status_after": "PROMOTED",
+              "weight_before": 0.0,
+              "weight_after": 0.2,
+              "weight_delta": 0.2,
+              "contradiction_before": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "contradiction_after": {
+                "blocking": false,
+                "open_count": 0,
+                "score": 0.0
+              },
+              "authority_version": 1,
+              "reason": "exploratory support via recurrence",
+              "created_at": "2026-08-16T14:08:33.311789"
+            }
+          ],
+          "audit_records_verified": 8,
+          "timing": {
+            "live_turn_elapsed_seconds": 878.844,
+            "deferral_scoring_elapsed_seconds": 0.0
+          }
+        }
+      ],
+      "interpretation": "Non-production recurrence-only counterfactual used only to measure deferral."
+    }
+  ]
+}

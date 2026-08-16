@@ -1,0 +1,20 @@
+{
+  "status": "new_evidence_quality_measurement",
+  "claim_boundary": "Real-model live-runtime evidence. Counterfactual and stress authority are non-production and recurrence is not external evidence. Candidate quality still requires separate evaluation.",
+  "source_revision": "35ce6691b15766a59c73633c5f7b37f6f12a44e3",
+  "workflow_run_id": "31947642012",
+  "workflow_run_attempt": "1",
+  "model_id": "qwen2.5:7b-instruct-q4_K_M",
+  "model_inventory": "NAME                          ID              SIZE      MODIFIED    \nqwen2.5:7b-instruct-q4_K_M    845dbda0ea48    4.7 GB    2 hours ago    \n",
+  "ollama_modelfile_sha256": "dc94c538b543be398b07d12abb66d5f9bf1d75936bf35a73baa3232b6d1008f7",
+  "input": "src/shadowseed/data/ssl_session_suite.json",
+  "input_sha256": "59a46cd3e08de1b0d585dadc2a0268d209e419c0a4b0916736109b2a27a297aa",
+  "python": "3.11.15",
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "max_new_tokens": 220,
+  "embedding_backend": "sentence-transformers",
+  "results": {
+    "benchmarks/results/live_runtime/ssl_live_session_qwen2.5_7b_q4km_default.json": "b810d1080dac0f3f8e8739656d634e4b760c6b275e7f8f39ad294de28e9c67bd",
+    "benchmarks/results/live_runtime/ssl_live_session_qwen2.5_7b_q4km_deferral_stress.json": "42548ea2e70d150004eb5ceff2087f0696ec59ae595d11a1c70110991954f0ff"
+  }
+}
