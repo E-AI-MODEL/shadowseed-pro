@@ -72,7 +72,7 @@ def test_live_turn_uses_one_generation_and_stores_visible_answer(monkeypatch):
     session, model = _session(monkeypatch, detector_seed=None, answer="What the user read.")
     report = session.turn("Question?")
     assert len(model.calls) == 1
-    assert "Respond in English only." in model.calls[0][0]
+    assert "same language as the user's current question" in model.calls[0][0]
     assert report["runtime_mode"] == "live"
     assert report["answer"] == "What the user read."
     assert report["baseline_answer"] is None

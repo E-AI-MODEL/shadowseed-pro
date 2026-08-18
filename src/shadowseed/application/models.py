@@ -10,6 +10,11 @@ from typing import Any
 class SessionConfig:
     """Configuration required to construct one :class:`ShadowChatSession`.
 
+    New product sessions default to the canonical live/evidence-backed runtime.
+    Legacy records that do not contain ``runtime_mode`` are still interpreted as
+    evaluation by the restoration/inspection layer so historical sessions are
+    never silently reclassified.
+
     Secrets are intentionally absent. Hosted backend credentials remain in the
     process environment or an operating-system keyring and are never persisted
     in a workspace record.
@@ -30,7 +35,7 @@ class SessionConfig:
     cluster_threshold: float | None = None
     probe_corpus: str | None = None
     probe_top_k: int = 3
-    runtime_mode: str = "evaluation"
+    runtime_mode: str = "live"
     gate_policy_id: str | None = None
     allow_toy_embedder: bool = False
 

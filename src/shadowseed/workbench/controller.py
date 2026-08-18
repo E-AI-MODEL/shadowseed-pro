@@ -28,7 +28,10 @@ RUNTIME_MODES = ("evaluation", "live")
 _EXTERNAL_PROMPT_BACKENDS = {"openai"}
 
 _BACKEND_NOTES = {
-    "fixture": "Deterministic local fixture. Best for onboarding and repeatable smoke tests.",
+    "fixture": (
+        "Offline deterministic demo backend. Useful for onboarding and regression checks, "
+        "not a high-end model."
+    ),
     "hf-transformers": (
         "Runs the selected Transformers model locally after it is available. Initial model "
         "download may contact Hugging Face; prompts are evaluated locally by this backend."
@@ -85,6 +88,14 @@ class WorkbenchController:
     def runtime_modes() -> tuple[str, ...]:
         return RUNTIME_MODES
 
+    @staticmethod
+    def default_embedding_backend(backend: str) -> str:
+        """Return the safe product default for a model backend."""
+
+        if backend == "fixture":
+            return "lexical"
+        return "sentence-transformers"
+
     def list_sessions(self) -> list[dict[str, Any]]:
         return [asdict(item) for item in self.sessions.list_sessions()]
 
@@ -95,17 +106,18 @@ class WorkbenchController:
         profile_id: str,
         backend: str,
         model_id: str | None = None,
-        runtime_mode: str = "evaluation",
-        embedding_backend: str = "lexical",
+        runtime_mode: str = "live",
+        embedding_backend: str | None = None,
         embedding_model: str | None = None,
         allow_toy_embedder: bool = False,
         external_confirmed: bool = False,
     ) -> str:
+        resolved_embedding = embedding_backend or self.default_embedding_backend(backend)
         self._validate_backend(
             backend,
             model_id=model_id,
             runtime_mode=runtime_mode,
-            embedding_backend=embedding_backend,
+            embedding_backend=resolved_embedding,
             allow_toy_embedder=allow_toy_embedder,
             external_confirmed=external_confirmed,
         )
@@ -114,7 +126,7 @@ class WorkbenchController:
             profile_id=profile_id,
             config=SessionConfig(
                 runtime_mode=runtime_mode,
-                embedding_backend=embedding_backend,
+                embedding_backend=resolved_embedding,
                 embedding_model=embedding_model or None,
                 allow_toy_embedder=allow_toy_embedder,
             ),
@@ -127,6 +139,7 @@ class WorkbenchController:
         session_id: str,
         question: str,
         *,
+        compare_without_ssl: bool = False,
         external_confirmed: bool = False,
     ) -> dict[str, Any]:
         stored = self.sessions.load(session_id)
@@ -139,14 +152,32 @@ class WorkbenchController:
             allow_toy_embedder=bool(config.get("allow_toy_embedder", False)),
             external_confirmed=external_confirmed,
         )
-        report = self.sessions.run_turn(session_id, question)
+        report = self.sessions.run_turn(
+            session_id,
+            question,
+            compare_without_ssl=compare_without_ssl,
+        )
+        comparison = None
+        if compare_without_ssl:
+            comparison = self.comparison.compare_turn(
+                session_id,
+                int(report["turn"]),
+                blinded=False,
+                reveal=True,
+            )
         return {
             "report": report,
+            "comparison": comparison,
             "session": self.inspection.session_view(session_id),
         }
 
     def session_view(self, session_id: str) -> dict[str, Any]:
         return self.inspection.session_view(session_id)
+
+    def falsify_seed(self, session_id: str, seed_id: str) -> dict[str, Any]:
+        """Submit an explicit contradiction through the existing runtime service."""
+
+        return self.sessions.falsify(session_id, seed_id)
 
     def submit_verified_evidence(
         self,
@@ -288,14 +319,18 @@ class WorkbenchController:
 
     @staticmethod
     def session_choices(summaries: list[dict[str, Any]]) -> list[tuple[str, str]]:
-        return [
-            (
-                f"{item['title']} · {item.get('runtime_mode', 'evaluation')} · "
-                f"{item['backend']} · {item['turn_count']} turns",
-                str(item["session_id"]),
+        choices: list[tuple[str, str]] = []
+        for item in summaries:
+            runtime_mode = item.get("runtime_mode", "evaluation")
+            experience = "SSL chat" if runtime_mode == "live" else "Research comparison"
+            choices.append(
+                (
+                    f"{item['title']} · {experience} · {item['backend']} · "
+                    f"{item['turn_count']} turns",
+                    str(item["session_id"]),
+                )
             )
-            for item in summaries
-        ]
+        return choices
 
     @staticmethod
     def seed_choices(session_view: dict[str, Any]) -> list[tuple[str, str]]:
@@ -312,7 +347,7 @@ class WorkbenchController:
         backend: str,
         *,
         model_id: str | None,
-        runtime_mode: str = "evaluation",
+        runtime_mode: str = "live",
         embedding_backend: str = "lexical",
         allow_toy_embedder: bool = False,
         external_confirmed: bool,
