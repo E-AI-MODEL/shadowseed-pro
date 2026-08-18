@@ -24,6 +24,16 @@ def _scoped_replace_once(text: str, old: str, new: str, label: str) -> str:
         # HFTransformersBackend appears before OpenAIBackend in adapters/models.py.
         # Replace only that first constructor; the OpenAI constructor remains unchanged.
         return text.replace(old, new, 1)
+    if label == "detector revision forwarding":
+        count = text.count(old)
+        if count != 3:
+            raise RuntimeError(
+                "detector revision forwarding: expected HF + Ollama + OpenAI "
+                f"factory-return matches, found {count}"
+            )
+        # HFTransformersDetectorBackend is the first real-model return in the
+        # detector factory. Only it accepts a Hugging Face revision.
+        return text.replace(old, new, 1)
     return _original_replace_once(text, old, new, label)
 
 
