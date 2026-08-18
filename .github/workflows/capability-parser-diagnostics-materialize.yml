@@ -1,9 +1,9 @@
 name: Research - capability parser diagnostics materialization
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/post-alignment-capability-scaling
+      - main
     paths:
       - .github/workflows/capability-parser-diagnostics-materialize.yml
 
@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: agent/post-alignment-capability-scaling
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
