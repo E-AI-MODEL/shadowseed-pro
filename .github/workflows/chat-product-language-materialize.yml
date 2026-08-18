@@ -1,0 +1,100 @@
+name: Temporary - materialize chat-first README
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/chat-product-language-materialize.yml
+  push:
+    branches:
+      - agent/chat-first-ssl-product
+    paths:
+      - .github/workflows/chat-product-language-materialize.yml
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/chat-first-ssl-product
+          fetch-depth: 0
+      - name: Replace obsolete Workbench product description
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('README.md')
+          text = path.read_text(encoding='utf-8')
+          old = '''The 0.4 tester preview adds a local, single-user Workbench for practical testing
+without writing Python code:
+
+```bash
+pip install -e ".[workbench]"
+shadowseed doctor
+shadowseed init
+shadowseed workbench
+```
+
+The supported native server binds to `127.0.0.1` by default. Testers can create
+live or evaluation sessions, choose an embedding backend, inspect stored seed
+decisions, submit explicitly verified support to the existing Validation Gate,
+record separate audit-only feedback, import scenarios, and export verified
+reports or privacy-minimized support bundles. Baseline/SSL comparison is limited
+to evaluation sessions because live mode intentionally performs one generation.
+The Workbench is a tester product layer over the existing runtime; it is not a
+second Validation Gate and does not turn ordinary tester observations into
+scientific evidence.
+'''
+          new = '''The Workbench is a local, single-user chat surface for testing Shadow Seed
+Learning without writing Python code or authoring benchmark inputs:
+
+```bash
+pip install -e ".[workbench]"
+shadowseed doctor
+shadowseed init
+shadowseed workbench
+```
+
+The supported native server binds to `127.0.0.1` by default. A newly created
+ordinary chat uses the product-oriented `live` runtime and the evidence-backed
+Gate policy. The tester chooses a model and chats normally. For any message they
+may enable **Compare this message with SSL off**; the Workbench then generates a
+paired no-SSL control from the same pre-turn visible history and model
+configuration before executing the real live turn. The control is comparison
+data only: it does not enter candidate detection, recurrence, the Gate, or later
+conversation history. A textual difference is attributable to SSL only when an
+authorized seed actually surfaced on the real turn.
+
+Historical `evaluation` sessions, authored baseline fixtures, scenario JSON and
+benchmark outputs remain available for research and regression under Advanced;
+they are not prerequisites for ordinary testing. Seed inspection, independently
+verified support, audit-only feedback and verified exports remain available as
+secondary tools. The Workbench is a product surface over the existing runtime;
+it is not a second Validation Gate and does not turn ordinary tester observations
+into scientific evidence.
+'''
+          if text.count(old) != 1:
+              raise SystemExit('expected exactly one obsolete Workbench README block')
+          path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+      - name: Verify documentation diff
+        run: |
+          git diff --check
+          grep -F 'Compare this message with SSL off' README.md
+          ! grep -F 'Baseline/SSL comparison is limited' README.md
+      - name: Commit README alignment
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add README.md
+          git diff --cached --check
+          git commit -m 'Align README with chat-first Workbench'
+          git pull --rebase origin agent/chat-first-ssl-product
+          git push origin HEAD:agent/chat-first-ssl-product
