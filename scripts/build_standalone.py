@@ -79,6 +79,8 @@ def _pyinstaller_command(root: Path, dist_dir: Path, work_dir: Path) -> list[str
         "--collect-data",
         "gradio_client",
         "--collect-data",
+        "safehttpx",
+        "--collect-data",
         "sentence_transformers",
         "--collect-data",
         "transformers",
