@@ -1,6 +1,12 @@
 name: Temporary - materialize chat product language contract
 
 on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/chat-product-language-materialize.yml
+      - tests/test_chat_product_language.py
   push:
     branches:
       - agent/chat-first-ssl-product
