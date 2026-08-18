@@ -2,12 +2,12 @@
 
 This talks to a running Ollama server (default ``http://localhost:11434``) so
 SSL model runs can use quantized GGUF models without pulling in the heavy
-``transformers`` / ``torch`` stack. That makes a real small-model run feasible
-inside a standard CI runner: install Ollama, ``ollama pull`` a model, point the
-run at it.
+``transformers`` / ``torch`` stack. The same local API is also used by the
+Workbench to discover models that are already installed, removing manual model
+ID entry from the normal local tester path.
 
 Decoding defaults to greedy (temperature 0, fixed seed) so the same prompt
-produces the same output across runs.
+produces the same output across runs as far as the selected model/runtime allows.
 """
 
 from __future__ import annotations
@@ -16,6 +16,7 @@ import json
 import os
 import urllib.error
 import urllib.request
+from typing import Any
 
 DEFAULT_OLLAMA_HOST = "http://localhost:11434"
 
@@ -26,6 +27,48 @@ def ollama_host() -> str:
     if not host.startswith(("http://", "https://")):
         host = "http://" + host
     return host.rstrip("/")
+
+
+def _read_json(request: urllib.request.Request, *, timeout: float) -> dict[str, Any]:
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except (urllib.error.URLError, TimeoutError) as exc:  # pragma: no cover - network dependent
+        raise RuntimeError(f"Could not reach Ollama at {request.full_url}: {exc}") from exc
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise RuntimeError("Ollama returned an invalid JSON response") from exc
+    if not isinstance(payload, dict):
+        raise RuntimeError("Ollama returned an unexpected response shape")
+    return payload
+
+
+def list_ollama_models(
+    *,
+    host: str | None = None,
+    timeout: float = 5.0,
+) -> list[str]:
+    """Return locally installed Ollama model names in deterministic order.
+
+    Discovery is read-only and talks only to the configured Ollama host. It does
+    not pull models, send chat content, or change SSL state. Names are
+    deduplicated case-insensitively while preserving the first spelling returned
+    by Ollama.
+    """
+
+    base = (host or ollama_host()).rstrip("/")
+    request = urllib.request.Request(f"{base}/api/tags", method="GET")
+    payload = _read_json(request, timeout=timeout)
+    raw_models = payload.get("models", [])
+    if not isinstance(raw_models, list):
+        raise RuntimeError("Ollama /api/tags response does not contain a model list")
+    names_by_key: dict[str, str] = {}
+    for item in raw_models:
+        if not isinstance(item, dict):
+            continue
+        name = str(item.get("name") or item.get("model") or "").strip()
+        if name:
+            names_by_key.setdefault(name.casefold(), name)
+    return sorted(names_by_key.values(), key=str.casefold)
 
 
 class OllamaClient:
@@ -68,12 +111,11 @@ class OllamaClient:
             method="POST",
         )
         try:
-            with urllib.request.urlopen(request, timeout=self.timeout) as response:
-                body = json.loads(response.read().decode("utf-8"))
-        except urllib.error.URLError as exc:  # pragma: no cover - network dependent
+            body = _read_json(request, timeout=self.timeout)
+        except RuntimeError as exc:  # pragma: no cover - network dependent
             raise RuntimeError(
-                f"Could not reach Ollama at {self.host}. Is `ollama serve` running "
-                f"and has the model been pulled with `ollama pull {self.model}`? "
-                f"Original error: {exc}"
+                f"Could not generate with Ollama model {self.model!r} at {self.host}. "
+                f"Is `ollama serve` running and has the model been pulled with "
+                f"`ollama pull {self.model}`? {exc}"
             ) from exc
         return str(body.get("response", "")).strip()

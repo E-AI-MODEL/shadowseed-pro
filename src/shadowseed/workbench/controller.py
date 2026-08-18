@@ -96,6 +96,18 @@ class WorkbenchController:
             return "lexical"
         return "sentence-transformers"
 
+    @staticmethod
+    def discover_models(backend: str) -> list[str]:
+        """Discover locally available models without changing provider state."""
+
+        if backend == "ollama":
+            from shadowseed.adapters.ollama_client import list_ollama_models
+
+            return list_ollama_models()
+        # Hosted providers and arbitrary HF repositories keep a custom-value
+        # field. Fixture needs no model id.
+        return []
+
     def list_sessions(self) -> list[dict[str, Any]]:
         return [asdict(item) for item in self.sessions.list_sessions()]
 

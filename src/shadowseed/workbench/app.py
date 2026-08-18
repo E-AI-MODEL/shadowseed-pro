@@ -121,12 +121,38 @@ def build_app(
     def refresh_session_dropdown(current: str | None):
         return dropdown_update(session_choices(), current)
 
-    def backend_defaults(backend: str):
+    def model_discovery_update(backend: str, current_model: str | None):
         note = next(
             (item["note"] for item in ctl.backends() if item["backend"] == backend),
             "",
         )
-        return ctl.default_embedding_backend(backend), note
+        if backend != "ollama":
+            return gr.update(choices=[], value=current_model or None), note
+        try:
+            models = ctl.discover_models(backend)
+        except Exception as exc:
+            return (
+                gr.update(choices=[], value=current_model or None),
+                note + f"\n\nLocal model discovery unavailable: {exc}",
+            )
+        selected = (
+            current_model
+            if current_model in models
+            else (models[0] if models else current_model or None)
+        )
+        discovery = (
+            f"Detected {len(models)} local Ollama model(s)."
+            if models
+            else "Ollama is reachable but no local models were reported."
+        )
+        return gr.update(choices=models, value=selected), note + f"\n\n{discovery}"
+
+    def backend_defaults(backend: str, current_model: str | None):
+        model_update, note = model_discovery_update(backend, current_model)
+        return ctl.default_embedding_backend(backend), note, model_update
+
+    def refresh_models(backend: str, current_model: str | None):
+        return model_discovery_update(backend, current_model)
 
     def create_chat(
         title: str,
@@ -375,10 +401,14 @@ def build_app(
                         value="ollama",
                         label="Model provider",
                     )
-                    model_id = gr.Textbox(
-                        label="Model id",
-                        placeholder="Use the exact model id configured for your provider",
+                    model_id = gr.Dropdown(
+                        choices=[],
+                        value=None,
+                        allow_custom_value=True,
+                        label="Model",
+                        info="Local Ollama models can be detected automatically; custom IDs remain allowed.",
                     )
+                    refresh_models_button = gr.Button("Detect local models", variant="secondary")
                     backend_note = gr.Markdown(
                         next(item["note"] for item in ctl.backends() if item["backend"] == "ollama")
                     )
@@ -444,8 +474,13 @@ def build_app(
 
             backend.change(
                 backend_defaults,
-                inputs=[backend],
-                outputs=[embedding_backend, backend_note],
+                inputs=[backend, model_id],
+                outputs=[embedding_backend, backend_note, model_id],
+            )
+            refresh_models_button.click(
+                refresh_models,
+                inputs=[backend, model_id],
+                outputs=[model_id, backend_note],
             )
             refresh_sessions.click(
                 refresh_session_dropdown,
