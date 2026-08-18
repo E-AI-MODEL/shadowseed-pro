@@ -64,7 +64,7 @@ class SessionService:
                 session.history,
                 question,
                 [],
-                response_language="English",
+                response_language="the same language as the user's current question",
             ),
             {
                 "question": question,

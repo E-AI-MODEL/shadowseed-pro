@@ -408,7 +408,7 @@ class ShadowChatSession:
         fixture_answer = f"Fixture echo answer to: {question}"
         final_answer = self.model.generate(
             build_chat_prompt(
-                self.history, question, surfaced, response_language="English"
+                self.history, question, surfaced, response_language="the same language as the user's current question"
             ),
             {"question": question, "turn": turn, "baseline_answer": fixture_answer},
             "ssl" if surfaced else "baseline",
