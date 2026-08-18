@@ -412,7 +412,7 @@ def build_app(
                     create_button = gr.Button("Create chat", variant="primary")
 
                 with gr.Column(scale=3, min_width=620):
-                    chat = gr.Chatbot(type="messages", label="Conversation", height=500)
+                    chat = gr.Chatbot(label="Conversation", height=500)
                     chat_status = gr.Markdown("Create or open a chat to begin.", elem_id="chat-status")
                     question = gr.Textbox(
                         label="Message",
