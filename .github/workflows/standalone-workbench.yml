@@ -1,0 +1,124 @@
+name: Standalone Workbench
+
+on:
+  pull_request:
+    paths:
+      - "src/shadowseed/**"
+      - "tests/test_workbench_*.py"
+      - "scripts/build_standalone.py"
+      - "pyproject.toml"
+      - "docs/workbench/**"
+      - ".github/workflows/standalone-workbench.yml"
+      - ".github/workflows/release-workbench.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/shadowseed/**"
+      - "tests/test_workbench_*.py"
+      - "scripts/build_standalone.py"
+      - "pyproject.toml"
+      - "docs/workbench/**"
+      - ".github/workflows/standalone-workbench.yml"
+      - ".github/workflows/release-workbench.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  GRADIO_ANALYTICS_ENABLED: "False"
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  quality-gate:
+    name: Product quality gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test and Workbench stack
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ".[test,workbench]"
+      - name: Ruff
+        run: python -m ruff check .
+      - name: Full repository tests and branch coverage
+        run: >-
+          python -m pytest -q
+          --cov=shadowseed --cov=shadowseed_agent --cov-branch
+          --cov-report=term-missing --cov-fail-under=80
+      - name: Standalone launcher tests
+        run: python -m pytest -q tests/test_workbench_standalone.py
+      - name: Checkout remains clean
+        shell: bash
+        run: git diff --exit-code && git status --porcelain=v1 | test -z "$(cat)"
+
+  build:
+    name: ${{ matrix.label }} standalone
+    needs: quality-gate
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            label: Linux
+            artifact: standalone-linux
+          - os: windows-latest
+            label: Windows
+            artifact: standalone-windows
+          - os: macos-latest
+            label: macOS
+            artifact: standalone-macos
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install CPU PyTorch first
+        if: runner.os != 'macOS'
+        run: >-
+          python -m pip install
+          --index-url https://download.pytorch.org/whl/cpu
+          "torch>=2.2"
+      - name: Install Workbench and frozen-build tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ".[workbench]" "pyinstaller==6.15.0"
+      - name: Build and execute frozen self-test
+        env:
+          SHADOWSEED_SOURCE_SHA: ${{ github.sha }}
+        run: python scripts/build_standalone.py --output-dir release-assets
+      - name: Validate release manifest
+        shell: python
+        run: |
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path("release-assets")
+          manifests = list(root.glob("*.manifest.json"))
+          archives = [p for p in root.iterdir() if p.is_file() and not p.name.endswith(".manifest.json")]
+          assert len(manifests) == 1, manifests
+          assert len(archives) == 1, archives
+          manifest = json.loads(manifests[0].read_text(encoding="utf-8"))
+          archive = root / manifest["archive"]
+          assert archive == archives[0]
+          assert manifest["source_sha"] == os.environ["GITHUB_SHA"]
+          assert manifest["self_contained_python_runtime"] is True
+          assert manifest["loopback_only_default"] is True
+          assert manifest["model_weights_bundled"] is False
+          assert manifest["self_test"]["frozen"] is True
+          assert manifest["self_test"]["runtime_mode"] == "live"
+          digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+          assert digest == manifest["archive_sha256"]
+          print(json.dumps(manifest, indent=2, sort_keys=True))
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: release-assets/*
+          if-no-files-found: error
+          retention-days: 14
