@@ -1,5 +1,6 @@
 name: Temporary - materialize chat-first README
 
+# Existing branch workflow: this update intentionally triggers the push path.
 on:
   pull_request:
     branches:
