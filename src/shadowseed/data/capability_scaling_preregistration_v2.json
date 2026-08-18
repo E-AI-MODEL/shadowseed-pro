@@ -1,0 +1,104 @@
+{
+  "schema": "ssl-capability-scaling-preregistration-v1",
+  "protocol_id": "post-alignment-capability-scaling-2026-08-v2",
+  "amends": "post-alignment-capability-scaling-2026-08-v1",
+  "amendment_timing": "Declared before accepting or interpreting any post-alignment Qwen 7B capability result as the definitive reference baseline.",
+  "amendment_reason": "The v1 harness observed candidates only after detector parsing. That makes parser-rejected malformed output and few-shot leakage unobservable and can hide the historical nested-numbering artifact caused by prompt prefill reconstruction. Issue #63 explicitly requires malformed-output and few-shot-leakage measurement, so v2 adds raw detector parse diagnostics and requires an actual model revision to be applied where the backend supports it.",
+  "registered_against_main_at_or_after": "90284b2448f1bc684a689506cd10bd705a40ad62",
+  "research_question": "How does detector capability scale after the SSL doctrine-alignment fixes while the same authority boundaries remain fixed?",
+  "claim_boundary": "This protocol can produce research evidence about candidate quality, detector/parser behavior, recurrence/deferral mechanics, and blinded answer effects for pinned model/runtime configurations. It cannot by itself establish candidate truth, general answer-quality improvement, production readiness, or that a larger model deserves more authority.",
+  "arms": {
+    "live": {
+      "runtime_mode": "live",
+      "gate_policy": "evidence_backed",
+      "external_evidence_injected": false,
+      "purpose": "Measure raw detector/parser behavior, candidate production, contamination/deferral, Gate behavior, and audit invariants without manufacturing authority.",
+      "hard_invariant": "No positive weight event, VALIDATED decision, or PROMOTED decision may occur without verified external evidence."
+    },
+    "evaluation": {
+      "runtime_mode": "evaluation",
+      "gate_policy": "exploratory",
+      "production_policy": false,
+      "purpose": "Create controlled cross-turn surfacing opportunities for blinded A/B review without feeding the SSL answer back into baseline history."
+    }
+  },
+  "primary_metrics": {
+    "detector_parser": [
+      "numbered_lines",
+      "unnumbered_nonblank_lines",
+      "parser_rejection_rate",
+      "fewshot_leakage_rate",
+      "nested_numbering_prefixes_removed",
+      "dropped_citation_or_stub_rate"
+    ],
+    "candidate_automatic": [
+      "malformed_or_non_atomic_rate_after_parsing",
+      "exact_duplicate_rate",
+      "semantic_duplicate_rate",
+      "same_turn_deferral_rate"
+    ],
+    "candidate_human": [
+      "atomic_yes_rate",
+      "relevant_yes_rate",
+      "grounded_to_context_yes_rate",
+      "useful_to_investigate_yes_rate",
+      "assertion_masquerade_yes_rate",
+      "epistemic_role_mix"
+    ],
+    "authority": [
+      "live_positive_weight_event_count",
+      "live_verified_external_support_event_count",
+      "gate_decision_distribution"
+    ],
+    "answer": [
+      "evaluation_surfaced_turn_count",
+      "blind_ssl_win_rate_non_tie",
+      "reviewer_agreement"
+    ],
+    "resource": [
+      "answer_generation_calls",
+      "detector_calls",
+      "wall_elapsed_seconds"
+    ]
+  },
+  "exclusion_rules": [
+    "Do not convert malformed detector text into a valid seed by adding semantic content or splitting model prose after generation.",
+    "Parser-only cleanup may remove duplicated numbering introduced by prompt-prefill reconstruction; this cleanup must be counted explicitly as a parser artifact.",
+    "Do not count parser-rejected few-shot echoes as accepted candidates; report them separately as detector leakage.",
+    "Do not count an SSL-exposed same-turn candidate as independent recurrence.",
+    "Do not treat recurrence as external evidence.",
+    "Do not treat an unreviewed candidate as true, useful, or a false promotion solely from automatic metrics.",
+    "Do not compute answer benefit on turns where no seed actually surfaced in the evaluation arm.",
+    "Do not combine primary and transfer domains into one hidden score; retain per-suite/domain outputs.",
+    "Do not overwrite historical pre-alignment Qwen 7B artifacts.",
+    "Do not compare model tiers unless prompt identity, runtime policy, suite version, embedding setup, and scoring protocol are reported.",
+    "For Hugging Face backends, a declared model revision must be passed to from_pretrained rather than merely written into the manifest."
+  ],
+  "review_contract": {
+    "minimum_independent_reviewers": 2,
+    "candidate_fields": [
+      "atomic",
+      "relevant",
+      "specific",
+      "investigable",
+      "nontrivial",
+      "grounded_to_context",
+      "assertion_masquerade",
+      "duplicate_of_prior_candidate",
+      "useful_to_investigate"
+    ],
+    "categorical_values": ["yes", "no", "unclear"],
+    "epistemic_roles": ["gap", "doubt", "what_if", "other", "unclear"],
+    "answer_values": ["A", "B", "tie"],
+    "blinding": "Candidate reviewers see context and accepted candidate text but not model identity, promotion state, or runtime key metadata. Raw parser diagnostics stay in the research artifact, not in the blind packet. Answer reviewers see A/B outputs but not which option is baseline or SSL."
+  },
+  "interpretation_rules": [
+    "A larger model may improve candidate quality but never receives authority from model identity or capability.",
+    "Parser rejection and few-shot leakage describe detector behavior before seed candidacy; they are not Gate decisions.",
+    "Nested numbering removal is syntax cleanup of a prompt-prefill artifact and must not alter the candidate's semantic content.",
+    "A null answer comparison means no evaluation seed surfaced; it is not evidence of zero benefit.",
+    "A zero live promotion count under evidence_backed without external evidence is expected trust-model behavior, not a failed experiment.",
+    "Reviewer disagreement is a result and must be reported, not silently adjudicated away.",
+    "The Qwen 7B GitHub run is a reference execution tier, not the design ceiling for SSL."
+  ]
+}
