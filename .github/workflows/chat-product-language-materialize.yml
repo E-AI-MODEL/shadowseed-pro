@@ -57,7 +57,8 @@ jobs:
           pytest -q \
             tests/test_chat_product_language.py \
             tests/test_chat_first_product.py \
-            tests/test_chat_runtime.py \
+            tests/test_live_runtime.py \
+            tests/test_shadow_chat.py \
             tests/test_workbench_application.py
       - name: Run full repository quality gate
         run: |
