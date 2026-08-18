@@ -66,6 +66,8 @@ def _pyinstaller_command(root: Path, dist_dir: Path, work_dir: Path) -> list[str
         "Shadowseed",
         "--paths",
         str(root / "src"),
+        "--additional-hooks-dir",
+        str(root / "scripts" / "pyinstaller_hooks"),
         "--distpath",
         str(dist_dir),
         "--workpath",
@@ -74,8 +76,6 @@ def _pyinstaller_command(root: Path, dist_dir: Path, work_dir: Path) -> list[str
         str(work_dir / "spec"),
         "--collect-data",
         "shadowseed",
-        "--collect-data",
-        "gradio",
         "--collect-data",
         "gradio_client",
         "--collect-data",
@@ -240,6 +240,7 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
         "model_weights_bundled": False,
         "self_contained_python_runtime": True,
         "loopback_only_default": True,
+        "gradio_source_files_bundled": True,
         "self_test": self_test,
     }
     manifest_path = output_dir / f"{stem}.manifest.json"
