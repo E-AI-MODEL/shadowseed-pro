@@ -112,9 +112,7 @@ class WorkbenchController:
         allow_toy_embedder: bool = False,
         external_confirmed: bool = False,
     ) -> str:
-        resolved_embedding = (
-            embedding_backend or self.default_embedding_backend(backend)
-        )
+        resolved_embedding = embedding_backend or self.default_embedding_backend(backend)
         self._validate_backend(
             backend,
             model_id=model_id,
@@ -175,6 +173,11 @@ class WorkbenchController:
 
     def session_view(self, session_id: str) -> dict[str, Any]:
         return self.inspection.session_view(session_id)
+
+    def falsify_seed(self, session_id: str, seed_id: str) -> dict[str, Any]:
+        """Submit an explicit contradiction through the existing runtime service."""
+
+        return self.sessions.falsify(session_id, seed_id)
 
     def submit_verified_evidence(
         self,
