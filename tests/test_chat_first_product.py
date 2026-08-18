@@ -33,17 +33,34 @@ def test_real_model_product_default_uses_semantic_embedding() -> None:
         assert WorkbenchController.default_embedding_backend(backend) == "sentence-transformers"
 
 
+def _seed_state(stored: dict) -> list[tuple[str, int, float, float, str]]:
+    return sorted(
+        (
+            str(seed["text"]),
+            int(seed["occurrence_count"]),
+            float(seed["trace"]),
+            float(seed["weight"]),
+            str(seed["status"]),
+        )
+        for seed in stored["state"]["manager"]["seeds"]
+    )
+
+
 def test_live_chat_can_generate_no_ssl_control_without_authored_baseline(tmp_path) -> None:
     sessions = service_for_workspace(tmp_path / "workspace")
-    session_id = sessions.create_session(title="Paired control", profile_id="demo")
+    paired_id = sessions.create_session(title="Paired control", profile_id="demo")
+    ordinary_id = sessions.create_session(title="Ordinary control", profile_id="demo")
+    question = "What important perspective could be missing?"
 
     report = sessions.run_turn(
-        session_id,
-        "What important perspective could be missing?",
+        paired_id,
+        question,
         compare_without_ssl=True,
     )
-    stored = sessions.load(session_id)
-    persisted_report = stored["state"]["turn_reports"][0]
+    sessions.run_turn(ordinary_id, question, compare_without_ssl=False)
+    paired = sessions.load(paired_id)
+    ordinary = sessions.load(ordinary_id)
+    persisted_report = paired["state"]["turn_reports"][0]
 
     assert report["runtime_mode"] == "live"
     assert report["comparison_requested"] is True
@@ -51,13 +68,12 @@ def test_live_chat_can_generate_no_ssl_control_without_authored_baseline(tmp_pat
     assert report["comparison_control_answer"]
     assert report["comparison_ssl_answer"] == report["answer"]
     assert persisted_report["comparison_control_answer"] == report["comparison_control_answer"]
-    assert stored["state"]["turn"] == 1
+    assert paired["state"]["turn"] == ordinary["state"]["turn"] == 1
 
-    # The control is presentation-only. Only the actual live answer is detected,
-    # so one product turn cannot manufacture recurrence by generating its control.
-    seeds = stored["state"]["manager"]["seeds"]
-    assert seeds
-    assert all(seed["occurrence_count"] == 1 for seed in seeds)
+    # The extra control generation is presentation-only. Running it must leave
+    # exactly the same seed/trace/weight state as an otherwise identical live turn
+    # that did not request a control. Cluster recurrence has a separate issue #69.
+    assert _seed_state(paired) == _seed_state(ordinary)
 
 
 def test_controller_returns_ready_to_render_ssl_on_off_comparison(tmp_path) -> None:
