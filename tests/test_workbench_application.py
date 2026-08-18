@@ -61,7 +61,7 @@ def test_controller_creates_and_lists_explicit_live_session(tmp_path) -> None:
     assert stored["config"]["runtime_mode"] == "live"
     assert stored["config"]["embedding_backend"] == "lexical"
     assert view["runtime_mode"] == "live"
-    assert choices[0][0] == "Live fixture · live · fixture · 0 turns"
+    assert choices[0][0] == "Live fixture · SSL chat · fixture · 0 turns"
 
 
 def test_live_non_fixture_requires_semantic_embeddings_or_explicit_override(tmp_path) -> None:
@@ -133,7 +133,7 @@ def test_inspection_is_read_only_and_explains_seed_state(tmp_path) -> None:
     after = sessions.load(session_id)["state"]
 
     assert view["turn"] == 1
-    assert view["runtime_mode"] == "evaluation"
+    assert view["runtime_mode"] == "live"
     assert before == after
     for seed in view["seeds"]:
         assert seed["plain_explanation"]
@@ -220,7 +220,11 @@ def test_scenario_rejects_non_boolean_toy_override() -> None:
 
 def test_blind_comparison_is_stable_and_revealable(tmp_path) -> None:
     sessions = service_for_workspace(tmp_path / "workspace")
-    session_id = sessions.create_session(title="Compare", profile_id="demo")
+    session_id = sessions.create_session(
+        title="Compare",
+        profile_id="demo",
+        config=SessionConfig(runtime_mode="evaluation"),
+    )
     sessions.run_turn(session_id, "Question")
     service = ComparisonService(sessions)
 
@@ -233,7 +237,7 @@ def test_blind_comparison_is_stable_and_revealable(tmp_path) -> None:
     assert set(revealed["revealed_mapping"].values()) == {"baseline", "shadowseed"}
 
 
-def test_live_session_rejects_baseline_comparison(tmp_path) -> None:
+def test_live_session_requires_requested_paired_control_for_comparison(tmp_path) -> None:
     sessions = service_for_workspace(tmp_path / "workspace")
     session_id = sessions.create_session(
         title="Live compare",
@@ -242,7 +246,7 @@ def test_live_session_rejects_baseline_comparison(tmp_path) -> None:
     )
     sessions.run_turn(session_id, "Question")
 
-    with pytest.raises(ValueError, match="only for evaluation sessions"):
+    with pytest.raises(ValueError, match="no paired no-SSL control"):
         ComparisonService(sessions).compare_turn(session_id, 0)
 
 
@@ -251,7 +255,11 @@ def test_legacy_comparison_normalizes_malformed_runtime_mode(
     tmp_path, monkeypatch, malformed_mode
 ) -> None:
     sessions = service_for_workspace(tmp_path / "workspace")
-    session_id = sessions.create_session(title="Legacy compare", profile_id="demo")
+    session_id = sessions.create_session(
+        title="Legacy compare",
+        profile_id="demo",
+        config=SessionConfig(runtime_mode="evaluation"),
+    )
     sessions.run_turn(session_id, "Question")
     stored = sessions.load(session_id)
     state = dict(stored["state"])
@@ -340,6 +348,7 @@ def test_evaluation_session_rejects_live_evidence_entry(tmp_path) -> None:
         title="Evaluation evidence",
         profile_id="demo",
         backend="fixture",
+        runtime_mode="evaluation",
     )
     result = controller.send_turn(session_id, "What is missing?")
     seed_id = result["session"]["seeds"][0]["id"]
