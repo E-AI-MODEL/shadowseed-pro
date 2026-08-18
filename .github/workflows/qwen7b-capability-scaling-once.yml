@@ -1,4 +1,4 @@
-name: Research - Post-alignment Qwen 7B capability reference (one-time)
+name: Research - Post-alignment Qwen 7B capability reference v2 (one-time)
 
 on:
   pull_request:
@@ -12,13 +12,14 @@ permissions:
 
 concurrency:
   group: post-alignment-qwen7b-capability-reference
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   MODEL_ID: qwen2.5:7b-instruct-q4_K_M
   EMBEDDING_REFERENCE: sentence-transformers/all-MiniLM-L6-v2
-  RUN_DIR: benchmarks/results/capability_scaling/qwen2.5_7b_q4km_post_alignment_2026-08-18
-  RUN_ID: qwen2.5-7b-q4km-post-alignment-2026-08-18
+  RUN_DIR: benchmarks/results/capability_scaling/qwen2.5_7b_q4km_post_alignment_v2_2026-08-18
+  RUN_ID: qwen2.5-7b-q4km-post-alignment-v2-2026-08-18
+  PREREG: src/shadowseed/data/capability_scaling_preregistration_v2.json
 
 jobs:
   qwen7b-reference:
@@ -114,12 +115,12 @@ jobs:
           conversation = dict(source["conversations"][0])
           conversation["turns"] = conversation["turns"][:2]
           smoke = {
-              "version": "capability-scaling-qwen7b-smoke-0.1",
+              "version": "capability-scaling-qwen7b-smoke-v2-0.1",
               "language": "en",
-              "description": "Two-turn real-model integration smoke before the post-alignment capability run.",
+              "description": "Two-turn real-model integration smoke before the post-alignment v2 capability run.",
               "conversations": [conversation],
           }
-          Path("/tmp/capability_scaling_qwen7b_smoke.json").write_text(
+          Path("/tmp/capability_scaling_qwen7b_smoke_v2.json").write_text(
               json.dumps(smoke, indent=2) + "\n", encoding="utf-8"
           )
           PY
@@ -137,11 +138,11 @@ jobs:
             --embedding-model "$EMBEDDING_PATH" \
             --embedding-reference "$EMBEDDING_REFERENCE" \
             --embedding-revision "$EMBEDDING_REVISION" \
-            --suite smoke=/tmp/capability_scaling_qwen7b_smoke.json \
-            --preregistration src/shadowseed/data/capability_scaling_preregistration_v1.json \
-            --output-dir /tmp/capability-scaling-qwen7b-smoke \
-            --run-id qwen7b-post-alignment-smoke
-          python -m shadowseed.benchmark.capability_scaling verify /tmp/capability-scaling-qwen7b-smoke
+            --suite smoke=/tmp/capability_scaling_qwen7b_smoke_v2.json \
+            --preregistration "$PREREG" \
+            --output-dir /tmp/capability-scaling-qwen7b-smoke-v2 \
+            --run-id qwen7b-post-alignment-smoke-v2
+          python -m shadowseed.benchmark.capability_scaling verify /tmp/capability-scaling-qwen7b-smoke-v2
 
       - name: Run preregistered primary plus transfer measurement
         run: |
@@ -161,7 +162,7 @@ jobs:
             --suite transfer=src/shadowseed/data/ssl_session_transfer_suite.json \
             --evaluation-conversation CONV_STARTUP \
             --evaluation-conversation CONV_EDU \
-            --preregistration src/shadowseed/data/capability_scaling_preregistration_v1.json \
+            --preregistration "$PREREG" \
             --output-dir "$RUN_DIR" \
             --run-id "$RUN_ID"
 
@@ -200,7 +201,7 @@ jobs:
           manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
           PY
 
-      - name: Verify bundle and fail closed on authority/provenance drift
+      - name: Verify bundle and fail closed on authority and protocol drift
         run: |
           python -m shadowseed.benchmark.capability_scaling verify "$RUN_DIR"
           python - <<'PY'
@@ -214,6 +215,7 @@ jobs:
           manifest = json.loads((bundle / "manifest.json").read_text(encoding="utf-8"))
           live = summary["automatic_metrics"]["live"]
           evaluation = summary["automatic_metrics"]["evaluation"]
+          parser = live["detector_parser"]
           expected_head = subprocess.run(
               ["git", "rev-parse", "HEAD"], check=True, capture_output=True, text=True
           ).stdout.strip()
@@ -221,26 +223,31 @@ jobs:
           assert evaluation["turn_count"] == 16, evaluation
           assert live["positive_weight_event_count"] == 0, live
           assert live["verified_external_support_event_count"] == 0, live
+          assert parser["numbered_lines"] >= parser["accepted_candidates"], parser
+          assert parser["nested_numbering_prefixes_removed"] >= 0, parser
+          assert parser["dropped_fewshot_leak"] >= 0, parser
           assert summary["candidate_review_item_count"] > 0, summary
           assert summary["review_status"] == "pending", summary
           assert manifest["source"]["source_revision"] == expected_head, manifest["source"]
           assert manifest["source"]["source_dirty"] is False, manifest["source"]
           assert manifest["model"]["digest"] == os.environ["MODEL_DIGEST"]
           assert manifest["model"]["authority_effect_of_model_identity"] == "none"
+          assert manifest["preregistration"]["protocol_id"] == "post-alignment-capability-scaling-2026-08-v2"
+          assert manifest["model"]["detector_prompt_template_sha256"]
           print(json.dumps(summary["automatic_metrics"], indent=2))
           PY
 
-      - name: Commit immutable post-alignment reference bundle
+      - name: Commit immutable post-alignment v2 reference bundle
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$RUN_DIR"
           git diff --cached --check
-          git commit -m "Record post-alignment Qwen 7B capability reference"
+          git commit -m "Record post-alignment Qwen 7B capability reference v2"
           git push origin HEAD:agent/post-alignment-capability-scaling
 
       - name: Upload verified reference bundle
         uses: actions/upload-artifact@v4
         with:
-          name: qwen2.5-7b-post-alignment-capability-reference
+          name: qwen2.5-7b-post-alignment-capability-reference-v2
           path: ${{ env.RUN_DIR }}
