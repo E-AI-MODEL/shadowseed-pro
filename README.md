@@ -50,7 +50,9 @@ Shadow Seed Learning, or SSL, records a possible omission as a **candidate for i
 
 ---
 
-## Tester Workbench
+## Quick start
+
+### Tester Workbench
 
 The ordinary 0.5.0 tester path is a local chat application, not a benchmark harness:
 
@@ -85,6 +87,7 @@ python -m pip install --upgrade pip
 pip install -e ".[test,workbench]"
 python -m pytest -q
 python -m ruff check .
+shadowseed --help
 shadowseed-workbench
 ```
 
@@ -117,6 +120,12 @@ shadowseed run-ssl-session \
 ```
 
 This measurement route is research instrumentation, not the ordinary product UI. Fixture and lexical backends are rejected for its live real-model measurement path. See [`docs/usage/cli.md`](docs/usage/cli.md) for command semantics.
+
+For dialectical falsification research, inspect the command before running it:
+
+```bash
+shadowseed run-dialectic-falsification --help
+```
 
 <details>
 <summary><strong>Common benchmark commands and optional dependencies</strong></summary>
@@ -159,7 +168,7 @@ That statement is not accepted as fact. It becomes a small, testable seed with n
 
 A seed is one bounded epistemic candidate tied to context. It can represent a gap, doubt, missing relation or boundary, dependency, unstated assumption, alternative hypothesis, contradiction to investigate, or relevant what-if direction. It is not a fact, instruction, evidence item, conclusion, or source of authority.
 
-Atomicity is a **normalization target and tested heuristic**; normalization cannot guarantee that every model-generated proposal is meaningful or perfectly split.
+Atomicity is a **normalization target and tested heuristic**. Normalization does not guarantee semantic atomicity: a model can still emit a compound, vague, vacuous, poorly split, or otherwise weak candidate.
 
 Good seed:
 
@@ -274,6 +283,13 @@ NEW -> ACTIVE -> DECAYING -> DORMANT -> EXPIRED
 
 > **"Non-bypassable" is a public-API property over new authority decisions, not a Python-runtime claim.** Restoration reinstates validated persisted state, and explicitly unsafe test hooks remain callable by arbitrary in-process Python.
 
+### Assurance boundaries
+
+- Atomicity remains heuristic; generated candidates can still be semantically compound or weak.
+- The current repository does **not** provide durable append-only, tamper-evident storage. Frozen/replayable in-process records are not the same as a tamper-evident external audit ledger.
+- Point-of-use checks are specific eligibility checks, not universal safety certification.
+- Packaging adds distribution convenience; it does not add seed authority or prove model benefit.
+
 ### Gate policy profiles
 
 - **`exploratory`**: qualifying recurrence or verified external support may raise authority when no unresolved contradiction exists. This is research/evaluation behavior.
@@ -376,7 +392,7 @@ The methods/systems manuscript is available in [`paper/`](paper/README.md), with
 - chat-first Workbench with automatic live SSL-on/off controls;
 - local Ollama model discovery;
 - deterministic fixtures plus optional Hugging Face, Ollama and OpenAI routes;
-- adversarial, retrieval, payoff, and activation-probe research instruments;
+- adversarial, retrieval, payoff, dialectical falsification and activation-probe research instruments;
 - 0.5.0 standalone build/release contracts for Windows, macOS and Linux.
 
 ### Not established
