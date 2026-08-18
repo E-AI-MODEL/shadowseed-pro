@@ -47,7 +47,7 @@ def test_list_ollama_models_reads_tags_without_sending_chat_content(monkeypatch)
 
     models = list_ollama_models(host="http://127.0.0.1:11434", timeout=1.5)
 
-    assert models == ["llama3.2:3b", "qwen2.5:7b", "QWEN2.5:7B"]
+    assert models == ["llama3.2:3b", "qwen2.5:7b"]
     assert captured == {
         "url": "http://127.0.0.1:11434/api/tags",
         "method": "GET",
