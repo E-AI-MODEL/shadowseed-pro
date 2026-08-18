@@ -1,24 +1,93 @@
-"""Gradio shell for the local Shadowseed tester Workbench."""
+"""Chat-first local Workbench UI for Shadow Seed Learning.
+
+The Workbench is intentionally a presentation layer. It calls the application
+controller and does not import or reimplement manager, Gate, lifecycle, or
+point-of-use authority logic.
+"""
 
 from __future__ import annotations
 
+import ipaddress
+import json
 from pathlib import Path
 from typing import Any
 
 from shadowseed.workbench.controller import WorkbenchController
 
 
-_LOOPBACK_HOSTS = {"127.0.0.1", "localhost", "::1"}
+_PRODUCT_CSS = """
+.gradio-container { max-width: 1480px !important; margin: 0 auto; }
+#product-title { margin-bottom: 0.25rem; }
+#product-subtitle { opacity: 0.78; margin-bottom: 1rem; }
+#chat-shell { min-height: 560px; }
+#chat-status { font-size: 0.92rem; }
+.comparison-note { font-size: 0.9rem; opacity: 0.82; }
+"""
 
 
 def _gradio():
     try:
         import gradio as gr
-    except ModuleNotFoundError as exc:  # pragma: no cover - exercised by installed CLI smoke
+    except ImportError as exc:  # pragma: no cover - optional dependency
         raise RuntimeError(
-            'Workbench UI requires the optional dependency: pip install "shadowseed[workbench]"'
+            "The Workbench UI requires the workbench extra: "
+            "python -m pip install 'shadowseed[workbench]'"
         ) from exc
     return gr
+
+
+def _is_loopback(host: str) -> bool:
+    normalized = str(host).strip().lower()
+    if normalized == "localhost":
+        return True
+    try:
+        return ipaddress.ip_address(normalized).is_loopback
+    except ValueError:
+        return False
+
+
+def _error_text(exc: Exception) -> str:
+    return f"**Error:** {type(exc).__name__}: {exc}"
+
+
+def _status_markdown(view: dict[str, Any] | None) -> str:
+    if not view:
+        return "Create or open a chat to begin."
+    seeds = list(view.get("seeds", []))
+    promoted = sum(str(seed.get("status", "")).lower() == "promoted" for seed in seeds)
+    mode = str(view.get("runtime_mode", "evaluation"))
+    experience = "Live SSL" if mode == "live" else "Research evaluation"
+    model = str(view.get("model_id") or view.get("backend") or "unknown")
+    return (
+        f"**{experience}** · model `{model}` · {int(view.get('turn', 0))} turns · "
+        f"{len(seeds)} shadow seeds · {promoted} promoted"
+    )
+
+
+def _comparison_outputs(comparison: dict[str, Any] | None) -> tuple[str, str, str]:
+    if not comparison:
+        return "", "", (
+            "Enable **Compare this message with SSL off** before sending when you want a "
+            "paired control."
+        )
+    labels = {
+        str(comparison.get("candidate_a_label", "")): str(comparison.get("candidate_a", "")),
+        str(comparison.get("candidate_b_label", "")): str(comparison.get("candidate_b", "")),
+    }
+    ssl_on = labels.get("ssl_on") or labels.get("shadowseed") or ""
+    ssl_off = labels.get("ssl_off") or labels.get("baseline") or ""
+    influenced = bool(comparison.get("ssl_influence_observed"))
+    if influenced:
+        note = (
+            "An authorized Shadow Seed surfaced on this turn. The two answers form a paired "
+            "same-model comparison; review quality rather than assuming the SSL answer is better."
+        )
+    else:
+        note = (
+            "No authorized Shadow Seed surfaced on this turn. Any difference between the two "
+            "generations must not be attributed to SSL."
+        )
+    return ssl_on, ssl_off, note
 
 
 def build_app(
@@ -26,59 +95,49 @@ def build_app(
     *,
     controller: WorkbenchController | None = None,
 ):
-    """Build the Workbench without starting a network listener."""
+    """Build the local Gradio product surface."""
 
     gr = _gradio()
     ctl = controller or WorkbenchController(workspace)
+    profile_choices = [
+        (f"{item['label']} — {item['description']}", item["profile_id"])
+        for item in ctl.profiles()
+    ]
+    backend_choices = [
+        ("Ollama — local model", "ollama"),
+        ("OpenAI — hosted model", "openai"),
+        ("Hugging Face Transformers — local model", "hf-transformers"),
+        ("Offline demo — deterministic fixture", "fixture"),
+    ]
 
     def session_choices() -> list[tuple[str, str]]:
         return ctl.session_choices(ctl.list_sessions())
 
-    def dropdown_update(selected: str | None = None):
-        choices = session_choices()
-        values = {value for _label, value in choices}
-        value = selected if selected in values else (choices[0][1] if choices else None)
-        return gr.Dropdown(choices=choices, value=value)
+    def dropdown_update(choices: list[tuple[str, str]], value: str | None = None):
+        valid = {item[1] for item in choices}
+        selected = value if value in valid else (choices[0][1] if choices else None)
+        return gr.update(choices=choices, value=selected)
 
-    def seed_update(session_id: str | None, selected: str | None = None):
-        if not session_id:
-            return gr.Dropdown(choices=[], value=None)
-        choices = ctl.seed_choices(ctl.session_view(session_id))
-        values = {value for _label, value in choices}
-        value = selected if selected in values else (choices[0][1] if choices else None)
-        return gr.Dropdown(choices=choices, value=value)
+    def refresh_session_dropdown(current: str | None):
+        return dropdown_update(session_choices(), current)
 
-    def backend_note(backend: str) -> str:
-        notes = {item["backend"]: item["note"] for item in ctl.backends()}
-        return notes.get(backend, "")
-
-    def runtime_note(runtime_mode: str, backend: str, embedding_backend: str) -> str:
-        if runtime_mode == "evaluation":
-            return (
-                "**Evaluation:** preserves the isolated baseline/SSL comparison. "
-                "Lexical embeddings are permitted for deterministic tester runs."
-            )
-        note = (
-            "**Live:** performs one visible generation and uses the evidence-backed Gate. "
-            "Verified operator support can be submitted after a seed is detected."
+    def backend_defaults(backend: str):
+        note = next(
+            (item["note"] for item in ctl.backends() if item["backend"] == backend),
+            "",
         )
-        if backend != "fixture" and embedding_backend == "lexical":
-            note += (
-                " Choose sentence-transformers or OpenAI embeddings for a normal live run, "
-                "or explicitly enable the toy override for a test-only run."
-            )
-        return note
+        return ctl.default_embedding_backend(backend), note
 
-    def create_session(
+    def create_chat(
         title: str,
         profile_id: str,
         backend: str,
         model_id: str,
-        runtime_mode: str,
         embedding_backend: str,
         embedding_model: str,
         allow_toy_embedder: bool,
         external_confirmed: bool,
+        research_evaluation: bool,
     ):
         try:
             session_id = ctl.create_session(
@@ -86,23 +145,122 @@ def build_app(
                 profile_id=profile_id,
                 backend=backend,
                 model_id=model_id or None,
-                runtime_mode=runtime_mode,
-                embedding_backend=embedding_backend,
+                runtime_mode="evaluation" if research_evaluation else "live",
+                embedding_backend=embedding_backend or None,
                 embedding_model=embedding_model or None,
-                allow_toy_embedder=allow_toy_embedder,
-                external_confirmed=external_confirmed,
+                allow_toy_embedder=bool(allow_toy_embedder),
+                external_confirmed=bool(external_confirmed),
             )
             view = ctl.session_view(session_id)
+            choices = session_choices()
             return (
-                dropdown_update(session_id),
-                f"Created `{session_id}` in **{view['runtime_mode']}** mode "
-                f"at `{ctl.workspace_root}`.",
+                dropdown_update(choices, session_id),
                 ctl.chat_messages(view),
+                _status_markdown(view),
+                dropdown_update(ctl.seed_choices(view)),
                 view,
-                seed_update(session_id),
+                "",
+                "",
+                "Chat created. Type a message below.",
             )
         except Exception as exc:
-            raise gr.Error(str(exc)) from exc
+            return (
+                gr.update(),
+                [],
+                _error_text(exc),
+                gr.update(choices=[], value=None),
+                None,
+                "",
+                "",
+                _error_text(exc),
+            )
+
+    def load_chat(session_id: str | None):
+        if not session_id:
+            return [], "Create or open a chat to begin.", gr.update(choices=[], value=None), None, "", "", ""
+        try:
+            view = ctl.session_view(session_id)
+            comparison = None
+            reports = list(view.get("turn_reports", []))
+            if reports and reports[-1].get("comparison_requested"):
+                try:
+                    comparison = ctl.compare_turn(
+                        session_id,
+                        int(reports[-1].get("turn", len(reports) - 1)),
+                        blinded=False,
+                        reveal=True,
+                    )
+                except ValueError:
+                    comparison = None
+            ssl_on, ssl_off, note = _comparison_outputs(comparison)
+            return (
+                ctl.chat_messages(view),
+                _status_markdown(view),
+                gr.update(choices=ctl.seed_choices(view), value=None),
+                view,
+                ssl_on,
+                ssl_off,
+                note,
+            )
+        except Exception as exc:
+            return [], _error_text(exc), gr.update(), None, "", "", _error_text(exc)
+
+    def send_message(
+        session_id: str | None,
+        question: str,
+        compare_without_ssl: bool,
+        external_confirmed: bool,
+    ):
+        if not session_id:
+            return [], "Select or create a chat first.", gr.update(), None, "", "", "", question
+        try:
+            result = ctl.send_turn(
+                session_id,
+                question,
+                compare_without_ssl=bool(compare_without_ssl),
+                external_confirmed=bool(external_confirmed),
+            )
+            view = result["session"]
+            ssl_on, ssl_off, note = _comparison_outputs(result.get("comparison"))
+            return (
+                ctl.chat_messages(view),
+                _status_markdown(view),
+                gr.update(choices=ctl.seed_choices(view), value=None),
+                result["report"],
+                ssl_on,
+                ssl_off,
+                note,
+                "",
+            )
+        except Exception as exc:
+            return gr.update(), _error_text(exc), gr.update(), None, "", "", _error_text(exc), question
+
+    def shadow_session_changed(session_id: str | None):
+        if not session_id:
+            return gr.update(choices=[], value=None), "Select a chat."
+        try:
+            view = ctl.session_view(session_id)
+            return dropdown_update(ctl.seed_choices(view)), _status_markdown(view)
+        except Exception as exc:
+            return gr.update(), _error_text(exc)
+
+    def inspect_seed(session_id: str | None, seed_id: str | None):
+        if not session_id or not seed_id:
+            return None, None
+        try:
+            view = ctl.seed_view(session_id, seed_id)
+            return view, view.get("timeline", [])
+        except Exception as exc:
+            return {"error": f"{type(exc).__name__}: {exc}"}, None
+
+    def falsify_seed(session_id: str | None, seed_id: str | None):
+        if not session_id or not seed_id:
+            return {"error": "Select a chat and seed first."}, None
+        try:
+            result = ctl.falsify_seed(session_id, seed_id)
+            return result, ctl.seed_view(session_id, seed_id)
+        except Exception as exc:
+            return {"error": f"{type(exc).__name__}: {exc}"}, None
 
     def submit_verified_evidence(
         session_id: str | None,
@@ -112,580 +270,430 @@ def build_app(
         operator_verified: bool,
     ):
         if not session_id or not seed_id:
-            raise gr.Error("Select a live session and seed first.")
+            return {"error": "Select a live chat and seed first."}, None, "", False
         try:
             result = ctl.submit_verified_evidence(
                 session_id,
                 seed_id,
                 source_ref=source_ref,
                 note=note,
-                operator_verified=operator_verified,
+                operator_verified=bool(operator_verified),
             )
-            view = ctl.session_view(session_id)
-            return (
-                result,
-                view,
-                seed_update(session_id, seed_id),
-                (
-                    f"Gate decision: **{result['decision']}** · "
-                    f"status: **{result['status_after']}** · "
-                    f"evidence: **{result['evidence_count']}**."
-                ),
-                "",
-                False,
-            )
+            return result, ctl.seed_view(session_id, seed_id), "", False
         except Exception as exc:
-            raise gr.Error(str(exc)) from exc
-
-    def load_session(session_id: str | None):
-        if not session_id:
-            return [], {}, gr.Dropdown(choices=[], value=None), "No session selected."
-        try:
-            view = ctl.session_view(session_id)
-            return (
-                ctl.chat_messages(view),
-                view,
-                seed_update(session_id),
-                f"Loaded **{view['title']}** · **{view['runtime_mode']}** mode · "
-                f"{view['turn']} turns · {len(view['seeds'])} seeds.",
-            )
-        except Exception as exc:
-            raise gr.Error(str(exc)) from exc
-
-    def send_turn(
-        session_id: str | None,
-        question: str,
-        external_confirmed: bool,
-    ):
-        if not session_id:
-            raise gr.Error("Create or select a session first.")
-        try:
-            result = ctl.send_turn(
-                session_id,
-                question,
-                external_confirmed=external_confirmed,
-            )
-            view = result["session"]
-            return (
-                ctl.chat_messages(view),
-                result["report"],
-                view,
-                seed_update(session_id),
-                "",
-            )
-        except Exception as exc:
-            raise gr.Error(str(exc)) from exc
-
-    def inspect_seed(session_id: str | None, seed_id: str | None):
-        if not session_id or not seed_id:
-            return {}, []
-        try:
-            view = ctl.seed_view(session_id, seed_id)
-            return view, view.get("timeline", [])
-        except Exception as exc:
-            raise gr.Error(str(exc)) from exc
+            return {"error": f"{type(exc).__name__}: {exc}"}, None, "", False
 
     def record_feedback(
         session_id: str | None,
         turn_index: float,
         overall: str,
         seed_effect: str,
-        seed_id: str,
         note: str,
     ):
         if not session_id:
-            raise gr.Error("Select a session first.")
+            return {"error": "Select a chat first."}
         try:
-            stored = ctl.record_feedback(
+            return ctl.record_feedback(
                 session_id=session_id,
                 turn_index=int(turn_index),
                 overall=overall,
                 seed_effect=seed_effect,
-                seed_id=seed_id.strip() or None,
                 note=note,
             )
-            return stored, "Feedback stored as **record-only audit data**. Runtime authority was not changed."
         except Exception as exc:
-            raise gr.Error(str(exc)) from exc
+            return {"error": f"{type(exc).__name__}: {exc}"}
 
-    def compare_turn(
+    def export_report(session_id: str | None, destination: str):
+        if not session_id:
+            return "Select a chat first."
+        try:
+            return ctl.export_report(session_id, destination or "shadowseed-workbench-report.zip")
+        except Exception as exc:
+            return f"{type(exc).__name__}: {exc}"
+
+    def export_support(session_id: str | None, destination: str):
+        if not session_id:
+            return "Select a chat first."
+        try:
+            return ctl.export_support_bundle(
+                session_id,
+                destination or "shadowseed-support-bundle.zip",
+            )
+        except Exception as exc:
+            return f"{type(exc).__name__}: {exc}"
+
+    def run_scenario(scenario_json: str, external_confirmed: bool):
+        try:
+            return ctl.run_scenario(
+                scenario_json,
+                external_confirmed=bool(external_confirmed),
+            )
+        except Exception as exc:
+            return {"error": f"{type(exc).__name__}: {exc}"}
+
+    def advanced_compare(
         session_id: str | None,
         turn_index: float,
         blinded: bool,
         reveal: bool,
     ):
         if not session_id:
-            raise gr.Error("Select a session first.")
+            return {"error": "Select a chat first."}
         try:
             return ctl.compare_turn(
                 session_id,
                 int(turn_index),
-                blinded=blinded,
-                reveal=reveal,
+                blinded=bool(blinded),
+                reveal=bool(reveal),
             )
         except Exception as exc:
-            raise gr.Error(str(exc)) from exc
+            return {"error": f"{type(exc).__name__}: {exc}"}
 
-    def export_report(session_id: str | None, destination: str):
-        if not session_id:
-            raise gr.Error("Select a session first.")
-        try:
-            target = ctl.export_report(
-                session_id,
-                destination.strip() or "shadowseed-workbench-report.zip",
-            )
-            return target, ctl.verify_export(target)
-        except Exception as exc:
-            raise gr.Error(str(exc)) from exc
+    initial_choices = session_choices()
 
-    def export_support(session_id: str | None, destination: str):
-        if not session_id:
-            raise gr.Error("Select a session first.")
-        try:
-            target = ctl.export_support_bundle(
-                session_id,
-                destination.strip() or "shadowseed-support-bundle.zip",
-            )
-            return target, ctl.verify_export(target)
-        except Exception as exc:
-            raise gr.Error(str(exc)) from exc
-
-    def verify_export(path: str):
-        try:
-            return ctl.verify_export(path.strip())
-        except Exception as exc:
-            raise gr.Error(str(exc)) from exc
-
-    def parse_scenario(scenario_json: str):
-        try:
-            return ctl.parse_scenario(scenario_json)
-        except Exception as exc:
-            raise gr.Error(str(exc)) from exc
-
-    def scenario_status(result: dict[str, Any]) -> str:
-        session_id = str(result["session_id"])
-        if result.get("complete"):
-            return (
-                f"Scenario completed: **{result['completed']}/{result['total']}** questions "
-                f"in resumable session `{session_id}`."
-            )
-        return (
-            f"Scenario paused after **{result['completed']}/{result['total']}** completed "
-            f"questions. Failure: `{result.get('error') or 'unknown error'}`. "
-            f"Resume from index **{result['next_at']}** to retry the failed question without "
-            "replaying completed turns."
-        )
-
-    def run_scenario(scenario_json: str, external_confirmed: bool):
-        try:
-            result = ctl.run_scenario(
-                scenario_json,
-                external_confirmed=external_confirmed,
-            )
-            session_id = str(result["session_id"])
-            return (
-                result,
-                scenario_status(result),
-                dropdown_update(session_id),
-                int(result["next_at"]),
-            )
-        except Exception as exc:
-            raise gr.Error(str(exc)) from exc
-
-    def resume_scenario(
-        scenario_json: str,
-        session_id: str | None,
-        start_at: float,
-        external_confirmed: bool,
-    ):
-        if not session_id:
-            raise gr.Error("Select the partial scenario session first.")
-        try:
-            result = ctl.resume_scenario(
-                scenario_json,
-                session_id,
-                start_at=int(start_at),
-                external_confirmed=external_confirmed,
-            )
-            return (
-                result,
-                scenario_status(result),
-                dropdown_update(session_id),
-                int(result["next_at"]),
-            )
-        except Exception as exc:
-            raise gr.Error(str(exc)) from exc
-
-    profiles = ctl.profiles()
-    profile_choices = [(item["label"], item["profile_id"]) for item in profiles]
-    initial_sessions = session_choices()
-    initial_session = initial_sessions[0][1] if initial_sessions else None
-
-    with gr.Blocks(title="Shadowseed Tester Workbench") as app:
+    with gr.Blocks(title="Shadowseed", css=_PRODUCT_CSS) as app:
+        gr.Markdown("# Shadowseed", elem_id="product-title")
         gr.Markdown(
-            "# Shadowseed Tester Workbench\n"
-            "Local-first tester environment. The UI explains and records runtime behavior; "
-            "it does **not** authorize seed influence or edit weights/statuses directly.\n\n"
-            f"Workspace: `{ctl.workspace_root}`"
+            "Chat normally with an LLM while Shadow Seed Learning runs as a gated shadow layer. "
+            "When you want a direct check, generate the same turn with SSL off automatically.",
+            elem_id="product-subtitle",
         )
 
-        with gr.Tab("Session"):
-            with gr.Row():
-                session_select = gr.Dropdown(
-                    label="Saved session",
-                    choices=initial_sessions,
-                    value=initial_session,
-                )
-                refresh_sessions = gr.Button("Refresh sessions")
-                load_session_button = gr.Button("Load")
-            session_status = gr.Markdown("Select or create a session.")
+        with gr.Tab("Chat"):
+            with gr.Row(elem_id="chat-shell"):
+                with gr.Column(scale=1, min_width=300):
+                    session_select = gr.Dropdown(
+                        choices=initial_choices,
+                        label="Chats",
+                        value=initial_choices[0][1] if initial_choices else None,
+                    )
+                    refresh_sessions = gr.Button("Refresh chats", variant="secondary")
+                    gr.Markdown("### New chat")
+                    title = gr.Textbox(label="Chat name", value="New SSL chat")
+                    backend = gr.Dropdown(
+                        choices=backend_choices,
+                        value="ollama",
+                        label="Model provider",
+                    )
+                    model_id = gr.Textbox(
+                        label="Model id",
+                        placeholder="Use the exact model id configured for your provider",
+                    )
+                    backend_note = gr.Markdown(
+                        next(item["note"] for item in ctl.backends() if item["backend"] == "ollama")
+                    )
+                    with gr.Accordion("Model and SSL settings", open=False):
+                        profile = gr.Dropdown(
+                            choices=profile_choices,
+                            value="balanced",
+                            label="SSL surfacing profile",
+                        )
+                        embedding_backend = gr.Dropdown(
+                            choices=list(ctl.embedding_backends()),
+                            value="sentence-transformers",
+                            label="Semantic embedding",
+                        )
+                        embedding_model = gr.Textbox(
+                            label="Embedding model override",
+                            placeholder="Optional",
+                        )
+                        allow_toy = gr.Checkbox(
+                            label="Allow lexical toy embeddings for a real model (research only)",
+                            value=False,
+                        )
+                        hosted_confirm = gr.Checkbox(
+                            label="I understand this configuration may send chat content to a hosted provider",
+                            value=False,
+                        )
+                        research_evaluation = gr.Checkbox(
+                            label="Create legacy/research evaluation session instead of live SSL chat",
+                            value=False,
+                        )
+                    create_button = gr.Button("Create chat", variant="primary")
 
-            with gr.Accordion("Create session", open=not bool(initial_sessions)):
-                with gr.Row():
-                    new_title = gr.Textbox(label="Title", value="Tester session")
-                    new_profile = gr.Dropdown(
-                        label="Profile",
-                        choices=profile_choices,
-                        value="balanced",
+                with gr.Column(scale=3, min_width=620):
+                    chat = gr.Chatbot(type="messages", label="Conversation", height=500)
+                    chat_status = gr.Markdown("Create or open a chat to begin.", elem_id="chat-status")
+                    question = gr.Textbox(
+                        label="Message",
+                        placeholder="Message the model...",
+                        lines=3,
                     )
-                    new_backend = gr.Dropdown(
-                        label="Backend",
-                        choices=list(ctl.backends()[index]["backend"] for index in range(len(ctl.backends()))),
-                        value="fixture",
+                    compare_checkbox = gr.Checkbox(
+                        label="Compare this message with SSL off",
+                        value=False,
                     )
-                new_model = gr.Textbox(
-                    label="Model id",
-                    info="Required for Hugging Face, Ollama, and OpenAI backends.",
-                )
-                with gr.Row():
-                    new_runtime_mode = gr.Dropdown(
-                        label="Runtime mode",
-                        choices=list(ctl.runtime_modes()),
-                        value="evaluation",
-                    )
-                    new_embedding_backend = gr.Dropdown(
-                        label="Embedding backend",
-                        choices=list(ctl.embedding_backends()),
-                        value="lexical",
-                    )
-                    new_embedding_model = gr.Textbox(
-                        label="Embedding model (optional)",
-                    )
-                allow_toy_embedder = gr.Checkbox(
-                    label="Allow lexical toy embeddings in a live non-fixture test",
-                    value=False,
-                )
-                backend_info = gr.Markdown(backend_note("fixture"))
-                runtime_info = gr.Markdown(runtime_note("evaluation", "fixture", "lexical"))
-                external_confirm = gr.Checkbox(
-                    label=(
-                        "I understand that the selected model or embedding backend may send "
-                        "content to an external provider."
-                    ),
-                    value=False,
-                )
-                create_button = gr.Button("Create session", variant="primary")
+                    send_button = gr.Button("Send", variant="primary")
 
-            chatbot = gr.Chatbot(label="Conversation", height=460)
-            with gr.Row():
-                question = gr.Textbox(
-                    label="Question",
-                    placeholder="Ask the next question…",
-                    lines=2,
-                    scale=5,
-                )
-                send_button = gr.Button("Send", variant="primary", scale=1)
-            send_external_confirm = gr.Checkbox(
-                label=(
-                    "Confirm external-provider transmission for this turn when the session "
-                    "uses a hosted model or embedding backend."
-                ),
-                value=False,
+                    with gr.Accordion("Compare SSL on/off", open=False):
+                        comparison_note = gr.Markdown(
+                            "Enable **Compare this message with SSL off** before sending when you want a paired control.",
+                            elem_classes=["comparison-note"],
+                        )
+                        with gr.Row():
+                            ssl_on = gr.Markdown(label="SSL on")
+                            ssl_off = gr.Markdown(label="SSL off")
+                    with gr.Accordion("Advanced turn diagnostics", open=False):
+                        last_turn_json = gr.JSON(label="Last turn report")
+                        session_json = gr.JSON(label="Read-only session view")
+                    main_seed_select = gr.Dropdown(
+                        choices=[],
+                        label="Shadow seed quick selector",
+                        visible=False,
+                    )
+
+            backend.change(
+                backend_defaults,
+                inputs=[backend],
+                outputs=[embedding_backend, backend_note],
             )
-            turn_report = gr.JSON(label="Latest turn report")
-            session_json = gr.JSON(label="Persisted session view")
-            session_seed_select = gr.Dropdown(label="Seeds in current session", choices=[])
-            with gr.Accordion("Submit verified support for a live seed", open=False):
+            refresh_sessions.click(
+                refresh_session_dropdown,
+                inputs=[session_select],
+                outputs=[session_select],
+            )
+            create_button.click(
+                create_chat,
+                inputs=[
+                    title,
+                    profile,
+                    backend,
+                    model_id,
+                    embedding_backend,
+                    embedding_model,
+                    allow_toy,
+                    hosted_confirm,
+                    research_evaluation,
+                ],
+                outputs=[
+                    session_select,
+                    chat,
+                    chat_status,
+                    main_seed_select,
+                    session_json,
+                    ssl_on,
+                    ssl_off,
+                    comparison_note,
+                ],
+            )
+            session_select.change(
+                load_chat,
+                inputs=[session_select],
+                outputs=[
+                    chat,
+                    chat_status,
+                    main_seed_select,
+                    session_json,
+                    ssl_on,
+                    ssl_off,
+                    comparison_note,
+                ],
+            )
+            send_button.click(
+                send_message,
+                inputs=[session_select, question, compare_checkbox, hosted_confirm],
+                outputs=[
+                    chat,
+                    chat_status,
+                    main_seed_select,
+                    last_turn_json,
+                    ssl_on,
+                    ssl_off,
+                    comparison_note,
+                    question,
+                ],
+            )
+            question.submit(
+                send_message,
+                inputs=[session_select, question, compare_checkbox, hosted_confirm],
+                outputs=[
+                    chat,
+                    chat_status,
+                    main_seed_select,
+                    last_turn_json,
+                    ssl_on,
+                    ssl_off,
+                    comparison_note,
+                    question,
+                ],
+            )
+
+        with gr.Tab("Shadow"):
+            gr.Markdown(
+                "Inspect candidate seeds and their audit history. Seed text is a hypothesis to "
+                "investigate, not an instruction or a fact."
+            )
+            with gr.Row():
+                shadow_session = gr.Dropdown(choices=initial_choices, label="Chat")
+                shadow_refresh = gr.Button("Refresh")
+            shadow_status = gr.Markdown("Select a chat.")
+            seed_select = gr.Dropdown(choices=[], label="Shadow seed")
+            with gr.Row():
+                seed_json = gr.JSON(label="Seed snapshot")
+                seed_timeline = gr.JSON(label="Audit timeline")
+            inspect_button = gr.Button("Inspect seed")
+            falsify_button = gr.Button("Mark seed contradicted", variant="stop")
+            falsify_result = gr.JSON(label="Falsification result")
+
+            with gr.Accordion("Submit independently verified support", open=False):
                 gr.Markdown(
-                    "This is an explicit trust action. Confirm only support that you checked "
-                    "outside the model output. Reusing a source reference does not add authority."
+                    "This is an authority-bearing action. Confirm support outside model output and "
+                    "use a stable source reference. Reusing one source does not add authority twice."
                 )
-                evidence_source_ref = gr.Textbox(
-                    label="Source reference",
-                    placeholder="reviewer:alice:case-17 or ssot:policy:4.2",
-                )
+                evidence_source = gr.Textbox(label="Source reference")
                 evidence_note = gr.Textbox(label="Verification note", lines=2)
-                evidence_verified = gr.Checkbox(
-                    label="I verified this independent source and attest that it supports the seed.",
+                evidence_attest = gr.Checkbox(
+                    label="I independently checked this support outside the model output",
                     value=False,
                 )
                 evidence_button = gr.Button("Submit verified support")
                 evidence_result = gr.JSON(label="Gate result")
-                evidence_status = gr.Markdown()
 
-            refresh_sessions.click(fn=lambda: dropdown_update(), outputs=session_select)
-            new_backend.change(fn=backend_note, inputs=new_backend, outputs=backend_info)
-            new_backend.change(
-                fn=runtime_note,
-                inputs=[new_runtime_mode, new_backend, new_embedding_backend],
-                outputs=runtime_info,
+            shadow_refresh.click(
+                refresh_session_dropdown,
+                inputs=[shadow_session],
+                outputs=[shadow_session],
             )
-            new_runtime_mode.change(
-                fn=runtime_note,
-                inputs=[new_runtime_mode, new_backend, new_embedding_backend],
-                outputs=runtime_info,
-            )
-            new_embedding_backend.change(
-                fn=runtime_note,
-                inputs=[new_runtime_mode, new_backend, new_embedding_backend],
-                outputs=runtime_info,
-            )
-            create_button.click(
-                fn=create_session,
-                inputs=[
-                    new_title,
-                    new_profile,
-                    new_backend,
-                    new_model,
-                    new_runtime_mode,
-                    new_embedding_backend,
-                    new_embedding_model,
-                    allow_toy_embedder,
-                    external_confirm,
-                ],
-                outputs=[session_select, session_status, chatbot, session_json, session_seed_select],
-            )
-            load_session_button.click(
-                fn=load_session,
-                inputs=session_select,
-                outputs=[chatbot, session_json, session_seed_select, session_status],
-            )
-            send_button.click(
-                fn=send_turn,
-                inputs=[session_select, question, send_external_confirm],
-                outputs=[chatbot, turn_report, session_json, session_seed_select, question],
-            )
-            evidence_button.click(
-                fn=submit_verified_evidence,
-                inputs=[
-                    session_select,
-                    session_seed_select,
-                    evidence_source_ref,
-                    evidence_note,
-                    evidence_verified,
-                ],
-                outputs=[
-                    evidence_result,
-                    session_json,
-                    session_seed_select,
-                    evidence_status,
-                    evidence_source_ref,
-                    evidence_verified,
-                ],
-            )
-            question.submit(
-                fn=send_turn,
-                inputs=[session_select, question, send_external_confirm],
-                outputs=[chatbot, turn_report, session_json, session_seed_select, question],
-            )
-
-        with gr.Tab("Seed inspector"):
-            with gr.Row():
-                inspect_session = gr.Dropdown(
-                    label="Session",
-                    choices=initial_sessions,
-                    value=initial_session,
-                )
-                inspect_refresh = gr.Button("Refresh")
-            inspect_seed_select = gr.Dropdown(label="Seed", choices=[])
-            inspect_load_seeds = gr.Button("Load seeds")
-            inspect_button = gr.Button("Inspect seed", variant="primary")
-            seed_json = gr.JSON(label="Seed snapshot + explanation")
-            timeline_json = gr.JSON(label="Audit timeline")
-            inspect_refresh.click(fn=lambda: dropdown_update(), outputs=inspect_session)
-            inspect_load_seeds.click(
-                fn=lambda sid: seed_update(sid),
-                inputs=inspect_session,
-                outputs=inspect_seed_select,
+            shadow_session.change(
+                shadow_session_changed,
+                inputs=[shadow_session],
+                outputs=[seed_select, shadow_status],
             )
             inspect_button.click(
-                fn=inspect_seed,
-                inputs=[inspect_session, inspect_seed_select],
-                outputs=[seed_json, timeline_json],
+                inspect_seed,
+                inputs=[shadow_session, seed_select],
+                outputs=[seed_json, seed_timeline],
             )
-
-        with gr.Tab("Tester feedback"):
-            feedback_session = gr.Dropdown(
-                label="Session",
-                choices=initial_sessions,
-                value=initial_session,
+            seed_select.change(
+                inspect_seed,
+                inputs=[shadow_session, seed_select],
+                outputs=[seed_json, seed_timeline],
             )
-            feedback_refresh = gr.Button("Refresh sessions")
-            feedback_turn = gr.Number(label="Turn index", value=0, precision=0)
-            with gr.Row():
-                feedback_overall = gr.Dropdown(
-                    label="Overall answer",
-                    choices=["better", "neutral", "worse", "unclear"],
-                    value="neutral",
-                )
-                feedback_effect = gr.Dropdown(
-                    label="Visible seed effect",
-                    choices=["helpful", "harmful", "no_visible_effect", "unclear"],
-                    value="no_visible_effect",
-                )
-            feedback_seed = gr.Textbox(
-                label="Seed id (optional)",
-                info="Leave empty for turn-level feedback.",
+            falsify_button.click(
+                falsify_seed,
+                inputs=[shadow_session, seed_select],
+                outputs=[falsify_result, seed_json],
             )
-            feedback_note = gr.Textbox(label="Tester note", lines=4)
-            feedback_button = gr.Button("Record feedback", variant="primary")
-            feedback_result = gr.JSON(label="Stored feedback")
-            feedback_status = gr.Markdown()
-            feedback_refresh.click(fn=lambda: dropdown_update(), outputs=feedback_session)
-            feedback_button.click(
-                fn=record_feedback,
+            evidence_button.click(
+                submit_verified_evidence,
                 inputs=[
-                    feedback_session,
-                    feedback_turn,
-                    feedback_overall,
-                    feedback_effect,
-                    feedback_seed,
-                    feedback_note,
+                    shadow_session,
+                    seed_select,
+                    evidence_source,
+                    evidence_note,
+                    evidence_attest,
                 ],
-                outputs=[feedback_result, feedback_status],
+                outputs=[evidence_result, seed_json, evidence_source, evidence_attest],
             )
 
-        with gr.Tab("Compare"):
+        with gr.Tab("Feedback and export"):
+            feedback_session = gr.Dropdown(choices=initial_choices, label="Chat")
+            feedback_refresh = gr.Button("Refresh chats")
             gr.Markdown(
-                "Compare the uncontaminated baseline answer with the answer visible after the "
-                "Shadowseed path in an **evaluation** session. Live sessions intentionally "
-                "perform one generation and cannot be compared here. No automatic quality "
-                "score is inferred."
+                "Tester feedback is record-only. It never changes seed weight, promotion, or Gate authority."
             )
-            compare_session = gr.Dropdown(
-                label="Session",
-                choices=initial_sessions,
-                value=initial_session,
+            turn_index = gr.Number(value=0, precision=0, label="Turn index")
+            overall = gr.Dropdown(
+                choices=["better", "neutral", "worse", "helpful", "unhelpful"],
+                value="neutral",
+                label="Overall impression",
             )
-            compare_refresh = gr.Button("Refresh sessions")
-            compare_turn_index = gr.Number(label="Turn index", value=0, precision=0)
-            compare_blind = gr.Checkbox(label="Blind labels", value=True)
-            compare_reveal = gr.Checkbox(label="Reveal A/B mapping", value=False)
-            compare_button = gr.Button("Compare", variant="primary")
-            comparison_json = gr.JSON(label="Comparison")
-            compare_refresh.click(fn=lambda: dropdown_update(), outputs=compare_session)
-            compare_button.click(
-                fn=compare_turn,
-                inputs=[compare_session, compare_turn_index, compare_blind, compare_reveal],
-                outputs=comparison_json,
+            seed_effect = gr.Dropdown(
+                choices=["helpful", "harmful", "no_visible_effect", "unclear"],
+                value="no_visible_effect",
+                label="Visible SSL effect",
             )
+            feedback_note = gr.Textbox(label="Optional note", lines=3)
+            feedback_button = gr.Button("Record feedback")
+            feedback_result = gr.JSON(label="Recorded feedback")
 
-        with gr.Tab("Export"):
-            gr.Markdown(
-                "A full report contains the selected session's conversation and seed snapshots. "
-                "A support bundle is privacy-minimized: no free session title, prompts, answers, "
-                "seed text, feedback notes, or direct session id are included."
-            )
-            export_session = gr.Dropdown(
-                label="Session",
-                choices=initial_sessions,
-                value=initial_session,
-            )
-            export_refresh = gr.Button("Refresh sessions")
-            full_output = gr.Textbox(
-                label="Full report ZIP",
+            gr.Markdown("### Export")
+            report_destination = gr.Textbox(
                 value="shadowseed-workbench-report.zip",
+                label="Full report destination",
             )
-            support_output = gr.Textbox(
-                label="Support bundle ZIP",
+            support_destination = gr.Textbox(
                 value="shadowseed-support-bundle.zip",
+                label="Privacy-minimized support destination",
             )
             with gr.Row():
-                export_full_button = gr.Button("Export full report", variant="primary")
+                export_report_button = gr.Button("Export full report")
                 export_support_button = gr.Button("Export support bundle")
-            export_path = gr.Textbox(label="Written export")
-            export_verification = gr.JSON(label="Verification")
-            gr.Markdown("### Verify an existing Workbench export")
-            verify_path = gr.Textbox(label="ZIP path")
-            verify_button = gr.Button("Verify")
-            verify_result = gr.JSON(label="Verification result")
-            export_refresh.click(fn=lambda: dropdown_update(), outputs=export_session)
-            export_full_button.click(
-                fn=export_report,
-                inputs=[export_session, full_output],
-                outputs=[export_path, export_verification],
+            export_result = gr.Textbox(label="Export result")
+
+            feedback_refresh.click(
+                refresh_session_dropdown,
+                inputs=[feedback_session],
+                outputs=[feedback_session],
+            )
+            feedback_button.click(
+                record_feedback,
+                inputs=[feedback_session, turn_index, overall, seed_effect, feedback_note],
+                outputs=[feedback_result],
+            )
+            export_report_button.click(
+                export_report,
+                inputs=[feedback_session, report_destination],
+                outputs=[export_result],
             )
             export_support_button.click(
-                fn=export_support,
-                inputs=[export_session, support_output],
-                outputs=[export_path, export_verification],
+                export_support,
+                inputs=[feedback_session, support_destination],
+                outputs=[export_result],
             )
-            verify_button.click(fn=verify_export, inputs=verify_path, outputs=verify_result)
 
-        with gr.Tab("Scenario"):
+        with gr.Tab("Advanced / research"):
             gr.Markdown(
-                "Import a JSON scenario. A batch backend failure preserves completed turns and "
-                "returns the exact resume position, so retrying does not replay earlier calls. "
-                "The resulting session also remains available in the Session tab."
+                "Research tools are intentionally separate from normal chat. Scenario JSON, the "
+                "historical evaluation runtime and blinded review exist for reproducibility and "
+                "experiments; ordinary testers do not need them."
             )
-            scenario_json = gr.Textbox(
-                label="Scenario JSON",
-                lines=12,
-                value=(
-                    '{\n  "title": "Example scenario",\n  "questions": [\n'
-                    '    "What is the main uncertainty?",\n'
-                    '    "What evidence would change the answer?"\n'
-                    '  ],\n  "profile_id": "balanced",\n  "backend": "fixture",\n'
-                    '  "runtime_mode": "evaluation",\n'
-                    '  "embedding_backend": "lexical"\n}'
-                ),
-            )
-            scenario_external_confirm = gr.Checkbox(
-                label=(
-                    "Confirm external-provider transmission when this scenario uses a hosted "
-                    "model or embedding backend."
-                ),
-                value=False,
-            )
-            with gr.Row():
-                scenario_parse = gr.Button("Validate")
-                scenario_run = gr.Button("Run new scenario", variant="primary")
-                scenario_resume = gr.Button("Resume partial scenario")
-            scenario_result = gr.JSON(label="Scenario")
-            scenario_status_output = gr.Markdown()
-            scenario_session = gr.Dropdown(label="Scenario session", choices=initial_sessions)
-            scenario_resume_at = gr.Number(
-                label="Resume index",
-                value=0,
-                precision=0,
-                info="Filled automatically after a partial run; persisted progress is authoritative.",
-            )
-            scenario_parse.click(fn=parse_scenario, inputs=scenario_json, outputs=scenario_result)
-            scenario_run.click(
-                fn=run_scenario,
-                inputs=[scenario_json, scenario_external_confirm],
-                outputs=[
-                    scenario_result,
-                    scenario_status_output,
-                    scenario_session,
-                    scenario_resume_at,
-                ],
-            )
-            scenario_resume.click(
-                fn=resume_scenario,
-                inputs=[
-                    scenario_json,
-                    scenario_session,
-                    scenario_resume_at,
-                    scenario_external_confirm,
-                ],
-                outputs=[
-                    scenario_result,
-                    scenario_status_output,
-                    scenario_session,
-                    scenario_resume_at,
-                ],
-            )
+            with gr.Accordion("Scenario runner", open=False):
+                scenario_json = gr.Code(
+                    language="json",
+                    label="Scenario JSON",
+                    value=json.dumps(
+                        {
+                            "title": "Research scenario",
+                            "questions": ["First question", "Second question"],
+                            "profile_id": "balanced",
+                            "backend": "fixture",
+                            "runtime_mode": "evaluation",
+                            "embedding_backend": "lexical",
+                        },
+                        indent=2,
+                    ),
+                )
+                scenario_external_confirm = gr.Checkbox(
+                    label="I understand this scenario may send content to a hosted provider",
+                    value=False,
+                )
+                scenario_button = gr.Button("Run scenario")
+                scenario_result = gr.JSON(label="Scenario result")
+                scenario_button.click(
+                    run_scenario,
+                    inputs=[scenario_json, scenario_external_confirm],
+                    outputs=[scenario_result],
+                )
+
+            with gr.Accordion("Inspect a stored comparison", open=False):
+                advanced_session = gr.Dropdown(choices=initial_choices, label="Chat")
+                advanced_refresh = gr.Button("Refresh chats")
+                advanced_turn = gr.Number(value=0, precision=0, label="Turn index")
+                advanced_blind = gr.Checkbox(label="Blind A/B", value=True)
+                advanced_reveal = gr.Checkbox(label="Reveal mapping", value=False)
+                advanced_compare_button = gr.Button("Load comparison")
+                advanced_compare_result = gr.JSON(label="Comparison")
+                advanced_refresh.click(
+                    refresh_session_dropdown,
+                    inputs=[advanced_session],
+                    outputs=[advanced_session],
+                )
+                advanced_compare_button.click(
+                    advanced_compare,
+                    inputs=[advanced_session, advanced_turn, advanced_blind, advanced_reveal],
+                    outputs=[advanced_compare_result],
+                )
 
     return app
 
@@ -697,23 +705,18 @@ def launch_workbench(
     port: int = 7860,
     allow_remote: bool = False,
     inbrowser: bool = True,
-) -> None:
-    """Launch the supported Workbench server.
+):
+    """Launch the local Workbench and reject accidental remote exposure."""
 
-    Remote binding is opt-in because this preview is a local, single-user
-    tester environment and has no multi-user authentication layer.
-    """
-
-    if host not in _LOOPBACK_HOSTS and not allow_remote:
+    if not _is_loopback(host) and not allow_remote:
         raise ValueError(
-            "remote Workbench binding is disabled by default; use --allow-remote only in a "
-            "trusted environment and add your own network access controls"
+            "remote Workbench binding is disabled by default; use --allow-remote only "
+            "inside a trusted environment because the preview has no multi-user auth layer"
         )
     app = build_app(workspace)
-    app.launch(
+    return app.launch(
         server_name=host,
         server_port=int(port),
-        share=False,
         inbrowser=bool(inbrowser),
-        show_error=True,
+        share=False,
     )
