@@ -258,7 +258,11 @@ def run_ssl_session(
                     if seed is None:
                         continue
                     if sid not in seed_to_cluster:
-                        cid = clusterer.add(seed.text, seed.embedding)
+                        cid = clusterer.add(
+                            seed.text,
+                            seed.embedding,
+                            observation_ref=f"{conv['id']}:turn:{t}",
+                        )
                         had_rep = cid in cluster_rep
                         seed_to_cluster[sid] = cid
                         # the earliest-born member anchors the cluster; record it
@@ -279,7 +283,7 @@ def run_ssl_session(
                         # too low while the member's own dedup-driven occurrence_count
                         # could still reach the Gate and promote a non-representative.
                         cid = seed_to_cluster[sid]
-                        clusterer.bump(cid)
+                        clusterer.bump(cid, observation_ref=f"{conv['id']}:turn:{t}")
                         rep_seed = manager.seeds.get(cluster_rep.get(cid, ""))
                         if rep_seed is not None and rep_seed is not seed:
                             refresh_cluster_representative(manager, rep_seed, seed)
