@@ -140,6 +140,8 @@ def validate_seed_snapshot(data: Mapping[str, Any]) -> None:
         raise ValueError("seed 'text' is missing")
     if not isinstance(data["text"], str):
         raise TypeError(f"seed 'text' must be a string, got {type(data['text']).__name__}")
+    if not data["text"].strip():
+        raise ValueError("seed 'text' must be a non-empty string")
 
     # --- embedding: numeric, non-empty, all finite ---
     if "embedding" not in data:
