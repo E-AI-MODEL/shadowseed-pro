@@ -37,7 +37,11 @@ from shadowseed.adapters.models import make_backend
 from shadowseed.benchmark.ssl45_model_benefit_suite import blind_order
 from shadowseed.chat import ShadowChatSession
 from shadowseed.core_config import SSLCoreConfig
-from shadowseed.detection.model_detector import make_detector_backend
+from shadowseed.detection.model_detector import (
+    OPEN_SET_GENERATIVE_DETECTOR_ID,
+    OPEN_SET_GENERATIVE_PROMPT,
+    make_detector_backend,
+)
 from shadowseed.gate.events import GateDecision
 from shadowseed.intake import is_atomic_seed, normalize_detection_candidates
 
@@ -344,6 +348,33 @@ def _gate_summary(events: Iterable[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _parser_diagnostics_summary(counts: Counter[str] | dict[str, int]) -> dict[str, Any]:
+    numbered = int(counts.get("numbered_lines", 0))
+    dropped_blank = int(counts.get("dropped_blank_or_placeholder", 0))
+    dropped_citation = int(counts.get("dropped_citation_or_stub", 0))
+    dropped_fewshot = int(counts.get("dropped_fewshot_leak", 0))
+    dropped_duplicate = int(counts.get("dropped_duplicate", 0))
+    rejected = dropped_blank + dropped_citation + dropped_fewshot + dropped_duplicate
+    return {
+        "nonblank_lines": int(counts.get("nonblank_lines", 0)),
+        "numbered_lines": numbered,
+        "unnumbered_nonblank_lines": int(counts.get("unnumbered_nonblank_lines", 0)),
+        "accepted_candidates": int(counts.get("accepted_candidates", 0)),
+        "nested_numbering_prefixes_removed": int(
+            counts.get("nested_numbering_prefixes_removed", 0)
+        ),
+        "dropped_blank_or_placeholder": dropped_blank,
+        "dropped_citation_or_stub": dropped_citation,
+        "dropped_fewshot_leak": dropped_fewshot,
+        "dropped_duplicate": dropped_duplicate,
+        "parser_rejection_rate": round(rejected / numbered, 6) if numbered else None,
+        "fewshot_leakage_rate": round(dropped_fewshot / numbered, 6) if numbered else None,
+        "dropped_citation_or_stub_rate": round(dropped_citation / numbered, 6)
+        if numbered
+        else None,
+    }
+
+
 def _assert_live_authority_invariants(events: list[dict[str, Any]]) -> None:
     for event in events:
         if float(event.get("weight_delta", 0.0)) > 1e-12:
@@ -397,6 +428,7 @@ def _run_mode_for_suite(
     total_suppressed = 0
     total_detected_on_surfaced = 0
     total_answer_calls = 0
+    parser_diag_totals: Counter[str] = Counter()
 
     for conversation in selected:
         config = SSLCoreConfig()
@@ -438,6 +470,16 @@ def _run_mode_for_suite(
         turn_reports: list[dict[str, Any]] = []
         for turn_index, turn in enumerate(conversation["turns"]):
             report = session.turn(turn["question"])
+            if mode == "live":
+                parse_diagnostics = getattr(detector_backend, "last_parse_diagnostics", None)
+                raw_detector_output = getattr(detector_backend, "last_raw_output", None)
+                if isinstance(parse_diagnostics, dict):
+                    report["detector_parse_diagnostics"] = dict(parse_diagnostics)
+                    for key, value in parse_diagnostics.items():
+                        if isinstance(value, int) and not isinstance(value, bool):
+                            parser_diag_totals[key] += value
+                if isinstance(raw_detector_output, str):
+                    report["detector_raw_output"] = raw_detector_output
             turn_reports.append(report)
             total_answer_calls += 1 + int(
                 mode == "evaluation" and bool(report.get("surfaced_seed_ids"))
@@ -604,6 +646,7 @@ def _run_mode_for_suite(
             else None
         ),
         "candidate_metrics": duplicate_metrics,
+        "detector_parser": _parser_diagnostics_summary(parser_diag_totals),
         "gate": gate_summary,
         "wall_elapsed_seconds": round(time.perf_counter() - mode_started, 3),
         "claim_boundary": (
@@ -628,6 +671,21 @@ def _aggregate_run_summaries(artifacts: list[dict[str, Any]]) -> dict[str, Any]:
     live_semantic_dupes = sum(item["candidate_metrics"]["semantic_duplicate_occurrences"] for item in live)
     surfaced_detected = sum(item["detected_on_surfaced_turns"] for item in live)
     suppressed = sum(item["suppressed_self_attributed_occurrences"] for item in live)
+    parser_counts: Counter[str] = Counter()
+    for item in live:
+        for key in (
+            "nonblank_lines",
+            "numbered_lines",
+            "unnumbered_nonblank_lines",
+            "accepted_candidates",
+            "nested_numbering_prefixes_removed",
+            "dropped_blank_or_placeholder",
+            "dropped_citation_or_stub",
+            "dropped_fewshot_leak",
+            "dropped_duplicate",
+        ):
+            parser_counts[key] += int(item.get("detector_parser", {}).get(key, 0))
+    parser_summary = _parser_diagnostics_summary(parser_counts)
     return {
         "live": {
             "suite_count": len(live),
@@ -643,6 +701,7 @@ def _aggregate_run_summaries(artifacts: list[dict[str, Any]]) -> dict[str, Any]:
             "semantic_duplicate_rate": round(live_semantic_dupes / live_admissible, 6)
             if live_admissible
             else None,
+            "detector_parser": parser_summary,
             "surfaced_turn_count": sum(item["surfaced_turn_count"] for item in live),
             "same_turn_deferral_rate": round(suppressed / surfaced_detected, 6)
             if surfaced_detected
@@ -682,7 +741,10 @@ def _write_report(
         "",
         f"- Live turns: {live['turn_count']}",
         f"- Live candidate occurrences: {live['candidate_occurrences']}",
-        f"- Malformed/non-atomic prescreen rate: {live['malformed_or_non_atomic_rate']}",
+        f"- Detector parser rejection rate: {live['detector_parser']['parser_rejection_rate']}",
+        f"- Detector few-shot leakage rate: {live['detector_parser']['fewshot_leakage_rate']}",
+        f"- Nested numbering prefixes removed: {live['detector_parser']['nested_numbering_prefixes_removed']}",
+        f"- Malformed/non-atomic prescreen rate after parsing: {live['malformed_or_non_atomic_rate']}",
         f"- Exact duplicate rate: {live['exact_duplicate_rate']}",
         f"- Semantic duplicate rate: {live['semantic_duplicate_rate']}",
         f"- Same-turn deferral rate when SSL surfaced: {live['same_turn_deferral_rate']}",
@@ -794,12 +856,18 @@ def run_capability_scaling(
 
     setup_started = time.perf_counter()
     embed_fn, embedding_dimension = make_embedding_fn(embedding_backend, embedding_model)
-    model = make_backend(backend=backend, model_id=model_id, max_new_tokens=max_new_tokens)
+    model = make_backend(
+        backend=backend,
+        model_id=model_id,
+        max_new_tokens=max_new_tokens,
+        model_revision=model_revision,
+    )
     detector = make_detector_backend(
         backend,
         model_id=model_id,
         max_new_tokens=max_new_tokens,
         prompt_variant="generative",
+        model_revision=model_revision,
     )
     setup_elapsed = time.perf_counter() - setup_started
 
@@ -955,6 +1023,10 @@ def run_capability_scaling(
             "quantization": quantization,
             "max_new_tokens": max_new_tokens,
             "detector_prompt_variant": "generative",
+            "detector_id": OPEN_SET_GENERATIVE_DETECTOR_ID,
+            "detector_prompt_template_sha256": _sha256_bytes(
+                OPEN_SET_GENERATIVE_PROMPT.encode("utf-8")
+            ),
             "authority_effect_of_model_identity": "none",
         },
         "embedding": {

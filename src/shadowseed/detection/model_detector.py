@@ -209,42 +209,91 @@ def _looks_like_citation_fragment(seed: str, source_text: str) -> bool:
     return False
 
 
+def parse_numbered_seeds_with_diagnostics(
+    raw_output: str,
+    max_seeds: int = 5,
+    source_text: str = "",
+) -> tuple[list[str], dict[str, int | bool]]:
+    """Parse detector output and retain non-authority parser diagnostics.
+
+    The diagnostics make malformed output and few-shot leakage observable to
+    research harnesses without changing Gate semantics. A duplicated numbering
+    prefix (``1. 1. candidate``) can be introduced when a backend reconstructs
+    the prompt's prefilled ``1.`` line. Removing only that syntactic prefix is
+    counted explicitly and never changes the candidate's semantic content.
+    """
+
+    seeds: list[str] = []
+    seen: set[str] = set()
+    diagnostics: dict[str, int | bool] = {
+        "nonblank_lines": 0,
+        "numbered_lines": 0,
+        "unnumbered_nonblank_lines": 0,
+        "nested_numbering_prefixes_removed": 0,
+        "dropped_blank_or_placeholder": 0,
+        "dropped_citation_or_stub": 0,
+        "dropped_fewshot_leak": 0,
+        "dropped_duplicate": 0,
+        "accepted_candidates": 0,
+        "truncated_after_max_seeds": False,
+    }
+    for line in raw_output.splitlines():
+        if line.strip():
+            diagnostics["nonblank_lines"] = int(diagnostics["nonblank_lines"]) + 1
+        match = _NUMBERED_LINE.match(line)
+        if not match:
+            if line.strip():
+                diagnostics["unnumbered_nonblank_lines"] = (
+                    int(diagnostics["unnumbered_nonblank_lines"]) + 1
+                )
+            continue
+        diagnostics["numbered_lines"] = int(diagnostics["numbered_lines"]) + 1
+        seed = match.group(1).strip().strip("-•").strip()
+        while seed:
+            nested = _NUMBERED_LINE.match(seed)
+            if nested is None:
+                break
+            seed = nested.group(1).strip().strip("-•").strip()
+            diagnostics["nested_numbering_prefixes_removed"] = (
+                int(diagnostics["nested_numbering_prefixes_removed"]) + 1
+            )
+        if not seed or seed.lower() == "[seed]":
+            diagnostics["dropped_blank_or_placeholder"] = (
+                int(diagnostics["dropped_blank_or_placeholder"]) + 1
+            )
+            continue
+        if _looks_like_citation_fragment(seed, source_text):
+            diagnostics["dropped_citation_or_stub"] = (
+                int(diagnostics["dropped_citation_or_stub"]) + 1
+            )
+            continue
+        if _looks_like_fewshot_leak(seed):
+            diagnostics["dropped_fewshot_leak"] = int(diagnostics["dropped_fewshot_leak"]) + 1
+            continue
+        if seed in seen:
+            diagnostics["dropped_duplicate"] = int(diagnostics["dropped_duplicate"]) + 1
+            continue
+        seen.add(seed)
+        seeds.append(seed)
+        if len(seeds) >= max_seeds:
+            diagnostics["truncated_after_max_seeds"] = True
+            break
+    diagnostics["accepted_candidates"] = len(seeds)
+    return seeds, diagnostics
+
+
 def parse_numbered_seeds(
     raw_output: str,
     max_seeds: int = 5,
     source_text: str = "",
 ) -> list[str]:
-    """Parse `1. seed` style lines out of a model response.
+    """Parse ``1. seed`` style lines while preserving the legacy list API."""
 
-    Lines without a leading number are ignored. Blank seeds, the literal
-    placeholder ``[seed]``, citation fragments (HTML entities, bare
-    acronyms, very short stubs, long substrings of the source text) and
-    duplicates are dropped. Returns at most ``max_seeds`` items in source
-    order.
-
-    `source_text` is the input text that was given to the model. When
-    provided, candidates that appear as a long literal substring of it are
-    dropped as citations.
-    """
-    seeds: list[str] = []
-    seen: set[str] = set()
-    for line in raw_output.splitlines():
-        match = _NUMBERED_LINE.match(line)
-        if not match:
-            continue
-        seed = match.group(1).strip().strip("-•").strip()
-        if not seed or seed.lower() == "[seed]":
-            continue
-        if _looks_like_citation_fragment(seed, source_text):
-            continue
-        if _looks_like_fewshot_leak(seed):
-            continue
-        if seed in seen:
-            continue
-        seen.add(seed)
-        seeds.append(seed)
-        if len(seeds) >= max_seeds:
-            break
+    seeds, _diagnostics = parse_numbered_seeds_with_diagnostics(
+        raw_output,
+        max_seeds=max_seeds,
+        source_text=source_text,
+    )
     return seeds
 
 
@@ -366,7 +415,13 @@ class HFTransformersDetectorBackend:
     greedy and deterministic so the same input produces the same seeds.
     """
 
-    def __init__(self, model_id: str, max_new_tokens: int = 400, prompt_variant: str = "absence") -> None:
+    def __init__(
+        self,
+        model_id: str,
+        max_new_tokens: int = 400,
+        prompt_variant: str = "absence",
+        revision: str | None = None,
+    ) -> None:
         self.prompt_variant = prompt_variant
         try:
             import torch
@@ -380,7 +435,11 @@ class HFTransformersDetectorBackend:
         self.name = f"hf-transformers:{model_id}"
         self.model_id = model_id
         self.max_new_tokens = max_new_tokens
-        self.tokenizer = AutoTokenizer.from_pretrained(model_id)
+        self.revision = revision
+        self.last_raw_output: str | None = None
+        self.last_parse_diagnostics: dict[str, int | bool] | None = None
+        tokenizer_kwargs = {"revision": revision} if revision is not None else {}
+        self.tokenizer = AutoTokenizer.from_pretrained(model_id, **tokenizer_kwargs)
         if torch.cuda.is_available():
             model_kwargs: dict[str, Any] = {"torch_dtype": torch.float16, "device_map": "auto"}
         else:
@@ -389,6 +448,8 @@ class HFTransformersDetectorBackend:
             # ~8 GB instead of ~15 GB, which is what makes Phi-3.5-mini and
             # Qwen3-4B fit on the public-repo ubuntu-latest runner (16 GB).
             model_kwargs = {"torch_dtype": "auto"}
+        if revision is not None:
+            model_kwargs["revision"] = revision
         model = AutoModelForCausalLM.from_pretrained(model_id, **model_kwargs)
         self.generator = pipeline(
             "text-generation",
@@ -409,10 +470,15 @@ class HFTransformersDetectorBackend:
             return_full_text=False,
         )
         raw = output[0]["generated_text"]
-        # the prompt ends with "1.\n" — re-prepend so the parser sees the first item
-        return parse_numbered_seeds(
+        # The prompt ends with a prefilled ``1.``. Reconstruct it for parsing,
+        # but retain raw output and diagnostics so research runs can measure
+        # formatting artifacts and rejected leakage rather than hiding them.
+        seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
             "1. " + raw, max_seeds=max_seeds, source_text=text
         )
+        self.last_raw_output = raw
+        self.last_parse_diagnostics = diagnostics
+        return seeds
 
 
 class OllamaDetectorBackend:
@@ -436,6 +502,8 @@ class OllamaDetectorBackend:
         self.name = f"ollama:{model_id}"
         self.model_id = model_id
         self.max_new_tokens = max_new_tokens
+        self.last_raw_output: str | None = None
+        self.last_parse_diagnostics: dict[str, int | bool] | None = None
         self.client = OllamaClient(model=model_id, host=host)
 
     def detect_seeds(self, item: dict[str, Any], max_seeds: int = 5) -> list[str]:
@@ -444,10 +512,15 @@ class OllamaDetectorBackend:
             return []
         prompt = build_detection_prompt(text, max_seeds=max_seeds, variant=self.prompt_variant)
         raw = self.client.generate(prompt, max_new_tokens=self.max_new_tokens)
-        # the prompt ends with "1.\n" — re-prepend so the parser sees the first item
-        return parse_numbered_seeds(
+        # The prompt ends with a prefilled ``1.``. Reconstruct it for parsing,
+        # but retain raw output and diagnostics so research runs can measure
+        # formatting artifacts and rejected leakage rather than hiding them.
+        seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
             "1. " + raw, max_seeds=max_seeds, source_text=text
         )
+        self.last_raw_output = raw
+        self.last_parse_diagnostics = diagnostics
+        return seeds
 
 
 class OpenAIDetectorBackend:
@@ -470,6 +543,8 @@ class OpenAIDetectorBackend:
         self.name = f"openai:{model_id}"
         self.model_id = model_id
         self.max_new_tokens = max_new_tokens
+        self.last_raw_output: str | None = None
+        self.last_parse_diagnostics: dict[str, int | bool] | None = None
         self.client = OpenAIClient(model=model_id)
 
     def detect_seeds(self, item: dict[str, Any], max_seeds: int = 5) -> list[str]:
@@ -478,10 +553,15 @@ class OpenAIDetectorBackend:
             return []
         prompt = build_detection_prompt(text, max_seeds=max_seeds, variant=self.prompt_variant)
         raw = self.client.generate(prompt, max_new_tokens=self.max_new_tokens)
-        # the prompt ends with "1.\n" — re-prepend so the parser sees the first item
-        return parse_numbered_seeds(
+        # The prompt ends with a prefilled ``1.``. Reconstruct it for parsing,
+        # but retain raw output and diagnostics so research runs can measure
+        # formatting artifacts and rejected leakage rather than hiding them.
+        seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
             "1. " + raw, max_seeds=max_seeds, source_text=text
         )
+        self.last_raw_output = raw
+        self.last_parse_diagnostics = diagnostics
+        return seeds
 
 
 SUPPORTED_MODEL_BACKENDS: tuple[str, ...] = ("fixture", "hf-transformers", "ollama", "openai")
@@ -492,6 +572,7 @@ def make_detector_backend(
     model_id: str | None = None,
     max_new_tokens: int = 400,
     prompt_variant: str = "absence",
+    model_revision: str | None = None,
 ) -> DetectorBackend:
     if prompt_variant not in PROMPT_VARIANTS:
         raise ValueError(f"Unknown prompt variant {prompt_variant!r}. Allowed: {PROMPT_VARIANTS}.")
@@ -503,7 +584,10 @@ def make_detector_backend(
                 "--model-id is required for --model-backend hf-transformers"
             )
         return HFTransformersDetectorBackend(
-            model_id=model_id, max_new_tokens=max_new_tokens, prompt_variant=prompt_variant
+            model_id=model_id,
+            max_new_tokens=max_new_tokens,
+            prompt_variant=prompt_variant,
+            revision=model_revision,
         )
     if backend == "ollama":
         if not model_id:
