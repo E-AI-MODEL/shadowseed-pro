@@ -197,6 +197,8 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
     shutil.rmtree(dist_dir, ignore_errors=True)
     shutil.rmtree(work_dir, ignore_errors=True)
     output_dir.mkdir(parents=True, exist_ok=True)
+    work_dir.mkdir(parents=True, exist_ok=True)
+    (work_dir / "spec").mkdir(parents=True, exist_ok=True)
 
     _run(_pyinstaller_command(root, dist_dir, work_dir), cwd=root)
     executable = _executable_path(dist_dir)
