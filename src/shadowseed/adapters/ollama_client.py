@@ -50,7 +50,9 @@ def list_ollama_models(
     """Return locally installed Ollama model names in deterministic order.
 
     Discovery is read-only and talks only to the configured Ollama host. It does
-    not pull models, send chat content, or change SSL state.
+    not pull models, send chat content, or change SSL state. Names are
+    deduplicated case-insensitively while preserving the first spelling returned
+    by Ollama.
     """
 
     base = (host or ollama_host()).rstrip("/")
@@ -59,14 +61,14 @@ def list_ollama_models(
     raw_models = payload.get("models", [])
     if not isinstance(raw_models, list):
         raise RuntimeError("Ollama /api/tags response does not contain a model list")
-    names: set[str] = set()
+    names_by_key: dict[str, str] = {}
     for item in raw_models:
         if not isinstance(item, dict):
             continue
         name = str(item.get("name") or item.get("model") or "").strip()
         if name:
-            names.add(name)
-    return sorted(names, key=str.casefold)
+            names_by_key.setdefault(name.casefold(), name)
+    return sorted(names_by_key.values(), key=str.casefold)
 
 
 class OllamaClient:
