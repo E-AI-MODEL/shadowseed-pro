@@ -6,6 +6,11 @@ on:
       - main
     paths:
       - .github/workflows/chat-first-readme-materialize.yml
+  push:
+    branches:
+      - agent/chat-first-ssl-product
+    paths:
+      - .github/workflows/chat-first-readme-materialize.yml
 
 permissions:
   contents: write
