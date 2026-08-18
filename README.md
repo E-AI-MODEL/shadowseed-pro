@@ -105,8 +105,8 @@ first reviewed real-model run plus a separately labelled deferral stress measure
 
 ### Tester Workbench
 
-The 0.4 tester preview adds a local, single-user Workbench for practical testing
-without writing Python code:
+The Workbench is a local, single-user chat surface for testing Shadow Seed
+Learning without writing Python code or authoring benchmark inputs:
 
 ```bash
 pip install -e ".[workbench]"
@@ -115,15 +115,23 @@ shadowseed init
 shadowseed workbench
 ```
 
-The supported native server binds to `127.0.0.1` by default. Testers can create
-live or evaluation sessions, choose an embedding backend, inspect stored seed
-decisions, submit explicitly verified support to the existing Validation Gate,
-record separate audit-only feedback, import scenarios, and export verified
-reports or privacy-minimized support bundles. Baseline/SSL comparison is limited
-to evaluation sessions because live mode intentionally performs one generation.
-The Workbench is a tester product layer over the existing runtime; it is not a
-second Validation Gate and does not turn ordinary tester observations into
-scientific evidence.
+The supported native server binds to `127.0.0.1` by default. A newly created
+ordinary chat uses the product-oriented `live` runtime and the evidence-backed
+Gate policy. The tester chooses a model and chats normally. For any message they
+may enable **Compare this message with SSL off**; the Workbench then generates a
+paired no-SSL control from the same pre-turn visible history and model
+configuration before executing the real live turn. The control is comparison
+data only: it does not enter candidate detection, recurrence, the Gate, or later
+conversation history. A textual difference is attributable to SSL only when an
+authorized seed actually surfaced on the real turn.
+
+Historical `evaluation` sessions, authored baseline fixtures, scenario JSON and
+benchmark outputs remain available for research and regression under Advanced;
+they are not prerequisites for ordinary testing. Seed inspection, independently
+verified support, audit-only feedback and verified exports remain available as
+secondary tools. The Workbench is a product surface over the existing runtime;
+it is not a second Validation Gate and does not turn ordinary tester observations
+into scientific evidence.
 
 See [`docs/workbench/README.md`](docs/workbench/README.md) for the practical
 workflow and [`docs/workbench/limitations.md`](docs/workbench/limitations.md)
