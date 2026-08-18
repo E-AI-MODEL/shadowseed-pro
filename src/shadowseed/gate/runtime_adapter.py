@@ -40,7 +40,9 @@ def _authority_signal_key(signal: ValidationSignal) -> str | None:
     """Return the stable identity of support that may raise authority.
 
     A recurrence count is one observation, even when a caller submits it more
-    than once. External evidence is one observation per source and kind. The
+    than once.
+    External evidence is one observation per underlying source reference, regardless
+    of external signal kind. The
     anonymous fallback is retained only so historical Gate events remain
     replayable; new verified external support is rejected before this key is
     computed unless it carries a ``source_ref``.
@@ -53,7 +55,7 @@ def _authority_signal_key(signal: ValidationSignal) -> str | None:
         return f"recurrence:{identity}"
     if signal.is_external_evidence and signal.verified:
         identity = signal.source_ref or "anonymous"
-        return f"external:{signal.kind.value}:{identity}"
+        return f"external:{identity}"
     return None
 
 

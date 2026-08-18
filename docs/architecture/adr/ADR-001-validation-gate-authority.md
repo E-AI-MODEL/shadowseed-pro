@@ -196,9 +196,9 @@ falsifiable:
 7. **Verification boundary.** External observations may be logged while
    unverified, but only verified external support can authorize a transition or
    increment the evidence counter. New verified external support must carry a
-   non-empty `source_ref`; repeated use of the same source-and-kind pair is
-   idempotent, while the same reference under a different signal kind is
-   distinct support. A bare `external_evidence=True` cannot supply provenance
+   non-empty `source_ref`; repeated use of the same underlying source reference is
+   idempotent across external signal kinds. Signal kind records the channel; it
+   does not create an independent evidence unit (ADR-004). A bare `external_evidence=True` cannot supply provenance
    and fails before a Gate event or authority change for a non-expired seed. An
    expired seed instead records the terminal `EXPIRED` decision without applying
    evidence or authority. Historical anonymous events remain replayable.

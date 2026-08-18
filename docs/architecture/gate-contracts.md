@@ -105,8 +105,8 @@ Gate engine and append one event per call to `SSLManager.gate_events`:
   proposes and the Gate applies through `_set_authority`. Recurrence can promote
   under `exploratory` without incrementing `evidence_count`. External support can
   authorize or count as evidence only when `verified=True` and accompanied by a
-  non-empty `source_ref`. Evidence identity is the source-and-kind pair, so the
-  same `source_ref` under a different external signal kind is distinct support.
+  non-empty `source_ref`. Evidence identity is the underlying `source_ref`, so the same source does not
+  accumulate authority merely by arriving under a different external signal kind.
   For non-expired seeds, new anonymous verified evidence raises `ValueError`
   before a Gate event or authority change. Expired seeds short-circuit to a
   terminal `EXPIRED` event without applying evidence or authority. Historical

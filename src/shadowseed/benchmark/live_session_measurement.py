@@ -152,7 +152,9 @@ def _effective_config(
 def _normalized_candidates(text: str, max_seed_words: int) -> list[str]:
     return [
         candidate
-        for candidate in normalize_detection_candidates([text])
+        for candidate in normalize_detection_candidates(
+            [text], expand_short_fragments=False, split_broad=False
+        )
         if is_atomic_seed(candidate, max_seed_words=max_seed_words)
     ]
 

@@ -112,6 +112,11 @@ class SurfacingPolicy:
     def __post_init__(self) -> None:
         if self.surface_threshold < -1.0 or self.surface_threshold > 1.0:
             raise ValueError("surface_threshold must be between -1.0 and 1.0")
+        if self.surface_top_k is not None:
+            if isinstance(self.surface_top_k, bool) or not isinstance(self.surface_top_k, int):
+                raise ValueError("surface_top_k must be an integer or None")
+            if self.surface_top_k < 0:
+                raise ValueError("surface_top_k must be >= 0 or None")
         if self.early_turn_margin < 0.0:
             raise ValueError("early_turn_margin must be >= 0")
         if self.early_turn_history < 0:
@@ -177,7 +182,12 @@ def select_cross_turn_seeds(
     candidates: list[SurfacingCandidate],
     top_k: int | None,
 ) -> list[SurfacingCandidate]:
-    """Rank eligible candidates by relevance and apply the use-time cap."""
+    """Rank eligible candidates by relevance and apply the use-time cap.
+
+    ``-1`` remains the historical direct-helper no-cap sentinel for benchmark
+    compatibility. Configured product policies validate ``surface_top_k`` in
+    :class:`SurfacingPolicy` and reject negative values there.
+    """
 
     ranked = sorted(candidates, key=lambda candidate: candidate[0], reverse=True)
     if top_k is not None and top_k >= 0:

@@ -329,7 +329,14 @@ class SQLiteWorkspaceRepository:
             raise WorkspaceStorageError("backup schema is missing or unsupported")
         self.database_path.parent.mkdir(parents=True, exist_ok=True)
         temporary = self.database_path.with_suffix(".restore.tmp")
+        temporary.unlink(missing_ok=True)
         shutil.copy2(source_path, temporary)
+        try:
+            candidate = SQLiteWorkspaceRepository(temporary)
+            candidate.initialize()
+        except Exception:
+            temporary.unlink(missing_ok=True)
+            raise
         os.replace(temporary, self.database_path)
         self.initialize()
 

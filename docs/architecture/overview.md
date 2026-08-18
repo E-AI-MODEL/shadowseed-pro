@@ -27,8 +27,8 @@ details live in dedicated documents; in summary:
   (`exploratory` manager/evaluation default, `evidence_backed` live default).
   Policies propose; only the Gate applies. Recurrence is a first-class signal and is never relabeled as external
   evidence. Verified external support requires a non-empty `source_ref`; repeated
-  use of the same source-and-kind pair is idempotent. The same reference under a
-  different signal kind is distinct support. Every Gate decision produces an
+  use of the same underlying source reference is idempotent across external signal
+  kinds. Signal kind remains channel provenance, not a second evidence identity. Every Gate decision produces an
   immutable `GateEvent`.
 - **Encapsulation** ([lifecycle-and-gate.md](lifecycle-and-gate.md)): `weight`,
   `status`, `evidence_count`, `contradiction_score`, and `authority_version` are

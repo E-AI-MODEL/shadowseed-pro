@@ -68,6 +68,8 @@ def is_atomic_seed(text: str, max_seed_words: int | None = None) -> bool:
     """
 
     lowered = text.lower().strip()
+    if not lowered:
+        return False
     separators = [",", ";", " en ", " of ", "zoals", "bijvoorbeeld"]
     broad_terms = [
         "analysekader",
@@ -212,7 +214,12 @@ def create_seed(
 ) -> str:
     """Create one weightless seed and record the creation event."""
 
-    seed_id = f"ss_{len(manager._seeds) + 1:03d}"
+    numeric_ids: list[int] = []
+    for existing_id in manager._seeds:
+        match = re.fullmatch(r"ss_(\d+)", existing_id)
+        if match is not None:
+            numeric_ids.append(int(match.group(1)))
+    seed_id = f"ss_{max(numeric_ids, default=0) + 1:03d}"
     manager._seeds[seed_id] = ShadowSeed(
         id=seed_id,
         text=text,

@@ -429,7 +429,12 @@ class ShadowChatSession:
             detection_basis="visible_answer_non_ssl_attributed",
             context_ref=f"turn:{turn}:visible_answer",
         )
-        ingest = self.manager.ingest_detection_candidates(candidates, origin=origin)
+        ingest = self.manager.ingest_detection_candidates(
+            candidates,
+            expand_short_fragments=False,
+            split_broad=False,
+            origin=origin,
+        )
         born: list[str] = []
         for accepted in ingest.get("accepted", []):
             self.born_turn.setdefault(accepted["seed_id"], turn)
@@ -583,7 +588,11 @@ class ShadowChatSession:
         candidates = self.detector.detect_seeds(
             {"text": baseline_answer}, max_seeds=self.max_seeds_per_turn
         )
-        ingest = self.manager.ingest_detection_candidates(candidates)
+        ingest = self.manager.ingest_detection_candidates(
+            candidates,
+            expand_short_fragments=False,
+            split_broad=False,
+        )
         born: list[str] = []
         for accepted in ingest.get("accepted", []):
             self.born_turn.setdefault(accepted["seed_id"], turn)
