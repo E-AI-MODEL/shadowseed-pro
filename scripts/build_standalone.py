@@ -159,17 +159,26 @@ def _archive_bundle(bundle: Path, output_dir: Path, stem: str) -> Path:
 def _verify_frozen(executable: Path, root: Path, work_dir: Path) -> dict[str, object]:
     workspace = work_dir / "self-test-workspace"
     result_file = work_dir / "standalone-self-test.json"
-    _run(
-        [
-            str(executable),
-            "--self-test",
-            "--workspace",
-            str(workspace),
-            "--self-test-output",
-            str(result_file),
-        ],
-        cwd=root,
-    )
+    command = [
+        str(executable),
+        "--self-test",
+        "--workspace",
+        str(workspace),
+        "--self-test-output",
+        str(result_file),
+    ]
+    print("+", " ".join(command), flush=True)
+    completed = subprocess.run(command, cwd=root, check=False)
+    if completed.returncode != 0:
+        logs = sorted((workspace / "logs").glob("standalone-startup-error-*.log"))
+        if logs:
+            print("\n===== frozen startup diagnostic =====", file=sys.stderr)
+            print(logs[-1].read_text(encoding="utf-8", errors="replace"), file=sys.stderr)
+            print("===== end frozen startup diagnostic =====\n", file=sys.stderr)
+        raise subprocess.CalledProcessError(completed.returncode, command)
+    if not result_file.is_file():
+        raise RuntimeError("frozen self-test exited successfully without writing its result artifact")
+
     payload = json.loads(result_file.read_text(encoding="utf-8"))
     required_true = (
         "frozen",
