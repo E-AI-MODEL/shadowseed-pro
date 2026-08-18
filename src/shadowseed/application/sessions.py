@@ -12,6 +12,7 @@ from shadowseed.application.profiles import get_profile
 from shadowseed.chat import ShadowChatSession
 from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal
 from shadowseed.storage.sqlite import SQLiteWorkspaceRepository
+from shadowseed.surfacing import build_chat_prompt
 
 
 class SessionService:
@@ -43,12 +44,91 @@ class SessionService:
         )
         return session_id
 
-    def run_turn(self, session_id: str, question: str) -> dict[str, Any]:
+    @staticmethod
+    def _generate_live_no_ssl_control(
+        session: ShadowChatSession,
+        question: str,
+    ) -> str:
+        """Generate a paired control without mutating SSL state.
+
+        The control uses the exact persisted visible conversation history and the
+        same model backend, but receives no surfaced Shadow Seeds. It is generated
+        before the real live turn so the control cannot observe state changes from
+        that turn. Its text is never fed to detection, recurrence, the Gate, or
+        later conversation history.
+        """
+
+        fixture_answer = f"Fixture echo answer to: {question}"
+        return session.model.generate(
+            build_chat_prompt(
+                session.history,
+                question,
+                [],
+                response_language="English",
+            ),
+            {
+                "question": question,
+                "turn": session._turn,
+                "baseline_answer": fixture_answer,
+            },
+            "baseline",
+            [],
+        )
+
+    def run_turn(
+        self,
+        session_id: str,
+        question: str,
+        *,
+        compare_without_ssl: bool = False,
+    ) -> dict[str, Any]:
         if not question or not question.strip():
             raise ValueError("question must not be empty")
+        normalized_question = question.strip()
         stored = self.repository.load_session(session_id)
         session = ShadowChatSession.from_state(stored["state"])
-        report = session.turn(question.strip())
+
+        control_answer: str | None = None
+        if compare_without_ssl and session.runtime_mode == "live":
+            control_answer = self._generate_live_no_ssl_control(
+                session,
+                normalized_question,
+            )
+
+        report = session.turn(normalized_question)
+
+        if compare_without_ssl:
+            if session.runtime_mode == "evaluation":
+                baseline = report.get("baseline_answer")
+                if baseline is None:
+                    raise RuntimeError(
+                        "evaluation comparison requested but the turn has no baseline answer"
+                    )
+                control_answer = str(baseline)
+            if control_answer is None:
+                raise RuntimeError("comparison requested but no no-SSL control was generated")
+            comparison_fields = {
+                "comparison_requested": True,
+                "comparison_kind": (
+                    "paired_live_no_ssl_control"
+                    if session.runtime_mode == "live"
+                    else "evaluation_control"
+                ),
+                "comparison_control_answer": control_answer,
+                "comparison_ssl_answer": str(report.get("answer", "")),
+                "comparison_ssl_influence_observed": bool(
+                    report.get("surfaced_seed_ids", [])
+                ),
+                "comparison_interpretation": (
+                    "The control used the same pre-turn visible history and model configuration "
+                    "without surfaced Shadow Seeds. When no authorized seed surfaced, textual "
+                    "differences must not be attributed to SSL."
+                ),
+            }
+            report.update(comparison_fields)
+            if session.turn_reports:
+                session.turn_reports[-1].update(comparison_fields)
+
         self.repository.save_session(
             session_id,
             session.to_state(),
