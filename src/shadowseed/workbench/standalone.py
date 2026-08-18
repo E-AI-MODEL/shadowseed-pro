@@ -166,6 +166,7 @@ def main(argv: list[str] | None = None) -> int:
             workspace = service.paths.root
             log_path = _write_startup_error(workspace, exc)
             print(f"Shadowseed failed to start. Diagnostic log: {log_path}", file=sys.stderr)
+            traceback.print_exception(type(exc), exc, exc.__traceback__, file=sys.stderr)
         except Exception:
             traceback.print_exc()
         return 1
