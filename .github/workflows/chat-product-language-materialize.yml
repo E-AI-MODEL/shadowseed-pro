@@ -1,6 +1,5 @@
-name: Temporary - materialize chat-first README
+name: Temporary - materialize final chat-first UI fixes
 
-# Existing branch workflow: this update intentionally triggers the push path.
 on:
   pull_request:
     branches:
@@ -20,19 +19,20 @@ jobs:
   materialize:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
           ref: agent/chat-first-ssl-product
           fetch-depth: 0
-      - name: Replace obsolete Workbench product description
+
+      - name: Apply README and Gradio 6 compatibility fixes
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          path = Path('README.md')
-          text = path.read_text(encoding='utf-8')
+          readme = Path('README.md')
+          text = readme.read_text(encoding='utf-8')
           old = '''The 0.4 tester preview adds a local, single-user Workbench for practical testing
 without writing Python code:
 
@@ -81,21 +81,82 @@ secondary tools. The Workbench is a product surface over the existing runtime;
 it is not a second Validation Gate and does not turn ordinary tester observations
 into scientific evidence.
 '''
-          if text.count(old) != 1:
-              raise SystemExit('expected exactly one obsolete Workbench README block')
-          path.write_text(text.replace(old, new), encoding='utf-8')
+          old_count = text.count(old)
+          if old_count == 1:
+              text = text.replace(old, new)
+          elif old_count == 0 and 'Compare this message with SSL off' in text:
+              pass
+          else:
+              raise SystemExit(f'could not identify README product block safely: old_count={old_count}')
+          if 'Baseline/SSL comparison is limited' in text:
+              raise SystemExit('obsolete evaluation-only product claim remains in README')
+          readme.write_text(text, encoding='utf-8')
+
+          app = Path('src/shadowseed/workbench/app.py')
+          app_text = app.read_text(encoding='utf-8')
+          old_chatbot = 'gr.Chatbot(type="messages", label="Conversation", height=500)'
+          new_chatbot = 'gr.Chatbot(label="Conversation", height=500)'
+          count = app_text.count(old_chatbot)
+          if count == 1:
+              app_text = app_text.replace(old_chatbot, new_chatbot)
+          elif count == 0 and new_chatbot in app_text:
+              pass
+          else:
+              raise SystemExit(f'could not patch Chatbot safely: old_count={count}')
+          app.write_text(app_text, encoding='utf-8')
           PY
-      - name: Verify documentation diff
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Workbench test stack
+        env:
+          PIP_EXTRA_INDEX_URL: https://download.pytorch.org/whl/cpu
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e '.[test,workbench]'
+
+      - name: Run Workbench contract tests
+        env:
+          GRADIO_ANALYTICS_ENABLED: 'False'
+        run: |
+          ruff check src/shadowseed/application src/shadowseed/workbench tests/test_workbench_*.py tests/test_chat_first_product.py tests/test_chat_product_language.py
+          pytest -q tests/test_workbench_*.py tests/test_chat_first_product.py tests/test_chat_product_language.py
+
+      - name: Headless UI build
+        env:
+          GRADIO_ANALYTICS_ENABLED: 'False'
+        run: |
+          python - <<'PY'
+          import tempfile
+          from pathlib import Path
+          from shadowseed.workbench.app import build_app
+
+          with tempfile.TemporaryDirectory() as tmp:
+              app = build_app(Path(tmp) / 'workspace')
+              if app is None:
+                  raise SystemExit('build_app returned None')
+          print('headless chat-first Workbench build OK')
+          PY
+
+      - name: Verify product docs and diff
         run: |
           git diff --check
           grep -F 'Compare this message with SSL off' README.md
+          grep -F 'ordinary chat uses the product-oriented `live` runtime' README.md
           ! grep -F 'Baseline/SSL comparison is limited' README.md
-      - name: Commit README alignment
+
+      - name: Commit only after all checks pass
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add README.md
+          git add README.md src/shadowseed/workbench/app.py
           git diff --cached --check
-          git commit -m 'Align README with chat-first Workbench'
+          if git diff --cached --quiet; then
+            echo 'No materialized changes required.'
+            exit 0
+          fi
+          git commit -m 'Finalize chat-first Workbench compatibility'
           git pull --rebase origin agent/chat-first-ssl-product
           git push origin HEAD:agent/chat-first-ssl-product
