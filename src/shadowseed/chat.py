@@ -73,6 +73,7 @@ from shadowseed.models import (
     ValidationGateResult,
 )
 from shadowseed.vectorstore.memory import InMemoryVectorStore
+from shadowseed.observations import CandidateObservationLedger
 from shadowseed_agent import (
     AgentInfluenceRecord,
     AgentSafetyContract,
@@ -197,6 +198,7 @@ class ShadowChatSession:
         self.history: list[tuple[str, str]] = []
         self.influence_records: list[AgentInfluenceRecord] = []
         self.turn_reports: list[dict[str, Any]] = []
+        self.observation_ledger = CandidateObservationLedger()
         self._turn = 0
         # SSL->RAG bridge (vision item 2): promoted seeds probe this corpus so
         # the report can show what the seed finds that the question does not.
@@ -421,6 +423,20 @@ class ShadowChatSession:
         candidates, suppressed_self = self._filter_ssl_attributed_candidates(
             raw_candidates, surfaced_seed_ids
         )
+        turn_observations = self.observation_ledger.record_batch(
+            raw_candidates,
+            context_ref=f"turn:{turn}:visible_answer",
+            detector_backend=str(getattr(self.detector, "name", "unknown")),
+            detector_prompt_provenance=(
+                None
+                if getattr(self.detector, "prompt_variant", None) is None
+                else str(getattr(self.detector, "prompt_variant"))
+            ),
+            candidate_type=CandidateType.POSSIBLE_COMPLETION.value,
+            ssl_exposed=bool(surfaced_seed_ids),
+            surfaced_seed_ids=surfaced_seed_ids,
+            created_at=self.manager._now_iso(),
+        )
         occurrence_before = {
             seed_id: seed.occurrence_count for seed_id, seed in self.manager.seeds.items()
         }
@@ -511,6 +527,9 @@ class ShadowChatSession:
             ),
             "detected_candidates": raw_candidates,
             "suppressed_self_attributed_candidates": suppressed_self,
+            "candidate_observations": [
+                observation.to_dict() for observation in turn_observations
+            ],
             "seeds_born_weightless": born,
             "prompt_boundary_markers": apply_prompt_boundary(surfaced)[1] if surfaced else [],
             "promoted_this_turn": promoted_now,
@@ -587,6 +606,19 @@ class ShadowChatSession:
         # weight zero.
         candidates = self.detector.detect_seeds(
             {"text": baseline_answer}, max_seeds=self.max_seeds_per_turn
+        )
+        turn_observations = self.observation_ledger.record_batch(
+            candidates,
+            context_ref=f"turn:{turn}:baseline_answer",
+            detector_backend=str(getattr(self.detector, "name", "unknown")),
+            detector_prompt_provenance=(
+                None
+                if getattr(self.detector, "prompt_variant", None) is None
+                else str(getattr(self.detector, "prompt_variant"))
+            ),
+            candidate_type=CandidateType.POSSIBLE_COMPLETION.value,
+            ssl_exposed=False,
+            created_at=self.manager._now_iso(),
         )
         ingest = self.manager.ingest_detection_candidates(
             candidates,
@@ -680,6 +712,9 @@ class ShadowChatSession:
                 if selected
                 else []
             ),
+            "candidate_observations": [
+                observation.to_dict() for observation in turn_observations
+            ],
             "seeds_born_weightless": born,
             "prompt_boundary_markers": apply_prompt_boundary(surfaced)[1] if surfaced else [],
             "promoted_this_turn": promoted_now,
@@ -777,6 +812,7 @@ class ShadowChatSession:
             "turns": self._turn,
             "seeds": seeds,
             "influence_records": [asdict(r) for r in self.influence_records],
+            "candidate_observation_ledger": self.observation_ledger.to_dict(),
         }
 
     def to_state(self) -> dict[str, Any]:
@@ -829,6 +865,7 @@ class ShadowChatSession:
             ],
             "influence_records": [asdict(record) for record in self.influence_records],
             "turn_reports": list(self.turn_reports),
+            "candidate_observation_ledger": self.observation_ledger.to_dict(),
             "turn": self._turn,
             "born_turn": dict(self.born_turn),
             "last_surfaced": dict(self.last_surfaced),
@@ -908,6 +945,17 @@ class ShadowChatSession:
             AgentInfluenceRecord(**item) for item in state.get("influence_records", [])
         ]
         session.turn_reports = list(state.get("turn_reports", []))
+        observation_state = state.get("candidate_observation_ledger")
+        if observation_state is None:
+            session.observation_ledger = (
+                CandidateObservationLedger.project_legacy_turn_reports(
+                    session.turn_reports
+                )
+            )
+        else:
+            session.observation_ledger = CandidateObservationLedger.from_dict(
+                observation_state
+            )
         session._turn = int(state.get("turn", len(session.turn_reports)))
         session.born_turn = {str(key): int(value) for key, value in state.get("born_turn", {}).items()}
         session.last_surfaced = {
