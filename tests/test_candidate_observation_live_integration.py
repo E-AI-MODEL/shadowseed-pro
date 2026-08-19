@@ -106,13 +106,21 @@ def test_live_later_clean_match_links_without_mutating_contaminated_record(monke
     contaminated_report = session.turn("What about privacy and data?")
     contaminated = dict(contaminated_report["candidate_observations"][0])
 
-    session.manager.falsify_seed(seed_id, reason="test removal of later surfacing")
-    clean_report = session.turn("A later independent question?")
+    clean = session.observation_ledger.record_batch(
+        [candidate],
+        context_ref="turn:later_clean_fixture",
+        detector_backend="static",
+        detector_prompt_provenance="generative",
+        candidate_type="possible_completion",
+        ssl_exposed=False,
+        created_at=session.manager._now_iso(),
+    )[0]
 
-    assert clean_report["candidate_observations"][0]["recurrence_eligible"] is True
+    assert clean.recurrence_eligible is True
     assert session.observation_ledger.observations[0].to_dict() == contaminated
     assert len(session.observation_ledger.links) == 1
     assert session.observation_ledger.links[0].contaminated_observation_id == contaminated["observation_id"]
+    assert session.observation_ledger.links[0].clean_observation_id == clean.observation_id
 
 
 def test_observation_ledger_roundtrips_with_session_state(monkeypatch):
