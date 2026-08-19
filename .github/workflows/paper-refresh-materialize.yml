@@ -1,0 +1,65 @@
+name: Paper refresh materialize
+
+on:
+  push:
+    branches:
+      - agent/paper-contract-refresh
+    paths:
+      - ".github/workflows/paper-refresh-materialize.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Align final paper source
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path("paper/main.tex")
+          text = path.read_text(encoding="utf-8")
+          marker = "\\usepackage{microtype}\n"
+          addition = marker + "\\usepackage{mathptmx}\n"
+          if "\\usepackage{mathptmx}" not in text:
+              if marker not in text:
+                  raise SystemExit("microtype marker missing")
+              text = text.replace(marker, addition, 1)
+              path.write_text(text, encoding="utf-8")
+      - name: Install paper toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk biber poppler-utils texlive-latex-extra texlive-fonts-recommended texlive-bibtex-extra
+      - name: Build and validate paper
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd paper
+          latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
+          test -s main.pdf
+          test "$(pdfinfo main.pdf | awk '/^Pages:/ {print $2}')" = "10"
+          pdfinfo main.pdf | grep -F "Title:           Shadowseed: Remembering Without Trusting"
+          pdfinfo main.pdf | grep -F "Author:          H. Visser"
+          if grep -E 'Overfull|Underfull|undefined references|Citation .* undefined|Reference .* undefined' main.log; then
+            echo "paper contains layout or reference warnings" >&2
+            exit 1
+          fi
+          mv main.pdf shadowseed-paper.pdf
+      - name: Commit synchronized paper PDF
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add paper/main.tex paper/shadowseed-paper.pdf
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "paper already synchronized"
+            exit 0
+          fi
+          git commit -m "Materialize synchronized paper PDF"
+          git push
