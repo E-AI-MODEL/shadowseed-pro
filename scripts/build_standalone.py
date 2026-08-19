@@ -91,6 +91,8 @@ def _pyinstaller_command(root: Path, dist_dir: Path, work_dir: Path) -> list[str
         "--collect-submodules",
         "transformers.models",
         "--collect-submodules",
+        "scipy._external.array_api_compat",
+        "--collect-submodules",
         "openai",
         "--hidden-import",
         "socksio",
