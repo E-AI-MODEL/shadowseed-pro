@@ -1,0 +1,1319 @@
+{
+  "summary": {
+    "suite_id": "transfer",
+    "suite_version": "ssl-session-transfer-0.2",
+    "runtime_mode": "evaluation",
+    "gate_policy_id": "exploratory",
+    "production_policy": false,
+    "external_evidence_injected": false,
+    "conversation_count": 1,
+    "turn_count": 7,
+    "answer_generation_calls": 7,
+    "detector_calls": 7,
+    "surfaced_turn_count": 0,
+    "influence_record_count": 0,
+    "detected_on_surfaced_turns": 0,
+    "suppressed_self_attributed_occurrences": 0,
+    "same_turn_deferral_rate": null,
+    "candidate_metrics": {
+      "candidate_occurrences": 0,
+      "normalization_admissible_occurrences": 0,
+      "malformed_or_non_atomic_occurrences": 0,
+      "malformed_or_non_atomic_rate": null,
+      "exact_duplicate_occurrences": 0,
+      "exact_duplicate_rate": null,
+      "semantic_duplicate_occurrences": 0,
+      "semantic_duplicate_rate": null,
+      "semantic_duplicate_threshold": 0.85
+    },
+    "detector_parser": {
+      "nonblank_lines": 0,
+      "numbered_lines": 0,
+      "unnumbered_nonblank_lines": 0,
+      "accepted_candidates": 0,
+      "nested_numbering_prefixes_removed": 0,
+      "dropped_blank_or_placeholder": 0,
+      "dropped_citation_or_stub": 0,
+      "dropped_fewshot_leak": 0,
+      "dropped_duplicate": 0,
+      "parser_rejection_rate": null,
+      "fewshot_leakage_rate": null,
+      "dropped_citation_or_stub_rate": null
+    },
+    "gate": {
+      "event_count": 23,
+      "decisions": {
+        "blocked": 22,
+        "validated": 1
+      },
+      "positive_weight_event_count": 1,
+      "verified_external_support_event_count": 0,
+      "contradiction_decision_count": 22
+    },
+    "wall_elapsed_seconds": 455.308,
+    "claim_boundary": "Live evidence-backed results establish observed runtime mechanics only. Evaluation is an explicitly non-production counterfactual used to create blind A/B opportunities. Neither arm establishes candidate truth or general benefit."
+  },
+  "conversations": [
+    {
+      "conversation_id": "CONV_EDU",
+      "domain": "education",
+      "turns": [
+        {
+          "runtime_mode": "evaluation",
+          "turn": 0,
+          "question": "I am designing a new digital literacy module for lower-secondary students. Where should I start?",
+          "answer": "To design an effective digital literacy module for lower-secondary students, start by understanding the core competencies needed at this age. Digital literacy encompasses not just the technical skills of using digital tools but also the critical thinking, ethical, and social skills necessary to navigate the digital world responsibly.\n\n1. **Assess Current Skills and Needs**: Begin by assessing the current digital literacy levels of your students. This can be done through a survey or a preliminary assessment. Identify the gaps and areas where students need more support. This will help tailor the module to meet their specific needs.\n\n2. **Set Clear Objectives**: Define what you want students to learn and be able to do by the end of the module. Objectives should be specific, measurable, achievable, relevant, and time-bound (SMART). For example, students should be able to evaluate the credibility of online sources, use digital tools effectively, and understand the implications of their online actions.\n\n3. **Incorporate a Variety of Learning Activities**: Design the module to include a mix of activities that cater to different learning styles. This could include interactive lessons,",
+          "baseline_answer": "To design an effective digital literacy module for lower-secondary students, start by understanding the core competencies needed at this age. Digital literacy encompasses not just the technical skills of using digital tools but also the critical thinking, ethical, and social skills necessary to navigate the digital world responsibly.\n\n1. **Assess Current Skills and Needs**: Begin by assessing the current digital literacy levels of your students. This can be done through a survey or a preliminary assessment. Identify the gaps and areas where students need more support. This will help tailor the module to meet their specific needs.\n\n2. **Set Clear Objectives**: Define what you want students to learn and be able to do by the end of the module. Objectives should be specific, measurable, achievable, relevant, and time-bound (SMART). For example, students should be able to evaluate the credibility of online sources, use digital tools effectively, and understand the implications of their online actions.\n\n3. **Incorporate a Variety of Learning Activities**: Design the module to include a mix of activities that cater to different learning styles. This could include interactive lessons,",
+          "ssl_answer": "To design an effective digital literacy module for lower-secondary students, start by understanding the core competencies needed at this age. Digital literacy encompasses not just the technical skills of using digital tools but also the critical thinking, ethical, and social skills necessary to navigate the digital world responsibly.\n\n1. **Assess Current Skills and Needs**: Begin by assessing the current digital literacy levels of your students. This can be done through a survey or a preliminary assessment. Identify the gaps and areas where students need more support. This will help tailor the module to meet their specific needs.\n\n2. **Set Clear Objectives**: Define what you want students to learn and be able to do by the end of the module. Objectives should be specific, measurable, achievable, relevant, and time-bound (SMART). For example, students should be able to evaluate the credibility of online sources, use digital tools effectively, and understand the implications of their online actions.\n\n3. **Incorporate a Variety of Learning Activities**: Design the module to include a mix of activities that cater to different learning styles. This could include interactive lessons,",
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_290e90490247ca8beaf48b5a",
+              "raw_text": "Socio-economic factors as a dimension influencing students' access to and engagement with digital tools.",
+              "normalized_text": "socio-economic factors as a dimension influencing students' access to and engagement with digital tools.",
+              "context_ref": "turn:0:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:30:16.884586",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_001"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 1,
+          "retrieval_probe": null
+        },
+        {
+          "runtime_mode": "evaluation",
+          "turn": 1,
+          "question": "How should I handle large differences in students' prior knowledge?",
+          "answer": "Handling large differences in students' prior knowledge requires a well-structured and flexible approach. Here are some strategies to consider:\n\n### Differentiated Instruction\n1. **Tiered Assignments**: Create assignments that cater to different levels of understanding. For example, provide simpler tasks for students who are less familiar with digital tools and more complex tasks for those who are more advanced.\n2. **Flexible Grouping**: Use flexible grouping strategies to allow students to work in small groups where they can support each other. This can help students with lower prior knowledge catch up while more advanced students can deepen their understanding.\n\n### Scaffolded Learning\n1. **Step-by-Step Guidance**: Break down complex tasks into smaller, manageable steps. Provide clear instructions and examples for each step.\n2. **Modeling and Demonstration**: Demonstrate how to use digital tools and solve problems. This can be done through live demonstrations, videos, or interactive tutorials.\n\n### Technology and Resources\n1. **Use of Technology**: Leverage technology to support diverse learning needs. Tools like adaptive learning platforms can provide personalized learning experiences.\n2. **",
+          "baseline_answer": "Handling large differences in students' prior knowledge requires a well-structured and flexible approach. Here are some strategies to consider:\n\n### Differentiated Instruction\n1. **Tiered Assignments**: Create assignments that cater to different levels of understanding. For example, provide simpler tasks for students who are less familiar with digital tools and more complex tasks for those who are more advanced.\n2. **Flexible Grouping**: Use flexible grouping strategies to allow students to work in small groups where they can support each other. This can help students with lower prior knowledge catch up while more advanced students can deepen their understanding.\n\n### Scaffolded Learning\n1. **Step-by-Step Guidance**: Break down complex tasks into smaller, manageable steps. Provide clear instructions and examples for each step.\n2. **Modeling and Demonstration**: Demonstrate how to use digital tools and solve problems. This can be done through live demonstrations, videos, or interactive tutorials.\n\n### Technology and Resources\n1. **Use of Technology**: Leverage technology to support diverse learning needs. Tools like adaptive learning platforms can provide personalized learning experiences.\n2. **",
+          "ssl_answer": "Handling large differences in students' prior knowledge requires a well-structured and flexible approach. Here are some strategies to consider:\n\n### Differentiated Instruction\n1. **Tiered Assignments**: Create assignments that cater to different levels of understanding. For example, provide simpler tasks for students who are less familiar with digital tools and more complex tasks for those who are more advanced.\n2. **Flexible Grouping**: Use flexible grouping strategies to allow students to work in small groups where they can support each other. This can help students with lower prior knowledge catch up while more advanced students can deepen their understanding.\n\n### Scaffolded Learning\n1. **Step-by-Step Guidance**: Break down complex tasks into smaller, manageable steps. Provide clear instructions and examples for each step.\n2. **Modeling and Demonstration**: Demonstrate how to use digital tools and solve problems. This can be done through live demonstrations, videos, or interactive tutorials.\n\n### Technology and Resources\n1. **Use of Technology**: Leverage technology to support diverse learning needs. Tools like adaptive learning platforms can provide personalized learning experiences.\n2. **",
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_c94dc56f78ddac8f273b0a3a",
+              "raw_text": "Socioeconomic background as a dimension influencing prior knowledge and its relation to differentiated instruction.",
+              "normalized_text": "socioeconomic background as a dimension influencing prior knowledge and its relation to differentiated instruction.",
+              "context_ref": "turn:1:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:31:21.475549",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_002"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 2,
+          "retrieval_probe": null
+        },
+        {
+          "runtime_mode": "evaluation",
+          "turn": 2,
+          "question": "Which learning activities work best for this topic?",
+          "answer": "### Interactive Lessons\nInteractive lessons are highly effective for engaging lower-secondary students. These can include:\n- **Digital Workshops**: Organize hands-on workshops where students can practice using digital tools in a controlled environment. For example, a workshop on creating a digital presentation or a blog post.\n- **Simulations and Games**: Utilize educational games and simulations that teach digital literacy skills in a fun and engaging way. Tools like Code.org for coding basics or Newsela for digital citizenship can be particularly useful.\n\n### Collaborative Projects\nCollaborative projects foster teamwork and communication skills, which are crucial for digital literacy:\n- **Group Research Projects**: Assign projects where students research a topic and present their findings using digital tools. This could involve creating a digital poster, a video, or a podcast.\n- **Peer Review Sessions**: Implement peer review sessions where students evaluate each other’s work. This not only enhances their critical thinking skills but also teaches them to provide constructive feedback.\n\n### Real-World Applications\nConnecting digital literacy to real-world scenarios helps students see the relevance of what they are learning:\n- **Case",
+          "baseline_answer": "### Interactive Lessons\nInteractive lessons are highly effective for engaging lower-secondary students. These can include:\n- **Digital Workshops**: Organize hands-on workshops where students can practice using digital tools in a controlled environment. For example, a workshop on creating a digital presentation or a blog post.\n- **Simulations and Games**: Utilize educational games and simulations that teach digital literacy skills in a fun and engaging way. Tools like Code.org for coding basics or Newsela for digital citizenship can be particularly useful.\n\n### Collaborative Projects\nCollaborative projects foster teamwork and communication skills, which are crucial for digital literacy:\n- **Group Research Projects**: Assign projects where students research a topic and present their findings using digital tools. This could involve creating a digital poster, a video, or a podcast.\n- **Peer Review Sessions**: Implement peer review sessions where students evaluate each other’s work. This not only enhances their critical thinking skills but also teaches them to provide constructive feedback.\n\n### Real-World Applications\nConnecting digital literacy to real-world scenarios helps students see the relevance of what they are learning:\n- **Case",
+          "ssl_answer": "### Interactive Lessons\nInteractive lessons are highly effective for engaging lower-secondary students. These can include:\n- **Digital Workshops**: Organize hands-on workshops where students can practice using digital tools in a controlled environment. For example, a workshop on creating a digital presentation or a blog post.\n- **Simulations and Games**: Utilize educational games and simulations that teach digital literacy skills in a fun and engaging way. Tools like Code.org for coding basics or Newsela for digital citizenship can be particularly useful.\n\n### Collaborative Projects\nCollaborative projects foster teamwork and communication skills, which are crucial for digital literacy:\n- **Group Research Projects**: Assign projects where students research a topic and present their findings using digital tools. This could involve creating a digital poster, a video, or a podcast.\n- **Peer Review Sessions**: Implement peer review sessions where students evaluate each other’s work. This not only enhances their critical thinking skills but also teaches them to provide constructive feedback.\n\n### Real-World Applications\nConnecting digital literacy to real-world scenarios helps students see the relevance of what they are learning:\n- **Case",
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_f930674eabc66a9cc098018b",
+              "raw_text": "User-generated content as a dimension for interactive lessons and collaborative projects.",
+              "normalized_text": "user-generated content as a dimension for interactive lessons and collaborative projects.",
+              "context_ref": "turn:2:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:32:25.416271",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_003"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 3,
+          "retrieval_probe": null
+        },
+        {
+          "runtime_mode": "evaluation",
+          "turn": 3,
+          "question": "How do I assess whether students genuinely understand it instead of merely repeating it?",
+          "answer": "### Formative Assessments\n1. **Observations and Walk-Throughs**: Regularly observe students during class activities to gauge their understanding and engagement. Note any areas where they might be struggling or excelling.\n2. **Exit Tickets**: At the end of each session, ask students to write down one thing they learned and one question they still have. This provides immediate feedback on their comprehension and identifies areas needing clarification.\n\n### Summative Assessments\n1. **Projects and Presentations**: Require students to complete a project or presentation that demonstrates their understanding of the material. For example, they could create a digital portfolio showcasing their skills or present a solution to a digital literacy challenge.\n2. **Quizzes and Tests**: Use quizzes and tests to assess knowledge retention. Ensure these are not just recall-based but also include questions that require application and analysis. For instance, ask students to evaluate the credibility of a given source or to design a digital citizenship campaign.\n\n### Peer and Self-Assessment\n1. **Peer Reviews**: Have students review and provide feedback on each other’s work. This not",
+          "baseline_answer": "### Formative Assessments\n1. **Observations and Walk-Throughs**: Regularly observe students during class activities to gauge their understanding and engagement. Note any areas where they might be struggling or excelling.\n2. **Exit Tickets**: At the end of each session, ask students to write down one thing they learned and one question they still have. This provides immediate feedback on their comprehension and identifies areas needing clarification.\n\n### Summative Assessments\n1. **Projects and Presentations**: Require students to complete a project or presentation that demonstrates their understanding of the material. For example, they could create a digital portfolio showcasing their skills or present a solution to a digital literacy challenge.\n2. **Quizzes and Tests**: Use quizzes and tests to assess knowledge retention. Ensure these are not just recall-based but also include questions that require application and analysis. For instance, ask students to evaluate the credibility of a given source or to design a digital citizenship campaign.\n\n### Peer and Self-Assessment\n1. **Peer Reviews**: Have students review and provide feedback on each other’s work. This not",
+          "ssl_answer": "### Formative Assessments\n1. **Observations and Walk-Throughs**: Regularly observe students during class activities to gauge their understanding and engagement. Note any areas where they might be struggling or excelling.\n2. **Exit Tickets**: At the end of each session, ask students to write down one thing they learned and one question they still have. This provides immediate feedback on their comprehension and identifies areas needing clarification.\n\n### Summative Assessments\n1. **Projects and Presentations**: Require students to complete a project or presentation that demonstrates their understanding of the material. For example, they could create a digital portfolio showcasing their skills or present a solution to a digital literacy challenge.\n2. **Quizzes and Tests**: Use quizzes and tests to assess knowledge retention. Ensure these are not just recall-based but also include questions that require application and analysis. For instance, ask students to evaluate the credibility of a given source or to design a digital citizenship campaign.\n\n### Peer and Self-Assessment\n1. **Peer Reviews**: Have students review and provide feedback on each other’s work. This not",
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_1afc3b31ee3916c124fdb29d",
+              "raw_text": "Formative assessment practices as a dynamic feedback loop alongside curriculum design.",
+              "normalized_text": "formative assessment practices as a dynamic feedback loop alongside curriculum design.",
+              "context_ref": "turn:3:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:33:30.450731",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_004"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 4,
+          "retrieval_probe": null
+        },
+        {
+          "runtime_mode": "evaluation",
+          "turn": 4,
+          "question": "How do I include students who have little digital support at home?",
+          "answer": "### Bridging the Digital Divide\nIncluding students with limited digital support at home requires a comprehensive approach. First, **evaluate their access** to technology and internet at home. If many students lack access, consider setting up a digital literacy lab at school with a variety of devices and internet connections. This ensures all students have the necessary tools to engage in the module.\n\n### In-Class Resources\nProvide **in-class access** to devices and internet. This can be achieved through shared devices, such as laptops or tablets, which can be rotated among students during class. Additionally, ensure that the school’s network is reliable and fast enough to support various digital activities.\n\n### Parental Involvement\nEngage parents in the learning process. Organize **parent-teacher meetings** or workshops to inform them about the importance of digital literacy and provide tips on how to support their children at home. Offer resources such as guides on setting up home internet, using free educational apps, and managing screen time.\n\n### Community Partnerships\nLeverage community resources. Partner with local libraries, community centers, or tech companies to",
+          "baseline_answer": "### Bridging the Digital Divide\nIncluding students with limited digital support at home requires a comprehensive approach. First, **evaluate their access** to technology and internet at home. If many students lack access, consider setting up a digital literacy lab at school with a variety of devices and internet connections. This ensures all students have the necessary tools to engage in the module.\n\n### In-Class Resources\nProvide **in-class access** to devices and internet. This can be achieved through shared devices, such as laptops or tablets, which can be rotated among students during class. Additionally, ensure that the school’s network is reliable and fast enough to support various digital activities.\n\n### Parental Involvement\nEngage parents in the learning process. Organize **parent-teacher meetings** or workshops to inform them about the importance of digital literacy and provide tips on how to support their children at home. Offer resources such as guides on setting up home internet, using free educational apps, and managing screen time.\n\n### Community Partnerships\nLeverage community resources. Partner with local libraries, community centers, or tech companies to",
+          "ssl_answer": "### Bridging the Digital Divide\nIncluding students with limited digital support at home requires a comprehensive approach. First, **evaluate their access** to technology and internet at home. If many students lack access, consider setting up a digital literacy lab at school with a variety of devices and internet connections. This ensures all students have the necessary tools to engage in the module.\n\n### In-Class Resources\nProvide **in-class access** to devices and internet. This can be achieved through shared devices, such as laptops or tablets, which can be rotated among students during class. Additionally, ensure that the school’s network is reliable and fast enough to support various digital activities.\n\n### Parental Involvement\nEngage parents in the learning process. Organize **parent-teacher meetings** or workshops to inform them about the importance of digital literacy and provide tips on how to support their children at home. Offer resources such as guides on setting up home internet, using free educational apps, and managing screen time.\n\n### Community Partnerships\nLeverage community resources. Partner with local libraries, community centers, or tech companies to",
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_1ed4d26b8fd9a5cb8e5f5e85",
+              "raw_text": "Economic disparity as a dimension influencing access and support for digital literacy programs.",
+              "normalized_text": "economic disparity as a dimension influencing access and support for digital literacy programs.",
+              "context_ref": "turn:4:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:34:37.576361",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_005"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 5,
+          "retrieval_probe": null
+        },
+        {
+          "runtime_mode": "evaluation",
+          "turn": 5,
+          "question": "How do I make sure colleagues actually adopt the module?",
+          "answer": "### Training and Support\n1. **Professional Development Workshops**: Organize workshops to train colleagues on the new digital literacy module. These should cover the curriculum, teaching strategies, and any new tools or technologies involved. Encourage active participation and provide hands-on experience.\n2. **Collaborative Planning Sessions**: Facilitate regular planning sessions where teachers can discuss lesson plans, share resources, and address any challenges. This fosters a sense of community and ensures that the module is being implemented consistently across the school.\n\n### Clear Communication\n1. **Implementation Plan**: Develop a detailed implementation plan that outlines the timeline, responsibilities, and expected outcomes. Share this plan with all relevant stakeholders, including teachers, administrators, and support staff.\n2. **Regular Updates and Feedback**: Keep colleagues informed about the progress of the module through regular updates and feedback sessions. Encourage open dialogue and address any concerns promptly.\n\n### Resources and Support\n1. **Technical Support**: Ensure that there is a dedicated technical support team available to assist teachers with any issues related to the digital tools and technologies used in the module.\n2",
+          "baseline_answer": "### Training and Support\n1. **Professional Development Workshops**: Organize workshops to train colleagues on the new digital literacy module. These should cover the curriculum, teaching strategies, and any new tools or technologies involved. Encourage active participation and provide hands-on experience.\n2. **Collaborative Planning Sessions**: Facilitate regular planning sessions where teachers can discuss lesson plans, share resources, and address any challenges. This fosters a sense of community and ensures that the module is being implemented consistently across the school.\n\n### Clear Communication\n1. **Implementation Plan**: Develop a detailed implementation plan that outlines the timeline, responsibilities, and expected outcomes. Share this plan with all relevant stakeholders, including teachers, administrators, and support staff.\n2. **Regular Updates and Feedback**: Keep colleagues informed about the progress of the module through regular updates and feedback sessions. Encourage open dialogue and address any concerns promptly.\n\n### Resources and Support\n1. **Technical Support**: Ensure that there is a dedicated technical support team available to assist teachers with any issues related to the digital tools and technologies used in the module.\n2",
+          "ssl_answer": "### Training and Support\n1. **Professional Development Workshops**: Organize workshops to train colleagues on the new digital literacy module. These should cover the curriculum, teaching strategies, and any new tools or technologies involved. Encourage active participation and provide hands-on experience.\n2. **Collaborative Planning Sessions**: Facilitate regular planning sessions where teachers can discuss lesson plans, share resources, and address any challenges. This fosters a sense of community and ensures that the module is being implemented consistently across the school.\n\n### Clear Communication\n1. **Implementation Plan**: Develop a detailed implementation plan that outlines the timeline, responsibilities, and expected outcomes. Share this plan with all relevant stakeholders, including teachers, administrators, and support staff.\n2. **Regular Updates and Feedback**: Keep colleagues informed about the progress of the module through regular updates and feedback sessions. Encourage open dialogue and address any concerns promptly.\n\n### Resources and Support\n1. **Technical Support**: Ensure that there is a dedicated technical support team available to assist teachers with any issues related to the digital tools and technologies used in the module.\n2",
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_f73414df9ed9b1cf0a87ec7f",
+              "raw_text": "Teacher agency as a dimension in the adoption and effectiveness of the digital literacy module.",
+              "normalized_text": "teacher agency as a dimension in the adoption and effectiveness of the digital literacy module.",
+              "context_ref": "turn:5:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:35:46.087414",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_006"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 6,
+          "retrieval_probe": null
+        },
+        {
+          "runtime_mode": "evaluation",
+          "turn": 6,
+          "question": "What most often goes wrong in curriculum renewal projects like this?",
+          "answer": "Curriculum renewal projects, like the one you're undertaking, often face several common challenges that can impede their success. Understanding these issues can help you navigate potential pitfalls and ensure a smoother implementation.\n\n### Resistance to Change\nOne of the most significant hurdles is resistance to change. Teachers and staff may be accustomed to traditional teaching methods and may be hesitant to adopt new digital tools and pedagogical approaches. To mitigate this, it's crucial to engage in transparent communication about the benefits of the new module. Highlight how it enhances student engagement, critical thinking, and prepares them for the digital world. Additionally, involve teachers in the planning and development process to foster ownership and reduce resistance.\n\n### Lack of Resources\nInsufficient resources, including time, technology, and funding, can hinder the successful implementation of a new curriculum. Ensure that you have a clear budget and plan for acquiring necessary technology and software. Allocate sufficient time for training and preparation. Collaborate with IT departments to secure necessary hardware and software licenses. Also, consider leveraging community partnerships and grants to supplement resources.\n\n### Inadequate Training\nProper training",
+          "baseline_answer": "Curriculum renewal projects, like the one you're undertaking, often face several common challenges that can impede their success. Understanding these issues can help you navigate potential pitfalls and ensure a smoother implementation.\n\n### Resistance to Change\nOne of the most significant hurdles is resistance to change. Teachers and staff may be accustomed to traditional teaching methods and may be hesitant to adopt new digital tools and pedagogical approaches. To mitigate this, it's crucial to engage in transparent communication about the benefits of the new module. Highlight how it enhances student engagement, critical thinking, and prepares them for the digital world. Additionally, involve teachers in the planning and development process to foster ownership and reduce resistance.\n\n### Lack of Resources\nInsufficient resources, including time, technology, and funding, can hinder the successful implementation of a new curriculum. Ensure that you have a clear budget and plan for acquiring necessary technology and software. Allocate sufficient time for training and preparation. Collaborate with IT departments to secure necessary hardware and software licenses. Also, consider leveraging community partnerships and grants to supplement resources.\n\n### Inadequate Training\nProper training",
+          "ssl_answer": "Curriculum renewal projects, like the one you're undertaking, often face several common challenges that can impede their success. Understanding these issues can help you navigate potential pitfalls and ensure a smoother implementation.\n\n### Resistance to Change\nOne of the most significant hurdles is resistance to change. Teachers and staff may be accustomed to traditional teaching methods and may be hesitant to adopt new digital tools and pedagogical approaches. To mitigate this, it's crucial to engage in transparent communication about the benefits of the new module. Highlight how it enhances student engagement, critical thinking, and prepares them for the digital world. Additionally, involve teachers in the planning and development process to foster ownership and reduce resistance.\n\n### Lack of Resources\nInsufficient resources, including time, technology, and funding, can hinder the successful implementation of a new curriculum. Ensure that you have a clear budget and plan for acquiring necessary technology and software. Allocate sufficient time for training and preparation. Collaborate with IT departments to secure necessary hardware and software licenses. Also, consider leveraging community partnerships and grants to supplement resources.\n\n### Inadequate Training\nProper training",
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_1d928630cf1fd07befb4ac21",
+              "raw_text": "Stakeholder engagement as a relational dimension influencing change management.",
+              "normalized_text": "stakeholder engagement as a relational dimension influencing change management.",
+              "context_ref": "turn:6:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:36:54.309132",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_007"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 7,
+          "retrieval_probe": null
+        }
+      ],
+      "gate_events": [
+        {
+          "event_id": "gate::ss_001::000001",
+          "seed_id": "ss_001",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:30:16.899277"
+        },
+        {
+          "event_id": "gate::ss_001::000002",
+          "seed_id": "ss_001",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:31:21.489577"
+        },
+        {
+          "event_id": "gate::ss_002::000003",
+          "seed_id": "ss_002",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:31:21.489611"
+        },
+        {
+          "event_id": "gate::ss_001::000004",
+          "seed_id": "ss_001",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:32:25.426716"
+        },
+        {
+          "event_id": "gate::ss_002::000005",
+          "seed_id": "ss_002",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:32:25.426749"
+        },
+        {
+          "event_id": "gate::ss_003::000006",
+          "seed_id": "ss_003",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:32:25.426773"
+        },
+        {
+          "event_id": "gate::ss_001::000007",
+          "seed_id": "ss_001",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:33:30.463978"
+        },
+        {
+          "event_id": "gate::ss_002::000008",
+          "seed_id": "ss_002",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:33:30.464012"
+        },
+        {
+          "event_id": "gate::ss_003::000009",
+          "seed_id": "ss_003",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:33:30.464037"
+        },
+        {
+          "event_id": "gate::ss_004::000010",
+          "seed_id": "ss_004",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:33:30.464061"
+        },
+        {
+          "event_id": "gate::ss_001::000011",
+          "seed_id": "ss_001",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=2 (threshold=3)"
+            }
+          ],
+          "status_before": "ACTIVE",
+          "status_after": "ACTIVE",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:34:37.586156"
+        },
+        {
+          "event_id": "gate::ss_002::000012",
+          "seed_id": "ss_002",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:34:37.586186"
+        },
+        {
+          "event_id": "gate::ss_003::000013",
+          "seed_id": "ss_003",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:34:37.586206"
+        },
+        {
+          "event_id": "gate::ss_004::000014",
+          "seed_id": "ss_004",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:34:37.586225"
+        },
+        {
+          "event_id": "gate::ss_001::000015",
+          "seed_id": "ss_001",
+          "policy_id": "exploratory",
+          "decision": "validated",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "support",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=3 (threshold=3)"
+            }
+          ],
+          "status_before": "ACTIVE",
+          "status_after": "ACTIVE",
+          "weight_before": 0.0,
+          "weight_after": 0.2,
+          "weight_delta": 0.2,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 1,
+          "reason": "exploratory support via recurrence",
+          "created_at": "2026-08-19T23:35:46.098128"
+        },
+        {
+          "event_id": "gate::ss_002::000016",
+          "seed_id": "ss_002",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:35:46.098166"
+        },
+        {
+          "event_id": "gate::ss_003::000017",
+          "seed_id": "ss_003",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:35:46.098192"
+        },
+        {
+          "event_id": "gate::ss_004::000018",
+          "seed_id": "ss_004",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:35:46.098223"
+        },
+        {
+          "event_id": "gate::ss_001::000019",
+          "seed_id": "ss_001",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "support",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=3 (threshold=3)"
+            }
+          ],
+          "status_before": "ACTIVE",
+          "status_after": "ACTIVE",
+          "weight_before": 0.2,
+          "weight_after": 0.2,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 1,
+          "reason": "no qualifying recurrence or verified external support; duplicate authority support ignored: recurrence:occurrence_count=3 (threshold=3)",
+          "created_at": "2026-08-19T23:36:54.318911"
+        },
+        {
+          "event_id": "gate::ss_002::000020",
+          "seed_id": "ss_002",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "DECAYING",
+          "status_after": "DECAYING",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:36:54.318950"
+        },
+        {
+          "event_id": "gate::ss_003::000021",
+          "seed_id": "ss_003",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:36:54.318977"
+        },
+        {
+          "event_id": "gate::ss_004::000022",
+          "seed_id": "ss_004",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:36:54.319001"
+        },
+        {
+          "event_id": "gate::ss_007::000023",
+          "seed_id": "ss_007",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:36:54.319024"
+        }
+      ],
+      "audit_records_verified": 0,
+      "final_shadow": {
+        "runtime_mode": "evaluation",
+        "turns": 7,
+        "seeds": [
+          {
+            "id": "ss_001",
+            "text": "Socio-economic factors as a dimension influencing students' access to and engagement with digital tools.",
+            "weight": 0.2,
+            "trace": 1.433,
+            "status": "ACTIVE",
+            "occurrence_count": 3,
+            "evidence_count": 0,
+            "born_turn": 0
+          },
+          {
+            "id": "ss_002",
+            "text": "Socioeconomic background as a dimension influencing prior knowledge and its relation to differentiated instruction.",
+            "weight": 0.0,
+            "trace": 0.378,
+            "status": "DECAYING",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 1
+          },
+          {
+            "id": "ss_003",
+            "text": "User-generated content as a dimension for interactive lessons and collaborative projects.",
+            "weight": 0.0,
+            "trace": 0.527,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 2
+          },
+          {
+            "id": "ss_004",
+            "text": "Formative assessment practices as a dynamic feedback loop alongside curriculum design.",
+            "weight": 0.0,
+            "trace": 0.736,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 3
+          },
+          {
+            "id": "ss_005",
+            "text": "Economic disparity as a dimension influencing access and support for digital literacy programs.",
+            "weight": 0.0,
+            "trace": 1.027,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 4
+          },
+          {
+            "id": "ss_006",
+            "text": "Teacher agency as a dimension in the adoption and effectiveness of the digital literacy module.",
+            "weight": 0.0,
+            "trace": 1.433,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 5
+          },
+          {
+            "id": "ss_007",
+            "text": "Stakeholder engagement as a relational dimension influencing change management.",
+            "weight": 0.0,
+            "trace": 2.0,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 6
+          }
+        ],
+        "influence_records": [],
+        "candidate_observation_ledger": {
+          "schema_version": 1,
+          "observations": [
+            {
+              "observation_id": "obs_290e90490247ca8beaf48b5a",
+              "raw_text": "Socio-economic factors as a dimension influencing students' access to and engagement with digital tools.",
+              "normalized_text": "socio-economic factors as a dimension influencing students' access to and engagement with digital tools.",
+              "context_ref": "turn:0:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:30:16.884586",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_c94dc56f78ddac8f273b0a3a",
+              "raw_text": "Socioeconomic background as a dimension influencing prior knowledge and its relation to differentiated instruction.",
+              "normalized_text": "socioeconomic background as a dimension influencing prior knowledge and its relation to differentiated instruction.",
+              "context_ref": "turn:1:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:31:21.475549",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_f930674eabc66a9cc098018b",
+              "raw_text": "User-generated content as a dimension for interactive lessons and collaborative projects.",
+              "normalized_text": "user-generated content as a dimension for interactive lessons and collaborative projects.",
+              "context_ref": "turn:2:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:32:25.416271",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_1afc3b31ee3916c124fdb29d",
+              "raw_text": "Formative assessment practices as a dynamic feedback loop alongside curriculum design.",
+              "normalized_text": "formative assessment practices as a dynamic feedback loop alongside curriculum design.",
+              "context_ref": "turn:3:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:33:30.450731",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_1ed4d26b8fd9a5cb8e5f5e85",
+              "raw_text": "Economic disparity as a dimension influencing access and support for digital literacy programs.",
+              "normalized_text": "economic disparity as a dimension influencing access and support for digital literacy programs.",
+              "context_ref": "turn:4:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:34:37.576361",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_f73414df9ed9b1cf0a87ec7f",
+              "raw_text": "Teacher agency as a dimension in the adoption and effectiveness of the digital literacy module.",
+              "normalized_text": "teacher agency as a dimension in the adoption and effectiveness of the digital literacy module.",
+              "context_ref": "turn:5:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:35:46.087414",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_1d928630cf1fd07befb4ac21",
+              "raw_text": "Stakeholder engagement as a relational dimension influencing change management.",
+              "normalized_text": "stakeholder engagement as a relational dimension influencing change management.",
+              "context_ref": "turn:6:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:36:54.309132",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "links": []
+        }
+      }
+    }
+  ]
+}

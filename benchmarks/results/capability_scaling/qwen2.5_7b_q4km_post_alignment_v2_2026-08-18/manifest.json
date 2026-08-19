@@ -1,0 +1,151 @@
+{
+  "schema": "ssl-capability-scaling-bundle-v1",
+  "run_id": "qwen2.5-7b-q4km-post-alignment-v2-2026-08-18",
+  "created_at": "2026-08-19T23:36:54.323460+00:00",
+  "source": {
+    "source_revision": "41212449b0da38d8076ee908ec89954efd41b250",
+    "source_dirty": false,
+    "package_version": "0.5.0"
+  },
+  "model": {
+    "backend": "ollama",
+    "runtime_id": "qwen2.5:7b-instruct-q4_K_M",
+    "reference": "qwen2.5:7b-instruct-q4_K_M",
+    "revision": null,
+    "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+    "quantization": "q4_K_M",
+    "max_new_tokens": 220,
+    "detector_prompt_variant": "generative",
+    "detector_id": "ssl46_open_set_model_detector_v0.4-gen",
+    "detector_prompt_template_sha256": "f488e70e92d9f996df74b2dca0485e59b128c3955c0f2369442e2da82822f0cd",
+    "authority_effect_of_model_identity": "none"
+  },
+  "embedding": {
+    "backend": "sentence-transformers",
+    "runtime_model": "/home/runner/.cache/huggingface/hub/models--sentence-transformers--all-MiniLM-L6-v2/snapshots/1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "reference": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "dimension": 384,
+    "semantic_duplicate_threshold": 0.85
+  },
+  "runtime": {
+    "surface_threshold": 0.3,
+    "surface_top_k": 2,
+    "early_turn_margin": 0.1,
+    "early_turn_history": 5,
+    "resurface_margin": 0.15,
+    "max_seeds_per_turn": 5,
+    "recurrence_mode": "cluster",
+    "cluster_threshold": null,
+    "live_gate_policy": "evidence_backed",
+    "evaluation_gate_policy": "exploratory",
+    "external_evidence_injected": false
+  },
+  "evaluation_conversation_ids": [
+    "CONV_EDU",
+    "CONV_STARTUP"
+  ],
+  "preregistration": {
+    "path": "inputs/preregistration.json",
+    "sha256": "b45210124649b7d66d386af6d6389dbd2119d2c188042c44f61a0d044d268071",
+    "protocol_id": "post-alignment-capability-scaling-2026-08-v2"
+  },
+  "suites": [
+    {
+      "suite_id": "primary",
+      "path": "inputs/suite_primary.json",
+      "sha256": "59a46cd3e08de1b0d585dadc2a0268d209e419c0a4b0916736109b2a27a297aa",
+      "version": "ssl-session-0.3"
+    },
+    {
+      "suite_id": "transfer",
+      "path": "inputs/suite_transfer.json",
+      "sha256": "cc11aa79af7d367279abef382d5253e6f941c5445186c35b9f5613fd31c10eb9",
+      "version": "ssl-session-transfer-0.2"
+    }
+  ],
+  "environment": {
+    "path": "environment.txt",
+    "sha256": "6e9160cb43ebd36dea8df96734fcf243798e3b878e870bba04ef0f2cc8fcc9ee",
+    "python": "3.11.16",
+    "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39"
+  },
+  "timing": {
+    "adapter_setup_elapsed_seconds": 6.605
+  },
+  "claim_boundary": "This protocol can produce research evidence about candidate quality, detector/parser behavior, recurrence/deferral mechanics, and blinded answer effects for pinned model/runtime configurations. It cannot by itself establish candidate truth, general answer-quality improvement, production readiness, or that a larger model deserves more authority.",
+  "artifacts": {
+    "raw/live_primary.json": {
+      "sha256": "daf9d7c91ca5018ff932545e564ca19a58478081f6993c9301365509dd75dfd7",
+      "size_bytes": 106568
+    },
+    "raw/evaluation_primary.json": {
+      "sha256": "e00a82b009e9274c0b4bd672c7680137b01ac776a7599499c677a6c2aa5758eb",
+      "size_bytes": 94512
+    },
+    "raw/live_transfer.json": {
+      "sha256": "abb0c72871b40a3a5d1b283f0cf8b347c602a4206c3ae38691a6293415aa33ef",
+      "size_bytes": 104115
+    },
+    "raw/evaluation_transfer.json": {
+      "sha256": "4aa1f55e98d4793cd623a3ab67442345681963c78d3bea5c7bccb3bb52cff7a9",
+      "size_bytes": 72792
+    },
+    "environment.txt": {
+      "sha256": "6e9160cb43ebd36dea8df96734fcf243798e3b878e870bba04ef0f2cc8fcc9ee",
+      "size_bytes": 1378
+    },
+    "inputs/preregistration.json": {
+      "sha256": "b45210124649b7d66d386af6d6389dbd2119d2c188042c44f61a0d044d268071",
+      "size_bytes": 6091
+    },
+    "inputs/suite_primary.json": {
+      "sha256": "59a46cd3e08de1b0d585dadc2a0268d209e419c0a4b0916736109b2a27a297aa",
+      "size_bytes": 3090
+    },
+    "inputs/suite_transfer.json": {
+      "sha256": "cc11aa79af7d367279abef382d5253e6f941c5445186c35b9f5613fd31c10eb9",
+      "size_bytes": 3033
+    },
+    "review/candidate_review_packet.json": {
+      "sha256": "a1b1e455a018893d75c93943b9fd9bf770eb78a197c52882000d2329d408ec49",
+      "size_bytes": 117127
+    },
+    "review/candidate_review_key.json": {
+      "sha256": "9d649cc8119a0c142e0bd1183542044f0aa178c634c5967e15e31534daeefc4c",
+      "size_bytes": 16433
+    },
+    "review/answer_review_packet.json": {
+      "sha256": "dbe22022b895e89044c93f6f311d3210f632e9854f385b537b51fc714f9f2f17",
+      "size_bytes": 93
+    },
+    "review/answer_review_key.json": {
+      "sha256": "4946dc1ef604fa23ad22f02b9e4d72018a4c6399f69e18d9ddb7205c1d584c61",
+      "size_bytes": 97
+    },
+    "summary.json": {
+      "sha256": "4e006c42945647cc6c779b878a48e4978095de828e9a22ac3aee9e8f79e9fccf",
+      "size_bytes": 1806
+    },
+    "REPORT.md": {
+      "sha256": "c54cf0dcf28be7714d76d1c20eb114dc7b8fb830820bd7c4f1cf752fc016f1d6",
+      "size_bytes": 1078
+    },
+    "runner_metadata.json": {
+      "sha256": "3712d8d920a1e3304ba03dc807a3bc630250999132f5ea681ec5a970e09662bc",
+      "size_bytes": 563
+    }
+  },
+  "external_runtime": {
+    "github_run_id": "32308388950",
+    "github_run_attempt": "1",
+    "github_runner_os": "Linux",
+    "github_runner_arch": "X64",
+    "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+    "ollama_version": "ollama version is 0.32.14 ",
+    "ollama_binary_sha256": "d0758d38ac5882a2c68fd930d0c1220af1952469fa9f30c268746d4021709bf4",
+    "ollama_model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+    "embedding_reference": "sentence-transformers/all-MiniLM-L6-v2",
+    "embedding_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+  }
+}
