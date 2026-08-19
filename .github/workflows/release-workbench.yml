@@ -17,7 +17,8 @@ jobs:
     if: >-
       github.repository == 'E-AI-MODEL/shadowseed-pro' &&
       github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'main'
+      github.event.workflow_run.head_branch == 'main' &&
+      false # temporary finalization hold; removed by the final release PR
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
