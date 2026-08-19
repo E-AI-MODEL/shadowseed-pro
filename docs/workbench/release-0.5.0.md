@@ -46,9 +46,9 @@ A published 0.5.0 prerelease is required to contain per-platform manifests, cons
 
 ### Fail-closed publication recovery
 
-Release publication is tied to the exact successful `Standalone Workbench` source commit. The release workflow also requires that commit to still be the current `main` head before it creates `v0.5.0`. If `main` advances while a standalone build or release is queued, the older run is intentionally rejected rather than tagged after the fact.
+Release publication is tied to the exact successful `Standalone Workbench` source commit. Pull requests keep path-filtered standalone builds, but every push to `main` produces a fresh standalone candidate so a later merge cannot invalidate an older candidate without starting a replacement.
 
-Recovery is to run `Standalone Workbench` again for the current `main` head, either through its normal `main` trigger or its explicit `workflow_dispatch`, and let the release workflow consume those newly verified artifacts. Do not retag an older build, copy assets between source commits, or weaken the exact-SHA preflight to force publication.
+The release workflow verifies `main == RELEASE_SHA` during preflight and fetches `main` again immediately before `gh release create`. If `main` advances during standalone or release verification, the older run is intentionally rejected rather than tagged after the fact. A failed or cancelled current-head build may be retried through the explicit `workflow_dispatch`; do not retag an older build, copy assets between source commits, or weaken either exact-SHA check to force publication.
 
 ## Platform signing boundary
 
