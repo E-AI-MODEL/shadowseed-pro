@@ -321,6 +321,17 @@ entries:
     modifications_allowed: true
     notes: Source reference material (e.g. papers). Not packaged.
 
+  - path: paper/**
+    authority: EVIDENCE_ARTIFACT
+    owner: research-publication
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: >
+      Manuscript source, bibliography, and compiled publication artifact. The
+      manuscript may describe reviewed runtime evidence but cannot override
+      canonical architecture or runtime behavior. main.tex is the manuscript
+      source; the compiled PDF must be regenerated when that source changes.
+
   # --- Archive / historical ----------------------------------------------
   - path: archive/legacy/**
     authority: HISTORICAL_REFERENCE
