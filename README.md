@@ -24,7 +24,7 @@ Shadow Seed Learning, or SSL, records a possible omission as a **candidate for i
 > [!IMPORTANT]
 > **Shadowseed Pro is research-ready, not production-ready.**
 >
-> Version 0.5.0 adds a downloadable local mass-tester preview. That improves product usability; it does not establish general answer-quality improvement, universal missing-information detection, high-impact deployment safety, or hostile-network production readiness.
+> Source version 0.5.0 adds standalone local mass-tester build and release contracts. That improves product usability; it does not establish general answer-quality improvement, universal missing-information detection, high-impact deployment safety, or hostile-network production readiness. A downloadable release should be treated as published only when the corresponding immutable tag and release assets are actually present and verified.
 
 > [!CAUTION]
 > This repository has **no open-source license**. All rights are reserved. Public visibility is not permission for reuse. See [Rights and temporary licensing position](#rights-and-temporary-licensing-position).
@@ -40,7 +40,7 @@ Shadow Seed Learning, or SSL, records a possible omission as a **candidate for i
 
 | Goal | Start here |
 |---|---|
-| Download/open the tester | [Tester Workbench](#tester-workbench) |
+| Use the tester Workbench | [Tester Workbench](#tester-workbench) |
 | Read the research paper | [Paper PDF](paper/shadowseed-paper.pdf) |
 | Install for development | [Developer quick start](#developer-quick-start) |
 | Understand the idea | [The idea in plain language](#the-idea-in-plain-language) |
@@ -60,9 +60,9 @@ The ordinary 0.5.0 tester path is a local chat application, not a benchmark harn
 download -> extract/open -> choose model -> create chat -> chat with SSL -> optionally compare one message with SSL off
 ```
 
-The 0.5.0 prerelease publishes self-contained Workbench archives for Windows, macOS and Linux from GitHub Releases. Each archive contains the application and its Python runtime. A normal tester does **not** need Git, a repository checkout, system Python, `pip`, benchmark JSON or an authored baseline answer.
+Source version 0.5.0 contains the fail-closed automation for self-contained Workbench archives for Windows, macOS and Linux. Use the download/open route only when a verified `v0.5.0` GitHub release and its assets are actually present. Each standalone archive contains the application and its Python runtime. A normal tester does **not** need Git, a repository checkout, system Python, `pip`, benchmark JSON or an authored baseline answer for that route. If no verified standalone release is present yet, use the developer installation route below rather than assuming unpublished assets exist.
 
-After extraction, open `Shadowseed.exe` on Windows, `Shadowseed.app` on macOS, or the `Shadowseed` executable in the Linux bundle. The launcher initializes the normal local `~/.shadowseed` workspace and opens the chat UI on loopback only. Local Ollama models can be detected automatically.
+When a verified standalone bundle is available, open `Shadowseed.exe` on Windows, `Shadowseed.app` on macOS, or the `Shadowseed` executable in the Linux bundle after extraction. The launcher initializes the normal local `~/.shadowseed` workspace and opens the chat UI on loopback only. Local Ollama models can be detected automatically.
 
 Model weights are intentionally not bundled. The deterministic fixture works immediately for offline mechanics testing; Ollama models remain managed by Ollama; Hugging Face and Sentence Transformers may acquire selected model material on first use; hosted OpenAI use remains explicit and credential-dependent.
 
@@ -70,7 +70,7 @@ A newly created ordinary chat uses the product-oriented `live` runtime and the `
 
 Historical `evaluation` sessions, authored baseline fixtures, scenario JSON and benchmark outputs remain research/regression material under **Advanced / research**. They are not product prerequisites.
 
-Each platform bundle must execute a frozen self-test in CI before upload. Release assets include per-platform manifests, consolidated provenance and SHA-256 checksums. Platform-vendor signing/notarization is **not** claimed unless a published asset actually carries it.
+Each platform bundle must execute a frozen self-test in CI before upload. Release assets are required to include per-platform manifests, consolidated provenance and SHA-256 checksums. Platform-vendor signing/notarization is **not** claimed unless a published asset actually carries it.
 
 See [`docs/workbench/README.md`](docs/workbench/README.md) for the download/open workflow, model behavior, privacy boundaries and release verification. See [`docs/workbench/limitations.md`](docs/workbench/limitations.md) before sharing tester data.
 

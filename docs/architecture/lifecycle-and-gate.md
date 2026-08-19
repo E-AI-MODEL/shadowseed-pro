@@ -152,13 +152,15 @@ Policy semantics are explicit:
 - `legacy_evidence_required` preserves the historical recurrence, trace, and
   accumulated verified-evidence thresholds for compatibility callers.
 
-Verified external support must carry a non-empty `source_ref`. Repeated use of
-the same source-and-kind pair is idempotent, while the same reference under a
-different signal kind is distinct support. Independent confirmations within one
-kind require distinct source references. The deprecated boolean adapter cannot
-express provenance, so bare `external_evidence=True` on a non-expired seed fails
-before a Gate event or authority change. An expired seed instead records a
-terminal `EXPIRED` Gate event without applying evidence or authority. Historical
+Verified external support must carry a non-empty `source_ref`. The underlying
+`source_ref` is the authority identity across external evidence channels:
+replaying the same source under the same or a different signal kind does not
+create additional authority credit. Signal kind remains channel provenance, not
+a second independent evidence identity. Independent confirmations require
+distinct source references. The deprecated boolean adapter cannot express
+provenance, so bare `external_evidence=True` on a non-expired seed fails before a
+Gate event or authority change. An expired seed instead records a terminal
+`EXPIRED` Gate event without applying evidence or authority. Historical
 anonymous events remain replayable. Unverified external observations remain
 auditable inputs but cannot authorize, increment `evidence_count`, or be reported
 as passed evidence. Contradiction can block promotion, reduce influence, or reset

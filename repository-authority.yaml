@@ -10,7 +10,7 @@
 #   RUNTIME_IMPLEMENTATION    Canonical runtime code that ships in the package.
 #   CONTRACT_TEST             Tests that pin public/compatibility contracts.
 #   EVALUATION_IMPLEMENTATION Benchmarks, evaluation suites, research tooling.
-#   EVIDENCE_ARTIFACT         Generated or curated result/evidence data.
+#   EVIDENCE_ARTIFACT         Generated, curated, or publication evidence artifacts.
 #   COMPATIBILITY_ONLY        Legacy import facades; re-export only, no logic.
 #   HISTORICAL_REFERENCE      Superseded material kept for provenance.
 #   ARCHIVE                   Frozen source material, not part of the package.
@@ -35,6 +35,24 @@ entries:
       Authoritative architecture, lifecycle, gate, compatibility, and
       repository-structure documentation. Active docs must cite canonical
       paths only.
+
+  - path: docs/plans/README.md
+    authority: CANONICAL_SPEC
+    owner: docs
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: >
+      Current index explaining that files below docs/plans/ are historical
+      execution records rather than present architecture authority.
+
+  - path: docs/migration/language-policy.md
+    authority: CANONICAL_SPEC
+    owner: docs
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: >
+      Current repository-language policy. Product chat language is a separate
+      runtime behavior and follows the current user question.
 
   - path: repository-authority.yaml
     authority: CANONICAL_SPEC
@@ -113,6 +131,16 @@ entries:
     notes: >
       Local workspace persistence, schema versioning, backup, restore, and
       normalized tester audit storage. No authority decisions live here.
+
+  - path: src/shadowseed/workbench/**
+    authority: RUNTIME_IMPLEMENTATION
+    owner: tester-workbench
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: >
+      Chat-first local tester UI and standalone launcher. This package presents
+      canonical runtime/application behavior and must not implement a second
+      Validation Gate or independent authority path.
 
   - path: src/shadowseed/gate/**
     authority: RUNTIME_IMPLEMENTATION
@@ -321,6 +349,78 @@ entries:
     modifications_allowed: true
     notes: Source reference material (e.g. papers). Not packaged.
 
+  - path: paper/**
+    authority: EVIDENCE_ARTIFACT
+    owner: research-publication
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: >
+      Manuscript source, bibliography, and compiled publication artifact. The
+      manuscript may describe reviewed runtime evidence but cannot override
+      canonical architecture or runtime behavior. main.tex is the manuscript
+      source; the compiled PDF must be regenerated when that source changes.
+
+  # --- Historical execution/migration records ----------------------------
+  - path: docs/plans/**
+    authority: HISTORICAL_REFERENCE
+    owner: planning
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: >
+      Execution and alignment plans preserved for decision history. They may be
+      annotated with later corrections but cannot override current architecture,
+      runtime behavior, research status, or product documentation. The more
+      specific docs/plans/README.md entry remains canonical as the index.
+
+  - path: MIGRATION_REPORT.md
+    authority: HISTORICAL_REFERENCE
+    owner: migration
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: Historical rebuild/migration report; not current architecture authority.
+
+  - path: docs/migration/audit-summary.json
+    authority: HISTORICAL_REFERENCE
+    owner: migration
+    runtime_import_allowed: false
+    modifications_allowed: false
+    notes: Snapshot from the repository rebuild audit.
+
+  - path: docs/migration/file-manifest.csv
+    authority: HISTORICAL_REFERENCE
+    owner: migration
+    runtime_import_allowed: false
+    modifications_allowed: false
+    notes: Historical rebuild file manifest.
+
+  - path: docs/migration/reuse-decisions.md
+    authority: HISTORICAL_REFERENCE
+    owner: migration
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: Historical rebuild reuse decisions.
+
+  - path: docs/migration/runtime-extractions.md
+    authority: HISTORICAL_REFERENCE
+    owner: migration
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: Historical runtime extraction record.
+
+  - path: docs/migration/source-audit.md
+    authority: HISTORICAL_REFERENCE
+    owner: migration
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: Historical source-audit record.
+
+  - path: docs/migration/test-inventory.csv
+    authority: HISTORICAL_REFERENCE
+    owner: migration
+    runtime_import_allowed: false
+    modifications_allowed: false
+    notes: Historical rebuild test inventory.
+
   # --- Archive / historical ----------------------------------------------
   - path: archive/legacy/**
     authority: HISTORICAL_REFERENCE
@@ -348,5 +448,6 @@ entries:
     runtime_import_allowed: false
     modifications_allowed: true
     notes: >
-      Usage, migration, and research documentation. Must reference canonical
-      paths. docs/architecture/** is the primary specification authority.
+      Current usage, migration-policy, and research documentation unless a more
+      specific historical entry above applies. Must reference canonical paths.
+      docs/architecture/** is the primary specification authority.

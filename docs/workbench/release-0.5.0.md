@@ -1,10 +1,10 @@
 # Shadowseed Workbench 0.5.0 Mass Tester Preview
 
-Shadowseed 0.5.0 changes the tester contract from a Python-installed research preview to a downloadable local chat application.
+Shadowseed source version 0.5.0 changes the tester contract from a Python-installed research preview to a standalone-capable local chat application. Public release availability is a separate publication fact: treat `v0.5.0` as published only when the immutable tag and verified release assets are actually present.
 
 ## Download/open product path
 
-The release publishes self-contained Workbench archives for Windows, macOS and Linux. The ordinary tester no longer needs Git, a repository checkout, a system Python installation, `pip`, benchmark JSON or an authored baseline answer.
+The 0.5.0 release contract builds self-contained Workbench archives for Windows, macOS and Linux. Once those verified release assets are published, the ordinary tester no longer needs Git, a repository checkout, a system Python installation, `pip`, benchmark JSON or an authored baseline answer.
 
 The intended flow is:
 
@@ -16,14 +16,14 @@ Each standalone bundle contains its own Python runtime and Workbench dependencie
 
 ## Chat-first SSL behavior
 
-The ordinary product continues to use the canonical live/evidence-backed runtime introduced before this release:
+The ordinary product uses the canonical live/evidence-backed runtime:
 
 - candidates start weightless;
 - recurrence is not external evidence;
 - Gate authority and point-of-use authorization remain runtime-owned;
 - contradictions remain blocking under the current contract;
 - ordinary tester feedback remains record-only;
-- `Compare this message with SSL off` generates a same-model control without adding detection, recurrence, Gate or conversation-history state;
+- `Compare this message with SSL off` generates a same-model control without adding detection, recurrence, Gate, seed or later conversation-history state;
 - a comparison difference is not labelled an SSL effect when no authorized seed actually surfaced.
 
 Packaging does not create a second SSL implementation or change seed authority.
@@ -42,11 +42,13 @@ Before upload, the frozen application runs its own self-test and must prove that
 6. export and verify the privacy-minimized support bundle;
 7. import the packaged Gradio, Sentence Transformers, Transformers, Torch and OpenAI runtime dependencies.
 
-The release contains per-platform manifests, consolidated `PROVENANCE.json`, and `SHA256SUMS` for all published assets. The release workflow also publishes the Python wheel and source distribution for developers.
+A published 0.5.0 prerelease is required to contain per-platform manifests, consolidated `PROVENANCE.json`, and `SHA256SUMS` for all published assets. The release workflow also verifies the Python wheel and source distribution for developers before publication and re-verifies published assets afterward.
 
 ## Platform signing boundary
 
-The 0.5.0 prerelease provides release checksums and build provenance. Platform-vendor signing/notarization is not claimed unless the published binary is actually signed with configured release credentials. macOS Gatekeeper or Windows reputation warnings can therefore still occur for this prerelease.
+The 0.5.0 release contract provides checksums and build provenance. Platform-vendor signing/notarization is not claimed unless a published binary is actually signed with configured release credentials. macOS Gatekeeper or Windows reputation warnings may therefore still occur for an unsigned prerelease.
+
+The current standalone macOS build target is Apple Silicon arm64. Intel/universal macOS support is not implied by the 0.5.0 build contract.
 
 ## Scientific and production boundary
 

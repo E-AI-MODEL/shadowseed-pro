@@ -1,6 +1,6 @@
 # Shadowseed Tester Workbench
 
-The Workbench is the local-first chat surface for testing Shadow Seed Learning in an ordinary LLM conversation. A normal tester does not prepare a benchmark suite, write JSON, author a baseline answer, install Git, or install a system Python runtime.
+The Workbench is the local-first chat surface for testing Shadow Seed Learning in an ordinary LLM conversation. A normal tester does not prepare a benchmark suite, write JSON, author a baseline answer, install Git, or install a system Python runtime when a verified standalone release is available.
 
 The ordinary product path is:
 
@@ -14,7 +14,9 @@ The Workbench remains a local single-user product preview. It is not a hostile-n
 
 ## Fastest start: standalone tester
 
-Version 0.5.0 publishes self-contained Workbench archives for Windows, macOS and Linux from the repository's GitHub Releases page. Each archive contains the application and its Python runtime.
+Source version 0.5.0 contains the fail-closed build and release automation for self-contained Workbench archives for Windows, macOS and Linux. Treat the standalone download route as available only when a verified `v0.5.0` GitHub release and its assets are actually present. Source version and public release availability are separate facts.
+
+When the verified release is present:
 
 1. Download the archive matching your operating system and architecture.
 2. Download `SHA256SUMS` from the same release and verify the archive hash when practical.
@@ -23,7 +25,7 @@ Version 0.5.0 publishes self-contained Workbench archives for Windows, macOS and
 5. The app creates or opens the local `~/.shadowseed` workspace and opens the chat UI in your browser on loopback only.
 6. Choose a model, create a chat and start talking.
 
-No Git checkout, `pip install`, system Python, fixture file or authored baseline is required for this route.
+No Git checkout, `pip install`, system Python, fixture file or authored baseline is required for the verified standalone route. If no verified release is present yet, use the developer/source installation route below rather than assuming unpublished assets exist.
 
 ### What the standalone bundle does not bundle
 
@@ -39,7 +41,7 @@ Model acquisition time is therefore measured separately from Shadowseed setup ti
 
 ### Release integrity and provenance
 
-Every 0.5.0 prerelease contains:
+A valid 0.5.0 standalone prerelease is required to contain:
 
 - one standalone archive per build platform;
 - one machine-readable manifest per standalone archive;
@@ -49,7 +51,7 @@ Every 0.5.0 prerelease contains:
 
 Each frozen bundle executes its own packaged self-test before it is uploaded. That self-test proves the embedded runtime can build the chat UI, run a live fixture turn, automatically generate the paired SSL-off control, and create/verify both report and support exports.
 
-The 0.5.0 prerelease uses release checksums and build provenance. Platform vendor signing/notarization is a separate hardening step when signing credentials are available; do not describe this prerelease as notarized or Authenticode-signed unless the published asset actually carries that signature.
+The 0.5.0 release contract uses checksums and build provenance. Platform vendor signing/notarization is a separate hardening step when signing credentials are available; do not describe an asset as notarized or Authenticode-signed unless the published asset actually carries that signature.
 
 ## Normal tester workflow
 
@@ -135,7 +137,7 @@ The workspace defaults to `~/.shadowseed`. Backup/restore remains available from
 
 ## Developer install
 
-Developers and research users can still install the Python package:
+Developers and research users can install the Python package directly:
 
 ```bash
 python -m pip install "shadowseed[workbench]"
@@ -149,7 +151,7 @@ The dedicated installed launcher is also available:
 shadowseed-workbench
 ```
 
-This path is for development and research automation. It is no longer the ordinary tester requirement.
+This is the development and research route, and it is also the source fallback while no verified standalone release is available. It is not the intended zero-setup mass-tester path once verified standalone assets are published.
 
 ## Docker
 
@@ -167,7 +169,7 @@ The container listens on `0.0.0.0` internally so the host can reach it, while th
 
 ## Claim boundary
 
-The 0.5.0 chat-first standalone builds make Shadowseed practically distributable to local testers. They do **not** by themselves establish full production readiness or general answer-quality benefit.
+The 0.5.0 chat-first standalone build contracts make Shadowseed packageable for local mass testing. A public downloadable release is a separate publication fact. Neither packaging nor publication by itself establishes full production readiness or general answer-quality benefit.
 
 Still separate are hostile-network authentication/tenancy, TLS/CSRF controls, abuse/rate limits, managed secret storage, formal retention/deletion operations, platform vendor signing/notarization, operational monitoring, high-end-model efficacy studies and independent real-world review.
 

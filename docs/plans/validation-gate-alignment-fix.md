@@ -1,17 +1,16 @@
 # Validation Gate Alignment Fix Plan
 
-- Status: Completed on 2026-07-21 by PR #18; hardened on 2026-08-15 by PR #46
-- Related ADR: `docs/architecture/adr/ADR-001-validation-gate-authority.md`
+- Status: Completed on 2026-07-21 by PR #18; hardened on 2026-08-15 by PR #46; evidence identity later tightened by ADR-004 and PR #62
+- Related ADRs: `docs/architecture/adr/ADR-001-validation-gate-authority.md`, `docs/architecture/adr/ADR-004-evidence-identity-and-independence.md`
 - Related issue: #8 (closed)
+
+> Historical execution record. Current authority semantics live in `docs/architecture/**` and the runtime. Later doctrine changes supersede intermediate wording in this plan.
 
 ## Completion record
 
-PR #18 implemented the alignment plan through issues #10–#17. Later boundary
-and modularization work kept the same authority model. PR #46 closed the final
-evidence-provenance and retrieval-authorization gaps: verified external support
-now requires a non-empty `source_ref`, duplicate source-and-kind pairs are
-idempotent, and retrieval candidates pass through the atomic point-of-use
-contract.
+PR #18 implemented the alignment plan through issues #10–#17. Later boundary and modularization work kept the same authority model. PR #46 closed the then-open evidence-provenance and retrieval-authorization gaps: verified external support required a non-empty `source_ref`, exact source-and-kind replays became idempotent, and retrieval candidates passed through the atomic point-of-use contract.
+
+ADR-004 and the later runtime alignment tightened that evidence identity further. The underlying external `source_ref` is now the authority identity across external signal channels. Replaying or relabelling the same source under another signal kind cannot create additional authority credit; signal kind remains channel provenance.
 
 Two accepted amendments define the delivered scope:
 
