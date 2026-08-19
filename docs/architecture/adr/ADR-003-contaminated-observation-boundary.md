@@ -1,6 +1,6 @@
 # ADR-003: SSL-Influenced Output Is an Observation, Not Independent Recurrence
 
-- Status: Accepted; current live runtime partially implements the boundary
+- Status: Accepted; minimum fail-closed boundary implemented
 - Date: 2026-08-18
 - Refines: ADR-001 and ADR-002
 
@@ -10,7 +10,7 @@ The live runtime can surface a previously promoted Shadow Seed into the model pr
 
 That candidate can be valuable. It can also be a paraphrase, consequence, or reframing caused by the surfaced seed. Semantic distance is not proof of causal independence. Counting such a candidate as fresh recurrence would let SSL reinforce itself.
 
-The current implementation fails closed: when any seed influenced a live turn, every detected candidate from that answer is deferred from seed intake and listed in `suppressed_self_attributed_candidates`. This is safe against self-credit, but the word "suppressed" can be misread as "discarded" and the boundary has not previously been stated as an epistemic contract.
+The implementation fails closed: when any seed influenced a live turn, every detected candidate from that answer is deferred from seed intake and listed in `suppressed_self_attributed_candidates`. This is safe against self-credit, but the historical field name "suppressed" can be misread as "discarded". The contract interprets these records as deferred contaminated observations.
 
 ## Decision
 
@@ -69,7 +69,7 @@ Future high-end-model experiments should retain this measurement and add a quali
 - keeps detector observations available for audit and research;
 - avoids pretending cosine distance proves causal independence;
 - preserves the separation between observation, recurrence, evidence, and authority;
-- makes the current live fail-closed behavior explicit rather than accidental.
+- makes the live fail-closed behavior explicit rather than accidental.
 
 ### Costs
 
@@ -89,7 +89,7 @@ Future high-end-model experiments should retain this measurement and add a quali
 
 ## Verification targets
 
-Tests and measurements must cover:
+Tests and measurements cover or should continue to cover:
 
 - direct paraphrase after surfacing receives no recurrence credit;
 - semantically distinct consequence after surfacing also receives no recurrence credit;
