@@ -4,7 +4,7 @@ Shadow Seed Learning separates detection, storage, validation, and influence. A 
 
 ## Runtime flow
 
-1. A detector proposes a candidate intended to represent one bounded epistemic absence or uncertainty. Normalization uses tested heuristics and can still produce a compound, vague, redundant, or weak candidate.
+1. A detector proposes a candidate intended to represent one bounded epistemic absence or uncertainty. Normalization uses tested heuristics and can still produce a compound, vague, or weak candidate; redundancy and other defects remain possible.
 2. `SSLManager` stores the candidate with trace above zero and weight exactly zero.
 3. TTL reduces trace when the seed is not reinforced.
 4. TrTL can reactivate a dormant seed through a trigger or semantic match.
