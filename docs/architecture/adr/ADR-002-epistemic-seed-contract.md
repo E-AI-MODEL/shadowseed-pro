@@ -1,6 +1,6 @@
 # ADR-002: Shadow Seeds Are Atomic Epistemic Candidates
 
-- Status: Accepted; implementation alignment in progress
+- Status: Accepted; implementation aligned
 - Date: 2026-08-18
 - Supersedes: no earlier ADR
 - Refines: ADR-001
@@ -180,7 +180,7 @@ A module must not silently:
 
 ## Verification targets
 
-Implementation alignment should include tests for:
+Contract coverage includes tests for:
 
 - empty/whitespace rejection;
 - English and Dutch atomic candidates;
