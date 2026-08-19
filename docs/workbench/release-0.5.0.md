@@ -44,6 +44,12 @@ Before upload, the frozen application runs its own self-test and must prove that
 
 A published 0.5.0 prerelease is required to contain per-platform manifests, consolidated `PROVENANCE.json`, and `SHA256SUMS` for all published assets. The release workflow also verifies the Python wheel and source distribution for developers before publication and re-verifies published assets afterward.
 
+### Fail-closed publication recovery
+
+Release publication is tied to the exact successful `Standalone Workbench` source commit. The release workflow also requires that commit to still be the current `main` head before it creates `v0.5.0`. If `main` advances while a standalone build or release is queued, the older run is intentionally rejected rather than tagged after the fact.
+
+Recovery is to run `Standalone Workbench` again for the current `main` head, either through its normal `main` trigger or its explicit `workflow_dispatch`, and let the release workflow consume those newly verified artifacts. Do not retag an older build, copy assets between source commits, or weaken the exact-SHA preflight to force publication.
+
 ## Platform signing boundary
 
 The 0.5.0 release contract provides checksums and build provenance. Platform-vendor signing/notarization is not claimed unless a published binary is actually signed with configured release credentials. macOS Gatekeeper or Windows reputation warnings may therefore still occur for an unsigned prerelease.
