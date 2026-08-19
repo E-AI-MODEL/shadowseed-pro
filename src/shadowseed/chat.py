@@ -408,7 +408,7 @@ class ShadowChatSession:
         fixture_answer = f"Fixture echo answer to: {question}"
         final_answer = self.model.generate(
             build_chat_prompt(
-                self.history, question, surfaced, response_language="English"
+                self.history, question, surfaced, response_language="the same language as the user's current question"
             ),
             {"question": question, "turn": turn, "baseline_answer": fixture_answer},
             "ssl" if surfaced else "baseline",
@@ -447,7 +447,7 @@ class ShadowChatSession:
                 if seed is None:
                     continue
                 if seed_id not in self.seed_to_cluster:
-                    cluster_id = self.clusterer.add(seed.text, seed.embedding)
+                    cluster_id = self.clusterer.add(seed.text, seed.embedding, observation_ref=f"turn:{turn}")
                     had_representative = cluster_id in self.cluster_rep
                     self.seed_to_cluster[seed_id] = cluster_id
                     self.cluster_rep.setdefault(cluster_id, seed_id)
@@ -458,7 +458,7 @@ class ShadowChatSession:
                             refresh_cluster_representative(self.manager, representative, seed)
                 else:
                     cluster_id = self.seed_to_cluster[seed_id]
-                    self.clusterer.bump(cluster_id)
+                    self.clusterer.bump(cluster_id, observation_ref=f"turn:{turn}")
                     representative = self.manager.seeds.get(self.cluster_rep.get(cluster_id, ""))
                     if representative is not None and representative is not seed:
                         refresh_cluster_representative(self.manager, representative, seed)
@@ -606,7 +606,7 @@ class ShadowChatSession:
                 if seed is None:
                     continue
                 if seed_id not in self.seed_to_cluster:
-                    cluster_id = self.clusterer.add(seed.text, seed.embedding)
+                    cluster_id = self.clusterer.add(seed.text, seed.embedding, observation_ref=f"turn:{turn}")
                     had_representative = cluster_id in self.cluster_rep
                     self.seed_to_cluster[seed_id] = cluster_id
                     self.cluster_rep.setdefault(cluster_id, seed_id)
@@ -621,7 +621,7 @@ class ShadowChatSession:
                             refresh_cluster_representative(self.manager, representative, seed)
                 else:
                     cluster_id = self.seed_to_cluster[seed_id]
-                    self.clusterer.bump(cluster_id)
+                    self.clusterer.bump(cluster_id, observation_ref=f"turn:{turn}")
                     representative = self.manager.seeds.get(
                         self.cluster_rep.get(cluster_id, "")
                     )
@@ -790,6 +790,9 @@ class ShadowChatSession:
                 "centroid_counts": list(self.clusterer.centroid_counts),
                 "recurrence_counts": list(self.clusterer.recurrence_counts),
                 "members": [list(items) for items in self.clusterer.members],
+                "seen_observation_refs": [
+                    sorted(items) for items in self.clusterer.seen_observation_refs
+                ],
             }
         return {
             "schema_version": SESSION_STATE_SCHEMA_VERSION,
@@ -933,6 +936,18 @@ class ShadowChatSession:
             ]
             clusterer.counts = clusterer.recurrence_counts
             clusterer.members = [list(items) for items in cluster_state.get("members", [])]
+            raw_seen_refs = cluster_state.get("seen_observation_refs")
+            if raw_seen_refs is None:
+                # Historical snapshots predate observation-scoped recurrence.
+                # Preserve their stored recurrence count and start tracking refs
+                # only for future observations after restoration.
+                clusterer.seen_observation_refs = [set() for _ in clusterer.centroids]
+            else:
+                clusterer.seen_observation_refs = [
+                    {str(ref) for ref in items} for items in raw_seen_refs
+                ]
+                if len(clusterer.seen_observation_refs) != len(clusterer.centroids):
+                    raise ValueError("invalid cluster observation-ref state")
             session.clusterer = clusterer
         return session
 

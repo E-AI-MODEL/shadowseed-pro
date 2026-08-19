@@ -8,7 +8,7 @@
   <a href="https://github.com/E-AI-MODEL/shadowseed-pro/actions/workflows/ci.yml">
     <img alt="Continuous integration" src="https://github.com/E-AI-MODEL/shadowseed-pro/actions/workflows/ci.yml/badge.svg">
   </a>
-  <img alt="Repository version 0.4.2" src="https://img.shields.io/badge/repository-0.4.2-2f6f5e">
+  <img alt="Repository version 0.5.0" src="https://img.shields.io/badge/repository-0.5.0-2f6f5e">
   <img alt="Python 3.10 or higher" src="https://img.shields.io/badge/Python-3.10%2B-3776AB">
   <img alt="Research status research ready" src="https://img.shields.io/badge/status-research--ready-c88719">
   <img alt="Active repository language English" src="https://img.shields.io/badge/active_language-English-6f42c1">
@@ -24,7 +24,7 @@ Shadow Seed Learning, or SSL, records a possible omission as a **candidate for i
 > [!IMPORTANT]
 > **Shadowseed Pro is research-ready, not production-ready.**
 >
-> The repository tests the mechanism and its safety boundaries. It does not establish general answer-quality improvement, a universal missing-information detector, a general neural signal for missing context, or safe deployment in high-impact settings.
+> Source version 0.5.0 adds standalone local mass-tester build and release contracts. That improves product usability; it does not establish general answer-quality improvement, universal missing-information detection, high-impact deployment safety, or hostile-network production readiness. A downloadable release should be treated as published only when the corresponding immutable tag and release assets are actually present and verified.
 
 > [!CAUTION]
 > This repository has **no open-source license**. All rights are reserved. Public visibility is not permission for reuse. See [Rights and temporary licensing position](#rights-and-temporary-licensing-position).
@@ -40,9 +40,9 @@ Shadow Seed Learning, or SSL, records a possible omission as a **candidate for i
 
 | Goal | Start here |
 |---|---|
+| Use the tester Workbench | [Tester Workbench](#tester-workbench) |
 | Read the research paper | [Paper PDF](paper/shadowseed-paper.pdf) |
-| Run the deterministic demo | [Quick start](#quick-start) |
-| Use the practical tester environment | [Tester Workbench](#tester-workbench) |
+| Install for development | [Developer quick start](#developer-quick-start) |
 | Understand the idea | [The idea in plain language](#the-idea-in-plain-language) |
 | Audit the guarantees | [What the code enforces](#what-the-code-enforces) |
 | Review evidence and limits | [Research status](#research-status) |
@@ -52,7 +52,31 @@ Shadow Seed Learning, or SSL, records a possible omission as a **candidate for i
 
 ## Quick start
 
-### Install and test
+### Tester Workbench
+
+The ordinary 0.5.0 tester path is a local chat application, not a benchmark harness:
+
+```text
+download -> extract/open -> choose model -> create chat -> chat with SSL -> optionally compare one message with SSL off
+```
+
+Source version 0.5.0 contains the fail-closed automation for self-contained Workbench archives for Windows, macOS and Linux. Use the download/open route only when a verified `v0.5.0` GitHub release and its assets are actually present. Each standalone archive contains the application and its Python runtime. A normal tester does **not** need Git, a repository checkout, system Python, `pip`, benchmark JSON or an authored baseline answer for that route. If no verified standalone release is present yet, use the developer installation route below rather than assuming unpublished assets exist.
+
+When a verified standalone bundle is available, open `Shadowseed.exe` on Windows, `Shadowseed.app` on macOS, or the `Shadowseed` executable in the Linux bundle after extraction. The launcher initializes the normal local `~/.shadowseed` workspace and opens the chat UI on loopback only. Local Ollama models can be detected automatically.
+
+Model weights are intentionally not bundled. The deterministic fixture works immediately for offline mechanics testing; Ollama models remain managed by Ollama; Hugging Face and Sentence Transformers may acquire selected model material on first use; hosted OpenAI use remains explicit and credential-dependent.
+
+A newly created ordinary chat uses the product-oriented `live` runtime and the `evidence_backed` Gate policy. The tester chooses a model and chats normally. For any message they may enable **Compare this message with SSL off**. The Workbench generates a same-model control from the same pre-turn visible history before executing the real live turn. The control is comparison data only: it does not enter candidate detection, recurrence, the Gate, or later conversation history. A textual difference is attributable to SSL only when an authorized seed actually surfaced on the real turn.
+
+Historical `evaluation` sessions, authored baseline fixtures, scenario JSON and benchmark outputs remain research/regression material under **Advanced / research**. They are not product prerequisites.
+
+Each platform bundle must execute a frozen self-test in CI before upload. Release assets are required to include per-platform manifests, consolidated provenance and SHA-256 checksums. Platform-vendor signing/notarization is **not** claimed unless a published asset actually carries it.
+
+See [`docs/workbench/README.md`](docs/workbench/README.md) for the download/open workflow, model behavior, privacy boundaries and release verification. See [`docs/workbench/limitations.md`](docs/workbench/limitations.md) before sharing tester data.
+
+## Developer quick start
+
+The Python package and CLI remain available for development, research and automation.
 
 Requirements: Python 3.10 or newer and Git.
 
@@ -60,12 +84,14 @@ Requirements: Python 3.10 or newer and Git.
 git clone https://github.com/E-AI-MODEL/shadowseed-pro.git
 cd shadowseed-pro
 python -m pip install --upgrade pip
-pip install -e ".[test]"
+pip install -e ".[test,workbench]"
 python -m pytest -q
 python -m ruff check .
+shadowseed --help
+shadowseed-workbench
 ```
 
-### Run the deterministic chat demo
+### Deterministic chat demo
 
 ```bash
 shadowseed chat --backend fixture --show-shadow
@@ -73,17 +99,17 @@ shadowseed chat --backend fixture --show-shadow
 
 The fixture backend verifies pipeline mechanics. It is not evidence of real-model quality.
 
-`shadowseed chat` and the `ShadowChatSession` API default to the product-oriented `live` runtime. Live mode produces one visible model answer per turn, stores that same answer in conversation history, and defaults to the `evidence_backed` Gate policy. Detected recurrence remains observable but cannot raise authority on its own. Verified external support enters through `ShadowChatSession.submit_evidence(...)`; the interactive command is `/support <seed_id> <source_ref>`. This API validates evidence shape and provenance, not source truth: the operator or host application is the trust anchor and must authenticate or verify a source before setting `verified=True`. Hard-coding that flag defeats the evidence-backed policy. Non-fixture live sessions reject the toy lexical hash embedder unless `--allow-toy-embedder` is supplied explicitly. The fixture default remains a deterministic mechanics test, and `shadowseed doctor` warns that lexical hashing is not a production semantic embedder. A local semantic setup can use:
+`shadowseed chat` and the `ShadowChatSession` API default to the product-oriented `live` runtime. Live mode produces one visible model answer per turn, stores that same answer in conversation history, and defaults to the `evidence_backed` Gate policy. Detected recurrence remains observable but cannot raise authority on its own. Verified external support enters through `ShadowChatSession.submit_evidence(...)`; the interactive command is `/support <seed_id> <source_ref>`. The caller/operator remains the trust anchor behind a verified external-evidence attestation.
+
+A local semantic developer setup can use:
 
 ```bash
-pip install -e ".[models]"
 shadowseed chat --backend ollama --model-id <model> --embedding-backend sentence-transformers
 ```
 
-Research A/B behavior remains available explicitly with `--runtime-mode evaluation`; that mode keeps the isolated baseline arm.
+Research A/B behavior remains explicitly available with `--runtime-mode evaluation`; that mode preserves the historical isolated baseline arm.
 
-The multi-turn session suite can also execute the real live loop and calculate
-same-turn deferral costs without manual counting:
+The multi-turn research session suite can execute the real live loop and calculate same-turn deferral costs:
 
 ```bash
 shadowseed run-ssl-session \
@@ -93,43 +119,13 @@ shadowseed run-ssl-session \
   --output results/ssl_live_session.json
 ```
 
-This runs the shipped evidence-backed policy without fabricated support and a separately
-labelled recurrence-only counterfactual that makes organic surfacing possible. It does not
-guarantee a promotion: when no turn is influenced, a zero suppression count means deferral
-was not observed rather than that it was free. The artifact reports suppressed candidates
-and later semantic recovery automatically. Those figures are opportunity-cost proxies, not
-truth or usefulness labels. Fixture and lexical backends are rejected for this live
-measurement route. See [`docs/usage/cli.md`](docs/usage/cli.md) for the arm and call-count
-semantics and [`benchmarks/results/live_runtime/`](benchmarks/results/live_runtime/) for the
-first reviewed real-model run plus a separately labelled deferral stress measurement.
+This measurement route is research instrumentation, not the ordinary product UI. Fixture and lexical backends are rejected for its live real-model measurement path. See [`docs/usage/cli.md`](docs/usage/cli.md) for command semantics.
 
-### Tester Workbench
-
-The 0.4 tester preview adds a local, single-user Workbench for practical testing
-without writing Python code:
+For dialectical falsification research, inspect the command before running it:
 
 ```bash
-pip install -e ".[workbench]"
-shadowseed doctor
-shadowseed init
-shadowseed workbench
+shadowseed run-dialectic-falsification --help
 ```
-
-The supported native server binds to `127.0.0.1` by default. Testers can create
-live or evaluation sessions, choose an embedding backend, inspect stored seed
-decisions, submit explicitly verified support to the existing Validation Gate,
-record separate audit-only feedback, import scenarios, and export verified
-reports or privacy-minimized support bundles. Baseline/SSL comparison is limited
-to evaluation sessions because live mode intentionally performs one generation.
-The Workbench is a tester product layer over the existing runtime; it is not a
-second Validation Gate and does not turn ordinary tester observations into
-scientific evidence.
-
-See [`docs/workbench/README.md`](docs/workbench/README.md) for the practical
-workflow and [`docs/workbench/limitations.md`](docs/workbench/limitations.md)
-before sharing data or changing the default network binding.
-
-For live-chat and core CLI guidance, see [`docs/usage/cli.md`](docs/usage/cli.md). Run `shadowseed --help` for the complete command list. Research-specific examples and reproducibility notes remain under [Activation-probe commands](#activation-probe-commands) and [Reproducibility rules](#reproducibility-rules).
 
 <details>
 <summary><strong>Common benchmark commands and optional dependencies</strong></summary>
@@ -170,7 +166,9 @@ That statement is not accepted as fact. It becomes a small, testable seed with n
 
 ### What a seed is
 
-A seed is intended to represent one candidate absence. Atomicity is a **normalization target and tested heuristic**; normalization does not guarantee semantic atomicity, and a generated candidate can still be compound, vague, vacuous, or poorly split.
+A seed is one bounded epistemic candidate tied to context. It can represent a gap, doubt, missing relation or boundary, dependency, unstated assumption, alternative hypothesis, contradiction to investigate, or relevant what-if direction. It is not a fact, instruction, evidence item, conclusion, or source of authority.
+
+Atomicity is a **normalization target and tested heuristic**. Normalization does not guarantee semantic atomicity: a model can still emit a compound, vague, vacuous, poorly split, or otherwise weak candidate.
 
 Good seed:
 
@@ -199,7 +197,8 @@ weight = 0   means the seed has no steering authority
 |---|---|---|
 | `trace` | Presence, recurrence, decay, and reactivation | Grant influence by itself |
 | `weight` | Bounded steering authority after validation | Rise because a detector sounds convincing |
-| seed | A candidate absence | Count as evidence for itself |
+| seed | An epistemic candidate | Count as evidence for itself |
+| recurrence | Renewed observation in a distinct observation context | Become truth or external evidence |
 | evidence | Verified external support with provenance | Bypass the Validation Gate |
 | contradiction | A reason to block, reduce, or reset influence | Disappear from the audit trail |
 | promotion | Permission to be considered | Force inclusion in an answer |
@@ -211,7 +210,7 @@ Detection is not validation. Promotion is not mandatory use. A signal is not a v
 
 ```mermaid
 flowchart LR
-    A[Possible omission] --> B[Weightless seed]
+    A[Epistemic candidate] --> B[Weightless seed]
     B --> C[Decay or reactivate]
     C --> D[Recurrence, evidence, contradiction]
     D --> E[Validation Gate]
@@ -221,10 +220,10 @@ flowchart LR
     G -->|allowed| H[Optional influence and audit]
 ```
 
-The conversation runtime has two explicit modes. `live` is product-oriented; `evaluation` retains the isolated baseline arm used by research comparisons. Seed validation, surfacing, point-of-use authorization, and actual influence remain separate concerns in both modes.
+The conversation runtime has two explicit implementation modes. `live` is product-oriented; `evaluation` preserves the historical isolated baseline arm for research. Seed validation, surfacing, point-of-use authorization and actual influence remain separate concerns.
 
 <details>
-<summary><strong>Live runtime, evaluation isolation, and lifecycle</strong></summary>
+<summary><strong>Live runtime, product comparison, evaluation isolation, and lifecycle</strong></summary>
 
 ### Live runtime
 
@@ -235,22 +234,26 @@ flowchart TD
     A -->|allowed candidates| M[One model generation]
     A -->|none allowed| M
     M --> V[Visible answer]
-    V --> H[Store the same visible answer in history]
-    V --> D[Detect candidate absences]
-    D --> X[If SSL surfaced, defer all detected candidates]
+    V --> H[Store visible answer in history]
+    V --> D[Detect epistemic candidates]
+    D --> X[If SSL surfaced, defer same-turn detected candidates]
     X --> N[Ingest remaining candidates at weight zero]
-    N --> R[Record changed recurrence]
+    N --> R[Record eligible renewed observations]
     R --> G[Validation Gate: evidence_backed by default]
     E[Explicit verified evidence] --> G
     G -->|recurrence only| B[No authority gain]
     G -->|verified external support| P[Authority may rise]
 ```
 
-Live mode avoids the hidden-history split: the answer the user reads is the answer carried into the next turn. Candidate detection runs on that visible answer. If a seed influenced the generation, all candidates detected in that same answer are deferred because embedding similarity cannot prove causal provenance. This fail-closed rule prevents both close paraphrases and differently worded consequences from earning self-recurrence credit. Recurrence alone cannot raise authority under the live default policy; verified support must enter through the explicit evidence boundary with a stable source reference.
+Live mode avoids a hidden-history split: the answer the user reads is carried into the next turn. If a seed influenced generation, candidates detected in that same answer are deferred because semantic similarity cannot prove causal independence. Recurrence itself is observation, not evidence, and one detector observation context can credit a semantic cluster at most once.
+
+### Product comparison
+
+When **Compare this message with SSL off** is enabled, the Workbench first generates a no-SSL control from the same pre-turn visible history/model configuration. That control is not detected, does not change recurrence or Gate state, and is not appended to conversation history. The actual live turn remains the only state-changing turn.
 
 ### Evaluation mode
 
-`--runtime-mode evaluation` preserves the historical research harness: an uncontaminated baseline is generated and stored separately from a possible SSL-assisted answer. This mode exists for controlled A/B measurement and benchmark reproducibility; it is not the default for `shadowseed chat`.
+`--runtime-mode evaluation` preserves the historical research harness with an isolated baseline arm. It exists for controlled benchmark/replay work and is not the default product conversation model.
 
 ### Lifecycle
 
@@ -278,48 +281,22 @@ NEW -> ACTIVE -> DECAYING -> DORMANT -> EXPIRED
 | Live history stores the visible answer; evaluation mode preserves baseline isolation | [`shadowseed.chat`](src/shadowseed/chat.py) | [`test_live_runtime.py`](tests/test_live_runtime.py), [`test_shadow_chat.py`](tests/test_shadow_chat.py) |
 | Gate decisions and influence attempts support strict in-process replay | [`GateEvent`](src/shadowseed/gate/events.py), [`AgentInfluenceRecord`](src/shadowseed_agent/audit_policy.py) | [`test_point_of_use.py`](tests/test_point_of_use.py) |
 
-> **"Non-bypassable" is a public-API property over new authority decisions, not a Python-runtime claim.** The supported runtime routes new Gate-controlled decisions through one engine. Restoration reinstates validated persisted state, and explicitly unsafe test hooks remain callable by arbitrary in-process Python.
-
-<details>
-<summary><strong>Assurance boundaries, policy profiles, and evidence hierarchy</strong></summary>
+> **"Non-bypassable" is a public-API property over new authority decisions, not a Python-runtime claim.** Restoration reinstates validated persisted state, and explicitly unsafe test hooks remain callable by arbitrary in-process Python.
 
 ### Assurance boundaries
 
-- **Restoration reinstates authority; it does not create it.** `ShadowSeed.from_dict` and `SSLManager.restore_seed` validate and restore a prior snapshot without running the Gate. `replace_existing=True` can deliberately replace a live seed.
-- **Atomicity is bounded.** A seed is normalized toward one candidate absence, but the runtime cannot guarantee that every model-generated proposal is meaningful or well split.
-- **Audit immutability is type-specific.** `GateEvent` and `AgentInfluenceRecord` are frozen and replayable in process. `SeedEvent`, `ValidationGateResult`, and `ProbeFeedbackResult` are ordinary mutable Python objects.
-- **Durable audit integrity is not implemented.** The runtime has no append-only, tamper-evident storage, cryptographic chaining, external timestamping, or write-once medium.
-- **Point-of-use checks are specific, not universal safety.** Positive weight, `PROMOTED` status, and a live current-version Gate-event link are mandatory. `block_contradicted_seed=False` can relax the contradiction check. The legacy `require_logged_promotion` constructor field remains accepted for compatibility but has no effect on authorization.
-- **Prompt-data quoting is a boundary, not injection prevention.** Surfaced seeds are presented as bounded candidate data. This does not solve every prompt-injection or evidence-poisoning attack.
+- Atomicity remains heuristic; generated candidates can still be semantically compound or weak.
+- The current repository does **not** provide durable append-only, tamper-evident storage. Frozen/replayable in-process records are not the same as a tamper-evident external audit ledger.
+- Point-of-use checks are specific eligibility checks, not universal safety certification.
+- Packaging adds distribution convenience; it does not add seed authority or prove model benefit.
 
 ### Gate policy profiles
 
-- **`exploratory`**: qualifying recurrence or verified external support may raise authority when no unresolved contradiction exists. Recurrence never increments `evidence_count`. This remains the evaluation/research default.
-- **`evidence_backed`**: verified external support is required. Recurrence may accompany it but cannot replace it. This is the `live` runtime default.
+- **`exploratory`**: qualifying recurrence or verified external support may raise authority when no unresolved contradiction exists. This is research/evaluation behavior.
+- **`evidence_backed`**: verified external support is required. Recurrence may accompany it but cannot replace it. This is the live product default.
 - **`legacy_evidence_required`**: compatibility behavior for the historical boolean API.
 
-Verified external support must carry a non-empty `source_ref`. Reusing the same
-source within the same signal kind is idempotent; the same reference under a
-different signal kind is treated as distinct support. Independent confirmations
-within one kind need distinct source references. Because the deprecated boolean
-adapter cannot provide provenance, bare `external_evidence=True` on a
-non-expired seed raises `ValueError` before a Gate event or authority change. An
-expired seed instead records a terminal `EXPIRED` Gate event without applying
-evidence or authority. Historical anonymous events remain replayable. Unverified
-external observations remain visible in `GateEvent.signals` for audit but cannot
-authorize a seed or be counted as passed evidence.
-
-### Seed origin metadata
-
-[`SeedOrigin`](src/shadowseed/models.py) records why a detector proposed a candidate. It is audit-only metadata and cannot raise weight or count as evidence.
-
-### Trusted evidence is stored separately
-
-[`SSOTManager`](src/shadowseed/ssot.py) keeps verified source material separate from uncertain seeds. Generated claims enter as unverified proposals and cannot validate a seed until explicitly verified.
-
-### Dialectical falsification
-
-[`dialectic_falsification.py`](src/shadowseed/benchmark/dialectic_falsification.py) challenges candidate absences against their source. Refutation routes through a Gate contradiction, survival can provide bounded feedback, and ambiguous output fails safe to an undecided result.
+Verified external support must carry a non-empty `source_ref`. The underlying source reference is the current authority identity: relabelling one source across signal channels does not create additional independent authority credit. Recurrence remains a separate keyspace and is never converted into external evidence.
 
 ### Evidence hierarchy
 
@@ -332,8 +309,6 @@ authorize a seed or be counted as passed evidence.
 7. Replication or transfer
 8. Documentation claim
 
-#### Fixture versus real-model evidence
-
 | Evidence type | What it can show | What it cannot show |
 |---|---|---|
 | deterministic fixture | command wiring, schemas, state transitions, logging | real detector quality or answer benefit |
@@ -341,8 +316,6 @@ authorize a seed or be counted as passed evidence.
 | one real-model run | behavior on that model, data, prompt, and environment | generalization |
 | reviewed benchmark | performance under a stated review protocol | production safety |
 | preregistered replication | whether a fixed claim survives a new sample | universal validity |
-
-</details>
 
 ---
 
@@ -361,12 +334,10 @@ authorize a seed or be counted as passed evidence.
 | [`shadowseed.gate`](src/shadowseed/gate/) | Typed signals, named policies, immutable Gate events, verified logging, and the executable decision engine |
 | [`shadowseed_agent`](src/shadowseed_agent/) | Point-of-use eligibility and strict influence replay |
 
-See the [architecture overview](docs/architecture/overview.md), [lifecycle and Gate specification](docs/architecture/lifecycle-and-gate.md), and [repository structure guide](docs/architecture/repository-structure.md) for the full ownership model.
+See the [architecture overview](docs/architecture/overview.md), [lifecycle and Gate specification](docs/architecture/lifecycle-and-gate.md), and [repository structure guide](docs/architecture/repository-structure.md).
 
 <details>
 <summary><strong>Repository map and authority classes</strong></summary>
-
-### Repository map
 
 ```text
 shadowseed-pro/
@@ -376,23 +347,15 @@ shadowseed-pro/
 ├── repository-authority.yaml       machine-readable authority map
 ├── src/
 │   ├── shadowseed/                 canonical runtime package
-│   │   ├── adapters/               model and service adapters
-│   │   ├── analysis/               result analysis
-│   │   ├── benchmark/              evaluation and research implementations
-│   │   ├── data/                   packaged fixtures and curated inputs
-│   │   ├── detection/              candidate detectors
-│   │   └── vectorstore/            memory, FAISS, and Chroma backends
 │   └── shadowseed_agent/           point-of-use contract and audit policy
 ├── tests/                           contract, unit, integration, and regression tests
 ├── benchmarks/                      benchmark definitions and reviewed rounds
 ├── docs/                            architecture, research, usage, and migration docs
 ├── experiments/                     exploratory runners, not supported runtime
-├── scripts/                         research and review utilities
+├── scripts/                         research, build, and review utilities
 ├── results/                         local and generated analysis output
 └── archive/                         frozen historical source material
 ```
-
-### Repository authority
 
 | Authority class | Meaning |
 |---|---|
@@ -413,7 +376,7 @@ The machine-readable source is [`repository-authority.yaml`](repository-authorit
 
 ## Research status
 
-The methods/systems manuscript for the current architecture is available in [`paper/`](paper/README.md), with the compiled version at [`paper/shadowseed-paper.pdf`](paper/shadowseed-paper.pdf). It identifies the reviewed implementation commit separately from the 0.4.2 release artifact and keeps the existing efficacy claim boundary unchanged.
+The methods/systems manuscript is available in [`paper/`](paper/README.md), with the compiled version at [`paper/shadowseed-paper.pdf`](paper/shadowseed-paper.pdf). Product packaging changes in 0.5.0 do not silently expand the paper's efficacy claims.
 
 ### Implemented and testable
 
@@ -422,13 +385,15 @@ The methods/systems manuscript for the current architecture is available in [`pa
 - TTL decay, dormancy, TrTL reactivation, and terminal expiry;
 - typed Validation Gate signals and named policies;
 - explicit contradiction records and resolution;
-- verified SSOT evidence separated from generated proposals;
-- a one-generation live loop plus a separately baseline-isolated evaluation loop;
+- verified external evidence separated from generated proposals;
+- a one-generation live loop plus historical evaluation loop;
+- same-turn contamination deferral and observation-scoped semantic recurrence;
 - point-of-use eligibility with current-version Gate-event linkage;
-- audit and strict in-process replay for Gate and influence decisions;
-- deterministic fixtures plus optional Hugging Face, Ollama, OpenAI, FAISS, and Chroma routes;
-- adversarial, retrieval, payoff, and activation-probe research instruments;
-- committed null-result and replication artifacts for the small-model activation track.
+- chat-first Workbench with automatic live SSL-on/off controls;
+- local Ollama model discovery;
+- deterministic fixtures plus optional Hugging Face, Ollama and OpenAI routes;
+- adversarial, retrieval, payoff, dialectical falsification and activation-probe research instruments;
+- 0.5.0 standalone build/release contracts for Windows, macOS and Linux.
 
 ### Not established
 
@@ -439,190 +404,57 @@ The methods/systems manuscript for the current architecture is available in [`pa
 - reliable value from every promoted seed;
 - calibration between seed weight and factual correctness;
 - safety against all prompt-injection, evidence-poisoning, or seed-spam attacks;
-- production readiness.
+- hostile-network or high-impact production readiness.
 
-### Work still required for production use
+### Work still required for broader production use
 
-Durable transactional storage, append-only or tamper-evident audit persistence, schema migrations, deterministic replay across versions, access control, privacy and retention controls, monitoring, rollback, backend isolation, rate limits, operator approval for high-impact actions, independent security review, and real-world evaluation remain open work.
-
-<details>
-<summary><strong>Project background, limitations, and open questions</strong></summary>
-
-### Project origin and author note
-
-Shadow Seed Learning began with a practical question:
-
-> Can an AI system record a suspected omission, keep it powerless while it is uncertain, test it over time, and allow it to influence later work only after explicit validation?
-
-The author is not a formally trained programmer or machine-learning researcher. The repository was developed through iterative, AI-assisted engineering, public research, explicit specifications, tests, benchmark rounds, and repeated attempts to disprove attractive results.
-
-That limitation shaped the project: claims are linked to code, tests, or artifacts; generated proposals are separated from verified evidence; negative results are retained; and independent review remains necessary. The repository should be inspected because the decision path is visible, not trusted because its author sounds certain.
-
-The project developed through stricter questions about atomic candidates, trace versus authority, decay and reactivation, Gate-controlled validation, point-of-use checks, open-set evaluation, and whether internal activations contain a reproducible signal related to candidate absence.
-
-
-### Discussion and limitations
-
-A missing point may be essential, optional, already implied, outside scope, unknowable, or invented by the detector. Recurrence can reflect importance or repeated detector bias. `weight` is steering authority, not probability. Promotion is permission to be considered, not proof of relevance.
-
-Method limits include fixture dependence, small human review sets, model-generated labels in some experiments, limited activation-study scale, shared assumptions between implementation and tests, and missing broad independent replication.
-
-| Tension | Current choice | Open question |
-|---|---|---|
-| Memory versus contamination | Visible history in live mode; baseline isolation in evaluation mode; same-turn candidate deferral after SSL influence; automated deferral and later-recovery measurement | Which deferred candidates are genuinely useful across models and domains? |
-| Persistence versus forgetting | TTL, TrTL, and expiry | How should decay vary by domain and risk? |
-| Exploration versus distraction | Relevance thresholds and top-k | Can usefulness be predicted before generation? |
-| Recurrence versus bias | Recurrence is distinct from evidence | How should correlated detector errors be measured? |
-| Verification versus verifier error | Evidence and dialectical review | How should malicious or conflicting verifiers be handled? |
-| Transparency versus overload | Full logs and authority maps | Can people review the trail efficiently? |
-| Memory utility versus privacy | Explicit seed and evidence text | What is the minimum safe retained data? |
-
-Open questions include reviewer agreement on meaningful absences, cross-language transfer, real answer benefit, negative controls, source credibility, cost-sensitive Gate thresholds, privacy-preserving memory, larger-model representation studies, and independent reproduction.
+Append-only or tamper-evident durable audit persistence, deterministic replay assurance across future versions, access control, explicit retention/deletion operations, monitoring, rollback, backend isolation, rate limits, hostile-network authentication/tenancy, managed secrets, platform vendor signing/notarization, independent security review, broad high-end-model evaluation and real-world independent review remain separate work.
 
 ### Appropriate use today
 
-Suitable uses include research inspection, mechanism testing, benchmark development, controlled local experiments, and discussion of auditable agent memory. Do not treat Shadowseed Pro as a ready safety layer for healthcare, education decisions, employment, finance, law, public administration, or autonomous high-impact action.
+Suitable uses include local product testing, research inspection, mechanism testing, benchmark development, controlled experiments, and discussion of auditable agent memory. Do not treat Shadowseed Pro as a certified safety layer for healthcare, education decisions, employment, finance, law, public administration, or autonomous high-impact action.
 
+---
 
-</details>
+## Research track and reproducibility
 
-<details>
-<summary><strong>Research track, scientific basis, references, and reproducibility</strong></summary>
+The repository retains the full research track, including AbsenceBench-related tooling, dialectical falsification, H-Neuron-inspired activation probes, negative results, transfer sets and benchmark artifacts. Research evidence remains separate from product packaging.
 
-### H-Neurons: code influence and separate experiment
+Key material:
 
-H-Neurons appears here in two separate roles.
+- [`paper/`](paper/README.md)
+- [`docs/research/status.md`](docs/research/status.md)
+- [`docs/research/h-neurons-conclusion.md`](docs/research/h-neurons-conclusion.md)
+- [`benchmarks/open_review/`](benchmarks/open_review/)
+- [`benchmarks/results/`](benchmarks/results/)
 
-First, Shadowseed adapts a measurement pattern from Gao et al. for a different question: whether small-model activations linearly separate external dialectical verdicts about candidate absences. The implementation is [`src/shadowseed/benchmark/activation_probe.py`](src/shadowseed/benchmark/activation_probe.py). Sparse classifier features are reported as `candidate_neurons`, not established causal neurons.
+Research runs should record the repository commit, Python and operating-system versions, package versions, model ID and immutable revision when available, dtype/device, input digest, detector prompt/configuration, embedding model, random seeds, review protocol, and output hashes. Discovery and confirmation require separate data or a preregistered test; selecting the strongest result after inspection is not confirmation.
 
-Second, the repository contains a bounded small-model research track. Round 032 produced a tempting candidate signal that did not pass the corrected significance threshold. Round 033 preregistered fixed tests on a new case set; none passed. The defensible conclusion is a bounded null result: no reproducible linearly decodable dialectical-verdict signal was established in the evaluated models up to 0.5B parameters.
-
-The result does not rule out nonlinear representations, other activation sites, larger datasets, or larger models. It also does not weaken the external runtime mechanics. The runtime must not depend on the tested internal signal.
+The runtime must not depend on an unverified internal activation signal:
 
 ```text
 internal signal != evidence != verdict != permission to influence
 ```
 
-Key material:
-
-- [`docs/research/h-neurons-conclusion.md`](docs/research/h-neurons-conclusion.md)
-- [`round_032/RESULTS.md`](benchmarks/open_review/rounds/round_032/RESULTS.md)
-- [`round_033/RESULTS.md`](benchmarks/open_review/rounds/round_033/RESULTS.md)
-- [`tests/test_activation_probe.py`](tests/test_activation_probe.py)
-
-### Activation-probe commands
-
-Mechanics-only smoke run:
-
-```bash
-shadowseed run-activation-probe \
-  --backend fake \
-  --input src/shadowseed/data/dialectic_falsification_fixture.json \
-  --read-location neuron \
-  --sparse-permutations 99 \
-  --output results/activation_probe_fake.json
-```
-
-Real Hugging Face probe:
-
-```bash
-pip install -e ".[test,models]"
-
-shadowseed run-activation-probe \
-  --backend hf \
-  --model-id Qwen/Qwen2.5-0.5B \
-  --input src/shadowseed/data/dialectic_falsification_transfer_v3.json \
-  --verdicts benchmarks/open_review/rounds/round_033/verdicts_run_29490380118.json \
-  --pooling statement \
-  --read-location neuron \
-  --sparse-permutations 500 \
-  --model-revision <immutable-hugging-face-commit-sha> \
-  --require-verdict-coverage \
-  --dtype float32 \
-  --output results/activation_probe.json
-```
-
-Generate fresh external dialectical labels:
-
-```bash
-shadowseed run-dialectic-falsification \
-  --backend openai \
-  --model-id <model-id> \
-  --input src/shadowseed/data/dialectic_falsification_transfer_v3.json \
-  --output results/dialectic_verdicts.json
-```
-
-Pass the resulting verdict artifact to `run-activation-probe --verdicts`. Fresh model labels are not bit-reproducible by default, so preserve the artifact together with the model identifier and date.
-
-A reproducible comparison needs a fixed model revision, dependencies, labels, case data, random seeds, and a plan written before inspecting the strongest layer.
-
-
-### Scientific basis and exact claim boundaries
-
-The references below provide problems, methods, counter-evidence, and precedents. They do not collectively prove Shadow Seed Learning.
-
-### References
-
-#### Missing information and memory
-
-- Fu et al. (2025). **Absence Bench: Language Models Can't See What's Missing.** *NeurIPS 2025*. [Paper](https://papers.neurips.cc/paper_files/paper/2025/hash/36b31e1bb8ecd4f4081686448e9eff2d-Abstract-Datasets_and_Benchmarks_Track.html).
-- Li, Kim, and Wang (2025). **QuestBench.** [arXiv:2503.22674](https://arxiv.org/abs/2503.22674).
-- Kirichenko et al. (2025). **AbstentionBench.** [arXiv:2506.09038](https://arxiv.org/abs/2506.09038).
-- Wu et al. (2025). **LongMemEval.** *ICLR 2025*. [Proceedings](https://proceedings.iclr.cc/paper_files/paper/2025/hash/d813d324dbf0598bbdc9c8e79740ed01-Abstract-Conference.html).
-
-#### Verification, retrieval, and security
-
-- Dhuliawala et al. (2024). **Chain-of-Verification.** *Findings of ACL 2024*. [Paper](https://aclanthology.org/2024.findings-acl.212/).
-- Fatahi Bayat et al. (2025). **FactBench.** *ACL 2025*. [Paper](https://aclanthology.org/2025.acl-long.1587/).
-- Jeong et al. (2024). **Adaptive-RAG.** *NAACL 2024*. [Paper](https://aclanthology.org/2024.naacl-long.389/).
-- Asai et al. (2024). **Self-RAG.** *ICLR 2024*. [OpenReview](https://openreview.net/forum?id=hSyW5go0v8).
-- Yao et al. (2025). **SeaKR.** *ACL 2025*. [Paper](https://aclanthology.org/2025.acl-long.1312/).
-- Soudani et al. (2025). **Why Uncertainty Estimation Methods Fall Short in RAG.** *Findings of ACL 2025*. [Paper](https://aclanthology.org/2025.findings-acl.852/).
-- Ge et al. (2025). **Resolving Conflicting Evidence in Automated Fact-Checking.** *IJCAI 2025*. [Paper](https://www.ijcai.org/proceedings/2025/1073).
-- Zou et al. (2025). **PoisonedRAG.** *USENIX Security 2025*. [Paper](https://www.usenix.org/conference/usenixsecurity25/presentation/zou-poisonedrag).
-- Debenedetti et al. (2024). **AgentDojo.** *NeurIPS 2024*. [Paper](https://proceedings.neurips.cc/paper_files/paper/2024/hash/97091a5177d8dc64b1da8bf3e1f6fb54-Abstract-Datasets_and_Benchmarks_Track.html).
-- Farquhar et al. (2024). **Detecting Hallucinations Using Semantic Entropy.** *Nature*. [DOI](https://doi.org/10.1038/s41586-024-07421-0).
-
-#### H-Neurons and internal representations
-
-- Gao et al. (2025). **H-Neurons.** [arXiv:2512.01797](https://arxiv.org/abs/2512.01797). [Official implementation](https://github.com/thunlp/H-Neurons).
-- Vaddi and Vaddi (2026). **Do Hallucination Neurons Generalize?** [arXiv:2604.19765](https://arxiv.org/abs/2604.19765).
-- Alansari et al. (2026). **CrossHallu.** [arXiv:2607.04029](https://arxiv.org/abs/2607.04029).
-
-#### Conceptual antecedents
-
-- Kendall, A., and Gal, Y. (2017). **What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?** *NeurIPS 2017*.
-- Schmidhuber, J. (2010). **Formal Theory of Creativity, Fun, and Intrinsic Motivation.** *IEEE Transactions on Autonomous Mental Development, 2*(3), 230-247.
-- Settles, B. (2009). **Active Learning Literature Survey.** University of Wisconsin-Madison.
-
-### Reproducibility rules
-
-Research runs should record the repository commit, Python and operating-system versions, package versions, model ID and immutable revision, dtype and device, input case and hash, prompt variant, pooling location, verdict artifact and coverage, random seeds, permutation count, correction method, preregistered hypotheses, and output artifact hash.
-
-Do not select the strongest layer and then present its uncorrected p-value as confirmation. Discovery and confirmation require separate data or a preregistered test.
-
-
-</details>
-
 ---
 
 ## Documentation
 
+- [Tester Workbench](docs/workbench/README.md)
 - [Architecture overview](docs/architecture/overview.md)
 - [Lifecycle and Validation Gate](docs/architecture/lifecycle-and-gate.md)
 - [Gate contracts](docs/architecture/gate-contracts.md)
+- [ADR-005: chat-first product surface](docs/architecture/adr/ADR-005-chat-first-product-surface.md)
 - [Repository structure](docs/architecture/repository-structure.md)
 - [Compatibility policy](docs/architecture/compatibility-policy.md)
 - [CLI usage](docs/usage/cli.md)
 - [Research status](docs/research/status.md)
 - [H-Neurons conclusion](docs/research/h-neurons-conclusion.md)
-- [Migration audit](docs/migration/source-audit.md)
-- [Language policy](docs/migration/language-policy.md)
 - [Authority map](repository-authority.yaml)
 - [Changelog](CHANGELOG.md)
 
 > [!NOTE]
-> The core runtime code is English, and this is enforced automatically. Benchmark fixtures retain documented Dutch tokens and source-language material for compatibility. Historical Dutch material under [`archive/`](archive/) is provenance, not current runtime authority.
+> The core runtime code is English, and this is enforced automatically. Product chat follows the current user question's language. Benchmark fixtures retain documented source-language material for compatibility. Historical material under [`archive/`](archive/) is provenance, not current runtime authority.
 
 ---
 

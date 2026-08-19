@@ -1,7 +1,7 @@
 [project]
 name = "shadowseed"
-version = "0.4.2"
-description = "Auditable research implementation of Shadow Seed Learning"
+version = "0.5.0"
+description = "Auditable Shadow Seed Learning runtime and local tester"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -10,6 +10,7 @@ dependencies = [
 
 [project.scripts]
 shadowseed = "shadowseed.cli:main"
+shadowseed-workbench = "shadowseed.workbench.standalone:main"
 
 [project.optional-dependencies]
 models = [
@@ -38,6 +39,15 @@ vector = [
 workbench = [
   "gradio>=6.0,<7",
   "httpx[socks]>=0.28.0,<1",
+  # Product Workbench sessions default to live SSL. Real local-model chat
+  # therefore needs a semantic embedder in the normal install rather than a
+  # hidden second setup step.
+  "sentence-transformers>=2.7",
+  "transformers>=4.51",
+  "torch>=2.2",
+  # Hosted OpenAI is an explicit opt-in backend in the same product surface.
+  # Credentials are still read from the environment and are never persisted.
+  "openai>=1.40",
 ]
 test = [
   "pytest>=8.0",

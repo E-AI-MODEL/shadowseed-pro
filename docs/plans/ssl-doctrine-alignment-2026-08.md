@@ -1,18 +1,20 @@
 # SSL doctrine alignment execution plan
 
-Date: 2026-08-18
-Status: in execution
-Branch: `agent/ssl-doctrine-alignment`
+Date: 2026-08-18  
+Status: execution record; doctrine/correctness work and the first mass-tester packaging baseline are merged, while evidence-scale and production-readiness work remain open  
+Original branch: `agent/ssl-doctrine-alignment`
+
+> This file records the execution sequence used during the August 2026 alignment. Current architecture authority lives in `docs/architecture/**`; current research/product status lives in `docs/research/status.md` and the Workbench documentation.
 
 ## Goal
 
-Bring the current Shadowseed Pro runtime into explicit alignment with ADR-001 through ADR-004 while preserving the 4.5/4.6 research history and keeping current claims at research-ready, not production-ready.
+Bring Shadowseed Pro into explicit alignment with ADR-001 through ADR-004 while preserving the 4.5/4.6 research history and keeping claims at research-ready, not production-ready. Later ADR-005 defines the chat-first product surface.
 
 The execution order follows risk, not file layout.
 
 ## Phase 1: doctrine and correctness
 
-Required before merge:
+Required before the doctrine alignment merge:
 
 - ADR-002 defines one atomic epistemic candidate and separates doctrine from calibration.
 - ADR-003 defines same-turn SSL-exposed detector output as a contaminated observation, not independent recurrence.
@@ -38,9 +40,9 @@ new doctrine regressions
 
 ## Phase 2: contamination observability
 
-ADR-003 accepts the existing fail-closed intake behavior as the minimum safe implementation because deferred candidates are persisted in turn reports. A later implementation may add an immutable candidate-observation ledger if cross-session analysis needs a first-class structure.
+ADR-003 accepts fail-closed same-turn deferral as the minimum safe implementation because deferred candidates are persisted in turn reports. A later implementation may add an immutable candidate-observation ledger if cross-session analysis needs a first-class structure.
 
-Do not make contaminated observations recurrence-bearing merely to reduce deferral counts.
+Semantic recurrence was later tightened so one detector observation context can contribute at most one recurrence credit to a matching semantic cluster. Do not make contaminated observations recurrence-bearing merely to reduce deferral counts. Recurrence remains observation, not evidence.
 
 Research measurements should report:
 
@@ -53,7 +55,7 @@ Research measurements should report:
 
 ## Phase 3: evidence-grade model scaling
 
-After Phase 1 merges, the existing Qwen 7B artifacts remain historical reference measurements. Do not reinterpret them as validation of the changed runtime.
+After Phase 1 merged, the existing Qwen 7B artifacts remained historical reference measurements. Do not reinterpret them as validation of the changed runtime.
 
 Run a new evidence-quality suite on the strongest practical model(s) available at execution time. Model scale is an experimental variable, not an SSL authority variable.
 
@@ -70,27 +72,33 @@ At minimum compare:
 
 Freeze or record model revision/digest, detector prompt id, embeddings, dependency lock or environment manifest, input digest, Git revision, and dirty state.
 
+This phase remains evidence work. Product packaging or successful tester operation must not be counted as efficacy evidence.
+
 ## Phase 4: mass-tester product
 
-Do not expose the current local Gradio preview directly as a hostile-network multi-tenant service.
+Do not expose the local Gradio Workbench directly as a hostile-network multi-tenant service.
 
-Target tester path:
+The delivered chat-first tester target is:
 
 ```text
-download/open -> choose model or provider -> test -> optional feedback/export
+download/open -> choose model or provider -> create chat -> chat normally with SSL -> optional same-message SSL-off comparison -> feedback/export
 ```
 
-Keep advanced CLI and research controls available, but do not require Python/Git knowledge for ordinary testers.
+The tester never authors the no-SSL baseline/control. The product generates a same-model control from the same pre-turn visible history and keeps it out of candidate detection, recurrence, the Gate, seed state, and later conversation history. Only the real live turn mutates state.
 
-Before broader distribution:
+Keep advanced CLI and research controls available, but do not require Python/Git knowledge for ordinary testers when verified standalone assets are published.
 
-- signed or otherwise verifiable standalone packaging per supported desktop OS;
-- live/evidence-backed path presented as the normal product path;
-- evaluation/blind A/B clearly marked as research comparison;
+The initial 0.5.0 packaging baseline covers:
+
+- verifiable standalone build contracts for Windows amd64, Linux x86_64 and macOS Apple Silicon arm64;
+- live/evidence-backed chat presented as the normal product path;
+- historical evaluation/blind A/B marked as research comparison;
 - hosted-provider consent and secret handling preserved;
 - content-bearing export warnings preserved;
 - crash-safe workspace backup/restore;
 - no direct authority editor in the UI.
+
+Platform-vendor signing/notarization, Intel/universal macOS support and public release publication remain separate from the source-level packaging contract and must not be implied unless actually delivered.
 
 ## Phase 5: production-readiness work
 
@@ -110,12 +118,12 @@ Required categories include:
 
 ## Non-negotiable invariants throughout all phases
 
-1. One accepted seed is one epistemic candidate.
+1. One accepted seed is one bounded epistemic candidate; normalization remains heuristic rather than a semantic guarantee.
 2. New seeds are weightless.
 3. Trace is presence, not authority.
 4. Recurrence is observation, not external evidence.
 5. Generated model output is not verified evidence.
-6. One underlying external source cannot be multiplied by relabeling its channel.
+6. One underlying external source cannot be multiplied by relabelling its channel.
 7. Unresolved contradictions block influence by default.
 8. Promotion is eligibility, not mandatory use.
 9. Actual influence requires a current point-of-use decision linked to current Gate authority.

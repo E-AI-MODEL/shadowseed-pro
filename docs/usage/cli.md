@@ -35,10 +35,12 @@ Inspect the live shadow and submit verified operator support with stable provena
 ```
 
 Each distinct source reference is offered as one verified `human_feedback` signal through
-the normal Validation Gate. Reusing the same reference is idempotent. Generated model
-text, anonymous support, recurrence, and unverified observations are rejected by the
-`ShadowChatSession.submit_evidence(...)` boundary. The command is an explicit trust action,
-not an automatic conversion of chat output into evidence.
+the normal Validation Gate. Reusing the same underlying source reference does not create
+additional authority credit, even if it is later presented through another external
+signal channel. Generated model text, anonymous support, recurrence, and unverified
+observations are rejected by the `ShadowChatSession.submit_evidence(...)` boundary. The
+command is an explicit trust action, not an automatic conversion of chat output into
+evidence.
 
 The boundary validates the signal kind, support direction, `verified` marker, and stable
 provenance. It cannot establish that a source is authentic or correct. The operator behind
@@ -70,7 +72,7 @@ Live non-fixture sessions reject the deterministic `lexical` hash embedder becau
 a CI/demo scaffold, not a production semantic retriever. `--allow-toy-embedder` exists
 only as an explicit escape hatch for controlled experiments. The fixture backend retains
 the lexical default so its offline mechanics tests stay deterministic; `shadowseed doctor`
-reports this production limitation explicitly.
+reports this product limitation explicitly.
 
 Surfacing controls:
 
@@ -132,10 +134,9 @@ shadowseed run-ssl-session \
 
 Live measurement rejects the fixture backend and lexical hash embeddings and requires an
 English input suite declaring `"language": "en"`. Live answers are explicitly requested
-in English. It constructs
-fresh `ShadowChatSession` state for every conversation while reusing the loaded model,
-detector, and semantic embedder. The default `both` setting runs two clearly separated
-arms:
+in English. It constructs fresh `ShadowChatSession` state for every conversation while
+reusing the loaded model, detector, and semantic embedder. The default `both` setting runs
+two clearly separated arms:
 
 - `evidence-backed` is the shipped policy. The runner supplies no external evidence, so
   it measures detection and memory without silently granting authority.
@@ -148,13 +149,14 @@ The artifact pins the input digest, package version, Git revision and dirty-work
 It also records answer-generation and detector-call counts, suppressed candidate
 occurrences, normalized candidates that pass the atomicity heuristic, and how many return
 semantically on a later uninfluenced turn. Recovery is scored only when such a later
-observation window exists; otherwise `later_recovery_rate` is `null`, never a synthetic zero. Timing is split into adapter setup, the live
-turn-loop, deferral scoring, other arm overhead, and total measurement wall time. Extra
-embedding calls made during semantic recovery scoring therefore never count as live-runtime
-latency. These are automated opportunity-cost proxies. They do not establish that a
-candidate is true, relevant, or useful, and the counterfactual does not turn recurrence
-into evidence. Use `--live-arms evidence-backed` when only the shipped no-evidence behavior
-is needed and the second set of model calls is not justified.
+observation window exists; otherwise `later_recovery_rate` is `null`, never a synthetic
+zero. Timing is split into adapter setup, the live turn-loop, deferral scoring, other arm
+overhead, and total measurement wall time. Extra embedding calls made during semantic
+recovery scoring therefore never count as live-runtime latency. These are automated
+opportunity-cost proxies. They do not establish that a candidate is true, relevant, or
+useful, and the counterfactual does not turn recurrence into evidence. Use
+`--live-arms evidence-backed` when only the shipped no-evidence behavior is needed and the
+second set of model calls is not justified.
 
 The first real-model pipeline run and a separate non-production stress measurement are in
 [`benchmarks/results/live_runtime/`](../../benchmarks/results/live_runtime/). The stress run
@@ -176,14 +178,20 @@ shadowseed workspace info
 shadowseed workspace backup
 ```
 
-The default local workspace is `~/.shadowseed`. Use `--workspace PATH` for an
-isolated workspace. `workspace delete` requires `--yes`. API keys remain in the
-process environment or an OS keyring and are never stored in the workspace.
+The default local workspace is `~/.shadowseed`. Use `--workspace PATH` for an isolated
+workspace. `workspace delete` requires `--yes`. API keys remain in the process environment
+or an OS keyring and are never stored in the workspace.
 
-The tester Workbench stores the selected runtime mode when a session is created
-and defaults its form to `evaluation`. Evaluation sessions retain the
-isolated baseline/SSL comparison. Live sessions use one visible generation and
-offer a separate, operator-attested evidence action; they cannot use the A/B
-Compare tab. Direct `ShadowChatSession()` use and `shadowseed chat` default to
-`live`; pass `runtime_mode="evaluation"` explicitly for a research comparison
-session.
+The ordinary Workbench product creates new sessions in `live` mode with the
+`evidence_backed` Gate policy. A live user may request **Compare this message with SSL
+off** for a single message. The Workbench generates that control automatically from the
+same model configuration and pre-turn visible history, keeps it out of candidate
+detection, recurrence, Gate state, and later conversation history, then executes the real
+live turn normally.
+
+Historical `evaluation` sessions, authored baseline fixtures, scenario JSON, and blind
+research comparison workflows remain available under **Advanced / research**. Persisted
+legacy sessions keep their recorded runtime mode; old snapshots without runtime metadata
+continue to resolve to `evaluation` for compatibility. Direct `ShadowChatSession()` use
+and `shadowseed chat` default to `live`; pass `runtime_mode="evaluation"` explicitly only
+for the research comparison runtime.

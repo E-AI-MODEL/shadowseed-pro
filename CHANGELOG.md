@@ -1,6 +1,23 @@
 # Changelog
 
-## Unreleased - Live runtime review follow-up
+## 0.5.0 - Chat-first mass tester preview
+
+Source version 0.5.0 makes the ordinary Shadowseed tester experience a persistent live chat instead of a research-harness workflow. Public release publication remains governed by the repository's fail-closed release workflow; source version and release availability are separate facts.
+
+- Adopted ADR-005: new ordinary Workbench sessions use the `live` runtime and `evidence_backed` Gate policy. Historical `evaluation` sessions, authored baseline fixtures, scenario JSON, and benchmark comparison flows remain under Advanced/research.
+- Added **Compare this message with SSL off** for live chat. The Workbench generates a same-model control from the same pre-turn visible history without surfaced seeds. The control does not enter candidate detection, recurrence, the Validation Gate, or later conversation history; only the real live turn mutates state.
+- A textual difference between the live answer and control is not labelled an SSL effect unless an authorized seed actually surfaced on the live turn.
+- Product chat follows the language of the current user question. Research suites may continue to pin a language as part of their protocol.
+- Scoped semantic recurrence to detector observation contexts. Semantic cluster membership is not recurrence credit, one observation context can contribute at most one recurrence credit to a matching cluster, and recurrence remains observation rather than evidence.
+- Unified external evidence authority identity on the underlying `source_ref`: replaying or relabelling the same source across external signal channels cannot create additional authority credit.
+- Added read-only discovery of locally installed Ollama models to the chat-first model selector while preserving custom model IDs.
+- Added self-contained standalone Workbench build contracts for Windows amd64, macOS Apple Silicon arm64, and Linux x86_64. Frozen bundles must pass their packaged product self-test before upload.
+- Added fail-closed standalone release automation with exact-source manifests, provenance, checksums, developer wheel/sdist verification, and post-publication asset verification.
+- Platform vendor signing/notarization, Intel macOS support, hostile-network multi-user hardening, and broad real-world efficacy remain separate work. Version 0.5.0 remains a mass-tester product preview and does not establish production readiness or general answer-quality improvement.
+
+## Historical development notes - Live runtime review follow-up
+
+The items in this section describe intermediate pre-0.5.0 development states. Where they conflict with the 0.5.0 section above, the later 0.5.0 contract is authoritative.
 
 - Live measurement now requires an English suite and live generation explicitly requests English output. The canonical primary and transfer session suites are English.
 - The detector leak filter now covers generative few-shot examples as well as absence examples, including Markdown-wrapped echoes. Detector prompts also require plain-text candidates.
@@ -25,19 +42,14 @@
 - The Workbench extra now installs HTTPX SOCKS support. Gradio can start in
   environments that configure a SOCKS proxy without disabling or bypassing the
   user's proxy settings.
-- Workbench session creation now offers explicit live/evaluation and embedding
-  backend choices. Session lists display the selected mode, and imported
-  scenarios persist the same runtime configuration.
+- Workbench session creation at this intermediate stage offered explicit live/evaluation and embedding backend choices. This was superseded by ADR-005 for ordinary new tester sessions; raw runtime choices remain research/advanced concerns.
 - Live Workbench sessions expose an operator-attested evidence action that sends
   provenance-bearing human support through the existing Validation Gate. The UI
   cannot set weights or promotion status directly, and duplicate sources remain
   idempotent.
-- Baseline comparison now rejects live turns with an actionable explanation
-  instead of rendering their intentionally absent baseline as `None`.
-- Workbench session views and load/create status text now expose the persisted
-  runtime mode. Legacy Workbench snapshots without runtime metadata are shown as
-  evaluation sessions.
-- Live sessions and the direct `ShadowChatSession` API now default to the
+- Baseline comparison at this intermediate stage rejected live turns. ADR-005 superseded that product behavior with an automatically generated same-message no-SSL control that leaves live state unchanged.
+- Workbench session views and load/create status text expose persisted runtime mode. Legacy Workbench snapshots without runtime metadata remain evaluation-compatible.
+- Live sessions and the direct `ShadowChatSession` API default to the
   `evidence_backed` product path and expose an explicit `submit_evidence` trust
   boundary. Verified external support must be supporting, provenance-bearing,
   and externally typed; the interactive chat exposes the same path through
@@ -144,7 +156,7 @@ The Workbench remains local-first, single-user, research-ready, and not
 production-ready. Fixture and tester runs are product/evaluation artifacts, not
 new benchmark evidence and not proof of general model-quality improvement.
 
-## Unreleased - Manager modularization and Gate boundary completion
+## Historical development notes - Manager modularization and Gate boundary completion
 
 `SSLManager` was reduced from 1,974 to 727 lines and now serves as the runtime
 orchestrator and compatibility facade. Executable concerns that were previously
@@ -197,7 +209,7 @@ tamper-evident audit storage remains a production gap (#34, #35). No runtime
 policy threshold, serialized shape, or benchmark meaning was intentionally
 changed by the modularization series.
 
-## Unreleased - Claim discipline and CI assurance
+## Historical development notes - Claim discipline and CI assurance
 
 Documentation and CI hardening (issue #23). No runtime behavior change.
 
@@ -228,7 +240,7 @@ Documentation and CI hardening (issue #23). No runtime behavior change.
   step to the test matrix. Documented explicit deferral decisions for static type
   checking and coverage gating in the workflow.
 
-## Unreleased - Hardened seed restoration
+## Historical development notes - Hardened seed restoration
 
 Defense-in-depth hardening of the persisted-seed restoration boundary. The
 authority model is unchanged: restoration remains a deserialization/migration
@@ -259,9 +271,9 @@ counts as no new evidence.
   or use `occurrence_count = 0` remain valid; only `id`, `text`, and `embedding`
   are required. No minimum-weight constraint is imposed on `PROMOTED` snapshots.
 
-## Unreleased - Validation Gate authority alignment
+## Historical development notes - Validation Gate authority alignment
 
-Aligns the authority model around a single Validation Gate (issues #10–#17,
+Aligns the authority model around a single Validation Gate (issues #10-#17,
 [ADR-001](docs/architecture/adr/ADR-001-validation-gate-authority.md)). Scope is
 the core runtime; benchmark suites and data fixtures are unchanged in meaning.
 
@@ -291,7 +303,7 @@ the core runtime; benchmark suites and data fixtures are unchanged in meaning.
 - Made English the enforced language of the core runtime prose, with a
   tokenizer-based check and documented Dutch input-language exceptions.
 
-## Unreleased - Seed-origin observability
+## Historical development notes - Seed-origin observability
 
 - Added optional, audit-only `SeedOrigin` metadata (`CandidateType` closed
   vocabulary, `detection_basis`, `context_ref`) recording *why* a candidate
