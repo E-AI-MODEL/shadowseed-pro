@@ -39,6 +39,12 @@ class CandidateObservation:
     legacy_projection: bool = False
     schema_version: int = OBSERVATION_SCHEMA_VERSION
 
+    def __post_init__(self) -> None:
+        if self.ssl_exposed and self.recurrence_eligible:
+            raise ValueError("SSL-exposed observations cannot be recurrence-eligible")
+        if self.schema_version != OBSERVATION_SCHEMA_VERSION:
+            raise ValueError("unsupported candidate-observation schema")
+
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
         payload["surfaced_seed_ids"] = list(self.surfaced_seed_ids)
@@ -49,7 +55,10 @@ class CandidateObservation:
         return cls(
             observation_id=str(payload["observation_id"]),
             raw_text=str(payload["raw_text"]),
-            normalized_text=str(payload.get("normalized_text") or normalize_observation_text(payload["raw_text"])),
+            normalized_text=str(
+                payload.get("normalized_text")
+                or normalize_observation_text(payload["raw_text"])
+            ),
             context_ref=str(payload["context_ref"]),
             detector_backend=str(payload.get("detector_backend", "unknown")),
             detector_prompt_provenance=(
@@ -59,11 +68,15 @@ class CandidateObservation:
             ),
             candidate_type=str(payload.get("candidate_type", "possible_completion")),
             ssl_exposed=bool(payload.get("ssl_exposed", False)),
-            surfaced_seed_ids=tuple(str(item) for item in payload.get("surfaced_seed_ids", [])),
+            surfaced_seed_ids=tuple(
+                str(item) for item in payload.get("surfaced_seed_ids", [])
+            ),
             recurrence_eligible=bool(payload.get("recurrence_eligible", False)),
             created_at=str(payload.get("created_at", "")),
             legacy_projection=bool(payload.get("legacy_projection", False)),
-            schema_version=int(payload.get("schema_version", OBSERVATION_SCHEMA_VERSION)),
+            schema_version=int(
+                payload.get("schema_version", OBSERVATION_SCHEMA_VERSION)
+            ),
         )
 
 
@@ -75,6 +88,12 @@ class ObservationLink:
     link_type: str = "later_clean_exact_match"
     schema_version: int = OBSERVATION_SCHEMA_VERSION
 
+    def __post_init__(self) -> None:
+        if self.schema_version != OBSERVATION_SCHEMA_VERSION:
+            raise ValueError("unsupported candidate-observation link schema")
+        if self.contaminated_observation_id == self.clean_observation_id:
+            raise ValueError("observation recovery links must connect distinct records")
+
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
@@ -85,7 +104,9 @@ class ObservationLink:
             contaminated_observation_id=str(payload["contaminated_observation_id"]),
             clean_observation_id=str(payload["clean_observation_id"]),
             link_type=str(payload.get("link_type", "later_clean_exact_match")),
-            schema_version=int(payload.get("schema_version", OBSERVATION_SCHEMA_VERSION)),
+            schema_version=int(
+                payload.get("schema_version", OBSERVATION_SCHEMA_VERSION)
+            ),
         )
 
 
@@ -113,14 +134,18 @@ class CandidateObservationLedger:
     @staticmethod
     def _observation_id(context_ref: str, index: int, raw_text: str) -> str:
         digest = sha256(
-            f"candidate-observation-v1\0{context_ref}\0{index}\0{raw_text}".encode("utf-8")
+            f"candidate-observation-v1\0{context_ref}\0{index}\0{raw_text}".encode(
+                "utf-8"
+            )
         ).hexdigest()
         return f"obs_{digest[:24]}"
 
     @staticmethod
     def _link_id(contaminated_id: str, clean_id: str) -> str:
         digest = sha256(
-            f"candidate-observation-link-v1\0{contaminated_id}\0{clean_id}".encode("utf-8")
+            f"candidate-observation-link-v1\0{contaminated_id}\0{clean_id}".encode(
+                "utf-8"
+            )
         ).hexdigest()
         return f"obslink_{digest[:24]}"
 
@@ -186,7 +211,9 @@ class CandidateObservationLedger:
             if previous.normalized_text != clean_observation.normalized_text:
                 continue
             link = ObservationLink(
-                link_id=self._link_id(previous.observation_id, clean_observation.observation_id),
+                link_id=self._link_id(
+                    previous.observation_id, clean_observation.observation_id
+                ),
                 contaminated_observation_id=previous.observation_id,
                 clean_observation_id=clean_observation.observation_id,
             )
@@ -206,7 +233,9 @@ class CandidateObservationLedger:
     def from_dict(cls, payload: dict[str, Any] | None) -> "CandidateObservationLedger":
         if not payload:
             return cls()
-        schema_version = int(payload.get("schema_version", OBSERVATION_SCHEMA_VERSION))
+        schema_version = int(
+            payload.get("schema_version", OBSERVATION_SCHEMA_VERSION)
+        )
         if schema_version != OBSERVATION_SCHEMA_VERSION:
             raise ValueError("unsupported candidate-observation ledger schema")
         return cls(
@@ -214,7 +243,9 @@ class CandidateObservationLedger:
                 CandidateObservation.from_dict(item)
                 for item in payload.get("observations", [])
             ),
-            links=(ObservationLink.from_dict(item) for item in payload.get("links", [])),
+            links=(
+                ObservationLink.from_dict(item) for item in payload.get("links", [])
+            ),
         )
 
     @classmethod
