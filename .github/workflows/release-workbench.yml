@@ -188,6 +188,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Preflight happens before distribution and asset verification. Re-read
+          # main at the publication boundary so a later merge cannot silently
+          # turn this run into a stale exact-head release candidate.
+          git fetch origin main --force
+          test "$(git rev-parse origin/main)" = "$RELEASE_SHA"
           gh release create "$RELEASE_TAG" \
             release-assets/* \
             --target "$RELEASE_SHA" \
