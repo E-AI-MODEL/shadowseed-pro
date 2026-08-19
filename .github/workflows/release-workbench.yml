@@ -122,7 +122,6 @@ jobs:
         if: steps.preflight.outputs.should_release == 'true'
         run: |
           python -m pip install --upgrade pip build
-          cp dist/* release-assets/ 2>/dev/null || true
           python -m build
           cp dist/* release-assets/
 
