@@ -48,7 +48,7 @@ A published 0.5.0 prerelease is required to contain per-platform manifests, cons
 
 Release publication is tied to the exact successful `Standalone Workbench` source commit. Pull requests keep path-filtered standalone builds, but every push to `main` produces a fresh standalone candidate so a later merge cannot invalidate an older candidate without starting a replacement.
 
-The release workflow verifies `main == RELEASE_SHA` during preflight and fetches `main` again immediately before `gh release create`. If `main` advances during standalone or release verification, the older run is intentionally rejected rather than tagged after the fact. A failed or cancelled current-head build may be retried through the explicit `workflow_dispatch`; do not retag an older build, copy assets between source commits, or weaken either exact-SHA check to force publication.
+The release workflow verifies `main == RELEASE_SHA` during preflight and fetches `main` again immediately before `gh release create`. It also fetches `main` immediately after the release API call. If `main` advanced while publication itself was in flight, the workflow deletes the just-created prerelease and tag with `gh release delete --cleanup-tag` and fails closed. A failed or cancelled current-head build may be retried through the explicit `workflow_dispatch`; do not retag an older build, copy assets between source commits, or weaken any exact-SHA check to force publication.
 
 ## Platform signing boundary
 
