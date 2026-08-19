@@ -1,3 +1,4 @@
+# Retry after correcting the clean-observation test fixture.
 name: Materialize candidate observation ledger
 
 on:
