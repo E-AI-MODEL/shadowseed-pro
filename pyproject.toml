@@ -1,7 +1,7 @@
 [project]
 name = "shadowseed"
-version = "0.4.2"
-description = "Auditable research implementation of Shadow Seed Learning"
+version = "0.5.0"
+description = "Auditable Shadow Seed Learning runtime and local tester"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -10,6 +10,7 @@ dependencies = [
 
 [project.scripts]
 shadowseed = "shadowseed.cli:main"
+shadowseed-workbench = "shadowseed.workbench.standalone:main"
 
 [project.optional-dependencies]
 models = [
