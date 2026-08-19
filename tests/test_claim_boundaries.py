@@ -81,7 +81,11 @@ def test_readme_keeps_onboarding_visible_and_details_balanced() -> None:
 def test_changelog_records_the_completed_modularization_contract() -> None:
     compact_changelog = _compact(CHANGELOG)
 
-    assert "Unreleased - Manager modularization and Gate boundary completion" in CHANGELOG
+    assert "0.5.0 - Chat-first mass tester preview" in CHANGELOG
+    assert (
+        "Historical development notes - Manager modularization and Gate boundary completion"
+        in CHANGELOG
+    )
     for module in (
         "shadowseed.models",
         "shadowseed.contradictions",
