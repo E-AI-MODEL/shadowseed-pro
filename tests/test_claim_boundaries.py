@@ -146,9 +146,16 @@ def test_release_revalidates_main_at_the_publication_boundary() -> None:
         "      - name: Publish GitHub prerelease and exact source tag\n", 1
     )[1].split("      - name: Verify published tag and downloadable assets\n", 1)[0]
 
-    assert "git fetch origin main --force" in publish_step
+    assert publish_step.count("git fetch origin main --force") >= 2
     assert 'test "$(git rev-parse origin/main)" = "$RELEASE_SHA"' in publish_step
     assert 'gh release create "$RELEASE_TAG"' in publish_step
-    assert publish_step.index("git fetch origin main --force") < publish_step.index(
-        'gh release create "$RELEASE_TAG"'
+    assert 'if [ "$(git rev-parse origin/main)" != "$RELEASE_SHA" ]; then' in publish_step
+    assert 'gh release delete "$RELEASE_TAG" --cleanup-tag --yes' in publish_step
+
+    create_index = publish_step.index('gh release create "$RELEASE_TAG"')
+    first_fetch_index = publish_step.index("git fetch origin main --force")
+    second_fetch_index = publish_step.index("git fetch origin main --force", first_fetch_index + 1)
+    rollback_index = publish_step.index(
+        'gh release delete "$RELEASE_TAG" --cleanup-tag --yes'
     )
+    assert first_fetch_index < create_index < second_fetch_index < rollback_index
