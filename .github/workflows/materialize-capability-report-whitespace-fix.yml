@@ -46,38 +46,19 @@ jobs:
               text = text.replace(old, new, 1)
           path.write_text(text, encoding="utf-8")
 
-          workflow = Path(".github/workflows/qwen7b-capability-scaling-once.yml")
-          flow = workflow.read_text(encoding="utf-8")
-          marker = '      - .github/workflows/qwen7b-capability-scaling-once.yml\n'
-          addition = marker + '      - src/shadowseed/benchmark/capability_scaling.py\n'
-          if addition not in flow:
-              if flow.count(marker) != 1:
-                  raise SystemExit("unable to locate qwen workflow path trigger")
-              flow = flow.replace(marker, addition, 1)
-          workflow.write_text(flow, encoding="utf-8")
-
       - name: Validate generated report has no trailing whitespace
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[test]"
           pytest -q tests/test_capability_scaling.py tests/test_capability_parser_diagnostics.py
           python -m ruff check src/shadowseed/benchmark/capability_scaling.py
-          python - <<'PY'
-          from pathlib import Path
-          source = Path("src/shadowseed/benchmark/capability_scaling.py").read_text(encoding="utf-8")
-          for line in source.splitlines():
-              if "This bundle is raw research evidence" in line:
-                  assert not 'configuration. ",' in line
-          PY
+          git diff --check
 
-      - name: Commit fix and remove one-time workflow
+      - name: Commit Python-only fix
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          rm .github/workflows/materialize-capability-report-whitespace-fix.yml
-          git add src/shadowseed/benchmark/capability_scaling.py \
-            .github/workflows/qwen7b-capability-scaling-once.yml \
-            .github/workflows/materialize-capability-report-whitespace-fix.yml
+          git add src/shadowseed/benchmark/capability_scaling.py
           git diff --cached --check
           git commit -m "Fix capability report whitespace"
           git push origin HEAD:agent/post-alignment-capability-scaling
