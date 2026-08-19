@@ -10,7 +10,7 @@
 #   RUNTIME_IMPLEMENTATION    Canonical runtime code that ships in the package.
 #   CONTRACT_TEST             Tests that pin public/compatibility contracts.
 #   EVALUATION_IMPLEMENTATION Benchmarks, evaluation suites, research tooling.
-#   EVIDENCE_ARTIFACT         Generated or curated result/evidence data.
+#   EVIDENCE_ARTIFACT         Generated, curated, or publication evidence artifacts.
 #   COMPATIBILITY_ONLY        Legacy import facades; re-export only, no logic.
 #   HISTORICAL_REFERENCE      Superseded material kept for provenance.
 #   ARCHIVE                   Frozen source material, not part of the package.
@@ -113,6 +113,16 @@ entries:
     notes: >
       Local workspace persistence, schema versioning, backup, restore, and
       normalized tester audit storage. No authority decisions live here.
+
+  - path: src/shadowseed/workbench/**
+    authority: RUNTIME_IMPLEMENTATION
+    owner: tester-workbench
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: >
+      Chat-first local tester UI and standalone launcher. This package presents
+      canonical runtime/application behavior and must not implement a second
+      Validation Gate or independent authority path.
 
   - path: src/shadowseed/gate/**
     authority: RUNTIME_IMPLEMENTATION
