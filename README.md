@@ -19,7 +19,7 @@
   <code>trace &gt; 0</code> means remembered. <code>weight = 0</code> means no steering authority.
 </p>
 
-Shadow Seed Learning, or SSL, records a possible omission as a **candidate for investigation**, not as hidden truth. A new seed starts powerless, can be tested over time, and may influence retrieval or an answer only after a logged Validation Gate decision and a second point-of-use check.
+Shadow Seed Learning, or SSL, records **bounded epistemic candidates for investigation**, not hidden truth. A candidate may be a suspected gap, doubt, missing relation or boundary, dependency, unstated assumption, alternative hypothesis, contradiction to investigate, or relevant what-if direction. A new seed starts powerless, can be tested over time, and may influence retrieval or an answer only after a logged Validation Gate decision and a second point-of-use check.
 
 > [!IMPORTANT]
 > **Shadowseed Pro is research-ready, not production-ready.**
