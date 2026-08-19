@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use Shadowseed Pro in research, cite this software artifact and pin the exact repository commit used."
+title: "Shadowseed Pro"
+type: software
+authors:
+  - family-names: "Visser"
+    given-names: "H."
+version: "0.5.0"
+repository-code: "https://github.com/E-AI-MODEL/shadowseed-pro"
+keywords:
+  - "language-model memory"
+  - "validation gate"
+  - "epistemic memory"
+  - "LLM agents"
