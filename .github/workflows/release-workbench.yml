@@ -201,6 +201,16 @@ jobs:
             --title "Shadowseed Workbench ${RELEASE_VERSION} Mass Tester Preview" \
             --notes-file "$NOTES_FILE"
 
+          # The branch can still move while the release API call is in flight.
+          # Re-check immediately afterwards and roll back the just-created
+          # prerelease plus its tag rather than leave a stale publication behind.
+          git fetch origin main --force
+          if [ "$(git rev-parse origin/main)" != "$RELEASE_SHA" ]; then
+            echo "main advanced during publication; deleting stale release $RELEASE_TAG" >&2
+            gh release delete "$RELEASE_TAG" --cleanup-tag --yes
+            exit 1
+          fi
+
       - name: Verify published tag and downloadable assets
         if: steps.preflight.outputs.should_release == 'true'
         env:
