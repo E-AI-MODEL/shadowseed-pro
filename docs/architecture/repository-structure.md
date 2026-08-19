@@ -3,7 +3,7 @@
 **Authority:** CANONICAL_SPEC  
 **Companion file:** [`repository-authority.yaml`](../../repository-authority.yaml) (machine-readable)
 
-This document explains how the Shadowseed Pro repository is organized so humans and agents can tell what is canonical runtime/specification, what is evaluation or publication material, what is compatibility-only, and what is frozen history.
+This document explains how the Shadowseed Pro repository is organized so humans and agents can tell what is canonical runtime/specification, what is evaluation or publication material, what is compatibility-only, and what is frozen or historical context.
 
 ## How to read the repository
 
@@ -13,8 +13,9 @@ This document explains how the Shadowseed Pro repository is organized so humans 
 4. **Seven files are legacy import facades** (`COMPATIBILITY_ONLY`). They re-export canonical objects and contain no independent logic. New code must import the canonical module instead.
 5. **Everything under `archive/` is frozen history.** It must not be imported at runtime or cited as current guidance.
 6. **Research/evaluation artifacts do not become product authority.** Benchmarks, results and the paper can report evidence but cannot authorize seeds or redefine runtime contracts.
-7. **When a result artifact has a canonical and legacy name, canonical wins.** See [Artifact precedence](#artifact-precedence).
-8. When in doubt, consult `repository-authority.yaml`: the **most specific path/glob wins**.
+7. **Execution plans and rebuild audit records are historical context.** `docs/plans/README.md` explains their precedence; completed or superseded plans cannot override later ADRs, runtime behavior, research status, or product documentation.
+8. **When a result artifact has a canonical and legacy name, canonical wins.** See [Artifact precedence](#artifact-precedence).
+9. When in doubt, consult `repository-authority.yaml`: the **most specific path/glob wins**.
 
 ## Current layout
 
@@ -50,8 +51,13 @@ shadowseed-pro/
 ├── paper/                          EVIDENCE_ARTIFACT manuscript/publication bundle
 ├── scripts/                        research/build/operational tooling
 ├── experiments/                    exploratory research runners
-├── docs/                           current usage/research docs
-│   └── architecture/               primary CANONICAL_SPEC authority
+├── docs/
+│   ├── architecture/               primary CANONICAL_SPEC authority
+│   ├── workbench/                  current tester/product documentation
+│   ├── research/                   current research status and bounded conclusions
+│   ├── usage/                      current CLI/user guidance
+│   ├── plans/                      HISTORICAL_REFERENCE execution records; README is index
+│   └── migration/                  current language policy plus historical rebuild records
 ├── .github/workflows/              CI, portability, standalone and release automation
 ├── archive/                        ARCHIVE / HISTORICAL_REFERENCE
 ├── templates/                      review/run templates
@@ -84,6 +90,8 @@ shadowseed-pro/
 | `tests/` | Contract and regression tests | CONTRACT_TEST |
 | `benchmarks/results/`, `results/`, `data/` | Generated or curated research evidence/reference material | EVIDENCE_ARTIFACT |
 | `paper/` | Manuscript source, bibliography and compiled publication artifact; not runtime/spec authority | EVIDENCE_ARTIFACT |
+| `docs/plans/**` | Execution and alignment history; `docs/plans/README.md` is the current precedence index | HISTORICAL_REFERENCE |
+| selected `docs/migration/` audit records and `MIGRATION_REPORT.md` | Rebuild provenance and historical inventories | HISTORICAL_REFERENCE |
 | `archive/` | Frozen pre-rebuild material | ARCHIVE / HISTORICAL_REFERENCE |
 
 ## Product and research surfaces
@@ -93,6 +101,8 @@ The ordinary Workbench product surface lives in `src/shadowseed/workbench/` and 
 Historical evaluation sessions, authored baseline fixtures, scenario JSON, benchmark outputs and other controlled comparison tooling remain research/evaluation material. They are not prerequisites for the product flow.
 
 The `paper/` directory is a publication bundle. `main.tex` is manuscript source and `shadowseed-paper.pdf` is its compiled artifact. Any manuscript refresh must update source claims against an exact reviewed commit and regenerate the PDF. Neither the manuscript nor its bibliography may silently supersede `docs/architecture/**` or the runtime.
+
+Execution plans preserve sequence and rationale, not current authority. Current contract questions should be answered from architecture/runtime first. Current claim questions should be answered from `docs/research/status.md`; current product questions should be answered from the Workbench/usage docs.
 
 ## Compatibility facades
 
@@ -138,7 +148,7 @@ The original `manager.py` combined data contracts, contradiction workflows, Gate
 
 Runtime modules and subpackages under `src/shadowseed/` are discovered by the package configuration. The Workbench extra and standalone build include the additional product dependencies explicitly. Public manager imports, CLI entry points and package data remain controlled through `pyproject.toml`.
 
-`archive/`, `benchmarks/`, `paper/`, `scripts/` and `experiments/` are not runtime package code. Paper and benchmark artifacts may be shipped or published separately without becoming runtime authority.
+`archive/`, `benchmarks/`, `paper/`, `scripts/`, `experiments/`, historical plans, and rebuild audit records are not runtime package code. Paper and benchmark artifacts may be shipped or published separately without becoming runtime authority.
 
 ## If you move files later
 
