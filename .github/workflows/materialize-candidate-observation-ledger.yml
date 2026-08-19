@@ -1,0 +1,169 @@
+name: Materialize candidate observation ledger
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/materialize-candidate-observation-ledger.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: materialize-candidate-observation-ledger
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    if: github.head_ref == 'agent/candidate-observation-ledger'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Integrate ledger with canonical chat runtime
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path("src/shadowseed/chat.py")
+          text = path.read_text(encoding="utf-8")
+
+          def replace_once(old: str, new: str) -> None:
+              global text
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"expected exactly one match, found {count}: {old[:80]!r}")
+              text = text.replace(old, new, 1)
+
+          replace_once(
+              "from shadowseed.vectorstore.memory import InMemoryVectorStore\n",
+              "from shadowseed.vectorstore.memory import InMemoryVectorStore\n"
+              "from shadowseed.observations import CandidateObservationLedger\n",
+          )
+          replace_once(
+              "        self.turn_reports: list[dict[str, Any]] = []\n        self._turn = 0\n",
+              "        self.turn_reports: list[dict[str, Any]] = []\n"
+              "        self.observation_ledger = CandidateObservationLedger()\n"
+              "        self._turn = 0\n",
+          )
+          replace_once(
+              "        candidates, suppressed_self = self._filter_ssl_attributed_candidates(\n"
+              "            raw_candidates, surfaced_seed_ids\n"
+              "        )\n"
+              "        occurrence_before = {\n",
+              "        candidates, suppressed_self = self._filter_ssl_attributed_candidates(\n"
+              "            raw_candidates, surfaced_seed_ids\n"
+              "        )\n"
+              "        turn_observations = self.observation_ledger.record_batch(\n"
+              "            raw_candidates,\n"
+              "            context_ref=f\"turn:{turn}:visible_answer\",\n"
+              "            detector_backend=str(getattr(self.detector, \"name\", \"unknown\")),\n"
+              "            detector_prompt_provenance=(\n"
+              "                None\n"
+              "                if getattr(self.detector, \"prompt_variant\", None) is None\n"
+              "                else str(getattr(self.detector, \"prompt_variant\"))\n"
+              "            ),\n"
+              "            candidate_type=CandidateType.POSSIBLE_COMPLETION.value,\n"
+              "            ssl_exposed=bool(surfaced_seed_ids),\n"
+              "            surfaced_seed_ids=surfaced_seed_ids,\n"
+              "            created_at=self.manager._now_iso(),\n"
+              "        )\n"
+              "        occurrence_before = {\n",
+          )
+          replace_once(
+              "        candidates = self.detector.detect_seeds(\n"
+              "            {\"text\": baseline_answer}, max_seeds=self.max_seeds_per_turn\n"
+              "        )\n"
+              "        ingest = self.manager.ingest_detection_candidates(\n",
+              "        candidates = self.detector.detect_seeds(\n"
+              "            {\"text\": baseline_answer}, max_seeds=self.max_seeds_per_turn\n"
+              "        )\n"
+              "        turn_observations = self.observation_ledger.record_batch(\n"
+              "            candidates,\n"
+              "            context_ref=f\"turn:{turn}:baseline_answer\",\n"
+              "            detector_backend=str(getattr(self.detector, \"name\", \"unknown\")),\n"
+              "            detector_prompt_provenance=(\n"
+              "                None\n"
+              "                if getattr(self.detector, \"prompt_variant\", None) is None\n"
+              "                else str(getattr(self.detector, \"prompt_variant\"))\n"
+              "            ),\n"
+              "            candidate_type=CandidateType.POSSIBLE_COMPLETION.value,\n"
+              "            ssl_exposed=False,\n"
+              "            created_at=self.manager._now_iso(),\n"
+              "        )\n"
+              "        ingest = self.manager.ingest_detection_candidates(\n",
+          )
+
+          expected_report_fields = text.count('            "seeds_born_weightless": born,\n')
+          if expected_report_fields != 2:
+              raise SystemExit(
+                  f"expected two report insertion points, found {expected_report_fields}"
+              )
+          text = text.replace(
+              '            "seeds_born_weightless": born,\n',
+              '            "candidate_observations": [\n'
+              '                observation.to_dict() for observation in turn_observations\n'
+              '            ],\n'
+              '            "seeds_born_weightless": born,\n',
+          )
+
+          replace_once(
+              '            "influence_records": [asdict(r) for r in self.influence_records],\n'
+              '        }\n\n    def to_state',
+              '            "influence_records": [asdict(r) for r in self.influence_records],\n'
+              '            "candidate_observation_ledger": self.observation_ledger.to_dict(),\n'
+              '        }\n\n    def to_state',
+          )
+          replace_once(
+              '            "turn_reports": list(self.turn_reports),\n'
+              '            "turn": self._turn,\n',
+              '            "turn_reports": list(self.turn_reports),\n'
+              '            "candidate_observation_ledger": self.observation_ledger.to_dict(),\n'
+              '            "turn": self._turn,\n',
+          )
+          replace_once(
+              '        session.turn_reports = list(state.get("turn_reports", []))\n'
+              '        session._turn = int(state.get("turn", len(session.turn_reports)))\n',
+              '        session.turn_reports = list(state.get("turn_reports", []))\n'
+              '        observation_state = state.get("candidate_observation_ledger")\n'
+              '        if observation_state is None:\n'
+              '            session.observation_ledger = (\n'
+              '                CandidateObservationLedger.project_legacy_turn_reports(\n'
+              '                    session.turn_reports\n'
+              '                )\n'
+              '            )\n'
+              '        else:\n'
+              '            session.observation_ledger = CandidateObservationLedger.from_dict(\n'
+              '                observation_state\n'
+              '            )\n'
+              '        session._turn = int(state.get("turn", len(session.turn_reports)))\n',
+          )
+
+          path.write_text(text, encoding="utf-8")
+
+      - name: Verify focused observation and live-runtime tests
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+          pytest -q \
+            tests/test_candidate_observations.py \
+            tests/test_candidate_observation_live_integration.py \
+            tests/test_live_runtime.py \
+            tests/test_observation_scoped_recurrence.py
+          python -m ruff check src/shadowseed/observations.py src/shadowseed/chat.py \
+            tests/test_candidate_observations.py tests/test_candidate_observation_live_integration.py
+
+      - name: Commit materialized runtime integration and remove one-time workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm .github/workflows/materialize-candidate-observation-ledger.yml
+          git add src/shadowseed/chat.py src/shadowseed/observations.py \
+            tests/test_candidate_observations.py tests/test_candidate_observation_live_integration.py \
+            .github/workflows/materialize-candidate-observation-ledger.yml
+          git diff --cached --check
+          git commit -m "Integrate candidate observation ledger"
+          git push origin HEAD:agent/candidate-observation-ledger
