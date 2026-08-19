@@ -1,21 +1,21 @@
 # ADR-004: Evidence Identity Is Independent of the Signal Channel
 
-- Status: Accepted; implementation alignment in progress
+- Status: Accepted; implementation aligned
 - Date: 2026-08-18
 - Refines: ADR-001 and ADR-002
 
 ## Context
 
-The Validation Gate receives typed channels such as SSOT, human feedback, and retrieval. The current runtime deduplicates verified external support by `(signal kind, source_ref)`. This means the same underlying source reference can be offered once as SSOT and again as retrieval or human feedback and be counted as distinct authority support.
+The Validation Gate receives typed channels such as SSOT, human feedback, and retrieval. At the time this ADR was proposed, the runtime deduplicated verified external support by `(signal kind, source_ref)`. This meant the same underlying source reference could be offered once as SSOT and again as retrieval or human feedback and be counted as distinct authority support.
 
-That behavior is auditable, but it confuses two different concepts:
+That behavior was auditable, but it confused two different concepts:
 
 - **channel**: how an observation reached the Gate;
 - **evidence identity**: which underlying source or evidence unit the observation represents.
 
 Channel diversity is not automatically evidential independence. Human verification of a retrieved document can increase confidence in that same evidence unit, but it does not create a second independent document.
 
-`ValidationSignal.independent` already exists as provenance metadata, but a boolean assertion alone cannot safely create a new evidence unit. Likewise, `strength` cannot serve as source trust: some current producers use it for relevance or semantic similarity.
+`ValidationSignal.independent` already exists as provenance metadata, but a boolean assertion alone cannot safely create a new evidence unit. Likewise, `strength` cannot serve as source trust: some producers use it for relevance or semantic similarity.
 
 ## Decision
 
@@ -90,7 +90,7 @@ Contradiction evidence is not collapsed into supporting-evidence identity merely
 
 ### Costs
 
-- callers that intentionally reused one `source_ref` across channels will no longer receive multiple authority increments;
+- callers that intentionally reused one `source_ref` across channels no longer receive multiple authority increments;
 - source-reference discipline becomes more important;
 - stronger independence guarantees eventually require richer evidence identifiers or content digests.
 
@@ -106,7 +106,7 @@ Contradiction evidence is not collapsed into supporting-evidence identity merely
 
 ## Verification targets
 
-Tests must cover:
+Contract coverage includes tests for:
 
 - same source and same kind is idempotent;
 - same source across SSOT, retrieval, and human-feedback kinds is also idempotent for authority;
