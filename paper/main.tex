@@ -9,332 +9,266 @@
 \usepackage{array}
 \usepackage{enumitem}
 \usepackage{xurl}
+\usepackage{xcolor}
 \usepackage{hyperref}
 \usepackage[backend=biber,style=numeric-comp,sorting=none,natbib=true]{biblatex}
 \addbibresource{references.bib}
 \setcounter{biburlnumpenalty}{100}
 \setcounter{biburlucpenalty}{100}
 \setcounter{biburllcpenalty}{100}
-\usepackage{xcolor}
 
 \hypersetup{
   colorlinks=true,
   linkcolor=black,
   citecolor=black,
   urlcolor=blue,
-  pdfauthor={H. Visser, ChatGPT, Claude, Kimi, GLM},
+  pdfauthor={H. Visser},
   pdftitle={Shadowseed: Remembering Without Trusting}
 }
 
 \newcommand{\ssl}{Shadow Seed Learning}
 \newcommand{\code}[1]{\texttt{#1}}
-\newcommand{\seed}{\mathcal{S}}
-\newcommand{\commitsha}{\nolinkurl{af2184d8c5a7cb1b3560e3cc554856613305a501}}
+\newcommand{\implcommit}{\nolinkurl{745ea31486f3d287a1f2bd97a7896f92a8ed6257}}
+\newcommand{\sourceversion}{0.5.0}
 
 \title{\textbf{Shadowseed: Remembering Without Trusting}\\[0.45em]
 \large A Validation-Gated Memory Architecture for Language Model Systems}
-\author{H. Visser, ChatGPT, Claude, Kimi, and GLM\\[0.3em]\small E-AI-MODEL}
+\author{H. Visser\\[0.3em]\small E-AI-MODEL}
 \date{August 2026}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-Memory is easy to add to a language-model system. Deciding when a remembered item deserves influence is harder. Existing systems retrieve documents, retain conversational facts, store reflections, or adapt retrieval to the current query. A narrower case remains awkward: the system suspects that something is missing from an answer or context without any warrant to treat that suspicion as true. Shadow Seed Learning (SSL) addresses that case by storing candidate omissions as explicitly untrusted memory. A seed can remain present with no steering authority: its trace may be positive at weight zero. Authority changes pass through a typed Validation Gate. Verified external support carries provenance; repeated evidence is idempotent at a defined source-and-signal boundary; unresolved contradictions block use; and a second, current-version authorization check is required when a seed is about to affect retrieval or generation. The implementation separates two conversation modes. The product-oriented live path performs one generation, stores the visible answer, and requires explicit verified evidence before recurrence can gain authority. The evaluation path retains an isolated baseline for controlled comparison. Both allowed and denied influence attempts are recorded. We describe the state model, lifecycle, evidence rules, contradiction handling, point-of-use contract, and prompt-data boundary. Evaluation of the reference implementation focuses on assurance of these contracts. Answer quality is outside the present evaluation. The repository gates its tests with linting, branch coverage, multi-version CI, build, clean-install, Workbench, portability, and release checks. These results establish implementation contracts; general answer improvement, semantic correctness of proposed omissions, universal security, and production readiness remain outside their evidential scope. SSL is therefore presented as a research-ready architecture for retaining uncertain candidate context without granting it automatic authority.
+Long-lived language-model systems need memory, but persistence is not the same as warrant. A generated suspicion, missing dependency, alternative hypothesis, unresolved contradiction, or relevant what-if can be worth remembering while still being unfit to steer an answer. Shadow Seed Learning (SSL) treats such items as bounded epistemic candidates rather than facts. New seeds are remembered with positive trace and zero steering weight. Authority is governed separately through typed Validation Gate decisions, contradiction state, source-aware evidence accounting, lifecycle rules, and a current point-of-use authorization. External support is deduplicated by the underlying source reference across evidence channels, so relabeling one source cannot manufacture independent authority. Semantic recurrence is observation-scoped: cluster membership alone is not recurrence, and one detector observation contributes at most one recurrence credit to a semantic candidate. Detector output produced after exposure to SSL-derived context remains auditable but cannot count as independent same-turn recurrence. The product surface is an ordinary evidence-backed chat. A tester may optionally request an automatically generated same-message SSL-off control that uses the same model configuration and visible pre-turn history but does not receive surfaced seeds, enter detection, alter recurrence, invoke the Gate, or mutate conversation state. This paper specifies the architecture and its executable contracts. It does not claim that SSL improves answer quality, detects missing information reliably, establishes semantic truth, provides universal security, or is production-ready. The reviewed reference implementation is source version \sourceversion{} at commit \implcommit{} \citep{shadowseed2026}.
 \end{abstract}
 
 \section{Introduction}
 
-Fluent language-model answers can omit a dependency, a qualification, a causal boundary, a stakeholder, or a question that would change their interpretation. Reliable detection of such absences remains unresolved. AbsenceBench shows a marked gap between retrieving information that is present and identifying information that has been deliberately removed from a context \citep{fu2025absencebench}. QuestBench reaches the same problem from another direction: even strong models can struggle to identify the missing variable that must be requested before an underspecified reasoning task becomes solvable \citep{li2025questbench}. Long-term interaction adds another difficulty. LongMemEval finds substantial degradation when assistants must retrieve, update, and reason over information distributed across sessions \citep{wu2025longmemeval}.
+Memory mechanisms are becoming a standard component of language-model agents. They can preserve conversational facts, retrieve documents, summarize past experience, or learn policies for storage and recall \citep{lewis2020rag,guu2020realm,packer2023memgpt,tan2025membench,yu2026agentic,lan2026ema}. These capabilities solve a persistence problem. They do not, by themselves, solve an authority problem: what should happen when the remembered object was uncertain when it was created?
 
-A tempting response is to save every plausible omission and put it back into later prompts. That solves persistence by creating a different problem. A model-generated suspicion has crossed an epistemic boundary merely because it was written to memory. Repetition can then make a weak hypothesis more available, retrieval can amplify it, and a later model may read the stored text with little indication of how uncertain it was when created.
+That case is common. A model may suspect that an answer omitted a causal qualification. It may notice that a boundary condition is missing, that two claims depend on an unstated assumption, that a contradiction deserves investigation, or that an alternative hypothesis should remain available. Clarification work shows that underspecified inputs materially degrade question answering and that asking for missing information remains difficult \citep{huang2026underspecified,zhao2026askbench,suri2026structured,toles2025clarification}. AbsenceBench and QuestBench similarly motivate explicit treatment of missing or unavailable information \citep{fu2025absencebench,li2025questbench}. None of these observations justifies turning a model-generated candidate into a fact merely because it was stored.
 
-SSL starts from a stricter premise: \emph{remembered} and \emph{authorized to influence} are different states. A detector may propose a candidate omission. The system may keep that candidate, recognize it later, compare it with external material, or record that it recurs. Keeping, recognizing, comparing, or counting a candidate leaves steering power unchanged. In the reference implementation, a newly created seed has positive trace and exactly zero weight. A Validation Gate controls authority changes. A point-of-use contract checks the current authorization again when the seed is about to affect retrieval, a probe, a warning, an answer, or another downstream action \citep{shadowseed2026}.
+SSL starts from a stricter separation:
+\begin{quote}
+A system may remember a candidate without granting it authority to steer a later answer or action.
+\end{quote}
+This gives uncertain memory an explicit epistemic status. A seed is a bounded candidate for later validation, not a truth claim. Its persistence is represented by trace. Its steering permission is represented separately by weight and derived authorization state. Newly created seeds are weightless. Validation signals are typed. Contradictions are first-class records. External evidence preserves source identity. Authorization is checked again at the point of use.
 
-This separation changes the role of memory. Memory becomes a place where uncertain hypotheses can remain available for testing without carrying an endorsement. Several failure cases then become visible in the data model. A candidate may be present with little authority. Recurrence may support it when external evidence is absent. An earlier promotion may have gone stale. The candidate may be contradicted, expired, or simply irrelevant to the current turn.
+The distinction matters because memory can amplify errors. Retrieval systems can be poisoned \citep{zou2025poisonedrag}; tool-using agents can be redirected by untrusted content \citep{debenedetti2024agentdojo}; and recent work demonstrates attacks that persist through long-term agent memory \citep{qian2026visual}. A design in which retrieval, repetition, or storage automatically creates authority therefore combines a useful capability with an avoidable trust escalation.
 
-The contribution of this paper is the architecture and its executable authority contracts. It formalizes candidate-omission memory as a stateful process with separate persistence and influence variables; routes new authority through typed, policy-bound Gate decisions; attaches provenance and identity to external support; treats contradiction as an explicit blocking record; and requires a current authorization at the moment of use. The accompanying software artifact implements these rules in a testable Python runtime and exposes the decision trail for inspection \citep{shadowseed2026}. We evaluate whether those contracts are enforced. Open-ended answer quality lies outside the claims supported by the present artifact. That empirical question requires a separate evaluation with fixed tasks, blinded comparison, independent review, and a frozen implementation.
+This paper makes four contributions. First, it defines the epistemic object stored by SSL and separates candidate identity, persistence, and steering authority. Second, it specifies authority-changing and authority-blocking contracts, including source-level evidence identity, observation-scoped recurrence, contradiction handling, lifecycle, and point-of-use checks. Third, it defines a chat-first product contract with an optional same-message SSL-off control that cannot contaminate the live state. Fourth, it states a narrow evidence boundary: the current artifact supports implementation-contract claims only. General answer-quality improvement and semantic correctness remain research questions.
 
-\section{Problem setting}
+\section{Problem setting and design goals}
 \label{sec:problem}
 
-\subsection{Candidate omissions are hypotheses}
+\subsection{The stored object is a bounded epistemic candidate}
 
-Consider an answer that reports an association and then moves directly to a recommendation. A detector may propose the candidate omission: ``The answer does not establish whether the association is causal.'' The proposal can be useful even when it is wrong. It points to a specific absence that can be checked. Treating the sentence as a fact would collapse detection and validation into one operation.
+The motivating case is a candidate omission, such as ``the answer does not establish whether the association is causal.'' SSL is deliberately broader than omissions. A seed can represent one bounded epistemic candidate of a type such as:
+\begin{itemize}[leftmargin=1.5em]
+  \item a suspected gap or missing dependency;
+  \item a bounded doubt or unresolved boundary condition;
+  \item a missing relation between otherwise present claims;
+  \item an assumption that may need validation;
+  \item an alternative hypothesis;
+  \item a contradiction that should be investigated; or
+  \item a relevant what-if direction that should remain available for testing.
+\end{itemize}
+The candidate type is audit metadata. It does not create authority. A missing-dependency seed and an alternative-hypothesis seed begin with the same epistemic constraint: neither may steer merely because the detector generated it.
 
-SSL calls such a proposal a \emph{seed}. A seed is intended to express one testable candidate absence. Atomicity is a design target with no semantic guarantee. Model-generated candidates can still be vague, compound, redundant, or based on a poor reading of the source. The architecture therefore grants no authority on the strength of a convincing formulation alone.
+A seed should be atomic enough to validate or reject as one bounded candidate. Atomicity is a tested normalization heuristic, not a semantic guarantee. Model-generated candidates can still be vague, compound, redundant, or wrong. The architecture therefore avoids deriving steering permission from fluency, detector confidence, semantic similarity, or candidate type alone.
 
-This choice differs from conventional memory tasks. Long-term conversational memory often asks whether a stored fact can be retrieved after many interactions \citep{wu2025longmemeval}. Retrieval-augmented generation asks which external documents should be brought into context \citep{lewis2020rag,guu2020realm}. Reflective agents store linguistic feedback that can guide later attempts \citep{shinn2023reflexion}. In SSL, the stored object is uncertain by construction. The central problem is the controlled transition from a remembered hypothesis to bounded permission to influence.
+\subsection{Failure modes}
 
-\subsection{Failure modes of unqualified memory}
+\paragraph{Persistence mistaken for confidence.}
+A detector can repeat the same error. Reappearance is an observation about recurrence, not proof that the candidate is correct.
 
-Four failure modes motivate the design.
+\paragraph{Similarity mistaken for recurrence.}
+Several outputs from one detector pass may cluster together. Treating every member as an independent recurrence would let one observation create artificial reinforcement.
 
-\paragraph{Persistence can masquerade as confidence.}
-A statement that reappears across turns may become salient simply because the detector repeats the same mistake. Recurrence records persistence. Correctness requires separate support.
+\paragraph{Retrieval mistaken for validation.}
+A retrieved item can be irrelevant, duplicated, poisoned, or derived from the same underlying source through another channel. Retrieval is an input to validation, not a verdict.
 
-\paragraph{Retrieved material can be wrong or hostile.}
-RAG systems gain access to external knowledge at the cost of another trust boundary. PoisonedRAG demonstrates that a small number of maliciously inserted texts can steer answers in a retrieval system \citep{zou2025poisonedrag}. The security problem is broader for agents: AgentDojo shows how untrusted data returned by tools can contain instructions that interfere with the user's task \citep{debenedetti2024agentdojo}. A memory architecture should therefore preserve source identity and distinguish data from instructions.
+\paragraph{Same-source relabeling mistaken for independence.}
+If one source is observed as both ``retrieval'' and ``trusted source,'' counting two authority credits rewards transport metadata rather than independent support.
 
-\paragraph{Past authorization can become stale.}
-A seed that was once supported can later receive contradictory evidence, lose authority, or change state. Caching an earlier ``allowed'' result would bypass the new state unless authorization is versioned.
+\paragraph{Historical authorization mistaken for current permission.}
+A seed can later be contradicted, expire, or become irrelevant. A cached prior authorization cannot substitute for a current point-of-use decision.
 
-\paragraph{A gate at storage time is insufficient.}
-A promoted seed may be irrelevant to the current query. It may also become unsafe to use because a contradiction opened after promotion. Permission to remain in memory and permission to affect this action are separate decisions.
-
-These cases suggest a design requirement that is stronger than ``attach a confidence score.'' The system needs a traceable authority path whose inputs and state transitions can be inspected after the fact.
+\paragraph{Model self-exposure mistaken for independent evidence.}
+If a model sees SSL-derived content and then generates a matching candidate, that output is contaminated by the system's own intervention. It may be logged, but it cannot count as independent same-turn recurrence.
 
 \section{Related work}
 \label{sec:related}
 
-\subsection{Retrieval and external memory}
+\subsection{Retrieval and long-term memory}
 
-REALM and RAG established influential patterns for combining language models with non-parametric stores \citep{guu2020realm,lewis2020rag}. Their main concern is access to external knowledge beyond the model's parameters. Later work makes retrieval conditional. Adaptive-RAG selects among no-retrieval, single-step retrieval, and iterative retrieval according to estimated query complexity \citep{jeong2024adaptiverag}. Self-RAG trains a model to retrieve and critique its own generations through special reflection signals \citep{asai2024selfrag}.
+RAG and REALM established influential patterns for bringing external information into model context \citep{lewis2020rag,guu2020realm}. Self-RAG and Adaptive-RAG add learned or conditional retrieval behavior \citep{asai2024selfrag,jeong2024adaptiverag}. MemGPT organizes limited context through explicit memory tiers \citep{packer2023memgpt}, while Reflexion stores linguistic feedback from prior attempts \citep{shinn2023reflexion}.
 
-SSL complements these methods. A seed may eventually trigger retrieval, and retrieved evidence may support or oppose it. The remaining question concerns the authority of the candidate that initiated the search after the result returns. A retrieved document enters validation as evidence input; its presence alone leaves the seed unconfirmed. Source conflict and poisoned stores make that distinction consequential \citep{zou2025poisonedrag}.
+Recent work broadens memory management itself. MemBench evaluates memory effectiveness, efficiency, and capacity across factual and reflective memory settings \citep{tan2025membench}. AgeMem learns when to store, retrieve, update, summarize, and discard information as agent actions \citep{yu2026agentic}. EMA adds selective episodic-memory filtering to reduce redundant context \citep{lan2026ema}. These approaches ask what to remember and how to use remembered information. SSL isolates a complementary question: under what conditions may an explicitly uncertain remembered candidate acquire bounded steering authority?
 
-\subsection{Long-term and reflective agent memory}
+\subsection{Missing information, underspecification, and clarification}
 
-MemGPT treats the context window as a constrained memory tier and moves information between fast and slow stores \citep{packer2023memgpt}. Reflexion retains verbal feedback in episodic memory so later trials can use lessons from earlier failures \citep{shinn2023reflexion}. These systems demonstrate that persistent text can change subsequent model behavior without updating model parameters.
+AbsenceBench studies information that has been deliberately removed and reports a gap between finding present information and identifying what is missing \citep{fu2025absencebench}. QuestBench evaluates acquisition of missing variables in reasoning tasks \citep{li2025questbench}. More recent work finds that underspecified questions are common in QA datasets and that resolving underspecification improves performance \citep{huang2026underspecified}. AskBench evaluates when and what a model should ask under missing or misleading information \citep{zhao2026askbench}. Structured-uncertainty approaches provide explicit criteria for selecting clarification questions in tool-using agents \citep{suri2026structured}, and factual clarification work shows continued difficulty eliciting missing information in multi-hop settings \citep{toles2025clarification}.
 
-SSL focuses on a different object. A seed is born as a hypothesis about an omission, so retention contributes no evidence for its content. The architecture therefore gives the stored item two independent quantities: trace for presence and recurrence, and weight for steering authority. This is the main conceptual departure from memory mechanisms in which successful retrieval is already close to use.
+SSL does not replace clarification. A seed may lead to a question, a retrieval request, or no action at all. The architecture governs whether the candidate is authorized to affect that choice.
 
-\subsection{Missing information and verification}
+\subsection{Verification, uncertainty, and memory security}
 
-AbsenceBench directly tests detection of omitted content and reports that strong language models remain substantially worse at finding absences than at retrieving inserted information \citep{fu2025absencebench}. QuestBench evaluates the ability to ask for a missing variable in underspecified reasoning problems and finds pronounced weaknesses on logic and planning tasks \citep{li2025questbench}. These benchmarks leave persistence unspecified. Together they motivate treating missing information as an explicit computational object.
+Chain-of-Verification separates draft generation from targeted verification \citep{dhuliawala2024cove}. Semantic entropy estimates uncertainty over generated meanings \citep{farquhar2024semanticentropy}. Both are relevant signals, but neither is identical to system-level authority. A low-uncertainty statement can be unsupported, and a high-uncertainty candidate can still be worth investigating.
 
-Verification work addresses a related trust problem after generation. Chain-of-Verification drafts an answer, generates verification questions, answers them separately, and produces a revised response \citep{dhuliawala2024cove}. SSL moves part of that discipline into persistent state: a candidate can survive between turns without being promoted, and its future use remains conditional on logged authority. The two approaches are compatible. A verification result can be represented as a validation signal, provided its provenance and trust status are explicit.
-
-\subsection{Uncertainty and authority}
-
-Semantic entropy measures uncertainty over meanings in sampled model outputs and can identify a class of confabulations \citep{farquhar2024semanticentropy}. Such uncertainty estimates answer a different question from SSL authority. A low-entropy candidate can be unsupported. A high-entropy candidate can still merit investigation. SSL keeps model confidence separate from steering permission. Authority is a system-level decision based on typed signals and policy.
+Security work gives a second reason to separate retrieval from authority. PoisonedRAG demonstrates knowledge-corruption attacks on retrieval-augmented systems \citep{zou2025poisonedrag}; AgentDojo evaluates indirect prompt injection against tool-using agents \citep{debenedetti2024agentdojo}; and Visual Inception demonstrates a long-term-memory poisoning threat in agentic recommenders \citep{qian2026visual}. SSL does not claim to solve these attacks. It aims to keep a specific trust boundary explicit so that persistence and retrieval do not silently become permission to steer.
 
 \section{Shadow Seed Learning}
 \label{sec:method}
 
-\subsection{State representation}
+\subsection{Seed state}
 
-Let a seed at time $t$ be
+Let a seed at time $t$ be represented by
 \begin{equation}
-  s_t = (x,\tau_t,w_t,z_t,E_t,C_t,v_t),
+  s_t = (x,c,\tau_t,w_t,z_t,E_t,C_t,v_t),
 \end{equation}
-where $x$ is the candidate text, $\tau_t \geq 0$ is trace, $w_t \in [0,1]$ is steering weight, $z_t$ is lifecycle/authority status, $E_t$ is the set of accepted evidence identities, $C_t$ is the set of contradiction records, and $v_t \in \mathbb{N}_0$ is an authority version.
+where $x$ is candidate content, $c$ is candidate-type metadata, $\tau_t \geq 0$ is trace, $w_t\in[0,1]$ is steering weight, $z_t$ is lifecycle/authority status, $E_t$ records accepted external evidence identities, $C_t$ records contradictions, and $v_t\in\mathbb{N}_0$ is the authority version.
 
-Creation obeys two invariants:
+Creation obeys
 \begin{equation}
-  \tau_{t_0} > 0, \qquad w_{t_0}=0.
+  \tau_{t_0}>0, \qquad w_{t_0}=0.
 \end{equation}
-Presence therefore carries no implication of influence:
+Therefore
 \begin{equation}
-  \tau_t>0 \;\not\Rightarrow\; w_t>0.
+  \tau_t>0 \not\Rightarrow w_t>0.
 \end{equation}
+A seed can remain remembered indefinitely while still having no steering authority.
 
-The reference implementation uses the statuses \code{NEW}, \code{ACTIVE}, \code{DECAYING}, \code{DORMANT}, \code{PROMOTED}, and \code{EXPIRED}. Status mixes lifecycle and one authority boundary because \code{PROMOTED} is the state from which a seed may become eligible for influence. Eligibility remains derived from several fields; no free-standing mutable flag stores it.
+The reference lifecycle uses \code{NEW}, \code{ACTIVE}, \code{DECAYING}, \code{DORMANT}, \code{PROMOTED}, and \code{EXPIRED}. Expiry is terminal in the supported lifecycle. Deterministic expiry may mechanically clear authority as part of lifecycle enforcement; this is not a new positive policy decision. Likewise, restoration from a previously validated durable state restores recorded authority state rather than inventing a new Gate verdict. New positive authority decisions remain Gate-controlled.
 
-\subsection{Trace, decay, and reactivation}
+\subsection{Trace and recurrence}
 
-Trace records that a candidate exists in shadow memory and captures recurrence or reactivation. A time-to-live process reduces trace during periods without reinforcement. A dormant seed can return through trigger or semantic matching, a transition referred to as Triggered Recall Time-to-Live (TrTL) in the implementation. Expiry is terminal. An expired seed has no weight, and the lifecycle prevents automatic resurrection.
+Trace represents remembered presence and reactivation, not truth. Decay can reduce trace without changing the candidate's content. Dormant candidates can be reactivated by trigger or semantic matching, subject to lifecycle rules.
 
-The lifecycle deliberately permits a long-lived candidate with zero authority. A recurring suspicion may deserve continued observation without being allowed to shape the user's answer. A seed that once had authority can lose it through contradiction or expiry. Its historical record remains available for audit. Trace decay uses true half-life semantics, $\tau_{t+h}=\tau_t/2$. The default $h=3\ln 2$ preserves the earlier calibrated curve $\exp(-t/3)$ while explicit configurations now mean what the parameter name states.
-
-\subsection{Typed validation signals}
-
-Validation uses typed signals. A generic confidence increment would erase distinctions among recurrence, external support, contradiction, and other evidence channels. A signal has a kind, direction, bounded strength, optional source reference, verification flag, independence flag, and reason. Implemented kinds include recurrence, trusted-source evidence, human feedback, retrieval, dialectic checks, probes, task outcomes, contradiction, and contradiction resolution \citep{shadowseed2026}.
-
-The distinction between recurrence and external evidence is fixed in the type system. Recurrence means that a candidate, or a semantically similar candidate, appeared again. Crossing a recurrence threshold leaves the signal classified as recurrence. In the reference implementation, trusted external evidence is restricted to designated signal kinds and must carry a non-empty \code{source\_ref} before it can count as verified support for a non-expired seed.
-
-Evidence has an identity boundary. For an external support signal $e$, define
+Semantic recurrence is scoped to detector observations. Let $o$ denote one detector observation context and let $M(o)$ be the set of normalized candidates produced in that observation. If multiple members of $M(o)$ map to the same semantic seed or cluster, the observation contributes at most one recurrence credit for that seed:
 \begin{equation}
-  \kappa(e) = (\mathrm{source\_ref}(e),\mathrm{kind}(e)).
+  r(s,o) \in \{0,1\}.
 \end{equation}
-Replaying the same $\kappa(e)$ is idempotent and leaves authority unchanged. Independent confirmations of the same signal kind need distinct source references. The same source reference used under a different typed signal kind is represented as a different observation. The rule defines accounting identity while source independence remains a separate empirical question.
+For a sequence of independent observations $O$, recurrence is
+\begin{equation}
+  R(s,O)=\sum_{o\in O} r(s,o).
+\end{equation}
+Cluster membership alone is not recurrence. The count refers to observations, not the number of textual variants emitted inside one observation.
 
-\subsection{Validation Gate}
+The independence qualification matters. A detector observation produced after the model has been exposed to SSL-surfaced content is marked contaminated for same-turn recurrence accounting. It remains auditable and may be reconsidered in a later independent observation, but it cannot earn independent same-turn recurrence credit. This prevents a surfaced seed from creating evidence for itself through the model's subsequent output.
 
-A Gate policy receives the current read-only authority snapshot and a set of signals. It proposes a decision. Only the Gate applies the authority transition. Each invocation creates an immutable \code{GateEvent} that records policy, inputs, decision, relevant before-and-after state, contradiction state, reason, and authority version.
+\subsection{External evidence identity}
 
-The reference implementation ships two current policies and one compatibility policy. The \code{exploratory} policy permits qualifying recurrence or verified external support to propose a positive change when no unresolved contradiction blocks the seed. It remains the manager-level and evaluation default, and recurrence leaves the external evidence count unchanged. The live conversation default is \code{evidence\_backed}, which requires verified external support. Live callers submit such support through an explicit API that rejects non-evidence kinds, opposing or unverified input, and missing source references before invoking the Gate. \code{legacy\_evidence\_required} preserves historical thresholds for compatibility callers. Policy names matter because a Gate event must be interpretable in terms of the rule that produced it.
+Validation signals are typed for provenance and policy handling. Examples include trusted-source evidence, retrieval results, human feedback, probes, task outcomes, recurrence, contradiction, and contradiction resolution. Signal kind records how information entered the system; it is not the underlying authority identity.
 
-A useful abstraction is
+For external evidence signal $e$, define the authority identity as
+\begin{equation}
+  \kappa(e)=\mathrm{source\_ref}(e).
+\end{equation}
+A non-empty stable source reference is required for external support to count toward authority. Replaying the same source reference is idempotent. Relabeling one underlying source under another external signal kind does not create another authority credit. Thus
+\begin{equation}
+  \kappa(e_1)=\kappa(e_2) \Rightarrow \text{at most one accepted authority credit},
+\end{equation}
+for positive external support derived from the same underlying source.
+
+This identity rule does not prove source independence or truth. Two distinct URLs can still reflect one upstream report, and one source can still be wrong. Source-level deduplication is an accounting boundary, not a semantic-verification theorem.
+
+\subsection{Validation Gate and contradiction}
+
+A named Gate policy consumes a read-only authority snapshot $A_t$ and a set of typed signals $\Sigma_t$:
 \begin{equation}
   G(P,A_t,\Sigma_t) \rightarrow (A_{t+1},g_t),
 \end{equation}
-where $P$ is a named policy, $A_t$ is the authority snapshot, $\Sigma_t$ is the offered signal set, and $g_t$ is the resulting Gate event. Policies can propose. Seed mutation remains exclusive to the Gate.
+where $P$ names the policy and $g_t$ is an immutable Gate event. The event records the offered signals, accepted and rejected inputs, before-and-after authority state, reason, contradiction state, and authority version.
 
-\subsection{Authority versioning}
+The Gate owns policy decisions that grant, reduce, block, or otherwise change steering authority in response to validation inputs. This claim is intentionally scoped. Mechanical lifecycle expiry can clear authority without a new policy decision, and durable-state restoration can reinstate a previously recorded validated state. Unsupported test hooks are outside the product contract and cannot be used to redefine runtime authority semantics.
 
-Authority-changing transitions increment $v_t$. The version changes when weight, accepted evidence count, or contradiction score changes, and when the seed crosses the promoted boundary. Pure observation changes, such as trace decay without an authority effect, need not advance the version.
+Contradictions are explicit blocking records. An unresolved contradiction prevents positive influence even when prior support exists. Resolution is itself typed and auditable. The architecture therefore avoids reducing support and contradiction to a single scalar confidence number that could hide why authority is blocked.
 
-Versioning prevents a past authorization from being reused after the state changes. A point-of-use decision must refer to a Gate event associated with the seed's current authority version. If a seed was promoted at version 7 and a contradiction changes its authority state to version 8, every later action requires version-8 authorization.
+\subsection{Authority version and point-of-use authorization}
 
-\subsection{Contradictions and recovery}
+Authority-relevant transitions advance a version $v_t$. A prior authorization is valid only for the authority snapshot it evaluated. When a seed is about to affect retrieval, prompt construction, an answer, a warning, a probe, or another downstream action, the runtime checks current state again.
 
-Contradiction is represented by explicit records in addition to the legacy scalar penalty. A record has an identifier, reason, optional source reference, strength, lifecycle state, and, once closed, a resolution basis. An open contradiction blocks influence in the default safety configuration.
-
-Resolution is an auditable action. It closes the blocking record, records a resolution event, and leaves the previous weight unrestored. Authority can rise again only after validation. Resolving a contradiction requires an explicit basis beyond reappearance of the same hypothesis.
-
-This distinction blocks an unsafe shortcut in which a seed is contradicted, recurs several times, and regains authority without any explicit treatment of the contradiction.
-
-\subsection{Point-of-use authorization}
-\label{sec:pou}
-
-Promotion is a prerequisite for influence in the reference design. By itself it grants no final permission. The point-of-use contract makes the final decision when a candidate is about to affect an action. Under the recommended configuration, a seed is allowed only when
+The point-of-use predicate can be written abstractly as
 \begin{equation}
-\begin{split}
-  \mathrm{allow}(s_t,a) = 1 \quad \text{only if}\quad
-  & z_t=\mathrm{PROMOTED},\\
-  & w_t>0,\\
-  & \nexists c\in C_t:\mathrm{open}(c),\\
-  & \exists g:\mathrm{authorizes}(g,s_t,v_t).
-\end{split}
+  U(s_t,q_t,a_t) \rightarrow \{\mathrm{allow},\mathrm{deny}\},
 \end{equation}
-The action $a$ may be retrieval, answer modification, a probe, a warning, or another downstream use. The implementation can relax the contradiction check for specialized use. The equation above therefore describes the default safety profile; arbitrary in-process Python is outside that guarantee.
+where $q_t$ is the current request context and $a_t$ is the proposed influence action. A positive result requires current policy eligibility, no unresolved blocking contradiction, a non-expired lifecycle state, and relevance to the proposed action. Both allowed and denied attempts are logged.
 
-The decision and its record are created atomically by \code{decide\_and\_record}. Allowed and denied attempts both enter the audit trail. The authorizing Gate event is selected strictly: it must belong to the same seed, match the current authority version, and represent a non-blocking state that left the seed promoted. A stale event is denied. The runtime never falls back to the last known promotion.
+This second check is essential. Promotion is not permanent truth. Retrieval is not confirmation. Surfacing is not an instruction. A seed can be remembered and even previously promoted while still being denied for the current action.
 
-\subsection{Live and evaluation conversation modes}
+\section{Product contract}
+\label{sec:product}
 
-The live session selects eligible, previously authorized seeds and applies the point-of-use contract before one model generation. The visible answer is the answer stored in conversation history. Detection runs on that visible output. When any seed was supplied to generation, every candidate detected in that same answer is deferred rather than ingested or credited as recurrence. This fail-closed rule is broader than embedding-based attribution: semantic distance cannot prove that a differently worded consequence was independent of SSL input. It can defer legitimate new candidates, which is the deliberate cost of a hard no-same-turn-self-credit contract.
+\subsection{Chat-first live path}
 
-The evaluation session retains the historical isolated comparison arm. It first generates and stores an uncontaminated baseline, and it may then generate a separate SSL-assisted answer for measurement. Baseline isolation is therefore an evaluation property, not the product conversation model.
+The normal product surface is a persistent ordinary chat. The live path is evidence-backed: recurrence alone does not grant live steering authority. Answers follow the language of the current user question rather than a repository-wide language default.
 
-Promotion creates eligibility for surfacing. A shared policy can still exclude the seed using contextual relevance, early-turn constraints, top-$k$ selection, and resurface damping. Damping is applied only after a seed was actually authorized and supplied to the model.
+A live turn may surface only seeds that pass the current point-of-use contract. If no seed is authorized, SSL may still detect and remember candidates after the answer, but those candidates cannot retroactively influence the answer that created them.
 
-\subsection{Prompt-data boundary}
+\subsection{Optional same-message SSL-off control}
 
-A surfaced seed remains candidate data. The implementation encloses surfaced candidates inside explicit delimiters marked as untrusted and instructs the model to treat imperative-looking text inside the block as quoted content. It also bounds the number of seeds and the number of characters per seed and per block \citep{shadowseed2026}.
+A tester may request a paired comparison for the same message. The system automatically generates a control response with SSL disabled. The tester does not author a baseline. The control receives:
+\begin{itemize}[leftmargin=1.5em]
+  \item the same model configuration;
+  \item the same user message; and
+  \item the same visible conversation history from before the turn.
+\end{itemize}
+The control does not receive surfaced seeds. It is not passed through candidate detection. It creates no recurrence credit, invokes no Validation Gate decisions, and is not appended to the live conversation history. Only the real live turn mutates state.
 
-The prompt-data boundary has a narrow function: structural separation of untrusted candidate data. It offers no prompt-injection guarantee. AgentDojo and related work give ample reason to avoid such a claim \citep{debenedetti2024agentdojo}. A capable model can still respond incorrectly to instruction-like data. SSL places the stronger control before the prompt: only an authorized seed may reach the surfacing stage. The quoting boundary reduces ambiguity at presentation time and leaves audit markers for instruction-like patterns.
+This design reduces one class of comparison contamination. It does not make the pair a blinded randomized experiment. Stochastic generation, hosted-model changes, latency, and provider-side nondeterminism can still differ between calls. A visible answer difference may be attributed to SSL only when at least one authorized seed was actually surfaced into the live generation path. Even then, the pair demonstrates a local behavioral difference, not a general performance benefit.
 
-\section{Reference implementation}
-\label{sec:implementation}
+\section{Auditability and artifact boundaries}
+\label{sec:audit}
 
-The research artifact is implemented in Python. Shadowseed Pro 0.4.2 is the published software release cited here; the reviewed implementation revision is identified separately in Section~\ref{sec:evaluation} because the live-runtime architecture continued to evolve after that release \citep{shadowseed2026}. The runtime is split into modules for intake, lifecycle, contradiction records, validation, surfacing, trusted-source handling, retrieval, and point-of-use authorization. A manager object coordinates state and compatibility APIs. New Gate-controlled authority decisions converge on one executable Gate engine.
+The reference implementation separates four kinds of artifact authority. The software source of truth defines executable behavior. The model/architecture specification explains intended contracts. Decision logs capture runtime evidence. Validation artifacts and benchmarks support bounded claims. Execution plans and historical migration reports do not override current runtime or accepted architecture decisions \citep{shadowseed2026}.
 
-Authority-bearing fields are guarded by the normal runtime API. Construction rejects arbitrary weight, and direct assignment to authority fields is rejected. Runtime transitions that change authority use one manager transition path. Restoration is treated separately because loading persistent state must reconstruct earlier authority without pretending that a new validation decision occurred. Persisted snapshots are validated before installation, restore their existing authority version, create no new evidence, and create no Gate event. The package includes explicitly named unsafe hooks for tests and edge-case construction. Those hooks are outside the supported runtime contract. Accordingly, the paper limits the non-bypassable claim to supported public APIs and makes no mathematical claim about arbitrary Python code.
+The reviewed implementation for this manuscript is source version \sourceversion{} at commit \implcommit{}. The version string identifies the source tree. It is not, by itself, evidence that a public binary release with the matching tag or assets exists. The manuscript source revision is a separate publication artifact and should be cited by its own repository commit when archived.
 
-The trusted-source layer stores verified material separately from uncertain seeds. Model-generated proposals enter as unverified observations. Retrieval, human feedback, or trusted-source matches can become external validation signals only under their stated provenance rules. This keeps a candidate from serving as evidence for itself.
+Audit records are designed to answer questions such as: What candidate was created? Which observation produced recurrence? Which underlying sources counted as evidence? Was a contradiction open? Which policy made the authority decision? Which authority version was checked at point of use? Was influence allowed or denied? This is an accountability objective, not a guarantee that the recorded evidence was semantically correct.
 
-A local Workbench provides a practical inspection surface for testers. It supports persistent sessions, seed and ledger inspection, scenario runs, baseline/SSL comparison, audit-only feedback, and verified report or support-bundle exports. The Workbench is an application layer over the runtime. Tester feedback remains audit-only unless it is separately admitted as evidence through the normal Gate path.
-
-\section{Assurance evaluation}
+\section{Executable assurance and claim boundary}
 \label{sec:evaluation}
 
-\subsection{Evaluation question}
+The current artifact is evaluated primarily through executable contracts rather than open-ended answer-quality experiments. The repository includes unit and integration tests, multi-version Python CI, linting, build checks, branch-coverage enforcement, Workbench tests, portability checks, and standalone build checks \citep{shadowseed2026}. These gates are useful for detecting contract regressions such as accidental authority mutation, evidence double-counting, unsupported recurrence, stale authorization, conversation-control contamination, or packaging drift.
 
-The present evaluation asks a narrow question: \emph{does the reference implementation enforce the authority contracts described in Section~\ref{sec:method}?} Detector recall, answer benefit, and user preference are deferred to separate empirical studies.
+This assurance supports claims of the form ``the tested implementation enforces this contract under covered conditions.'' It does not support stronger claims such as ``the detector finds all important missing information'' or ``SSL improves answer quality.'' In particular, the following remain outside the evidence provided by the current artifact:
+\begin{itemize}[leftmargin=1.5em]
+  \item semantic correctness and completeness of generated candidates;
+  \item calibrated utility of recurrence thresholds across domains;
+  \item truth or independence of external sources;
+  \item general answer-quality improvement over an SSL-off system;
+  \item robustness to all prompt-injection, retrieval-poisoning, or memory-poisoning attacks;
+  \item operational production readiness at scale; and
+  \item human-factor effects of warnings, clarifications, or surfaced uncertainty.
+\end{itemize}
 
-The reviewed live-runtime implementation is commit
-\begin{center}
-\commitsha.
-\end{center}
-The repository path executes linting, the test suite on Python 3.10 and 3.12, package build, clean wheel installation, command-line smoke tests, Workbench checks, cross-platform portability checks, and release-asset verification \citep{shadowseed2026}.
-
-\subsection{Contract coverage}
-
-Table~\ref{tab:contracts} summarizes representative contracts and the test families that pin them. The table reports what each test family establishes. Test count is not used as an empirical quality metric.
-
-\begin{table*}[t]
-\centering
-\small
-\begin{tabular}{p{0.29\textwidth} p{0.31\textwidth} p{0.31\textwidth}}
-\toprule
-Contract & Failure prevented & Representative test evidence \\
-\midrule
-New seeds begin weightless & Detector output gains authority at creation & \nolinkurl{test_authority_encapsulation.py}; \nolinkurl{test_models_extraction.py} \\
-Trace and authority remain separate & Recurrence or reactivation grants steering implicitly & \nolinkurl{test_lifecycle_ttl.py}; \nolinkurl{test_lifecycle_extraction.py} \\
-Gate-controlled decisions use one engine & A compatibility or helper path creates a second authority route & \nolinkurl{test_gate_path_unification.py}; \nolinkurl{test_gate_boundary_completion.py} \\
-Recurrence is distinct from external evidence & Repetition masquerades as independent support & \nolinkurl{test_gate_signal_routing.py} \\
-Open contradictions block use & A contradicted seed remains silently influential & \nolinkurl{test_contradiction_lifecycle.py}; contradiction extraction tests \\
-Point-of-use requires current authorization & A stale promotion authorizes a later action & \nolinkurl{test_point_of_use.py}; \nolinkurl{test_agent_safety_contract.py} \\
-Live uses one generation and stores its visible answer & Hidden baseline history diverges from the conversation the user read & \nolinkurl{test_live_runtime.py} \\
-Same-turn live detection fails closed after SSL influence & SSL-generated text earns recurrence credit for itself & \nolinkurl{test_live_runtime.py} \\
-Evaluation history stays baseline-isolated & The controlled comparison arm feeds on its own intervention & \nolinkurl{test_shadow_chat.py}; \nolinkurl{test_live_runtime.py} \\
-Live evidence enters through a provenance-checked API & The evidence-backed default has no usable or auditable support route & \nolinkurl{test_live_runtime.py} \\
-Strict replay checks allowed influence records & An incomplete or mismatched audit record is accepted as valid & point-of-use replay tests \\
-\bottomrule
-\end{tabular}
-\caption{Representative executable contracts in the reviewed reference implementation. Test names identify implementation evidence; independent empirical validation requires separate studies.}
-\label{tab:contracts}
-\end{table*}
-
-\subsection{Continuous-integration result}
-
-The repository records the exact test count and branch coverage for each reviewed commit rather than treating numbers from an earlier release as properties of later code. The configured branch-coverage floor is 80\%. CI also requires Ruff, Python 3.10 and 3.12 tests, package build, and clean installed-package command-line smoke tests. These checks are commit-specific evidence and must be rerun on the revision intended for merge \citep{shadowseed2026}.
-
-These numbers show that the repository's executable contracts ran successfully under the recorded environment. They measure contract execution in that environment. Statistical confidence about omission quality, usefulness, security under adaptive attack, and human outcomes requires independent evaluation.
-
-\subsection{What this evaluation establishes}
-
-The assurance evidence supports six implementation-level claims. Uncertain candidates have a representable state in which they persist without steering. New Gate-controlled authority decisions in the supported runtime pass through the documented validation engine. Provenance and contradiction state participate directly in authority accounting. Actual influence requires a fresh point-of-use decision tied to the current authority version. The live session performs one generation and remembers the answer shown to the user. The evaluation session keeps baseline and SSL-assisted paths separately observable.
-
-Semantic atomicity, factual correctness, completeness, usefulness, and Gate-policy optimality remain unevaluated. Contract tests cannot answer those empirical and normative questions.
-
-\section{Security and failure analysis}
-\label{sec:security}
-
-\subsection{Detector error}
-
-A detector can invent an omission that is already covered, irrelevant, outside scope, or nonsensical. Atomicity heuristics can split a coherent issue badly or fail to split a compound candidate. Weightless creation limits immediate damage. A weak detector can still fill the store with noise and consume reviewer attention. Rate limits, quality calibration, and stronger spam controls remain open work.
-
-\subsection{Correlated recurrence}
-
-Repeated detection may reflect a real unresolved issue. It may equally reflect a stable detector bias. The exploratory policy deliberately allows recurrence to contribute to promotion under its stated rules, so it suits research settings where investigation is cheap and false promotion is visible. The evidence-backed policy is the more defensible choice where influence should depend on external support. Neither policy can infer source independence from repeated model output.
-
-\subsection{Evidence poisoning}
-
-Provenance makes evidence inspectable while source trust remains a separate problem. The live evidence API validates signal type, support direction, a caller-supplied verification marker, and source identity; it does not authenticate the source or establish truth. The operator or host application is therefore the trust anchor and must verify a source before setting the marker. Hard-coding it would collapse the intended distinction between observed recurrence and external support. PoisonedRAG shows that retrieval stores can be attacked directly \citep{zou2025poisonedrag}. A compromised trusted source can therefore produce well-formed, provenance-carrying evidence that is still false. Deployment in consequential domains would need source authentication, trust policies, conflicting-source handling, and review outside the current artifact.
-
-\subsection{Instruction-like seed text}
-
-A seed can contain text that resembles a system instruction or prompt-injection payload. The prompt boundary quotes and bounds that text. The point-of-use contract controls whether the seed reaches the prompt. The model can still mishandle quoted adversarial content. The design reduces one authority ambiguity. Prompt injection remains possible. AgentDojo illustrates why external data and instructions cannot be assumed to remain cleanly separated by model behavior alone \citep{debenedetti2024agentdojo}.
-
-\subsection{Persistence boundary}
-
-Restoration bypasses new Gate decisions by design because it reconstructs prior state. The implementation validates snapshots and preserves their authority version. The persistence store remains a trust boundary. Production use would require stronger access control, schema migration guarantees, rollback, and durable audit integrity. The current immutable Gate and influence records are in-process data structures. Durable append-only and cryptographically chained audit guarantees are absent.
-
-\subsection{In-process escape hatches}
-
-Python permits callers with code execution to reach internals. The repository contains explicitly unsafe test hooks. The system's ``non-bypassable'' property is therefore scoped to supported public runtime paths for new authority decisions. The scope excludes sandboxing and arbitrary in-process code.
+A future answer-quality evaluation should freeze an implementation commit, define tasks before inspection of outcomes, use paired or randomized controls with reproducible model settings where possible, separate candidate quality from authority-policy effects, blind human review when feasible, report failure cases as well as gains, and preserve the distinction between statistical recurrence and external evidence.
 
 \section{Discussion}
-\label{sec:discussion}
 
-The practical value of separating memory from authority is easiest to see in ambiguous cases. A system may notice the same candidate omission on three turns. Deleting it would discard a pattern worth investigating. Treating it as fact would overstate what recurrence can show. SSL allows a third state: remember the pattern, keep its epistemic status visible, and wait for a policy-relevant reason before permitting influence.
+SSL can be viewed as an authority layer over uncertain memory. This framing is intentionally narrower than a general memory architecture. It does not decide every storage policy and does not require one detector or one retrieval backend. Its central invariant is that each module preserves the candidate's epistemic identity. A gap must not silently become a conclusion; a what-if must not become a fact; recurrence must not become evidence; similarity must not become truth; retrieval must not become confirmation; promotion must not become permanent truth; and surfacing must not become an instruction.
 
-The same distinction clarifies retrieval. A seed can be authorized to initiate a search without treating the search result as automatically true. Retrieved support retains its source identity and enters validation as a typed signal. If contradictory material appears later, the authority version changes and earlier point-of-use authorization becomes stale. This creates a chain that can be reconstructed from candidate to evidence to Gate event to action.
+This invariant also constrains stronger models. A stronger detector may produce better candidates, and a stronger verifier may produce better evidence assessments. Neither receives extra authority merely because of model capability. Authority remains a policy-governed system property.
 
-The architecture also makes policy disagreement explicit. A research prototype may accept recurrence as enough reason to surface a candidate for exploration. A higher-risk system may require verified external support. Putting that difference into named policies is preferable to hiding it in a threshold whose semantics are unclear. Domain owners still choose the appropriate policy. The architecture constrains where that policy acts.
+The same principle provides a useful way to position SSL relative to recent learned-memory systems. AgeMem and EMA optimize memory actions and filtering \citep{yu2026agentic,lan2026ema}. SSL does not compete with those mechanisms on storage efficiency. It can instead sit beside or above them as a trust contract for uncertain candidates. Likewise, clarification systems can decide what question is most valuable \citep{zhao2026askbench,suri2026structured}; SSL can govern whether a remembered hypothesis is authorized to trigger that question in the current context.
 
-There is a cost. More state means more bookkeeping, more failure modes, and more material to review. A Validation Gate that nobody inspects becomes ceremony. Provenance that identifies a source without measuring its credibility can give a false sense of rigor. Audit logs can also expose sensitive text. The architecture earns its complexity only where preserving uncertain context is useful enough to justify an explicit authority trail.
+\section{Limitations}
 
-\section{Limitations and empirical work still required}
-\label{sec:limitations}
+The architecture introduces additional state, policy logic, logging, and tests. These create engineering cost. The source-reference identity rule is intentionally conservative but cannot detect hidden dependence among distinct sources. Observation-scoped recurrence prevents obvious within-observation inflation but does not prove that separate observations are causally independent. Candidate normalization can merge distinct ideas or split one idea into several seeds. Point-of-use relevance is itself a model or rule-based judgment and can be wrong. Hosted model APIs can change behavior over time. The optional SSL-off control doubles model calls for compared turns and therefore changes cost and latency.
 
-The strongest current limitation is empirical. General answer-quality improvement remains unestablished. Deterministic fixtures demonstrate wiring and state transitions. Contract tests establish executable invariants. Neither tells us how often real detectors propose useful absences, how often valid seeds improve a response, or how often surfacing distracts the model.
-
-A suitable next study should freeze the implementation and preregister the evaluation. At minimum, it should compare isolated baseline responses with SSL-assisted responses on tasks containing recoverable contextual omissions; include negative controls in which no meaningful omission is present; measure false influence as well as useful influence; and use blinded, independent assessment. The design should report effect sizes and uncertainty; win rates alone are insufficient. Ablations should separate candidate persistence, Gate validation, retrieval, and point-of-use checks. Such a study can test whether the architecture's control costs buy useful behavior.
-
-Generalization is also open. Evidence for seed quality across domains, languages, model families, and long deployments is currently absent. Weight represents steering authority and carries no calibrated probability of truth. The current implementation provides local persistence and a tester Workbench. It lacks the append-only audit storage, mature access control, privacy and retention policy, operational monitoring, rollback procedures, rate limiting, and independent security review expected of a production system.
-
-Security claims remain bounded. A malicious trusted source can still supply false evidence. Prompt-data quoting leaves residual instruction-following risk. The default contradiction block can be relaxed programmatically. Arbitrary Python code with access to unsupported internals is outside the public-API authority guarantee.
-
-These limits define the method's intended use. The current Shadowseed reference implementation is a research artifact for mechanism inspection, controlled experiments, and tester studies. High-impact deployment in healthcare, finance, employment, law, public administration, education decisions, or autonomous action falls outside that intended use.
-
-\section{Reproducibility and artifact statement}
-\label{sec:artifact}
-
-The paper cites the published Shadowseed Pro 0.4.2 artifact and describes the later reviewed implementation at commit \commitsha \citep{shadowseed2026}. The repository records the architecture, contract tests, benchmark implementations, release metadata, and CI workflows used for the assurance claims in this paper. Its validation path verifies Python 3.10 and 3.12, package build, clean wheel installation, Workbench checks, cross-platform portability, and release assets.
-
-A reproduction should record the repository commit, Python and operating-system versions, dependency versions, backend and model identifiers, immutable model revisions where available, input hashes, prompt variants, random seeds, and output hashes. Real-model labels or reviews should be preserved as artifacts because hosted model outputs can vary across runs.
-
-The repository is publicly visible for inspection, research discussion, and evaluation. At the time of writing the repository carries no open-source license; the original content remains all rights reserved. Public visibility grants inspection access only under the repository's stated rights position.
+The present implementation is research-ready in the bounded sense used in the repository: contracts are explicit and testable. It should not be described as production-ready without additional security review, scale testing, incident handling, operational monitoring, data-governance analysis, and domain-specific evaluation.
 
 \section{Conclusion}
 
-A language-model system can benefit from remembering a suspicion before it is ready to trust it. That requires more than a memory store. The representation must preserve uncertainty after storage, validation must have an explicit authority boundary, and permission must still be current when the memory is used.
+Shadow Seed Learning separates remembering from trusting. Its basic object is a bounded epistemic candidate that can persist with zero steering weight. Authority is added only through explicit policy and remains defeasible through contradiction, lifecycle, and point-of-use checks. External evidence is deduplicated by underlying source identity across channels. Semantic recurrence is counted across detector observations rather than textual cluster members, and contaminated same-turn observations cannot reinforce themselves. The chat-first product contract keeps live state separate from an automatically generated SSL-off comparison. These design choices make uncertain memory inspectable without pretending that persistence is proof. The current contribution is an architecture and executable contract, not evidence of general answer-quality improvement.
 
-Shadow Seed Learning implements that separation with weightless candidate omissions, a distinct trace signal, typed validation, provenance-bound evidence, explicit contradiction records, versioned Gate events, and atomic point-of-use decisions. The reviewed reference implementation provides executable evidence that these contracts are wired into the supported runtime. General answer improvement remains an open empirical question for controlled evaluation. Further mechanism expansion cannot substitute for that study.
+\section*{LLM usage disclosure}
+Large language models, including ChatGPT and other model systems used during the Shadowseed project, assisted with ideation, drafting, editing, literature discovery, code review, and implementation analysis. They are not listed as authors. The human author is responsible for the manuscript, source verification, claims, citations, and released artifact.
+
+\section*{Artifact note}
+The implementation described here is available in the Shadowseed Pro repository \citep{shadowseed2026}. The implementation anchor for this manuscript is commit \implcommit{}. The paper source and compiled PDF are publication artifacts and should be rebuilt together whenever the manuscript changes.
 
 \printbibliography
 
