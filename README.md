@@ -146,6 +146,8 @@ A textual difference is not automatically an SSL effect. Attribute an observed d
 
 ## What the code enforces
 
+`shadowseed.manager` is the supported high-level orchestration surface. It coordinates canonical concerns rather than reimplementing their authority semantics.
+
 | Enforced property | Canonical implementation | Contract coverage |
 |---|---|---|
 | New seeds start weightless and authority fields are guarded | [`shadowseed.models`](src/shadowseed/models.py), [`shadowseed.intake`](src/shadowseed/intake.py) | [`test_authority_encapsulation.py`](tests/test_authority_encapsulation.py) |
