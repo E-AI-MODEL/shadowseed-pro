@@ -56,11 +56,31 @@ def _suite(path: Path) -> Path:
                         "after_turn": 0,
                         "selector": {"born_turn": 0, "seed_index": 0},
                         "kind": "ssot",
-                        "source_ref": "fixture://independent-source/alpha",
+                        "source_ref": "fixture://independent-source/alpha-1",
                         "strength": 1.0,
                         "independent": True,
-                        "reason": "fixture operator attestation for mechanics",
-                    }
+                        "reason": "fixture operator attestation one for mechanics",
+                    },
+                    {
+                        "evidence_id": "support-alpha-2",
+                        "after_turn": 0,
+                        "selector": {"born_turn": 0, "seed_index": 0},
+                        "kind": "retrieval",
+                        "source_ref": "fixture://independent-source/alpha-2",
+                        "strength": 1.0,
+                        "independent": True,
+                        "reason": "fixture operator attestation two for mechanics",
+                    },
+                    {
+                        "evidence_id": "support-alpha-3",
+                        "after_turn": 0,
+                        "selector": {"born_turn": 0, "seed_index": 0},
+                        "kind": "human_feedback",
+                        "source_ref": "fixture://independent-source/alpha-3",
+                        "strength": 1.0,
+                        "independent": True,
+                        "reason": "fixture operator attestation three for mechanics",
+                    },
                 ],
             }
         ],
@@ -97,20 +117,30 @@ def test_fixture_evidence_efficacy_generates_only_authorized_pairs(tmp_path: Pat
     assert verify_evidence_efficacy_bundle(tmp_path / "bundle")["verified"] is True
 
     summary = json.loads((tmp_path / "bundle" / "summary.json").read_text(encoding="utf-8"))
-    assert summary["evidence_opportunity_count"] == 1
-    assert summary["candidate_observed_count"] == 1
+    assert summary["evidence_opportunity_count"] == 3
+    assert summary["candidate_observed_count"] == 3
     assert summary["authority_granted_count"] == 1
-    assert summary["surfaced_opportunity_count"] == 1
+    assert summary["surfaced_opportunity_count"] == 3
     assert summary["answer_review_item_count"] >= 1
 
     audit = json.loads(
         (tmp_path / "bundle" / "opportunity_audit.json").read_text(encoding="utf-8")
     )
-    item = audit["items"][0]
-    assert item["evidence_submitted"] is True
-    assert item["authority_granted"] is True
-    assert item["later_surfaced_turns"]
-    assert item["terminal_reason"] == "ab_generated"
+    items = audit["items"]
+    assert [item["gate_decision"] for item in items] == [
+        "validated",
+        "validated",
+        "promoted",
+    ]
+    assert [item["weight_after_evidence"] for item in items] == pytest.approx([0.2, 0.4, 0.6])
+    assert all(item["evidence_submitted"] is True for item in items)
+    assert [item["authority_granted"] for item in items] == [False, False, True]
+    assert all(item["later_surfaced_turns"] for item in items)
+    assert [item["terminal_reason"] for item in items] == [
+        "gate_did_not_grant_authority",
+        "gate_did_not_grant_authority",
+        "ab_generated",
+    ]
 
     raw = json.loads(
         (tmp_path / "bundle" / "raw" / "evidence_backed_paired.json").read_text(
@@ -132,6 +162,7 @@ def test_fixture_evidence_efficacy_generates_only_authorized_pairs(tmp_path: Pat
 def test_unmatched_predeclared_selector_is_recorded_not_fabricated(tmp_path: Path) -> None:
     suite_path = _suite(tmp_path / "suite.json")
     suite = json.loads(suite_path.read_text(encoding="utf-8"))
+    suite["conversations"][0]["evidence_plan"] = [suite["conversations"][0]["evidence_plan"][0]]
     suite["conversations"][0]["evidence_plan"][0]["selector"] = {
         "text_contains": "candidate that cannot exist in the fixture"
     }

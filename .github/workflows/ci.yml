@@ -36,7 +36,7 @@ jobs:
       - run: pip install -e ".[test]"
       - run: ruff check .
       - run: >-
-          pytest -q
+          python -m pytest -q
           --cov=shadowseed
           --cov=shadowseed_agent
           --cov-branch

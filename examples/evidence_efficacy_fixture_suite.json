@@ -29,10 +29,36 @@
             "seed_index": 0
           },
           "kind": "ssot",
-          "source_ref": "fixture://independent-source/alpha",
+          "source_ref": "fixture://independent-source/alpha-1",
           "strength": 1.0,
           "independent": true,
-          "reason": "Fixture-only external support attestation used to test mechanics."
+          "reason": "Fixture-only external support attestation one used to test cumulative Gate mechanics."
+        },
+        {
+          "evidence_id": "fixture-support-alpha-2",
+          "after_turn": 0,
+          "selector": {
+            "born_turn": 0,
+            "seed_index": 0
+          },
+          "kind": "retrieval",
+          "source_ref": "fixture://independent-source/alpha-2",
+          "strength": 1.0,
+          "independent": true,
+          "reason": "Fixture-only external support attestation two used to test cumulative Gate mechanics."
+        },
+        {
+          "evidence_id": "fixture-support-alpha-3",
+          "after_turn": 0,
+          "selector": {
+            "born_turn": 0,
+            "seed_index": 0
+          },
+          "kind": "human_feedback",
+          "source_ref": "fixture://independent-source/alpha-3",
+          "strength": 1.0,
+          "independent": true,
+          "reason": "Fixture-only external support attestation three used to test cumulative Gate mechanics."
         }
       ]
     }
