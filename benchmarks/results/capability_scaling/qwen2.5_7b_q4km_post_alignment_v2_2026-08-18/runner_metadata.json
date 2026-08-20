@@ -1,0 +1,12 @@
+{
+  "github_run_id": "32308388950",
+  "github_run_attempt": "1",
+  "github_runner_os": "Linux",
+  "github_runner_arch": "X64",
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "ollama_version": "ollama version is 0.32.14 ",
+  "ollama_binary_sha256": "d0758d38ac5882a2c68fd930d0c1220af1952469fa9f30c268746d4021709bf4",
+  "ollama_model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+  "embedding_reference": "sentence-transformers/all-MiniLM-L6-v2",
+  "embedding_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+}

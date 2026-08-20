@@ -1,0 +1,520 @@
+{
+  "schema": "ssl-capability-scaling-review-v1",
+  "review_type": "candidate_key",
+  "items": [
+    {
+      "review_id": "candidate_865ee841e2250c4c",
+      "suite_id": "primary",
+      "conversation_id": "CONV_IR_SHORT",
+      "turn": 0,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Colonial trade dynamics as a relational dimension alongside technological innovation."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_b00ed8f1e935e0c1",
+      "suite_id": "primary",
+      "conversation_id": "CONV_IR_SHORT",
+      "turn": 1,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Ideological influences of Enlightenment thinkers as a dimension supporting industrialization efforts."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_75e3a758785b2fd6",
+      "suite_id": "primary",
+      "conversation_id": "CONV_IR_SHORT",
+      "turn": 2,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Ideological influences as a dimension shaping industrial policies and practices."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_154999318ca8da4f",
+      "suite_id": "primary",
+      "conversation_id": "CONV_IR_SHORT",
+      "turn": 3,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Psychological factors as a dimension influencing social norms and values."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_af6ca692d0d85803",
+      "suite_id": "primary",
+      "conversation_id": "CONV_STARTUP",
+      "turn": 0,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Psychological triggers and motivations as a dimension influencing user engagement and retention."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_9de2fc6c5c66abf6",
+      "suite_id": "primary",
+      "conversation_id": "CONV_STARTUP",
+      "turn": 1,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Gamification as a dimension to enhance user engagement and retention through points, badges, and leaderboards."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_f8d3fd17e726a1ec",
+      "suite_id": "primary",
+      "conversation_id": "CONV_STARTUP",
+      "turn": 2,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Viral marketing strategies as a dimension of user experience design."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_182ed8ee5bb23ce0",
+      "suite_id": "primary",
+      "conversation_id": "CONV_STARTUP",
+      "turn": 3,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "User experience as a dimension influencing the effectiveness of different business models."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_45b059bfac9ab9f9",
+      "suite_id": "primary",
+      "conversation_id": "CONV_STARTUP",
+      "turn": 4,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Ethical considerations as a framing dimension alongside legal compliance."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_15b4a2e464c0056b",
+      "suite_id": "primary",
+      "conversation_id": "CONV_STARTUP",
+      "turn": 5,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Human resource management as a strategic dimension alongside technical solutions."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_29846f161e62aa2d",
+      "suite_id": "primary",
+      "conversation_id": "CONV_STARTUP",
+      "turn": 6,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Viral marketing strategies as a dimension influencing user acquisition and engagement."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_d1cf3e15b33ebf49",
+      "suite_id": "primary",
+      "conversation_id": "CONV_STARTUP",
+      "turn": 7,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Psychological impact of negative publicity on stakeholders as a dimension of trust and credibility management."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_133ca18e90036855",
+      "suite_id": "primary",
+      "conversation_id": "CONV_STARTUP",
+      "turn": 8,
+      "candidate_index": 0,
+      "normalized_candidates": [],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_91dca4d07fba93ed",
+      "suite_id": "primary",
+      "conversation_id": "CONV_CITY",
+      "turn": 0,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Socioeconomic disparities as a dimension affecting the assessment and revitalization efforts."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_15f71e6c31e93ffc",
+      "suite_id": "primary",
+      "conversation_id": "CONV_CITY",
+      "turn": 1,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Regulatory flexibility as a dimension for attracting diverse business types."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_c7817b4c527ba7e5",
+      "suite_id": "primary",
+      "conversation_id": "CONV_CITY",
+      "turn": 2,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Smart city integration as a dimension for cohesive urban development."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_a4969b76565499db",
+      "suite_id": "primary",
+      "conversation_id": "CONV_CITY",
+      "turn": 3,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Public-private partnerships as a collaborative framework for enhancement projects."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_f406c47f859d2f94",
+      "suite_id": "primary",
+      "conversation_id": "CONV_CITY",
+      "turn": 4,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Economic disparity as a dimension affecting the feasibility and distribution of mixed-use developments."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_c2bce21e465676a0",
+      "suite_id": "primary",
+      "conversation_id": "CONV_CITY",
+      "turn": 5,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Smart technology integration as a dimension for enhancing maintenance and visitor experience."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_2f65fd5ba7bb2ee8",
+      "suite_id": "primary",
+      "conversation_id": "CONV_CITY",
+      "turn": 6,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Community engagement as a relational dimension alongside public safety measures."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_5e2284aa7858cd08",
+      "suite_id": "primary",
+      "conversation_id": "CONV_CITY",
+      "turn": 7,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Social impact bonds as a financing mechanism for public projects."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_8258baf110baba8f",
+      "suite_id": "primary",
+      "conversation_id": "CONV_CITY",
+      "turn": 8,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Community resilience as a dimension influencing project sustainability and impact."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_d52c7a7ddb358a1f",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_EDU",
+      "turn": 0,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Socioeconomic disparities as a dimension influencing students' access to and engagement with digital tools."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_fcee69050be654e3",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_EDU",
+      "turn": 1,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Socioeconomic background as a dimension influencing prior knowledge and its impact on instructional strategies."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_13f1c66a22dc39b8",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_EDU",
+      "turn": 2,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "User-centered design as a dimension influencing activity selection and effectiveness."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_d5b42d70e61cf690",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_EDU",
+      "turn": 3,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Gamification as a dimension to enhance engagement in both formative and summative assessments."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_6821a02c416c695e",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_EDU",
+      "turn": 4,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Socioeconomic status as a dimension affecting digital literacy and learning outcomes."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_d28d4ddf72580702",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_EDU",
+      "turn": 5,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Resistance and change management as a relational dimension to adoption strategies."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_d798986ed8f00d6f",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_EDU",
+      "turn": 6,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Organizational culture as a dimension influencing curriculum acceptance and implementation."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_38eb6288d76d7d11",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_HEALTH",
+      "turn": 0,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Parental involvement as a relational dimension influencing campaign effectiveness."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_1a36c1848c9cf302",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_HEALTH",
+      "turn": 1,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Psychological triggers and behavioral economics as dimensions influencing choice and consumption."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_792f188b1c4af2b8",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_HEALTH",
+      "turn": 2,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Psychological triggers and content resonance as dimensions influencing engagement on social media."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_f11095a21f039aa0",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_HEALTH",
+      "turn": 3,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Behavioral economics as a lens to understand and predict teenager responses to the campaign."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_0c523e11bce275dc",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_HEALTH",
+      "turn": 4,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Socioeconomic status as a dimension influencing health-consciousness and campaign engagement."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_1c3e85f8795f2fa6",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_HEALTH",
+      "turn": 5,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Socioeconomic disparities as a dimension affecting campaign effectiveness."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_2fbd1294e819a5ce",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_HEALTH",
+      "turn": 6,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Digital divide as a dimension affecting campaign reach and effectiveness."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_5c0daf63411f538e",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_POLICY",
+      "turn": 0,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Socioeconomic disparities as a dimension influencing community resilience and resource allocation."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_d82b0e6365fde4c2",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_POLICY",
+      "turn": 1,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Economic incentives as a policy dimension influencing adoption of cost-effective measures."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_1e4cd2308b1e51bf",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_POLICY",
+      "turn": 2,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Socioeconomic disparities as a dimension affecting engagement and plan effectiveness."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_a5cdb23f062ccaed",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_POLICY",
+      "turn": 3,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Behavioral economics as a lens for understanding public and private sector engagement in climate adaptation initiatives."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_28ca953fd3e45d01",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_POLICY",
+      "turn": 4,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Inter-generational equity as a dimension in cost and benefit distribution."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_cfe18197b8d7fbb6",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_POLICY",
+      "turn": 5,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Interdependencies between climate-adaptation measures and local economic development as a dimension."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    },
+    {
+      "review_id": "candidate_fbde52e85ef673c3",
+      "suite_id": "transfer",
+      "conversation_id": "CONV_POLICY",
+      "turn": 6,
+      "candidate_index": 0,
+      "normalized_candidates": [
+        "Interdependencies between data quality and technological solutions as a dimension for enhancing climate-adaptation planning."
+      ],
+      "ssl_exposed": false,
+      "suppressed_same_turn": false
+    }
+  ]
+}

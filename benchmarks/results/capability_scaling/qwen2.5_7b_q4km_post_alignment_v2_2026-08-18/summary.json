@@ -1,0 +1,46 @@
+{
+  "schema": "ssl-capability-scaling-bundle-v1",
+  "run_id": "qwen2.5-7b-q4km-post-alignment-v2-2026-08-18",
+  "created_at": "2026-08-19T23:36:54.323225+00:00",
+  "claim_level": "real-model-research",
+  "automatic_metrics": {
+    "live": {
+      "suite_count": 2,
+      "turn_count": 43,
+      "candidate_occurrences": 43,
+      "malformed_or_non_atomic_occurrences": 1,
+      "malformed_or_non_atomic_rate": 0.023256,
+      "exact_duplicate_rate": 0.0,
+      "semantic_duplicate_rate": 0.02381,
+      "detector_parser": {
+        "nonblank_lines": 43,
+        "numbered_lines": 43,
+        "unnumbered_nonblank_lines": 0,
+        "accepted_candidates": 43,
+        "nested_numbering_prefixes_removed": 43,
+        "dropped_blank_or_placeholder": 0,
+        "dropped_citation_or_stub": 0,
+        "dropped_fewshot_leak": 0,
+        "dropped_duplicate": 0,
+        "parser_rejection_rate": 0.0,
+        "fewshot_leakage_rate": 0.0,
+        "dropped_citation_or_stub_rate": 0.0
+      },
+      "surfaced_turn_count": 0,
+      "same_turn_deferral_rate": null,
+      "positive_weight_event_count": 0,
+      "verified_external_support_event_count": 0
+    },
+    "evaluation": {
+      "suite_count": 2,
+      "turn_count": 16,
+      "surfaced_turn_count": 0,
+      "answer_generation_calls": 16,
+      "influence_record_count": 0
+    }
+  },
+  "candidate_review_item_count": 43,
+  "answer_review_item_count": 0,
+  "review_status": "pending",
+  "claim_boundary": "This protocol can produce research evidence about candidate quality, detector/parser behavior, recurrence/deferral mechanics, and blinded answer effects for pinned model/runtime configurations. It cannot by itself establish candidate truth, general answer-quality improvement, production readiness, or that a larger model deserves more authority."
+}

@@ -1,0 +1,91 @@
+{
+  "version": "ssl-session-0.3",
+  "language": "en",
+  "description": "Multi-turn conversations for the real SSL session pipeline: weight-zero seeding, recurrence deduplication, Validation Gate decisions across turns, TTL/TrTL lifecycle, and cross-turn surfacing only after promotion. The conversations deliberately return to themes so recurrence can emerge without planted answers. Whether a candidate recurs, promotes, and adds value is left to the pipeline and model.",
+  "conversations": [
+    {
+      "id": "CONV_IR_SHORT",
+      "domain": "history and economics",
+      "turns": [
+        {
+          "question": "Briefly explain why the Industrial Revolution began in Great Britain."
+        },
+        {
+          "question": "How did industrialization then spread to continental Europe?"
+        },
+        {
+          "question": "What explains why some regions industrialized much faster than others?"
+        },
+        {
+          "question": "Which factor is most often underestimated in standard explanations?"
+        }
+      ]
+    },
+    {
+      "id": "CONV_STARTUP",
+      "domain": "product and growth",
+      "turns": [
+        {
+          "question": "I am building a social app for teenagers. How do I get the first thousand users?"
+        },
+        {
+          "question": "Which features are most effective at retaining users?"
+        },
+        {
+          "question": "How do I make the app viral so users invite their friends?"
+        },
+        {
+          "question": "What is the best business model for an app aimed at young users?"
+        },
+        {
+          "question": "How should I use user data to improve recommendations?"
+        },
+        {
+          "question": "How do I scale the infrastructure if growth accelerates?"
+        },
+        {
+          "question": "Which metrics should I show investors?"
+        },
+        {
+          "question": "How should I handle negative publicity if it occurs?"
+        },
+        {
+          "question": "What is the biggest long-term threat to this kind of app?"
+        }
+      ]
+    },
+    {
+      "id": "CONV_CITY",
+      "domain": "urban development",
+      "turns": [
+        {
+          "question": "Our city wants to revitalize the downtown area. Where should we start?"
+        },
+        {
+          "question": "How can we attract more shops, restaurants, and cafes?"
+        },
+        {
+          "question": "How should we improve accessibility and traffic?"
+        },
+        {
+          "question": "How can we make downtown more attractive to tourists?"
+        },
+        {
+          "question": "What role should housing development play in the city center?"
+        },
+        {
+          "question": "How should we add more green public space?"
+        },
+        {
+          "question": "How do we keep downtown safe and lively in the evening?"
+        },
+        {
+          "question": "How can the municipality finance all of this?"
+        },
+        {
+          "question": "What most often goes wrong in downtown revitalization projects?"
+        }
+      ]
+    }
+  ]
+}

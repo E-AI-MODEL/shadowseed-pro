@@ -35,7 +35,12 @@ class HFTransformersBackend:
     models or any local text-generation model available in the HF cache.
     """
 
-    def __init__(self, model_id: str, max_new_tokens: int = 220) -> None:
+    def __init__(
+        self,
+        model_id: str,
+        max_new_tokens: int = 220,
+        revision: str | None = None,
+    ) -> None:
         try:
             import torch
             from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
@@ -47,13 +52,17 @@ class HFTransformersBackend:
         self.name = f"hf-transformers:{model_id}"
         self.model_id = model_id
         self.max_new_tokens = max_new_tokens
-        self.tokenizer = AutoTokenizer.from_pretrained(model_id)
+        self.revision = revision
+        tokenizer_kwargs = {"revision": revision} if revision is not None else {}
+        self.tokenizer = AutoTokenizer.from_pretrained(model_id, **tokenizer_kwargs)
         if torch.cuda.is_available():
             model_kwargs = {"torch_dtype": torch.float16, "device_map": "auto"}
         else:
             # CPU: keep the checkpoint's native (half) precision instead of
             # upcasting to float32 — halves memory on CPU-only runners.
             model_kwargs = {"torch_dtype": "auto"}
+        if revision is not None:
+            model_kwargs["revision"] = revision
         model = AutoModelForCausalLM.from_pretrained(model_id, **model_kwargs)
         self.generator = pipeline(
             "text-generation",
@@ -115,13 +124,22 @@ class OpenAIBackend:
         return self.client.generate(prompt, max_new_tokens=self.max_new_tokens)
 
 
-def make_backend(backend: str, model_id: str | None, max_new_tokens: int) -> ModelBackend:
+def make_backend(
+    backend: str,
+    model_id: str | None,
+    max_new_tokens: int,
+    model_revision: str | None = None,
+) -> ModelBackend:
     if backend == "fixture":
         return FixtureBackend()
     if backend == "hf-transformers":
         if not model_id:
             raise ValueError("--model-id is required for backend hf-transformers")
-        return HFTransformersBackend(model_id=model_id, max_new_tokens=max_new_tokens)
+        return HFTransformersBackend(
+            model_id=model_id,
+            max_new_tokens=max_new_tokens,
+            revision=model_revision,
+        )
     if backend == "ollama":
         if not model_id:
             raise ValueError("--model-id is required for backend ollama")
