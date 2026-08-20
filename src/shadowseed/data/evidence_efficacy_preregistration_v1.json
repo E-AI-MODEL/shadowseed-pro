@@ -1,0 +1,43 @@
+{
+  "schema": "ssl-evidence-efficacy-preregistration-v1",
+  "protocol_id": "ssl-evidence-efficacy-v1",
+  "claim_boundary": "This protocol can measure blinded answer preference only on later turns where a predeclared, operator-attested external evidence event granted authority through the evidence_backed Gate and the authorized seed actually surfaced. It does not establish candidate truth, general answer-quality improvement, universal safety, or production readiness.",
+  "primary_metrics": [
+    "predeclared_candidate_match_rate",
+    "evidence_submission_rate",
+    "gate_authority_grant_rate",
+    "later_selection_rate",
+    "later_surfacing_rate",
+    "blinded_ssl_vs_baseline_preference_on_surfaced_turns"
+  ],
+  "exclusion_rules": [
+    "Do not create an answer A/B item when no authorized seed surfaced.",
+    "Do not replace an unmatched predeclared candidate selector after inspecting the run.",
+    "Do not count generated model output, recurrence, similarity, or the research harness itself as verified external evidence.",
+    "Do not reinterpret the baseline-isolated evaluation loop as the ordinary product runtime.",
+    "Do not combine results across model or suite revisions without preserving per-run provenance."
+  ],
+  "evidence_contract": {
+    "gate_policy_id": "evidence_backed",
+    "generated_model_output_is_evidence": false,
+    "operator_attestation_required": true,
+    "required_signal_direction": "support",
+    "allowed_signal_kinds": [
+      "ssot",
+      "human_feedback",
+      "retrieval"
+    ],
+    "stable_source_ref_required": true,
+    "verification_is_external_to_the_model": true
+  },
+  "review_contract": {
+    "blind_answer_preference": true,
+    "options": [
+      "A",
+      "B",
+      "tie"
+    ],
+    "review_instruction": "Choose the more useful answer. Penalize invented, forced, repetitive, or off-topic content. Do not reward SSL merely because an authorized seed was present.",
+    "independent_review_preferred": true
+  }
+}

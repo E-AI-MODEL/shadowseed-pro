@@ -4,13 +4,13 @@ The gap-2/gap-3 probe and the SSL-vs-RAG head-to-head originally hard-wired the
 deterministic ``lexical_embedding`` (a 128-d hash). That is CI-safe but a toy:
 it makes both the RAG arm and the SSL-probe arm brittle, so a gap-3 result under
 it shows the *mechanism*, not a real RAG comparison. This module lets the same
-experiment run on a real embedder (OpenAI) so the retriever stops being the
-confound.
+experiment run on a real embedder so the retriever stops being the confound.
 
 ``make_embedding_fn`` returns ``(embed_fn, dimensions)``: a single-text -> vector
 callable plus the vector width (needed to size dimension-checked stores like
-FAISS; the in-memory store is dimension-agnostic). The OpenAI client is injected
-in tests, so nothing here needs network or a key to import or unit-test.
+FAISS; the in-memory store is dimension-agnostic). Optional model revisions are
+applied at load time when the backend supports them, so provenance is not merely
+recorded after the fact.
 """
 
 from __future__ import annotations
@@ -45,15 +45,23 @@ def make_embedding_fn(
     *,
     dimensions: int = 128,
     client: Any | None = None,
+    revision: str | None = None,
 ) -> tuple[EmbedFn, int]:
     """Return ``(embed_fn, dimensions)`` for the chosen embedding backend.
 
     - ``lexical``: the deterministic CI hash (``lexical_embedding``), width
-      ``dimensions``.
+      ``dimensions``. ``revision`` is invalid because there is no remote model.
+    - ``sentence-transformers``: local SentenceTransformer inference. When a
+      revision is supplied it is passed to ``SentenceTransformer`` and therefore
+      constrains the actual loaded model snapshot.
     - ``openai``: real embeddings via ``OpenAIClient.embed`` (needs the
-      ``openai`` extra and ``OPENAI_API_KEY``, or an injected ``client``).
+      ``openai`` extra and ``OPENAI_API_KEY``, or an injected ``client``). Hosted
+      model snapshot identity is represented by the chosen model id; a separate
+      revision argument is rejected rather than merely recorded.
     """
     if backend == "lexical":
+        if revision is not None:
+            raise ValueError("lexical embeddings do not accept a model revision")
         dim = dimensions
 
         def lexical_embed(text: str) -> np.ndarray:
@@ -69,7 +77,8 @@ def make_embedding_fn(
                 "Install shadowseed[models] to use sentence-transformers embeddings"
             ) from exc
         model = model_id or "sentence-transformers/all-MiniLM-L6-v2"
-        encoder = SentenceTransformer(model)
+        kwargs = {"revision": revision} if revision is not None else {}
+        encoder = SentenceTransformer(model, **kwargs)
         dimension = int(encoder.get_sentence_embedding_dimension())
 
         def sentence_transformer_embed(text: str) -> np.ndarray:
@@ -78,6 +87,11 @@ def make_embedding_fn(
         return sentence_transformer_embed, dimension
 
     if backend == "openai":
+        if revision is not None:
+            raise ValueError(
+                "OpenAI embedding snapshot identity must be expressed by model_id; "
+                "a separate revision cannot be applied by this adapter"
+            )
         from shadowseed.adapters.openai_client import DEFAULT_EMBEDDING_MODEL, OpenAIClient
 
         model = model_id or DEFAULT_EMBEDDING_MODEL

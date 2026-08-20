@@ -1,16 +1,16 @@
 # Shadowseed Tester Workbench
 
-The Workbench is the local-first chat surface for testing Shadow Seed Learning in an ordinary LLM conversation. Version 0.5.1 targets three practical outcomes: low-friction local testing, auditable exports, and structured privacy-minimized multi-tester collection.
+The Workbench is the local-first chat surface for testing Shadow Seed Learning in an ordinary LLM conversation. Version 0.6.0 keeps the low-friction mass-tester path from 0.5.1 and adds explicit noncommercial research access plus stronger evidence-measurement tooling outside the ordinary tester flow.
 
 ```text
 download -> extract/open -> choose model -> create chat -> chat with SSL -> optionally compare one message with SSL off
 ```
 
-Research scenarios, historical evaluation mode, raw diagnostics and benchmark tools remain separate. They are not prerequisites for ordinary testing.
+Research scenarios, baseline-isolated evaluation mode, evidence-efficacy studies, raw diagnostics and benchmark tools remain separate. They are not prerequisites for ordinary testing.
 
 ## Standalone tester
 
-Use the download/open route only when a verified `v0.5.1` GitHub release and its assets are present. A normal tester then does not need Git, `pip`, system Python, benchmark JSON or an authored baseline.
+Use the download/open route only when a verified GitHub release for the version you want to test and its assets are present. A normal tester then does not need Git, `pip`, system Python, benchmark JSON or an authored baseline.
 
 1. Download the archive for the operating system/architecture.
 2. Verify it against `SHA256SUMS` when practical.
@@ -20,7 +20,13 @@ Use the download/open route only when a verified `v0.5.1` GitHub release and its
 
 Model weights are intentionally separate. Fixture works offline for mechanics. Ollama uses local installed models. Hugging Face/Sentence Transformers may acquire model material on first use. Hosted OpenAI is explicit and credential-dependent.
 
-A valid 0.5.1 prerelease contains three standalone archives and manifests, `PROVENANCE.json`, `SHA256SUMS`, a Python wheel and source distribution. Frozen bundles must pass their packaged product self-test before upload.
+A valid 0.6.0 prerelease contains three standalone archives and manifests, `PROVENANCE.json`, `SHA256SUMS`, a Python wheel, source distribution, and `LICENSE`. Frozen bundles must pass their packaged product self-test and carry the exact repository license hash before upload.
+
+## Research access
+
+Repository states/releases containing the root `LICENSE` are available under PolyForm Noncommercial License 1.0.0. Read those terms before copying, modifying or redistributing the software. Commercial use requires separate permission. This is source-available licensing, not an OSI open-source claim.
+
+Historical releases keep the rights terms distributed with those versions. The 0.6.0 licensing change is not retroactive.
 
 ## Normal product contract
 
@@ -61,7 +67,7 @@ Both export types contain SHA-256 manifests and are checked by `shadowseed verif
 
 ## Collect data across testers
 
-Version 0.5.1 adds a research/operator collector for verified support bundles:
+The support collector combines verified privacy-minimized bundles:
 
 ```bash
 python scripts/aggregate_support_bundles.py \
@@ -80,7 +86,26 @@ The collector:
 
 This makes mass-test data technically collectable and auditable. It does not create a scientific conclusion by itself. A real study still needs protocol, inclusion rules, controls, analysis plan, privacy/ethics decisions and review.
 
-See [privacy guidance](privacy.md) and [tester guidelines](tester-guidelines.md).
+## Evidence-efficacy studies are separate
+
+Version 0.6.0 adds `python -m shadowseed.benchmark.evidence_efficacy` for preregistered research on answer-level effects after verified external support has passed through the canonical `evidence_backed` Gate.
+
+This is not a Workbench support-data feature. Evidence-efficacy bundles contain content-bearing research data and use baseline-isolated evaluation mechanics. They must not be treated as privacy-minimized support bundles.
+
+A valid paired item is created only when:
+
+```text
+predeclared candidate observed
+-> verified external support submitted
+-> evidence_backed Gate grants authority
+-> later point-of-use check allows it
+-> seed surfaces
+-> blind baseline/SSL A/B packet generated
+```
+
+If any step does not happen, the reason remains in `opportunity_audit.json`. The harness never weakens the product Gate merely to create an A/B pair.
+
+See [evidence efficacy](../research/evidence-efficacy.md), [privacy guidance](privacy.md) and [tester guidelines](tester-guidelines.md).
 
 ## Developer install
 
@@ -101,17 +126,17 @@ shadowseed-workbench
 The optional container route remains available for development/testing:
 
 ```bash
-docker build -f Dockerfile.workbench -t shadowseed-workbench:0.5.1 .
+docker build -f Dockerfile.workbench -t shadowseed-workbench:0.6.0 .
 docker run --rm \
   -p 127.0.0.1:7860:7860 \
   -v shadowseed-data:/data \
-  shadowseed-workbench:0.5.1
+  shadowseed-workbench:0.6.0
 ```
 
 Do not expose this preview directly to an untrusted network.
 
 ## Claim boundary
 
-Version 0.5.1 makes Shadowseed practical for local mass testing and structured minimized data collection. Packaging, tester observations and dataset aggregation do not establish general answer-quality benefit, semantic truth, hostile-network production security or high-impact deployment readiness.
+Version 0.6.0 makes Shadowseed easier to study and gives the repository a stronger protocol for measuring actual authorized influence. Packaging, licensing, tester observations, support-dataset aggregation and the existence of an efficacy runner do not establish general answer-quality benefit, semantic truth, hostile-network production security or high-impact deployment readiness.
 
 The scientific/authority constraints remain in the canonical runtime. Historical evaluation sessions, benchmark artifacts and compatibility surfaces remain research/provenance material rather than product prerequisites.

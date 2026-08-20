@@ -1,0 +1,66 @@
+{
+  "schema": "ssl-evidence-efficacy-suite-v1",
+  "version": "fixture-efficacy-example-v1",
+  "language": "en",
+  "conversations": [
+    {
+      "id": "CONV_FIXTURE_EFFICACY",
+      "domain": "mechanics-only fixture",
+      "surface_threshold": -1.0,
+      "surface_top_k": 2,
+      "recurrence_mode": "pairwise",
+      "turns": [
+        {
+          "question": "Alpha is the first research topic."
+        },
+        {
+          "question": "How should Alpha affect the next answer?"
+        },
+        {
+          "question": "What follows from Alpha now?"
+        }
+      ],
+      "evidence_plan": [
+        {
+          "evidence_id": "fixture-support-alpha-1",
+          "after_turn": 0,
+          "selector": {
+            "born_turn": 0,
+            "seed_index": 0
+          },
+          "kind": "ssot",
+          "source_ref": "fixture://independent-source/alpha-1",
+          "strength": 1.0,
+          "independent": true,
+          "reason": "Fixture-only external support attestation one used to test cumulative Gate mechanics."
+        },
+        {
+          "evidence_id": "fixture-support-alpha-2",
+          "after_turn": 0,
+          "selector": {
+            "born_turn": 0,
+            "seed_index": 0
+          },
+          "kind": "retrieval",
+          "source_ref": "fixture://independent-source/alpha-2",
+          "strength": 1.0,
+          "independent": true,
+          "reason": "Fixture-only external support attestation two used to test cumulative Gate mechanics."
+        },
+        {
+          "evidence_id": "fixture-support-alpha-3",
+          "after_turn": 0,
+          "selector": {
+            "born_turn": 0,
+            "seed_index": 0
+          },
+          "kind": "human_feedback",
+          "source_ref": "fixture://independent-source/alpha-3",
+          "strength": 1.0,
+          "independent": true,
+          "reason": "Fixture-only external support attestation three used to test cumulative Gate mechanics."
+        }
+      ]
+    }
+  ]
+}

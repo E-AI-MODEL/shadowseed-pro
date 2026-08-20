@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.6.0 - Research access and evidence-backed efficacy instrumentation
+
+Version 0.6.0 moves the repository from mechanism-only readiness toward controlled answer-level efficacy measurement without weakening the shipped SSL authority model.
+
+- Added PolyForm Noncommercial License 1.0.0 for repository states and software releases that include the root `LICENSE`, with a required H. Visser / E-AI-MODEL copyright notice. Commercial rights remain separate, the license is not presented as OSI open source, and historical artifacts are not retroactively relicensed.
+- Made license delivery a release contract: wheel/sdist builds must contain the exact repository license, standalone bundles embed the license and record its SHA-256, release provenance records the same identity/hash, and the published release carries `LICENSE` under `SHA256SUMS`.
+- Added `shadowseed.benchmark.evidence_efficacy`, a baseline-isolated research runner that keeps `gate_policy_id = evidence_backed` and submits predeclared external support only through `ShadowChatSession.submit_evidence`.
+- Added a versioned efficacy preregistration contract. Generated model output, recurrence, similarity, probes and harness output cannot become verified external evidence; evidence requires an external signal kind, stable source identity and explicit operator/researcher attestation.
+- Added `opportunity_audit.json` to distinguish candidate observation, evidence submission, Gate authority, later selection, point-of-use authorization, surfacing and valid blinded A/B generation. Unmatched selectors, Gate blocks and no-opportunity paths remain visible results.
+- Added blind answer-review packets only for turns where an authorized seed actually surfaces. Human review fields remain blank until independently completed.
+- Hardened research provenance by applying pinned Sentence-Transformers revisions at model load time, requiring applicable model/digest identities, recording quantization and detector prompt identity/hash, and failing closed on metadata that cannot be applied to the selected backend.
+- Added fixture, tamper, provenance, license-packaging and release-contract tests plus an executable fixture efficacy suite.
+- Updated README, research status, capability-scaling guidance, Workbench tester/privacy/limitations docs, paper notes and release notes while preserving the reviewed manuscript's source-0.5.0 implementation anchor.
+- The ordinary product remains `runtime_mode = live` with the `evidence_backed` Gate. Recurrence remains observation rather than external evidence, new seeds remain weightless, contradictions remain blocking, and point-of-use authorization remains mandatory.
+- Existing post-alignment Qwen candidate evidence remains historical/current research input: its pending human candidate review and zero surfaced exploratory A/B opportunities are not rewritten into efficacy claims by this release.
+
 ## 0.5.1 - Research-ready mass tester and structured data collection
 
 Version 0.5.1 aligns the public repository around three explicit outcomes: scientifically bounded inspection, low-friction local testing, and structured privacy-minimized tester-data collection. Source version and public release availability remain separate facts; treat `v0.5.1` as published only after the immutable tag and verified release assets exist.
