@@ -120,7 +120,7 @@ Limit or dependency failures must fail explicitly. They may not silently switch 
 
 `production-ready/local` cannot be claimed while production changes can bypass repository quality gates.
 
-Issue #66 is therefore an administrative production dependency. The production claim requires protected `main`, required applicable checks, no force-push/delete path for normal operation, and a documented break-glass procedure.
+Issue #66 records this administrative production dependency. It was completed on 2026-08-20 after end-to-end enforcement proved that protected `main` blocks pending and failed required CI and permits a passing PR to merge normally. The production claim continues to require that protection to remain active: protected `main`, required applicable checks, no force-push/delete path for normal operation, and a documented break-glass procedure.
 
 Release assurance must extend current exact-source provenance and cross-platform self-tests with the production acceptance contract in `docs/architecture/production-acceptance.md`.
 
