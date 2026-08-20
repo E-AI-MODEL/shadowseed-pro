@@ -1,15 +1,15 @@
 # Shadowseed Pro
 
 <p align="center">
-  <strong>Auditable Shadow Seed Learning for research, local testing, and structured tester-data collection.</strong>
+  <strong>Auditable Shadow Seed Learning for research, local testing, and evidence-disciplined evaluation.</strong>
 </p>
 
 <p align="center">
   <a href="https://github.com/E-AI-MODEL/shadowseed-pro/actions/workflows/ci.yml"><img alt="Continuous integration" src="https://github.com/E-AI-MODEL/shadowseed-pro/actions/workflows/ci.yml/badge.svg"></a>
-  <img alt="Repository version 0.5.1" src="https://img.shields.io/badge/repository-0.5.1-2f6f5e">
+  <img alt="Repository version 0.6.0" src="https://img.shields.io/badge/repository-0.6.0-2f6f5e">
   <img alt="Python 3.10 or higher" src="https://img.shields.io/badge/Python-3.10%2B-3776AB">
   <img alt="Research status research ready" src="https://img.shields.io/badge/status-research--ready-c88719">
-  <img alt="All rights reserved" src="https://img.shields.io/badge/rights-all_rights_reserved-red">
+  <img alt="PolyForm Noncommercial 1.0.0" src="https://img.shields.io/badge/license-PolyForm_Noncommercial_1.0.0-5b4b8a">
 </p>
 
 <p align="center"><code>trace &gt; 0</code> means remembered. <code>weight = 0</code> means no steering authority.</p>
@@ -17,16 +17,16 @@
 Shadow Seed Learning (SSL) records **bounded epistemic candidates for investigation**, not hidden truth. A candidate may be a suspected gap, doubt, missing relation or boundary, dependency, unstated assumption, alternative hypothesis, contradiction to investigate, or relevant what-if direction. A new seed starts powerless. It may be remembered, recur, be contradicted, receive independently verified support, and only influence a later answer after the configured Validation Gate and a current point-of-use authorization both allow it.
 
 > [!IMPORTANT]
-> **Shadowseed Pro is research-ready, not production-ready.** Version 0.5.1 is the release candidate for the local mass-tester and structured support-data collection path. It does not establish general answer-quality improvement, universal missing-information detection, semantic truth, hostile-network safety, or high-impact production readiness.
+> **Shadowseed Pro is research-ready, not production-ready.** Source version 0.6.0 adds noncommercial research access and an evidence-backed paired efficacy protocol. It does not establish general answer-quality improvement, universal missing-information detection, semantic truth, hostile-network safety, or high-impact production readiness.
 
-> [!CAUTION]
-> This repository has **no open-source license**. All rights are reserved. Public visibility is not permission for reuse.
+> [!NOTE]
+> Repository states and releases that include [`LICENSE`](LICENSE) are source-available under **PolyForm Noncommercial License 1.0.0**. Noncommercial research, experiment, testing, modification, and distribution are permitted according to those terms. Commercial use requires separate permission. This is not an OSI open-source license. Historical artifacts keep the rights terms distributed with those versions; the new license is not retroactive.
 
 ## Quick start
 
 ### 1. Test Shadowseed as a normal chat application
 
-When a verified `v0.5.1` GitHub release is present, the intended tester path is:
+For a verified GitHub release, the intended tester path is:
 
 ```text
 download -> extract/open -> choose model -> create chat -> chat with SSL -> optionally compare one message with SSL off
@@ -34,7 +34,7 @@ download -> extract/open -> choose model -> create chat -> chat with SSL -> opti
 
 The standalone release contract builds Windows, macOS, and Linux archives with an embedded Python runtime. A normal tester does not need Git, system Python, `pip`, benchmark JSON, or an authored baseline answer. Model weights remain separate: the deterministic fixture works immediately for mechanics, local Ollama models can be discovered, Hugging Face models may be acquired on first use, and hosted OpenAI use stays explicit and credential-dependent.
 
-Source and release availability are separate facts. Treat `v0.5.1` as published only after the immutable tag and verified release assets actually exist.
+Source and release availability are separate facts. Treat a version as publicly released only after its immutable tag and verified release assets exist.
 
 ### 2. Run from source
 
@@ -84,6 +84,41 @@ The collector verifies every input ZIP with the normal Workbench export verifier
 
 See [`docs/workbench/privacy.md`](docs/workbench/privacy.md) and [`docs/workbench/tester-guidelines.md`](docs/workbench/tester-guidelines.md) before collecting or sharing data.
 
+## Evidence upgrade in 0.6.0
+
+Version 0.6.0 does not make the live Gate more permissive. Instead it adds a separate research path for the question the previous architecture work could not answer by itself: **when verified external support grants a candidate authority, does that candidate improve a later answer when it actually surfaces?**
+
+The research design keeps three views separate:
+
+1. the ordinary live `evidence_backed` no-evidence arm remains a negative authority control;
+2. the existing `exploratory` evaluation arm remains a recurrence-only non-production counterfactual;
+3. the new evidence-backed paired efficacy runner uses baseline-isolated evaluation mechanics while still selecting the shipped `evidence_backed` Gate policy and submitting support only through `ShadowChatSession.submit_evidence`.
+
+A planned evidence event that cannot match its preregistered candidate is recorded as an unmatched opportunity. A Gate block, point-of-use denial, or lack of a later relevant turn is also retained as a result. The runner never changes policy or fabricates evidence merely to create an A/B item.
+
+Canonical preregistration:
+
+```text
+src/shadowseed/data/evidence_efficacy_preregistration_v1.json
+```
+
+Run and verify a study bundle:
+
+```bash
+python -m shadowseed.benchmark.evidence_efficacy run \
+  --backend <fixture|ollama|hf-transformers|openai> \
+  --model-id <model> \
+  --suite path/to/evidence-efficacy-suite.json \
+  --preregistration src/shadowseed/data/evidence_efficacy_preregistration_v1.json \
+  --output-dir results/evidence-efficacy/<run> \
+  --embedding-backend <lexical|sentence-transformers|openai>
+
+python -m shadowseed.benchmark.evidence_efficacy verify \
+  results/evidence-efficacy/<run>
+```
+
+Real-model runs must pin the model and embedding provenance required by the selected backend. Human answer review remains blind and is never filled automatically by the runner. See [`docs/research/evidence-efficacy.md`](docs/research/evidence-efficacy.md) and [`docs/research/capability-scaling.md`](docs/research/capability-scaling.md).
+
 ## Research paper and evidence
 
 **Shadowseed: Remembering Without Trusting**  
@@ -91,9 +126,11 @@ See [`docs/workbench/privacy.md`](docs/workbench/privacy.md) and [`docs/workbenc
 
 [Paper PDF](paper/shadowseed-paper.pdf) · [LaTeX source](paper/main.tex) · [Bibliography](paper/references.bib) · [Paper notes](paper/README.md)
 
-The manuscript is a reviewed methods/systems snapshot, not a moving release brochure. Its source version and implementation commit remain explicit inside the manuscript. Version 0.5.1 extends the tester/release/data-collection surface without changing the paper's core authority model. We do not rewrite the compiled paper merely to make a release badge match; a future manuscript revision must rebuild `main.tex`, bibliography, and PDF together.
+The manuscript is a reviewed methods/systems snapshot, not a moving release brochure. Its source version and implementation commit remain explicit inside the manuscript. Software 0.6.0 extends research access and evidence instrumentation without changing the paper's core authority model. We do not rewrite the compiled paper merely to make a release badge match; a future manuscript revision must rebuild `main.tex`, bibliography, and PDF together.
 
 Canonical research status is documented in [`docs/research/status.md`](docs/research/status.md). Historical benchmark results and immutable evidence bundles remain under `benchmarks/results/**`; ordinary tester exports do not silently become benchmark evidence.
+
+The post-alignment Qwen2.5 7B capability bundle already demonstrates why opportunity accounting matters: it contains real candidate-generation measurements and a pending human candidate-review queue, while the exploratory evaluation subset produced no surfaced turns and therefore no legitimate answer A/B items. That is a sequencing/opportunity result, not evidence that recurrence should be relabeled or that the product Gate should be weakened.
 
 ## The idea in plain language
 
@@ -159,12 +196,14 @@ A textual difference is not automatically an SSL effect. Attribute an observed d
 | Influence requires current authority and point-of-use authorization | [`AgentSafetyContract`](src/shadowseed_agent/agent_contract.py) | [`test_point_of_use.py`](tests/test_point_of_use.py) |
 | Live history stores the visible answer; evaluation preserves isolated research controls | [`shadowseed.chat`](src/shadowseed/chat.py) | [`test_live_runtime.py`](tests/test_live_runtime.py) |
 | Support datasets accept verified minimized bundles only | [`shadowseed.support_collection`](src/shadowseed/support_collection.py) | [`test_workbench_support_collection.py`](tests/test_workbench_support_collection.py) |
+| Evidence efficacy uses the canonical evidence-backed trust boundary | [`shadowseed.benchmark.evidence_efficacy`](src/shadowseed/benchmark/evidence_efficacy.py), [`ShadowChatSession.submit_evidence`](src/shadowseed/chat.py) | [`test_evidence_efficacy.py`](tests/test_evidence_efficacy.py) |
 
 > **"Non-bypassable" is a public-API property** over supported new authority decisions, not a claim about arbitrary in-process Python mutation, validated state restoration, or explicitly unsafe test hooks.
 
 ## Assurance boundaries
 
 - Generated candidate quality is not guaranteed by normalization or by the detector being fluent.
+- A researcher/operator marking a source as verified is the external trust anchor; the runner validates signal shape and provenance, not source truth.
 - The repository does not provide durable **append-only, tamper-evident storage**; current audit records are useful for replay and inspection but are not an external immutable ledger.
 - Point-of-use checks are specific eligibility checks, not universal safety certification.
 - A support dataset is structured observational data, not automatic proof of benefit.
@@ -180,12 +219,12 @@ A textual difference is not automatically an SSL effect. Attribute an observed d
 - `benchmarks/` - benchmark suites and immutable evidence artifacts
 - `experiments/`, `results/` - reproducibility and development research outputs
 - `docs/architecture/` - current design and accepted ADRs
-- `docs/research/` - evidence status and bounded claim guidance
+- `docs/research/` - evidence status, capability scaling, efficacy protocol, and bounded claim guidance
 - `docs/workbench/` - tester, privacy, release, and limitations documentation
 - `archive/` - historical provenance, not current authority
 - `repository-authority.yaml` - canonical/compatibility/archive ownership map
 
-Historical compatibility surfaces are retained when they protect replay or public API behavior. They should not be mistaken for duplicate canonical implementations. The unused legacy paper-ingest runtime path was removed in 0.5.1 because it had no supported entrypoint and duplicated obsolete claim/SSOT semantics.
+Historical compatibility surfaces are retained when they protect replay or public API behavior. They should not be mistaken for duplicate canonical implementations.
 
 <details>
 <summary><strong>Research and benchmark commands</strong></summary>
@@ -199,6 +238,8 @@ shadowseed run-adversarial-gate-benchmark
 shadowseed run-probe-utility-benchmark
 shadowseed run-probe-feedback-behavior-suite
 shadowseed analyze-results
+python -m shadowseed.benchmark.capability_scaling --help
+python -m shadowseed.benchmark.evidence_efficacy --help
 ```
 
 Optional stacks:
@@ -215,12 +256,12 @@ pip install -e ".[dev]"         # development extras
 
 ## Release and reproducibility contract
 
-`Standalone Workbench` builds Windows, macOS, and Linux bundles from one exact source SHA. Frozen bundles must run their packaged self-test and emit manifests. `Release Workbench` verifies exact `main` head, source version, manifests, wheel/sdist smoke, provenance, and checksums before publication. It rechecks `main` immediately before and after release creation and removes a stale release/tag if the branch moved during publication.
+`Standalone Workbench` builds Windows, macOS, and Linux bundles from one exact source SHA. Frozen bundles must run their packaged self-test, contain the repository license, and emit manifests that include the license hash. `Release Workbench` verifies exact `main` head, source version, standalone manifests, wheel/sdist smoke, exact license inclusion, provenance, and checksums before publication. It rechecks `main` immediately before and after release creation and removes a stale release/tag if the branch moved during publication.
 
-For research reuse, cite `CITATION.cff` and record the exact Git commit, model/backend identity, configuration, protocol, and evidence bundle or support-dataset hash used.
+For research reuse, cite `CITATION.cff` and record the exact Git commit, model/backend identity, configuration, protocol, evidence bundle or support-dataset hash, and any externally attested source identities used.
 
 ## Rights and status
 
-Copyright and other rights remain reserved by the repository owner. No open-source license is granted by the repository's public visibility.
+Repository states and software releases that include `LICENSE` are licensed under **PolyForm Noncommercial License 1.0.0** with the required copyright notice for H. Visser / E-AI-MODEL. Commercial rights are not granted by that license. Historical artifacts keep their original distributed rights terms, and third-party materials retain their own licenses.
 
-Current defensible status: **research-ready, local mass-testable, and able to collect structured privacy-minimized tester data; not production-ready and not proven to improve answers generally.**
+Current defensible status: **research-ready, local mass-testable, able to collect structured privacy-minimized tester data, and equipped to run preregistered evidence-backed paired efficacy studies; not production-ready and not proven to improve answers generally.**
