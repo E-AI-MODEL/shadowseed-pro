@@ -1,5 +1,6 @@
 name: Phase 1 lock bootstrap
 
+# Temporary Phase 1 bootstrap. Remove before merge after the final uv.lock is committed.
 on:
   push:
     branches:
