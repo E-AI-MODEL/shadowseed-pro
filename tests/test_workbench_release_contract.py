@@ -30,6 +30,8 @@ def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -
     assert "pattern: standalone-*" in workflow
     assert "PROVENANCE.json" in workflow
     assert "SHA256SUMS" in workflow
+    assert "-name 'shadowseed-[0-9]*.tar.gz' | wc -l" in workflow
+    assert "-name 'shadowseed-*.tar.gz' | wc -l" not in workflow
     assert "gh release create" in workflow
     assert 'RELEASE_TAG: "v0.4.0"' not in workflow
     assert "scoped to v0.4.0" not in workflow
