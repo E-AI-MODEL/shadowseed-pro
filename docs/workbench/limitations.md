@@ -1,6 +1,6 @@
-# Workbench 0.5.1 limitations
+# Workbench 0.6.0 limitations
 
-Shadowseed Workbench 0.5.1 is a local mass-tester research preview for single-user use. It is not a production service, a multi-user authorization boundary, or a scientific evidence generator by itself.
+Shadowseed Workbench 0.6.0 remains a local research preview for single-user use. It is not a production service, a multi-user authorization boundary, or a scientific evidence generator by itself. Version 0.6.0 adds noncommercial research access and stronger efficacy instrumentation; neither change upgrades the assurance claim automatically.
 
 ## Security and deployment
 
@@ -15,9 +15,10 @@ Shadowseed Workbench 0.5.1 is a local mass-tester research preview for single-us
 - Prompts, answers, seeds and audit data are stored locally in the tester workspace.
 - Full reports are content-bearing and should be treated as sensitive unless inspected.
 - Support bundles are content-minimized but can still reveal pseudonymous session identity, backend/model choice, platform/environment metadata, sanitized configuration and structural counts.
-- The v0.5.1 support-dataset collector combines only verified support bundles, rejects duplicates and records input bundle hashes. This is structured pseudonymous collection, not formal anonymization.
+- The support-dataset collector combines only verified support bundles, rejects duplicates and records input bundle hashes. This is structured pseudonymous collection, not formal anonymization.
+- Evidence-efficacy bundles can contain full questions, baseline/SSL answers, candidate-selection metadata, source references, and research audit data. Treat them as research data, not privacy-minimized support bundles.
 - Study owners remain responsible for consent where applicable, minimization, retention/deletion, access control, ethics/legal requirements and analysis protocol.
-- Hosted inference/embeddings send relevant content to the selected provider after explicit confirmation.
+- Hosted inference/embeddings send relevant content to the selected provider after explicit confirmation/configuration.
 - SSL-off comparison adds one model generation; with a hosted model this means an additional hosted request.
 
 ## Runtime authority
@@ -29,6 +30,7 @@ Shadowseed Workbench 0.5.1 is a local mass-tester research preview for single-us
 - The operator/host remains the trust anchor for evidence attestation. Field/provenance validation is not source-truth verification.
 - Reusing one underlying external `source_ref` through another signal channel does not create extra authority credit.
 - Promotion means eligibility for consideration, not mandatory influence. Point-of-use checks remain current and separate.
+- The evidence-efficacy runner does not define a benchmark-only Gate. It submits external support through `ShadowChatSession.submit_evidence` and keeps `gate_policy_id = evidence_backed`.
 
 ## Comparison and scientific limits
 
@@ -36,15 +38,28 @@ Shadowseed Workbench 0.5.1 is a local mass-tester research preview for single-us
 - The actual live turn is the only state-changing turn.
 - Textual difference is not automatically an SSL effect; when no authorized seed surfaced, ordinary generation variance remains possible.
 - Historical evaluation sessions, authored baselines, scenario JSON and blind benchmark flows remain research tools.
-- Fixture runs are deterministic product smokes, not model-effect evidence.
+- The evidence-efficacy loop is also research-only: it uses baseline-isolated evaluation mechanics to create paired comparisons while the authority policy remains evidence-backed.
+- A preregistered selector that does not match remains an unmatched opportunity. The runner does not substitute another candidate after inspecting results.
+- A blind A/B item is generated only when an authorized seed actually surfaces on a later turn.
+- Fixture runs are deterministic product/research smokes, not model-effect evidence.
 - Workbench exports and aggregated support datasets do not by themselves establish statistical significance, candidate quality, causal benefit or generalization.
+- A complete efficacy bundle still requires valid external support, appropriate experimental design and independent human review before answer-preference claims are defensible.
 - `benchmarks/results/**` remains a separately governed evidence area.
 
-## Compatibility and distribution
+## Licensing and distribution
+
+- Repository states/releases containing `LICENSE` are subject to PolyForm Noncommercial License 1.0.0. Commercial use is not granted by that license.
+- The software license is source-available, not an OSI open-source claim.
+- Historical artifacts retain the rights terms distributed with those versions; the new license is not retroactive.
+- Third-party dependencies, model weights, datasets, the manuscript and separately identified material can have different rights terms.
+- Python wheel/sdist builds are checked for the exact repository license.
+- Frozen standalone bundles include the license and record its SHA-256 in their manifest.
+
+## Compatibility
 
 - Python 3.10 and 3.12 are covered by repository CI for the package.
 - Windows, macOS and Linux receive standalone build/self-test coverage.
-- The 0.5.1 standalone contract targets Windows amd64, Linux x86_64 and macOS Apple Silicon arm64. Intel/universal macOS support is not implied.
+- The standalone contract targets Windows amd64, Linux x86_64 and macOS Apple Silicon arm64. Intel/universal macOS support is not implied.
 - Frozen bundles must pass their packaged self-test before upload.
 - Model weights are not bundled. Model acquisition, provider availability and credentials remain separate dependencies.
 - The browser UI uses Gradio 6 through the `[workbench]` extra.
