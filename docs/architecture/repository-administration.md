@@ -37,3 +37,9 @@ Issue #66 is verified with a disposable pull request created after the ruleset b
 5. confirm the resulting commit is on `main` and close issue #66 with the verification evidence.
 
 This procedure tests enforcement rather than relying only on the ruleset configuration screen.
+
+## Verification history
+
+On 2026-08-20, PR #90 exposed an initial ruleset misconfiguration: `main` was protected, but the CI jobs were not yet configured as required checks, so a deliberately failing probe could still merge. PR #91 immediately removed that probe and issue #66 was reopened.
+
+After the ruleset was corrected, PR #93 was used for the final enforcement test. GitHub rejected merge while all three required checks were pending with `3 of 3 required status checks are expected`. The deliberate probe then made both test matrix jobs fail, and GitHub again rejected merge. The probe was removed before the final passing run. The resulting protected merge and final `main` commit are recorded on issue #66.
