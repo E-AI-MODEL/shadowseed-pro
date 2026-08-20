@@ -8,6 +8,9 @@ except ModuleNotFoundError:  # Python 3.10
     import tomli as tomllib
 
 
+DOWNLOAD_ARTIFACT_SHA = "d3f86a106a0bac45b974a628896c90dbdf5c8093"
+
+
 def test_workbench_release_metadata_stays_aligned() -> None:
     project = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))["project"]
     version = project["version"]
@@ -30,9 +33,13 @@ def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -
     assert 'test "$(git rev-parse origin/main)" = "$RELEASE_SHA"' in workflow
     assert 'release_tag="v${release_version}"' in workflow
     assert 'notes_file="docs/workbench/release-${release_version}.md"' in workflow
-    assert "actions/download-artifact@v4" in workflow
+    assert f"actions/download-artifact@{DOWNLOAD_ARTIFACT_SHA}" in workflow
+    assert "actions/download-artifact@v4" not in workflow
     assert "pattern: standalone-*" in workflow
     assert "PROVENANCE.json" in workflow
+    assert "SBOM.cdx.json" in workflow
+    assert "uv.lock" in workflow
+    assert "dependency_lock_sha256" in workflow
     assert "SHA256SUMS" in workflow
     assert "license_identifier" in workflow
     assert "license_sha256" in workflow
