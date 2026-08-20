@@ -1,8 +1,9 @@
 [project]
 name = "shadowseed"
-version = "0.5.1"
+version = "0.6.0"
 description = "Auditable Shadow Seed Learning runtime and local tester"
 readme = "README.md"
+license = {file = "LICENSE"}
 requires-python = ">=3.10"
 dependencies = [
   "numpy>=1.24",
