@@ -16,6 +16,9 @@ name: CI
 #   - Optional backends (Hugging Face, Ollama, OpenAI, FAISS, Chroma) are exercised
 #     only through deterministic fixtures here; live-backend integration needs
 #     network/credentials and stays out of the default matrix by design.
+#   - The production dependency audit covers the production-ready/local candidate
+#     closure (core + Workbench + build/standalone tooling). Optional vector backends
+#     remain outside that claim until separately cleared by the production policy.
 
 on:
   push:
@@ -67,19 +70,21 @@ jobs:
           version: "0.8.14"
       - name: Verify lock is current
         run: uv lock --check
-      - name: Export locked dependency inventory
+      - name: Export production dependency inventory
         run: >-
-          uv export --locked --all-extras --no-emit-project --no-hashes
-          --format requirements.txt --output-file /tmp/shadowseed-locked.txt
-      - name: Audit locked dependencies
+          uv export --locked --extra workbench --extra build --extra standalone-build
+          --no-emit-project --no-hashes --format requirements.txt
+          --output-file /tmp/shadowseed-production-locked.txt
+      - name: Audit production dependency inventory
         run: |
           uv sync --locked --extra security
-          uv run --no-sync pip-audit -r /tmp/shadowseed-locked.txt --strict --progress-spinner off
+          uv run --no-sync pip-audit -r /tmp/shadowseed-production-locked.txt --strict --progress-spinner off
       - name: Generate and validate CycloneDX SBOM
         env:
           UV_PREVIEW_FEATURES: sbom-export
         run: |
-          uv export --locked --all-extras --format cyclonedx1.5 --output-file /tmp/SBOM.cdx.json
+          uv export --locked --extra workbench --extra build --extra standalone-build \
+            --format cyclonedx1.5 --output-file /tmp/SBOM.cdx.json
           python - <<'PY'
           import json
           from pathlib import Path
@@ -96,7 +101,7 @@ jobs:
         run: uv run --no-sync python -m build --no-isolation
       - name: Verify exact license is shipped in wheel and sdist
         run: uv run --no-sync python scripts/verify_distribution_license.py --dist-dir dist --license LICENSE
-      - name: Install built wheel against locked runtime dependencies
+      - name: Install from the built wheel in a clean venv
         run: |
           uv export --locked --no-emit-project --no-hashes --format requirements.txt --output-file /tmp/runtime-constraints.txt
           uv venv /tmp/ci-wheel-env --python 3.12
