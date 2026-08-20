@@ -1,0 +1,253 @@
+name: Research - Post-alignment Qwen 7B capability reference v2 (one-time)
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/qwen7b-capability-scaling-once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: post-alignment-qwen7b-capability-reference
+  cancel-in-progress: true
+
+env:
+  MODEL_ID: qwen2.5:7b-instruct-q4_K_M
+  EMBEDDING_REFERENCE: sentence-transformers/all-MiniLM-L6-v2
+  RUN_DIR: benchmarks/results/capability_scaling/qwen2.5_7b_q4km_post_alignment_v2_2026-08-18
+  RUN_ID: qwen2.5-7b-q4km-post-alignment-v2-2026-08-18
+  PREREG: src/shadowseed/data/capability_scaling_preregistration_v2.json
+
+jobs:
+  qwen7b-reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Shadowseed and semantic model dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[models]"
+
+      - name: Install and start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve > /tmp/ollama.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then
+              break
+            fi
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
+          OLLAMA_BIN="$(command -v ollama)"
+          echo "OLLAMA_VERSION=$(ollama --version 2>&1 | tr '\n' ' ')" >> "$GITHUB_ENV"
+          echo "OLLAMA_BINARY_SHA256=$(sha256sum "$OLLAMA_BIN" | cut -d' ' -f1)" >> "$GITHUB_ENV"
+
+      - name: Pull and fingerprint Qwen 2.5 7B q4_K_M
+        run: |
+          ollama pull "$MODEL_ID"
+          ollama list
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          with urllib.request.urlopen("http://127.0.0.1:11434/api/tags", timeout=30) as response:
+              payload = json.load(response)
+          requested = os.environ["MODEL_ID"]
+          models = payload.get("models", [])
+          match = next(
+              (
+                  model
+                  for model in models
+                  if model.get("name") == requested
+                  or model.get("model") == requested
+                  or str(model.get("name", "")).startswith(requested + ":")
+              ),
+              None,
+          )
+          if match is None or not match.get("digest"):
+              raise SystemExit(f"unable to resolve Ollama digest for {requested}: {models}")
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as handle:
+              handle.write(f"MODEL_DIGEST={match['digest']}\n")
+          print("resolved model digest", match["digest"])
+          PY
+
+      - name: Pin and materialize semantic embedding snapshot
+        run: |
+          python - <<'PY'
+          import os
+          from huggingface_hub import model_info, snapshot_download
+
+          reference = os.environ["EMBEDDING_REFERENCE"]
+          revision = model_info(reference).sha
+          if not revision:
+              raise SystemExit(f"unable to resolve embedding revision for {reference}")
+          path = snapshot_download(reference, revision=revision)
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as handle:
+              handle.write(f"EMBEDDING_REVISION={revision}\n")
+              handle.write(f"EMBEDDING_PATH={path}\n")
+          print("resolved embedding revision", revision)
+          PY
+
+      - name: Build two-turn integration smoke suite
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          source = json.loads(Path("src/shadowseed/data/ssl_session_suite.json").read_text(encoding="utf-8"))
+          conversation = dict(source["conversations"][0])
+          conversation["turns"] = conversation["turns"][:2]
+          smoke = {
+              "version": "capability-scaling-qwen7b-smoke-v2-0.1",
+              "language": "en",
+              "description": "Two-turn real-model integration smoke before the post-alignment v2 capability run.",
+              "conversations": [conversation],
+          }
+          Path("/tmp/capability_scaling_qwen7b_smoke_v2.json").write_text(
+              json.dumps(smoke, indent=2) + "\n", encoding="utf-8"
+          )
+          PY
+
+      - name: Smoke-test canonical live capability path
+        run: |
+          GITHUB_SHA="$(git rev-parse HEAD)" python -m shadowseed.benchmark.capability_scaling run \
+            --backend ollama \
+            --model-id "$MODEL_ID" \
+            --model-reference "$MODEL_ID" \
+            --model-digest "$MODEL_DIGEST" \
+            --quantization q4_K_M \
+            --max-new-tokens 160 \
+            --embedding-backend sentence-transformers \
+            --embedding-model "$EMBEDDING_PATH" \
+            --embedding-reference "$EMBEDDING_REFERENCE" \
+            --embedding-revision "$EMBEDDING_REVISION" \
+            --suite smoke=/tmp/capability_scaling_qwen7b_smoke_v2.json \
+            --preregistration "$PREREG" \
+            --output-dir /tmp/capability-scaling-qwen7b-smoke-v2 \
+            --run-id qwen7b-post-alignment-smoke-v2
+          python -m shadowseed.benchmark.capability_scaling verify /tmp/capability-scaling-qwen7b-smoke-v2
+
+      - name: Run preregistered primary plus transfer measurement
+        run: |
+          rm -rf "$RUN_DIR"
+          GITHUB_SHA="$(git rev-parse HEAD)" python -m shadowseed.benchmark.capability_scaling run \
+            --backend ollama \
+            --model-id "$MODEL_ID" \
+            --model-reference "$MODEL_ID" \
+            --model-digest "$MODEL_DIGEST" \
+            --quantization q4_K_M \
+            --max-new-tokens 220 \
+            --embedding-backend sentence-transformers \
+            --embedding-model "$EMBEDDING_PATH" \
+            --embedding-reference "$EMBEDDING_REFERENCE" \
+            --embedding-revision "$EMBEDDING_REVISION" \
+            --suite primary=src/shadowseed/data/ssl_session_suite.json \
+            --suite transfer=src/shadowseed/data/ssl_session_transfer_suite.json \
+            --evaluation-conversation CONV_STARTUP \
+            --evaluation-conversation CONV_EDU \
+            --preregistration "$PREREG" \
+            --output-dir "$RUN_DIR" \
+            --run-id "$RUN_ID"
+
+      - name: Add external runtime provenance to hash chain
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import platform
+          from pathlib import Path
+
+          bundle = Path(os.environ["RUN_DIR"])
+          metadata = {
+              "github_run_id": os.environ["GITHUB_RUN_ID"],
+              "github_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "github_runner_os": os.environ.get("RUNNER_OS"),
+              "github_runner_arch": os.environ.get("RUNNER_ARCH"),
+              "platform": platform.platform(),
+              "ollama_version": os.environ["OLLAMA_VERSION"],
+              "ollama_binary_sha256": os.environ["OLLAMA_BINARY_SHA256"],
+              "ollama_model_digest": os.environ["MODEL_DIGEST"],
+              "embedding_reference": os.environ["EMBEDDING_REFERENCE"],
+              "embedding_revision": os.environ["EMBEDDING_REVISION"],
+          }
+          metadata_path = bundle / "runner_metadata.json"
+          metadata_path.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+          manifest_path = bundle / "manifest.json"
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          raw = metadata_path.read_bytes()
+          manifest["external_runtime"] = metadata
+          manifest.setdefault("artifacts", {})["runner_metadata.json"] = {
+              "sha256": hashlib.sha256(raw).hexdigest(),
+              "size_bytes": len(raw),
+          }
+          manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+          PY
+
+      - name: Verify bundle and fail closed on authority and protocol drift
+        run: |
+          python -m shadowseed.benchmark.capability_scaling verify "$RUN_DIR"
+          python - <<'PY'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          bundle = Path(os.environ["RUN_DIR"])
+          summary = json.loads((bundle / "summary.json").read_text(encoding="utf-8"))
+          manifest = json.loads((bundle / "manifest.json").read_text(encoding="utf-8"))
+          live = summary["automatic_metrics"]["live"]
+          evaluation = summary["automatic_metrics"]["evaluation"]
+          parser = live["detector_parser"]
+          expected_head = subprocess.run(
+              ["git", "rev-parse", "HEAD"], check=True, capture_output=True, text=True
+          ).stdout.strip()
+          assert live["turn_count"] == 43, live
+          assert evaluation["turn_count"] == 16, evaluation
+          assert live["positive_weight_event_count"] == 0, live
+          assert live["verified_external_support_event_count"] == 0, live
+          assert parser["numbered_lines"] >= parser["accepted_candidates"], parser
+          assert parser["nested_numbering_prefixes_removed"] >= 0, parser
+          assert parser["dropped_fewshot_leak"] >= 0, parser
+          assert summary["candidate_review_item_count"] > 0, summary
+          assert summary["review_status"] == "pending", summary
+          assert manifest["source"]["source_revision"] == expected_head, manifest["source"]
+          assert manifest["source"]["source_dirty"] is False, manifest["source"]
+          assert manifest["model"]["digest"] == os.environ["MODEL_DIGEST"]
+          assert manifest["model"]["authority_effect_of_model_identity"] == "none"
+          assert manifest["preregistration"]["protocol_id"] == "post-alignment-capability-scaling-2026-08-v2"
+          assert manifest["model"]["detector_prompt_template_sha256"]
+          print(json.dumps(summary["automatic_metrics"], indent=2))
+          PY
+
+      - name: Commit immutable post-alignment v2 reference bundle
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$RUN_DIR"
+          git diff --cached --check
+          git commit -m "Record post-alignment Qwen 7B capability reference v2"
+          git push origin HEAD:agent/post-alignment-capability-scaling
+
+      - name: Upload verified reference bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: qwen2.5-7b-post-alignment-capability-reference-v2
+          path: ${{ env.RUN_DIR }}

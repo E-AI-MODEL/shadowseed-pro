@@ -1,0 +1,88 @@
+{
+  "version": "ssl-session-transfer-0.2",
+  "language": "en",
+  "description": "Doctrine-transfer conversations for the same SSL session pipeline in domains outside the primary suite. Each conversation returns to its theme across at least seven turns so a candidate can recur and earn promotion without a planted signal. Results are reported per domain rather than collapsed into one score.",
+  "conversations": [
+    {
+      "id": "CONV_EDU",
+      "domain": "education",
+      "turns": [
+        {
+          "question": "I am designing a new digital literacy module for lower-secondary students. Where should I start?"
+        },
+        {
+          "question": "How should I handle large differences in students' prior knowledge?"
+        },
+        {
+          "question": "Which learning activities work best for this topic?"
+        },
+        {
+          "question": "How do I assess whether students genuinely understand it instead of merely repeating it?"
+        },
+        {
+          "question": "How do I include students who have little digital support at home?"
+        },
+        {
+          "question": "How do I make sure colleagues actually adopt the module?"
+        },
+        {
+          "question": "What most often goes wrong in curriculum renewal projects like this?"
+        }
+      ]
+    },
+    {
+      "id": "CONV_HEALTH",
+      "domain": "public health",
+      "turns": [
+        {
+          "question": "We want to encourage teenagers to drink fewer energy drinks. How should we design the campaign?"
+        },
+        {
+          "question": "Which message works better than simply saying that energy drinks are unhealthy?"
+        },
+        {
+          "question": "Which channels actually reach this group?"
+        },
+        {
+          "question": "How do we measure whether the campaign works?"
+        },
+        {
+          "question": "How do we avoid reaching mainly the teenagers who are already health-conscious?"
+        },
+        {
+          "question": "What role should schools and parents play?"
+        },
+        {
+          "question": "What most often goes wrong in lifestyle campaigns like this?"
+        }
+      ]
+    },
+    {
+      "id": "CONV_POLICY",
+      "domain": "policy",
+      "turns": [
+        {
+          "question": "Our municipality wants a climate-adaptation plan for heavy rainfall and flooding. Where should we start?"
+        },
+        {
+          "question": "Which measures provide the most impact per euro?"
+        },
+        {
+          "question": "How should we involve residents in the choices?"
+        },
+        {
+          "question": "How do we finance the plan over several years?"
+        },
+        {
+          "question": "Who bears the costs and who receives the benefits of these measures?"
+        },
+        {
+          "question": "How do we keep the plan durable across changes in local government?"
+        },
+        {
+          "question": "What most often goes wrong in adaptation plans like this?"
+        }
+      ]
+    }
+  ]
+}

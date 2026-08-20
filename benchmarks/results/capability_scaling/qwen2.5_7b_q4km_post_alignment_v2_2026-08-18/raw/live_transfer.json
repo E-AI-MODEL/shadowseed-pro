@@ -1,0 +1,1777 @@
+{
+  "summary": {
+    "suite_id": "transfer",
+    "suite_version": "ssl-session-transfer-0.2",
+    "runtime_mode": "live",
+    "gate_policy_id": "evidence_backed",
+    "production_policy": true,
+    "external_evidence_injected": false,
+    "conversation_count": 3,
+    "turn_count": 21,
+    "answer_generation_calls": 21,
+    "detector_calls": 21,
+    "surfaced_turn_count": 0,
+    "influence_record_count": 0,
+    "detected_on_surfaced_turns": 0,
+    "suppressed_self_attributed_occurrences": 0,
+    "same_turn_deferral_rate": null,
+    "candidate_metrics": {
+      "candidate_occurrences": 21,
+      "normalization_admissible_occurrences": 21,
+      "malformed_or_non_atomic_occurrences": 0,
+      "malformed_or_non_atomic_rate": 0.0,
+      "exact_duplicate_occurrences": 0,
+      "exact_duplicate_rate": 0.0,
+      "semantic_duplicate_occurrences": 0,
+      "semantic_duplicate_rate": 0.0,
+      "semantic_duplicate_threshold": 0.85
+    },
+    "detector_parser": {
+      "nonblank_lines": 21,
+      "numbered_lines": 21,
+      "unnumbered_nonblank_lines": 0,
+      "accepted_candidates": 21,
+      "nested_numbering_prefixes_removed": 21,
+      "dropped_blank_or_placeholder": 0,
+      "dropped_citation_or_stub": 0,
+      "dropped_fewshot_leak": 0,
+      "dropped_duplicate": 0,
+      "parser_rejection_rate": 0.0,
+      "fewshot_leakage_rate": 0.0,
+      "dropped_citation_or_stub_rate": 0.0
+    },
+    "gate": {
+      "event_count": 0,
+      "decisions": {},
+      "positive_weight_event_count": 0,
+      "verified_external_support_event_count": 0,
+      "contradiction_decision_count": 0
+    },
+    "wall_elapsed_seconds": 1383.995,
+    "claim_boundary": "Live evidence-backed results establish observed runtime mechanics only. Evaluation is an explicitly non-production counterfactual used to create blind A/B opportunities. Neither arm establishes candidate truth or general benefit."
+  },
+  "conversations": [
+    {
+      "conversation_id": "CONV_EDU",
+      "domain": "education",
+      "turns": [
+        {
+          "runtime_mode": "live",
+          "turn": 0,
+          "question": "I am designing a new digital literacy module for lower-secondary students. Where should I start?",
+          "answer": "To design an effective digital literacy module for lower-secondary students, start by understanding the core competencies needed at this age. Digital literacy encompasses not just the technical skills of using digital tools but also the critical thinking, ethical, and social skills necessary to navigate the digital world responsibly.\n\n1. **Assess Current Skills and Needs**: Begin by assessing the current digital literacy levels of your students. This can be done through a survey or a brief assessment. Identify the gaps and areas where students need more support. This will help tailor the module to meet their specific needs.\n\n2. **Set Clear Objectives**: Define what you want students to learn and be able to do by the end of the module. Objectives should be specific, measurable, achievable, relevant, and time-bound (SMART). For example, students should be able to evaluate the credibility of online sources, use digital tools effectively, and understand the implications of their online actions.\n\n3. **Incorporate Practical Activities**: Design activities that are both engaging and educational. Practical exercises can include creating digital presentations, participating in online discussions, and using digital",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Socioeconomic disparities as a dimension influencing students' access to and engagement with digital tools."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_8769f6d7a316109e6b0181b1",
+              "raw_text": "Socioeconomic disparities as a dimension influencing students' access to and engagement with digital tools.",
+              "normalized_text": "socioeconomic disparities as a dimension influencing students' access to and engagement with digital tools.",
+              "context_ref": "turn:0:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:07:12.858403",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_001"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 1,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Socioeconomic disparities as a dimension influencing students' access to and engagement with digital tools."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 1,
+          "question": "How should I handle large differences in students' prior knowledge?",
+          "answer": "Handling large differences in students' prior knowledge requires a thoughtful and inclusive approach. Here are some strategies to consider:\n\n1. **Differentiated Instruction**: Tailor the content and activities to accommodate various skill levels. For instance, provide advanced students with more complex tasks or additional challenges, while offering foundational support to those who need it. This can be achieved through tiered assignments, where tasks are structured to increase in difficulty, allowing all students to engage at their appropriate level.\n\n2. **Group Work**: Utilize group projects where students can collaborate and learn from each other. Pairing students with different levels of expertise can foster a supportive learning environment. More experienced students can help their peers, while less experienced students can learn from their more knowledgeable counterparts.\n\n3. **Flexible Learning Paths**: Offer multiple pathways through the material. This could involve providing different resources or activities that cater to various learning styles and paces. For example, visual learners might benefit from video tutorials, while kinesthetic learners might prefer hands-on activities.\n\n4. **Formative Assessments**: Regularly assess students' understanding to identify areas where they",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Socioeconomic background as a dimension influencing prior knowledge and its impact on instructional strategies."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_5680a6a4bed79699b4acff52",
+              "raw_text": "Socioeconomic background as a dimension influencing prior knowledge and its impact on instructional strategies.",
+              "normalized_text": "socioeconomic background as a dimension influencing prior knowledge and its impact on instructional strategies.",
+              "context_ref": "turn:1:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:08:17.997956",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_002"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 2,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Socioeconomic background as a dimension influencing prior knowledge and its impact on instructional strategies."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 2,
+          "question": "Which learning activities work best for this topic?",
+          "answer": "For a digital literacy module, incorporating a variety of engaging and effective learning activities is crucial. Here are some activities that can be particularly beneficial:\n\n1. **Interactive Workshops**: Organize hands-on workshops where students can practice using digital tools and software. For example, a workshop on creating digital presentations can include step-by-step instructions and real-time feedback. This approach helps students build practical skills and confidence.\n\n2. **Online Simulations and Games**: Utilize educational games and simulations that simulate real-world digital scenarios. These can be particularly effective for teaching critical thinking and problem-solving skills. For instance, a game that challenges students to identify credible online sources can help them develop the necessary skills to navigate the internet safely.\n\n3. **Collaborative Projects**: Encourage students to work in teams on projects that require them to use digital tools and resources. Projects could include creating a digital newsletter, developing a website, or producing a video. These activities not only enhance digital literacy but also promote teamwork and communication skills.\n\n4. **Guest Speakers and Webinars**: Invite experts in digital literacy or related fields to speak",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "User-centered design as a dimension influencing activity selection and effectiveness."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_e16e7a6a760153749c519f05",
+              "raw_text": "User-centered design as a dimension influencing activity selection and effectiveness.",
+              "normalized_text": "user-centered design as a dimension influencing activity selection and effectiveness.",
+              "context_ref": "turn:2:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:09:23.151940",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_003"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 3,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. User-centered design as a dimension influencing activity selection and effectiveness."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 3,
+          "question": "How do I assess whether students genuinely understand it instead of merely repeating it?",
+          "answer": "To ensure students genuinely understand digital literacy concepts rather than just repeating them, it's essential to employ a mix of formative and summative assessments that go beyond rote memorization. Here are some strategies:\n\n1. **Formative Assessments**: These are ongoing assessments that provide immediate feedback to both teachers and students. They can include:\n   - **Observations**: Watch students as they work on digital tasks to see if they apply the correct skills and understanding.\n   - **Quizzes and Polls**: Use quick, informal quizzes or polls to check for understanding during or after lessons. Tools like Kahoot! or Mentimeter can make this engaging.\n   - **Peer Reviews**: Have students review each other's work, which can help them articulate their understanding and identify areas for improvement.\n\n2. **Summative Assessments**: These are more formal and comprehensive, often used at the end of a unit or module. They can include:\n   - **Projects**: Assign projects that require students to apply their knowledge in real-world scenarios. For example, a project on digital citizenship could involve creating a presentation",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Gamification as a dimension to enhance engagement in both formative and summative assessments."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_4f17d82d11f2265f82836270",
+              "raw_text": "Gamification as a dimension to enhance engagement in both formative and summative assessments.",
+              "normalized_text": "gamification as a dimension to enhance engagement in both formative and summative assessments.",
+              "context_ref": "turn:3:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:10:30.636022",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_004"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 4,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Gamification as a dimension to enhance engagement in both formative and summative assessments."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 4,
+          "question": "How do I include students who have little digital support at home?",
+          "answer": "Including students who have little digital support at home is crucial to ensure equitable learning. Here are strategies to support these students effectively:\n\n1. **Equal Access to Resources**: Ensure that all students have access to necessary digital tools and resources. This might involve providing devices or internet access at school. For instance, you could organize a \"Bring Your Own Device\" (BYOD) policy, where students can use their personal devices if they have them, or arrange for school-provided devices during class time.\n\n2. **Parental Involvement**: Engage parents in the learning process. Provide them with resources and guidance on how to support their children's digital literacy at home. This could include workshops or webinars on digital safety, online learning tools, and tips for setting up a home learning environment. Encourage parents to communicate with you about their child's progress and any challenges they face.\n\n3. **In-School Support**: Offer in-school support for students who need extra help. This could be through after-school clubs, lunchtime sessions, or one-on-one tutoring. These sessions can focus on building",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Socioeconomic status as a dimension affecting digital literacy and learning outcomes."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_c31eac7dd021d209fb8efaa9",
+              "raw_text": "Socioeconomic status as a dimension affecting digital literacy and learning outcomes.",
+              "normalized_text": "socioeconomic status as a dimension affecting digital literacy and learning outcomes.",
+              "context_ref": "turn:4:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:11:37.521599",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_005"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 5,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Socioeconomic status as a dimension affecting digital literacy and learning outcomes."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 5,
+          "question": "How do I make sure colleagues actually adopt the module?",
+          "answer": "To ensure colleagues adopt the digital literacy module, it's essential to build a strong foundation of support and engagement. Start by:\n\n1. **Demonstrating the Module's Value**: Clearly articulate the benefits of the module, such as improved digital skills, enhanced critical thinking, and better preparedness for the digital world. Share success stories or case studies from other schools or educational programs that have implemented similar modules.\n\n2. **Collaborative Development**: Involve colleagues in the development and refinement of the module. This can foster a sense of ownership and commitment. For example, organize a team meeting where you discuss the module's structure, objectives, and activities. Encourage feedback and suggestions to make the module more relevant and effective.\n\n3. **Professional Development**: Offer professional development opportunities for colleagues to learn about the module and how to integrate it into their teaching. This could include workshops, webinars, or peer-to-peer training sessions. Highlight how the module aligns with broader educational goals and standards.\n\n4. **Support and Resources**: Provide colleagues with the necessary resources and support to implement the module. This",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Resistance and change management as a relational dimension to adoption strategies."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_bae4da6388ceb97fb2e9d494",
+              "raw_text": "Resistance and change management as a relational dimension to adoption strategies.",
+              "normalized_text": "resistance and change management as a relational dimension to adoption strategies.",
+              "context_ref": "turn:5:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:12:47.441274",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_006"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 6,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Resistance and change management as a relational dimension to adoption strategies."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 6,
+          "question": "What most often goes wrong in curriculum renewal projects like this?",
+          "answer": "Curriculum renewal projects, like the digital literacy module, can face several common challenges that can impede their success. One of the most frequent issues is **lack of clear communication and buy-in**. Teachers and staff may not fully understand the goals and benefits of the new curriculum, leading to resistance or disengagement. To mitigate this, it's crucial to involve all stakeholders in the planning and implementation phases, ensuring everyone is informed and invested in the project.\n\nAnother common pitfall is **insufficient resources and support**. This includes not only financial resources but also time, technology, and professional development. Without adequate resources, teachers may struggle to implement the new curriculum effectively. To address this, secure necessary funding and allocate time for training and preparation. Additionally, ensure that all required technology is available and functioning properly.\n\n**Resistance to change** is also a significant hurdle. Teachers and administrators may be resistant due to fear of the unknown or a belief that the current system is sufficient. To overcome this, emphasize the benefits of the new curriculum and provide clear, compelling reasons for its adoption. Highlight how",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Organizational culture as a dimension influencing curriculum acceptance and implementation."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_bcac08463ba4e76166b30e3a",
+              "raw_text": "Organizational culture as a dimension influencing curriculum acceptance and implementation.",
+              "normalized_text": "organizational culture as a dimension influencing curriculum acceptance and implementation.",
+              "context_ref": "turn:6:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:13:57.453631",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_007"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 7,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Organizational culture as a dimension influencing curriculum acceptance and implementation."
+        }
+      ],
+      "gate_events": [],
+      "audit_records_verified": 0,
+      "final_shadow": {
+        "runtime_mode": "live",
+        "turns": 7,
+        "seeds": [
+          {
+            "id": "ss_001",
+            "text": "Socioeconomic disparities as a dimension influencing students' access to and engagement with digital tools.",
+            "weight": 0.0,
+            "trace": 1.027,
+            "status": "ACTIVE",
+            "occurrence_count": 2,
+            "evidence_count": 0,
+            "born_turn": 0
+          },
+          {
+            "id": "ss_002",
+            "text": "Socioeconomic background as a dimension influencing prior knowledge and its impact on instructional strategies.",
+            "weight": 0.0,
+            "trace": 0.378,
+            "status": "DECAYING",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 1
+          },
+          {
+            "id": "ss_003",
+            "text": "User-centered design as a dimension influencing activity selection and effectiveness.",
+            "weight": 0.0,
+            "trace": 0.527,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 2
+          },
+          {
+            "id": "ss_004",
+            "text": "Gamification as a dimension to enhance engagement in both formative and summative assessments.",
+            "weight": 0.0,
+            "trace": 0.736,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 3
+          },
+          {
+            "id": "ss_005",
+            "text": "Socioeconomic status as a dimension affecting digital literacy and learning outcomes.",
+            "weight": 0.0,
+            "trace": 1.027,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 4
+          },
+          {
+            "id": "ss_006",
+            "text": "Resistance and change management as a relational dimension to adoption strategies.",
+            "weight": 0.0,
+            "trace": 1.433,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 5
+          },
+          {
+            "id": "ss_007",
+            "text": "Organizational culture as a dimension influencing curriculum acceptance and implementation.",
+            "weight": 0.0,
+            "trace": 2.0,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 6
+          }
+        ],
+        "influence_records": [],
+        "candidate_observation_ledger": {
+          "schema_version": 1,
+          "observations": [
+            {
+              "observation_id": "obs_8769f6d7a316109e6b0181b1",
+              "raw_text": "Socioeconomic disparities as a dimension influencing students' access to and engagement with digital tools.",
+              "normalized_text": "socioeconomic disparities as a dimension influencing students' access to and engagement with digital tools.",
+              "context_ref": "turn:0:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:07:12.858403",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_5680a6a4bed79699b4acff52",
+              "raw_text": "Socioeconomic background as a dimension influencing prior knowledge and its impact on instructional strategies.",
+              "normalized_text": "socioeconomic background as a dimension influencing prior knowledge and its impact on instructional strategies.",
+              "context_ref": "turn:1:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:08:17.997956",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_e16e7a6a760153749c519f05",
+              "raw_text": "User-centered design as a dimension influencing activity selection and effectiveness.",
+              "normalized_text": "user-centered design as a dimension influencing activity selection and effectiveness.",
+              "context_ref": "turn:2:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:09:23.151940",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_4f17d82d11f2265f82836270",
+              "raw_text": "Gamification as a dimension to enhance engagement in both formative and summative assessments.",
+              "normalized_text": "gamification as a dimension to enhance engagement in both formative and summative assessments.",
+              "context_ref": "turn:3:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:10:30.636022",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_c31eac7dd021d209fb8efaa9",
+              "raw_text": "Socioeconomic status as a dimension affecting digital literacy and learning outcomes.",
+              "normalized_text": "socioeconomic status as a dimension affecting digital literacy and learning outcomes.",
+              "context_ref": "turn:4:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:11:37.521599",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_bae4da6388ceb97fb2e9d494",
+              "raw_text": "Resistance and change management as a relational dimension to adoption strategies.",
+              "normalized_text": "resistance and change management as a relational dimension to adoption strategies.",
+              "context_ref": "turn:5:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:12:47.441274",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_bcac08463ba4e76166b30e3a",
+              "raw_text": "Organizational culture as a dimension influencing curriculum acceptance and implementation.",
+              "normalized_text": "organizational culture as a dimension influencing curriculum acceptance and implementation.",
+              "context_ref": "turn:6:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:13:57.453631",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "links": []
+        }
+      }
+    },
+    {
+      "conversation_id": "CONV_HEALTH",
+      "domain": "public health",
+      "turns": [
+        {
+          "runtime_mode": "live",
+          "turn": 0,
+          "question": "We want to encourage teenagers to drink fewer energy drinks. How should we design the campaign?",
+          "answer": "To effectively encourage teenagers to reduce their consumption of energy drinks, a comprehensive and engaging campaign should be designed with several key components:\n\n1. **Educational Content**: Start by providing accurate information about the potential health risks associated with energy drinks, such as increased heart rate, high blood pressure, and sleep disturbances. Use clear, age-appropriate language and visuals to make the information accessible and relatable.\n\n2. **Positive Messaging**: Frame the campaign around positive messages that resonate with teenagers, such as the benefits of staying hydrated with water or natural juices, and the importance of a good night's sleep. Highlight the positive outcomes of making healthier choices, like improved energy levels and better academic performance.\n\n3. **Interactive Elements**: Incorporate interactive elements such as quizzes, games, and social media challenges that engage teenagers and make the campaign more interactive. For example, a \"Hydration Hero\" challenge where participants can share their hydration strategies and tips on social media for a chance to win prizes.\n\n4. **Influencer Partnerships**: Collaborate with influencers and role models that teenagers look up to, such as",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Parental involvement as a relational dimension influencing campaign effectiveness."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_5bb3ec28b689485c309a2e4b",
+              "raw_text": "Parental involvement as a relational dimension influencing campaign effectiveness.",
+              "normalized_text": "parental involvement as a relational dimension influencing campaign effectiveness.",
+              "context_ref": "turn:0:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:14:53.966397",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_001"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 1,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Parental involvement as a relational dimension influencing campaign effectiveness."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 1,
+          "question": "Which message works better than simply saying that energy drinks are unhealthy?",
+          "answer": "To craft a message that resonates more effectively than simply stating that energy drinks are unhealthy, it's crucial to focus on the positive outcomes of making healthier choices. Here’s a structured approach to develop a compelling message:\n\n### Highlighting Positive Outcomes\nInstead of solely emphasizing the negative impacts, frame the message around the benefits of healthier alternatives. For example, you could emphasize how drinking water or natural juices can lead to better concentration, improved mood, and enhanced physical performance. This approach not only addresses the health concerns but also provides a clear, positive reason for teenagers to make a change.\n\n### Personal Stories and Testimonials\nShare real-life stories or testimonials from teenagers who have successfully reduced their energy drink consumption and noticed improvements in their health and well-being. These stories can be powerful tools to inspire and motivate teenagers to make healthier choices. Personal experiences often have a more profound impact than general health statistics.\n\n### Engaging Visuals and Graphics\nUse engaging visuals and graphics to illustrate the benefits of healthier choices. For instance, you could create infographics that show the difference between the ingredients in energy drinks and those",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Psychological triggers and behavioral economics as dimensions influencing choice and consumption."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_0678fa741c241f2c1067337b",
+              "raw_text": "Psychological triggers and behavioral economics as dimensions influencing choice and consumption.",
+              "normalized_text": "psychological triggers and behavioral economics as dimensions influencing choice and consumption.",
+              "context_ref": "turn:1:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:15:57.518640",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_002"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 2,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Psychological triggers and behavioral economics as dimensions influencing choice and consumption."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 2,
+          "question": "Which channels actually reach this group?",
+          "answer": "To effectively reach teenagers, it's essential to leverage the channels where they are most active and engaged. Here are the key channels to consider:\n\n### Social Media\nSocial media platforms like Instagram, TikTok, and Snapchat are where teenagers spend a significant amount of time. These platforms offer a wide range of interactive features, such as stories, live videos, and challenges, which can be used to engage teenagers directly. Influencer partnerships and user-generated content can amplify the campaign's reach and impact.\n\n### School and Educational Institutions\nSchools and educational institutions can be powerful channels for reaching teenagers. By collaborating with teachers, school counselors, and student organizations, the campaign can be integrated into the curriculum or school events. This approach ensures that the message is delivered in a context that teenagers are familiar with and trust.\n\n### Mobile Apps and Gaming Platforms\nMany teenagers use mobile apps and gaming platforms, which can be leveraged to deliver targeted messages. For example, apps that teenagers use for socializing, gaming, or learning can incorporate the campaign’s messaging through in-app notifications, in-game challenges, or special features.",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Psychological triggers and content resonance as dimensions influencing engagement on social media."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_eef4dd2accef0b6c878caad0",
+              "raw_text": "Psychological triggers and content resonance as dimensions influencing engagement on social media.",
+              "normalized_text": "psychological triggers and content resonance as dimensions influencing engagement on social media.",
+              "context_ref": "turn:2:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:17:02.583751",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_003"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 3,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Psychological triggers and content resonance as dimensions influencing engagement on social media."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 3,
+          "question": "How do we measure whether the campaign works?",
+          "answer": "To measure the effectiveness of the campaign, it's essential to establish clear, measurable objectives and employ a variety of evaluation methods. Here are some key steps:\n\n### Define Clear Objectives\nBefore launching the campaign, define specific, measurable objectives. For example, you might aim to reduce energy drink consumption by 20% among teenagers within six months, increase the number of teenagers who can correctly identify the health risks of energy drinks, or boost the number of teenagers who participate in hydration-related activities.\n\n### Utilize Pre- and Post-Campaign Surveys\nConduct surveys before and after the campaign to gauge changes in knowledge, attitudes, and behaviors related to energy drink consumption. This can provide insights into the campaign's impact on teenagers' perceptions and practices.\n\n### Track Social Media Engagement\nMonitor social media metrics such as likes, shares, comments, and followers to assess the campaign's reach and engagement. Analyze the content's performance to identify which messages and formats resonate most with the target audience.\n\n### Monitor Sales Data\nIf possible, collaborate with retailers to track changes in energy drink sales among teenagers.",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Behavioral economics as a lens to understand and predict teenager responses to the campaign."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_ea90fad547669abee1ea54c9",
+              "raw_text": "Behavioral economics as a lens to understand and predict teenager responses to the campaign.",
+              "normalized_text": "behavioral economics as a lens to understand and predict teenager responses to the campaign.",
+              "context_ref": "turn:3:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:18:07.802218",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_004"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 4,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Behavioral economics as a lens to understand and predict teenager responses to the campaign."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 4,
+          "question": "How do we avoid reaching mainly the teenagers who are already health-conscious?",
+          "answer": "To ensure the campaign reaches a broader spectrum of teenagers, including those who are not initially health-conscious, it's crucial to adopt a multi-faceted approach:\n\n### Diverse Messaging\nCraft messages that appeal to various interests and values. For example, emphasize the benefits of hydration for athletes, the importance of good sleep for students, and the environmental impact of reducing energy drink consumption. This approach ensures that the campaign resonates with different groups of teenagers.\n\n### Collaborate with Diverse Influencers\nPartner with a range of influencers who have different interests and followings. For instance, work with influencers from sports, gaming, music, and academic communities. This diversification can help the campaign reach teenagers who might not typically engage with health-related content.\n\n### Engage Schools and Community Organizations\nCollaborate with schools, community centers, and youth organizations that cater to diverse groups of teenagers. These organizations can help spread the campaign’s message to teenagers who might not be as engaged with mainstream social media.\n\n### Utilize Traditional Media\nLeverage traditional media channels such as local radio, television, and print",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Socioeconomic status as a dimension influencing health-consciousness and campaign engagement."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_411986b76d50b789e57ab85b",
+              "raw_text": "Socioeconomic status as a dimension influencing health-consciousness and campaign engagement.",
+              "normalized_text": "socioeconomic status as a dimension influencing health-consciousness and campaign engagement.",
+              "context_ref": "turn:4:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:19:15.135257",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_005"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 5,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Socioeconomic status as a dimension influencing health-consciousness and campaign engagement."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 5,
+          "question": "What role should schools and parents play?",
+          "answer": "Schools and parents play crucial roles in supporting the campaign to reduce energy drink consumption among teenagers. Schools can integrate health education into their curriculum, providing comprehensive information on the effects of energy drinks and promoting healthier alternatives. Teachers and school health professionals can also organize workshops, seminars, and interactive sessions to engage students and reinforce the campaign’s messages. Additionally, schools can implement policies that limit the availability of energy drinks on campus and encourage the consumption of water and natural juices.\n\nParents, as key influencers in teenagers' lives, can reinforce the campaign’s messages at home. They can discuss the health risks associated with energy drinks and the benefits of healthier alternatives, such as water and natural juices. Parents can also set a good example by making healthy choices themselves and involving their children in activities that promote hydration and well-being. By working together, schools and parents can create a supportive environment that encourages teenagers to make healthier choices.\n\nIn summary, schools and parents are essential partners in the campaign. Their involvement can significantly enhance the campaign’s reach and effectiveness, ensuring that the message resonates with a broader audience and leads to lasting behavioral",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Socioeconomic disparities as a dimension affecting campaign effectiveness."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_a893e0e94469c5c3c722a3ff",
+              "raw_text": "Socioeconomic disparities as a dimension affecting campaign effectiveness.",
+              "normalized_text": "socioeconomic disparities as a dimension affecting campaign effectiveness.",
+              "context_ref": "turn:5:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:20:23.205618",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_006"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 6,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Socioeconomic disparities as a dimension affecting campaign effectiveness."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 6,
+          "question": "What most often goes wrong in lifestyle campaigns like this?",
+          "answer": "In lifestyle campaigns like this, several common pitfalls can undermine their effectiveness. First, **over-reliance on scare tactics** can backfire, as teenagers may become desensitized to overly negative messaging or feel that the risks are exaggerated. Instead, focusing on positive outcomes and benefits can be more effective.\n\nSecond, **lack of engagement and interactivity** can limit the campaign's impact. Campaigns that are too static or one-sided may fail to capture teenagers' attention or inspire them to take action. Interactive elements, such as quizzes, games, and social media challenges, can increase engagement and make the campaign more memorable.\n\nThird, **insufficient collaboration and partnership** can limit the campaign's reach. Working with a wide range of stakeholders, including schools, parents, influencers, and community organizations, can help ensure that the campaign reaches a broader and more diverse audience. Each partner brings unique resources and perspectives that can strengthen the campaign's overall impact.\n\nFourth, **lack of follow-up and sustainability** can diminish the campaign's long-term effectiveness. Initial engagement is important, but sustained efforts are",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Digital divide as a dimension affecting campaign reach and effectiveness."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_abf9c1a0f9996903f72b1fc0",
+              "raw_text": "Digital divide as a dimension affecting campaign reach and effectiveness.",
+              "normalized_text": "digital divide as a dimension affecting campaign reach and effectiveness.",
+              "context_ref": "turn:6:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:21:32.872730",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_007"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 7,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Digital divide as a dimension affecting campaign reach and effectiveness."
+        }
+      ],
+      "gate_events": [],
+      "audit_records_verified": 0,
+      "final_shadow": {
+        "runtime_mode": "live",
+        "turns": 7,
+        "seeds": [
+          {
+            "id": "ss_001",
+            "text": "Parental involvement as a relational dimension influencing campaign effectiveness.",
+            "weight": 0.0,
+            "trace": 0.271,
+            "status": "DECAYING",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 0
+          },
+          {
+            "id": "ss_002",
+            "text": "Psychological triggers and behavioral economics as dimensions influencing choice and consumption.",
+            "weight": 0.0,
+            "trace": 0.378,
+            "status": "DECAYING",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 1
+          },
+          {
+            "id": "ss_003",
+            "text": "Psychological triggers and content resonance as dimensions influencing engagement on social media.",
+            "weight": 0.0,
+            "trace": 0.527,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 2
+          },
+          {
+            "id": "ss_004",
+            "text": "Behavioral economics as a lens to understand and predict teenager responses to the campaign.",
+            "weight": 0.0,
+            "trace": 0.736,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 3
+          },
+          {
+            "id": "ss_005",
+            "text": "Socioeconomic status as a dimension influencing health-consciousness and campaign engagement.",
+            "weight": 0.0,
+            "trace": 1.433,
+            "status": "ACTIVE",
+            "occurrence_count": 2,
+            "evidence_count": 0,
+            "born_turn": 4
+          },
+          {
+            "id": "ss_006",
+            "text": "Socioeconomic disparities as a dimension affecting campaign effectiveness.",
+            "weight": 0.0,
+            "trace": 1.433,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 5
+          },
+          {
+            "id": "ss_007",
+            "text": "Digital divide as a dimension affecting campaign reach and effectiveness.",
+            "weight": 0.0,
+            "trace": 2.0,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 6
+          }
+        ],
+        "influence_records": [],
+        "candidate_observation_ledger": {
+          "schema_version": 1,
+          "observations": [
+            {
+              "observation_id": "obs_5bb3ec28b689485c309a2e4b",
+              "raw_text": "Parental involvement as a relational dimension influencing campaign effectiveness.",
+              "normalized_text": "parental involvement as a relational dimension influencing campaign effectiveness.",
+              "context_ref": "turn:0:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:14:53.966397",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_0678fa741c241f2c1067337b",
+              "raw_text": "Psychological triggers and behavioral economics as dimensions influencing choice and consumption.",
+              "normalized_text": "psychological triggers and behavioral economics as dimensions influencing choice and consumption.",
+              "context_ref": "turn:1:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:15:57.518640",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_eef4dd2accef0b6c878caad0",
+              "raw_text": "Psychological triggers and content resonance as dimensions influencing engagement on social media.",
+              "normalized_text": "psychological triggers and content resonance as dimensions influencing engagement on social media.",
+              "context_ref": "turn:2:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:17:02.583751",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_ea90fad547669abee1ea54c9",
+              "raw_text": "Behavioral economics as a lens to understand and predict teenager responses to the campaign.",
+              "normalized_text": "behavioral economics as a lens to understand and predict teenager responses to the campaign.",
+              "context_ref": "turn:3:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:18:07.802218",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_411986b76d50b789e57ab85b",
+              "raw_text": "Socioeconomic status as a dimension influencing health-consciousness and campaign engagement.",
+              "normalized_text": "socioeconomic status as a dimension influencing health-consciousness and campaign engagement.",
+              "context_ref": "turn:4:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:19:15.135257",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_a893e0e94469c5c3c722a3ff",
+              "raw_text": "Socioeconomic disparities as a dimension affecting campaign effectiveness.",
+              "normalized_text": "socioeconomic disparities as a dimension affecting campaign effectiveness.",
+              "context_ref": "turn:5:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:20:23.205618",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_abf9c1a0f9996903f72b1fc0",
+              "raw_text": "Digital divide as a dimension affecting campaign reach and effectiveness.",
+              "normalized_text": "digital divide as a dimension affecting campaign reach and effectiveness.",
+              "context_ref": "turn:6:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:21:32.872730",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "links": []
+        }
+      }
+    },
+    {
+      "conversation_id": "CONV_POLICY",
+      "domain": "policy",
+      "turns": [
+        {
+          "runtime_mode": "live",
+          "turn": 0,
+          "question": "Our municipality wants a climate-adaptation plan for heavy rainfall and flooding. Where should we start?",
+          "answer": "To develop a climate-adaptation plan for heavy rainfall and flooding, start by assessing the current situation. Engage with local communities, stakeholders, and experts to gather data on past flood events, their impacts, and the community's resilience. This foundational step will help identify the most pressing needs and potential vulnerabilities.\n\nNext, integrate climate projections into your planning. Work with meteorologists and climate scientists to understand future rainfall patterns and their potential impacts. This information is crucial for predicting future flood risks and designing effective mitigation strategies.\n\nDevelop a comprehensive plan that includes both structural and non-structural measures. Structural measures might include building or improving drainage systems, constructing levees, and enhancing flood barriers. Non-structural measures could involve land-use planning, zoning regulations, and public education campaigns to raise awareness about flood risks and safety measures.\n\nCollaborate with neighboring municipalities and regional organizations to ensure a coordinated approach. Flooding often affects multiple jurisdictions, and a unified strategy can be more effective in managing flood risks.\n\nFinally, establish a monitoring and evaluation system to track the effectiveness of your adaptation measures. Regularly review and update",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Socioeconomic disparities as a dimension influencing community resilience and resource allocation."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_c8addfd0a196541ed86ce7c2",
+              "raw_text": "Socioeconomic disparities as a dimension influencing community resilience and resource allocation.",
+              "normalized_text": "socioeconomic disparities as a dimension influencing community resilience and resource allocation.",
+              "context_ref": "turn:0:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:22:31.543478",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_001"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 1,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Socioeconomic disparities as a dimension influencing community resilience and resource allocation."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 1,
+          "question": "Which measures provide the most impact per euro?",
+          "answer": "When considering cost-effectiveness, several measures can provide significant impact per euro spent. Here are some of the most impactful strategies:\n\n1. **Flood Barriers and Retention Basins**: Constructing or enhancing flood barriers and retention basins can significantly reduce flood risk. These structures can be cost-effective in areas prone to frequent flooding. For instance, a well-designed retention basin can manage stormwater runoff, reducing the likelihood of flash floods and alleviating pressure on drainage systems.\n\n2. **Green Infrastructure**: Implementing green infrastructure, such as rain gardens, permeable pavements, and green roofs, can be highly effective. These solutions mimic natural water cycles, reducing runoff and improving water quality. Green infrastructure often has lower maintenance costs compared to traditional grey infrastructure and can also provide additional benefits like improved air quality and urban biodiversity.\n\n3. **Early Warning Systems**: Investing in early warning systems can save lives and reduce property damage. These systems can be relatively inexpensive compared to the costs of recovery from flooding. They can include weather monitoring, real-time data analysis, and communication networks to alert residents and emergency services",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Economic incentives as a policy dimension influencing adoption of cost-effective measures."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_27ef65520dd30eecbd8810b1",
+              "raw_text": "Economic incentives as a policy dimension influencing adoption of cost-effective measures.",
+              "normalized_text": "economic incentives as a policy dimension influencing adoption of cost-effective measures.",
+              "context_ref": "turn:1:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:23:36.530081",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_002"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 2,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Economic incentives as a policy dimension influencing adoption of cost-effective measures."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 2,
+          "question": "How should we involve residents in the choices?",
+          "answer": "Involving residents in the choices for a climate-adaptation plan is crucial for ensuring the plan's effectiveness and sustainability. Here’s how you can engage them effectively:\n\n1. **Public Consultations and Workshops**: Organize public consultations and workshops to gather input from residents. These sessions can be held in community centers, schools, or online to accommodate different schedules and preferences. During these events, present the proposed measures and gather feedback on their feasibility, desirability, and potential impacts. This not only ensures that the plan reflects community needs but also builds support and ownership.\n\n2. **Community Engagement Programs**: Develop community engagement programs that educate residents about flood risks and adaptation strategies. Workshops, seminars, and informational sessions can help residents understand the importance of the measures and how they can contribute. For example, teaching residents about maintaining green spaces and proper drainage can enhance the effectiveness of green infrastructure.\n\n3. **Feedback Mechanisms**: Establish feedback mechanisms to continuously involve residents in the planning process. This could include online surveys, suggestion boxes, or regular town hall meetings. Encourage residents to provide ongoing",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Socioeconomic disparities as a dimension affecting engagement and plan effectiveness."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_532ed31f60c6ca23557cc361",
+              "raw_text": "Socioeconomic disparities as a dimension affecting engagement and plan effectiveness.",
+              "normalized_text": "socioeconomic disparities as a dimension affecting engagement and plan effectiveness.",
+              "context_ref": "turn:2:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:24:42.034618",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_003"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 3,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Socioeconomic disparities as a dimension affecting engagement and plan effectiveness."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 3,
+          "question": "How do we finance the plan over several years?",
+          "answer": "Financing a climate-adaptation plan over several years requires a strategic and diversified approach. Here are key steps to consider:\n\n1. **Government Grants and Funding**: Explore eligibility for government grants and funding programs aimed at climate adaptation. Many national and regional governments offer financial support for projects that address climate change impacts. Additionally, check for eligibility in international funding opportunities, such as those from the Green Climate Fund or the Adaptation Fund.\n\n2. **Public-Private Partnerships (PPPs)**: Engage with private sector entities to form PPPs. These partnerships can provide additional funding, expertise, and resources. For instance, private companies might be willing to invest in green infrastructure in exchange for tax incentives or other benefits.\n\n3. **Green Bonds and Impact Investments**: Issue green bonds or seek impact investments to finance the plan. Green bonds are specifically designed to fund environmental projects, and impact investments can provide capital for projects that have a positive social and environmental impact. These financial instruments can attract investors who are interested in sustainable development.\n\n4. **Fees and Levies**: Consider implementing fees or levies",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Behavioral economics as a lens for understanding public and private sector engagement in climate adaptation initiatives."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_02a7ca17772c391e12569a54",
+              "raw_text": "Behavioral economics as a lens for understanding public and private sector engagement in climate adaptation initiatives.",
+              "normalized_text": "behavioral economics as a lens for understanding public and private sector engagement in climate adaptation initiatives.",
+              "context_ref": "turn:3:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:25:48.794382",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_004"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 4,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Behavioral economics as a lens for understanding public and private sector engagement in climate adaptation initiatives."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 4,
+          "question": "Who bears the costs and who receives the benefits of these measures?",
+          "answer": "Determining who bears the costs and who receives the benefits of climate-adaptation measures is crucial for ensuring equitable distribution and support. Here’s a breakdown:\n\n1. **Cost Allocation**: Costs can be shared among various stakeholders, including the government, private sector, and community members. For instance, the government might fund infrastructure projects, while private entities could contribute through PPPs or impact investments. Community members can participate through local taxes, fees, or voluntary contributions. This shared responsibility can make the financial burden more manageable and foster a sense of collective ownership.\n\n2. **Benefit Distribution**: Benefits should be distributed based on the impact of the measures. For example, flood barriers and early warning systems benefit the entire community, but they might be more critical for low-lying areas or those with higher flood risk. Green infrastructure can benefit the broader community through improved air quality and aesthetics, while also providing direct benefits to property owners through reduced flood damage. It’s important to ensure that the most vulnerable populations, such as low-income households, are not disproportionately burdened by costs and that they receive adequate support.\n\n3",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Inter-generational equity as a dimension in cost and benefit distribution."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_1be20b5ee0235b25ba0d0bac",
+              "raw_text": "Inter-generational equity as a dimension in cost and benefit distribution.",
+              "normalized_text": "inter-generational equity as a dimension in cost and benefit distribution.",
+              "context_ref": "turn:4:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:26:58.033527",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_005"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 5,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Inter-generational equity as a dimension in cost and benefit distribution."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 5,
+          "question": "How do we keep the plan durable across changes in local government?",
+          "answer": "To ensure the durability of the climate-adaptation plan across changes in local government, it’s essential to establish a robust governance structure and build community support. First, create a dedicated climate-adaptation task force or committee that includes representatives from various sectors, such as local government, community organizations, and private sector entities. This group should be responsible for overseeing the implementation and ongoing management of the plan. By involving diverse stakeholders, the task force can ensure that the plan remains relevant and responsive to changing conditions and community needs.\n\nSecond, develop a long-term maintenance and monitoring plan. This should include regular assessments of the effectiveness of the implemented measures, adjustments based on new data and changing conditions, and a clear budget for ongoing maintenance. By setting up a sustainable funding mechanism, such as dedicated taxes or fees, the plan can be financially supported even if the local government changes.\n\nThird, integrate the climate-adaptation plan into broader local development strategies and policies. This ensures that the plan is not seen as a standalone initiative but as an integral part of the community’s long-term vision. By aligning the plan",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Interdependencies between climate-adaptation measures and local economic development as a dimension."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_576e3628a81f7ae7b9519442",
+              "raw_text": "Interdependencies between climate-adaptation measures and local economic development as a dimension.",
+              "normalized_text": "interdependencies between climate-adaptation measures and local economic development as a dimension.",
+              "context_ref": "turn:5:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:28:08.140969",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_006"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 6,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Interdependencies between climate-adaptation measures and local economic development as a dimension."
+        },
+        {
+          "runtime_mode": "live",
+          "turn": 6,
+          "question": "What most often goes wrong in adaptation plans like this?",
+          "answer": "Several common pitfalls can undermine the effectiveness of climate-adaptation plans. First, a lack of comprehensive data and analysis can lead to poorly informed decisions. Without robust data on local climate projections, historical flood patterns, and community vulnerabilities, the plan may miss critical elements or overemphasize less pressing issues. Engaging with local experts and stakeholders is essential to ensure the plan is grounded in accurate information.\n\nSecond, insufficient stakeholder engagement can result in a plan that lacks community support and buy-in. Without active participation from residents, businesses, and other key stakeholders, the plan may face resistance or fail to address the community's needs effectively. Effective communication and transparent decision-making processes are crucial to building trust and ensuring that the plan is seen as a collaborative effort.\n\nThird, inadequate funding and resource allocation can hinder the implementation and maintenance of adaptation measures. Without a clear and sustainable funding strategy, the plan may struggle to secure the necessary resources, leading to incomplete or poorly executed projects. It’s important to identify potential funding sources early and develop a realistic budget that accounts for both initial implementation and ongoing maintenance.\n\nFourth,",
+          "baseline_answer": null,
+          "ssl_answer": null,
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "detected_candidates": [
+            "Interdependencies between data quality and technological solutions as a dimension for enhancing climate-adaptation planning."
+          ],
+          "suppressed_self_attributed_candidates": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_2aa1e0feef42809830d9cb87",
+              "raw_text": "Interdependencies between data quality and technological solutions as a dimension for enhancing climate-adaptation planning.",
+              "normalized_text": "interdependencies between data quality and technological solutions as a dimension for enhancing climate-adaptation planning.",
+              "context_ref": "turn:6:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:29:18.815967",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_007"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 7,
+          "retrieval_probe": null,
+          "detector_parse_diagnostics": {
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 1,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_raw_output": "1. Interdependencies between data quality and technological solutions as a dimension for enhancing climate-adaptation planning."
+        }
+      ],
+      "gate_events": [],
+      "audit_records_verified": 0,
+      "final_shadow": {
+        "runtime_mode": "live",
+        "turns": 7,
+        "seeds": [
+          {
+            "id": "ss_001",
+            "text": "Socioeconomic disparities as a dimension influencing community resilience and resource allocation.",
+            "weight": 0.0,
+            "trace": 0.271,
+            "status": "DECAYING",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 0
+          },
+          {
+            "id": "ss_002",
+            "text": "Economic incentives as a policy dimension influencing adoption of cost-effective measures.",
+            "weight": 0.0,
+            "trace": 0.378,
+            "status": "DECAYING",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 1
+          },
+          {
+            "id": "ss_003",
+            "text": "Socioeconomic disparities as a dimension affecting engagement and plan effectiveness.",
+            "weight": 0.0,
+            "trace": 0.527,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 2
+          },
+          {
+            "id": "ss_004",
+            "text": "Behavioral economics as a lens for understanding public and private sector engagement in climate adaptation initiatives.",
+            "weight": 0.0,
+            "trace": 0.736,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 3
+          },
+          {
+            "id": "ss_005",
+            "text": "Inter-generational equity as a dimension in cost and benefit distribution.",
+            "weight": 0.0,
+            "trace": 1.027,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 4
+          },
+          {
+            "id": "ss_006",
+            "text": "Interdependencies between climate-adaptation measures and local economic development as a dimension.",
+            "weight": 0.0,
+            "trace": 1.433,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 5
+          },
+          {
+            "id": "ss_007",
+            "text": "Interdependencies between data quality and technological solutions as a dimension for enhancing climate-adaptation planning.",
+            "weight": 0.0,
+            "trace": 2.0,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 6
+          }
+        ],
+        "influence_records": [],
+        "candidate_observation_ledger": {
+          "schema_version": 1,
+          "observations": [
+            {
+              "observation_id": "obs_c8addfd0a196541ed86ce7c2",
+              "raw_text": "Socioeconomic disparities as a dimension influencing community resilience and resource allocation.",
+              "normalized_text": "socioeconomic disparities as a dimension influencing community resilience and resource allocation.",
+              "context_ref": "turn:0:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:22:31.543478",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_27ef65520dd30eecbd8810b1",
+              "raw_text": "Economic incentives as a policy dimension influencing adoption of cost-effective measures.",
+              "normalized_text": "economic incentives as a policy dimension influencing adoption of cost-effective measures.",
+              "context_ref": "turn:1:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:23:36.530081",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_532ed31f60c6ca23557cc361",
+              "raw_text": "Socioeconomic disparities as a dimension affecting engagement and plan effectiveness.",
+              "normalized_text": "socioeconomic disparities as a dimension affecting engagement and plan effectiveness.",
+              "context_ref": "turn:2:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:24:42.034618",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_02a7ca17772c391e12569a54",
+              "raw_text": "Behavioral economics as a lens for understanding public and private sector engagement in climate adaptation initiatives.",
+              "normalized_text": "behavioral economics as a lens for understanding public and private sector engagement in climate adaptation initiatives.",
+              "context_ref": "turn:3:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:25:48.794382",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_1be20b5ee0235b25ba0d0bac",
+              "raw_text": "Inter-generational equity as a dimension in cost and benefit distribution.",
+              "normalized_text": "inter-generational equity as a dimension in cost and benefit distribution.",
+              "context_ref": "turn:4:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:26:58.033527",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_576e3628a81f7ae7b9519442",
+              "raw_text": "Interdependencies between climate-adaptation measures and local economic development as a dimension.",
+              "normalized_text": "interdependencies between climate-adaptation measures and local economic development as a dimension.",
+              "context_ref": "turn:5:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:28:08.140969",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_2aa1e0feef42809830d9cb87",
+              "raw_text": "Interdependencies between data quality and technological solutions as a dimension for enhancing climate-adaptation planning.",
+              "normalized_text": "interdependencies between data quality and technological solutions as a dimension for enhancing climate-adaptation planning.",
+              "context_ref": "turn:6:visible_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:29:18.815967",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "links": []
+        }
+      }
+    }
+  ]
+}

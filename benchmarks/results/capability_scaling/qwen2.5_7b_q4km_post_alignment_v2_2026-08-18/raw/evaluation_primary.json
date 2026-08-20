@@ -1,0 +1,1792 @@
+{
+  "summary": {
+    "suite_id": "primary",
+    "suite_version": "ssl-session-0.3",
+    "runtime_mode": "evaluation",
+    "gate_policy_id": "exploratory",
+    "production_policy": false,
+    "external_evidence_injected": false,
+    "conversation_count": 1,
+    "turn_count": 9,
+    "answer_generation_calls": 9,
+    "detector_calls": 9,
+    "surfaced_turn_count": 0,
+    "influence_record_count": 0,
+    "detected_on_surfaced_turns": 0,
+    "suppressed_self_attributed_occurrences": 0,
+    "same_turn_deferral_rate": null,
+    "candidate_metrics": {
+      "candidate_occurrences": 0,
+      "normalization_admissible_occurrences": 0,
+      "malformed_or_non_atomic_occurrences": 0,
+      "malformed_or_non_atomic_rate": null,
+      "exact_duplicate_occurrences": 0,
+      "exact_duplicate_rate": null,
+      "semantic_duplicate_occurrences": 0,
+      "semantic_duplicate_rate": null,
+      "semantic_duplicate_threshold": 0.85
+    },
+    "detector_parser": {
+      "nonblank_lines": 0,
+      "numbered_lines": 0,
+      "unnumbered_nonblank_lines": 0,
+      "accepted_candidates": 0,
+      "nested_numbering_prefixes_removed": 0,
+      "dropped_blank_or_placeholder": 0,
+      "dropped_citation_or_stub": 0,
+      "dropped_fewshot_leak": 0,
+      "dropped_duplicate": 0,
+      "parser_rejection_rate": null,
+      "fewshot_leakage_rate": null,
+      "dropped_citation_or_stub_rate": null
+    },
+    "gate": {
+      "event_count": 33,
+      "decisions": {
+        "blocked": 33
+      },
+      "positive_weight_event_count": 0,
+      "verified_external_support_event_count": 0,
+      "contradiction_decision_count": 33
+    },
+    "wall_elapsed_seconds": 591.388,
+    "claim_boundary": "Live evidence-backed results establish observed runtime mechanics only. Evaluation is an explicitly non-production counterfactual used to create blind A/B opportunities. Neither arm establishes candidate truth or general benefit."
+  },
+  "conversations": [
+    {
+      "conversation_id": "CONV_STARTUP",
+      "domain": "product and growth",
+      "turns": [
+        {
+          "runtime_mode": "evaluation",
+          "turn": 0,
+          "question": "I am building a social app for teenagers. How do I get the first thousand users?",
+          "answer": "To attract the first thousand users for your social app targeting teenagers, a multi-faceted approach is essential. Start by understanding your target audience's preferences and behaviors. Teenagers are tech-savvy and often influenced by peer recommendations and social media trends. Here are key strategies to consider:\n\n1. **Leverage Social Media and Influencers**: Use platforms like TikTok, Instagram, and Snapchat where teenagers are most active. Collaborate with influencers who resonate with your target demographic. Influencers can create engaging content that showcases the app’s features and benefits, encouraging their followers to download and use it.\n\n2. **Create Compelling Content**: Develop a series of engaging videos, infographics, and blog posts that highlight the unique features of your app. Use storytelling to connect with teenagers on an emotional level, emphasizing how your app can enhance their social interactions and experiences.\n\n3. **Offer Incentives**: Consider offering incentives such as free in-app rewards, exclusive content, or early access to new features. These can motivate teenagers to download and use your app. You could also run contests or giveaways",
+          "baseline_answer": "To attract the first thousand users for your social app targeting teenagers, a multi-faceted approach is essential. Start by understanding your target audience's preferences and behaviors. Teenagers are tech-savvy and often influenced by peer recommendations and social media trends. Here are key strategies to consider:\n\n1. **Leverage Social Media and Influencers**: Use platforms like TikTok, Instagram, and Snapchat where teenagers are most active. Collaborate with influencers who resonate with your target demographic. Influencers can create engaging content that showcases the app’s features and benefits, encouraging their followers to download and use it.\n\n2. **Create Compelling Content**: Develop a series of engaging videos, infographics, and blog posts that highlight the unique features of your app. Use storytelling to connect with teenagers on an emotional level, emphasizing how your app can enhance their social interactions and experiences.\n\n3. **Offer Incentives**: Consider offering incentives such as free in-app rewards, exclusive content, or early access to new features. These can motivate teenagers to download and use your app. You could also run contests or giveaways",
+          "ssl_answer": "To attract the first thousand users for your social app targeting teenagers, a multi-faceted approach is essential. Start by understanding your target audience's preferences and behaviors. Teenagers are tech-savvy and often influenced by peer recommendations and social media trends. Here are key strategies to consider:\n\n1. **Leverage Social Media and Influencers**: Use platforms like TikTok, Instagram, and Snapchat where teenagers are most active. Collaborate with influencers who resonate with your target demographic. Influencers can create engaging content that showcases the app’s features and benefits, encouraging their followers to download and use it.\n\n2. **Create Compelling Content**: Develop a series of engaging videos, infographics, and blog posts that highlight the unique features of your app. Use storytelling to connect with teenagers on an emotional level, emphasizing how your app can enhance their social interactions and experiences.\n\n3. **Offer Incentives**: Consider offering incentives such as free in-app rewards, exclusive content, or early access to new features. These can motivate teenagers to download and use your app. You could also run contests or giveaways",
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_201f136144ae5db00cf161d2",
+              "raw_text": "Peer influence dynamics as a relational dimension alongside influencer marketing.",
+              "normalized_text": "peer influence dynamics as a relational dimension alongside influencer marketing.",
+              "context_ref": "turn:0:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T22:57:19.687141",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_001"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 1,
+          "retrieval_probe": null
+        },
+        {
+          "runtime_mode": "evaluation",
+          "turn": 1,
+          "question": "Which features are most effective at retaining users?",
+          "answer": "To retain users effectively, your social app for teenagers should focus on several key features that enhance user engagement and satisfaction. Here are the most effective features:\n\n### 1. **Personalization and Customization**\nAllow users to personalize their profiles, avatars, and settings. This not only makes the app more appealing but also fosters a sense of ownership and attachment. Features like customizable backgrounds, themes, and the ability to add personal details can significantly increase user engagement.\n\n### 2. **Interactive and Engaging Content**\nIncorporate interactive elements such as polls, quizzes, and games that are relevant to teenagers. These features encourage frequent use and interaction, making the app more enjoyable and less likely to be abandoned. For example, a trivia game related to pop culture or a quiz about trending topics can keep users coming back.\n\n### 3. **Community and Social Features**\nBuild a strong community by implementing features that facilitate interaction and connection. Group chats, forums, and event planning tools can help users form and maintain relationships. Additionally, integrating social features like friend requests, direct messaging, and group activities",
+          "baseline_answer": "To retain users effectively, your social app for teenagers should focus on several key features that enhance user engagement and satisfaction. Here are the most effective features:\n\n### 1. **Personalization and Customization**\nAllow users to personalize their profiles, avatars, and settings. This not only makes the app more appealing but also fosters a sense of ownership and attachment. Features like customizable backgrounds, themes, and the ability to add personal details can significantly increase user engagement.\n\n### 2. **Interactive and Engaging Content**\nIncorporate interactive elements such as polls, quizzes, and games that are relevant to teenagers. These features encourage frequent use and interaction, making the app more enjoyable and less likely to be abandoned. For example, a trivia game related to pop culture or a quiz about trending topics can keep users coming back.\n\n### 3. **Community and Social Features**\nBuild a strong community by implementing features that facilitate interaction and connection. Group chats, forums, and event planning tools can help users form and maintain relationships. Additionally, integrating social features like friend requests, direct messaging, and group activities",
+          "ssl_answer": "To retain users effectively, your social app for teenagers should focus on several key features that enhance user engagement and satisfaction. Here are the most effective features:\n\n### 1. **Personalization and Customization**\nAllow users to personalize their profiles, avatars, and settings. This not only makes the app more appealing but also fosters a sense of ownership and attachment. Features like customizable backgrounds, themes, and the ability to add personal details can significantly increase user engagement.\n\n### 2. **Interactive and Engaging Content**\nIncorporate interactive elements such as polls, quizzes, and games that are relevant to teenagers. These features encourage frequent use and interaction, making the app more enjoyable and less likely to be abandoned. For example, a trivia game related to pop culture or a quiz about trending topics can keep users coming back.\n\n### 3. **Community and Social Features**\nBuild a strong community by implementing features that facilitate interaction and connection. Group chats, forums, and event planning tools can help users form and maintain relationships. Additionally, integrating social features like friend requests, direct messaging, and group activities",
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_49233b4d8a8849f7250f7e94",
+              "raw_text": "Gamification as a dimension enhancing user engagement through competitive and collaborative features.",
+              "normalized_text": "gamification as a dimension enhancing user engagement through competitive and collaborative features.",
+              "context_ref": "turn:1:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T22:58:22.507128",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_002"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 2,
+          "retrieval_probe": null
+        },
+        {
+          "runtime_mode": "evaluation",
+          "turn": 2,
+          "question": "How do I make the app viral so users invite their friends?",
+          "answer": "To make your social app viral and encourage users to invite their friends, focus on creating a seamless and rewarding experience that taps into the natural desire of teenagers to share and connect. Here are key strategies to achieve this:\n\n### 1. **Referral Programs with Incentives**\nImplement a robust referral program that rewards both the referrer and the referee. For example, offer points, badges, or exclusive content to users who invite friends. Make sure the process is simple and user-friendly, with clear instructions and minimal steps required to participate. Consider integrating gamification elements to make the process more engaging.\n\n### 2. **Social Proof and User Testimonials**\nHighlight user testimonials and success stories within the app. Showcase how other teenagers are using the app and benefiting from it. This social proof can inspire new users to join and feel more confident about the app’s value. You can also feature user-generated content, such as photos or videos, to create a sense of community and authenticity.\n\n### 3. **Engaging and Shareable Content**\nCreate content that is not only engaging but also shareable",
+          "baseline_answer": "To make your social app viral and encourage users to invite their friends, focus on creating a seamless and rewarding experience that taps into the natural desire of teenagers to share and connect. Here are key strategies to achieve this:\n\n### 1. **Referral Programs with Incentives**\nImplement a robust referral program that rewards both the referrer and the referee. For example, offer points, badges, or exclusive content to users who invite friends. Make sure the process is simple and user-friendly, with clear instructions and minimal steps required to participate. Consider integrating gamification elements to make the process more engaging.\n\n### 2. **Social Proof and User Testimonials**\nHighlight user testimonials and success stories within the app. Showcase how other teenagers are using the app and benefiting from it. This social proof can inspire new users to join and feel more confident about the app’s value. You can also feature user-generated content, such as photos or videos, to create a sense of community and authenticity.\n\n### 3. **Engaging and Shareable Content**\nCreate content that is not only engaging but also shareable",
+          "ssl_answer": "To make your social app viral and encourage users to invite their friends, focus on creating a seamless and rewarding experience that taps into the natural desire of teenagers to share and connect. Here are key strategies to achieve this:\n\n### 1. **Referral Programs with Incentives**\nImplement a robust referral program that rewards both the referrer and the referee. For example, offer points, badges, or exclusive content to users who invite friends. Make sure the process is simple and user-friendly, with clear instructions and minimal steps required to participate. Consider integrating gamification elements to make the process more engaging.\n\n### 2. **Social Proof and User Testimonials**\nHighlight user testimonials and success stories within the app. Showcase how other teenagers are using the app and benefiting from it. This social proof can inspire new users to join and feel more confident about the app’s value. You can also feature user-generated content, such as photos or videos, to create a sense of community and authenticity.\n\n### 3. **Engaging and Shareable Content**\nCreate content that is not only engaging but also shareable",
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_da557029a282689f62f74d07",
+              "raw_text": "Peer influence as a social psychological dimension driving referral behavior.",
+              "normalized_text": "peer influence as a social psychological dimension driving referral behavior.",
+              "context_ref": "turn:2:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T22:59:25.825148",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_003"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 3,
+          "retrieval_probe": null
+        },
+        {
+          "runtime_mode": "evaluation",
+          "turn": 3,
+          "question": "What is the best business model for an app aimed at young users?",
+          "answer": "### Monetization Strategies for a Teen-Focused App\n\n#### 1. **Freemium Model with In-App Purchases**\nThe freemium model is highly effective for apps targeting young users. Offer a basic version of the app for free, complete with essential features, while providing premium features through in-app purchases. This approach allows users to try the app and gradually unlock more advanced functionalities. For example, you could offer premium content, additional customization options, or exclusive events. Ensure that the in-app purchases are clearly labeled and easy to understand to avoid any confusion.\n\n#### 2. **Subscription Services**\nConsider implementing a subscription service that provides access to premium features, exclusive content, or additional social benefits. Subscriptions can be monthly or yearly, offering users a consistent and reliable way to support the app. To make subscriptions appealing, offer tiered pricing plans with varying levels of access and benefits. For instance, a basic subscription could include access to a certain number of features, while a premium subscription could unlock all features and additional perks.\n\n#### 3. **Advertising**\nAdvertising can be",
+          "baseline_answer": "### Monetization Strategies for a Teen-Focused App\n\n#### 1. **Freemium Model with In-App Purchases**\nThe freemium model is highly effective for apps targeting young users. Offer a basic version of the app for free, complete with essential features, while providing premium features through in-app purchases. This approach allows users to try the app and gradually unlock more advanced functionalities. For example, you could offer premium content, additional customization options, or exclusive events. Ensure that the in-app purchases are clearly labeled and easy to understand to avoid any confusion.\n\n#### 2. **Subscription Services**\nConsider implementing a subscription service that provides access to premium features, exclusive content, or additional social benefits. Subscriptions can be monthly or yearly, offering users a consistent and reliable way to support the app. To make subscriptions appealing, offer tiered pricing plans with varying levels of access and benefits. For instance, a basic subscription could include access to a certain number of features, while a premium subscription could unlock all features and additional perks.\n\n#### 3. **Advertising**\nAdvertising can be",
+          "ssl_answer": "### Monetization Strategies for a Teen-Focused App\n\n#### 1. **Freemium Model with In-App Purchases**\nThe freemium model is highly effective for apps targeting young users. Offer a basic version of the app for free, complete with essential features, while providing premium features through in-app purchases. This approach allows users to try the app and gradually unlock more advanced functionalities. For example, you could offer premium content, additional customization options, or exclusive events. Ensure that the in-app purchases are clearly labeled and easy to understand to avoid any confusion.\n\n#### 2. **Subscription Services**\nConsider implementing a subscription service that provides access to premium features, exclusive content, or additional social benefits. Subscriptions can be monthly or yearly, offering users a consistent and reliable way to support the app. To make subscriptions appealing, offer tiered pricing plans with varying levels of access and benefits. For instance, a basic subscription could include access to a certain number of features, while a premium subscription could unlock all features and additional perks.\n\n#### 3. **Advertising**\nAdvertising can be",
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_80d9cd8fe634391993d92919",
+              "raw_text": "Behavioral economics as a lens for understanding user engagement and in-app purchasing decisions.",
+              "normalized_text": "behavioral economics as a lens for understanding user engagement and in-app purchasing decisions.",
+              "context_ref": "turn:3:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:00:31.473959",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_004"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 4,
+          "retrieval_probe": null
+        },
+        {
+          "runtime_mode": "evaluation",
+          "turn": 4,
+          "question": "How should I use user data to improve recommendations?",
+          "answer": "### Leveraging User Data for Enhanced Recommendations\n\nTo effectively use user data to improve recommendations, it's crucial to adopt a thoughtful and ethical approach. Here are key steps to follow:\n\n#### 1. **Data Collection and Privacy**\nFirst, ensure you have a clear privacy policy and obtain user consent for data collection. Collect data through user interactions, such as likes, shares, and comments, and through direct input like profile information and preferences. Use anonymized data to protect user privacy and comply with regulations like GDPR and CCPA.\n\n#### 2. **Data Analysis and Segmentation**\nAnalyze the collected data to identify patterns and preferences. Segment users based on their behavior, interests, and demographics. For example, you might find that users who frequently engage with sports content are also interested in fitness challenges. Use machine learning algorithms to process and analyze this data, identifying correlations and trends.\n\n#### 3. **Personalized Recommendations**\nDevelop a recommendation engine that uses the analyzed data to provide personalized content. Tailor content suggestions based on user behavior and preferences. For instance, if a user frequently shares posts",
+          "baseline_answer": "### Leveraging User Data for Enhanced Recommendations\n\nTo effectively use user data to improve recommendations, it's crucial to adopt a thoughtful and ethical approach. Here are key steps to follow:\n\n#### 1. **Data Collection and Privacy**\nFirst, ensure you have a clear privacy policy and obtain user consent for data collection. Collect data through user interactions, such as likes, shares, and comments, and through direct input like profile information and preferences. Use anonymized data to protect user privacy and comply with regulations like GDPR and CCPA.\n\n#### 2. **Data Analysis and Segmentation**\nAnalyze the collected data to identify patterns and preferences. Segment users based on their behavior, interests, and demographics. For example, you might find that users who frequently engage with sports content are also interested in fitness challenges. Use machine learning algorithms to process and analyze this data, identifying correlations and trends.\n\n#### 3. **Personalized Recommendations**\nDevelop a recommendation engine that uses the analyzed data to provide personalized content. Tailor content suggestions based on user behavior and preferences. For instance, if a user frequently shares posts",
+          "ssl_answer": "### Leveraging User Data for Enhanced Recommendations\n\nTo effectively use user data to improve recommendations, it's crucial to adopt a thoughtful and ethical approach. Here are key steps to follow:\n\n#### 1. **Data Collection and Privacy**\nFirst, ensure you have a clear privacy policy and obtain user consent for data collection. Collect data through user interactions, such as likes, shares, and comments, and through direct input like profile information and preferences. Use anonymized data to protect user privacy and comply with regulations like GDPR and CCPA.\n\n#### 2. **Data Analysis and Segmentation**\nAnalyze the collected data to identify patterns and preferences. Segment users based on their behavior, interests, and demographics. For example, you might find that users who frequently engage with sports content are also interested in fitness challenges. Use machine learning algorithms to process and analyze this data, identifying correlations and trends.\n\n#### 3. **Personalized Recommendations**\nDevelop a recommendation engine that uses the analyzed data to provide personalized content. Tailor content suggestions based on user behavior and preferences. For instance, if a user frequently shares posts",
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_05971ecee14ea4304830601d",
+              "raw_text": "Behavioral economics as a lens for understanding user decision-making in recommendation systems.",
+              "normalized_text": "behavioral economics as a lens for understanding user decision-making in recommendation systems.",
+              "context_ref": "turn:4:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:01:38.128419",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_005"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 5,
+          "retrieval_probe": null
+        },
+        {
+          "runtime_mode": "evaluation",
+          "turn": 5,
+          "question": "How do I scale the infrastructure if growth accelerates?",
+          "answer": "### Scaling Infrastructure for Growth\n\n#### 1. **Cloud Services**\nLeverage cloud platforms like AWS, Google Cloud, or Azure to scale your infrastructure dynamically. These platforms offer auto-scaling capabilities, which automatically adjust the number of active servers based on the current load. This ensures that your app can handle increased traffic without manual intervention. Additionally, use managed services for databases, storage, and other components to reduce the operational burden.\n\n#### 2. **Microservices Architecture**\nAdopt a microservices architecture to break down your application into smaller, independent services. This approach allows you to scale individual components of your app independently, improving efficiency and resilience. Each microservice can be scaled based on its specific load, ensuring that resources are used optimally.\n\n#### 3. **Load Balancing**\nImplement load balancers to distribute traffic evenly across your servers. This prevents any single server from becoming a bottleneck and ensures that your app remains responsive under high load. Use advanced load balancing techniques like round-robin, least connections, or IP hash to optimize performance.\n\n#### 4. **Caching Strategies",
+          "baseline_answer": "### Scaling Infrastructure for Growth\n\n#### 1. **Cloud Services**\nLeverage cloud platforms like AWS, Google Cloud, or Azure to scale your infrastructure dynamically. These platforms offer auto-scaling capabilities, which automatically adjust the number of active servers based on the current load. This ensures that your app can handle increased traffic without manual intervention. Additionally, use managed services for databases, storage, and other components to reduce the operational burden.\n\n#### 2. **Microservices Architecture**\nAdopt a microservices architecture to break down your application into smaller, independent services. This approach allows you to scale individual components of your app independently, improving efficiency and resilience. Each microservice can be scaled based on its specific load, ensuring that resources are used optimally.\n\n#### 3. **Load Balancing**\nImplement load balancers to distribute traffic evenly across your servers. This prevents any single server from becoming a bottleneck and ensures that your app remains responsive under high load. Use advanced load balancing techniques like round-robin, least connections, or IP hash to optimize performance.\n\n#### 4. **Caching Strategies",
+          "ssl_answer": "### Scaling Infrastructure for Growth\n\n#### 1. **Cloud Services**\nLeverage cloud platforms like AWS, Google Cloud, or Azure to scale your infrastructure dynamically. These platforms offer auto-scaling capabilities, which automatically adjust the number of active servers based on the current load. This ensures that your app can handle increased traffic without manual intervention. Additionally, use managed services for databases, storage, and other components to reduce the operational burden.\n\n#### 2. **Microservices Architecture**\nAdopt a microservices architecture to break down your application into smaller, independent services. This approach allows you to scale individual components of your app independently, improving efficiency and resilience. Each microservice can be scaled based on its specific load, ensuring that resources are used optimally.\n\n#### 3. **Load Balancing**\nImplement load balancers to distribute traffic evenly across your servers. This prevents any single server from becoming a bottleneck and ensures that your app remains responsive under high load. Use advanced load balancing techniques like round-robin, least connections, or IP hash to optimize performance.\n\n#### 4. **Caching Strategies",
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_8eaaca30d0e7ef7d8bc10ab3",
+              "raw_text": "Economic models of cloud adoption as a dimension alongside technical considerations.",
+              "normalized_text": "economic models of cloud adoption as a dimension alongside technical considerations.",
+              "context_ref": "turn:5:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:02:44.464871",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_006"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 6,
+          "retrieval_probe": null
+        },
+        {
+          "runtime_mode": "evaluation",
+          "turn": 6,
+          "question": "Which metrics should I show investors?",
+          "answer": "### Key Metrics for Investors\n\n#### 1. **User Growth Metrics**\n- **Monthly Active Users (MAU)**: Tracks the number of unique users who engage with the app each month. This metric is crucial for understanding the app's reach and engagement.\n- **Daily Active Users (DAU)**: Measures the number of users who interact with the app daily. DAU provides insight into user retention and the frequency of use.\n- **User Acquisition Cost (UAC)**: The cost of acquiring a new user. This metric helps in understanding the efficiency of marketing and advertising efforts.\n\n#### 2. **Engagement Metrics**\n- **Session Duration**: The average time users spend in the app. Longer session durations indicate higher user engagement.\n- **Retention Rate**: The percentage of users who continue to use the app over time. High retention rates suggest a positive user experience and strong value proposition.\n- **User Feedback and Ratings**: Reviews and ratings from users can provide qualitative insights into user satisfaction and areas for improvement.\n\n#### 3. **Monetization Metrics**\n- **Revenue per User (",
+          "baseline_answer": "### Key Metrics for Investors\n\n#### 1. **User Growth Metrics**\n- **Monthly Active Users (MAU)**: Tracks the number of unique users who engage with the app each month. This metric is crucial for understanding the app's reach and engagement.\n- **Daily Active Users (DAU)**: Measures the number of users who interact with the app daily. DAU provides insight into user retention and the frequency of use.\n- **User Acquisition Cost (UAC)**: The cost of acquiring a new user. This metric helps in understanding the efficiency of marketing and advertising efforts.\n\n#### 2. **Engagement Metrics**\n- **Session Duration**: The average time users spend in the app. Longer session durations indicate higher user engagement.\n- **Retention Rate**: The percentage of users who continue to use the app over time. High retention rates suggest a positive user experience and strong value proposition.\n- **User Feedback and Ratings**: Reviews and ratings from users can provide qualitative insights into user satisfaction and areas for improvement.\n\n#### 3. **Monetization Metrics**\n- **Revenue per User (",
+          "ssl_answer": "### Key Metrics for Investors\n\n#### 1. **User Growth Metrics**\n- **Monthly Active Users (MAU)**: Tracks the number of unique users who engage with the app each month. This metric is crucial for understanding the app's reach and engagement.\n- **Daily Active Users (DAU)**: Measures the number of users who interact with the app daily. DAU provides insight into user retention and the frequency of use.\n- **User Acquisition Cost (UAC)**: The cost of acquiring a new user. This metric helps in understanding the efficiency of marketing and advertising efforts.\n\n#### 2. **Engagement Metrics**\n- **Session Duration**: The average time users spend in the app. Longer session durations indicate higher user engagement.\n- **Retention Rate**: The percentage of users who continue to use the app over time. High retention rates suggest a positive user experience and strong value proposition.\n- **User Feedback and Ratings**: Reviews and ratings from users can provide qualitative insights into user satisfaction and areas for improvement.\n\n#### 3. **Monetization Metrics**\n- **Revenue per User (",
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_411cf5b25e774ce83cadda9b",
+              "raw_text": "Monetization strategies as a dimension alongside revenue per user.",
+              "normalized_text": "monetization strategies as a dimension alongside revenue per user.",
+              "context_ref": "turn:6:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:03:52.130023",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_007"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 7,
+          "retrieval_probe": null
+        },
+        {
+          "runtime_mode": "evaluation",
+          "turn": 7,
+          "question": "How should I handle negative publicity if it occurs?",
+          "answer": "### Managing Negative Publicity\n\n#### 1. **Immediate Response**\nWhen negative publicity arises, it's crucial to address the issue promptly. Delayed responses can exacerbate the situation. Acknowledge the issue publicly and take responsibility for any mistakes. For example, if the app has a bug that causes user data to be compromised, immediately inform users and apologize for the inconvenience.\n\n#### 2. **Transparency and Communication**\nBe transparent about the steps you are taking to resolve the issue. Regular updates to users and the public can help maintain trust. For instance, if a security breach is reported, provide details on the breach, the steps being taken to secure user data, and any actions users should take to protect their information.\n\n#### 3. **Customer Support and Feedback**\nEnhance customer support to handle user concerns effectively. Offer multiple channels for users to reach out, such as email, chat, or social media. Actively listen to user feedback and address their concerns. This not only helps in resolving issues but also shows that you value user opinions.\n\n#### 4. **Legal and Compliance",
+          "baseline_answer": "### Managing Negative Publicity\n\n#### 1. **Immediate Response**\nWhen negative publicity arises, it's crucial to address the issue promptly. Delayed responses can exacerbate the situation. Acknowledge the issue publicly and take responsibility for any mistakes. For example, if the app has a bug that causes user data to be compromised, immediately inform users and apologize for the inconvenience.\n\n#### 2. **Transparency and Communication**\nBe transparent about the steps you are taking to resolve the issue. Regular updates to users and the public can help maintain trust. For instance, if a security breach is reported, provide details on the breach, the steps being taken to secure user data, and any actions users should take to protect their information.\n\n#### 3. **Customer Support and Feedback**\nEnhance customer support to handle user concerns effectively. Offer multiple channels for users to reach out, such as email, chat, or social media. Actively listen to user feedback and address their concerns. This not only helps in resolving issues but also shows that you value user opinions.\n\n#### 4. **Legal and Compliance",
+          "ssl_answer": "### Managing Negative Publicity\n\n#### 1. **Immediate Response**\nWhen negative publicity arises, it's crucial to address the issue promptly. Delayed responses can exacerbate the situation. Acknowledge the issue publicly and take responsibility for any mistakes. For example, if the app has a bug that causes user data to be compromised, immediately inform users and apologize for the inconvenience.\n\n#### 2. **Transparency and Communication**\nBe transparent about the steps you are taking to resolve the issue. Regular updates to users and the public can help maintain trust. For instance, if a security breach is reported, provide details on the breach, the steps being taken to secure user data, and any actions users should take to protect their information.\n\n#### 3. **Customer Support and Feedback**\nEnhance customer support to handle user concerns effectively. Offer multiple channels for users to reach out, such as email, chat, or social media. Actively listen to user feedback and address their concerns. This not only helps in resolving issues but also shows that you value user opinions.\n\n#### 4. **Legal and Compliance",
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_ba725b726f8fcac5907a65c9",
+              "raw_text": "Psychological impact of negative publicity on brand perception as a dimension.",
+              "normalized_text": "psychological impact of negative publicity on brand perception as a dimension.",
+              "context_ref": "turn:7:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:05:01.280942",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_008"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 8,
+          "retrieval_probe": null
+        },
+        {
+          "runtime_mode": "evaluation",
+          "turn": 8,
+          "question": "What is the biggest long-term threat to this kind of app?",
+          "answer": "### Long-Term Threats to a Teen-Focused Social App\n\n#### 1. **Regulatory and Compliance Issues**\nOne of the biggest long-term threats is the evolving landscape of data privacy and security regulations. As laws like GDPR, CCPA, and others become more stringent, non-compliance can lead to hefty fines and damage to the app's reputation. Staying ahead of regulatory changes and ensuring continuous compliance is crucial. Regular audits and updates to privacy policies and data handling practices can mitigate these risks.\n\n#### 2. **Technological Obsolescence**\nTechnology evolves rapidly, and staying current is essential. Failure to adapt to new trends, such as advancements in AI, AR, or VR, can make the app less appealing to users. Investing in research and development to incorporate cutting-edge features can help maintain user interest and engagement. Additionally, ensuring the app is compatible with the latest devices and operating systems is vital.\n\n#### 3. **Competition and Market Saturation**\nThe social app market is highly competitive, with new entrants constantly vying for market share. To remain relevant,",
+          "baseline_answer": "### Long-Term Threats to a Teen-Focused Social App\n\n#### 1. **Regulatory and Compliance Issues**\nOne of the biggest long-term threats is the evolving landscape of data privacy and security regulations. As laws like GDPR, CCPA, and others become more stringent, non-compliance can lead to hefty fines and damage to the app's reputation. Staying ahead of regulatory changes and ensuring continuous compliance is crucial. Regular audits and updates to privacy policies and data handling practices can mitigate these risks.\n\n#### 2. **Technological Obsolescence**\nTechnology evolves rapidly, and staying current is essential. Failure to adapt to new trends, such as advancements in AI, AR, or VR, can make the app less appealing to users. Investing in research and development to incorporate cutting-edge features can help maintain user interest and engagement. Additionally, ensuring the app is compatible with the latest devices and operating systems is vital.\n\n#### 3. **Competition and Market Saturation**\nThe social app market is highly competitive, with new entrants constantly vying for market share. To remain relevant,",
+          "ssl_answer": "### Long-Term Threats to a Teen-Focused Social App\n\n#### 1. **Regulatory and Compliance Issues**\nOne of the biggest long-term threats is the evolving landscape of data privacy and security regulations. As laws like GDPR, CCPA, and others become more stringent, non-compliance can lead to hefty fines and damage to the app's reputation. Staying ahead of regulatory changes and ensuring continuous compliance is crucial. Regular audits and updates to privacy policies and data handling practices can mitigate these risks.\n\n#### 2. **Technological Obsolescence**\nTechnology evolves rapidly, and staying current is essential. Failure to adapt to new trends, such as advancements in AI, AR, or VR, can make the app less appealing to users. Investing in research and development to incorporate cutting-edge features can help maintain user interest and engagement. Additionally, ensuring the app is compatible with the latest devices and operating systems is vital.\n\n#### 3. **Competition and Market Saturation**\nThe social app market is highly competitive, with new entrants constantly vying for market share. To remain relevant,",
+          "surfaced_seeds": [],
+          "surfaced_seed_ids": [],
+          "selected_seed_ids": [],
+          "influence_decisions": [],
+          "candidate_observations": [
+            {
+              "observation_id": "obs_3cf24de4031560af83f91be3",
+              "raw_text": "User behavior and psychological impacts as a dimension alongside regulatory compliance.",
+              "normalized_text": "user behavior and psychological impacts as a dimension alongside regulatory compliance.",
+              "context_ref": "turn:8:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:06:14.999491",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "seeds_born_weightless": [
+            "ss_009"
+          ],
+          "prompt_boundary_markers": [],
+          "promoted_this_turn": [],
+          "reactivated_trtl": [],
+          "shadow_size": 9,
+          "retrieval_probe": null
+        }
+      ],
+      "gate_events": [
+        {
+          "event_id": "gate::ss_001::000001",
+          "seed_id": "ss_001",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T22:57:19.695933"
+        },
+        {
+          "event_id": "gate::ss_001::000002",
+          "seed_id": "ss_001",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T22:58:22.518018"
+        },
+        {
+          "event_id": "gate::ss_002::000003",
+          "seed_id": "ss_002",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T22:58:22.518061"
+        },
+        {
+          "event_id": "gate::ss_001::000004",
+          "seed_id": "ss_001",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=2 (threshold=3)"
+            }
+          ],
+          "status_before": "ACTIVE",
+          "status_after": "ACTIVE",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T22:59:25.833973"
+        },
+        {
+          "event_id": "gate::ss_002::000005",
+          "seed_id": "ss_002",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T22:59:25.834009"
+        },
+        {
+          "event_id": "gate::ss_001::000006",
+          "seed_id": "ss_001",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=2 (threshold=3)"
+            }
+          ],
+          "status_before": "ACTIVE",
+          "status_after": "ACTIVE",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:00:31.484688"
+        },
+        {
+          "event_id": "gate::ss_002::000007",
+          "seed_id": "ss_002",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:00:31.484728"
+        },
+        {
+          "event_id": "gate::ss_004::000008",
+          "seed_id": "ss_004",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:00:31.484774"
+        },
+        {
+          "event_id": "gate::ss_001::000009",
+          "seed_id": "ss_001",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=2 (threshold=3)"
+            }
+          ],
+          "status_before": "ACTIVE",
+          "status_after": "ACTIVE",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:01:38.139269"
+        },
+        {
+          "event_id": "gate::ss_002::000010",
+          "seed_id": "ss_002",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:01:38.139306"
+        },
+        {
+          "event_id": "gate::ss_004::000011",
+          "seed_id": "ss_004",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=2 (threshold=3)"
+            }
+          ],
+          "status_before": "ACTIVE",
+          "status_after": "ACTIVE",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:01:38.139332"
+        },
+        {
+          "event_id": "gate::ss_001::000012",
+          "seed_id": "ss_001",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=2 (threshold=3)"
+            }
+          ],
+          "status_before": "ACTIVE",
+          "status_after": "ACTIVE",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:02:44.473753"
+        },
+        {
+          "event_id": "gate::ss_002::000013",
+          "seed_id": "ss_002",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:02:44.473785"
+        },
+        {
+          "event_id": "gate::ss_004::000014",
+          "seed_id": "ss_004",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=2 (threshold=3)"
+            }
+          ],
+          "status_before": "ACTIVE",
+          "status_after": "ACTIVE",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:02:44.473825"
+        },
+        {
+          "event_id": "gate::ss_006::000015",
+          "seed_id": "ss_006",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:02:44.473848"
+        },
+        {
+          "event_id": "gate::ss_001::000016",
+          "seed_id": "ss_001",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=2 (threshold=3)"
+            }
+          ],
+          "status_before": "ACTIVE",
+          "status_after": "ACTIVE",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:03:52.143028"
+        },
+        {
+          "event_id": "gate::ss_002::000017",
+          "seed_id": "ss_002",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "DECAYING",
+          "status_after": "DECAYING",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:03:52.143065"
+        },
+        {
+          "event_id": "gate::ss_004::000018",
+          "seed_id": "ss_004",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=2 (threshold=3)"
+            }
+          ],
+          "status_before": "ACTIVE",
+          "status_after": "ACTIVE",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:03:52.143091"
+        },
+        {
+          "event_id": "gate::ss_006::000019",
+          "seed_id": "ss_006",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:03:52.143117"
+        },
+        {
+          "event_id": "gate::ss_007::000020",
+          "seed_id": "ss_007",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:03:52.143142"
+        },
+        {
+          "event_id": "gate::ss_001::000021",
+          "seed_id": "ss_001",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=2 (threshold=3)"
+            }
+          ],
+          "status_before": "DECAYING",
+          "status_after": "DECAYING",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:05:01.293896"
+        },
+        {
+          "event_id": "gate::ss_002::000022",
+          "seed_id": "ss_002",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "DECAYING",
+          "status_after": "DECAYING",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:05:01.293934"
+        },
+        {
+          "event_id": "gate::ss_004::000023",
+          "seed_id": "ss_004",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=2 (threshold=3)"
+            }
+          ],
+          "status_before": "ACTIVE",
+          "status_after": "ACTIVE",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:05:01.293961"
+        },
+        {
+          "event_id": "gate::ss_006::000024",
+          "seed_id": "ss_006",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:05:01.293985"
+        },
+        {
+          "event_id": "gate::ss_007::000025",
+          "seed_id": "ss_007",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:05:01.294008"
+        },
+        {
+          "event_id": "gate::ss_008::000026",
+          "seed_id": "ss_008",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:05:01.294030"
+        },
+        {
+          "event_id": "gate::ss_001::000027",
+          "seed_id": "ss_001",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=2 (threshold=3)"
+            }
+          ],
+          "status_before": "DECAYING",
+          "status_after": "DECAYING",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:06:15.010984"
+        },
+        {
+          "event_id": "gate::ss_002::000028",
+          "seed_id": "ss_002",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "DECAYING",
+          "status_after": "DECAYING",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:06:15.011028"
+        },
+        {
+          "event_id": "gate::ss_004::000029",
+          "seed_id": "ss_004",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=2 (threshold=3)"
+            }
+          ],
+          "status_before": "ACTIVE",
+          "status_after": "ACTIVE",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:06:15.011067"
+        },
+        {
+          "event_id": "gate::ss_006::000030",
+          "seed_id": "ss_006",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:06:15.011096"
+        },
+        {
+          "event_id": "gate::ss_007::000031",
+          "seed_id": "ss_007",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:06:15.011124"
+        },
+        {
+          "event_id": "gate::ss_008::000032",
+          "seed_id": "ss_008",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:06:15.011150"
+        },
+        {
+          "event_id": "gate::ss_009::000033",
+          "seed_id": "ss_009",
+          "policy_id": "exploratory",
+          "decision": "blocked",
+          "signals": [
+            {
+              "kind": "recurrence",
+              "direction": "neutral",
+              "strength": 0.0,
+              "source_ref": null,
+              "verified": false,
+              "independent": false,
+              "reason": "occurrence_count=1 (threshold=3)"
+            }
+          ],
+          "status_before": "NEW",
+          "status_after": "NEW",
+          "weight_before": 0.0,
+          "weight_after": 0.0,
+          "weight_delta": 0.0,
+          "contradiction_before": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "contradiction_after": {
+            "blocking": false,
+            "open_count": 0,
+            "score": 0.0
+          },
+          "authority_version": 0,
+          "reason": "no qualifying recurrence or verified external support",
+          "created_at": "2026-08-19T23:06:15.011177"
+        }
+      ],
+      "audit_records_verified": 0,
+      "final_shadow": {
+        "runtime_mode": "evaluation",
+        "turns": 9,
+        "seeds": [
+          {
+            "id": "ss_001",
+            "text": "Peer influence dynamics as a relational dimension alongside influencer marketing.",
+            "weight": 0.0,
+            "trace": 0.271,
+            "status": "DECAYING",
+            "occurrence_count": 2,
+            "evidence_count": 0,
+            "born_turn": 0
+          },
+          {
+            "id": "ss_002",
+            "text": "Gamification as a dimension enhancing user engagement through competitive and collaborative features.",
+            "weight": 0.0,
+            "trace": 0.194,
+            "status": "DECAYING",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 1
+          },
+          {
+            "id": "ss_003",
+            "text": "Peer influence as a social psychological dimension driving referral behavior.",
+            "weight": 0.0,
+            "trace": 0.271,
+            "status": "DECAYING",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 2
+          },
+          {
+            "id": "ss_004",
+            "text": "Behavioral economics as a lens for understanding user engagement and in-app purchasing decisions.",
+            "weight": 0.0,
+            "trace": 0.527,
+            "status": "ACTIVE",
+            "occurrence_count": 2,
+            "evidence_count": 0,
+            "born_turn": 3
+          },
+          {
+            "id": "ss_005",
+            "text": "Behavioral economics as a lens for understanding user decision-making in recommendation systems.",
+            "weight": 0.0,
+            "trace": 0.527,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 4
+          },
+          {
+            "id": "ss_006",
+            "text": "Economic models of cloud adoption as a dimension alongside technical considerations.",
+            "weight": 0.0,
+            "trace": 0.736,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 5
+          },
+          {
+            "id": "ss_007",
+            "text": "Monetization strategies as a dimension alongside revenue per user.",
+            "weight": 0.0,
+            "trace": 1.027,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 6
+          },
+          {
+            "id": "ss_008",
+            "text": "Psychological impact of negative publicity on brand perception as a dimension.",
+            "weight": 0.0,
+            "trace": 1.433,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 7
+          },
+          {
+            "id": "ss_009",
+            "text": "User behavior and psychological impacts as a dimension alongside regulatory compliance.",
+            "weight": 0.0,
+            "trace": 2.0,
+            "status": "NEW",
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "born_turn": 8
+          }
+        ],
+        "influence_records": [],
+        "candidate_observation_ledger": {
+          "schema_version": 1,
+          "observations": [
+            {
+              "observation_id": "obs_201f136144ae5db00cf161d2",
+              "raw_text": "Peer influence dynamics as a relational dimension alongside influencer marketing.",
+              "normalized_text": "peer influence dynamics as a relational dimension alongside influencer marketing.",
+              "context_ref": "turn:0:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T22:57:19.687141",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_49233b4d8a8849f7250f7e94",
+              "raw_text": "Gamification as a dimension enhancing user engagement through competitive and collaborative features.",
+              "normalized_text": "gamification as a dimension enhancing user engagement through competitive and collaborative features.",
+              "context_ref": "turn:1:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T22:58:22.507128",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_da557029a282689f62f74d07",
+              "raw_text": "Peer influence as a social psychological dimension driving referral behavior.",
+              "normalized_text": "peer influence as a social psychological dimension driving referral behavior.",
+              "context_ref": "turn:2:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T22:59:25.825148",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_80d9cd8fe634391993d92919",
+              "raw_text": "Behavioral economics as a lens for understanding user engagement and in-app purchasing decisions.",
+              "normalized_text": "behavioral economics as a lens for understanding user engagement and in-app purchasing decisions.",
+              "context_ref": "turn:3:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:00:31.473959",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_05971ecee14ea4304830601d",
+              "raw_text": "Behavioral economics as a lens for understanding user decision-making in recommendation systems.",
+              "normalized_text": "behavioral economics as a lens for understanding user decision-making in recommendation systems.",
+              "context_ref": "turn:4:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:01:38.128419",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_8eaaca30d0e7ef7d8bc10ab3",
+              "raw_text": "Economic models of cloud adoption as a dimension alongside technical considerations.",
+              "normalized_text": "economic models of cloud adoption as a dimension alongside technical considerations.",
+              "context_ref": "turn:5:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:02:44.464871",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_411cf5b25e774ce83cadda9b",
+              "raw_text": "Monetization strategies as a dimension alongside revenue per user.",
+              "normalized_text": "monetization strategies as a dimension alongside revenue per user.",
+              "context_ref": "turn:6:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:03:52.130023",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_ba725b726f8fcac5907a65c9",
+              "raw_text": "Psychological impact of negative publicity on brand perception as a dimension.",
+              "normalized_text": "psychological impact of negative publicity on brand perception as a dimension.",
+              "context_ref": "turn:7:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:05:01.280942",
+              "legacy_projection": false,
+              "schema_version": 1
+            },
+            {
+              "observation_id": "obs_3cf24de4031560af83f91be3",
+              "raw_text": "User behavior and psychological impacts as a dimension alongside regulatory compliance.",
+              "normalized_text": "user behavior and psychological impacts as a dimension alongside regulatory compliance.",
+              "context_ref": "turn:8:baseline_answer",
+              "detector_backend": "ollama:qwen2.5:7b-instruct-q4_K_M",
+              "detector_prompt_provenance": "generative",
+              "candidate_type": "possible_completion",
+              "ssl_exposed": false,
+              "surfaced_seed_ids": [],
+              "recurrence_eligible": true,
+              "created_at": "2026-08-19T23:06:14.999491",
+              "legacy_projection": false,
+              "schema_version": 1
+            }
+          ],
+          "links": []
+        }
+      }
+    }
+  ]
+}

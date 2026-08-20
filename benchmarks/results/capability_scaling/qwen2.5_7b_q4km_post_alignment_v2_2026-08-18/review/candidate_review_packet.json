@@ -1,0 +1,1812 @@
+{
+  "schema": "ssl-capability-scaling-review-v1",
+  "review_type": "candidate",
+  "items": [
+    {
+      "review_id": "candidate_865ee841e2250c4c",
+      "domain": "history and economics",
+      "question": "Briefly explain why the Industrial Revolution began in Great Britain.",
+      "answer": "The Industrial Revolution began in Great Britain due to a combination of factors that created a perfect storm of conditions conducive to technological and economic transformation. Firstly, Britain had abundant natural resources, including coal and iron, which were crucial for the development of steam power and the production of goods. Secondly, the country's colonial empire provided access to raw materials and new markets, driving demand and encouraging innovation. Thirdly, Britain had a well-established system of banking and finance, which facilitated the investment needed for industrialization. Additionally, the Agricultural Revolution, which preceded the Industrial Revolution, increased agricultural productivity, freeing up labor that could then be employed in factories. Lastly, Britain's political stability and legal framework, including the protection of property rights, supported the growth of businesses and the adoption of new technologies.\n\nIn summary, the unique combination of natural resources, economic incentives, technological innovation, and supportive institutions in Great Britain created the ideal conditions for the onset of the Industrial Revolution. This period marked a significant shift from agrarian economies to industrialized ones, fundamentally altering the global economic landscape.",
+      "candidate": "Colonial trade dynamics as a relational dimension alongside technological innovation.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_b00ed8f1e935e0c1",
+      "domain": "history and economics",
+      "question": "How did industrialization then spread to continental Europe?",
+      "answer": "The spread of industrialization to continental Europe was influenced by several key factors, including economic, technological, and social influences from Britain, as well as internal developments in the European countries themselves.\n\nFirstly, Britain's success in the Industrial Revolution served as a powerful model for other nations. The economic benefits, such as increased productivity and wealth, attracted the attention of European leaders and entrepreneurs. The British example demonstrated the potential for rapid economic growth through industrialization, which motivated other countries to adopt similar strategies.\n\nSecondly, technological transfer played a crucial role. British engineers, scientists, and entrepreneurs traveled to Europe, sharing their knowledge and expertise. Additionally, the export of machinery, tools, and raw materials from Britain to continental Europe facilitated the adoption of new technologies. For instance, the steam engine, which was central to Britain's industrialization, was quickly adapted and improved upon in other countries.\n\nThirdly, the political and economic conditions in Europe created favorable environments for industrialization. The Napoleonic Wars, which ended in 1815, led to a period of relative stability and economic growth in many",
+      "candidate": "Ideological influences of Enlightenment thinkers as a dimension supporting industrialization efforts.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_75e3a758785b2fd6",
+      "domain": "history and economics",
+      "question": "What explains why some regions industrialized much faster than others?",
+      "answer": "The speed of industrialization varied significantly among regions due to a complex interplay of factors, including economic, political, social, and technological conditions. Firstly, access to capital and financial institutions was crucial. Countries with well-developed banking systems and a robust financial infrastructure could more easily fund industrial projects. For instance, the United States, with its strong banking system and the availability of venture capital, industrialized rapidly after the Civil War.\n\nSecondly, the availability of natural resources, such as coal, iron, and water power, influenced industrialization. Regions with abundant resources could support larger and more efficient industries. For example, the Ruhr Valley in Germany benefited from its rich coal deposits, which fueled the growth of its steel industry.\n\nThirdly, the presence of a skilled labor force was essential. Areas with a well-educated and trained workforce could more effectively adopt and operate new technologies. The German states, with their emphasis on education and technical training, had a workforce well-suited for industrial work.\n\nFourthly, political stability and supportive policies played a significant role. Governments that provided incentives for industrial development,",
+      "candidate": "Ideological influences as a dimension shaping industrial policies and practices.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_154999318ca8da4f",
+      "domain": "history and economics",
+      "question": "Which factor is most often underestimated in standard explanations?",
+      "answer": "One factor that is often underestimated in standard explanations of industrialization is the role of social and cultural changes. While economic, technological, and political factors are frequently highlighted, the shift in social norms and values, as well as the cultural emphasis on innovation and progress, can significantly influence the pace and success of industrialization.\n\nSocial changes, such as the rise of the middle class and the spread of Enlightenment ideas, fostered a culture that valued education, innovation, and entrepreneurship. This cultural shift encouraged individuals to embrace new technologies and business practices, driving industrial growth. For example, the emphasis on education in the German states not only provided a skilled workforce but also created a society that was more receptive to industrialization.\n\nMoreover, the cultural emphasis on progress and innovation can lead to a self-reinforcing cycle of technological advancement. As new technologies are adopted, they often lead to further innovations, creating a virtuous cycle that accelerates industrialization. This cultural aspect is often overlooked in favor of more tangible factors like capital availability or natural resources.\n\nIn conclusion, while economic, technological, and political factors are crucial,",
+      "candidate": "Psychological factors as a dimension influencing social norms and values.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_af6ca692d0d85803",
+      "domain": "product and growth",
+      "question": "I am building a social app for teenagers. How do I get the first thousand users?",
+      "answer": "To attract the first thousand users for your social app targeting teenagers, consider these strategic steps:\n\n1. **Identify Your Target Audience**: Understand the interests, behaviors, and preferences of teenagers. This will help tailor your app’s features and marketing efforts to resonate with them.\n\n2. **Leverage Social Media**: Use platforms like Instagram, TikTok, and Snapchat where teenagers are most active. Run targeted ads, collaborate with influencers, and participate in trending challenges to increase visibility.\n\n3. **Create Engaging Content**: Develop content that appeals to teenagers, such as fun quizzes, interactive polls, or challenges. Share user-generated content to foster a sense of community and authenticity.\n\n4. **Offer Incentives**: Provide free trials, exclusive features, or small rewards for signing up. Consider hosting a contest or a giveaway to attract initial users.\n\n5. **Optimize for Virality**: Make your app easy to share and encourage users to invite friends. Implement features that naturally promote sharing, such as group chats or collaborative activities.\n\n6. **Partnerships and Collaborations**: Partner with schools,",
+      "candidate": "Psychological triggers and motivations as a dimension influencing user engagement and retention.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_9de2fc6c5c66abf6",
+      "domain": "product and growth",
+      "question": "Which features are most effective at retaining users?",
+      "answer": "To retain users effectively, your social app should focus on several key features that enhance user engagement and satisfaction:\n\n1. **Personalization and Customization**: Allow users to personalize their profiles, choose themes, and customize their experience. This makes the app more appealing and encourages users to spend more time on it.\n\n2. **Interactive Content and Features**: Incorporate interactive elements such as quizzes, polls, and games. These features not only keep users engaged but also provide a sense of community and fun. For example, a quiz feature can be themed around popular interests like music, movies, or sports.\n\n3. **Real-Time Communication**: Implement real-time messaging and group chat functionalities. Instant communication is crucial for maintaining user engagement, especially among teenagers who are always connected and value real-time interaction.\n\n4. **Privacy and Safety**: Ensure that your app prioritizes user privacy and safety. Features like end-to-end encryption, privacy settings, and reporting tools can build trust and keep users secure, which is essential for long-term retention.\n\n5. **Regular Updates and New Features**: Keep the app fresh by regularly updating",
+      "candidate": "Gamification as a dimension to enhance user engagement and retention through points, badges, and leaderboards.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_f8d3fd17e726a1ec",
+      "domain": "product and growth",
+      "question": "How do I make the app viral so users invite their friends?",
+      "answer": "To make your social app viral and encourage users to invite their friends, focus on creating a compelling user experience that naturally promotes sharing. Here are key strategies:\n\n1. **Gamification and Challenges**: Integrate gamification elements such as badges, points, and leaderboards. Create fun challenges that users can share with their friends, like trivia contests or photo challenges. This not only increases user engagement but also makes the app more shareable.\n\n2. **Referral Programs**: Implement a referral program that rewards both the referrer and the new user. Offer incentives like extra features, discounts, or in-app rewards. Make the process simple and seamless, perhaps with a one-click referral link or a QR code.\n\n3. **Social Proof and Community Building**: Highlight the number of users, active communities, and popular features to create a sense of community and belonging. Encourage users to share their experiences and achievements on social media, and feature these stories within the app.\n\n4. **Seamless Sharing Options**: Ensure your app has easy-to-use sharing options. Allow users to share content directly from the app",
+      "candidate": "Viral marketing strategies as a dimension of user experience design.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_182ed8ee5bb23ce0",
+      "domain": "product and growth",
+      "question": "What is the best business model for an app aimed at young users?",
+      "answer": "For an app aimed at young users, choosing the right business model is crucial for long-term success. Here are some effective models:\n\n1. **Freemium Model**: Offer the core features of your app for free while providing premium features or services for a fee. This model is popular among young users who are often more willing to try free apps. You can monetize through in-app purchases, such as virtual goods, premium subscriptions, or ad-free experiences.\n\n2. **Advertising**: Leverage the large user base to generate revenue through targeted ads. Young users are often more receptive to ads that are relevant and engaging. Ensure that ads do not disrupt the user experience, as this can lead to app abandonment.\n\n3. **Sponsored Content and Partnerships**: Collaborate with brands and influencers to create sponsored content or events within the app. This can be particularly effective if your app has a strong community and active user base. Ensure that partnerships align with your brand values and do not compromise user experience.\n\n4. **Data Monetization**: With the increasing value of user data, consider monetizing through",
+      "candidate": "User experience as a dimension influencing the effectiveness of different business models.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_45b059bfac9ab9f9",
+      "domain": "product and growth",
+      "question": "How should I use user data to improve recommendations?",
+      "answer": "To effectively use user data to improve recommendations, follow these steps:\n\n1. **Data Collection and Privacy**: Collect data through user interactions, such as likes, shares, and search queries, while ensuring compliance with privacy regulations like GDPR and CCPA. Clearly inform users about data collection and usage, and provide options to control their data.\n\n2. **Data Analysis and Segmentation**: Analyze user data to identify patterns and preferences. Segment users based on their behavior, interests, and demographics. This segmentation helps in tailoring recommendations to specific user groups, enhancing relevance and engagement.\n\n3. **Algorithm Development**: Develop or refine recommendation algorithms that leverage machine learning techniques. These algorithms can predict user preferences and suggest content, friends, or activities that align with their interests. For example, collaborative filtering can recommend content based on similar users, while content-based filtering can suggest items similar to those a user has liked.\n\n4. **A/B Testing and Iteration**: Implement A/B testing to compare different recommendation strategies and algorithms. Continuously test and refine your approach based on user feedback and engagement metrics. This iterative process ensures",
+      "candidate": "Ethical considerations as a framing dimension alongside legal compliance.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_15b4a2e464c0056b",
+      "domain": "product and growth",
+      "question": "How do I scale the infrastructure if growth accelerates?",
+      "answer": "Scaling infrastructure for a growing social app requires a strategic approach to ensure smooth performance and user satisfaction. Here are key steps to consider:\n\n1. **Cloud Services**: Leverage cloud providers like AWS, Google Cloud, or Azure, which offer scalable infrastructure. These platforms can automatically adjust resources based on demand, reducing the need for upfront investment in hardware. Utilize auto-scaling groups and load balancers to handle increased traffic efficiently.\n\n2. **Database Optimization**: Optimize your database to handle increased data volume and query load. Consider using NoSQL databases for unstructured data and traditional SQL databases for structured data. Implement caching strategies to reduce database load and improve response times. Regularly review and optimize database queries to ensure they are efficient.\n\n3. **Content Delivery Network (CDN)**: Implement a CDN to distribute content closer to users, reducing latency and improving load times. This is particularly important for media-heavy apps where users access large files or streams.\n\n4. **Microservices Architecture**: Adopt a microservices architecture to break down your application into smaller, manageable services. This approach allows you to scale individual",
+      "candidate": "Human resource management as a strategic dimension alongside technical solutions.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_29846f161e62aa2d",
+      "domain": "product and growth",
+      "question": "Which metrics should I show investors?",
+      "answer": "To effectively communicate the growth and health of your social app to investors, focus on a few key metrics that demonstrate user engagement, financial performance, and potential for future growth. Here’s a structured approach:\n\n1. **User Growth Metrics**:\n   - **Monthly Active Users (MAU)**: Track the number of unique users who engage with the app each month. This metric shows the app’s reach and user base.\n   - **Daily Active Users (DAU)**: Measure the number of users who interact with the app daily. This indicates user engagement and the app’s daily relevance.\n   - **User Acquisition Cost (UAC)**: Monitor the cost of acquiring new users. A lower UAC suggests efficient marketing strategies and cost-effective growth.\n\n2. **Engagement Metrics**:\n   - **Session Length and Frequency**: Analyze how long users spend in the app and how often they return. High session lengths and frequent returns indicate strong user engagement.\n   - **Retention Rate**: Track the percentage of users who continue to use the app over time. A high retention rate signals user satisfaction and",
+      "candidate": "Viral marketing strategies as a dimension influencing user acquisition and engagement.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_d1cf3e15b33ebf49",
+      "domain": "product and growth",
+      "question": "How should I handle negative publicity if it occurs?",
+      "answer": "Handling negative publicity requires a strategic and timely response to maintain trust and credibility. Here’s a structured approach:\n\n1. **Immediate Response**: Address the issue promptly. Delayed responses can exacerbate the situation. Acknowledge the issue publicly and assure stakeholders that you are taking it seriously. This shows transparency and responsibility.\n\n2. **Investigate the Issue**: Conduct a thorough investigation to understand the root cause of the negative publicity. This helps in formulating a genuine and effective response. Ensure that your investigation is transparent and that you are willing to share findings with the public.\n\n3. **Communicate Openly and Honestly**: Be transparent about the steps you are taking to address the issue. Regular updates can help manage expectations and keep the conversation going. Use clear, concise, and empathetic language to convey your message.\n\n4. **Take Action**: Demonstrate that you are taking concrete steps to resolve the issue. This could involve policy changes, improvements in services, or compensatory measures for affected users. Show that you are committed to learning from the experience and making necessary adjustments.\n\n5. **Engage with",
+      "candidate": "Psychological impact of negative publicity on stakeholders as a dimension of trust and credibility management.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_133ca18e90036855",
+      "domain": "product and growth",
+      "question": "What is the biggest long-term threat to this kind of app?",
+      "answer": "The biggest long-term threat to a social app aimed at teenagers is the evolving landscape of privacy concerns and regulatory scrutiny. As user data becomes increasingly valuable, the risk of data breaches and misuse grows, potentially leading to legal and reputational damage. Additionally, the increasing focus on digital well-being and the potential for apps to contribute to issues like cyberbullying and addiction poses a significant threat. Regulatory bodies are likely to implement stricter guidelines, which could limit the app's functionality and user base. Moreover, the rise of alternative social media platforms and the changing preferences of young users can also pose a challenge. To mitigate these threats, it is crucial to prioritize user privacy and safety, continuously adapt to regulatory changes, and regularly engage with the user community to understand their evolving needs and preferences.\n\nIn summary, the combination of privacy concerns, regulatory pressures, and the dynamic nature of user preferences and technology trends presents a multifaceted threat to the long-term success of a social app for teenagers.",
+      "candidate": "Technological determinism as a lens for understanding the role of app design in shaping user behavior and well-being.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_91dca4d07fba93ed",
+      "domain": "urban development",
+      "question": "Our city wants to revitalize the downtown area. Where should we start?",
+      "answer": "To revitalize the downtown area of your city, consider starting with a comprehensive assessment of the current state of the downtown. This involves gathering data on the demographics, economic conditions, and infrastructure. Engage with the community to understand their needs and aspirations, which can be done through surveys, town hall meetings, and focus groups. This step is crucial as it provides a solid foundation for your revitalization plan.\n\nNext, prioritize projects that can have a significant impact on the downtown's appeal and functionality. For instance, improving public spaces such as parks, plazas, and pedestrian walkways can enhance the quality of life and attract more foot traffic. Consider implementing smart city technologies to improve public safety and convenience, such as smart lighting, real-time traffic management systems, and public Wi-Fi.\n\nRevitalizing the commercial and retail landscape is another key area. Encourage the development of mixed-use buildings that combine residential, commercial, and recreational spaces. This can foster a vibrant community and reduce the need for long commutes. Attracting and retaining businesses is essential, so consider offering incentives such as tax breaks",
+      "candidate": "Socioeconomic disparities as a dimension affecting the assessment and revitalization efforts.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_15f71e6c31e93ffc",
+      "domain": "urban development",
+      "question": "How can we attract more shops, restaurants, and cafes?",
+      "answer": "To attract more shops, restaurants, and cafes, start by understanding the current retail landscape and identifying gaps in the market. Analyze the types of businesses already present and the ones that are missing, considering the preferences of your target demographic. For instance, if your downtown area is family-oriented, consider attracting more family-friendly restaurants and cafes. If there's a lack of specialty shops, explore opportunities for unique boutiques or artisanal food stores.\n\nOffering incentives can be a powerful tool. Provide tax breaks, grants, or low-interest loans to new businesses. Additionally, consider waiving or reducing initial fees for businesses that open within a certain timeframe. This can significantly reduce the financial burden on new entrepreneurs, making it more attractive for them to set up in your downtown area.\n\nCreating a supportive business environment is crucial. Ensure that the infrastructure is up-to-date and conducive to business operations. This includes reliable utilities, efficient waste management, and adequate parking. Also, consider implementing programs that help businesses thrive, such as business mentoring, marketing support, and networking events. These initiatives can help new businesses establish themselves and",
+      "candidate": "Regulatory flexibility as a dimension for attracting diverse business types.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_c7817b4c527ba7e5",
+      "domain": "urban development",
+      "question": "How should we improve accessibility and traffic?",
+      "answer": "Improving accessibility and traffic in your downtown area is crucial for enhancing the overall appeal and functionality. Start by conducting a thorough traffic analysis to identify congestion points and areas with high pedestrian foot traffic. Based on this data, consider implementing traffic-calming measures such as speed bumps, narrower streets, and roundabouts to reduce vehicle speeds and improve safety. Additionally, consider adding dedicated bike lanes and pedestrian walkways to encourage alternative modes of transportation and reduce car dependency.\n\nPublic transportation is another key factor. Enhance the existing bus or tram routes to better serve the downtown area, ensuring that they are frequent and reliable. Introduce real-time information systems to help commuters plan their journeys more effectively. If feasible, consider expanding the network to include light rail or metro services, which can significantly reduce traffic congestion and provide a more efficient transportation option.\n\nTo address parking issues, explore the possibility of implementing a smart parking system that uses sensors and mobile apps to guide drivers to available spots. This can reduce the time spent searching for parking and minimize the number of cars circling the block. Also, consider creating a parking district where parking",
+      "candidate": "Smart city integration as a dimension for cohesive urban development.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_a4969b76565499db",
+      "domain": "urban development",
+      "question": "How can we make downtown more attractive to tourists?",
+      "answer": "To make your downtown area more attractive to tourists, start by enhancing the aesthetic appeal. Invest in landscaping and beautification projects, such as planting trees, flowers, and greenery along streets and in public spaces. Install attractive street furniture, such as benches and trash cans, and ensure that the overall environment is clean and well-maintained. Highlight local art and culture by incorporating murals, sculptures, and other public art installations that reflect the unique character of your city.\n\nDevelop a cohesive theme or narrative that ties together the various attractions in your downtown area. This could be based on local history, culture, or natural features. For example, if your city has a rich industrial heritage, you could create a walking tour that showcases old factories and machinery, now repurposed into galleries, cafes, and shops. Promote this theme through marketing materials, guided tours, and interactive experiences that engage visitors and provide a memorable experience.\n\nImprove the visitor experience by providing comprehensive information and support. Establish a visitor center that offers maps, brochures, and information about local attractions, events, and services.",
+      "candidate": "Public-private partnerships as a collaborative framework for enhancement projects.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_f406c47f859d2f94",
+      "domain": "urban development",
+      "question": "What role should housing development play in the city center?",
+      "answer": "Housing development in the city center plays a pivotal role in revitalizing the downtown area and enhancing its overall appeal. By integrating residential units into the heart of the city, you can create a vibrant, 24/7 environment that supports a diverse community. This can be achieved through the development of mixed-use buildings that combine residential, commercial, and recreational spaces. Such developments not only provide housing options but also foster a sense of community and reduce the need for long commutes, making the downtown area more attractive to both residents and visitors.\n\nTo ensure that housing development is sustainable and beneficial, consider the following strategies:\n\n1. **Affordability and Diversity**: Implement policies that promote the development of affordable housing options to ensure a diverse and inclusive community. This can include subsidies, tax incentives, and zoning regulations that encourage developers to include a mix of housing types and price points.\n\n2. **Sustainability**: Incorporate green building practices and sustainable design principles into new housing developments. This includes using energy-efficient materials, designing for natural light and ventilation, and integrating renewable energy sources. Additionally, consider the integration",
+      "candidate": "Economic disparity as a dimension affecting the feasibility and distribution of mixed-use developments.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_c2bce21e465676a0",
+      "domain": "urban development",
+      "question": "How should we add more green public space?",
+      "answer": "To add more green public space in your downtown area, start by identifying underutilized or neglected areas that could be transformed into parks, gardens, or other green spaces. Engage with local communities to understand their preferences and needs, ensuring that the new green spaces meet the diverse interests of residents and visitors. For instance, consider creating pocket parks, which are small, easily accessible green areas that can be found in various parts of the city, or larger parks that offer amenities like playgrounds, sports facilities, and picnic areas.\n\nIncorporate native plants and trees that require minimal maintenance and support local biodiversity. This not only reduces the environmental impact but also enhances the aesthetic appeal of the green spaces. Additionally, consider installing water features, such as fountains or small ponds, which can create a calming atmosphere and attract wildlife. To ensure the long-term sustainability of these green spaces, establish maintenance and management plans that involve local community groups and volunteers.\n\nSmart landscaping techniques can also be employed to maximize the benefits of green spaces. For example, use permeable paving materials that allow rainwater to filter through, reducing",
+      "candidate": "Smart technology integration as a dimension for enhancing maintenance and visitor experience.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_2f65fd5ba7bb2ee8",
+      "domain": "urban development",
+      "question": "How do we keep downtown safe and lively in the evening?",
+      "answer": "To keep your downtown area safe and lively in the evening, a multi-faceted approach is essential. First, enhance public safety through the deployment of well-lit streets and the installation of security cameras in key areas. This not only deters crime but also provides a sense of security for residents and visitors. Consider partnering with local law enforcement to establish a visible presence, such as through foot patrols or bike patrols, which can help maintain order and address any issues promptly.\n\nNext, encourage businesses to stay open later by offering incentives and support. This can include tax breaks, grants, or low-interest loans for businesses that extend their operating hours. Additionally, organize events and activities that draw people to the downtown area after dark, such as outdoor movie screenings, live music performances, or themed festivals. These events can create a lively atmosphere and attract a diverse crowd, reducing the risk of crime and enhancing the overall experience.\n\nPublic transportation plays a crucial role in keeping the downtown area safe and accessible. Ensure that public transit services run frequently and reliably into the evening hours, providing a safe and convenient alternative to driving.",
+      "candidate": "Community engagement as a relational dimension alongside public safety measures.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_5e2284aa7858cd08",
+      "domain": "urban development",
+      "question": "How can the municipality finance all of this?",
+      "answer": "Financing the revitalization of your downtown area requires a strategic and collaborative approach. Start by exploring public funding options, such as grants from state and federal agencies, and local government budgets. For instance, the U.S. Department of Transportation offers grants for transportation and infrastructure projects, while the U.S. Economic Development Administration provides funding for community and economic development initiatives. Additionally, consider applying for grants from private foundations that support urban revitalization and sustainability projects.\n\nPublic-private partnerships (PPPs) can also be a viable financing mechanism. Engage with local businesses, developers, and investors to form partnerships that share the financial burden and leverage resources. For example, a developer might contribute funds for infrastructure improvements in exchange for the right to build and operate a mixed-use development. PPPs can also involve public entities providing land or other assets in exchange for private sector investment.\n\nCrowdfunding and community fundraising can also play a role, especially for smaller projects or initiatives. Leverage social media and local media to raise awareness and engage the community in the fundraising process. This can help build support and generate additional funding.\n\nTo ensure",
+      "candidate": "Social impact bonds as a financing mechanism for public projects.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_8258baf110baba8f",
+      "domain": "urban development",
+      "question": "What most often goes wrong in downtown revitalization projects?",
+      "answer": "Several common pitfalls can undermine the success of downtown revitalization projects. First, a lack of comprehensive planning often leads to fragmented and uncoordinated efforts. Without a clear vision and strategic plan, projects may fail to address the root causes of decline and instead focus on superficial changes that do not yield lasting results. Engaging stakeholders, including local residents, businesses, and government officials, from the outset can help ensure that the plan aligns with community needs and expectations.\n\nSecond, inadequate funding can hinder progress. Projects that rely solely on public funds may face budget constraints, while those that depend on private investment may struggle to secure the necessary capital. Diversifying funding sources, such as through public-private partnerships, grants, and community fundraising, can help mitigate financial risks. However, it is crucial to have a robust financial plan that outlines how funds will be allocated and managed throughout the project lifecycle.\n\nThird, neglecting the social and cultural aspects of the community can lead to projects that fail to resonate with residents. Revitalization efforts should prioritize community engagement and cultural preservation. For example, incorporating local history and traditions",
+      "candidate": "Community resilience as a dimension influencing project sustainability and impact.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_d52c7a7ddb358a1f",
+      "domain": "education",
+      "question": "I am designing a new digital literacy module for lower-secondary students. Where should I start?",
+      "answer": "To design an effective digital literacy module for lower-secondary students, start by understanding the core competencies needed at this age. Digital literacy encompasses not just the technical skills of using digital tools but also the critical thinking, ethical, and social skills necessary to navigate the digital world responsibly.\n\n1. **Assess Current Skills and Needs**: Begin by assessing the current digital literacy levels of your students. This can be done through a survey or a brief assessment. Identify the gaps and areas where students need more support. This will help tailor the module to meet their specific needs.\n\n2. **Set Clear Objectives**: Define what you want students to learn and be able to do by the end of the module. Objectives should be specific, measurable, achievable, relevant, and time-bound (SMART). For example, students should be able to evaluate the credibility of online sources, use digital tools effectively, and understand the implications of their online actions.\n\n3. **Incorporate Practical Activities**: Design activities that are both engaging and educational. Practical exercises can include creating digital presentations, participating in online discussions, and using digital",
+      "candidate": "Socioeconomic disparities as a dimension influencing students' access to and engagement with digital tools.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_fcee69050be654e3",
+      "domain": "education",
+      "question": "How should I handle large differences in students' prior knowledge?",
+      "answer": "Handling large differences in students' prior knowledge requires a thoughtful and inclusive approach. Here are some strategies to consider:\n\n1. **Differentiated Instruction**: Tailor the content and activities to accommodate various skill levels. For instance, provide advanced students with more complex tasks or additional challenges, while offering foundational support to those who need it. This can be achieved through tiered assignments, where tasks are structured to increase in difficulty, allowing all students to engage at their appropriate level.\n\n2. **Group Work**: Utilize group projects where students can collaborate and learn from each other. Pairing students with different levels of expertise can foster a supportive learning environment. More experienced students can help their peers, while less experienced students can learn from their more knowledgeable counterparts.\n\n3. **Flexible Learning Paths**: Offer multiple pathways through the material. This could involve providing different resources or activities that cater to various learning styles and paces. For example, visual learners might benefit from video tutorials, while kinesthetic learners might prefer hands-on activities.\n\n4. **Formative Assessments**: Regularly assess students' understanding to identify areas where they",
+      "candidate": "Socioeconomic background as a dimension influencing prior knowledge and its impact on instructional strategies.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_13f1c66a22dc39b8",
+      "domain": "education",
+      "question": "Which learning activities work best for this topic?",
+      "answer": "For a digital literacy module, incorporating a variety of engaging and effective learning activities is crucial. Here are some activities that can be particularly beneficial:\n\n1. **Interactive Workshops**: Organize hands-on workshops where students can practice using digital tools and software. For example, a workshop on creating digital presentations can include step-by-step instructions and real-time feedback. This approach helps students build practical skills and confidence.\n\n2. **Online Simulations and Games**: Utilize educational games and simulations that simulate real-world digital scenarios. These can be particularly effective for teaching critical thinking and problem-solving skills. For instance, a game that challenges students to identify credible online sources can help them develop the necessary skills to navigate the internet safely.\n\n3. **Collaborative Projects**: Encourage students to work in teams on projects that require them to use digital tools and resources. Projects could include creating a digital newsletter, developing a website, or producing a video. These activities not only enhance digital literacy but also promote teamwork and communication skills.\n\n4. **Guest Speakers and Webinars**: Invite experts in digital literacy or related fields to speak",
+      "candidate": "User-centered design as a dimension influencing activity selection and effectiveness.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_d5b42d70e61cf690",
+      "domain": "education",
+      "question": "How do I assess whether students genuinely understand it instead of merely repeating it?",
+      "answer": "To ensure students genuinely understand digital literacy concepts rather than just repeating them, it's essential to employ a mix of formative and summative assessments that go beyond rote memorization. Here are some strategies:\n\n1. **Formative Assessments**: These are ongoing assessments that provide immediate feedback to both teachers and students. They can include:\n   - **Observations**: Watch students as they work on digital tasks to see if they apply the correct skills and understanding.\n   - **Quizzes and Polls**: Use quick, informal quizzes or polls to check for understanding during or after lessons. Tools like Kahoot! or Mentimeter can make this engaging.\n   - **Peer Reviews**: Have students review each other's work, which can help them articulate their understanding and identify areas for improvement.\n\n2. **Summative Assessments**: These are more formal and comprehensive, often used at the end of a unit or module. They can include:\n   - **Projects**: Assign projects that require students to apply their knowledge in real-world scenarios. For example, a project on digital citizenship could involve creating a presentation",
+      "candidate": "Gamification as a dimension to enhance engagement in both formative and summative assessments.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_6821a02c416c695e",
+      "domain": "education",
+      "question": "How do I include students who have little digital support at home?",
+      "answer": "Including students who have little digital support at home is crucial to ensure equitable learning. Here are strategies to support these students effectively:\n\n1. **Equal Access to Resources**: Ensure that all students have access to necessary digital tools and resources. This might involve providing devices or internet access at school. For instance, you could organize a \"Bring Your Own Device\" (BYOD) policy, where students can use their personal devices if they have them, or arrange for school-provided devices during class time.\n\n2. **Parental Involvement**: Engage parents in the learning process. Provide them with resources and guidance on how to support their children's digital literacy at home. This could include workshops or webinars on digital safety, online learning tools, and tips for setting up a home learning environment. Encourage parents to communicate with you about their child's progress and any challenges they face.\n\n3. **In-School Support**: Offer in-school support for students who need extra help. This could be through after-school clubs, lunchtime sessions, or one-on-one tutoring. These sessions can focus on building",
+      "candidate": "Socioeconomic status as a dimension affecting digital literacy and learning outcomes.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_d28d4ddf72580702",
+      "domain": "education",
+      "question": "How do I make sure colleagues actually adopt the module?",
+      "answer": "To ensure colleagues adopt the digital literacy module, it's essential to build a strong foundation of support and engagement. Start by:\n\n1. **Demonstrating the Module's Value**: Clearly articulate the benefits of the module, such as improved digital skills, enhanced critical thinking, and better preparedness for the digital world. Share success stories or case studies from other schools or educational programs that have implemented similar modules.\n\n2. **Collaborative Development**: Involve colleagues in the development and refinement of the module. This can foster a sense of ownership and commitment. For example, organize a team meeting where you discuss the module's structure, objectives, and activities. Encourage feedback and suggestions to make the module more relevant and effective.\n\n3. **Professional Development**: Offer professional development opportunities for colleagues to learn about the module and how to integrate it into their teaching. This could include workshops, webinars, or peer-to-peer training sessions. Highlight how the module aligns with broader educational goals and standards.\n\n4. **Support and Resources**: Provide colleagues with the necessary resources and support to implement the module. This",
+      "candidate": "Resistance and change management as a relational dimension to adoption strategies.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_d798986ed8f00d6f",
+      "domain": "education",
+      "question": "What most often goes wrong in curriculum renewal projects like this?",
+      "answer": "Curriculum renewal projects, like the digital literacy module, can face several common challenges that can impede their success. One of the most frequent issues is **lack of clear communication and buy-in**. Teachers and staff may not fully understand the goals and benefits of the new curriculum, leading to resistance or disengagement. To mitigate this, it's crucial to involve all stakeholders in the planning and implementation phases, ensuring everyone is informed and invested in the project.\n\nAnother common pitfall is **insufficient resources and support**. This includes not only financial resources but also time, technology, and professional development. Without adequate resources, teachers may struggle to implement the new curriculum effectively. To address this, secure necessary funding and allocate time for training and preparation. Additionally, ensure that all required technology is available and functioning properly.\n\n**Resistance to change** is also a significant hurdle. Teachers and administrators may be resistant due to fear of the unknown or a belief that the current system is sufficient. To overcome this, emphasize the benefits of the new curriculum and provide clear, compelling reasons for its adoption. Highlight how",
+      "candidate": "Organizational culture as a dimension influencing curriculum acceptance and implementation.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_38eb6288d76d7d11",
+      "domain": "public health",
+      "question": "We want to encourage teenagers to drink fewer energy drinks. How should we design the campaign?",
+      "answer": "To effectively encourage teenagers to reduce their consumption of energy drinks, a comprehensive and engaging campaign should be designed with several key components:\n\n1. **Educational Content**: Start by providing accurate information about the potential health risks associated with energy drinks, such as increased heart rate, high blood pressure, and sleep disturbances. Use clear, age-appropriate language and visuals to make the information accessible and relatable.\n\n2. **Positive Messaging**: Frame the campaign around positive messages that resonate with teenagers, such as the benefits of staying hydrated with water or natural juices, and the importance of a good night's sleep. Highlight the positive outcomes of making healthier choices, like improved energy levels and better academic performance.\n\n3. **Interactive Elements**: Incorporate interactive elements such as quizzes, games, and social media challenges that engage teenagers and make the campaign more interactive. For example, a \"Hydration Hero\" challenge where participants can share their hydration strategies and tips on social media for a chance to win prizes.\n\n4. **Influencer Partnerships**: Collaborate with influencers and role models that teenagers look up to, such as",
+      "candidate": "Parental involvement as a relational dimension influencing campaign effectiveness.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_1a36c1848c9cf302",
+      "domain": "public health",
+      "question": "Which message works better than simply saying that energy drinks are unhealthy?",
+      "answer": "To craft a message that resonates more effectively than simply stating that energy drinks are unhealthy, it's crucial to focus on the positive outcomes of making healthier choices. Here’s a structured approach to develop a compelling message:\n\n### Highlighting Positive Outcomes\nInstead of solely emphasizing the negative impacts, frame the message around the benefits of healthier alternatives. For example, you could emphasize how drinking water or natural juices can lead to better concentration, improved mood, and enhanced physical performance. This approach not only addresses the health concerns but also provides a clear, positive reason for teenagers to make a change.\n\n### Personal Stories and Testimonials\nShare real-life stories or testimonials from teenagers who have successfully reduced their energy drink consumption and noticed improvements in their health and well-being. These stories can be powerful tools to inspire and motivate teenagers to make healthier choices. Personal experiences often have a more profound impact than general health statistics.\n\n### Engaging Visuals and Graphics\nUse engaging visuals and graphics to illustrate the benefits of healthier choices. For instance, you could create infographics that show the difference between the ingredients in energy drinks and those",
+      "candidate": "Psychological triggers and behavioral economics as dimensions influencing choice and consumption.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_792f188b1c4af2b8",
+      "domain": "public health",
+      "question": "Which channels actually reach this group?",
+      "answer": "To effectively reach teenagers, it's essential to leverage the channels where they are most active and engaged. Here are the key channels to consider:\n\n### Social Media\nSocial media platforms like Instagram, TikTok, and Snapchat are where teenagers spend a significant amount of time. These platforms offer a wide range of interactive features, such as stories, live videos, and challenges, which can be used to engage teenagers directly. Influencer partnerships and user-generated content can amplify the campaign's reach and impact.\n\n### School and Educational Institutions\nSchools and educational institutions can be powerful channels for reaching teenagers. By collaborating with teachers, school counselors, and student organizations, the campaign can be integrated into the curriculum or school events. This approach ensures that the message is delivered in a context that teenagers are familiar with and trust.\n\n### Mobile Apps and Gaming Platforms\nMany teenagers use mobile apps and gaming platforms, which can be leveraged to deliver targeted messages. For example, apps that teenagers use for socializing, gaming, or learning can incorporate the campaign’s messaging through in-app notifications, in-game challenges, or special features.",
+      "candidate": "Psychological triggers and content resonance as dimensions influencing engagement on social media.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_f11095a21f039aa0",
+      "domain": "public health",
+      "question": "How do we measure whether the campaign works?",
+      "answer": "To measure the effectiveness of the campaign, it's essential to establish clear, measurable objectives and employ a variety of evaluation methods. Here are some key steps:\n\n### Define Clear Objectives\nBefore launching the campaign, define specific, measurable objectives. For example, you might aim to reduce energy drink consumption by 20% among teenagers within six months, increase the number of teenagers who can correctly identify the health risks of energy drinks, or boost the number of teenagers who participate in hydration-related activities.\n\n### Utilize Pre- and Post-Campaign Surveys\nConduct surveys before and after the campaign to gauge changes in knowledge, attitudes, and behaviors related to energy drink consumption. This can provide insights into the campaign's impact on teenagers' perceptions and practices.\n\n### Track Social Media Engagement\nMonitor social media metrics such as likes, shares, comments, and followers to assess the campaign's reach and engagement. Analyze the content's performance to identify which messages and formats resonate most with the target audience.\n\n### Monitor Sales Data\nIf possible, collaborate with retailers to track changes in energy drink sales among teenagers.",
+      "candidate": "Behavioral economics as a lens to understand and predict teenager responses to the campaign.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_0c523e11bce275dc",
+      "domain": "public health",
+      "question": "How do we avoid reaching mainly the teenagers who are already health-conscious?",
+      "answer": "To ensure the campaign reaches a broader spectrum of teenagers, including those who are not initially health-conscious, it's crucial to adopt a multi-faceted approach:\n\n### Diverse Messaging\nCraft messages that appeal to various interests and values. For example, emphasize the benefits of hydration for athletes, the importance of good sleep for students, and the environmental impact of reducing energy drink consumption. This approach ensures that the campaign resonates with different groups of teenagers.\n\n### Collaborate with Diverse Influencers\nPartner with a range of influencers who have different interests and followings. For instance, work with influencers from sports, gaming, music, and academic communities. This diversification can help the campaign reach teenagers who might not typically engage with health-related content.\n\n### Engage Schools and Community Organizations\nCollaborate with schools, community centers, and youth organizations that cater to diverse groups of teenagers. These organizations can help spread the campaign’s message to teenagers who might not be as engaged with mainstream social media.\n\n### Utilize Traditional Media\nLeverage traditional media channels such as local radio, television, and print",
+      "candidate": "Socioeconomic status as a dimension influencing health-consciousness and campaign engagement.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_1c3e85f8795f2fa6",
+      "domain": "public health",
+      "question": "What role should schools and parents play?",
+      "answer": "Schools and parents play crucial roles in supporting the campaign to reduce energy drink consumption among teenagers. Schools can integrate health education into their curriculum, providing comprehensive information on the effects of energy drinks and promoting healthier alternatives. Teachers and school health professionals can also organize workshops, seminars, and interactive sessions to engage students and reinforce the campaign’s messages. Additionally, schools can implement policies that limit the availability of energy drinks on campus and encourage the consumption of water and natural juices.\n\nParents, as key influencers in teenagers' lives, can reinforce the campaign’s messages at home. They can discuss the health risks associated with energy drinks and the benefits of healthier alternatives, such as water and natural juices. Parents can also set a good example by making healthy choices themselves and involving their children in activities that promote hydration and well-being. By working together, schools and parents can create a supportive environment that encourages teenagers to make healthier choices.\n\nIn summary, schools and parents are essential partners in the campaign. Their involvement can significantly enhance the campaign’s reach and effectiveness, ensuring that the message resonates with a broader audience and leads to lasting behavioral",
+      "candidate": "Socioeconomic disparities as a dimension affecting campaign effectiveness.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_2fbd1294e819a5ce",
+      "domain": "public health",
+      "question": "What most often goes wrong in lifestyle campaigns like this?",
+      "answer": "In lifestyle campaigns like this, several common pitfalls can undermine their effectiveness. First, **over-reliance on scare tactics** can backfire, as teenagers may become desensitized to overly negative messaging or feel that the risks are exaggerated. Instead, focusing on positive outcomes and benefits can be more effective.\n\nSecond, **lack of engagement and interactivity** can limit the campaign's impact. Campaigns that are too static or one-sided may fail to capture teenagers' attention or inspire them to take action. Interactive elements, such as quizzes, games, and social media challenges, can increase engagement and make the campaign more memorable.\n\nThird, **insufficient collaboration and partnership** can limit the campaign's reach. Working with a wide range of stakeholders, including schools, parents, influencers, and community organizations, can help ensure that the campaign reaches a broader and more diverse audience. Each partner brings unique resources and perspectives that can strengthen the campaign's overall impact.\n\nFourth, **lack of follow-up and sustainability** can diminish the campaign's long-term effectiveness. Initial engagement is important, but sustained efforts are",
+      "candidate": "Digital divide as a dimension affecting campaign reach and effectiveness.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_5c0daf63411f538e",
+      "domain": "policy",
+      "question": "Our municipality wants a climate-adaptation plan for heavy rainfall and flooding. Where should we start?",
+      "answer": "To develop a climate-adaptation plan for heavy rainfall and flooding, start by assessing the current situation. Engage with local communities, stakeholders, and experts to gather data on past flood events, their impacts, and the community's resilience. This foundational step will help identify the most pressing needs and potential vulnerabilities.\n\nNext, integrate climate projections into your planning. Work with meteorologists and climate scientists to understand future rainfall patterns and their potential impacts. This information is crucial for predicting future flood risks and designing effective mitigation strategies.\n\nDevelop a comprehensive plan that includes both structural and non-structural measures. Structural measures might include building or improving drainage systems, constructing levees, and enhancing flood barriers. Non-structural measures could involve land-use planning, zoning regulations, and public education campaigns to raise awareness about flood risks and safety measures.\n\nCollaborate with neighboring municipalities and regional organizations to ensure a coordinated approach. Flooding often affects multiple jurisdictions, and a unified strategy can be more effective in managing flood risks.\n\nFinally, establish a monitoring and evaluation system to track the effectiveness of your adaptation measures. Regularly review and update",
+      "candidate": "Socioeconomic disparities as a dimension influencing community resilience and resource allocation.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_d82b0e6365fde4c2",
+      "domain": "policy",
+      "question": "Which measures provide the most impact per euro?",
+      "answer": "When considering cost-effectiveness, several measures can provide significant impact per euro spent. Here are some of the most impactful strategies:\n\n1. **Flood Barriers and Retention Basins**: Constructing or enhancing flood barriers and retention basins can significantly reduce flood risk. These structures can be cost-effective in areas prone to frequent flooding. For instance, a well-designed retention basin can manage stormwater runoff, reducing the likelihood of flash floods and alleviating pressure on drainage systems.\n\n2. **Green Infrastructure**: Implementing green infrastructure, such as rain gardens, permeable pavements, and green roofs, can be highly effective. These solutions mimic natural water cycles, reducing runoff and improving water quality. Green infrastructure often has lower maintenance costs compared to traditional grey infrastructure and can also provide additional benefits like improved air quality and urban biodiversity.\n\n3. **Early Warning Systems**: Investing in early warning systems can save lives and reduce property damage. These systems can be relatively inexpensive compared to the costs of recovery from flooding. They can include weather monitoring, real-time data analysis, and communication networks to alert residents and emergency services",
+      "candidate": "Economic incentives as a policy dimension influencing adoption of cost-effective measures.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_1e4cd2308b1e51bf",
+      "domain": "policy",
+      "question": "How should we involve residents in the choices?",
+      "answer": "Involving residents in the choices for a climate-adaptation plan is crucial for ensuring the plan's effectiveness and sustainability. Here’s how you can engage them effectively:\n\n1. **Public Consultations and Workshops**: Organize public consultations and workshops to gather input from residents. These sessions can be held in community centers, schools, or online to accommodate different schedules and preferences. During these events, present the proposed measures and gather feedback on their feasibility, desirability, and potential impacts. This not only ensures that the plan reflects community needs but also builds support and ownership.\n\n2. **Community Engagement Programs**: Develop community engagement programs that educate residents about flood risks and adaptation strategies. Workshops, seminars, and informational sessions can help residents understand the importance of the measures and how they can contribute. For example, teaching residents about maintaining green spaces and proper drainage can enhance the effectiveness of green infrastructure.\n\n3. **Feedback Mechanisms**: Establish feedback mechanisms to continuously involve residents in the planning process. This could include online surveys, suggestion boxes, or regular town hall meetings. Encourage residents to provide ongoing",
+      "candidate": "Socioeconomic disparities as a dimension affecting engagement and plan effectiveness.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_a5cdb23f062ccaed",
+      "domain": "policy",
+      "question": "How do we finance the plan over several years?",
+      "answer": "Financing a climate-adaptation plan over several years requires a strategic and diversified approach. Here are key steps to consider:\n\n1. **Government Grants and Funding**: Explore eligibility for government grants and funding programs aimed at climate adaptation. Many national and regional governments offer financial support for projects that address climate change impacts. Additionally, check for eligibility in international funding opportunities, such as those from the Green Climate Fund or the Adaptation Fund.\n\n2. **Public-Private Partnerships (PPPs)**: Engage with private sector entities to form PPPs. These partnerships can provide additional funding, expertise, and resources. For instance, private companies might be willing to invest in green infrastructure in exchange for tax incentives or other benefits.\n\n3. **Green Bonds and Impact Investments**: Issue green bonds or seek impact investments to finance the plan. Green bonds are specifically designed to fund environmental projects, and impact investments can provide capital for projects that have a positive social and environmental impact. These financial instruments can attract investors who are interested in sustainable development.\n\n4. **Fees and Levies**: Consider implementing fees or levies",
+      "candidate": "Behavioral economics as a lens for understanding public and private sector engagement in climate adaptation initiatives.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_28ca953fd3e45d01",
+      "domain": "policy",
+      "question": "Who bears the costs and who receives the benefits of these measures?",
+      "answer": "Determining who bears the costs and who receives the benefits of climate-adaptation measures is crucial for ensuring equitable distribution and support. Here’s a breakdown:\n\n1. **Cost Allocation**: Costs can be shared among various stakeholders, including the government, private sector, and community members. For instance, the government might fund infrastructure projects, while private entities could contribute through PPPs or impact investments. Community members can participate through local taxes, fees, or voluntary contributions. This shared responsibility can make the financial burden more manageable and foster a sense of collective ownership.\n\n2. **Benefit Distribution**: Benefits should be distributed based on the impact of the measures. For example, flood barriers and early warning systems benefit the entire community, but they might be more critical for low-lying areas or those with higher flood risk. Green infrastructure can benefit the broader community through improved air quality and aesthetics, while also providing direct benefits to property owners through reduced flood damage. It’s important to ensure that the most vulnerable populations, such as low-income households, are not disproportionately burdened by costs and that they receive adequate support.\n\n3",
+      "candidate": "Inter-generational equity as a dimension in cost and benefit distribution.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_cfe18197b8d7fbb6",
+      "domain": "policy",
+      "question": "How do we keep the plan durable across changes in local government?",
+      "answer": "To ensure the durability of the climate-adaptation plan across changes in local government, it’s essential to establish a robust governance structure and build community support. First, create a dedicated climate-adaptation task force or committee that includes representatives from various sectors, such as local government, community organizations, and private sector entities. This group should be responsible for overseeing the implementation and ongoing management of the plan. By involving diverse stakeholders, the task force can ensure that the plan remains relevant and responsive to changing conditions and community needs.\n\nSecond, develop a long-term maintenance and monitoring plan. This should include regular assessments of the effectiveness of the implemented measures, adjustments based on new data and changing conditions, and a clear budget for ongoing maintenance. By setting up a sustainable funding mechanism, such as dedicated taxes or fees, the plan can be financially supported even if the local government changes.\n\nThird, integrate the climate-adaptation plan into broader local development strategies and policies. This ensures that the plan is not seen as a standalone initiative but as an integral part of the community’s long-term vision. By aligning the plan",
+      "candidate": "Interdependencies between climate-adaptation measures and local economic development as a dimension.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    },
+    {
+      "review_id": "candidate_fbde52e85ef673c3",
+      "domain": "policy",
+      "question": "What most often goes wrong in adaptation plans like this?",
+      "answer": "Several common pitfalls can undermine the effectiveness of climate-adaptation plans. First, a lack of comprehensive data and analysis can lead to poorly informed decisions. Without robust data on local climate projections, historical flood patterns, and community vulnerabilities, the plan may miss critical elements or overemphasize less pressing issues. Engaging with local experts and stakeholders is essential to ensure the plan is grounded in accurate information.\n\nSecond, insufficient stakeholder engagement can result in a plan that lacks community support and buy-in. Without active participation from residents, businesses, and other key stakeholders, the plan may face resistance or fail to address the community's needs effectively. Effective communication and transparent decision-making processes are crucial to building trust and ensuring that the plan is seen as a collaborative effort.\n\nThird, inadequate funding and resource allocation can hinder the implementation and maintenance of adaptation measures. Without a clear and sustainable funding strategy, the plan may struggle to secure the necessary resources, leading to incomplete or poorly executed projects. It’s important to identify potential funding sources early and develop a realistic budget that accounts for both initial implementation and ongoing maintenance.\n\nFourth,",
+      "candidate": "Interdependencies between data quality and technological solutions as a dimension for enhancing climate-adaptation planning.",
+      "reviewer_instruction": "Judge the candidate as one epistemic direction to investigate. Do not infer truth from fluency and do not reward it merely for being speculative.",
+      "reviewer_responses": [
+        {
+          "reviewer_id": "reviewer_a",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        },
+        {
+          "reviewer_id": "reviewer_b",
+          "scores": {
+            "atomic": "",
+            "relevant": "",
+            "specific": "",
+            "investigable": "",
+            "nontrivial": "",
+            "grounded_to_context": "",
+            "assertion_masquerade": "",
+            "duplicate_of_prior_candidate": "",
+            "useful_to_investigate": "",
+            "epistemic_role": "",
+            "notes": ""
+          }
+        }
+      ]
+    }
+  ]
+}
