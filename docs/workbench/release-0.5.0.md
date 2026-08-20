@@ -60,6 +60,8 @@ The current standalone macOS build target is Apple Silicon arm64. Intel/universa
 
 0.5.0 is a **mass-tester product preview**, not a full production-readiness claim.
 
+The post-alignment Qwen2.5 7B capability bundle is research evidence, not a publication gate. Independent candidate review may continue after the 0.5.0 prerelease is published; that review does not change the release source SHA or the live/evidence-backed authority contract.
+
 It does not establish general answer-quality improvement, reliable benefit from every valid seed, hostile-network multi-user security, managed tenancy/secrets, complete retention/deletion operations, broad high-end-model efficacy or independent real-world validation.
 
 Historical benchmark baselines remain research/regression material. They are not inputs required by the standalone tester.
