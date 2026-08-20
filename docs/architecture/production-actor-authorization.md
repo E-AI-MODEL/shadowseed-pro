@@ -1,6 +1,6 @@
 # Production Actor and Authorization Contract
 
-**Status:** Proposed  
+**Status:** Accepted  
 **Scope:** Product authorization surrounding the canonical Shadowseed runtime.
 
 ## Purpose

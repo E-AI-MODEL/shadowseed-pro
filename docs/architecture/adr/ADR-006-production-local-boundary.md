@@ -1,6 +1,6 @@
 # ADR-006: Production-ready/local Is a Single-User Local Deployment Contract
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-08-20
 - Related: issue #88, ADR-001, ADR-004, ADR-005
 

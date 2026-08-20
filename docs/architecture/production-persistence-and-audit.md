@@ -1,6 +1,6 @@
 # Production Persistence and Audit Contract
 
-**Status:** Proposed  
+**Status:** Accepted  
 **Scope:** `production-ready/local` first; hosted implementations must preserve or strengthen the same integrity properties.
 
 ## Goals

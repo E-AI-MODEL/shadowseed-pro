@@ -1,6 +1,6 @@
 # Production Data Lifecycle
 
-**Status:** Proposed  
+**Status:** Accepted  
 **Primary profile:** `production-ready/local`
 
 ## Data classes

@@ -1,6 +1,6 @@
 # Production Acceptance Gate
 
-**Status:** Proposed  
+**Status:** Accepted  
 **Target:** first `production-ready/local`, later `production-ready/hosted` under ADR-007.
 
 ## Claim rule

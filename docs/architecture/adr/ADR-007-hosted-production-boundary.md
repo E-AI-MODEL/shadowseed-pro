@@ -1,6 +1,6 @@
 # ADR-007: Hosted Production Is a Separate Deployment Architecture
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-08-20
 - Related: issue #88, ADR-005, ADR-006
 

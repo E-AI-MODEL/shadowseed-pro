@@ -1,6 +1,6 @@
 # Production Migration and Recovery Policy
 
-**Status:** Proposed
+**Status:** Accepted
 
 ## Principle
 
