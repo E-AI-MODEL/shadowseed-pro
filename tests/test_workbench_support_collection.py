@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from shadowseed.application.exports import ExportService
+from shadowseed.application.exports import ExportService, ExportVerificationError
 from shadowseed.application.sessions import service_for_workspace
 from shadowseed.support_collection import (
     SUPPORT_DATASET_SCHEMA,
@@ -91,7 +91,7 @@ def test_tampered_support_bundle_is_rejected(tmp_path) -> None:
         for name, content in files.items():
             archive.writestr(name, content)
 
-    with pytest.raises(Exception, match="mismatch"):
+    with pytest.raises(ExportVerificationError, match="mismatch"):
         collect_support_bundles([bundle], collection_id="tamper-reject")
 
 
