@@ -1,7 +1,8 @@
 # Production Threat Model
 
 **Status:** Proposed  
-**Baseline:** `main` at `02b8d2f505c837c88e5cc6654c7f864b751480f5`  
+**Original implementation baseline:** `v0.6.0` at `02b8d2f505c837c88e5cc6654c7f864b751480f5`  
+**Governance review:** refreshed 2026-08-20 after issue #66 protection enforcement; the architecture remains intentionally based on the v0.6.0 runtime contract until later phases change implementation.  
 **Scope:** Phase 0 architecture for `production-ready/local`; hosted deltas are explicitly identified.
 
 ## Assets to protect
