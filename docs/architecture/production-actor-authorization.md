@@ -53,11 +53,12 @@ Every operator action that can cause or participate in a Gate-controlled authori
 3. require the operation-specific capability;
 4. validate request fields and stable identities;
 5. establish a stable request/idempotency identity before mutation;
-6. record/commit the actor and authorization metadata in the production authority ledger together with the resulting authority event;
-7. only then invoke the canonical runtime/Gate action;
-8. preserve the Gate as the component that decides and applies authority effects.
+6. prepare the minimal actor/authorization metadata that must accompany the operation in the production ledger;
+7. invoke the canonical runtime/Gate or contradiction path without granting the application layer direct authority over weight/status;
+8. commit the resulting authoritative state change, Gate/contradiction result, actor/authorization metadata and corresponding production-ledger event atomically under the persistence contract;
+9. advance/verify the protected external anchor through the recoverable anchor-update protocol.
 
-The application layer may reject the request. It may not force a Gate promotion, contradiction penalty, contradiction resolution or authority restoration.
+The application layer may reject the request. It may not force a Gate promotion, contradiction penalty, contradiction resolution or authority restoration. If the authoritative mutation or ledger append cannot commit together, the operation fails and must not be reported as successful.
 
 ### Verified evidence
 
