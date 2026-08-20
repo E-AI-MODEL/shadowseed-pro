@@ -17,7 +17,8 @@ Passing the research benchmark suite alone is not sufficient.
 - production threat model reviewed and current;
 - issue #66 repository protection/ruleset active;
 - production changes merge through PR with required checks;
-- break-glass process documented and tested administratively;
+- applicable Workbench/portability quality gates cannot be bypassed: before a production claim, path-filtered workflows that are part of the production gate must expose an always-reporting terminal/aggregate check (or equivalent safe conditional enforcement) and that result must be required at the repository layer;
+- break-glass process documented and validated by a non-destructive administrative/tabletop exercise; routine production acceptance must not weaken the ruleset merely to prove that bypass exists;
 - license wording matches intended permitted use and does not imply commercial rights not granted by `LICENSE`.
 
 ### SSL authority invariants
