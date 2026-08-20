@@ -2,8 +2,9 @@ name: CI
 
 # CI contract (see issue #23, "Expand CI coverage"):
 #   - `test`  : Ruff lint + full pytest matrix + CLI smoke on each Python.
-#   - `build` : package builds, exact license inclusion, clean wheel install,
-#               and installed console entry-point smoke.
+#   - `build` : locked dependency/security validation, SBOM generation, package
+#               build, exact license inclusion, clean wheel install, and installed
+#               console entry-point smoke.
 #
 # Explicit deferrals (tracked as production/assurance gaps, not silently skipped):
 #   - Static type checking (e.g. mypy) is NOT gated yet: the codebase is not fully
@@ -20,6 +21,9 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -27,23 +31,25 @@ jobs:
       matrix:
         python-version: ["3.10", "3.12"]
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: ${{ matrix.python-version }}
-          cache: pip
-      - run: python -m pip install --upgrade pip
-      - run: pip install -e ".[test]"
-      - run: ruff check .
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.8.14"
+      - name: Sync locked test environment
+        run: uv sync --locked --extra test
+      - run: uv run --no-sync ruff check .
       - run: >-
-          python -m pytest -q
+          uv run --no-sync python -m pytest -q
           --cov=shadowseed
           --cov=shadowseed_agent
           --cov-branch
           --cov-report=term-missing
           --cov-fail-under=80
       - name: CLI smoke (source tree)
-        run: python -m shadowseed.cli --help
+        run: uv run --no-sync python -m shadowseed.cli --help
       - name: Test suite leaves checkout clean
         run: |
           git diff --exit-code
@@ -52,21 +58,49 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
-          cache: pip
-      - run: python -m pip install --upgrade pip build
-      - name: Build wheel and sdist
-        run: python -m build
-      - name: Verify exact license is shipped in wheel and sdist
-        run: python scripts/verify_distribution_license.py --dist-dir dist --license LICENSE
-      - name: Install from the built wheel in a clean venv
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.8.14"
+      - name: Verify lock is current
+        run: uv lock --check
+      - name: Export locked dependency inventory
+        run: >-
+          uv export --locked --all-extras --no-emit-project --no-hashes
+          --format requirements.txt --output-file /tmp/shadowseed-locked.txt
+      - name: Audit locked dependencies
         run: |
-          python -m venv /tmp/ci-wheel-env
-          /tmp/ci-wheel-env/bin/python -m pip install --upgrade pip
-          /tmp/ci-wheel-env/bin/python -m pip install dist/*.whl
+          uv sync --locked --extra security
+          uv run --no-sync pip-audit -r /tmp/shadowseed-locked.txt --strict --progress-spinner off
+      - name: Generate and validate CycloneDX SBOM
+        env:
+          UV_PREVIEW_FEATURES: sbom-export
+        run: |
+          uv export --locked --all-extras --format cyclonedx1.5 --output-file /tmp/SBOM.cdx.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          payload = json.loads(Path("/tmp/SBOM.cdx.json").read_text(encoding="utf-8"))
+          assert payload["bomFormat"] == "CycloneDX"
+          assert payload["specVersion"] == "1.5"
+          assert payload.get("components")
+          print("SBOM components", len(payload["components"]))
+          PY
+      - name: Sync locked build environment
+        run: uv sync --locked --extra build
+      - name: Build wheel and sdist without floating build isolation
+        run: uv run --no-sync python -m build --no-isolation
+      - name: Verify exact license is shipped in wheel and sdist
+        run: uv run --no-sync python scripts/verify_distribution_license.py --dist-dir dist --license LICENSE
+      - name: Install built wheel against locked runtime dependencies
+        run: |
+          uv export --locked --no-emit-project --no-hashes --format requirements.txt --output-file /tmp/runtime-constraints.txt
+          uv venv /tmp/ci-wheel-env --python 3.12
+          uv pip install --python /tmp/ci-wheel-env/bin/python --constraints /tmp/runtime-constraints.txt dist/*.whl
       - name: CLI smoke (installed package, outside the source tree)
         run: |
           cd /tmp
