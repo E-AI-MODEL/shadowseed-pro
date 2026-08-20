@@ -1,5 +1,6 @@
 """Regression guards for public claim and assurance boundaries (#23)."""
 
+import re
 from pathlib import Path
 
 
@@ -131,6 +132,25 @@ def test_ci_assurance_choices_are_explicit() -> None:
     assert "Static type checking" in CI
     assert "Coverage" in CI
     assert "Optional backends" in CI
+
+
+def test_external_github_actions_are_immutable() -> None:
+    mutable = []
+    for workflow in sorted((ROOT / ".github/workflows").glob("*.yml")):
+        for line_number, line in enumerate(
+            workflow.read_text(encoding="utf-8").splitlines(), start=1
+        ):
+            match = re.search(r"\buses:\s*([^\s#]+)", line)
+            if match is None:
+                continue
+            action = match.group(1)
+            if action.startswith("./"):
+                continue
+            _, separator, ref = action.rpartition("@")
+            if separator != "@" or re.fullmatch(r"[0-9a-f]{40}", ref) is None:
+                mutable.append(f"{workflow.relative_to(ROOT)}:{line_number}: {action}")
+
+    assert not mutable, "mutable external Action refs:\n" + "\n".join(mutable)
 
 
 def test_release_candidate_is_refreshed_for_every_main_push() -> None:
