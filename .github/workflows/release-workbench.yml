@@ -174,7 +174,7 @@ jobs:
           test "$(find . -maxdepth 1 -name '*.manifest.json' | wc -l)" -eq 3
           test "$(find . -maxdepth 1 -name 'shadowseed-workbench-*' ! -name '*.manifest.json' | wc -l)" -eq 3
           test "$(find . -maxdepth 1 -name 'shadowseed-*.whl' | wc -l)" -eq 1
-          test "$(find . -maxdepth 1 -name 'shadowseed-*.tar.gz' | wc -l)" -eq 1
+          test "$(find . -maxdepth 1 -name 'shadowseed-[0-9]*.tar.gz' | wc -l)" -eq 1
           test -f PROVENANCE.json
 
       - name: Publish GitHub prerelease and exact source tag
