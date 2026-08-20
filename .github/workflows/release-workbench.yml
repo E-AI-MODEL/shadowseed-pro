@@ -20,13 +20,16 @@ jobs:
       github.event.workflow_run.head_branch == 'main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.8.14"
       - name: Validate exact release candidate
         id: preflight
         env:
@@ -38,6 +41,7 @@ jobs:
           git fetch origin main --tags --force
           test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
           test "$(git rev-parse origin/main)" = "$RELEASE_SHA"
+          uv lock --check
           release_version="$(python - <<'PY'
           import tomllib
           from pathlib import Path
@@ -48,6 +52,7 @@ jobs:
           notes_file="docs/workbench/release-${release_version}.md"
           test -f "$notes_file"
           test -f LICENSE
+          test -f uv.lock
           echo "release_version=$release_version" >> "$GITHUB_OUTPUT"
           echo "release_tag=$release_tag" >> "$GITHUB_OUTPUT"
           echo "notes_file=$notes_file" >> "$GITHUB_OUTPUT"
@@ -62,9 +67,25 @@ jobs:
           fi
           echo "should_release=true" >> "$GITHUB_OUTPUT"
 
+      - name: Generate locked release SBOM
+        if: steps.preflight.outputs.should_release == 'true'
+        env:
+          UV_PREVIEW_FEATURES: sbom-export
+        run: |
+          mkdir -p release-assets
+          uv export --locked --all-extras --format cyclonedx1.5 --output-file release-assets/SBOM.cdx.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          payload = json.loads(Path("release-assets/SBOM.cdx.json").read_text(encoding="utf-8"))
+          assert payload["bomFormat"] == "CycloneDX"
+          assert payload["specVersion"] == "1.5"
+          assert payload.get("components")
+          PY
+
       - name: Download verified standalone assets from triggering run
         if: steps.preflight.outputs.should_release == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ github.token }}
@@ -90,6 +111,7 @@ jobs:
           release = Path("release-assets")
           release.mkdir(exist_ok=True)
           expected_license_sha = sha256(Path("LICENSE").read_bytes()).hexdigest()
+          lock_sha = sha256(Path("uv.lock").read_bytes()).hexdigest()
           manifests = sorted(source.glob("*.manifest.json"))
           if len(manifests) != 3:
               raise SystemExit(f"expected 3 standalone manifests, found {len(manifests)}")
@@ -115,10 +137,13 @@ jobs:
               shutil.copy2(archive, release / archive.name)
               bundles.append(payload)
           shutil.copy2("LICENSE", release / "LICENSE")
+          shutil.copy2("uv.lock", release / "uv.lock")
           provenance = {
               "artifact": "shadowseed_release_provenance",
               "version": os.environ["RELEASE_VERSION"],
               "source_sha": os.environ["RELEASE_SHA"],
+              "dependency_lock_sha256": lock_sha,
+              "sbom_file": "SBOM.cdx.json",
               "license_identifier": "PolyForm-Noncommercial-1.0.0",
               "license_sha256": expected_license_sha,
               "standalone_workflow_run_id": int(os.environ["SOURCE_RUN_ID"]),
@@ -129,23 +154,25 @@ jobs:
               encoding="utf-8",
           )
 
-      - name: Build Python distribution
+      - name: Build Python distribution from locked build tooling
         if: steps.preflight.outputs.should_release == 'true'
         run: |
-          python -m pip install --upgrade pip build
-          python -m build
-          python scripts/verify_distribution_license.py --dist-dir dist --license LICENSE
+          uv sync --locked --extra build
+          uv run --no-sync python -m build --no-isolation
+          uv run --no-sync python scripts/verify_distribution_license.py --dist-dir dist --license LICENSE
           cp dist/* release-assets/
 
-      - name: Installed wheel smoke
+      - name: Installed wheel smoke against locked Workbench dependencies
         if: steps.preflight.outputs.should_release == 'true'
         shell: bash
         run: |
           set -euo pipefail
           wheel="$(ls dist/*.whl)"
-          python -m venv "${RUNNER_TEMP}/release-venv"
-          "${RUNNER_TEMP}/release-venv/bin/pip" install --upgrade pip
-          "${RUNNER_TEMP}/release-venv/bin/pip" install "${wheel}[workbench]"
+          uv export --locked --extra workbench --no-emit-project --no-hashes \
+            --format requirements.txt --output-file "${RUNNER_TEMP}/workbench-constraints.txt"
+          uv venv "${RUNNER_TEMP}/release-venv" --python 3.12
+          uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python" \
+            --constraints "${RUNNER_TEMP}/workbench-constraints.txt" "${wheel}[workbench]"
           cd "${RUNNER_TEMP}"
           "${RUNNER_TEMP}/release-venv/bin/shadowseed" workbench --help
           "${RUNNER_TEMP}/release-venv/bin/shadowseed-workbench" --self-test \
@@ -189,6 +216,8 @@ jobs:
           test "$(find . -maxdepth 1 -name 'shadowseed-*.whl' | wc -l)" -eq 1
           test "$(find . -maxdepth 1 -name 'shadowseed-[0-9]*.tar.gz' | wc -l)" -eq 1
           test -f PROVENANCE.json
+          test -f SBOM.cdx.json
+          test -f uv.lock
           test -f LICENSE
 
       - name: Publish GitHub prerelease and exact source tag
@@ -237,4 +266,6 @@ jobs:
           test "$(find . -maxdepth 1 -name '*.manifest.json' | wc -l)" -eq 3
           test "$(find . -maxdepth 1 -name 'shadowseed-workbench-*' ! -name '*.manifest.json' | wc -l)" -eq 3
           test -f PROVENANCE.json
+          test -f SBOM.cdx.json
+          test -f uv.lock
           test -f LICENSE
