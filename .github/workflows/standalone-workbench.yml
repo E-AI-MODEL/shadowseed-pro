@@ -10,6 +10,7 @@ on:
       - "scripts/pyinstaller_hooks/**"
       - "pyproject.toml"
       - "LICENSE"
+      - ".gitattributes"
       - "docs/workbench/**"
       - ".github/workflows/standalone-workbench.yml"
       - ".github/workflows/release-workbench.yml"
