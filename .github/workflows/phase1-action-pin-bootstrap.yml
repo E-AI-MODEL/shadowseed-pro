@@ -64,4 +64,5 @@ jobs:
           git add .github/workflows
           git diff --cached --check
           git commit -m "Pin GitHub Actions to immutable revisions"
+          git pull --rebase origin production/phase-1-supply-chain-guardrails
           git push origin HEAD:production/phase-1-supply-chain-guardrails
