@@ -34,11 +34,15 @@ This assurance requirement is deliberately narrower than an unconditional one-ap
 
 ## Dependency and Action update policy
 
-Python dependency resolution is recorded in `uv.lock`. The resolver version is pinned in `pyproject.toml`; updates to direct dependency ranges or the resolver must refresh the lock and pass supply-chain validation.
+Python dependency resolution is recorded in `uv.lock`. The resolver version is pinned in `pyproject.toml`; updates to direct dependency ranges or the resolver must refresh the lock and pass supply-chain validation. The bounded local product is CPU-first: Linux and Windows resolve PyTorch from the explicit CPU wheel index, while macOS uses the native PyPI wheel. This prevents the production lock from silently turning a CPU-first Workbench into a CUDA dependency closure.
 
-Dependabot checks Python and GitHub Actions dependencies weekly. Update pull requests use the same protected-main process as other changes. Mutable Action tags are not accepted in production/release workflows: Actions are recorded by full immutable commit SHA with a human-readable version comment. Version comments are informative only; the SHA is the executed identity.
+Dependabot checks Python and GitHub Actions dependencies weekly. Update pull requests use the same protected-main process as other changes. Mutable Action tags are not accepted in repository workflows: Actions are recorded by full immutable commit SHA with a human-readable version comment. Version comments are informative only; the SHA is the executed identity.
 
 Dependency updates are not auto-merged. They must pass the repository checks and the dependency-security scan. A security update may be prioritized, but urgency does not convert it into a break-glass event by default.
+
+The required vulnerability gate audits the dependency closure that can ship in or build the `production-ready/local` candidate: core runtime, Workbench, build tooling and standalone-build tooling. Optional vector-store extras are not silently folded into that production claim. In particular, the current Chroma extra resolves to `chromadb 1.5.9`, for which pip-audit reports `PYSEC-2026-311`; the advisory has no fixed release listed as of 2026-08-20. `vector-chroma` therefore remains outside the `production-ready/local` supported dependency surface until a non-vulnerable upstream release is available and the lock/security gate is refreshed. This is a bounded unsupported-production dependency, not an ignored passing scan.
+
+Release SBOMs describe the same production dependency closure as the required vulnerability gate. Research-only or unsupported optional extras may remain installable for research, but they must not be represented as covered by the production SBOM or production security verdict until separately cleared.
 
 ## Break-glass
 
