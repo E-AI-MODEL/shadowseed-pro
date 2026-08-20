@@ -52,12 +52,17 @@ test = [
   "pytest-cov>=5.0",
   "ruff>=0.6",
 ]
+build = [
+  "build==1.5.0",
+  "setuptools==83.0.0",
+  "wheel==0.47.0",
+]
 dev = [
-  "shadowseed[test,models,vector,openai,workbench]",
+  "shadowseed[test,build,models,vector,openai,workbench]",
 ]
 
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools==83.0.0", "wheel==0.47.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.uv]
