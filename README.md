@@ -1,84 +1,42 @@
 # Shadowseed Pro
 
 <p align="center">
-  <strong>An auditable research implementation of Shadow Seed Learning.</strong>
+  <strong>Auditable Shadow Seed Learning for research, local testing, and structured tester-data collection.</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/E-AI-MODEL/shadowseed-pro/actions/workflows/ci.yml">
-    <img alt="Continuous integration" src="https://github.com/E-AI-MODEL/shadowseed-pro/actions/workflows/ci.yml/badge.svg">
-  </a>
-  <img alt="Repository version 0.5.0" src="https://img.shields.io/badge/repository-0.5.0-2f6f5e">
+  <a href="https://github.com/E-AI-MODEL/shadowseed-pro/actions/workflows/ci.yml"><img alt="Continuous integration" src="https://github.com/E-AI-MODEL/shadowseed-pro/actions/workflows/ci.yml/badge.svg"></a>
+  <img alt="Repository version 0.5.1" src="https://img.shields.io/badge/repository-0.5.1-2f6f5e">
   <img alt="Python 3.10 or higher" src="https://img.shields.io/badge/Python-3.10%2B-3776AB">
   <img alt="Research status research ready" src="https://img.shields.io/badge/status-research--ready-c88719">
-  <img alt="Active repository language English" src="https://img.shields.io/badge/active_language-English-6f42c1">
   <img alt="All rights reserved" src="https://img.shields.io/badge/rights-all_rights_reserved-red">
 </p>
 
-<p align="center">
-  <code>trace &gt; 0</code> means remembered. <code>weight = 0</code> means no steering authority.
-</p>
+<p align="center"><code>trace &gt; 0</code> means remembered. <code>weight = 0</code> means no steering authority.</p>
 
-Shadow Seed Learning, or SSL, records **bounded epistemic candidates for investigation**, not hidden truth. A candidate may be a suspected gap, doubt, missing relation or boundary, dependency, unstated assumption, alternative hypothesis, contradiction to investigate, or relevant what-if direction. A new seed starts powerless, can be tested over time, and may influence retrieval or an answer only after a logged Validation Gate decision and a second point-of-use check.
+Shadow Seed Learning (SSL) records **bounded epistemic candidates for investigation**, not hidden truth. A candidate may be a suspected gap, doubt, missing relation or boundary, dependency, unstated assumption, alternative hypothesis, contradiction to investigate, or relevant what-if direction. A new seed starts powerless. It may be remembered, recur, be contradicted, receive independently verified support, and only influence a later answer after the configured Validation Gate and a current point-of-use authorization both allow it.
 
 > [!IMPORTANT]
-> **Shadowseed Pro is research-ready, not production-ready.**
->
-> Source version 0.5.0 adds standalone local mass-tester build and release contracts. That improves product usability; it does not establish general answer-quality improvement, universal missing-information detection, high-impact deployment safety, or hostile-network production readiness. A downloadable release should be treated as published only when the corresponding immutable tag and release assets are actually present and verified.
+> **Shadowseed Pro is research-ready, not production-ready.** Version 0.5.1 is the release candidate for the local mass-tester and structured support-data collection path. It does not establish general answer-quality improvement, universal missing-information detection, semantic truth, hostile-network safety, or high-impact production readiness.
 
 > [!CAUTION]
-> This repository has **no open-source license**. All rights are reserved. Public visibility is not permission for reuse. See [Rights and temporary licensing position](#rights-and-temporary-licensing-position).
-
-## Research paper
-
-**Shadowseed: Remembering Without Trusting**
-*A Validation-Gated Memory Architecture for Language Model Systems*
-
-[Read the paper (PDF)](paper/shadowseed-paper.pdf) · [LaTeX source](paper/main.tex) · [Bibliography](paper/references.bib)
-
-## Start here
-
-| Goal | Start here |
-|---|---|
-| Use the tester Workbench | [Tester Workbench](#tester-workbench) |
-| Read the research paper | [Paper PDF](paper/shadowseed-paper.pdf) |
-| Install for development | [Developer quick start](#developer-quick-start) |
-| Understand the idea | [The idea in plain language](#the-idea-in-plain-language) |
-| Audit the guarantees | [What the code enforces](#what-the-code-enforces) |
-| Review evidence and limits | [Research status](#research-status) |
-| Navigate the code and docs | [Architecture](#architecture) |
-
----
+> This repository has **no open-source license**. All rights are reserved. Public visibility is not permission for reuse.
 
 ## Quick start
 
-### Tester Workbench
+### 1. Test Shadowseed as a normal chat application
 
-The ordinary 0.5.0 tester path is a local chat application, not a benchmark harness:
+When a verified `v0.5.1` GitHub release is present, the intended tester path is:
 
 ```text
 download -> extract/open -> choose model -> create chat -> chat with SSL -> optionally compare one message with SSL off
 ```
 
-Source version 0.5.0 contains the fail-closed automation for self-contained Workbench archives for Windows, macOS and Linux. Use the download/open route only when a verified `v0.5.0` GitHub release and its assets are actually present. Each standalone archive contains the application and its Python runtime. A normal tester does **not** need Git, a repository checkout, system Python, `pip`, benchmark JSON or an authored baseline answer for that route. If no verified standalone release is present yet, use the developer installation route below rather than assuming unpublished assets exist.
+The standalone release contract builds Windows, macOS, and Linux archives with an embedded Python runtime. A normal tester does not need Git, system Python, `pip`, benchmark JSON, or an authored baseline answer. Model weights remain separate: the deterministic fixture works immediately for mechanics, local Ollama models can be discovered, Hugging Face models may be acquired on first use, and hosted OpenAI use stays explicit and credential-dependent.
 
-When a verified standalone bundle is available, open `Shadowseed.exe` on Windows, `Shadowseed.app` on macOS, or the `Shadowseed` executable in the Linux bundle after extraction. The launcher initializes the normal local `~/.shadowseed` workspace and opens the chat UI on loopback only. Local Ollama models can be detected automatically.
+Source and release availability are separate facts. Treat `v0.5.1` as published only after the immutable tag and verified release assets actually exist.
 
-Model weights are intentionally not bundled. The deterministic fixture works immediately for offline mechanics testing; Ollama models remain managed by Ollama; Hugging Face and Sentence Transformers may acquire selected model material on first use; hosted OpenAI use remains explicit and credential-dependent.
-
-A newly created ordinary chat uses the product-oriented `live` runtime and the `evidence_backed` Gate policy. The tester chooses a model and chats normally. For any message they may enable **Compare this message with SSL off**. The Workbench generates a same-model control from the same pre-turn visible history before executing the real live turn. The control is comparison data only: it does not enter candidate detection, recurrence, the Gate, or later conversation history. A textual difference is attributable to SSL only when an authorized seed actually surfaced on the real turn.
-
-Historical `evaluation` sessions, authored baseline fixtures, scenario JSON and benchmark outputs remain research/regression material under **Advanced / research**. They are not product prerequisites.
-
-Each platform bundle must execute a frozen self-test in CI before upload. Release assets are required to include per-platform manifests, consolidated provenance and SHA-256 checksums. Platform-vendor signing/notarization is **not** claimed unless a published asset actually carries it.
-
-See [`docs/workbench/README.md`](docs/workbench/README.md) for the download/open workflow, model behavior, privacy boundaries and release verification. See [`docs/workbench/limitations.md`](docs/workbench/limitations.md) before sharing tester data.
-
-## Developer quick start
-
-The Python package and CLI remain available for development, research and automation.
-
-Requirements: Python 3.10 or newer and Git.
+### 2. Run from source
 
 ```bash
 git clone https://github.com/E-AI-MODEL/shadowseed-pro.git
@@ -91,44 +49,146 @@ shadowseed --help
 shadowseed-workbench
 ```
 
-### Deterministic chat demo
+Deterministic mechanics demo:
 
 ```bash
 shadowseed chat --backend fixture --show-shadow
 ```
 
-The fixture backend verifies pipeline mechanics. It is not evidence of real-model quality.
-
-`shadowseed chat` and the `ShadowChatSession` API default to the product-oriented `live` runtime. Live mode produces one visible model answer per turn, stores that same answer in conversation history, and defaults to the `evidence_backed` Gate policy. Detected recurrence remains observable but cannot raise authority on its own. Verified external support enters through `ShadowChatSession.submit_evidence(...)`; the interactive command is `/support <seed_id> <source_ref>`. The caller/operator remains the trust anchor behind a verified external-evidence attestation.
-
-A local semantic developer setup can use:
+Real local model example:
 
 ```bash
 shadowseed chat --backend ollama --model-id <model> --embedding-backend sentence-transformers
 ```
 
-Research A/B behavior remains explicitly available with `--runtime-mode evaluation`; that mode preserves the historical isolated baseline arm.
-
-The multi-turn research session suite can execute the real live loop and calculate same-turn deferral costs:
-
-```bash
-shadowseed run-ssl-session \
-  --runtime-mode live --live-arms both \
-  --backend ollama --model-id <model> \
-  --embedding-backend sentence-transformers \
-  --output results/ssl_live_session.json
-```
-
-This measurement route is research instrumentation, not the ordinary product UI. Fixture and lexical backends are rejected for its live real-model measurement path. See [`docs/usage/cli.md`](docs/usage/cli.md) for command semantics.
-
-For dialectical falsification research, inspect the command before running it:
+For falsification research:
 
 ```bash
 shadowseed run-dialectic-falsification --help
 ```
 
+### 3. Collect privacy-minimized tester data
+
+Each Workbench session can export a full auditable report and a privacy-minimized support bundle. Full reports contain conversation content and should be treated as sensitive. Support bundles omit the direct session identifier, free session title, prompts, generated answers, comparison text, seed text, and free-text tester notes. They retain pseudonymous session identity, model/backend/configuration metadata, environment metadata, and structural counts.
+
+Researchers can combine verified support bundles without importing conversation free text:
+
+```bash
+python scripts/aggregate_support_bundles.py \
+  tester-a.zip tester-b.zip tester-c.zip \
+  --collection-id pilot-2026-08 \
+  --output results/pilot-2026-08-support-dataset.json
+```
+
+The collector verifies every input ZIP with the normal Workbench export verifier, rejects full reports and duplicate support-session identities, records each source bundle SHA-256, and writes schema `shadowseed-support-dataset-v1`. This creates a reproducible collection artifact. It does **not** turn incidental tester output into efficacy evidence; scientific claims still require a declared protocol, analysis plan, appropriate controls, and review.
+
+See [`docs/workbench/privacy.md`](docs/workbench/privacy.md) and [`docs/workbench/tester-guidelines.md`](docs/workbench/tester-guidelines.md) before collecting or sharing data.
+
+## Research paper and evidence
+
+**Shadowseed: Remembering Without Trusting**  
+*A Validation-Gated Memory Architecture for Language Model Systems*
+
+[Paper PDF](paper/shadowseed-paper.pdf) · [LaTeX source](paper/main.tex) · [Bibliography](paper/references.bib) · [Paper notes](paper/README.md)
+
+The manuscript is a reviewed methods/systems snapshot, not a moving release brochure. Its source version and implementation commit remain explicit inside the manuscript. Version 0.5.1 extends the tester/release/data-collection surface without changing the paper's core authority model. We do not rewrite the compiled paper merely to make a release badge match; a future manuscript revision must rebuild `main.tex`, bibliography, and PDF together.
+
+Canonical research status is documented in [`docs/research/status.md`](docs/research/status.md). Historical benchmark results and immutable evidence bundles remain under `benchmarks/results/**`; ordinary tester exports do not silently become benchmark evidence.
+
+## The idea in plain language
+
+A fluent answer can omit a causal boundary, dependency, stakeholder, alternative explanation, contradiction, or necessary question. SSL lets a detector record a bounded candidate such as:
+
+```text
+The answer does not state whether the reported association is causal.
+```
+
+That candidate is not accepted as fact. It starts with trace but zero steering weight. The system can keep it available for investigation while separately tracking recurrence, verified external support, contradictions, lifecycle state, Gate decisions, and later point-of-use authorization.
+
+Atomicity is a **normalization target and tested heuristic**. Normalization **does not guarantee semantic atomicity**: a generated candidate can still be compound, vague, redundant, vacuous, or wrong.
+
+## Core invariant
+
+```text
+trace  > 0   means the candidate is present in shadow memory
+weight = 0   means the candidate has no steering authority
+```
+
+| Concept | Meaning | It does not mean |
+|---|---|---|
+| `trace` | remembered presence, decay, recurrence/reactivation | truth or permission to steer |
+| `weight` | bounded steering authority after policy validation | detector confidence |
+| recurrence | a renewed eligible observation | external evidence |
+| verified support | provenance-bearing external support accepted by policy | universal truth |
+| contradiction | an explicit reason to block/reduce authority | deletion from the audit trail |
+| promotion | permission to be considered | mandatory use |
+| surfacing | contextual selection for a request | bypass of point-of-use checks |
+
+```mermaid
+flowchart LR
+    A[Epistemic candidate] --> B[Weightless seed]
+    B --> C[Observe / decay / reactivate]
+    C --> D[Recurrence, evidence, contradiction]
+    D --> E[Validation Gate]
+    E -->|blocked| F[No influence]
+    E -->|authority granted| G[Point-of-use check]
+    G -->|deny| F
+    G -->|allow| H[Optional influence + audit]
+```
+
+The ordinary product uses `runtime_mode = live` with the `evidence_backed` Gate policy. Recurrence remains observable but cannot grant authority by itself in that policy. Research/evaluation paths can use different explicit policies; policy-dependent validation must not be rewritten as one universal rule.
+
+## Same-message SSL-off comparison
+
+For a live Workbench turn, **Compare this message with SSL off** generates a same-model control from the same pre-turn visible history before the real state-changing turn. The control receives no surfaced seeds and does not enter candidate detection, recurrence, the Validation Gate, or later conversation history.
+
+A textual difference is not automatically an SSL effect. Attribute an observed difference to SSL only when an authorized seed actually surfaced on the live turn; otherwise ordinary generation variance remains a possible explanation.
+
+## What the code enforces
+
+`shadowseed.manager` is the supported high-level orchestration surface. It coordinates canonical concerns rather than reimplementing their authority semantics.
+
+| Enforced property | Canonical implementation | Contract coverage |
+|---|---|---|
+| New seeds start weightless and authority fields are guarded | [`shadowseed.models`](src/shadowseed/models.py), [`shadowseed.intake`](src/shadowseed/intake.py) | [`test_authority_encapsulation.py`](tests/test_authority_encapsulation.py) |
+| Trace and authority remain separate through lifecycle transitions | [`shadowseed.lifecycle`](src/shadowseed/lifecycle.py) | [`test_lifecycle_ttl.py`](tests/test_lifecycle_ttl.py) |
+| Gate-controlled authority changes use one typed policy engine | [`shadowseed.gate.runtime_adapter`](src/shadowseed/gate/runtime_adapter.py) | [`test_gate_path_unification.py`](tests/test_gate_path_unification.py) |
+| Contradictions are explicit and blocking | [`shadowseed.contradictions`](src/shadowseed/contradictions.py) | [`test_contradiction_lifecycle.py`](tests/test_contradiction_lifecycle.py) |
+| Vector search/feedback workflows remain a distinct canonical concern | [`shadowseed.vector_workflows`](src/shadowseed/vector_workflows.py) | [`test_vector_workflows_extraction.py`](tests/test_vector_workflows_extraction.py) |
+| Unverified/generated observations are not silently trusted evidence | [`shadowseed.ssot`](src/shadowseed/ssot.py), [`shadowseed.gate`](src/shadowseed/gate/) | [`test_gate_signal_routing.py`](tests/test_gate_signal_routing.py) |
+| Influence requires current authority and point-of-use authorization | [`AgentSafetyContract`](src/shadowseed_agent/agent_contract.py) | [`test_point_of_use.py`](tests/test_point_of_use.py) |
+| Live history stores the visible answer; evaluation preserves isolated research controls | [`shadowseed.chat`](src/shadowseed/chat.py) | [`test_live_runtime.py`](tests/test_live_runtime.py) |
+| Support datasets accept verified minimized bundles only | [`shadowseed.support_collection`](src/shadowseed/support_collection.py) | [`test_workbench_support_collection.py`](tests/test_workbench_support_collection.py) |
+
+> **"Non-bypassable" is a public-API property** over supported new authority decisions, not a claim about arbitrary in-process Python mutation, validated state restoration, or explicitly unsafe test hooks.
+
+## Assurance boundaries
+
+- Generated candidate quality is not guaranteed by normalization or by the detector being fluent.
+- The repository does not provide durable **append-only, tamper-evident storage**; current audit records are useful for replay and inspection but are not an external immutable ledger.
+- Point-of-use checks are specific eligibility checks, not universal safety certification.
+- A support dataset is structured observational data, not automatic proof of benefit.
+- Fixture runs demonstrate mechanics, not real-model quality.
+- Platform packaging and checksum provenance do not establish model efficacy.
+- Hostile-network authentication, managed multi-user tenancy, operational incident handling, formal retention/deletion controls, and high-impact deployment assurance remain outside the current product claim.
+
+## Repository map
+
+- `src/shadowseed/` - canonical SSL runtime, chat/application services, export and collection contracts
+- `src/shadowseed_agent/` - point-of-use agent authorization and influence audit
+- `paper/` - manuscript source, bibliography, and compiled reviewed snapshot
+- `benchmarks/` - benchmark suites and immutable evidence artifacts
+- `experiments/`, `results/` - reproducibility and development research outputs
+- `docs/architecture/` - current design and accepted ADRs
+- `docs/research/` - evidence status and bounded claim guidance
+- `docs/workbench/` - tester, privacy, release, and limitations documentation
+- `archive/` - historical provenance, not current authority
+- `repository-authority.yaml` - canonical/compatibility/archive ownership map
+
+Historical compatibility surfaces are retained when they protect replay or public API behavior. They should not be mistaken for duplicate canonical implementations. The unused legacy paper-ingest runtime path was removed in 0.5.1 because it had no supported entrypoint and duplicated obsolete claim/SSOT semantics.
+
 <details>
-<summary><strong>Common benchmark commands and optional dependencies</strong></summary>
+<summary><strong>Research and benchmark commands</strong></summary>
 
 ```bash
 shadowseed run-gap-suite
@@ -141,333 +201,26 @@ shadowseed run-probe-feedback-behavior-suite
 shadowseed analyze-results
 ```
 
+Optional stacks:
+
 ```bash
-pip install -e ".[models]"          # Hugging Face, Sentence Transformers, Torch
-pip install -e ".[openai]"          # hosted OpenAI adapter
-pip install -e ".[vector]"          # FAISS and Chroma
-pip install -e ".[paper]"           # PDF paper pipeline
-pip install -e ".[workbench]"       # local tester Workbench (Gradio 6)
-pip install -e ".[dev]"             # all development extras
+pip install -e ".[models]"      # Transformers / Sentence Transformers / Torch
+pip install -e ".[openai]"      # hosted OpenAI adapter
+pip install -e ".[vector]"      # FAISS and Chroma
+pip install -e ".[workbench]"   # local Gradio Workbench
+pip install -e ".[dev]"         # development extras
 ```
-
-API keys must be supplied through environment variables. Never commit keys to source, fixture files, or workflow inputs.
 
 </details>
 
----
+## Release and reproducibility contract
 
-## The idea in plain language
+`Standalone Workbench` builds Windows, macOS, and Linux bundles from one exact source SHA. Frozen bundles must run their packaged self-test and emit manifests. `Release Workbench` verifies exact `main` head, source version, manifests, wheel/sdist smoke, provenance, and checksums before publication. It rechecks `main` immediately before and after release creation and removes a stale release/tag if the branch moved during publication.
 
-A fluent answer can still omit a causal boundary, dependency, stakeholder, alternative explanation, contradiction, or necessary question. SSL lets a detector say:
+For research reuse, cite `CITATION.cff` and record the exact Git commit, model/backend identity, configuration, protocol, and evidence bundle or support-dataset hash used.
 
-> Something specific may be missing here.
+## Rights and status
 
-That statement is not accepted as fact. It becomes a small, testable seed with no authority over the answer. The system can remember it, look for recurrence, compare it with trusted material, try to falsify it, and record every decision.
+Copyright and other rights remain reserved by the repository owner. No open-source license is granted by the repository's public visibility.
 
-### What a seed is
-
-A seed is one bounded epistemic candidate tied to context. It can represent a gap, doubt, missing relation or boundary, dependency, unstated assumption, alternative hypothesis, contradiction to investigate, or relevant what-if direction. It is not a fact, instruction, evidence item, conclusion, or source of authority.
-
-Atomicity is a **normalization target and tested heuristic**. Normalization does not guarantee semantic atomicity: a model can still emit a compound, vague, vacuous, poorly split, or otherwise weak candidate.
-
-Good seed:
-
-```text
-The answer does not state whether the reported association is causal.
-```
-
-Too broad:
-
-```text
-The answer needs more context, nuance, limitations, causes, consequences, and alternatives.
-```
-
-### What SSL is not
-
-SSL is not a claim that model intuitions are facts, a replacement for retrieval or source verification, a universal hallucination detector, or a production safety certification.
-
-## The invariant
-
-```text
-trace  > 0   means the seed is present in shadow memory
-weight = 0   means the seed has no steering authority
-```
-
-| Concept | Meaning | What it cannot do |
-|---|---|---|
-| `trace` | Presence, recurrence, decay, and reactivation | Grant influence by itself |
-| `weight` | Bounded steering authority after validation | Rise because a detector sounds convincing |
-| seed | An epistemic candidate | Count as evidence for itself |
-| recurrence | Renewed observation in a distinct observation context | Become truth or external evidence |
-| evidence | Verified external support with provenance | Bypass the Validation Gate |
-| contradiction | A reason to block, reduce, or reset influence | Disappear from the audit trail |
-| promotion | Permission to be considered | Force inclusion in an answer |
-| surfacing | Contextual selection at use time | Override the point-of-use contract |
-
-Detection is not validation. Promotion is not mandatory use. A signal is not a verdict.
-
-## How a seed moves through the system
-
-```mermaid
-flowchart LR
-    A[Epistemic candidate] --> B[Weightless seed]
-    B --> C[Decay or reactivate]
-    C --> D[Recurrence, evidence, contradiction]
-    D --> E[Validation Gate]
-    E -->|blocked or contradicted| F[No influence]
-    E -->|promoted| G[Point-of-use check]
-    G -->|blocked| F
-    G -->|allowed| H[Optional influence and audit]
-```
-
-The conversation runtime has two explicit implementation modes. `live` is product-oriented; `evaluation` preserves the historical isolated baseline arm for research. Seed validation, surfacing, point-of-use authorization and actual influence remain separate concerns.
-
-<details>
-<summary><strong>Live runtime, product comparison, evaluation isolation, and lifecycle</strong></summary>
-
-### Live runtime
-
-```mermaid
-flowchart TD
-    Q[User question] --> U[Select earlier promoted seeds]
-    U --> A[AgentSafetyContract at point of use]
-    A -->|allowed candidates| M[One model generation]
-    A -->|none allowed| M
-    M --> V[Visible answer]
-    V --> H[Store visible answer in history]
-    V --> D[Detect epistemic candidates]
-    D --> X[If SSL surfaced, defer same-turn detected candidates]
-    X --> N[Ingest remaining candidates at weight zero]
-    N --> R[Record eligible renewed observations]
-    R --> G[Validation Gate: evidence_backed by default]
-    E[Explicit verified evidence] --> G
-    G -->|recurrence only| B[No authority gain]
-    G -->|verified external support| P[Authority may rise]
-```
-
-Live mode avoids a hidden-history split: the answer the user reads is carried into the next turn. If a seed influenced generation, candidates detected in that same answer are deferred because semantic similarity cannot prove causal independence. Recurrence itself is observation, not evidence, and one detector observation context can credit a semantic cluster at most once.
-
-### Product comparison
-
-When **Compare this message with SSL off** is enabled, the Workbench first generates a no-SSL control from the same pre-turn visible history/model configuration. That control is not detected, does not change recurrence or Gate state, and is not appended to conversation history. The actual live turn remains the only state-changing turn.
-
-### Evaluation mode
-
-`--runtime-mode evaluation` preserves the historical research harness with an isolated baseline arm. It exists for controlled benchmark/replay work and is not the default product conversation model.
-
-### Lifecycle
-
-```text
-NEW -> ACTIVE -> DECAYING -> DORMANT -> EXPIRED
-                         \-> PROMOTED
-```
-
-`EXPIRED` is terminal. A dormant seed may return through TrTL recognition, but an expired seed is not silently resurrected.
-
-</details>
-
----
-
-## What the code enforces
-
-| Enforced property | Canonical implementation | Contract coverage |
-|---|---|---|
-| New seeds start weightless and authority fields are guarded | [`shadowseed.models`](src/shadowseed/models.py), [`shadowseed.intake`](src/shadowseed/intake.py) | [`test_authority_encapsulation.py`](tests/test_authority_encapsulation.py), [`test_models_extraction.py`](tests/test_models_extraction.py) |
-| Trace and authority remain separate across decay and reactivation | [`shadowseed.lifecycle`](src/shadowseed/lifecycle.py) | [`test_lifecycle_ttl.py`](tests/test_lifecycle_ttl.py), [`test_lifecycle_extraction.py`](tests/test_lifecycle_extraction.py) |
-| Gate-controlled effects use one typed, policy-bound engine | [`shadowseed.gate.runtime_adapter`](src/shadowseed/gate/runtime_adapter.py) | [`test_gate_path_unification.py`](tests/test_gate_path_unification.py), [`test_gate_boundary_completion.py`](tests/test_gate_boundary_completion.py) |
-| Open contradiction records block influence and recovery is explicit | [`shadowseed.contradictions`](src/shadowseed/contradictions.py), [`shadowseed.gate`](src/shadowseed/gate/) | [`test_contradiction_lifecycle.py`](tests/test_contradiction_lifecycle.py), [`test_contradictions_extraction.py`](tests/test_contradictions_extraction.py) |
-| Generated or unverified observations do not count as trusted evidence | [`shadowseed.ssot`](src/shadowseed/ssot.py), [`shadowseed.gate`](src/shadowseed/gate/) | [`test_ssot_manager.py`](tests/test_ssot_manager.py), [`test_gate_signal_routing.py`](tests/test_gate_signal_routing.py) |
-| Influence requires positive weight, promotion, and a live current-version Gate event | [`AgentSafetyContract.decide_and_record`](src/shadowseed_agent/agent_contract.py) | [`test_point_of_use.py`](tests/test_point_of_use.py), [`test_agent_safety_contract.py`](tests/test_agent_safety_contract.py) |
-| Live history stores the visible answer; evaluation mode preserves baseline isolation | [`shadowseed.chat`](src/shadowseed/chat.py) | [`test_live_runtime.py`](tests/test_live_runtime.py), [`test_shadow_chat.py`](tests/test_shadow_chat.py) |
-| Gate decisions and influence attempts support strict in-process replay | [`GateEvent`](src/shadowseed/gate/events.py), [`AgentInfluenceRecord`](src/shadowseed_agent/audit_policy.py) | [`test_point_of_use.py`](tests/test_point_of_use.py) |
-
-> **"Non-bypassable" is a public-API property over new authority decisions, not a Python-runtime claim.** Restoration reinstates validated persisted state, and explicitly unsafe test hooks remain callable by arbitrary in-process Python.
-
-### Assurance boundaries
-
-- Atomicity remains heuristic; generated candidates can still be semantically compound or weak.
-- The current repository does **not** provide durable append-only, tamper-evident storage. Frozen/replayable in-process records are not the same as a tamper-evident external audit ledger.
-- Point-of-use checks are specific eligibility checks, not universal safety certification.
-- Packaging adds distribution convenience; it does not add seed authority or prove model benefit.
-
-### Gate policy profiles
-
-- **`exploratory`**: qualifying recurrence or verified external support may raise authority when no unresolved contradiction exists. This is research/evaluation behavior.
-- **`evidence_backed`**: verified external support is required. Recurrence may accompany it but cannot replace it. This is the live product default.
-- **`legacy_evidence_required`**: compatibility behavior for the historical boolean API.
-
-Verified external support must carry a non-empty `source_ref`. The underlying source reference is the current authority identity: relabelling one source across signal channels does not create additional independent authority credit. Recurrence remains a separate keyspace and is never converted into external evidence.
-
-### Evidence hierarchy
-
-1. Runtime code
-2. Contract and regression tests
-3. Benchmark implementation
-4. CI or recorded execution
-5. Result artifact with inputs and settings
-6. Independent or human review
-7. Replication or transfer
-8. Documentation claim
-
-| Evidence type | What it can show | What it cannot show |
-|---|---|---|
-| deterministic fixture | command wiring, schemas, state transitions, logging | real detector quality or answer benefit |
-| synthetic planted signal | whether an instrument can recover a known feature | whether the feature exists in a real model |
-| one real-model run | behavior on that model, data, prompt, and environment | generalization |
-| reviewed benchmark | performance under a stated review protocol | production safety |
-| preregistered replication | whether a fixed claim survives a new sample | universal validity |
-
----
-
-## Architecture
-
-`SSLManager` is an orchestration and compatibility facade. Focused modules own the extracted implementation.
-
-| Module | Responsibility |
-|---|---|
-| [`shadowseed.manager`](src/shadowseed/manager.py) | Runtime configuration, seed registry, audit collections, serialization, guarded authority mutation, and compatibility methods |
-| [`shadowseed.models`](src/shadowseed/models.py) | Stable seed, lifecycle, validation-result, constellation, and probe data contracts |
-| [`shadowseed.intake`](src/shadowseed/intake.py) | Embedding, normalization, deduplication, and seed creation/update |
-| [`shadowseed.lifecycle`](src/shadowseed/lifecycle.py) | TTL decay, dormancy, TrTL reactivation, and terminal expiry |
-| [`shadowseed.contradictions`](src/shadowseed/contradictions.py) | Contradiction records, blocking state, formal resolution, sequencing, and migration |
-| [`shadowseed.vector_workflows`](src/shadowseed/vector_workflows.py) | Uncertain-region search, external-feedback routing, and constellations |
-| [`shadowseed.gate`](src/shadowseed/gate/) | Typed signals, named policies, immutable Gate events, verified logging, and the executable decision engine |
-| [`shadowseed_agent`](src/shadowseed_agent/) | Point-of-use eligibility and strict influence replay |
-
-See the [architecture overview](docs/architecture/overview.md), [lifecycle and Gate specification](docs/architecture/lifecycle-and-gate.md), and [repository structure guide](docs/architecture/repository-structure.md).
-
-<details>
-<summary><strong>Repository map and authority classes</strong></summary>
-
-```text
-shadowseed-pro/
-├── README.md                       repository front page
-├── CHANGELOG.md                    user-visible structural and behavior changes
-├── pyproject.toml                  packaging and tool configuration
-├── repository-authority.yaml       machine-readable authority map
-├── src/
-│   ├── shadowseed/                 canonical runtime package
-│   └── shadowseed_agent/           point-of-use contract and audit policy
-├── tests/                           contract, unit, integration, and regression tests
-├── benchmarks/                      benchmark definitions and reviewed rounds
-├── docs/                            architecture, research, usage, and migration docs
-├── experiments/                     exploratory runners, not supported runtime
-├── scripts/                         research, build, and review utilities
-├── results/                         local and generated analysis output
-└── archive/                         frozen historical source material
-```
-
-| Authority class | Meaning |
-|---|---|
-| `CANONICAL_SPEC` | Current architecture, packaging, or repository rules |
-| `RUNTIME_IMPLEMENTATION` | Code shipped in the installed package |
-| `CONTRACT_TEST` | Tests that pin runtime or compatibility behavior |
-| `EVALUATION_IMPLEMENTATION` | Benchmarks, research instruments, and evaluation utilities |
-| `EVIDENCE_ARTIFACT` | Curated or generated result material |
-| `COMPATIBILITY_ONLY` | Legacy import facade with no independent logic |
-| `HISTORICAL_REFERENCE` | Superseded material kept for provenance |
-| `ARCHIVE` | Frozen source material excluded from the package |
-
-The machine-readable source is [`repository-authority.yaml`](repository-authority.yaml). Archive material may explain history but cannot override current runtime code or canonical architecture documents.
-
-</details>
-
----
-
-## Research status
-
-The methods/systems manuscript is available in [`paper/`](paper/README.md), with the compiled version at [`paper/shadowseed-paper.pdf`](paper/shadowseed-paper.pdf). Product packaging changes in 0.5.0 do not silently expand the paper's efficacy claims.
-
-### Implemented and testable
-
-- weightless-by-default seed intake;
-- separate trace and authority state;
-- TTL decay, dormancy, TrTL reactivation, and terminal expiry;
-- typed Validation Gate signals and named policies;
-- explicit contradiction records and resolution;
-- verified external evidence separated from generated proposals;
-- a one-generation live loop plus historical evaluation loop;
-- same-turn contamination deferral and observation-scoped semantic recurrence;
-- point-of-use eligibility with current-version Gate-event linkage;
-- chat-first Workbench with automatic live SSL-on/off controls;
-- local Ollama model discovery;
-- deterministic fixtures plus optional Hugging Face, Ollama and OpenAI routes;
-- adversarial, retrieval, payoff, dialectical falsification and activation-probe research instruments;
-- 0.5.0 standalone build/release contracts for Windows, macOS and Linux.
-
-### Not established
-
-- general answer-quality improvement across open-ended tasks;
-- a universal definition or detector for meaningful absence;
-- a general internal neural representation of missing context;
-- cross-domain or cross-lingual generalization of seed quality;
-- reliable value from every promoted seed;
-- calibration between seed weight and factual correctness;
-- safety against all prompt-injection, evidence-poisoning, or seed-spam attacks;
-- hostile-network or high-impact production readiness.
-
-### Work still required for broader production use
-
-Append-only or tamper-evident durable audit persistence, deterministic replay assurance across future versions, access control, explicit retention/deletion operations, monitoring, rollback, backend isolation, rate limits, hostile-network authentication/tenancy, managed secrets, platform vendor signing/notarization, independent security review, broad high-end-model evaluation and real-world independent review remain separate work.
-
-### Appropriate use today
-
-Suitable uses include local product testing, research inspection, mechanism testing, benchmark development, controlled experiments, and discussion of auditable agent memory. Do not treat Shadowseed Pro as a certified safety layer for healthcare, education decisions, employment, finance, law, public administration, or autonomous high-impact action.
-
----
-
-## Research track and reproducibility
-
-The repository retains the full research track, including AbsenceBench-related tooling, dialectical falsification, H-Neuron-inspired activation probes, negative results, transfer sets and benchmark artifacts. Research evidence remains separate from product packaging.
-
-Key material:
-
-- [`paper/`](paper/README.md)
-- [`docs/research/status.md`](docs/research/status.md)
-- [`docs/research/h-neurons-conclusion.md`](docs/research/h-neurons-conclusion.md)
-- [`benchmarks/open_review/`](benchmarks/open_review/)
-- [`benchmarks/results/`](benchmarks/results/)
-
-Research runs should record the repository commit, Python and operating-system versions, package versions, model ID and immutable revision when available, dtype/device, input digest, detector prompt/configuration, embedding model, random seeds, review protocol, and output hashes. Discovery and confirmation require separate data or a preregistered test; selecting the strongest result after inspection is not confirmation.
-
-The runtime must not depend on an unverified internal activation signal:
-
-```text
-internal signal != evidence != verdict != permission to influence
-```
-
----
-
-## Documentation
-
-- [Tester Workbench](docs/workbench/README.md)
-- [Architecture overview](docs/architecture/overview.md)
-- [Lifecycle and Validation Gate](docs/architecture/lifecycle-and-gate.md)
-- [Gate contracts](docs/architecture/gate-contracts.md)
-- [ADR-005: chat-first product surface](docs/architecture/adr/ADR-005-chat-first-product-surface.md)
-- [Repository structure](docs/architecture/repository-structure.md)
-- [Compatibility policy](docs/architecture/compatibility-policy.md)
-- [CLI usage](docs/usage/cli.md)
-- [Research status](docs/research/status.md)
-- [H-Neurons conclusion](docs/research/h-neurons-conclusion.md)
-- [Authority map](repository-authority.yaml)
-- [Changelog](CHANGELOG.md)
-
-> [!NOTE]
-> The core runtime code is English, and this is enforced automatically. Product chat follows the current user question's language. Benchmark fixtures retain documented source-language material for compatibility. Historical material under [`archive/`](archive/) is provenance, not current runtime authority.
-
----
-
-## Rights and temporary licensing position
-
-**Copyright © 2026 H. Visser / E-AI-MODEL. All rights reserved.**
-
-This repository intentionally has no open-source license at present. No general permission is granted to use, copy, modify, redistribute, publish, commercialize, or incorporate the original repository content into another product or service.
-
-Public access is provided for inspection, research discussion, and evaluation. Reuse requires prior written permission from the copyright holder, except where applicable law, GitHub's Terms of Service, or a separate written agreement provides otherwise.
-
-Third-party libraries, papers, datasets, model weights, quoted material, and archived external artifacts remain subject to their own rights and terms.
-
-This is a temporary rights reservation. A later repository update may adopt a different license. Until then, no implied open-source license is granted.
-
-For a legally binding licensing arrangement or commercial use, contact the repository owner and obtain professional legal advice.
+Current defensible status: **research-ready, local mass-testable, and able to collect structured privacy-minimized tester data; not production-ready and not proven to improve answers generally.**

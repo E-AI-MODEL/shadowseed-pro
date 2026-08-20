@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.5.1 - Research-ready mass tester and structured data collection
+
+Version 0.5.1 aligns the public repository around three explicit outcomes: scientifically bounded inspection, low-friction local testing, and structured privacy-minimized tester-data collection. Source version and public release availability remain separate facts; treat `v0.5.1` as published only after the immutable tag and verified release assets exist.
+
+- Added `shadowseed-support-dataset-v1` aggregation for verified privacy-minimized Workbench support bundles, including duplicate-session rejection and source-bundle SHA-256 provenance.
+- Added a simple operator script for combining multi-tester support bundles without importing conversation or seed free text.
+- Clarified throughout README, research status, privacy, tester, limitations, release, and paper documentation that collected support data is structured observational data rather than automatic efficacy evidence.
+- Kept the manuscript/PDF as its own reviewed methods snapshot with explicit provenance instead of silently rewriting its implementation anchor to match the software release badge.
+- Removed the unused legacy `paper_pipeline.py` runtime path and its now-unused PyMuPDF package extra; retained compatibility surfaces, benchmark evidence, migration history, and `archive/` because they support replay and scientific provenance.
+- Bumped package and citation metadata to 0.5.1. No Gate-policy, trace/weight, recurrence-authority, contradiction, lifecycle, detector, or point-of-use semantics are intentionally changed by this release.
+
 ## 0.5.0 - Chat-first mass tester preview
 
 Source version 0.5.0 makes the ordinary Shadowseed tester experience a persistent live chat instead of a research-harness workflow. Public release publication remains governed by the repository's fail-closed release workflow; source version and release availability are separate facts.

@@ -7,29 +7,45 @@
 
 [Read the compiled paper (PDF)](shadowseed-paper.pdf)
 
-This `paper/` directory is the canonical repository location for the manuscript source. The paper is a research/publication artifact. It does not override the runtime, accepted ADRs, or current architecture documentation.
+This `paper/` directory is the canonical manuscript location. The manuscript is a reviewed research artifact, not a moving release brochure and not an authority source over the runtime, accepted ADRs, or current architecture documentation.
 
 ## Files
 
 - `main.tex` - manuscript source
 - `references.bib` - bibliography
-- `shadowseed-paper.pdf` - compiled manuscript generated from the source above
+- `shadowseed-paper.pdf` - compiled manuscript generated from that source revision
 
-`main.tex`, `references.bib`, and `shadowseed-paper.pdf` must change together when the manuscript is revised.
+`main.tex`, `references.bib`, and `shadowseed-paper.pdf` must change together when the manuscript itself is revised. Do not edit only the visible PDF version/commit text to make it match a newer software badge.
 
-## Version anchors
+## Relationship to software v0.5.1
 
-The manuscript separates three identities that should not be conflated:
+The current software release candidate is **0.5.1**. The checked-in manuscript remains intentionally pinned to the reviewed software source version and implementation commit printed inside `main.tex` and the compiled PDF. Version 0.5.1 adds and cleans the tester/release/data-collection surface, including verified privacy-minimized support-bundle aggregation, without redefining the paper's core trace/weight, Validation Gate, evidence identity, contradiction, lifecycle, or point-of-use authority model.
 
-1. **Software source version:** the package/repository source version described by the paper.
-2. **Reviewed implementation commit:** the exact code commit against which implementation claims were checked.
-3. **Paper-source revision:** the Git commit containing the manuscript source and compiled PDF.
+This separation is deliberate scientific provenance:
 
-A source version is not evidence that a matching public release tag or binary asset exists. Release availability must be verified independently before documentation calls it published.
+1. **Current software version** tells you which package/release you are running.
+2. **Reviewed implementation commit in the paper** tells you which code snapshot the manuscript's implementation claims were checked against.
+3. **Paper-source revision** identifies the exact manuscript/PDF pair.
 
-## Claim boundary
+A later paper revision may advance those anchors, but only when the LaTeX source, bibliography as needed, and compiled PDF are rebuilt and reviewed together.
 
-The manuscript is a methods/systems paper. Tests and CI support bounded implementation-contract claims. They do not establish general answer-quality improvement, semantic correctness of generated candidates, universal security, or production readiness.
+## Claim alignment
+
+The repository and manuscript agree on the important claim boundary:
+
+- a remembered candidate is not automatically trusted;
+- trace and steering weight are separate;
+- authority changes are policy-controlled and auditable;
+- validation policy is explicit rather than universalized across research and product modes;
+- recurrence is not automatically external evidence;
+- current point-of-use authorization remains separate from prior promotion;
+- tests and artifacts support bounded implementation claims, not general answer-quality improvement or production certification.
+
+The v0.5.1 support-dataset collector is research instrumentation. It makes privacy-minimized multi-tester observations easier to combine, but collected data becomes scientific evidence only under an explicit protocol, controls, analysis plan, and review.
+
+## Release identity is separate
+
+A source version is not proof that a corresponding public release exists. Treat `v0.5.1` as published only when the immutable tag and verified release assets are present. Release provenance and checksums are governed by the repository's release workflow, not by this manuscript.
 
 ## Authorship and LLM disclosure
 
@@ -37,11 +53,11 @@ The manuscript lists the accountable human author. LLM systems are acknowledged 
 
 ## Build
 
-From this directory, with a TeX distribution that includes `latexmk`, `biber`, and the packages imported by `main.tex`:
+With a TeX distribution containing `latexmk`, `biber`, and the packages imported by `main.tex`:
 
 ```bash
 latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
 mv main.pdf shadowseed-paper.pdf
 ```
 
-Before committing a rebuilt PDF, render it and inspect every page for broken references, clipping, missing glyphs, or layout regressions.
+Before committing a rebuilt PDF, render and inspect every page for broken references, clipping, missing glyphs, or layout regressions.

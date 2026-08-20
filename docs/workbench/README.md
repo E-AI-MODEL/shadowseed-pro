@@ -1,143 +1,88 @@
 # Shadowseed Tester Workbench
 
-The Workbench is the local-first chat surface for testing Shadow Seed Learning in an ordinary LLM conversation. A normal tester does not prepare a benchmark suite, write JSON, author a baseline answer, install Git, or install a system Python runtime when a verified standalone release is available.
-
-The ordinary product path is:
+The Workbench is the local-first chat surface for testing Shadow Seed Learning in an ordinary LLM conversation. Version 0.5.1 targets three practical outcomes: low-friction local testing, auditable exports, and structured privacy-minimized multi-tester collection.
 
 ```text
 download -> extract/open -> choose model -> create chat -> chat with SSL -> optionally compare one message with SSL off
 ```
 
-Research scenarios, historical evaluation mode, raw diagnostics and benchmark-oriented tools remain under **Advanced / research**. They are not prerequisites for ordinary testing.
+Research scenarios, historical evaluation mode, raw diagnostics and benchmark tools remain separate. They are not prerequisites for ordinary testing.
 
-The Workbench remains a local single-user product preview. It is not a hostile-network multi-user service. Before sharing tester data, read the [privacy guidance](privacy.md), [tester guidelines](tester-guidelines.md), and [preview limitations](limitations.md).
+## Standalone tester
 
-## Fastest start: standalone tester
+Use the download/open route only when a verified `v0.5.1` GitHub release and its assets are present. A normal tester then does not need Git, `pip`, system Python, benchmark JSON or an authored baseline.
 
-Source version 0.5.0 contains the fail-closed build and release automation for self-contained Workbench archives for Windows, macOS and Linux. Treat the standalone download route as available only when a verified `v0.5.0` GitHub release and its assets are actually present. Source version and public release availability are separate facts.
+1. Download the archive for the operating system/architecture.
+2. Verify it against `SHA256SUMS` when practical.
+3. Extract/open **Shadowseed**.
+4. The app creates/opens the local `~/.shadowseed` workspace and binds the UI to loopback.
+5. Choose a model, create a chat and start talking.
 
-When the verified release is present:
+Model weights are intentionally separate. Fixture works offline for mechanics. Ollama uses local installed models. Hugging Face/Sentence Transformers may acquire model material on first use. Hosted OpenAI is explicit and credential-dependent.
 
-1. Download the archive matching your operating system and architecture.
-2. Download `SHA256SUMS` from the same release and verify the archive hash when practical.
-3. Extract the archive.
-4. Open **Shadowseed** (`Shadowseed.exe` on Windows, `Shadowseed.app` on macOS, or the `Shadowseed` executable inside the Linux folder).
-5. The app creates or opens the local `~/.shadowseed` workspace and opens the chat UI in your browser on loopback only.
-6. Choose a model, create a chat and start talking.
+A valid 0.5.1 prerelease contains three standalone archives and manifests, `PROVENANCE.json`, `SHA256SUMS`, a Python wheel and source distribution. Frozen bundles must pass their packaged product self-test before upload.
 
-No Git checkout, `pip install`, system Python, fixture file or authored baseline is required for the verified standalone route. If no verified release is present yet, use the developer/source installation route below rather than assuming unpublished assets exist.
+## Normal product contract
 
-### What the standalone bundle does not bundle
-
-Model weights are intentionally separate from the application. This avoids silently shipping third-party model material and keeps model provenance explicit.
-
-- **fixture** works offline immediately and demonstrates mechanics only.
-- **Ollama** discovers models already installed in the local Ollama server. If none exist, install/pull a model through Ollama first.
-- **Hugging Face Transformers** may download the selected model on first use.
-- **Sentence Transformers** may download its semantic embedding model on first use.
-- **OpenAI** requires an explicitly configured provider credential and user confirmation before hosted content is sent.
-
-Model acquisition time is therefore measured separately from Shadowseed setup time.
-
-### Release integrity and provenance
-
-A valid 0.5.0 standalone prerelease is required to contain:
-
-- one standalone archive per build platform;
-- one machine-readable manifest per standalone archive;
-- `PROVENANCE.json` tying those manifests to the exact source commit and standalone workflow run;
-- `SHA256SUMS` covering all downloadable release files;
-- the Python wheel and source distribution for developers.
-
-Each frozen bundle executes its own packaged self-test before it is uploaded. That self-test proves the embedded runtime can build the chat UI, run a live fixture turn, automatically generate the paired SSL-off control, and create/verify both report and support exports.
-
-The 0.5.0 release contract uses checksums and build provenance. Platform vendor signing/notarization is a separate hardening step when signing credentials are available; do not describe an asset as notarized or Authenticode-signed unless the published asset actually carries that signature.
-
-## Normal tester workflow
-
-1. Open Shadowseed.
-2. In **Chat**, choose a provider and model. Local Ollama models can be detected automatically.
-3. Create a chat. New ordinary chats use the canonical `live` runtime and its `evidence_backed` Gate policy.
-4. Chat normally. The visible answer is the answer stored in conversation history.
-5. When useful, enable **Compare this message with SSL off** before sending one message.
-6. Review the paired outputs. A difference is an SSL effect only when an authorized Shadow Seed actually surfaced on that turn.
-7. Open **Shadow** only when you want to inspect seed state, contradictions or independently verified evidence.
-8. Record feedback or export a report when useful.
-
-No authored baseline is required. No benchmark suite is required. There is no direct seed-weight or promotion editor.
-
-## Chat with SSL
-
-A new ordinary session defaults to:
+New ordinary chats use:
 
 ```text
 runtime_mode = live
 Gate policy = evidence_backed
 ```
 
-The detector may propose atomic epistemic candidates after a visible answer. New candidates start weightless. Recurrence is observable but does not become external evidence and cannot raise authority by itself under the live default policy.
+New candidates start weightless. Recurrence is observable but does not become external evidence or raise authority on its own under this product policy. Contradictions remain blocking. Only current Gate-authorized seeds that pass the point-of-use contract may influence a later answer.
 
-Only a seed with current Gate authority that passes the point-of-use contract may influence a later answer. Contradictions remain blocking according to the canonical runtime contract. The Workbench presents this runtime; it does not implement a second Gate.
-
-### Model and embedding defaults
-
-- **fixture** uses lexical embeddings for deterministic offline mechanics testing. It is not a high-end model.
-- **Ollama**, **Hugging Face Transformers**, and **OpenAI** default to Sentence Transformers for semantic seed matching in the product form.
-- lexical hashing with a real model is available only behind the explicit research/toy override.
-- OpenAI inference or OpenAI embeddings require explicit external-provider confirmation in the UI.
-
-Product live prompts ask the model to answer in the language of the current user question. Research benchmarks may pin a language as part of their protocol.
+The Workbench presents the canonical runtime; it does not implement a second Gate or expose direct weight/promotion editing.
 
 ## Compare one message with SSL off
 
-The comparison checkbox is a product control, not an authored baseline workflow.
+When **Compare this message with SSL off** is enabled, the Workbench first generates a same-model control from the same pre-turn visible history without surfaced SSL seeds. The control is stored as comparison data only. It does not enter candidate detection, recurrence, the Validation Gate or later conversation history. The actual live turn remains the only state-changing turn.
 
-For a live session the Workbench:
+A textual difference is not automatically an SSL effect. When no authorized seed surfaced, ordinary generation variance remains a possible explanation.
 
-1. restores the current pre-turn visible conversation history;
-2. asks the same model for a control answer with no surfaced Shadow Seeds;
-3. keeps that control out of candidate detection, recurrence, the Gate and later conversation history;
-4. runs the actual live SSL turn normally;
-5. stores the control beside the real turn as comparison data.
+## Feedback and independently verified support
 
-The actual live turn is the only state-changing turn. Requesting a comparison must not create extra seeds, recurrence, trace, weight or Gate authority.
+Ordinary tester feedback is `record_only`: it does not alter seed authority.
 
-When no authorized seed surfaced, the comparison UI warns that textual differences may be ordinary generation variance and must not be attributed to SSL.
+Verified support is a separate live action. The tester/operator must attest that support was checked outside model output and provide a stable source reference. Reusing the same underlying source cannot manufacture extra authority by relabeling or resubmitting it.
 
-## Shadow inspection, evidence and feedback
+## Exports
 
-The **Shadow** tab is secondary to the conversation. It exposes read-only seed state and audit history plus explicit contradiction and independently verified-support actions.
+### Full report
 
-Verified support is available only in live sessions. The tester must confirm support was checked outside model output and provide a stable source reference. Reusing the same underlying source does not create extra authority by changing channel labels or repeating it.
+A full report is self-contained and auditable but content-bearing. It can include prompts, answers, controls, seeds, Gate/influence records and free-text tester feedback. Treat it as sensitive unless inspected and intentionally shared.
 
-Ordinary tester feedback remains `record_only`. It may describe perceived answer quality or visible SSL effect, but it does not change weight, promotion or Gate authority.
+### Privacy-minimized support bundle
 
-## Advanced / research
+A support bundle omits direct session identity, session title, prompts, answers, control text, seed text and free-text tester notes. It retains a stable pseudonymous `support::...` identifier, model/backend/configuration metadata, environment metadata and structural counts. This is minimization, not formal anonymization.
 
-The **Advanced / research** tab contains scenario JSON, historical `evaluation` runtime controls, stored blind comparisons and benchmark-oriented diagnostics.
+Both export types contain SHA-256 manifests and are checked by `shadowseed verify-workbench-export`.
 
-Historical scenarios or persisted sessions without runtime metadata retain their evaluation-compatible interpretation so old data is not silently reclassified. Historical baseline fixtures and result artifacts remain useful for regression and reproducibility. They are not product inputs.
+## Collect data across testers
 
-## Backends and privacy
+Version 0.5.1 adds a research/operator collector for verified support bundles:
 
-- **fixture**: deterministic offline mechanics backend.
-- **Ollama**: inference through the configured local Ollama server; model discovery uses read-only `/api/tags` and sends no chat content.
-- **Hugging Face Transformers**: local inference after model material is available; initial acquisition may contact Hugging Face.
-- **OpenAI**: hosted inference after explicit confirmation. Prompts and generated context are transmitted to that provider.
+```bash
+python scripts/aggregate_support_bundles.py \
+  tester-a.zip tester-b.zip tester-c.zip \
+  --collection-id pilot-2026-08 \
+  --output results/pilot-2026-08-support-dataset.json
+```
 
-OpenAI embeddings also send relevant text to the hosted provider. Sentence Transformers runs locally after its model material is available.
+The collector:
 
-Session messages, answers, seeds and full report exports are content-bearing data. Do not paste credentials or unnecessary sensitive material into conversations.
+- verifies every ZIP through the canonical Workbench verifier;
+- accepts support bundles only;
+- rejects duplicate pseudonymous session identities;
+- records each source bundle SHA-256;
+- emits schema `shadowseed-support-dataset-v1` with collection identity, software/environment/configuration metadata and minimized structural observations.
 
-## Exports and workspace safety
+This makes mass-test data technically collectable and auditable. It does not create a scientific conclusion by itself. A real study still needs protocol, inclusion rules, controls, analysis plan, privacy/ethics decisions and review.
 
-The UI provides full reports and privacy-minimized support bundles. Every export contains a manifest with SHA-256 hashes and sizes. The verifier rejects missing/extra files, duplicates, path traversal, symlink entries, oversized content, unsafe compression ratios and external/embedded resources in standalone HTML reports.
-
-The workspace defaults to `~/.shadowseed`. Backup/restore remains available from the developer CLI and restore validates a candidate database before replacing the active workspace.
+See [privacy guidance](privacy.md) and [tester guidelines](tester-guidelines.md).
 
 ## Developer install
-
-Developers and research users can install the Python package directly:
 
 ```bash
 python -m pip install "shadowseed[workbench]"
@@ -145,32 +90,28 @@ shadowseed doctor
 shadowseed workbench
 ```
 
-The dedicated installed launcher is also available:
+or:
 
 ```bash
 shadowseed-workbench
 ```
 
-This is the development and research route, and it is also the source fallback while no verified standalone release is available. It is not the intended zero-setup mass-tester path once verified standalone assets are published.
-
 ## Docker
 
-The repository still includes `Dockerfile.workbench` as an optional deployment/test packaging route:
+The optional container route remains available for development/testing:
 
 ```bash
-docker build -f Dockerfile.workbench -t shadowseed-workbench:0.5.0 .
+docker build -f Dockerfile.workbench -t shadowseed-workbench:0.5.1 .
 docker run --rm \
   -p 127.0.0.1:7860:7860 \
   -v shadowseed-data:/data \
-  shadowseed-workbench:0.5.0
+  shadowseed-workbench:0.5.1
 ```
 
-The container listens on `0.0.0.0` internally so the host can reach it, while the recommended port mapping publishes it only on host loopback. Do not expose this preview directly to an untrusted network.
+Do not expose this preview directly to an untrusted network.
 
 ## Claim boundary
 
-The 0.5.0 chat-first standalone build contracts make Shadowseed packageable for local mass testing. A public downloadable release is a separate publication fact. Neither packaging nor publication by itself establishes full production readiness or general answer-quality benefit.
+Version 0.5.1 makes Shadowseed practical for local mass testing and structured minimized data collection. Packaging, tester observations and dataset aggregation do not establish general answer-quality benefit, semantic truth, hostile-network production security or high-impact deployment readiness.
 
-Still separate are hostile-network authentication/tenancy, TLS/CSRF controls, abuse/rate limits, managed secret storage, formal retention/deletion operations, platform vendor signing/notarization, operational monitoring, high-end-model efficacy studies and independent real-world review.
-
-Scientific and authority constraints remain in the canonical runtime. Packaging does not grant seeds authority and does not turn research artifacts into product truth.
+The scientific/authority constraints remain in the canonical runtime. Historical evaluation sessions, benchmark artifacts and compatibility surfaces remain research/provenance material rather than product prerequisites.
