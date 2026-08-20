@@ -8,9 +8,8 @@ operator-attested external support is submitted only through
 
 The purpose is narrow: create auditable opportunities to compare a baseline
 answer with an SSL answer on a later turn where a genuinely authorized seed
-actually surfaced. A missing candidate, rejected evidence event, point-of-use
-block, or lack of later relevance remains a result rather than being repaired by
-weakening the Gate.
+actually surfaced. Missing candidates, rejected evidence, point-of-use blocks,
+and absent later relevance remain results rather than triggers for a weaker Gate.
 """
 
 from __future__ import annotations
@@ -37,7 +36,11 @@ from shadowseed.benchmark.capability_scaling import (
 )
 from shadowseed.benchmark.ssl45_model_benefit_suite import blind_order
 from shadowseed.chat import ShadowChatSession
-from shadowseed.detection.model_detector import make_detector_backend
+from shadowseed.detection.model_detector import (
+    OPEN_SET_GENERATIVE_DETECTOR_ID,
+    OPEN_SET_GENERATIVE_PROMPT,
+    make_detector_backend,
+)
 from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal
 
 
@@ -49,7 +52,7 @@ _EXTERNAL_KINDS = {SignalKind.SSOT, SignalKind.HUMAN_FEEDBACK, SignalKind.RETRIE
 
 @dataclass(frozen=True)
 class EvidenceSelector:
-    """A preregistered way to identify one observed candidate without creating it."""
+    """A preregistered way to identify an observed candidate without creating it."""
 
     born_turn: int | None = None
     seed_index: int | None = None
@@ -59,9 +62,9 @@ class EvidenceSelector:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "EvidenceSelector":
         selector = cls(
-            born_turn=(None if data.get("born_turn") is None else int(data["born_turn"])),
-            seed_index=(None if data.get("seed_index") is None else int(data["seed_index"])),
-            seed_id=(None if data.get("seed_id") is None else str(data["seed_id"])),
+            born_turn=None if data.get("born_turn") is None else int(data["born_turn"]),
+            seed_index=None if data.get("seed_index") is None else int(data["seed_index"]),
+            seed_id=None if data.get("seed_id") is None else str(data["seed_id"]),
             text_contains=(
                 None if data.get("text_contains") is None else str(data["text_contains"]).strip()
             ),
@@ -89,16 +92,13 @@ class EvidenceSelector:
         return selector
 
     def to_dict(self) -> dict[str, Any]:
-        return {
-            key: value
-            for key, value in {
-                "born_turn": self.born_turn,
-                "seed_index": self.seed_index,
-                "seed_id": self.seed_id,
-                "text_contains": self.text_contains,
-            }.items()
-            if value is not None
+        values = {
+            "born_turn": self.born_turn,
+            "seed_index": self.seed_index,
+            "seed_id": self.seed_id,
+            "text_contains": self.text_contains,
         }
+        return {key: value for key, value in values.items() if value is not None}
 
 
 @dataclass(frozen=True)
@@ -114,7 +114,10 @@ class EvidencePlanItem:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "EvidencePlanItem":
-        kind = SignalKind(str(data.get("kind", "")))
+        try:
+            kind = SignalKind(str(data.get("kind", "")))
+        except ValueError as exc:
+            raise ValueError("efficacy evidence kind must be ssot, human_feedback, or retrieval") from exc
         if kind not in _EXTERNAL_KINDS:
             raise ValueError("efficacy evidence kind must be ssot, human_feedback, or retrieval")
         source_ref = str(data.get("source_ref", "")).strip()
@@ -172,6 +175,8 @@ def validate_preregistration(data: dict[str, Any]) -> None:
         raise ValueError("efficacy protocol must use gate_policy_id='evidence_backed'")
     if contract.get("generated_model_output_is_evidence") is not False:
         raise ValueError("protocol must explicitly reject generated model output as evidence")
+    if contract.get("operator_attestation_required") is not True:
+        raise ValueError("protocol must require operator/researcher evidence attestation")
     review = data["review_contract"]
     if not isinstance(review, dict) or review.get("blind_answer_preference") is not True:
         raise ValueError("protocol must require blind answer preference review")
@@ -194,7 +199,10 @@ def validate_suite(data: dict[str, Any]) -> list[dict[str, Any]]:
         for turn in turns:
             if not isinstance(turn, dict) or not str(turn.get("question", "")).strip():
                 raise ValueError("every efficacy turn requires a question")
-        plans = [EvidencePlanItem.from_dict(dict(item)) for item in conversation.get("evidence_plan", [])]
+        plans = [
+            EvidencePlanItem.from_dict(dict(item))
+            for item in conversation.get("evidence_plan", [])
+        ]
         if not plans:
             raise ValueError("efficacy conversation requires at least one evidence_plan item")
         ids = [item.evidence_id for item in plans]
@@ -206,6 +214,40 @@ def validate_suite(data: dict[str, Any]) -> list[dict[str, Any]]:
                     "evidence must be scheduled before at least one later turn so surfacing can be measured"
                 )
     return conversations
+
+
+def _validate_model_provenance(
+    *,
+    backend: str,
+    model_id: str,
+    model_revision: str | None,
+    model_digest: str | None,
+    embedding_backend: str,
+    embedding_model: str | None,
+    embedding_revision: str | None,
+) -> None:
+    if backend == "hf-transformers" and not model_revision:
+        raise ValueError("hf-transformers efficacy runs require --model-revision")
+    if backend == "ollama" and not model_digest:
+        raise ValueError("ollama efficacy runs require --model-digest")
+    if backend == "openai":
+        if not model_revision:
+            raise ValueError("openai efficacy runs require an explicit model snapshot/revision")
+        if model_revision != model_id:
+            raise ValueError(
+                "openai --model-revision must equal --model-id so the recorded snapshot is the "
+                "identity actually sent to the provider"
+            )
+    if embedding_backend == "sentence-transformers":
+        if not embedding_model:
+            raise ValueError("sentence-transformers efficacy runs require --embedding-model")
+        if not embedding_revision:
+            raise ValueError("sentence-transformers efficacy runs require --embedding-revision")
+    elif embedding_revision is not None:
+        raise ValueError(
+            "--embedding-revision is only supported for sentence-transformers; "
+            "other embedding backends must encode identity in --embedding-model/reference"
+        )
 
 
 def _select_seed(
@@ -262,7 +304,13 @@ def _record_answer_pair(
     report: dict[str, Any],
     reviewers: tuple[str, ...],
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    rid = _review_id("evidence_answer", suite_id, conversation_id, turn_index, report["question"])
+    rid = _review_id(
+        "evidence_answer",
+        suite_id,
+        conversation_id,
+        turn_index,
+        report["question"],
+    )
     first, second = blind_order(rid)
     answers = {
         "baseline": str(report.get("baseline_answer", "")),
@@ -301,39 +349,49 @@ def _finalize_opportunity(
 ) -> None:
     seed_id = opportunity.get("matched_seed_id")
     if not seed_id:
-        opportunity["terminal_reason"] = opportunity.get("selector_result", "candidate_not_observed")
+        opportunity["terminal_reason"] = opportunity.get(
+            "selector_result", "candidate_not_observed"
+        )
+        opportunity["later_selected_turns"] = []
+        opportunity["later_surfaced_turns"] = []
+        opportunity["point_of_use_allowed_turns"] = []
+        opportunity["point_of_use_blocks"] = []
+        opportunity["ab_generated_turns"] = []
         return
+
     scheduled = int(opportunity["scheduled_after_turn"])
     later_reports = [report for report in turn_reports if int(report["turn"]) > scheduled]
-    opportunity["later_selected_turns"] = [
-        int(report["turn"])
-        for report in later_reports
-        if seed_id in report.get("selected_seed_ids", [])
-    ]
-    opportunity["later_surfaced_turns"] = [
-        int(report["turn"])
-        for report in later_reports
-        if seed_id in report.get("surfaced_seed_ids", [])
-    ]
-    opportunity["ab_generated_turns"] = list(opportunity["later_surfaced_turns"])
+    selected_turns: list[int] = []
+    surfaced_turns: list[int] = []
+    allowed_turns: list[int] = []
     blocked: list[dict[str, Any]] = []
     for report in later_reports:
-        if seed_id not in report.get("selected_seed_ids", []):
-            continue
+        turn = int(report["turn"])
+        selected = seed_id in report.get("selected_seed_ids", [])
+        surfaced = seed_id in report.get("surfaced_seed_ids", [])
+        if selected:
+            selected_turns.append(turn)
+        if surfaced:
+            surfaced_turns.append(turn)
         for decision in report.get("influence_decisions", []):
-            if str(decision.get("seed_id")) == seed_id and not bool(decision.get("allowed")):
-                blocked.append(
-                    {
-                        "turn": int(report["turn"]),
-                        "reason": str(decision.get("reason", "unknown")),
-                    }
-                )
+            if str(decision.get("seed_id")) != seed_id:
+                continue
+            if bool(decision.get("allowed")):
+                allowed_turns.append(turn)
+            else:
+                blocked.append({"turn": turn, "reason": str(decision.get("reason", "unknown"))})
+
+    opportunity["later_selected_turns"] = selected_turns
+    opportunity["later_surfaced_turns"] = surfaced_turns
+    opportunity["point_of_use_allowed_turns"] = sorted(set(allowed_turns))
     opportunity["point_of_use_blocks"] = blocked
+    opportunity["ab_generated_turns"] = list(surfaced_turns)
+
     if opportunity.get("authority_granted") is not True:
         opportunity["terminal_reason"] = "gate_did_not_grant_authority"
-    elif opportunity["later_surfaced_turns"]:
+    elif surfaced_turns:
         opportunity["terminal_reason"] = "ab_generated"
-    elif opportunity["later_selected_turns"]:
+    elif selected_turns and blocked:
         opportunity["terminal_reason"] = "selected_but_not_authorized_at_point_of_use"
     else:
         opportunity["terminal_reason"] = "no_later_relevant_surfacing_opportunity"
@@ -358,6 +416,7 @@ def run_evidence_efficacy(
     surface_top_k: int,
     reviewers: tuple[str, ...],
     run_id: str | None = None,
+    quantization: str | None = None,
 ) -> Path:
     prereg = _load_json(preregistration_path)
     validate_preregistration(prereg)
@@ -365,14 +424,15 @@ def run_evidence_efficacy(
     conversations = validate_suite(suite)
     if not reviewers or len(set(reviewers)) != len(reviewers):
         raise ValueError("reviewer ids must be non-empty and unique")
-    if backend == "hf-transformers" and not model_revision:
-        raise ValueError("hf-transformers efficacy runs require --model-revision")
-    if backend == "ollama" and not model_digest:
-        raise ValueError("ollama efficacy runs require --model-digest")
-    if backend == "openai" and not model_revision:
-        raise ValueError("openai efficacy runs require an explicit model snapshot/revision")
-    if embedding_backend == "sentence-transformers" and not embedding_revision:
-        raise ValueError("sentence-transformers efficacy runs require --embedding-revision")
+    _validate_model_provenance(
+        backend=backend,
+        model_id=model_id,
+        model_revision=model_revision,
+        model_digest=model_digest,
+        embedding_backend=embedding_backend,
+        embedding_model=embedding_model,
+        embedding_revision=embedding_revision,
+    )
 
     output_dir = output_dir.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -383,7 +443,8 @@ def run_evidence_efficacy(
     source = _git_provenance()
     if run_id is None:
         source_tag = str(source.get("source_revision") or "unknown")[:8]
-        run_id = f"{_utc_now().replace(':', '').replace('-', '')[:15]}-{source_tag}-evidence-efficacy"
+        timestamp = _utc_now().replace(":", "").replace("-", "")[:15]
+        run_id = f"{timestamp}-{source_tag}-evidence-efficacy"
 
     copied_prereg = inputs_dir / "preregistration.json"
     copied_suite = inputs_dir / "suite.json"
@@ -393,7 +454,11 @@ def run_evidence_efficacy(
     environment = _write_environment_manifest(environment_path)
     environment["path"] = "environment.txt"
 
-    embed_fn, embedding_dimension = make_embedding_fn(embedding_backend, embedding_model)
+    embed_fn, embedding_dimension = make_embedding_fn(
+        embedding_backend,
+        embedding_model,
+        revision=embedding_revision if embedding_backend == "sentence-transformers" else None,
+    )
     model = make_backend(
         backend=backend,
         model_id=model_id,
@@ -440,7 +505,9 @@ def run_evidence_efficacy(
             detector_backend=detector,
             embedding_fn=embed_fn,
         )
-        plans = [EvidencePlanItem.from_dict(dict(item)) for item in conversation["evidence_plan"]]
+        plans = [
+            EvidencePlanItem.from_dict(dict(item)) for item in conversation["evidence_plan"]
+        ]
         by_turn: dict[int, list[EvidencePlanItem]] = {}
         for item in plans:
             by_turn.setdefault(item.after_turn, []).append(item)
@@ -464,6 +531,9 @@ def run_evidence_efficacy(
 
             for item in by_turn.get(turn_index, []):
                 seed_id, selector_result = _select_seed(session, item.selector, turn_reports)
+                seed_text = None
+                if seed_id is not None:
+                    seed_text = session.manager.seeds[seed_id].text
                 opportunity: dict[str, Any] = {
                     "evidence_id": item.evidence_id,
                     "conversation_id": conversation_id,
@@ -472,30 +542,38 @@ def run_evidence_efficacy(
                     "selector_result": selector_result,
                     "candidate_observed": seed_id is not None,
                     "matched_seed_id": seed_id,
+                    "matched_seed_text": seed_text,
                     "evidence_kind": item.kind.value,
                     "source_ref": item.source_ref,
+                    "evidence_strength": item.strength,
+                    "evidence_independent": item.independent,
+                    "evidence_reason": item.reason,
                     "evidence_submitted": False,
                     "gate_decision": None,
                     "authority_granted": False,
                 }
                 if seed_id is not None:
                     result = session.submit_evidence(seed_id, _make_signal(item))
-                    opportunity["evidence_submitted"] = True
-                    opportunity["gate_decision"] = result["decision"]
-                    opportunity["weight_after_evidence"] = result["weight_after"]
-                    opportunity["status_after_evidence"] = result["status_after"]
-                    opportunity["evidence_count_after"] = result["evidence_count"]
-                    opportunity["authority_granted"] = (
-                        float(result["weight_after"]) > 0.0
-                        and str(result["status_after"]) == "PROMOTED"
+                    opportunity.update(
+                        {
+                            "evidence_submitted": True,
+                            "gate_decision": result["decision"],
+                            "weight_after_evidence": result["weight_after"],
+                            "status_after_evidence": result["status_after"],
+                            "evidence_count_after": result["evidence_count"],
+                            "authority_granted": (
+                                float(result["weight_after"]) > 0.0
+                                and str(result["status_after"]) == "PROMOTED"
+                            ),
+                            "gate_event": result["gate_event"],
+                        }
                     )
-                    opportunity["gate_event"] = result["gate_event"]
                 conversation_opportunities.append(opportunity)
 
         for opportunity in conversation_opportunities:
             _finalize_opportunity(opportunity, turn_reports)
         opportunities.extend(conversation_opportunities)
-        session.audit()
+        verified_records = session.audit()
         raw_conversations.append(
             {
                 "conversation_id": conversation_id,
@@ -503,6 +581,7 @@ def run_evidence_efficacy(
                 "turns": turn_reports,
                 "opportunities": conversation_opportunities,
                 "gate_events": [event.to_dict() for event in session.manager.gate_events],
+                "audit_records_verified": verified_records,
                 "final_shadow": session.shadow_report(),
             }
         )
@@ -563,9 +642,15 @@ def run_evidence_efficacy(
             "created_at": _utc_now(),
             "claim_level": "harness-smoke" if backend == "fixture" else "real-model-research",
             "evidence_opportunity_count": len(opportunities),
-            "candidate_observed_count": sum(bool(item["candidate_observed"]) for item in opportunities),
-            "authority_granted_count": sum(bool(item["authority_granted"]) for item in opportunities),
-            "surfaced_opportunity_count": sum(bool(item.get("later_surfaced_turns")) for item in opportunities),
+            "candidate_observed_count": sum(
+                bool(item["candidate_observed"]) for item in opportunities
+            ),
+            "authority_granted_count": sum(
+                bool(item["authority_granted"]) for item in opportunities
+            ),
+            "surfaced_opportunity_count": sum(
+                bool(item.get("later_surfaced_turns")) for item in opportunities
+            ),
             "answer_review_item_count": len(answer_packets),
             "terminal_reason_counts": dict(sorted(reason_counts.items())),
             "review_status": "pending" if answer_packets else "not_applicable",
@@ -585,6 +670,7 @@ def run_evidence_efficacy(
         copied_prereg,
         copied_suite,
     ]
+    detector_prompt_hash = sha256(OPEN_SET_GENERATIVE_PROMPT.encode("utf-8")).hexdigest()
     manifest = {
         "schema": BUNDLE_SCHEMA,
         "run_id": run_id,
@@ -596,6 +682,11 @@ def run_evidence_efficacy(
             "reference": model_reference,
             "revision": model_revision,
             "digest": model_digest,
+            "quantization": quantization,
+            "max_new_tokens": max_new_tokens,
+            "detector_id": OPEN_SET_GENERATIVE_DETECTOR_ID,
+            "detector_prompt_variant": "generative",
+            "detector_prompt_template_sha256": detector_prompt_hash,
             "authority_effect_of_model_identity": "none",
         },
         "embedding": {
@@ -603,11 +694,13 @@ def run_evidence_efficacy(
             "runtime_model": embedding_model,
             "reference": embedding_reference or embedding_model,
             "revision": embedding_revision,
+            "revision_applied_at_load": embedding_backend == "sentence-transformers",
             "dimension": embedding_dimension,
         },
         "research_runtime": {
             "runtime_mode": "evaluation",
             "gate_policy_id": "evidence_backed",
+            "production_policy": False,
             "baseline_history_isolated": True,
             "evidence_submission_api": "ShadowChatSession.submit_evidence",
             "generated_model_output_is_evidence": False,
@@ -642,6 +735,11 @@ def verify_evidence_efficacy_bundle(output_dir: Path) -> dict[str, Any]:
     manifest = _load_json(output_dir / "manifest.json")
     if manifest.get("schema") != BUNDLE_SCHEMA:
         raise ValueError("unsupported evidence efficacy bundle schema")
+    runtime = manifest.get("research_runtime", {})
+    if runtime.get("gate_policy_id") != "evidence_backed":
+        raise ValueError("efficacy bundle does not record the evidence_backed Gate policy")
+    if runtime.get("generated_model_output_is_evidence") is not False:
+        raise ValueError("efficacy bundle claims generated model output can be evidence")
     checked = 0
     for relative, metadata in manifest.get("artifacts", {}).items():
         path = output_dir / relative
@@ -660,13 +758,22 @@ def _build_parser() -> argparse.ArgumentParser:
     run.add_argument("--suite", required=True, type=Path)
     run.add_argument("--preregistration", required=True, type=Path)
     run.add_argument("--output-dir", required=True, type=Path)
-    run.add_argument("--backend", choices=["fixture", "hf-transformers", "ollama", "openai"], required=True)
+    run.add_argument(
+        "--backend",
+        choices=["fixture", "hf-transformers", "ollama", "openai"],
+        required=True,
+    )
     run.add_argument("--model-id", required=True)
     run.add_argument("--model-reference", default=None)
     run.add_argument("--model-revision", default=None)
     run.add_argument("--model-digest", default=None)
+    run.add_argument("--quantization", default=None)
     run.add_argument("--max-new-tokens", type=int, default=320)
-    run.add_argument("--embedding-backend", choices=["lexical", "sentence-transformers", "openai"], default="sentence-transformers")
+    run.add_argument(
+        "--embedding-backend",
+        choices=["lexical", "sentence-transformers", "openai"],
+        default="sentence-transformers",
+    )
     run.add_argument("--embedding-model", default=None)
     run.add_argument("--embedding-reference", default=None)
     run.add_argument("--embedding-revision", default=None)
@@ -691,6 +798,7 @@ def main(argv: list[str] | None = None) -> int:
             model_reference=args.model_reference or args.model_id,
             model_revision=args.model_revision,
             model_digest=args.model_digest,
+            quantization=args.quantization,
             max_new_tokens=args.max_new_tokens,
             embedding_backend=args.embedding_backend,
             embedding_model=args.embedding_model,
