@@ -1,6 +1,8 @@
 # Workbench tester guidelines
 
-Shadowseed Workbench 0.5.1 is a local mass-tester preview for using Shadow Seed Learning in an ordinary chat. A normal tester should not need to understand the research harness, author a baseline answer, prepare benchmark JSON, install Git, or install a system Python runtime when a verified standalone release is available.
+Shadowseed Workbench 0.6.0 is a local research preview for using Shadow Seed Learning in an ordinary chat. A normal tester should not need to understand the research harness, author a baseline answer, prepare benchmark JSON, install Git, or install a system Python runtime when a verified standalone release is available.
+
+Repository states/releases containing `LICENSE` are available under PolyForm Noncommercial License 1.0.0. Read the terms before copying, modifying or redistributing the software. Commercial use requires separate permission.
 
 ## What to test
 
@@ -59,6 +61,14 @@ The collection command re-verifies every ZIP, rejects content-bearing full repor
 
 When contributing to an actual study, use the collection/study identifier and instructions provided by the study owner. The repository supplies technical collection tooling; consent, inclusion criteria, study protocol, retention, access control and interpretation remain study-level responsibilities.
 
+## Evidence-efficacy studies are not routine tester exports
+
+The 0.6.0 evidence-efficacy runner is a research harness, not an automatic mode for ordinary tester sessions. Its bundles can contain questions, baseline/SSL answers, seed metadata, Gate decisions and external source references. Do not submit them through the privacy-minimized support-bundle collection path.
+
+A valid evidence-efficacy study must be preregistered before interpreting results. A human/researcher must attest external support independently of model output. A blind A/B item is created only when that support passes the normal `evidence_backed` Gate and the authorized seed later surfaces.
+
+If a candidate selector does not match, the Gate blocks, the point-of-use check denies influence, or no later question makes the seed relevant, that is a study result. Do not alter the candidate or Gate after seeing the outcome merely to obtain an A/B pair.
+
 ## Reporting an issue
 
 Include:
@@ -77,6 +87,7 @@ Include:
 - Prefer synthetic or redacted data for ordinary testing.
 - Read `privacy.md` before sharing or collecting exports.
 - Prefer support bundles for routine troubleshooting and observational collection.
+- Treat evidence-efficacy bundles as content-bearing research data.
 - Keep valuable workspaces backed up before prerelease upgrades.
 
 ## Evidence discipline
