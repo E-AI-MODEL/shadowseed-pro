@@ -57,11 +57,14 @@ build = [
   "setuptools==83.0.0",
   "wheel==0.47.0",
 ]
+standalone-build = [
+  "pyinstaller==6.15.0",
+]
 security = [
   "pip-audit==2.10.1",
 ]
 dev = [
-  "shadowseed[test,build,security,models,vector,openai,workbench]",
+  "shadowseed[test,build,standalone-build,security,models,vector,openai,workbench]",
 ]
 
 [build-system]
