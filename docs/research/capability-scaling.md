@@ -2,18 +2,22 @@
 
 This protocol measures Shadow Seed Learning after the doctrine-alignment merge in PR #62. It is designed to scale from the GitHub-hosted Qwen 7B reference tier to stronger local, dedicated-runner, or hosted models without changing the SSL trust model.
 
+Capability scaling answers **candidate/detector/mechanics** questions. It intentionally keeps the ordinary live arm free of external evidence. Version 0.6.0 adds a separate evidence-backed paired efficacy protocol for answer-level benefit after genuine authority has been granted. See [`evidence-efficacy.md`](evidence-efficacy.md).
+
 ## Canonical protocol and amendment history
 
-The canonical preregistration for definitive post-alignment model measurements is:
+The canonical preregistration for definitive post-alignment capability measurements is:
 
-`src/shadowseed/data/capability_scaling_preregistration_v2.json`
+```text
+src/shadowseed/data/capability_scaling_preregistration_v2.json
+```
 
-Version 1 is intentionally retained as an immutable protocol-history artifact. Before accepting or interpreting a post-alignment Qwen 7B result as the definitive reference, the first execution attempt exposed two measurement blind spots:
+Version 1 is intentionally retained as immutable protocol history. The first execution attempt exposed two measurement blind spots before the definitive Qwen reference was accepted:
 
 1. the v1 harness observed detector candidates only after parser filtering, so parser-rejected malformed output and few-shot leakage were not measurable;
-2. a declared Hugging Face model revision was written into provenance but was not yet passed to the underlying tokenizer/model loaders.
+2. a declared Hugging Face model revision was recorded in provenance but was not yet applied to the tokenizer/model loaders.
 
-Version 2 was registered before the definitive reference result was accepted. It adds raw detector/parser diagnostics and requires declared Hugging Face revisions to be applied to `from_pretrained`, not merely recorded. The earlier execution remains diagnostic and is not the v2 baseline.
+Version 2 was registered before the definitive reference result was accepted. It adds raw detector/parser diagnostics and requires declared Hugging Face revisions to be applied rather than merely recorded.
 
 ## What is held fixed
 
@@ -27,16 +31,16 @@ Every run keeps these invariants:
 - trace and recurrence remain separate from authority;
 - recurrence is never external evidence;
 - the live arm uses `evidence_backed` and injects no external evidence;
-- the evaluation arm is explicitly non-production and uses `exploratory` only to create cross-turn A/B opportunities;
+- the evaluation arm is explicitly non-production and uses `exploratory` only to create recurrence-driven cross-turn A/B opportunities;
 - influence is still subject to the normal point-of-use safety contract;
 - SSL-exposed same-turn candidates are deferred rather than counted as independent recurrence;
 - parser diagnostics never change seed weight, evidence, Gate policy, or point-of-use authorization.
 
-## Why there are two arms
+## The two capability-scaling arms
 
-### Live evidence-backed arm
+### Live evidence-backed negative control
 
-The live arm answers once per turn with the same runtime used by the product-oriented path. It measures:
+The live arm answers once per turn with the same runtime/policy class used by the product-oriented path. It measures:
 
 - raw detector/parser behavior;
 - numbered and unnumbered detector output;
@@ -50,15 +54,40 @@ The live arm answers once per turn with the same runtime used by the product-ori
 - influence records;
 - latency and call counts.
 
-No external evidence is supplied. Therefore a positive weight event, `VALIDATED`, or `PROMOTED` decision in this arm is treated as a harness failure, not as an interesting result.
+No external evidence is supplied. Therefore a positive weight event, `VALIDATED`, or `PROMOTED` decision in this arm is a harness/runtime failure, not an interesting positive result.
 
-A zero promotion count is expected trust-model behaviour. It is not evidence that SSL has no value.
+A zero promotion count is expected trust-model behavior. It is not evidence that SSL has no value.
 
-### Evaluation exploratory arm
+### Exploratory recurrence counterfactual
 
-The evaluation arm keeps the baseline history isolated from the SSL answer. Recurrence may promote under the explicit research-only `exploratory` policy. A blind A/B pair is created only when a previously promoted seed actually passes point-of-use checks and surfaces on a later turn.
+The evaluation arm keeps baseline history isolated from the SSL answer. Recurrence may promote under the explicit research-only `exploratory` policy. A blind A/B pair is created only when a previously promoted seed actually passes point-of-use checks and surfaces on a later turn.
 
-This arm asks whether a carried-over epistemic direction adds value under a controlled research counterfactual. It is not production authority and is never merged into the live metrics.
+This arm asks whether a carried-over epistemic direction can add value under a recurrence-enabled research counterfactual. It is not production authority and is never merged into the live metrics.
+
+## Where evidence-backed efficacy now lives
+
+Do not inject external evidence into the capability-scaling live arm merely to force A/B data. That would destroy its value as a negative authority control.
+
+Use `shadowseed.benchmark.evidence_efficacy` instead. That protocol:
+
+- runs baseline-isolated evaluation mechanics with `gate_policy_id = evidence_backed`;
+- accepts only predeclared external support submitted through `ShadowChatSession.submit_evidence`;
+- records an explicit opportunity path from candidate observation through Gate and point-of-use to surfacing;
+- creates blind A/B items only after authorized surfacing;
+- preserves unmatched selectors and no-opportunity paths as results.
+
+Together the protocols answer different questions:
+
+```text
+capability scaling
+  -> Can the model/detector produce usable candidates and obey authority invariants?
+
+evidence efficacy
+  -> When a supported candidate legitimately gains authority and later surfaces,
+     does the resulting answer help under blind review?
+```
+
+Neither protocol changes the ordinary product policy.
 
 ## Detector/parser observability
 
@@ -97,15 +126,19 @@ Reviewers score:
 
 The review packet does not contain model identity, promotion state, or hidden runtime keys. Raw parser diagnostics remain in the research artifact rather than the blind packet. A separate key file preserves provenance for later analysis.
 
+The checked-in post-alignment Qwen2.5 7B reference currently contains 43 candidate-review items. Those fields remain pending until independent humans fill them. The repository must not infer subjective labels from the same model output being reviewed.
+
 ## Answer review
 
 Answer reviewers receive option A and option B without knowing which is baseline and which is SSL. They choose `A`, `B`, or `tie` and may add notes. The answer key is separate.
 
 No A/B item is created on a turn where no seed surfaced. This prevents the denominator from being inflated with turns where SSL could not have affected the answer.
 
+The current Qwen reference produced zero evaluation surfaced turns, so its zero A/B items are an opportunity/sequencing fact. They do not justify weakening the Gate or relabeling recurrence as evidence.
+
 ## Provenance and reproducibility
 
-A bundle contains:
+A capability bundle contains:
 
 ```text
 manifest.json
@@ -141,9 +174,9 @@ review/
 - Python/platform/pip environment;
 - every generated artifact.
 
-For Hugging Face runs, `--model-revision` is mandatory and is applied to both tokenizer and model loading. For Ollama runs, `--model-digest` is mandatory. Sentence-transformer runs require `--embedding-revision`; reference workflows materialize the embedding model from that exact snapshot. A hosted OpenAI run must supply an explicit model snapshot/revision identifier rather than relying on an unversioned alias.
+For Hugging Face runs, `--model-revision` is mandatory and applied to both tokenizer and model loading. For Ollama runs, `--model-digest` is mandatory. Sentence-transformer reference runs require a pinned embedding revision and should materialize/use that exact snapshot. A hosted OpenAI run must use an explicit provider snapshot/revision identity rather than relying on an unversioned alias.
 
-A GitHub reference bundle additionally records the external runner layer, including the Ollama version, Ollama binary SHA256, actual pulled model digest, GitHub runner metadata, and the resolved embedding revision. This metadata is added to the same artifact hash chain before final verification.
+A GitHub reference bundle additionally records the external runner layer, including the Ollama version, Ollama binary SHA256, actual pulled model digest, GitHub runner metadata, and resolved embedding revision. This metadata is added to the same artifact hash chain before final verification.
 
 The runner can verify a moved bundle without access to the original working directory:
 
@@ -155,7 +188,7 @@ Any changed or missing hashed artifact fails verification.
 
 ## Running the harness
 
-A runner can use any supported real model backend. Example with a locally served model:
+Example with a locally served model:
 
 ```bash
 python -m shadowseed.benchmark.capability_scaling run \
@@ -176,7 +209,7 @@ python -m shadowseed.benchmark.capability_scaling run \
   --output-dir results/capability-scaling/qwen7b-post-alignment-v2
 ```
 
-The evaluation subset is fixed before results are inspected. For the GitHub Qwen 7B reference, `CONV_STARTUP` supplies a primary-domain conversation and `CONV_EDU` supplies a transfer-domain conversation. The live arm still runs every conversation in both suites.
+The evaluation subset is fixed before results are inspected. The live arm still runs every conversation in both suites.
 
 ## High-end/frontier execution
 
@@ -223,11 +256,11 @@ After independent blind review, the same bundle may additionally support bounded
 
 It does not support:
 
-- "the seeds are true";
-- "SSL always improves answers";
-- "larger models should receive more weight";
-- "recurrence is evidence";
-- "parser acceptance proves atomicity";
-- "the system is production-ready".
+- `the seeds are true`;
+- `SSL always improves answers`;
+- `larger models should receive more weight`;
+- `recurrence is evidence`;
+- `parser acceptance proves atomicity`;
+- `the system is production-ready`.
 
 Historical Qwen 7B artifacts from PR #61 remain pre-alignment reference data and must not be overwritten or relabeled as post-alignment evidence.
