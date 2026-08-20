@@ -1,5 +1,6 @@
 name: Phase 1 action pin bootstrap
 
+# Temporary Phase 1 bootstrap. Remove before merge after all workflow refs are immutable.
 on:
   push:
     branches:
