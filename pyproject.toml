@@ -24,9 +24,6 @@ models = [
 openai = [
   "openai>=1.40",
 ]
-paper = [
-  "pymupdf>=1.24",
-]
 vector-faiss = [
   "faiss-cpu>=1.8",
 ]
@@ -55,7 +52,7 @@ test = [
   "ruff>=0.6",
 ]
 dev = [
-  "shadowseed[test,models,vector,paper,openai,workbench]",
+  "shadowseed[test,models,vector,openai,workbench]",
 ]
 
 [build-system]
