@@ -13,15 +13,6 @@ on:
       - ".github/workflows/release-workbench.yml"
   push:
     branches: [main]
-    paths:
-      - "src/shadowseed/**"
-      - "tests/test_workbench_*.py"
-      - "scripts/build_standalone.py"
-      - "scripts/pyinstaller_hooks/**"
-      - "pyproject.toml"
-      - "docs/workbench/**"
-      - ".github/workflows/standalone-workbench.yml"
-      - ".github/workflows/release-workbench.yml"
   workflow_dispatch:
 
 permissions:

@@ -11,6 +11,12 @@ LIFECYCLE = (ROOT / "docs/architecture/lifecycle-and-gate.md").read_text(
     encoding="utf-8"
 )
 CI = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+STANDALONE_WORKFLOW = (
+    ROOT / ".github/workflows/standalone-workbench.yml"
+).read_text(encoding="utf-8")
+RELEASE_WORKFLOW = (ROOT / ".github/workflows/release-workbench.yml").read_text(
+    encoding="utf-8"
+)
 
 
 def _compact(text: str) -> str:
@@ -25,6 +31,22 @@ def test_atomicity_is_never_presented_as_a_semantic_guarantee() -> None:
     assert "normalization target and tested heuristic" in README
     assert "does not guarantee semantic atomicity" in README
     assert "can still produce a compound, vague, or weak candidate" in OVERVIEW
+
+
+def test_readme_defines_the_general_bounded_candidate_contract() -> None:
+    assert "bounded epistemic candidates for investigation" in README
+    assert "records a possible omission as a **candidate for investigation**" not in README
+    for candidate_kind in (
+        "suspected gap",
+        "doubt",
+        "missing relation or boundary",
+        "dependency",
+        "unstated assumption",
+        "alternative hypothesis",
+        "contradiction to investigate",
+        "relevant what-if direction",
+    ):
+        assert candidate_kind in README
 
 
 def test_non_bypassable_claim_is_scoped_to_supported_runtime_decisions() -> None:
@@ -108,3 +130,32 @@ def test_ci_assurance_choices_are_explicit() -> None:
     assert "Static type checking" in CI
     assert "Coverage" in CI
     assert "Optional backends" in CI
+
+
+def test_release_candidate_is_refreshed_for_every_main_push() -> None:
+    push_section = STANDALONE_WORKFLOW.split("  push:\n", 1)[1].split(
+        "  workflow_dispatch:", 1
+    )[0]
+
+    assert "branches: [main]" in push_section
+    assert "paths:" not in push_section
+
+
+def test_release_revalidates_main_at_the_publication_boundary() -> None:
+    publish_step = RELEASE_WORKFLOW.split(
+        "      - name: Publish GitHub prerelease and exact source tag\n", 1
+    )[1].split("      - name: Verify published tag and downloadable assets\n", 1)[0]
+
+    assert publish_step.count("git fetch origin main --force") >= 2
+    assert 'test "$(git rev-parse origin/main)" = "$RELEASE_SHA"' in publish_step
+    assert 'gh release create "$RELEASE_TAG"' in publish_step
+    assert 'if [ "$(git rev-parse origin/main)" != "$RELEASE_SHA" ]; then' in publish_step
+    assert 'gh release delete "$RELEASE_TAG" --cleanup-tag --yes' in publish_step
+
+    create_index = publish_step.index('gh release create "$RELEASE_TAG"')
+    first_fetch_index = publish_step.index("git fetch origin main --force")
+    second_fetch_index = publish_step.index("git fetch origin main --force", first_fetch_index + 1)
+    rollback_index = publish_step.index(
+        'gh release delete "$RELEASE_TAG" --cleanup-tag --yes'
+    )
+    assert first_fetch_index < create_index < second_fetch_index < rollback_index
