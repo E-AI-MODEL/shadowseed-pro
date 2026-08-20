@@ -128,6 +128,26 @@ def _bundle_path(dist_dir: Path) -> Path:
     return dist_dir / "Shadowseed"
 
 
+def _install_license(root: Path, bundle: Path, *, macos: bool | None = None) -> Path:
+    """Copy the repository license into the user-visible frozen bundle."""
+
+    source = root / "LICENSE"
+    if not source.is_file():
+        raise RuntimeError("standalone build requires repository LICENSE")
+    if macos is None:
+        macos = sys.platform == "darwin"
+    target = (
+        bundle / "Contents" / "Resources" / "SHADOWSEED_LICENSE.txt"
+        if macos
+        else bundle / "SHADOWSEED_LICENSE.txt"
+    )
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source, target)
+    if _sha256(target) != _sha256(source):
+        raise RuntimeError("standalone license copy failed integrity check")
+    return target
+
+
 def _archive_bundle(bundle: Path, output_dir: Path, stem: str) -> Path:
     if sys.platform == "darwin":
         archive = output_dir / f"{stem}.zip"
@@ -221,6 +241,9 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
     if not executable.is_file() or not bundle.exists():
         raise RuntimeError(f"PyInstaller output is incomplete: {bundle}")
 
+    license_path = _install_license(root, bundle)
+    license_relative = str(license_path.relative_to(bundle))
+    license_sha256 = _sha256(license_path)
     self_test = None if skip_self_test else _verify_frozen(executable, root, work_dir)
     version = _project_version(root)
     machine = platform.machine().lower() or "unknown"
@@ -239,6 +262,9 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
         "archive": archive.name,
         "archive_size": archive.stat().st_size,
         "archive_sha256": _sha256(archive),
+        "license_file": license_relative,
+        "license_sha256": license_sha256,
+        "license_identifier": "PolyForm-Noncommercial-1.0.0",
         "model_weights_bundled": False,
         "self_contained_python_runtime": True,
         "loopback_only_default": True,
