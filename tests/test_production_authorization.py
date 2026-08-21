@@ -5,12 +5,14 @@ from dataclasses import replace
 import pytest
 
 from shadowseed.application.auth import (
+    CONTRADICTION_SUBMIT,
     EVIDENCE_VERIFY,
     ActorContext,
     AuthorizationError,
     require_capability,
 )
 from shadowseed.application.workspace import WorkspaceService
+from shadowseed.workbench.controller import WorkbenchController
 
 
 def test_local_workspace_identity_is_stable_and_not_path_derived(tmp_path) -> None:
@@ -86,3 +88,115 @@ def test_authorization_record_contains_no_secret_material() -> None:
         "policy_version": "production-authz-v1",
         "authorized": True,
     }
+
+
+def _live_seed(controller: WorkbenchController) -> tuple[str, str]:
+    session_id = controller.create_session(
+        title="Authorization target",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+    )
+    result = controller.send_turn(session_id, "What is missing from this privacy plan?")
+    return session_id, str(result["session"]["seeds"][0]["id"])
+
+
+def test_workbench_verified_evidence_uses_trusted_actor_context(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id, seed_id = _live_seed(controller)
+
+    result = controller.submit_verified_evidence(
+        session_id,
+        seed_id,
+        source_ref="reviewer:one",
+        note="Independently checked.",
+        operator_verified=True,
+    )
+
+    authz = result["authorization"]
+    assert authz["authorized"] is True
+    assert authz["scope_id"] == controller.workspace.workspace_id
+    assert authz["capability"] == EVIDENCE_VERIFY
+    assert str(authz["actor_id"]).startswith("local-owner::")
+    assert str(authz["request_id"]).startswith("request::")
+
+
+def test_workbench_wrong_scope_fails_before_evidence_mutation(tmp_path, monkeypatch) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id, seed_id = _live_seed(controller)
+    before = controller.sessions.load(session_id)["state"]
+    valid = controller.workspace.local_actor_context(request_id="request::wrong-scope")
+    wrong_scope = replace(valid, scope_id="workspace::other")
+    monkeypatch.setattr(controller.workspace, "local_actor_context", lambda: wrong_scope)
+
+    with pytest.raises(AuthorizationError, match="scope"):
+        controller.submit_verified_evidence(
+            session_id,
+            seed_id,
+            source_ref="reviewer:wrong-scope",
+            operator_verified=True,
+        )
+
+    after = controller.sessions.load(session_id)["state"]
+    assert after == before
+
+
+def test_workbench_missing_evidence_capability_fails_before_mutation(
+    tmp_path, monkeypatch
+) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id, seed_id = _live_seed(controller)
+    before = controller.sessions.load(session_id)["state"]
+    valid = controller.workspace.local_actor_context(request_id="request::no-evidence")
+    without_evidence = replace(
+        valid,
+        capabilities=valid.capabilities - {EVIDENCE_VERIFY},
+    )
+    monkeypatch.setattr(controller.workspace, "local_actor_context", lambda: without_evidence)
+
+    with pytest.raises(AuthorizationError, match="evidence.verify"):
+        controller.submit_verified_evidence(
+            session_id,
+            seed_id,
+            source_ref="reviewer:no-capability",
+            operator_verified=True,
+        )
+
+    after = controller.sessions.load(session_id)["state"]
+    assert after == before
+
+
+def test_workbench_contradiction_requires_capability_before_mutation(
+    tmp_path, monkeypatch
+) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id, seed_id = _live_seed(controller)
+    before = controller.sessions.load(session_id)["state"]
+    valid = controller.workspace.local_actor_context(request_id="request::no-contradiction")
+    without_contradiction = replace(
+        valid,
+        capabilities=valid.capabilities - {CONTRADICTION_SUBMIT},
+    )
+    monkeypatch.setattr(
+        controller.workspace,
+        "local_actor_context",
+        lambda: without_contradiction,
+    )
+
+    with pytest.raises(AuthorizationError, match="contradiction.submit"):
+        controller.falsify_seed(session_id, seed_id)
+
+    after = controller.sessions.load(session_id)["state"]
+    assert after == before
+
+
+def test_workbench_contradiction_is_attributable(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id, seed_id = _live_seed(controller)
+
+    result = controller.falsify_seed(session_id, seed_id)
+
+    authz = result["authorization"]
+    assert authz["authorized"] is True
+    assert authz["scope_id"] == controller.workspace.workspace_id
+    assert authz["capability"] == CONTRADICTION_SUBMIT
