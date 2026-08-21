@@ -104,20 +104,70 @@ jobs:
           uv run --no-sync pip-audit -r /tmp/shadowseed-production-locked.txt \
             --no-deps --disable-pip --strict --progress-spinner off
       - name: Generate and validate CycloneDX SBOM
-        env:
-          UV_PREVIEW_FEATURES: sbom-export
         run: |
           uv export --locked --extra workbench --extra build --extra standalone-build \
-            --format cyclonedx1.5 --output-file /tmp/SBOM.cdx.json
+            --no-emit-project --no-hashes --format requirements.txt \
+            --output-file /tmp/shadowseed-production-sbom.txt
           python - <<'PY'
           import json
+          import re
           from pathlib import Path
 
-          payload = json.loads(Path("/tmp/SBOM.cdx.json").read_text(encoding="utf-8"))
-          assert payload["bomFormat"] == "CycloneDX"
-          assert payload["specVersion"] == "1.5"
-          assert payload.get("components")
-          print("SBOM components", len(payload["components"]))
+          requirement = re.compile(
+              r"^([A-Za-z0-9_.-]+)==([^ ;]+)(?:\s*;\s*(.+))?$"
+          )
+          components = []
+          seen = set()
+          for raw in Path("/tmp/shadowseed-production-sbom.txt").read_text(
+              encoding="utf-8"
+          ).splitlines():
+              line = raw.strip()
+              if not line or line.startswith("#"):
+                  continue
+              match = requirement.fullmatch(line)
+              if match is None:
+                  raise SystemExit(f"unsupported locked requirement in SBOM export: {line}")
+              name, version, marker = match.groups()
+              key = (name.lower().replace("_", "-"), version, marker or "")
+              if key in seen:
+                  continue
+              seen.add(key)
+              component = {
+                  "type": "library",
+                  "name": name,
+                  "version": version,
+              }
+              if marker:
+                  component["properties"] = [
+                      {
+                          "name": "shadowseed:environment-marker",
+                          "value": marker,
+                      }
+                  ]
+              components.append(component)
+
+          if not components:
+              raise SystemExit("locked production SBOM contains no components")
+          payload = {
+              "bomFormat": "CycloneDX",
+              "specVersion": "1.5",
+              "version": 1,
+              "components": components,
+          }
+          path = Path("/tmp/SBOM.cdx.json")
+          path.write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          checked = json.loads(path.read_text(encoding="utf-8"))
+          assert checked["bomFormat"] == "CycloneDX"
+          assert checked["specVersion"] == "1.5"
+          assert checked.get("components")
+          assert any(
+              item["name"] == "torch" and item["version"].endswith("+cpu")
+              for item in checked["components"]
+          )
+          print("SBOM components", len(checked["components"]))
           PY
       - name: Sync locked build environment
         run: uv sync --locked --extra build
