@@ -7,6 +7,12 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+from shadowseed.application.auth import (
+    CONTRADICTION_SUBMIT,
+    EVIDENCE_VERIFY,
+    ActorContext,
+    require_capability,
+)
 from shadowseed.application.models import SessionConfig, SessionSummary, TesterFeedback
 from shadowseed.application.profiles import get_profile
 from shadowseed.chat import ShadowChatSession
@@ -16,8 +22,14 @@ from shadowseed.surfacing import build_chat_prompt
 
 
 class SessionService:
-    def __init__(self, repository: SQLiteWorkspaceRepository) -> None:
+    def __init__(
+        self,
+        repository: SQLiteWorkspaceRepository,
+        *,
+        scope_id: str | None = None,
+    ) -> None:
         self.repository = repository
+        self.scope_id = scope_id
         self.repository.initialize()
 
     def create_session(
@@ -49,14 +61,7 @@ class SessionService:
         session: ShadowChatSession,
         question: str,
     ) -> str:
-        """Generate a paired control without mutating SSL state.
-
-        The control uses the exact persisted visible conversation history and the
-        same model backend, but receives no surfaced Shadow Seeds. It is generated
-        before the real live turn so the control cannot observe state changes from
-        that turn. Its text is never fed to detection, recurrence, the Gate, or
-        later conversation history.
-        """
+        """Generate a paired control without mutating SSL state."""
 
         fixture_answer = f"Fixture echo answer to: {question}"
         return session.model.generate(
@@ -90,10 +95,7 @@ class SessionService:
 
         control_answer: str | None = None
         if compare_without_ssl and session.runtime_mode == "live":
-            control_answer = self._generate_live_no_ssl_control(
-                session,
-                normalized_question,
-            )
+            control_answer = self._generate_live_no_ssl_control(session, normalized_question)
 
         report = session.turn(normalized_question)
 
@@ -116,9 +118,7 @@ class SessionService:
                 ),
                 "comparison_control_answer": control_answer,
                 "comparison_ssl_answer": str(report.get("answer", "")),
-                "comparison_ssl_influence_observed": bool(
-                    report.get("surfaced_seed_ids", [])
-                ),
+                "comparison_ssl_influence_observed": bool(report.get("surfaced_seed_ids", [])),
                 "comparison_interpretation": (
                     "The control used the same pre-turn visible history and model configuration "
                     "without surfaced Shadow Seeds. When no authorized seed surfaced, textual "
@@ -137,6 +137,8 @@ class SessionService:
         return report
 
     def falsify(self, session_id: str, seed_id: str) -> dict[str, Any]:
+        """Research compatibility path; not production authorization."""
+
         stored = self.repository.load_session(session_id)
         session = ShadowChatSession.from_state(stored["state"])
         result = session.falsify(seed_id)
@@ -147,6 +149,19 @@ class SessionService:
         )
         return result
 
+    def falsify_authorized(
+        self,
+        session_id: str,
+        seed_id: str,
+        *,
+        actor: ActorContext,
+    ) -> dict[str, Any]:
+        """Production contradiction submission guarded before runtime mutation."""
+
+        authz = self._authorize(actor, CONTRADICTION_SUBMIT)
+        result = self.falsify(session_id, seed_id)
+        return {**result, "authorization": authz}
+
     def submit_verified_evidence(
         self,
         session_id: str,
@@ -156,10 +171,45 @@ class SessionService:
         note: str = "",
         operator_verified: bool = False,
     ) -> dict[str, Any]:
-        """Persist explicit operator-attested support through the runtime Gate."""
+        """Research compatibility path; a bare boolean is not production authorization."""
 
         if not operator_verified:
             raise ValueError("operator verification must be explicitly confirmed")
+        return self._submit_verified_evidence(
+            session_id,
+            seed_id,
+            source_ref=source_ref,
+            note=note,
+        )
+
+    def submit_verified_evidence_authorized(
+        self,
+        session_id: str,
+        seed_id: str,
+        *,
+        source_ref: str,
+        note: str = "",
+        actor: ActorContext,
+    ) -> dict[str, Any]:
+        """Production evidence submission requiring trusted attributable authorization."""
+
+        authz = self._authorize(actor, EVIDENCE_VERIFY)
+        result = self._submit_verified_evidence(
+            session_id,
+            seed_id,
+            source_ref=source_ref,
+            note=note,
+        )
+        return {**result, "authorization": authz}
+
+    def _submit_verified_evidence(
+        self,
+        session_id: str,
+        seed_id: str,
+        *,
+        source_ref: str,
+        note: str,
+    ) -> dict[str, Any]:
         if not isinstance(source_ref, str):
             raise ValueError("source_ref must be a string")
         normalized_source = source_ref.strip()
@@ -186,6 +236,11 @@ class SessionService:
             updated_at=datetime.now().isoformat(),
         )
         return result
+
+    def _authorize(self, actor: ActorContext, capability: str) -> dict[str, object]:
+        if not self.scope_id:
+            raise RuntimeError("production authorization requires a stable workspace scope")
+        return require_capability(actor, scope_id=self.scope_id, capability=capability)
 
     def load(self, session_id: str) -> dict[str, Any]:
         return self.repository.load_session(session_id)
@@ -234,4 +289,7 @@ def service_for_workspace(workspace: str | Path | None = None) -> SessionService
 
     workspace_service = WorkspaceService(workspace)
     workspace_service.initialize()
-    return SessionService(workspace_service.repository)
+    return SessionService(
+        workspace_service.repository,
+        scope_id=workspace_service.workspace_id,
+    )

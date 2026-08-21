@@ -6,7 +6,9 @@ import shutil
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from uuid import uuid4
 
+from shadowseed.application.auth import ActorContext, LOCAL_PRODUCTION_CAPABILITIES
 from shadowseed.storage.sqlite import SQLiteWorkspaceRepository
 
 
@@ -15,6 +17,7 @@ class WorkspacePaths:
     root: Path
     database: Path
     config: Path
+    identity: Path
     exports: Path
     attachments: Path
     logs: Path
@@ -26,6 +29,7 @@ def workspace_paths(root: str | Path | None = None) -> WorkspacePaths:
         root=resolved,
         database=resolved / "workspace.db",
         config=resolved / "config.toml",
+        identity=resolved / "workspace.id",
         exports=resolved / "exports",
         attachments=resolved / "attachments",
         logs=resolved / "logs",
@@ -49,14 +53,39 @@ class WorkspaceService:
                 'default_backend = "fixture"\n',
                 encoding="utf-8",
             )
+        if not self.paths.identity.exists():
+            self.paths.identity.write_text(f"workspace::{uuid4()}\n", encoding="utf-8")
         self.repository.initialize()
         return self.paths
+
+    @property
+    def workspace_id(self) -> str:
+        self.initialize()
+        workspace_id = self.paths.identity.read_text(encoding="utf-8").strip()
+        if not workspace_id.startswith("workspace::") or len(workspace_id) <= len("workspace::"):
+            raise ValueError("workspace identity is missing or malformed")
+        return workspace_id
+
+    def local_actor_context(self, *, request_id: str | None = None) -> ActorContext:
+        """Create trusted local-owner context at the product boundary."""
+
+        workspace_id = self.workspace_id
+        return ActorContext(
+            actor_id=f"local-owner::{workspace_id.removeprefix('workspace::')}",
+            scope_id=workspace_id,
+            capabilities=LOCAL_PRODUCTION_CAPABILITIES,
+            auth_method="local-install",
+            assurance={"profile": "single-user-local"},
+            request_id=request_id or f"request::{uuid4()}",
+            policy_version="production-authz-v1",
+        )
 
     def info(self) -> dict[str, object]:
         self.initialize()
         return {
             "root": str(self.paths.root),
             "database": str(self.paths.database),
+            "workspace_id": self.workspace_id,
             "schema_version": self.repository.schema_version(),
             "counts": self.repository.counts(),
         }
@@ -79,7 +108,7 @@ class WorkspaceService:
         protected = {Path(root.anchor).resolve(), home, home.parent.resolve()}
         if root in protected or len(root.parts) < 3:
             raise ValueError(f"refusing to delete unsafe workspace path: {root}")
-        markers = (self.paths.database, self.paths.config)
+        markers = (self.paths.database, self.paths.config, self.paths.identity)
         if root.exists() and not any(path.exists() for path in markers):
             raise ValueError(
                 f"refusing to delete a directory that is not a Shadowseed workspace: {root}"
