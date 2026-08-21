@@ -52,8 +52,9 @@ jobs:
       - name: Installed CLI contract
         run: uv run --no-sync python -m shadowseed.cli workbench --help
       - name: End-to-end fixture, exports, and headless UI
-        shell: python
+        shell: bash
         run: |
+          uv run --no-sync python - <<'PY'
           from pathlib import Path
           import tempfile
           from shadowseed.workbench.controller import WorkbenchController
@@ -76,6 +77,7 @@ jobs:
               controller.workspace.backup(root / "backup.sqlite")
               assert (root / "backup.sqlite").is_file()
           print("portable Workbench smoke OK")
+          PY
 
   docker-build:
     name: Workbench container build
