@@ -75,6 +75,29 @@ jobs:
           uv export --locked --extra workbench --extra build --extra standalone-build
           --no-emit-project --no-hashes --format requirements.txt
           --output-file /tmp/shadowseed-production-locked.txt
+      - name: Normalize CPU torch version for advisory lookup
+        run: |
+          # PyTorch publishes Linux/Windows CPU wheels with a local `+cpu`
+          # version suffix. Advisory databases index the public release version,
+          # not that build-local suffix. Normalize only this one audit lookup;
+          # uv.lock and the generated SBOM retain the exact `+cpu` artifact.
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path("/tmp/shadowseed-production-locked.txt")
+          text = path.read_text(encoding="utf-8")
+          normalized, count = re.subn(
+              r"(?m)^torch==([^ ;+]+)\+cpu(\s*;.*)$",
+              r"torch==\1\2",
+              text,
+          )
+          if count != 1:
+              raise SystemExit(
+                  f"expected exactly one locked torch +cpu record, found {count}"
+              )
+          path.write_text(normalized, encoding="utf-8")
+          PY
       - name: Audit production dependency inventory
         run: |
           uv sync --locked --extra security
