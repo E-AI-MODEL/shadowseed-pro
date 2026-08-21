@@ -78,7 +78,8 @@ jobs:
       - name: Audit production dependency inventory
         run: |
           uv sync --locked --extra security
-          uv run --no-sync pip-audit -r /tmp/shadowseed-production-locked.txt --strict --progress-spinner off
+          uv run --no-sync pip-audit -r /tmp/shadowseed-production-locked.txt \
+            --no-deps --disable-pip --strict --progress-spinner off
       - name: Generate and validate CycloneDX SBOM
         env:
           UV_PREVIEW_FEATURES: sbom-export
