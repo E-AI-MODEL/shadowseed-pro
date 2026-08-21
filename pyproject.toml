@@ -52,13 +52,40 @@ test = [
   "pytest-cov>=5.0",
   "ruff>=0.6",
 ]
+build = [
+  "build==1.5.0",
+  "setuptools==83.0.0",
+  "wheel==0.47.0",
+]
+standalone-build = [
+  "pyinstaller==6.15.0",
+]
+security = [
+  "pip-audit==2.10.1",
+]
 dev = [
-  "shadowseed[test,models,vector,openai,workbench]",
+  "shadowseed[test,build,standalone-build,security,models,vector,openai,workbench]",
 ]
 
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools==83.0.0", "wheel==0.47.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.uv]
+required-version = "==0.8.14"
+
+# Workbench and model extras are CPU-first for the bounded local product.
+# Linux and Windows use PyTorch's explicit CPU index; macOS falls back to PyPI,
+# where the native macOS wheel is CPU/Metal capable and has no CUDA dependency set.
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cpu", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
 
 [tool.setuptools]
 package-dir = {"" = "src"}

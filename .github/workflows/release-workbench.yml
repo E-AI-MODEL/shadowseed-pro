@@ -20,13 +20,16 @@ jobs:
       github.event.workflow_run.head_branch == 'main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
       - name: Validate exact release candidate
         id: preflight
         env:
@@ -38,6 +41,7 @@ jobs:
           git fetch origin main --tags --force
           test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
           test "$(git rev-parse origin/main)" = "$RELEASE_SHA"
+          uv lock --check
           release_version="$(python - <<'PY'
           import tomllib
           from pathlib import Path
@@ -48,6 +52,7 @@ jobs:
           notes_file="docs/workbench/release-${release_version}.md"
           test -f "$notes_file"
           test -f LICENSE
+          test -f uv.lock
           echo "release_version=$release_version" >> "$GITHUB_OUTPUT"
           echo "release_tag=$release_tag" >> "$GITHUB_OUTPUT"
           echo "notes_file=$notes_file" >> "$GITHUB_OUTPUT"
@@ -62,9 +67,66 @@ jobs:
           fi
           echo "should_release=true" >> "$GITHUB_OUTPUT"
 
+      - name: Generate locked release SBOM
+        if: steps.preflight.outputs.should_release == 'true'
+        run: |
+          mkdir -p release-assets
+          uv export --locked --extra workbench --extra build --extra standalone-build \
+            --no-emit-project --no-hashes --format requirements.txt \
+            --output-file "${RUNNER_TEMP}/release-sbom.txt"
+          python - <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          requirement = re.compile(
+              r"^([A-Za-z0-9_.-]+)==([^ ;]+)(?:\s*;\s*(.+))?$"
+          )
+          source = Path(os.environ["RUNNER_TEMP"]) / "release-sbom.txt"
+          components = []
+          seen = set()
+          for raw in source.read_text(encoding="utf-8").splitlines():
+              line = raw.strip()
+              if not line or line.startswith("#"):
+                  continue
+              match = requirement.fullmatch(line)
+              if match is None:
+                  raise SystemExit(f"unsupported locked requirement in release SBOM: {line}")
+              name, version, marker = match.groups()
+              key = (name.lower().replace("_", "-"), version, marker or "")
+              if key in seen:
+                  continue
+              seen.add(key)
+              component = {"type": "library", "name": name, "version": version}
+              if marker:
+                  component["properties"] = [
+                      {"name": "shadowseed:environment-marker", "value": marker}
+                  ]
+              components.append(component)
+          if not components:
+              raise SystemExit("locked release SBOM contains no components")
+          payload = {
+              "bomFormat": "CycloneDX",
+              "specVersion": "1.5",
+              "version": 1,
+              "components": components,
+          }
+          path = Path("release-assets/SBOM.cdx.json")
+          path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          checked = json.loads(path.read_text(encoding="utf-8"))
+          assert checked["bomFormat"] == "CycloneDX"
+          assert checked["specVersion"] == "1.5"
+          assert checked.get("components")
+          assert any(
+              item["name"] == "torch" and item["version"].endswith("+cpu")
+              for item in checked["components"]
+          )
+          PY
+
       - name: Download verified standalone assets from triggering run
         if: steps.preflight.outputs.should_release == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ github.token }}
@@ -90,6 +152,7 @@ jobs:
           release = Path("release-assets")
           release.mkdir(exist_ok=True)
           expected_license_sha = sha256(Path("LICENSE").read_bytes()).hexdigest()
+          lock_sha = sha256(Path("uv.lock").read_bytes()).hexdigest()
           manifests = sorted(source.glob("*.manifest.json"))
           if len(manifests) != 3:
               raise SystemExit(f"expected 3 standalone manifests, found {len(manifests)}")
@@ -115,10 +178,13 @@ jobs:
               shutil.copy2(archive, release / archive.name)
               bundles.append(payload)
           shutil.copy2("LICENSE", release / "LICENSE")
+          shutil.copy2("uv.lock", release / "uv.lock")
           provenance = {
               "artifact": "shadowseed_release_provenance",
               "version": os.environ["RELEASE_VERSION"],
               "source_sha": os.environ["RELEASE_SHA"],
+              "dependency_lock_sha256": lock_sha,
+              "sbom_file": "SBOM.cdx.json",
               "license_identifier": "PolyForm-Noncommercial-1.0.0",
               "license_sha256": expected_license_sha,
               "standalone_workflow_run_id": int(os.environ["SOURCE_RUN_ID"]),
@@ -129,23 +195,51 @@ jobs:
               encoding="utf-8",
           )
 
-      - name: Build Python distribution
+      - name: Build Python distribution from locked build tooling
         if: steps.preflight.outputs.should_release == 'true'
         run: |
-          python -m pip install --upgrade pip build
-          python -m build
-          python scripts/verify_distribution_license.py --dist-dir dist --license LICENSE
+          uv sync --locked --extra build
+          uv run --no-sync python -m build --no-isolation
+          uv run --no-sync python scripts/verify_distribution_license.py --dist-dir dist --license LICENSE
           cp dist/* release-assets/
 
-      - name: Installed wheel smoke
+      - name: Installed wheel smoke against locked Workbench dependencies
         if: steps.preflight.outputs.should_release == 'true'
         shell: bash
         run: |
           set -euo pipefail
           wheel="$(ls dist/*.whl)"
-          python -m venv "${RUNNER_TEMP}/release-venv"
-          "${RUNNER_TEMP}/release-venv/bin/pip" install --upgrade pip
-          "${RUNNER_TEMP}/release-venv/bin/pip" install "${wheel}[workbench]"
+          uv export --locked --extra workbench --no-emit-project --no-hashes \
+            --format requirements.txt --output-file "${RUNNER_TEMP}/release-workbench-locked.txt"
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          source = Path(os.environ["RUNNER_TEMP"]) / "release-workbench-locked.txt"
+          pypi = Path(os.environ["RUNNER_TEMP"]) / "release-workbench-pypi.txt"
+          torch = Path(os.environ["RUNNER_TEMP"]) / "release-workbench-torch.txt"
+          lines = source.read_text(encoding="utf-8").splitlines()
+          cpu_lines = [
+              line for line in lines if line.startswith("torch==") and "+cpu" in line
+          ]
+          if len(cpu_lines) != 1:
+              raise SystemExit(f"expected exactly one locked CPU torch record, found {len(cpu_lines)}")
+          pypi.write_text(
+              "\n".join(line for line in lines if not line.startswith("torch==")) + "\n",
+              encoding="utf-8",
+          )
+          torch.write_text(cpu_lines[0] + "\n", encoding="utf-8")
+          PY
+          uv venv "${RUNNER_TEMP}/release-venv" --python 3.12
+          uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python" \
+            --no-deps --index-url https://pypi.org/simple \
+            -r "${RUNNER_TEMP}/release-workbench-pypi.txt"
+          torch_requirement="$(cat "${RUNNER_TEMP}/release-workbench-torch.txt")"
+          uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python" \
+            --no-deps --index-url https://download.pytorch.org/whl/cpu \
+            "$torch_requirement"
+          uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python" \
+            --no-deps "${wheel}[workbench]"
           cd "${RUNNER_TEMP}"
           "${RUNNER_TEMP}/release-venv/bin/shadowseed" workbench --help
           "${RUNNER_TEMP}/release-venv/bin/shadowseed-workbench" --self-test \
@@ -189,6 +283,8 @@ jobs:
           test "$(find . -maxdepth 1 -name 'shadowseed-*.whl' | wc -l)" -eq 1
           test "$(find . -maxdepth 1 -name 'shadowseed-[0-9]*.tar.gz' | wc -l)" -eq 1
           test -f PROVENANCE.json
+          test -f SBOM.cdx.json
+          test -f uv.lock
           test -f LICENSE
 
       - name: Publish GitHub prerelease and exact source tag
@@ -237,4 +333,6 @@ jobs:
           test "$(find . -maxdepth 1 -name '*.manifest.json' | wc -l)" -eq 3
           test "$(find . -maxdepth 1 -name 'shadowseed-workbench-*' ! -name '*.manifest.json' | wc -l)" -eq 3
           test -f PROVENANCE.json
+          test -f SBOM.cdx.json
+          test -f uv.lock
           test -f LICENSE

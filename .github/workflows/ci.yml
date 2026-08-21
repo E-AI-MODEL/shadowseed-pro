@@ -2,8 +2,9 @@ name: CI
 
 # CI contract (see issue #23, "Expand CI coverage"):
 #   - `test`  : Ruff lint + full pytest matrix + CLI smoke on each Python.
-#   - `build` : package builds, exact license inclusion, clean wheel install,
-#               and installed console entry-point smoke.
+#   - `build` : locked dependency/security validation, SBOM generation, package
+#               build, exact license inclusion, clean wheel install, and installed
+#               console entry-point smoke.
 #
 # Explicit deferrals (tracked as production/assurance gaps, not silently skipped):
 #   - Static type checking (e.g. mypy) is NOT gated yet: the codebase is not fully
@@ -15,10 +16,16 @@ name: CI
 #   - Optional backends (Hugging Face, Ollama, OpenAI, FAISS, Chroma) are exercised
 #     only through deterministic fixtures here; live-backend integration needs
 #     network/credentials and stays out of the default matrix by design.
+#   - The production dependency audit covers the production-ready/local candidate
+#     closure (core + Workbench + build/standalone tooling). Optional vector backends
+#     remain outside that claim until separately cleared by the production policy.
 
 on:
   push:
   pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -27,23 +34,25 @@ jobs:
       matrix:
         python-version: ["3.10", "3.12"]
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: ${{ matrix.python-version }}
-          cache: pip
-      - run: python -m pip install --upgrade pip
-      - run: pip install -e ".[test]"
-      - run: ruff check .
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
+      - name: Sync locked test environment
+        run: uv sync --locked --extra test
+      - run: uv run --no-sync ruff check .
       - run: >-
-          python -m pytest -q
+          uv run --no-sync python -m pytest -q
           --cov=shadowseed
           --cov=shadowseed_agent
           --cov-branch
           --cov-report=term-missing
           --cov-fail-under=80
       - name: CLI smoke (source tree)
-        run: python -m shadowseed.cli --help
+        run: uv run --no-sync python -m shadowseed.cli --help
       - name: Test suite leaves checkout clean
         run: |
           git diff --exit-code
@@ -52,21 +61,125 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
-          cache: pip
-      - run: python -m pip install --upgrade pip build
-      - name: Build wheel and sdist
-        run: python -m build
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
+      - name: Verify lock is current
+        run: uv lock --check
+      - name: Export production dependency inventory
+        run: >-
+          uv export --locked --extra workbench --extra build --extra standalone-build
+          --no-emit-project --no-hashes --format requirements.txt
+          --output-file /tmp/shadowseed-production-locked.txt
+      - name: Normalize CPU torch version for advisory lookup
+        run: |
+          # PyTorch publishes Linux/Windows CPU wheels with a local `+cpu`
+          # version suffix. Advisory databases index the public release version,
+          # not that build-local suffix. Normalize only this one audit lookup;
+          # uv.lock and the generated SBOM retain the exact `+cpu` artifact.
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path("/tmp/shadowseed-production-locked.txt")
+          text = path.read_text(encoding="utf-8")
+          normalized, count = re.subn(
+              r"(?m)^torch==([^ ;+]+)\+cpu(\s*;.*)$",
+              r"torch==\1\2",
+              text,
+          )
+          if count != 1:
+              raise SystemExit(
+                  f"expected exactly one locked torch +cpu record, found {count}"
+              )
+          path.write_text(normalized, encoding="utf-8")
+          PY
+      - name: Audit production dependency inventory
+        run: |
+          uv sync --locked --extra security
+          uv run --no-sync pip-audit -r /tmp/shadowseed-production-locked.txt \
+            --no-deps --disable-pip --strict --progress-spinner off
+      - name: Generate and validate CycloneDX SBOM
+        run: |
+          uv export --locked --extra workbench --extra build --extra standalone-build \
+            --no-emit-project --no-hashes --format requirements.txt \
+            --output-file /tmp/shadowseed-production-sbom.txt
+          python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          requirement = re.compile(
+              r"^([A-Za-z0-9_.-]+)==([^ ;]+)(?:\s*;\s*(.+))?$"
+          )
+          components = []
+          seen = set()
+          for raw in Path("/tmp/shadowseed-production-sbom.txt").read_text(
+              encoding="utf-8"
+          ).splitlines():
+              line = raw.strip()
+              if not line or line.startswith("#"):
+                  continue
+              match = requirement.fullmatch(line)
+              if match is None:
+                  raise SystemExit(f"unsupported locked requirement in SBOM export: {line}")
+              name, version, marker = match.groups()
+              key = (name.lower().replace("_", "-"), version, marker or "")
+              if key in seen:
+                  continue
+              seen.add(key)
+              component = {
+                  "type": "library",
+                  "name": name,
+                  "version": version,
+              }
+              if marker:
+                  component["properties"] = [
+                      {
+                          "name": "shadowseed:environment-marker",
+                          "value": marker,
+                      }
+                  ]
+              components.append(component)
+
+          if not components:
+              raise SystemExit("locked production SBOM contains no components")
+          payload = {
+              "bomFormat": "CycloneDX",
+              "specVersion": "1.5",
+              "version": 1,
+              "components": components,
+          }
+          path = Path("/tmp/SBOM.cdx.json")
+          path.write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          checked = json.loads(path.read_text(encoding="utf-8"))
+          assert checked["bomFormat"] == "CycloneDX"
+          assert checked["specVersion"] == "1.5"
+          assert checked.get("components")
+          assert any(
+              item["name"] == "torch" and item["version"].endswith("+cpu")
+              for item in checked["components"]
+          )
+          print("SBOM components", len(checked["components"]))
+          PY
+      - name: Sync locked build environment
+        run: uv sync --locked --extra build
+      - name: Build wheel and sdist without floating build isolation
+        run: uv run --no-sync python -m build --no-isolation
       - name: Verify exact license is shipped in wheel and sdist
-        run: python scripts/verify_distribution_license.py --dist-dir dist --license LICENSE
+        run: uv run --no-sync python scripts/verify_distribution_license.py --dist-dir dist --license LICENSE
       - name: Install from the built wheel in a clean venv
         run: |
-          python -m venv /tmp/ci-wheel-env
-          /tmp/ci-wheel-env/bin/python -m pip install --upgrade pip
-          /tmp/ci-wheel-env/bin/python -m pip install dist/*.whl
+          uv export --locked --no-emit-project --no-hashes --format requirements.txt --output-file /tmp/runtime-constraints.txt
+          uv venv /tmp/ci-wheel-env --python 3.12
+          uv pip install --python /tmp/ci-wheel-env/bin/python --constraints /tmp/runtime-constraints.txt dist/*.whl
       - name: CLI smoke (installed package, outside the source tree)
         run: |
           cd /tmp

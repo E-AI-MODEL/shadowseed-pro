@@ -22,9 +22,37 @@ These checks are emitted by `.github/workflows/ci.yml`, which runs for every pul
 
 Pull-request conversations must be resolved before merge where enforced by the ruleset. There is no standing bypass path for routine administration.
 
+## Independent assurance for sensitive changes
+
+The repository currently has one maintainer. Requiring one GitHub approval on every pull request would create a self-blocking rule because an author cannot approve their own pull request. The ruleset therefore does not treat a maintainer self-review as an independent approval.
+
+Architecture/security-sensitive production changes still require independent assurance before a `production-ready/local` claim. Acceptable evidence is a review by a person other than the author, or an explicitly approved external review mechanism whose reviewed commit, findings and disposition are preserved in the repository record. Maintainer self-review remains useful but must be labelled as self-review and cannot be represented as independent assurance.
+
+Issue #95 tracks the independent post-acceptance review of the Phase 0 production contracts. Material findings are resolved through a protected pull request and do not rewrite the history of PR #89.
+
+This assurance requirement is deliberately narrower than an unconditional one-approval repository rule. Routine single-maintainer development continues through protected pull requests and required automated checks; production architecture/security acceptance additionally requires the independent evidence above.
+
+## Dependency and Action update policy
+
+Python dependency resolution is recorded in `uv.lock`. The resolver version is pinned in `pyproject.toml`; updates to direct dependency ranges or the resolver must refresh the lock and pass supply-chain validation. The bounded local product is CPU-first: Linux and Windows resolve PyTorch from the explicit CPU wheel index, while macOS uses the native PyPI wheel. This prevents the production lock from silently turning a CPU-first Workbench into a CUDA dependency closure.
+
+Dependabot checks Python and GitHub Actions dependencies weekly. Update pull requests use the same protected-main process as other changes. Mutable Action tags are not accepted in repository workflows: Actions are recorded by full immutable commit SHA with a human-readable version comment. Version comments are informative only; the SHA is the executed identity.
+
+Dependency updates are not auto-merged. They must pass the repository checks and the dependency-security scan. A security update may be prioritized, but urgency does not convert it into a break-glass event by default.
+
+The required vulnerability gate audits the dependency closure that can ship in or build the `production-ready/local` candidate: core runtime, Workbench, build tooling and standalone-build tooling. Optional vector-store extras are not silently folded into that production claim. In particular, the current Chroma extra resolves to `chromadb 1.5.9`, for which pip-audit reports `PYSEC-2026-311`; the advisory has no fixed release listed as of 2026-08-20. `vector-chroma` therefore remains outside the `production-ready/local` supported dependency surface until a non-vulnerable upstream release is available and the lock/security gate is refreshed. This is a bounded unsupported-production dependency, not an ignored passing scan.
+
+Release SBOMs describe the same production dependency closure as the required vulnerability gate. Research-only or unsupported optional extras may remain installable for research, but they must not be represented as covered by the production SBOM or production security verdict until separately cleared.
+
 ## Break-glass
 
-A ruleset bypass or temporary ruleset relaxation is emergency-only. It must be deliberate, time-bounded, and followed by restoration of the normal ruleset. The administrator must record why the bypass was needed, the affected commit or pull request, what checks were unavailable or overridden, and confirmation that the protection was restored. Break-glass must never be used to make ordinary development faster.
+A ruleset bypass or temporary ruleset relaxation is emergency-only. It must be deliberate, time-bounded, and followed by restoration of the normal ruleset. Break-glass must never be used to make ordinary development faster or to evade a reproducible failing quality gate.
+
+Before use, the administrator records the incident/change reference, reason normal protected flow cannot be used, exact intended commit or pull request, checks or rules that would be bypassed, the narrowest required time window, and the rollback/restoration plan. No break-glass procedure authorizes force-rewriting repository history or deleting the historical red verification commit `e9e47d9708e3291f555ba08c1022a52071ee2cc1`.
+
+After use, the administrator restores the normal ruleset immediately and records the resulting commit, checks that ran or were unavailable, any compensating verification, the restoration time, and confirmation that `main` is protected again. The event remains auditable even when the emergency change was later reverted.
+
+Before a `production-ready/local` claim, break-glass is validated non-destructively by a tabletop exercise. The exercise walks the record, authorization, bounded bypass, restoration and post-event verification steps without weakening a working ruleset merely to prove that bypass exists.
 
 ## Verification procedure
 

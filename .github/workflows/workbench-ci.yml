@@ -9,6 +9,7 @@ on:
       - "src/shadowseed/cli_dispatch.py"
       - "tests/test_workbench_*.py"
       - "pyproject.toml"
+      - "uv.lock"
       - ".github/workflows/workbench-ci.yml"
   push:
     branches: [main]
@@ -19,6 +20,7 @@ on:
       - "src/shadowseed/cli_dispatch.py"
       - "tests/test_workbench_*.py"
       - "pyproject.toml"
+      - "uv.lock"
       - ".github/workflows/workbench-ci.yml"
 
 permissions:
@@ -36,23 +38,24 @@ jobs:
       matrix:
         python-version: ["3.10", "3.12"]
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: ${{ matrix.python-version }}
-          cache: pip
-      - run: python -m pip install --upgrade pip
-      - run: pip install -e ".[test,workbench]"
-      - run: ruff check src/shadowseed/application src/shadowseed/workbench tests/test_workbench_*.py
-      - run: pytest -q tests/test_workbench_*.py
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
+      - run: uv sync --locked --extra test --extra workbench
+      - run: uv run --no-sync ruff check src/shadowseed/application src/shadowseed/workbench tests/test_workbench_*.py
+      - run: uv run --no-sync pytest -q tests/test_workbench_*.py
       - name: CLI contract
         run: |
-          shadowseed workbench --help
-          shadowseed doctor --workspace "${RUNNER_TEMP}/shadowseed-doctor"
-          shadowseed init --workspace "${RUNNER_TEMP}/shadowseed-init"
+          uv run --no-sync shadowseed workbench --help
+          uv run --no-sync shadowseed doctor --workspace "${RUNNER_TEMP}/shadowseed-doctor"
+          uv run --no-sync shadowseed init --workspace "${RUNNER_TEMP}/shadowseed-init"
       - name: Headless UI build
         run: |
-          python - <<'PY'
+          uv run --no-sync python - <<'PY'
           from pathlib import Path
           import tempfile
           from shadowseed.workbench.app import build_app
@@ -67,21 +70,51 @@ jobs:
     name: workbench wheel extra
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
-      - run: python -m pip install --upgrade pip build
-      - run: python -m build
-      - name: Install built wheel with Workbench dependency
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
+      - run: uv sync --locked --extra build
+      - run: uv run --no-sync python -m build --no-isolation
+      - name: Install built wheel with locked Workbench dependencies
         shell: bash
         run: |
           set -euo pipefail
           wheel="$(ls dist/*.whl)"
-          python -m venv "${RUNNER_TEMP}/workbench-wheel"
-          "${RUNNER_TEMP}/workbench-wheel/bin/pip" install --upgrade pip
-          "${RUNNER_TEMP}/workbench-wheel/bin/pip" install "httpx[socks]==0.27.2"
-          "${RUNNER_TEMP}/workbench-wheel/bin/pip" install "${wheel}[workbench]"
+          uv export --locked --extra workbench --no-emit-project --no-hashes \
+            --format requirements.txt --output-file "${RUNNER_TEMP}/workbench-locked.txt"
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          source = Path(os.environ["RUNNER_TEMP"]) / "workbench-locked.txt"
+          pypi = Path(os.environ["RUNNER_TEMP"]) / "workbench-pypi.txt"
+          torch = Path(os.environ["RUNNER_TEMP"]) / "workbench-torch.txt"
+          lines = source.read_text(encoding="utf-8").splitlines()
+          torch_lines = [line for line in lines if line.startswith("torch==")]
+          cpu_lines = [line for line in torch_lines if "+cpu" in line]
+          if len(cpu_lines) != 1:
+              raise SystemExit(f"expected exactly one locked CPU torch record, found {len(cpu_lines)}")
+          pypi.write_text(
+              "\n".join(line for line in lines if not line.startswith("torch==")) + "\n",
+              encoding="utf-8",
+          )
+          torch.write_text(cpu_lines[0] + "\n", encoding="utf-8")
+          PY
+          uv venv "${RUNNER_TEMP}/workbench-wheel" --python 3.12
+          uv pip install --python "${RUNNER_TEMP}/workbench-wheel/bin/python" "httpx[socks]==0.27.2"
+          uv pip install --python "${RUNNER_TEMP}/workbench-wheel/bin/python" \
+            --no-deps --index-url https://pypi.org/simple \
+            -r "${RUNNER_TEMP}/workbench-pypi.txt"
+          torch_requirement="$(cat "${RUNNER_TEMP}/workbench-torch.txt")"
+          uv pip install --python "${RUNNER_TEMP}/workbench-wheel/bin/python" \
+            --no-deps --index-url https://download.pytorch.org/whl/cpu \
+            "$torch_requirement"
+          uv pip install --python "${RUNNER_TEMP}/workbench-wheel/bin/python" \
+            --no-deps "${wheel}[workbench]"
           cd "${RUNNER_TEMP}"
           "${RUNNER_TEMP}/workbench-wheel/bin/shadowseed" workbench --help
           ALL_PROXY="socks5h://127.0.0.1:9" \
@@ -91,5 +124,6 @@ jobs:
           from packaging.version import Version
           from shadowseed.workbench.app import build_app
           assert Version(httpx.__version__) >= Version("0.28.0")
+          assert build_app is not None
           print("installed Workbench SOCKS-proxy import OK", gradio.__version__)
           PY

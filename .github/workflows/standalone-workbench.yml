@@ -9,6 +9,7 @@ on:
       - "scripts/build_standalone.py"
       - "scripts/pyinstaller_hooks/**"
       - "pyproject.toml"
+      - "uv.lock"
       - "LICENSE"
       - ".gitattributes"
       - "docs/workbench/**"
@@ -30,26 +31,25 @@ jobs:
     name: Product quality gate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
-          cache: pip
-          cache-dependency-path: pyproject.toml
-      - name: Install test and Workbench stack
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install ".[test,workbench]"
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
+      - name: Install locked test and Workbench stack
+        run: uv sync --locked --extra test --extra workbench
       - name: Ruff
-        run: python -m ruff check .
+        run: uv run --no-sync ruff check .
       - name: Full repository tests and branch coverage
         run: >-
-          python -m pytest -q
+          uv run --no-sync python -m pytest -q
           --cov=shadowseed --cov=shadowseed_agent --cov-branch
           --cov-report=term-missing --cov-fail-under=80
       - name: Standalone launcher and license tests
         run: >-
-          python -m pytest -q
+          uv run --no-sync python -m pytest -q
           tests/test_workbench_standalone.py
           tests/test_standalone_license_packaging.py
       - name: Checkout remains clean
@@ -76,26 +76,19 @@ jobs:
             label: macOS
             artifact: standalone-macos
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
-          cache: pip
-          cache-dependency-path: pyproject.toml
-      - name: Install CPU PyTorch first
-        if: runner.os != 'macOS'
-        run: >-
-          python -m pip install
-          --index-url https://download.pytorch.org/whl/cpu
-          "torch>=2.2"
-      - name: Install Workbench and frozen-build tooling
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install ".[workbench]" "pyinstaller==6.15.0"
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
+      - name: Install locked Workbench and frozen-build tooling
+        run: uv sync --locked --extra workbench --extra standalone-build
       - name: Build and execute frozen self-test
         env:
           SHADOWSEED_SOURCE_SHA: ${{ github.sha }}
-        run: python scripts/build_standalone.py --output-dir release-assets
+        run: uv run --no-sync python scripts/build_standalone.py --output-dir release-assets
       - name: Validate release manifest
         shell: python
         run: |
@@ -125,7 +118,7 @@ jobs:
           digest = hashlib.sha256(archive.read_bytes()).hexdigest()
           assert digest == manifest["archive_sha256"]
           print(json.dumps(manifest, indent=2, sort_keys=True))
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ${{ matrix.artifact }}
           path: release-assets/*
