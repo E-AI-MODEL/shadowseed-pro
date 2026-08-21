@@ -50,7 +50,10 @@ class WorkbenchController:
     def __init__(self, workspace: str | Path | None = None) -> None:
         self.workspace = WorkspaceService(workspace)
         self.workspace.initialize()
-        self.sessions = SessionService(self.workspace.repository)
+        self.sessions = SessionService(
+            self.workspace.repository,
+            scope_id=self.workspace.workspace_id,
+        )
         self.inspection = InspectionService(self.sessions)
         self.feedback = FeedbackService(self.sessions)
         self.scenarios = ScenarioService(self.sessions)
@@ -187,9 +190,14 @@ class WorkbenchController:
         return self.inspection.session_view(session_id)
 
     def falsify_seed(self, session_id: str, seed_id: str) -> dict[str, Any]:
-        """Submit an explicit contradiction through the existing runtime service."""
+        """Submit an attributed local-owner contradiction through authorization."""
 
-        return self.sessions.falsify(session_id, seed_id)
+        actor = self.workspace.local_actor_context()
+        return self.sessions.falsify_authorized(
+            session_id,
+            seed_id,
+            actor=actor,
+        )
 
     def submit_verified_evidence(
         self,
@@ -200,12 +208,22 @@ class WorkbenchController:
         note: str = "",
         operator_verified: bool = False,
     ) -> dict[str, Any]:
-        return self.sessions.submit_verified_evidence(
+        """Submit verified support with UI attestation plus trusted local authorization.
+
+        ``operator_verified`` is only the explicit evidence-verification attestation from
+        the local user. It is not authorization. The trusted ActorContext is created here
+        at the product boundary and is required separately before runtime mutation.
+        """
+
+        if not operator_verified:
+            raise ValueError("operator verification must be explicitly confirmed")
+        actor = self.workspace.local_actor_context()
+        return self.sessions.submit_verified_evidence_authorized(
             session_id,
             seed_id,
             source_ref=source_ref,
             note=note,
-            operator_verified=operator_verified,
+            actor=actor,
         )
 
     def seed_view(self, session_id: str, seed_id: str) -> dict[str, Any]:
