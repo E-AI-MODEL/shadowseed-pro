@@ -89,6 +89,7 @@ jobs:
           uv venv "${RUNNER_TEMP}/workbench-wheel" --python 3.12
           uv pip install --python "${RUNNER_TEMP}/workbench-wheel/bin/python" "httpx[socks]==0.27.2"
           uv pip install --python "${RUNNER_TEMP}/workbench-wheel/bin/python" \
+            --extra-index-url https://download.pytorch.org/whl/cpu \
             --constraints "${RUNNER_TEMP}/workbench-constraints.txt" "${wheel}[workbench]"
           cd "${RUNNER_TEMP}"
           "${RUNNER_TEMP}/workbench-wheel/bin/shadowseed" workbench --help
