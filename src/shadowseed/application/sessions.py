@@ -18,7 +18,7 @@ from shadowseed.application.models import SessionConfig, SessionSummary, TesterF
 from shadowseed.application.profiles import get_profile
 from shadowseed.chat import ShadowChatSession
 from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal
-from shadowseed.storage.sqlite import SQLiteWorkspaceRepository
+from shadowseed.storage.sqlite import SQLiteWorkspaceRepository, WorkspaceStorageError
 from shadowseed.surfacing import build_chat_prompt
 
 
@@ -204,6 +204,37 @@ class SessionService:
             note=note,
         )
 
+    @staticmethod
+    def _evidence_request_fingerprint(
+        session_id: str,
+        seed_id: str,
+        source_ref: str,
+        note: str,
+    ) -> str:
+        material = "\x1f".join(
+            (
+                EVIDENCE_VERIFY,
+                session_id,
+                seed_id,
+                source_ref,
+                note.strip(),
+            )
+        )
+        return hashlib.sha256(material.encode("utf-8")).hexdigest()
+
+    @staticmethod
+    def _validated_replay(
+        replay: dict[str, Any],
+        *,
+        expected_fingerprint: str,
+    ) -> dict[str, Any]:
+        stored_fingerprint = replay.pop("_request_fingerprint", None)
+        if stored_fingerprint != expected_fingerprint:
+            raise WorkspaceStorageError(
+                "request_id was replayed with different authority-operation input"
+            )
+        return replay
+
     def submit_verified_evidence_authorized(
         self,
         session_id: str,
@@ -217,6 +248,12 @@ class SessionService:
 
         authz = self._authorize(actor, EVIDENCE_VERIFY)
         normalized_source = self._normalize_source_ref(source_ref)
+        request_fingerprint = self._evidence_request_fingerprint(
+            session_id,
+            seed_id,
+            normalized_source,
+            note,
+        )
         replay = self.repository.authorized_request_result(
             actor.request_id,
             event_type=EVIDENCE_VERIFY,
@@ -224,6 +261,9 @@ class SessionService:
             seed_id=seed_id,
         )
         if replay is not None:
+            replay = self._validated_replay(
+                replay, expected_fingerprint=request_fingerprint
+            )
             return {**replay, "authorization": authz}
 
         stored = self.repository.load_session(session_id)
@@ -248,7 +288,7 @@ class SessionService:
             authorization=authz,
             event_type=EVIDENCE_VERIFY,
             seed_id=seed_id,
-            operation_result=result,
+            operation_result={**result, "_request_fingerprint": request_fingerprint},
             event_metadata={
                 "source_ref_sha256": hashlib.sha256(
                     normalized_source.encode("utf-8")
@@ -257,6 +297,9 @@ class SessionService:
                 "verified": True,
                 "independent": True,
             },
+        )
+        persisted = self._validated_replay(
+            persisted, expected_fingerprint=request_fingerprint
         )
         return {**persisted, "authorization": authz}
 
