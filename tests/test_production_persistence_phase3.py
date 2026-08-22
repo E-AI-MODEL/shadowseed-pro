@@ -166,9 +166,7 @@ def test_new_product_workspace_binds_identity_and_anchor_outside_workspace(tmp_p
     workspace.initialize()
     workspace_id = workspace.workspace_id
 
-    integrity_dir = root.parent / ".shadowseed-integrity" / workspace_id.removeprefix(
-        "workspace::"
-    )
+    integrity_dir = workspace._integrity_dir(workspace_id)
     assert (integrity_dir / "integrity.key").is_file()
     assert (integrity_dir / "anchor.json").is_file()
     assert not (root / "integrity.key").exists()
@@ -304,17 +302,63 @@ def test_ledger_deletion_fails_verification(tmp_path: Path) -> None:
         controller.workspace.repository.verify_production_integrity()
 
 
+def test_ledger_reordering_fails_verification(tmp_path: Path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    _live_seed(controller)
+    with sqlite3.connect(controller.workspace.paths.database) as connection:
+        rows = connection.execute(
+            "SELECT sequence_no, event_hash FROM production_ledger ORDER BY sequence_no LIMIT 2"
+        ).fetchall()
+        assert len(rows) == 2
+        connection.execute(
+            "UPDATE production_ledger SET sequence_no = -1 WHERE sequence_no = ?",
+            (rows[0][0],),
+        )
+        connection.execute(
+            "UPDATE production_ledger SET sequence_no = ? WHERE sequence_no = ?",
+            (rows[0][0], rows[1][0]),
+        )
+        connection.execute(
+            "UPDATE production_ledger SET sequence_no = ? WHERE sequence_no = -1",
+            (rows[1][0],),
+        )
+
+    with pytest.raises(WorkspaceStorageError, match="verification failed"):
+        controller.workspace.repository.verify_production_integrity()
+
+
+def test_session_delete_removes_content_but_preserves_minimal_tombstone(tmp_path: Path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id, _ = _live_seed(controller)
+    state_before = controller.sessions.load(session_id)["state"]
+    raw_content = state_before["turn_reports"][0]["question"]
+
+    controller.sessions.delete_session(session_id)
+
+    with sqlite3.connect(controller.workspace.paths.database) as connection:
+        session = connection.execute(
+            "SELECT 1 FROM sessions WHERE session_id = ?", (session_id,)
+        ).fetchone()
+        tombstone = connection.execute(
+            "SELECT payload_json FROM production_ledger "
+            "WHERE event_type='session.delete' AND session_id = ? "
+            "ORDER BY sequence_no DESC LIMIT 1",
+            (session_id,),
+        ).fetchone()
+    assert session is None
+    assert tombstone is not None
+    assert raw_content not in tombstone[0]
+    payload = json.loads(tombstone[0])
+    assert payload["content_removed"] is True
+    assert len(payload["authority_digest_before_delete"]) == 64
+
+
 def test_missing_protected_anchor_fails_closed_instead_of_recreating(tmp_path: Path) -> None:
     root = tmp_path / "workspace"
     workspace = WorkspaceService(root)
     workspace.initialize()
     workspace_id = workspace.workspace_id
-    anchor = (
-        root.parent
-        / ".shadowseed-integrity"
-        / workspace_id.removeprefix("workspace::")
-        / "anchor.json"
-    )
+    anchor = workspace._integrity_dir(workspace_id) / "anchor.json"
     anchor.unlink()
 
     reopened = WorkspaceService(root)
@@ -333,9 +377,9 @@ def test_old_valid_backup_cannot_silently_replace_newer_live_workspace(tmp_path:
     controller.send_turn(session_id, "Add a newer committed turn")
     current = controller.workspace.repository.verify_production_integrity()
 
-    shutil.copy2(backup, controller.workspace.paths.database)
     Path(str(controller.workspace.paths.database) + "-wal").unlink(missing_ok=True)
     Path(str(controller.workspace.paths.database) + "-shm").unlink(missing_ok=True)
+    shutil.copy2(backup, controller.workspace.paths.database)
 
     reopened = WorkspaceService(root)
     with pytest.raises(WorkspaceStorageError, match="behind the protected anchor"):
@@ -346,13 +390,14 @@ def test_old_valid_backup_cannot_silently_replace_newer_live_workspace(tmp_path:
 def test_database_ahead_of_anchor_recovers_only_valid_chain_extension(tmp_path: Path) -> None:
     workspace = WorkspaceService(tmp_path / "workspace")
     workspace.initialize()
+    workspace_id = workspace.workspace_id
     before = workspace.repository.verify_production_integrity()
 
     with workspace.repository._connect() as connection:
         connection.execute("BEGIN IMMEDIATE")
         workspace.repository._append_ledger_event(
             connection,
-            workspace_id=workspace.workspace_id,
+            workspace_id=workspace_id,
             audit_epoch=str(before["audit_epoch"]),
             event_type="test.crash_after_db_commit",
             payload={"content_minimized": True},
