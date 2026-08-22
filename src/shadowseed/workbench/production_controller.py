@@ -9,8 +9,10 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from shadowseed.application.auth import SESSION_MANAGE, require_capability
 from shadowseed.application.operations import OperationalEventLog
 from shadowseed.application.provider_policy import validate_production_local_backend
+from shadowseed.storage.session_deletion import delete_authorized_session
 from shadowseed.workbench.controller import WorkbenchController
 
 
@@ -54,7 +56,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
             validate_production_local_backend("ollama", "lexical")
         return WorkbenchController.discover_models(backend)
 
-    def _emit_failure(self, event: str, exc: BaseException, **fields: Any) -> None:
+    def _emit_failure(self, event: str, exc: Exception, **fields: Any) -> None:
         self.operations.emit(
             event,
             status="error",
@@ -65,7 +67,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
     def create_session(self, **kwargs: Any) -> str:
         try:
             session_id = super().create_session(**kwargs)
-        except BaseException as exc:
+        except Exception as exc:
             self._emit_failure("session.create", exc)
             raise
         self.operations.emit(
@@ -76,6 +78,27 @@ class ProductionLocalWorkbenchController(WorkbenchController):
             status="ok",
         )
         return session_id
+
+    def delete_session(self, session_id: str) -> dict[str, Any]:
+        """Delete a live session through the attributed production lifecycle boundary."""
+
+        actor = self.workspace.local_actor_context()
+        authorization = require_capability(
+            actor,
+            scope_id=self.workspace.workspace_id,
+            capability=SESSION_MANAGE,
+        )
+        try:
+            result = delete_authorized_session(
+                self.workspace.repository,
+                session_id,
+                authorization=authorization,
+            )
+        except Exception as exc:
+            self._emit_failure("session.delete", exc, session_id=session_id)
+            raise
+        self.operations.emit("session.delete", session_id=session_id, status="ok")
+        return {**result, "authorization": authorization}
 
     def send_turn(
         self,
@@ -92,7 +115,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
                 compare_without_ssl=compare_without_ssl,
                 external_confirmed=external_confirmed,
             )
-        except BaseException as exc:
+        except Exception as exc:
             self._emit_failure("session.turn", exc, session_id=session_id)
             raise
         self.operations.emit(
@@ -105,7 +128,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
     def falsify_seed(self, session_id: str, seed_id: str) -> dict[str, Any]:
         try:
             result = super().falsify_seed(session_id, seed_id)
-        except BaseException as exc:
+        except Exception as exc:
             self._emit_failure(
                 "contradiction.submit",
                 exc,
@@ -138,7 +161,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
                 note=note,
                 operator_verified=operator_verified,
             )
-        except BaseException as exc:
+        except Exception as exc:
             self._emit_failure(
                 "evidence.verify",
                 exc,
@@ -159,7 +182,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
     def export_report(self, session_id: str, destination: str | Path) -> str:
         try:
             result = super().export_report(session_id, destination)
-        except BaseException as exc:
+        except Exception as exc:
             self._emit_failure("export.report", exc, session_id=session_id)
             raise
         self.operations.emit("export.report", session_id=session_id, status="ok")
@@ -168,7 +191,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
     def export_support_bundle(self, session_id: str, destination: str | Path) -> str:
         try:
             result = super().export_support_bundle(session_id, destination)
-        except BaseException as exc:
+        except Exception as exc:
             self._emit_failure("export.support", exc, session_id=session_id)
             raise
         self.operations.emit("export.support", session_id=session_id, status="ok")
