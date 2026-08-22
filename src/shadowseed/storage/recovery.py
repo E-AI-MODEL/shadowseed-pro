@@ -9,7 +9,7 @@ import shutil
 import sqlite3
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 from uuid import uuid4
 
 from shadowseed.storage.integrity import (
@@ -130,23 +130,50 @@ def inspect_production_backup(source: str | Path) -> dict[str, Any]:
     }
 
 
-def _authority_baseline(rows: list[tuple[Any, ...]]) -> str:
-    baseline: list[dict[str, str]] = []
+def _authority_snapshot(rows: list[tuple[Any, ...]]) -> list[dict[str, str]]:
+    snapshot: list[dict[str, str]] = []
     session_columns = _MUTABLE_TABLE_COLUMNS["sessions"]
     state_index = session_columns.index("state_json")
     id_index = session_columns.index("session_id")
     for row in sorted(rows, key=lambda item: str(item[id_index])):
         state = json.loads(str(row[state_index]))
-        baseline.append(
+        snapshot.append(
             {
                 "session_id": str(row[id_index]),
                 "authority_digest": authority_digest(state),
             }
         )
+    return snapshot
+
+
+def _authority_baseline(rows: list[tuple[Any, ...]]) -> str:
     canonical = json.dumps(
-        baseline, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        _authority_snapshot(rows),
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
     )
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def _auth_fields(
+    authorization: Mapping[str, Any],
+    *,
+    workspace_id: str,
+) -> dict[str, str]:
+    values = {
+        "request_id": str(authorization.get("request_id") or "").strip(),
+        "actor_id": str(authorization.get("actor_id") or "").strip(),
+        "actor_scope_id": str(authorization.get("scope_id") or "").strip(),
+        "capability": str(authorization.get("capability") or "").strip(),
+        "auth_method": str(authorization.get("auth_method") or "").strip(),
+        "policy_version": str(authorization.get("policy_version") or "").strip(),
+    }
+    if not all(values.values()):
+        raise ValueError("recovery authorization metadata is incomplete")
+    if values["actor_scope_id"] != workspace_id:
+        raise ValueError("recovery authorization scope does not match workspace")
+    return values
 
 
 def import_production_backup(
@@ -154,7 +181,7 @@ def import_production_backup(
     source: str | Path,
     *,
     integrity_dir: str | Path,
-    bootstrap_actor_id: str,
+    authorization: Mapping[str, Any],
 ) -> dict[str, Any]:
     """Import a verified backup on a machine without the previous protected anchor.
 
@@ -166,6 +193,7 @@ def import_production_backup(
     if not source_path.is_file():
         raise ValueError(f"backup does not exist: {source_path}")
     workspace_id, backup_report, source_rows = _read_backup(source_path)
+    auth = _auth_fields(authorization, workspace_id=workspace_id)
     if repository.database_path.exists() and repository.database_path.stat().st_size:
         raise ValueError("cross-machine import requires an empty target workspace")
 
@@ -202,12 +230,9 @@ def import_production_backup(
                         "imported_authority_baseline": _authority_baseline(
                             source_rows["sessions"]
                         ),
+                        "authority_snapshot": _authority_snapshot(source_rows["sessions"]),
                     },
-                    actor_id=bootstrap_actor_id,
-                    actor_scope_id=workspace_id,
-                    auth_method="local-import-recovery",
-                    capability="workspace.integrity_recover",
-                    policy_version="production-authz-v1",
+                    **auth,
                     created_at=datetime.now().isoformat(),
                 )
                 connection.commit()
@@ -253,6 +278,7 @@ def import_production_backup(
             "ledger_sequence_no": event["sequence_no"],
             "ledger_event_hash": event["event_hash"],
             "continuity_break": True,
+            "authorization": dict(authorization),
         }
     except Exception:
         stage.unlink(missing_ok=True)
@@ -261,7 +287,12 @@ def import_production_backup(
         raise
 
 
-def restore_production_backup(repository: Any, source: str | Path) -> dict[str, Any]:
+def restore_production_backup(
+    repository: Any,
+    source: str | Path,
+    *,
+    authorization: Mapping[str, Any],
+) -> dict[str, Any]:
     """Restore mutable state from an older same-workspace backup into a new audit epoch.
 
     The current append-only ledger is preserved. The restore event commits to the
@@ -276,6 +307,7 @@ def restore_production_backup(repository: Any, source: str | Path) -> dict[str, 
     workspace_id = getattr(repository, "_workspace_id", None)
     if not workspace_id:
         raise ValueError("production restore requires a bound workspace")
+    auth = _auth_fields(authorization, workspace_id=workspace_id)
     backup_workspace, backup_report, source_rows = _read_backup(source_path)
     if backup_workspace != workspace_id:
         raise ValueError("backup belongs to a different workspace identity")
@@ -333,7 +365,9 @@ def restore_production_backup(repository: Any, source: str | Path) -> dict[str, 
                         "restored_authority_baseline": _authority_baseline(
                             source_rows["sessions"]
                         ),
+                        "authority_snapshot": _authority_snapshot(source_rows["sessions"]),
                     },
+                    **auth,
                     created_at=datetime.now().isoformat(),
                 )
                 connection.commit()
@@ -366,6 +400,7 @@ def restore_production_backup(repository: Any, source: str | Path) -> dict[str, 
             "ledger_sequence_no": event["sequence_no"],
             "ledger_event_hash": event["event_hash"],
             "backup_head_hash": backup_report["head_hash"],
+            "authorization": dict(authorization),
         }
     except Exception:
         stage.unlink(missing_ok=True)
