@@ -8,7 +8,13 @@ from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
 
-from shadowseed.application.auth import ActorContext, LOCAL_PRODUCTION_CAPABILITIES
+from shadowseed.application.auth import (
+    LOCAL_PRODUCTION_CAPABILITIES,
+    WORKSPACE_BACKUP_RESTORE,
+    WORKSPACE_INTEGRITY_RECOVER,
+    ActorContext,
+    require_capability,
+)
 from shadowseed.storage.recovery import (
     import_production_backup,
     inspect_production_backup,
@@ -75,6 +81,23 @@ class WorkspaceService:
                 encoding="utf-8",
             )
 
+    @staticmethod
+    def _local_actor_for_workspace(
+        workspace_id: str,
+        *,
+        request_id: str | None = None,
+        auth_method: str = "local-install",
+    ) -> ActorContext:
+        return ActorContext(
+            actor_id=f"local-owner::{workspace_id.removeprefix('workspace::')}",
+            scope_id=workspace_id,
+            capabilities=LOCAL_PRODUCTION_CAPABILITIES,
+            auth_method=auth_method,
+            assurance={"profile": "single-user-local"},
+            request_id=request_id or f"request::{uuid4()}",
+            policy_version="production-authz-v1",
+        )
+
     def initialize(self) -> WorkspacePaths:
         self._initialize_structure()
         if not self.paths.identity.exists():
@@ -96,15 +119,9 @@ class WorkspaceService:
     def local_actor_context(self, *, request_id: str | None = None) -> ActorContext:
         """Create trusted local-owner context at the product boundary."""
 
-        workspace_id = self.workspace_id
-        return ActorContext(
-            actor_id=f"local-owner::{workspace_id.removeprefix('workspace::')}",
-            scope_id=workspace_id,
-            capabilities=LOCAL_PRODUCTION_CAPABILITIES,
-            auth_method="local-install",
-            assurance={"profile": "single-user-local"},
-            request_id=request_id or f"request::{uuid4()}",
-            policy_version="production-authz-v1",
+        return self._local_actor_for_workspace(
+            self.workspace_id,
+            request_id=request_id,
         )
 
     def info(self) -> dict[str, object]:
@@ -127,10 +144,27 @@ class WorkspaceService:
         return self.repository.backup_to(target)
 
     def restore(self, source: str | Path) -> dict[str, object]:
+        """Run the trusted local restore/recovery boundary.
+
+        Fresh-machine imports use integrity-recovery authority because the previous
+        protected anchor is unavailable. Restores into an existing workspace use the
+        narrower backup/restore capability. Neither path accepts a client-supplied
+        authorization boolean.
+        """
+
         fresh_target = not self.paths.database.exists() and not self.paths.identity.exists()
         if fresh_target:
             backup = inspect_production_backup(source)
             workspace_id = self._validate_workspace_id(str(backup["workspace_id"]))
+            actor = self._local_actor_for_workspace(
+                workspace_id,
+                auth_method="local-import-recovery",
+            )
+            authorization = require_capability(
+                actor,
+                scope_id=workspace_id,
+                capability=WORKSPACE_INTEGRITY_RECOVER,
+            )
             self._initialize_structure()
             self.paths.identity.write_text(f"{workspace_id}\n", encoding="utf-8")
             try:
@@ -138,15 +172,25 @@ class WorkspaceService:
                     self.repository,
                     source,
                     integrity_dir=self._integrity_dir(workspace_id),
-                    bootstrap_actor_id=(
-                        f"local-owner::{workspace_id.removeprefix('workspace::')}"
-                    ),
+                    authorization=authorization,
                 )
             except Exception:
                 self.paths.identity.unlink(missing_ok=True)
                 raise
+
         self.initialize()
-        return restore_production_backup(self.repository, source)
+        workspace_id = self._read_workspace_id()
+        actor = self._local_actor_for_workspace(workspace_id)
+        authorization = require_capability(
+            actor,
+            scope_id=workspace_id,
+            capability=WORKSPACE_BACKUP_RESTORE,
+        )
+        return restore_production_backup(
+            self.repository,
+            source,
+            authorization=authorization,
+        )
 
     def delete(self) -> None:
         root = self.paths.root
