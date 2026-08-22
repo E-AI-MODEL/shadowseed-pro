@@ -9,7 +9,11 @@ from pathlib import Path
 from uuid import uuid4
 
 from shadowseed.application.auth import ActorContext, LOCAL_PRODUCTION_CAPABILITIES
-from shadowseed.storage.recovery import restore_production_backup
+from shadowseed.storage.recovery import (
+    import_production_backup,
+    inspect_production_backup,
+    restore_production_backup,
+)
 from shadowseed.storage.sqlite import SQLiteWorkspaceRepository
 
 
@@ -58,7 +62,7 @@ class WorkspaceService:
         identity = workspace_id.removeprefix("workspace::")
         return self.paths.root.parent / ".shadowseed-integrity" / identity
 
-    def initialize(self) -> WorkspacePaths:
+    def _initialize_structure(self) -> None:
         self.paths.root.mkdir(parents=True, exist_ok=True)
         for path in (self.paths.exports, self.paths.attachments, self.paths.logs):
             path.mkdir(parents=True, exist_ok=True)
@@ -70,6 +74,9 @@ class WorkspaceService:
                 'default_backend = "fixture"\n',
                 encoding="utf-8",
             )
+
+    def initialize(self) -> WorkspacePaths:
+        self._initialize_structure()
         if not self.paths.identity.exists():
             self.paths.identity.write_text(f"workspace::{uuid4()}\n", encoding="utf-8")
         workspace_id = self._read_workspace_id()
@@ -120,6 +127,24 @@ class WorkspaceService:
         return self.repository.backup_to(target)
 
     def restore(self, source: str | Path) -> dict[str, object]:
+        fresh_target = not self.paths.database.exists() and not self.paths.identity.exists()
+        if fresh_target:
+            backup = inspect_production_backup(source)
+            workspace_id = self._validate_workspace_id(str(backup["workspace_id"]))
+            self._initialize_structure()
+            self.paths.identity.write_text(f"{workspace_id}\n", encoding="utf-8")
+            try:
+                return import_production_backup(
+                    self.repository,
+                    source,
+                    integrity_dir=self._integrity_dir(workspace_id),
+                    bootstrap_actor_id=(
+                        f"local-owner::{workspace_id.removeprefix('workspace::')}"
+                    ),
+                )
+            except Exception:
+                self.paths.identity.unlink(missing_ok=True)
+                raise
         self.initialize()
         return restore_production_backup(self.repository, source)
 
