@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import shutil
 from dataclasses import dataclass
 from datetime import datetime
@@ -66,7 +67,8 @@ class WorkspaceService:
 
     def _integrity_dir(self, workspace_id: str) -> Path:
         identity = workspace_id.removeprefix("workspace::")
-        return self.paths.root.parent / ".shadowseed-integrity" / identity
+        location_id = hashlib.sha256(str(self.paths.root).encode("utf-8")).hexdigest()[:20]
+        return self.paths.root.parent / ".shadowseed-integrity" / location_id / identity
 
     def _initialize_structure(self) -> None:
         self.paths.root.mkdir(parents=True, exist_ok=True)
@@ -210,8 +212,9 @@ class WorkspaceService:
             shutil.rmtree(root)
         if integrity_dir is not None and integrity_dir.exists():
             shutil.rmtree(integrity_dir)
-            parent = integrity_dir.parent
+            location_dir = integrity_dir.parent
             try:
-                parent.rmdir()
+                location_dir.rmdir()
+                location_dir.parent.rmdir()
             except OSError:
                 pass
