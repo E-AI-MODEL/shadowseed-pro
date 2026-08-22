@@ -12,10 +12,11 @@ from shadowseed.application.profiles import get_profile, list_profiles
 from shadowseed.application.sessions import SessionService
 from shadowseed.application.workspace import WorkspaceService
 from shadowseed.chat import ShadowChatSession
+from shadowseed.storage.schema import SCHEMA_VERSION
+from shadowseed.storage.sqlite import SQLiteWorkspaceRepository, WorkspaceStorageError
 from shadowseed_agent import AgentSafetyContract
 from shadowseed.cli import build_parser
 from shadowseed.cli_dispatch import execute_command
-from shadowseed.storage.sqlite import SQLiteWorkspaceRepository, WorkspaceStorageError
 
 
 def test_profiles_are_small_named_surfacing_configurations() -> None:
@@ -133,7 +134,7 @@ def test_doctor_and_workspace_cli_are_available(tmp_path: Path) -> None:
     parser = build_parser()
     args = parser.parse_args(["workspace", "--workspace", str(tmp_path / "cli"), "info"])
     payload = json.loads(execute_command(args))
-    assert payload["schema_version"] == 1
+    assert payload["schema_version"] == SCHEMA_VERSION
 
     doctor_args = Namespace(command="doctor", workspace=str(tmp_path / "cli"), json=True)
     doctor_payload = json.loads(execute_command(doctor_args))

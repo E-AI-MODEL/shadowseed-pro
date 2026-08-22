@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -17,7 +18,7 @@ from shadowseed.application.models import SessionConfig, SessionSummary, TesterF
 from shadowseed.application.profiles import get_profile
 from shadowseed.chat import ShadowChatSession
 from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal
-from shadowseed.storage.sqlite import SQLiteWorkspaceRepository
+from shadowseed.storage.sqlite import SQLiteWorkspaceRepository, WorkspaceStorageError
 from shadowseed.surfacing import build_chat_prompt
 
 
@@ -159,8 +160,29 @@ class SessionService:
         """Production contradiction submission guarded before runtime mutation."""
 
         authz = self._authorize(actor, CONTRADICTION_SUBMIT)
-        result = self.falsify(session_id, seed_id)
-        return {**result, "authorization": authz}
+        replay = self.repository.authorized_request_result(
+            actor.request_id,
+            event_type=CONTRADICTION_SUBMIT,
+            session_id=session_id,
+            seed_id=seed_id,
+        )
+        if replay is not None:
+            return {**replay, "authorization": authz}
+
+        stored = self.repository.load_session(session_id)
+        session = ShadowChatSession.from_state(stored["state"])
+        result = session.falsify(seed_id)
+        persisted = self.repository.save_authorized_session(
+            session_id,
+            session.to_state(),
+            updated_at=datetime.now().isoformat(),
+            authorization=authz,
+            event_type=CONTRADICTION_SUBMIT,
+            seed_id=seed_id,
+            operation_result=result,
+            event_metadata={"action": "operator_falsification"},
+        )
+        return {**persisted, "authorization": authz}
 
     def submit_verified_evidence(
         self,
@@ -182,6 +204,58 @@ class SessionService:
             note=note,
         )
 
+    @staticmethod
+    def _evidence_request_fingerprint(
+        session_id: str,
+        seed_id: str,
+        source_ref: str,
+        note: str,
+    ) -> str:
+        material = "\x1f".join(
+            (
+                EVIDENCE_VERIFY,
+                session_id,
+                seed_id,
+                source_ref,
+                note.strip(),
+            )
+        )
+        return hashlib.sha256(material.encode("utf-8")).hexdigest()
+
+    @staticmethod
+    def _validated_replay(
+        replay: dict[str, Any],
+        *,
+        expected_fingerprint: str,
+    ) -> dict[str, Any]:
+        stored_fingerprint = replay.pop("_request_fingerprint", None)
+        if stored_fingerprint != expected_fingerprint:
+            raise WorkspaceStorageError(
+                "request_id was replayed with different authority-operation input"
+            )
+        return replay
+
+    @staticmethod
+    def _minimal_evidence_result(
+        result: dict[str, Any],
+        *,
+        request_fingerprint: str,
+    ) -> dict[str, Any]:
+        """Keep idempotency data useful without copying raw evidence into the ledger."""
+
+        keys = (
+            "seed_id",
+            "decision",
+            "policy_id",
+            "weight_after",
+            "status_after",
+            "evidence_count",
+        )
+        return {
+            **{key: result[key] for key in keys if key in result},
+            "_request_fingerprint": request_fingerprint,
+        }
+
     def submit_verified_evidence_authorized(
         self,
         session_id: str,
@@ -194,13 +268,83 @@ class SessionService:
         """Production evidence submission requiring trusted attributable authorization."""
 
         authz = self._authorize(actor, EVIDENCE_VERIFY)
-        result = self._submit_verified_evidence(
+        normalized_source = self._normalize_source_ref(source_ref)
+        request_fingerprint = self._evidence_request_fingerprint(
             session_id,
             seed_id,
-            source_ref=source_ref,
-            note=note,
+            normalized_source,
+            note,
         )
-        return {**result, "authorization": authz}
+        replay = self.repository.authorized_request_result(
+            actor.request_id,
+            event_type=EVIDENCE_VERIFY,
+            session_id=session_id,
+            seed_id=seed_id,
+        )
+        if replay is not None:
+            replay = self._validated_replay(
+                replay, expected_fingerprint=request_fingerprint
+            )
+            return {**replay, "authorization": authz}
+
+        stored = self.repository.load_session(session_id)
+        session = ShadowChatSession.from_state(stored["state"])
+        if session.runtime_mode != "live":
+            raise ValueError("verified evidence entry is available only for live sessions")
+        result = session.submit_evidence(
+            seed_id,
+            ValidationSignal(
+                kind=SignalKind.HUMAN_FEEDBACK,
+                direction=SignalDirection.SUPPORT,
+                verified=True,
+                independent=True,
+                source_ref=normalized_source,
+                reason=note.strip() or "verified Workbench operator support",
+            ),
+        )
+        persisted = self.repository.save_authorized_session(
+            session_id,
+            session.to_state(),
+            updated_at=datetime.now().isoformat(),
+            authorization=authz,
+            event_type=EVIDENCE_VERIFY,
+            seed_id=seed_id,
+            operation_result=self._minimal_evidence_result(
+                result,
+                request_fingerprint=request_fingerprint,
+            ),
+            event_metadata={
+                "source_ref_sha256": hashlib.sha256(
+                    normalized_source.encode("utf-8")
+                ).hexdigest(),
+                "note_sha256": hashlib.sha256(note.strip().encode("utf-8")).hexdigest(),
+                "verified": True,
+                "independent": True,
+            },
+        )
+        persisted = self._validated_replay(
+            persisted, expected_fingerprint=request_fingerprint
+        )
+        ledger_fields = {
+            key: persisted[key]
+            for key in (
+                "idempotent_replay",
+                "ledger_event_id",
+                "ledger_sequence_no",
+                "ledger_event_hash",
+            )
+            if key in persisted
+        }
+        return {**result, **ledger_fields, "authorization": authz}
+
+    @staticmethod
+    def _normalize_source_ref(source_ref: str) -> str:
+        if not isinstance(source_ref, str):
+            raise ValueError("source_ref must be a string")
+        normalized_source = source_ref.strip()
+        if not normalized_source:
+            raise ValueError("source_ref must not be empty")
+        return normalized_source
 
     def _submit_verified_evidence(
         self,
@@ -210,11 +354,7 @@ class SessionService:
         source_ref: str,
         note: str,
     ) -> dict[str, Any]:
-        if not isinstance(source_ref, str):
-            raise ValueError("source_ref must be a string")
-        normalized_source = source_ref.strip()
-        if not normalized_source:
-            raise ValueError("source_ref must not be empty")
+        normalized_source = self._normalize_source_ref(source_ref)
         stored = self.repository.load_session(session_id)
         session = ShadowChatSession.from_state(stored["state"])
         if session.runtime_mode != "live":
