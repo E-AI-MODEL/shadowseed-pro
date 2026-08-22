@@ -41,6 +41,22 @@ class WorkspaceService:
         self.paths = workspace_paths(root)
         self.repository = SQLiteWorkspaceRepository(self.paths.database)
 
+    @staticmethod
+    def _validate_workspace_id(workspace_id: str) -> str:
+        value = workspace_id.strip()
+        if not value.startswith("workspace::") or len(value) <= len("workspace::"):
+            raise ValueError("workspace identity is missing or malformed")
+        return value
+
+    def _read_workspace_id(self) -> str:
+        return self._validate_workspace_id(
+            self.paths.identity.read_text(encoding="utf-8")
+        )
+
+    def _integrity_dir(self, workspace_id: str) -> Path:
+        identity = workspace_id.removeprefix("workspace::")
+        return self.paths.root.parent / ".shadowseed-integrity" / identity
+
     def initialize(self) -> WorkspacePaths:
         self.paths.root.mkdir(parents=True, exist_ok=True)
         for path in (self.paths.exports, self.paths.attachments, self.paths.logs):
@@ -55,16 +71,19 @@ class WorkspaceService:
             )
         if not self.paths.identity.exists():
             self.paths.identity.write_text(f"workspace::{uuid4()}\n", encoding="utf-8")
+        workspace_id = self._read_workspace_id()
         self.repository.initialize()
+        self.repository.bind_production(
+            workspace_id=workspace_id,
+            integrity_dir=self._integrity_dir(workspace_id),
+            bootstrap_actor_id=f"local-owner::{workspace_id.removeprefix('workspace::')}",
+        )
         return self.paths
 
     @property
     def workspace_id(self) -> str:
         self.initialize()
-        workspace_id = self.paths.identity.read_text(encoding="utf-8").strip()
-        if not workspace_id.startswith("workspace::") or len(workspace_id) <= len("workspace::"):
-            raise ValueError("workspace identity is missing or malformed")
-        return workspace_id
+        return self._read_workspace_id()
 
     def local_actor_context(self, *, request_id: str | None = None) -> ActorContext:
         """Create trusted local-owner context at the product boundary."""
@@ -85,9 +104,10 @@ class WorkspaceService:
         return {
             "root": str(self.paths.root),
             "database": str(self.paths.database),
-            "workspace_id": self.workspace_id,
+            "workspace_id": self._read_workspace_id(),
             "schema_version": self.repository.schema_version(),
             "counts": self.repository.counts(),
+            "integrity": self.repository.verify_production_integrity(),
         }
 
     def backup(self, destination: str | Path | None = None) -> Path:
@@ -113,5 +133,15 @@ class WorkspaceService:
             raise ValueError(
                 f"refusing to delete a directory that is not a Shadowseed workspace: {root}"
             )
+        integrity_dir: Path | None = None
+        if self.paths.identity.is_file():
+            integrity_dir = self._integrity_dir(self._read_workspace_id())
         if root.exists():
             shutil.rmtree(root)
+        if integrity_dir is not None and integrity_dir.exists():
+            shutil.rmtree(integrity_dir)
+            parent = integrity_dir.parent
+            try:
+                parent.rmdir()
+            except OSError:
+                pass
