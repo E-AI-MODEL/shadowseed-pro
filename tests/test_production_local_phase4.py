@@ -15,6 +15,18 @@ from shadowseed.application.limits import (
     validate_message,
 )
 from shadowseed.application.workspace import WorkspaceService
+from shadowseed.workbench.controller import WorkbenchController
+
+
+def _live_seed(controller: WorkbenchController) -> tuple[str, str]:
+    session_id = controller.create_session(
+        title="Phase 4 limits",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+    )
+    result = controller.send_turn(session_id, "What should be checked?")
+    return session_id, result["session"]["seeds"][0]["id"]
 
 
 def test_message_limit_rejects_before_product_use() -> None:
@@ -29,6 +41,44 @@ def test_evidence_note_limit_is_explicit() -> None:
     assert note == "checked"
     with pytest.raises(ResourceLimitError, match="evidence note exceeds"):
         validate_evidence("reviewer:source", "x" * (MAX_EVIDENCE_NOTE_CHARS + 1))
+
+
+def test_oversized_message_does_not_mutate_session_or_ledger(tmp_path: Path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id, _ = _live_seed(controller)
+    before_state = controller.sessions.load(session_id)["state"]
+    before_integrity = controller.workspace.repository.verify_production_integrity()
+
+    with pytest.raises(ResourceLimitError, match="message exceeds"):
+        controller.send_turn(session_id, "x" * (MAX_MESSAGE_CHARS + 1))
+
+    after_state = controller.sessions.load(session_id)["state"]
+    after_integrity = controller.workspace.repository.verify_production_integrity()
+    assert after_state == before_state
+    assert after_integrity["sequence_no"] == before_integrity["sequence_no"]
+    assert after_integrity["head_hash"] == before_integrity["head_hash"]
+
+
+def test_oversized_evidence_does_not_mutate_authority_or_ledger(tmp_path: Path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id, seed_id = _live_seed(controller)
+    before_state = controller.sessions.load(session_id)["state"]
+    before_integrity = controller.workspace.repository.verify_production_integrity()
+
+    with pytest.raises(ResourceLimitError, match="evidence note exceeds"):
+        controller.submit_verified_evidence(
+            session_id,
+            seed_id,
+            source_ref="reviewer:source",
+            note="x" * (MAX_EVIDENCE_NOTE_CHARS + 1),
+            operator_verified=True,
+        )
+
+    after_state = controller.sessions.load(session_id)["state"]
+    after_integrity = controller.workspace.repository.verify_production_integrity()
+    assert after_state == before_state
+    assert after_integrity["sequence_no"] == before_integrity["sequence_no"]
+    assert after_integrity["head_hash"] == before_integrity["head_hash"]
 
 
 def test_oversized_backup_is_rejected_without_creating_workspace(tmp_path: Path) -> None:
@@ -61,3 +111,22 @@ def test_workspace_uses_restrictive_posix_permissions(tmp_path: Path) -> None:
     assert paths.config.stat().st_mode & 0o777 == 0o600
     assert paths.identity.stat().st_mode & 0o777 == 0o600
     assert paths.database.stat().st_mode & 0o777 == 0o600
+
+
+def test_full_workspace_erase_removes_live_state_but_not_external_backup(tmp_path: Path) -> None:
+    root = tmp_path / "workspace"
+    service = WorkspaceService(root)
+    service.initialize()
+    workspace_id = service.workspace_id
+    integrity_dir = service._integrity_dir(workspace_id)
+    backup = service.backup(tmp_path / "independent-backup.db")
+
+    assert root.exists()
+    assert integrity_dir.exists()
+    assert backup.exists()
+
+    service.delete()
+
+    assert not root.exists()
+    assert not integrity_dir.exists()
+    assert backup.exists()
