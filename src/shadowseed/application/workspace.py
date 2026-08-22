@@ -16,12 +16,12 @@ from shadowseed.application.auth import (
     ActorContext,
     require_capability,
 )
+from shadowseed.storage.production import ProductionSQLiteWorkspaceRepository
 from shadowseed.storage.recovery import (
     import_production_backup,
     inspect_production_backup,
     restore_production_backup,
 )
-from shadowseed.storage.sqlite import SQLiteWorkspaceRepository
 
 
 @dataclass(frozen=True)
@@ -51,7 +51,7 @@ def workspace_paths(root: str | Path | None = None) -> WorkspacePaths:
 class WorkspaceService:
     def __init__(self, root: str | Path | None = None) -> None:
         self.paths = workspace_paths(root)
-        self.repository = SQLiteWorkspaceRepository(self.paths.database)
+        self.repository = ProductionSQLiteWorkspaceRepository(self.paths.database)
 
     @staticmethod
     def _validate_workspace_id(workspace_id: str) -> str:
