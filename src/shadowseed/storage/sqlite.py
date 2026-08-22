@@ -10,10 +10,25 @@ import sqlite3
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any, Iterator, Mapping
 from uuid import uuid4
 
 from shadowseed.application.models import SessionSummary, TesterFeedback
+from shadowseed.storage.integrity import (
+    EVENT_FORMAT_VERSION,
+    GENESIS_HASH,
+    AnchorState,
+    authority_digest,
+    canonical_json,
+    create_integrity_key,
+    event_digest,
+    key_id,
+    load_integrity_key,
+    minimal_runtime_commit,
+    read_anchor,
+    verify_chain_rows,
+    write_anchor,
+)
 from shadowseed.storage.schema import DDL, MIGRATION_1_TO_2, SCHEMA_VERSION
 
 
@@ -25,7 +40,7 @@ _SECRET_FRAGMENTS = ("api_key", "apikey", "access_token", "secret", "password")
 
 
 def _json(value: Any) -> str:
-    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return canonical_json(value)
 
 
 def _reject_secrets(value: Any, path: str = "config") -> None:
@@ -54,6 +69,10 @@ def _file_sha256(path: Path) -> str:
 class SQLiteWorkspaceRepository:
     def __init__(self, database_path: str | Path) -> None:
         self.database_path = Path(database_path).expanduser().resolve()
+        self._workspace_id: str | None = None
+        self._integrity_dir: Path | None = None
+        self._anchor_path: Path | None = None
+        self._key_path: Path | None = None
 
     @contextmanager
     def _connect(self) -> Iterator[sqlite3.Connection]:
@@ -94,10 +113,13 @@ class SQLiteWorkspaceRepository:
         except (TypeError, ValueError) as exc:
             raise WorkspaceStorageError("workspace schema version is invalid") from exc
 
-    def _pre_migration_backup(self, from_version: int) -> Path:
-        target = self.database_path.with_name(
+    def _pre_migration_backup_path(self, from_version: int = 1) -> Path:
+        return self.database_path.with_name(
             f"{self.database_path.name}.pre-migration-v{from_version}-to-v{SCHEMA_VERSION}.bak"
         )
+
+    def _pre_migration_backup(self, from_version: int) -> Path:
+        target = self._pre_migration_backup_path(from_version)
         if target.exists():
             return target
         temporary = target.with_suffix(target.suffix + ".tmp")
@@ -163,6 +185,9 @@ class SQLiteWorkspaceRepository:
             except sqlite3.DatabaseError as exc:
                 raise WorkspaceStorageError(f"workspace database is invalid: {exc}") from exc
 
+        if self._workspace_id is not None:
+            self._verify_bound_integrity(recover_anchor=True)
+
     def _migrate(self, connection: sqlite3.Connection, from_version: int) -> None:
         if from_version != 1 or SCHEMA_VERSION != 2:
             raise WorkspaceStorageError(
@@ -174,6 +199,300 @@ class SQLiteWorkspaceRepository:
             "UPDATE workspace_meta SET value = ? WHERE key = 'schema_version'",
             (str(SCHEMA_VERSION),),
         )
+
+    def bind_production(
+        self,
+        *,
+        workspace_id: str,
+        integrity_dir: str | Path,
+        bootstrap_actor_id: str,
+    ) -> dict[str, Any]:
+        """Bind a stable workspace identity and protected anchor to this repository.
+
+        Existing ledgers never recreate missing key/anchor material silently. The only
+        automatic anchor advancement is crash recovery for a verified unique extension
+        of the previously authenticated head.
+        """
+
+        if not workspace_id.startswith("workspace::"):
+            raise WorkspaceStorageError("production workspace_id is invalid")
+        self.initialize()
+        self._workspace_id = workspace_id
+        self._integrity_dir = Path(integrity_dir).expanduser().resolve()
+        self._anchor_path = self._integrity_dir / "anchor.json"
+        self._key_path = self._integrity_dir / "integrity.key"
+
+        with self._connect() as connection:
+            stored_workspace = connection.execute(
+                "SELECT value FROM workspace_meta WHERE key='workspace_id'"
+            ).fetchone()
+            ledger_count = int(
+                connection.execute("SELECT COUNT(*) FROM production_ledger").fetchone()[0]
+            )
+
+        if stored_workspace is not None and stored_workspace["value"] != workspace_id:
+            raise WorkspaceStorageError(
+                "workspace identity does not match the production database"
+            )
+
+        if ledger_count == 0:
+            key = create_integrity_key(self._key_path)
+            self._create_production_genesis(
+                workspace_id=workspace_id,
+                bootstrap_actor_id=bootstrap_actor_id,
+            )
+            report = self._verify_chain_only()
+            epoch = str(report["audit_epoch"])
+            write_anchor(
+                self._anchor_path,
+                AnchorState(
+                    workspace_id=workspace_id,
+                    audit_epoch=epoch,
+                    sequence_no=int(report["sequence_no"]),
+                    head_hash=str(report["head_hash"]),
+                    key_id=key_id(key),
+                ),
+                key,
+            )
+            return self._verify_bound_integrity(recover_anchor=False)
+
+        if stored_workspace is None:
+            raise WorkspaceStorageError(
+                "production ledger exists without bound workspace identity"
+            )
+        if not self._key_path.is_file() or not self._anchor_path.is_file():
+            raise WorkspaceStorageError(
+                "protected integrity material is missing; explicit recovery is required"
+            )
+        return self._verify_bound_integrity(recover_anchor=True)
+
+    def _create_production_genesis(
+        self,
+        *,
+        workspace_id: str,
+        bootstrap_actor_id: str,
+    ) -> None:
+        backup = self._pre_migration_backup_path(1)
+        pre_production_history = backup.is_file()
+        source_schema = 1 if pre_production_history else SCHEMA_VERSION
+        source_digest = _file_sha256(backup) if pre_production_history else None
+        audit_epoch = f"epoch::{uuid4()}"
+        now = datetime.now().isoformat()
+        with self._connect() as connection:
+            try:
+                connection.execute("BEGIN IMMEDIATE")
+                existing = connection.execute(
+                    "SELECT COUNT(*) FROM production_ledger"
+                ).fetchone()
+                if existing is None or int(existing[0]) != 0:
+                    raise WorkspaceStorageError("production genesis already exists")
+                stored_workspace = connection.execute(
+                    "SELECT value FROM workspace_meta WHERE key='workspace_id'"
+                ).fetchone()
+                if stored_workspace is None:
+                    connection.execute(
+                        "INSERT INTO workspace_meta(key, value) VALUES('workspace_id', ?)",
+                        (workspace_id,),
+                    )
+                elif stored_workspace["value"] != workspace_id:
+                    raise WorkspaceStorageError("workspace identity mismatch during bootstrap")
+                connection.execute(
+                    "INSERT OR REPLACE INTO workspace_meta(key, value) VALUES('audit_epoch', ?)",
+                    (audit_epoch,),
+                )
+                payload = {
+                    "pre_production_history": pre_production_history,
+                    "source_schema_version": source_schema,
+                    "source_database_sha256": source_digest,
+                    "authority_baseline": self._workspace_authority_baseline(connection),
+                }
+                self._append_ledger_event(
+                    connection,
+                    workspace_id=workspace_id,
+                    audit_epoch=audit_epoch,
+                    event_type="production.bootstrap",
+                    payload=payload,
+                    actor_id=bootstrap_actor_id,
+                    actor_scope_id=workspace_id,
+                    auth_method="local-install-bootstrap",
+                    policy_version="production-bootstrap-v1",
+                    created_at=now,
+                )
+                connection.commit()
+            except Exception:
+                connection.rollback()
+                raise
+
+    def _workspace_authority_baseline(self, connection: sqlite3.Connection) -> str:
+        rows = connection.execute(
+            "SELECT session_id, state_json FROM sessions ORDER BY session_id"
+        ).fetchall()
+        baseline: list[dict[str, str]] = []
+        for row in rows:
+            try:
+                state = json.loads(row["state_json"])
+            except json.JSONDecodeError as exc:
+                raise WorkspaceStorageError(
+                    f"session {row['session_id']!r} contains invalid JSON"
+                ) from exc
+            baseline.append(
+                {
+                    "session_id": str(row["session_id"]),
+                    "authority_digest": authority_digest(state),
+                }
+            )
+        return hashlib.sha256(_json(baseline).encode("utf-8")).hexdigest()
+
+    def _append_ledger_event(
+        self,
+        connection: sqlite3.Connection,
+        *,
+        workspace_id: str,
+        audit_epoch: str,
+        event_type: str,
+        payload: Mapping[str, Any],
+        session_id: str | None = None,
+        seed_id: str | None = None,
+        request_id: str | None = None,
+        actor_id: str | None = None,
+        actor_scope_id: str | None = None,
+        capability: str | None = None,
+        auth_method: str | None = None,
+        policy_version: str | None = None,
+        created_at: str | None = None,
+    ) -> dict[str, Any]:
+        latest = connection.execute(
+            "SELECT sequence_no, event_hash FROM production_ledger "
+            "ORDER BY sequence_no DESC LIMIT 1"
+        ).fetchone()
+        sequence_no = 1 if latest is None else int(latest["sequence_no"]) + 1
+        previous_hash = GENESIS_HASH if latest is None else str(latest["event_hash"])
+        row: dict[str, Any] = {
+            "sequence_no": sequence_no,
+            "event_id": f"ledger::{uuid4()}",
+            "workspace_id": workspace_id,
+            "audit_epoch": audit_epoch,
+            "session_id": session_id,
+            "seed_id": seed_id,
+            "event_type": event_type,
+            "request_id": request_id,
+            "actor_id": actor_id,
+            "actor_scope_id": actor_scope_id,
+            "capability": capability,
+            "auth_method": auth_method,
+            "policy_version": policy_version,
+            "payload_json": _json(dict(payload)),
+            "previous_hash": previous_hash,
+            "created_at": created_at or datetime.now().isoformat(),
+            "event_format_version": EVENT_FORMAT_VERSION,
+        }
+        row["event_hash"] = event_digest(row)
+        connection.execute(
+            """
+            INSERT INTO production_ledger(
+                sequence_no, event_id, workspace_id, audit_epoch, session_id, seed_id,
+                event_type, request_id, actor_id, actor_scope_id, capability,
+                auth_method, policy_version, payload_json, previous_hash, event_hash,
+                created_at, event_format_version
+            ) VALUES(
+                :sequence_no, :event_id, :workspace_id, :audit_epoch, :session_id, :seed_id,
+                :event_type, :request_id, :actor_id, :actor_scope_id, :capability,
+                :auth_method, :policy_version, :payload_json, :previous_hash, :event_hash,
+                :created_at, :event_format_version
+            )
+            """,
+            row,
+        )
+        return row
+
+    def _ledger_rows(self, connection: sqlite3.Connection) -> list[dict[str, Any]]:
+        rows = connection.execute(
+            "SELECT * FROM production_ledger ORDER BY sequence_no"
+        ).fetchall()
+        return [dict(row) for row in rows]
+
+    def _verify_chain_only(self) -> dict[str, Any]:
+        with self._connect() as connection:
+            try:
+                return verify_chain_rows(self._ledger_rows(connection))
+            except ValueError as exc:
+                raise WorkspaceStorageError(f"production ledger verification failed: {exc}") from exc
+
+    def _verify_bound_integrity(self, *, recover_anchor: bool) -> dict[str, Any]:
+        if (
+            self._workspace_id is None
+            or self._anchor_path is None
+            or self._key_path is None
+        ):
+            raise WorkspaceStorageError("production integrity context is not bound")
+        report = self._verify_chain_only()
+        if report["event_count"] == 0:
+            raise WorkspaceStorageError("production ledger genesis is missing")
+        if report["workspace_id"] != self._workspace_id:
+            raise WorkspaceStorageError("production ledger workspace identity mismatch")
+        try:
+            key = load_integrity_key(self._key_path)
+            anchor = read_anchor(self._anchor_path, key)
+        except ValueError as exc:
+            raise WorkspaceStorageError(str(exc)) from exc
+        if anchor.workspace_id != self._workspace_id:
+            raise WorkspaceStorageError("protected anchor workspace identity mismatch")
+        if anchor.key_id != key_id(key):
+            raise WorkspaceStorageError("protected anchor key identity mismatch")
+
+        db_sequence = int(report["sequence_no"])
+        db_head = str(report["head_hash"])
+        if db_sequence < anchor.sequence_no:
+            raise WorkspaceStorageError("workspace database is behind the protected anchor")
+        if db_sequence == anchor.sequence_no:
+            if db_head != anchor.head_hash:
+                raise WorkspaceStorageError("workspace ledger conflicts with protected anchor")
+            if str(report["audit_epoch"]) != anchor.audit_epoch:
+                raise WorkspaceStorageError("workspace audit epoch conflicts with protected anchor")
+        else:
+            with self._connect() as connection:
+                anchored_row = connection.execute(
+                    "SELECT event_hash FROM production_ledger WHERE sequence_no = ?",
+                    (anchor.sequence_no,),
+                ).fetchone()
+            if anchored_row is None or anchored_row["event_hash"] != anchor.head_hash:
+                raise WorkspaceStorageError(
+                    "workspace ledger is not a continuation of the protected anchor"
+                )
+            if not recover_anchor:
+                raise WorkspaceStorageError("protected anchor update is pending")
+            write_anchor(
+                self._anchor_path,
+                AnchorState(
+                    workspace_id=self._workspace_id,
+                    audit_epoch=str(report["audit_epoch"]),
+                    sequence_no=db_sequence,
+                    head_hash=db_head,
+                    key_id=key_id(key),
+                ),
+                key,
+            )
+        return {
+            **report,
+            "anchor_sequence_no": db_sequence,
+            "anchor_head_hash": db_head,
+            "key_id": key_id(key),
+        }
+
+    def verify_production_integrity(self) -> dict[str, Any]:
+        self.initialize()
+        return self._verify_bound_integrity(recover_anchor=True)
+
+    def _current_epoch(self, connection: sqlite3.Connection) -> str:
+        row = connection.execute(
+            "SELECT value FROM workspace_meta WHERE key='audit_epoch'"
+        ).fetchone()
+        if row is None:
+            raise WorkspaceStorageError("workspace audit epoch is missing")
+        return str(row["value"])
+
+    def _advance_anchor(self) -> None:
+        self._verify_bound_integrity(recover_anchor=True)
 
     def schema_version(self) -> int:
         self.initialize()
@@ -199,46 +518,212 @@ class SQLiteWorkspaceRepository:
         _reject_secrets(config)
         with self._connect() as connection:
             try:
-                with connection:
-                    connection.execute(
-                        """
-                        INSERT INTO sessions(
-                            session_id, title, profile_id, backend, model_id,
-                            config_json, state_json, created_at, updated_at
-                        ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
-                        """,
-                        (
-                            session_id,
-                            title,
-                            profile_id,
-                            str(config.get("backend", "fixture")),
-                            config.get("model_id"),
-                            _json(config),
-                            _json(state),
-                            created_at,
-                            created_at,
-                        ),
+                connection.execute("BEGIN IMMEDIATE")
+                connection.execute(
+                    """
+                    INSERT INTO sessions(
+                        session_id, title, profile_id, backend, model_id,
+                        config_json, state_json, created_at, updated_at
+                    ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        session_id,
+                        title,
+                        profile_id,
+                        str(config.get("backend", "fixture")),
+                        config.get("model_id"),
+                        _json(config),
+                        _json(state),
+                        created_at,
+                        created_at,
+                    ),
+                )
+                self._sync_normalized(connection, session_id, state)
+                if self._workspace_id is not None:
+                    self._append_ledger_event(
+                        connection,
+                        workspace_id=self._workspace_id,
+                        audit_epoch=self._current_epoch(connection),
+                        session_id=session_id,
+                        event_type="session.create",
+                        payload={"authority_digest": authority_digest(state)},
+                        created_at=created_at,
                     )
-                    self._sync_normalized(connection, session_id, state)
+                connection.commit()
             except sqlite3.IntegrityError as exc:
+                connection.rollback()
                 raise WorkspaceStorageError(f"session {session_id!r} already exists") from exc
+            except Exception:
+                connection.rollback()
+                raise
+        if self._workspace_id is not None:
+            self._advance_anchor()
+
+    def _save_session_state(
+        self,
+        connection: sqlite3.Connection,
+        session_id: str,
+        state: dict[str, Any],
+        *,
+        updated_at: str,
+    ) -> None:
+        cursor = connection.execute(
+            "UPDATE sessions SET state_json = ?, updated_at = ? WHERE session_id = ?",
+            (_json(state), updated_at, session_id),
+        )
+        if cursor.rowcount != 1:
+            raise KeyError(f"unknown session id: {session_id}")
+        self._sync_normalized(connection, session_id, state)
 
     def save_session(self, session_id: str, state: dict[str, Any], *, updated_at: str) -> None:
         self.initialize()
         with self._connect() as connection:
             try:
-                with connection:
-                    cursor = connection.execute(
-                        "UPDATE sessions SET state_json = ?, updated_at = ? WHERE session_id = ?",
-                        (_json(state), updated_at, session_id),
+                connection.execute("BEGIN IMMEDIATE")
+                self._save_session_state(
+                    connection, session_id, state, updated_at=updated_at
+                )
+                if self._workspace_id is not None:
+                    self._append_ledger_event(
+                        connection,
+                        workspace_id=self._workspace_id,
+                        audit_epoch=self._current_epoch(connection),
+                        session_id=session_id,
+                        event_type="runtime.session_commit",
+                        payload=minimal_runtime_commit(state),
+                        created_at=updated_at,
                     )
-                    if cursor.rowcount != 1:
-                        raise KeyError(f"unknown session id: {session_id}")
-                    self._sync_normalized(connection, session_id, state)
+                connection.commit()
             except sqlite3.DatabaseError as exc:
+                connection.rollback()
                 if isinstance(exc, sqlite3.IntegrityError):
                     raise WorkspaceStorageError(f"cannot save session: {exc}") from exc
                 raise
+            except Exception:
+                connection.rollback()
+                raise
+        if self._workspace_id is not None:
+            self._advance_anchor()
+
+    def authorized_request_result(
+        self,
+        request_id: str,
+        *,
+        event_type: str,
+        session_id: str,
+        seed_id: str,
+    ) -> dict[str, Any] | None:
+        self.initialize()
+        with self._connect() as connection:
+            row = connection.execute(
+                "SELECT * FROM production_ledger WHERE request_id = ?", (request_id,)
+            ).fetchone()
+        if row is None:
+            return None
+        if (
+            row["event_type"] != event_type
+            or row["session_id"] != session_id
+            or row["seed_id"] != seed_id
+        ):
+            raise WorkspaceStorageError(
+                "request_id was already used for a different authority operation"
+            )
+        payload = json.loads(row["payload_json"])
+        result = payload.get("operation_result")
+        if not isinstance(result, dict):
+            raise WorkspaceStorageError("stored authority operation result is invalid")
+        return {**result, "idempotent_replay": True, "ledger_event_id": row["event_id"]}
+
+    def save_authorized_session(
+        self,
+        session_id: str,
+        state: dict[str, Any],
+        *,
+        updated_at: str,
+        authorization: Mapping[str, Any],
+        event_type: str,
+        seed_id: str,
+        operation_result: Mapping[str, Any],
+        event_metadata: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        self.initialize()
+        if self._workspace_id is None:
+            raise WorkspaceStorageError(
+                "authorized production persistence requires a bound workspace"
+            )
+        request_id = str(authorization.get("request_id") or "").strip()
+        actor_id = str(authorization.get("actor_id") or "").strip()
+        actor_scope_id = str(authorization.get("scope_id") or "").strip()
+        capability = str(authorization.get("capability") or "").strip()
+        auth_method = str(authorization.get("auth_method") or "").strip()
+        policy_version = str(authorization.get("policy_version") or "").strip()
+        if not all(
+            (request_id, actor_id, actor_scope_id, capability, auth_method, policy_version)
+        ):
+            raise WorkspaceStorageError("authorization metadata is incomplete")
+        if actor_scope_id != self._workspace_id:
+            raise WorkspaceStorageError("authorization scope does not match workspace")
+
+        existing = self.authorized_request_result(
+            request_id,
+            event_type=event_type,
+            session_id=session_id,
+            seed_id=seed_id,
+        )
+        if existing is not None:
+            return existing
+
+        payload = {
+            "operation_result": dict(operation_result),
+            "runtime_commit": minimal_runtime_commit(state),
+            "metadata": dict(event_metadata or {}),
+        }
+        with self._connect() as connection:
+            try:
+                connection.execute("BEGIN IMMEDIATE")
+                duplicate = connection.execute(
+                    "SELECT * FROM production_ledger WHERE request_id = ?",
+                    (request_id,),
+                ).fetchone()
+                if duplicate is not None:
+                    connection.rollback()
+                    return self.authorized_request_result(
+                        request_id,
+                        event_type=event_type,
+                        session_id=session_id,
+                        seed_id=seed_id,
+                    ) or {}
+                self._save_session_state(
+                    connection, session_id, state, updated_at=updated_at
+                )
+                ledger = self._append_ledger_event(
+                    connection,
+                    workspace_id=self._workspace_id,
+                    audit_epoch=self._current_epoch(connection),
+                    session_id=session_id,
+                    seed_id=seed_id,
+                    event_type=event_type,
+                    request_id=request_id,
+                    actor_id=actor_id,
+                    actor_scope_id=actor_scope_id,
+                    capability=capability,
+                    auth_method=auth_method,
+                    policy_version=policy_version,
+                    payload=payload,
+                    created_at=updated_at,
+                )
+                connection.commit()
+            except Exception:
+                connection.rollback()
+                raise
+        self._advance_anchor()
+        return {
+            **dict(operation_result),
+            "idempotent_replay": False,
+            "ledger_event_id": ledger["event_id"],
+            "ledger_sequence_no": ledger["sequence_no"],
+            "ledger_event_hash": ledger["event_hash"],
+        }
 
     def load_session(self, session_id: str) -> dict[str, Any]:
         self.initialize()
@@ -299,12 +784,38 @@ class SQLiteWorkspaceRepository:
 
     def delete_session(self, session_id: str) -> None:
         self.initialize()
-        with self._connect() as connection, connection:
-            cursor = connection.execute(
-                "DELETE FROM sessions WHERE session_id = ?", (session_id,)
-            )
-            if cursor.rowcount != 1:
-                raise KeyError(f"unknown session id: {session_id}")
+        with self._connect() as connection:
+            try:
+                connection.execute("BEGIN IMMEDIATE")
+                if self._workspace_id is not None:
+                    stored = connection.execute(
+                        "SELECT state_json FROM sessions WHERE session_id = ?", (session_id,)
+                    ).fetchone()
+                    if stored is None:
+                        raise KeyError(f"unknown session id: {session_id}")
+                    state = json.loads(stored["state_json"])
+                    self._append_ledger_event(
+                        connection,
+                        workspace_id=self._workspace_id,
+                        audit_epoch=self._current_epoch(connection),
+                        session_id=session_id,
+                        event_type="session.delete",
+                        payload={
+                            "authority_digest_before_delete": authority_digest(state),
+                            "content_removed": True,
+                        },
+                    )
+                cursor = connection.execute(
+                    "DELETE FROM sessions WHERE session_id = ?", (session_id,)
+                )
+                if cursor.rowcount != 1:
+                    raise KeyError(f"unknown session id: {session_id}")
+                connection.commit()
+            except Exception:
+                connection.rollback()
+                raise
+        if self._workspace_id is not None:
+            self._advance_anchor()
 
     def add_feedback(self, feedback: TesterFeedback) -> TesterFeedback:
         self.initialize()
@@ -385,6 +896,8 @@ class SQLiteWorkspaceRepository:
 
     def backup_to(self, destination: str | Path) -> Path:
         self.initialize()
+        if self._workspace_id is not None:
+            self._verify_bound_integrity(recover_anchor=True)
         target = Path(destination).expanduser().resolve()
         target.parent.mkdir(parents=True, exist_ok=True)
         temporary = target.with_suffix(target.suffix + ".tmp")
@@ -397,6 +910,11 @@ class SQLiteWorkspaceRepository:
                 destination_db.commit()
             finally:
                 destination_db.close()
+        with sqlite3.connect(f"file:{temporary}?mode=ro", uri=True) as candidate:
+            check = candidate.execute("PRAGMA integrity_check").fetchone()
+            if check is None or check[0] != "ok":
+                temporary.unlink(missing_ok=True)
+                raise WorkspaceStorageError("backup failed integrity check")
         os.replace(temporary, target)
         return target
 
@@ -416,6 +934,10 @@ class SQLiteWorkspaceRepository:
             raise WorkspaceStorageError("backup schema is missing or unsupported")
         if check is None or check[0] != "ok":
             raise WorkspaceStorageError("backup failed integrity check")
+        if self._workspace_id is not None:
+            raise WorkspaceStorageError(
+                "production restore requires the explicit audit-epoch recovery workflow"
+            )
         self.database_path.parent.mkdir(parents=True, exist_ok=True)
         temporary = self.database_path.with_suffix(".restore.tmp")
         temporary.unlink(missing_ok=True)
