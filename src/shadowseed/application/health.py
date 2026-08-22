@@ -13,6 +13,10 @@ from urllib.request import Request, urlopen
 
 from shadowseed.adapters.models import make_backend
 from shadowseed.application.models import DoctorReport, HealthCheck
+from shadowseed.application.production_health import (
+    workspace_integrity_check,
+    workspace_permission_check,
+)
 from shadowseed.application.workspace import WorkspaceService
 
 
@@ -53,6 +57,8 @@ def run_doctor(workspace: str | Path | None = None) -> DoctorReport:
         checks.append(
             HealthCheck("sqlite_schema", "ok", str(service.repository.schema_version()))
         )
+        checks.append(workspace_integrity_check(service))
+        checks.append(workspace_permission_check(service))
         writable = os.access(paths.root, os.W_OK) and os.access(paths.exports, os.W_OK)
         checks.append(
             HealthCheck(
@@ -72,7 +78,15 @@ def run_doctor(workspace: str | Path | None = None) -> DoctorReport:
             )
         )
     except Exception as exc:
-        checks.append(HealthCheck("workspace", "error", str(exc)))
+        checks.append(
+            HealthCheck(
+                "workspace",
+                "error",
+                f"{type(exc).__name__}: {exc}",
+                "Use a verified backup with `shadowseed workspace restore <backup>` "
+                "when recovery is required; integrity continuity is not recreated silently.",
+            )
+        )
 
     try:
         make_backend("fixture", None, 20)
