@@ -9,6 +9,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from shadowseed.application.auth import ActorContext, LOCAL_PRODUCTION_CAPABILITIES
+from shadowseed.storage.recovery import restore_production_backup
 from shadowseed.storage.sqlite import SQLiteWorkspaceRepository
 
 
@@ -118,9 +119,9 @@ class WorkspaceService:
         )
         return self.repository.backup_to(target)
 
-    def restore(self, source: str | Path) -> None:
+    def restore(self, source: str | Path) -> dict[str, object]:
         self.initialize()
-        self.repository.restore_from(source)
+        return restore_production_backup(self.repository, source)
 
     def delete(self) -> None:
         root = self.paths.root
