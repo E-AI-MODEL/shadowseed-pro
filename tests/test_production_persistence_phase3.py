@@ -146,18 +146,22 @@ def test_v1_product_bootstrap_creates_explicit_preproduction_genesis(tmp_path: P
     with sqlite3.connect(root / "workspace.db") as connection:
         connection.row_factory = sqlite3.Row
         meta = dict(connection.execute("SELECT key, value FROM workspace_meta").fetchall())
-        row = connection.execute(
-            "SELECT * FROM production_ledger WHERE sequence_no = 1"
-        ).fetchone()
+        rows = connection.execute(
+            "SELECT * FROM production_ledger ORDER BY sequence_no"
+        ).fetchall()
     assert meta["workspace_id"] == "workspace::legacy"
     assert meta["audit_epoch"].startswith("epoch::")
-    assert row is not None
-    assert row["event_type"] == "production.bootstrap"
-    payload = json.loads(row["payload_json"])
+    assert [row["event_type"] for row in rows] == [
+        "production.bootstrap",
+        "production.authority_checkpoint",
+    ]
+    payload = json.loads(rows[0]["payload_json"])
     assert payload["pre_production_history"] is True
     assert payload["source_schema_version"] == 1
     assert len(payload["source_database_sha256"]) == 64
-    assert workspace.repository.verify_production_integrity()["event_count"] == 1
+    report = workspace.repository.verify_production_integrity()
+    assert report["event_count"] == 2
+    assert report["authority_snapshot_verified"] is True
 
 
 def test_new_product_workspace_binds_identity_and_anchor_outside_workspace(tmp_path: Path) -> None:
@@ -173,7 +177,8 @@ def test_new_product_workspace_binds_identity_and_anchor_outside_workspace(tmp_p
 
     report = workspace.repository.verify_production_integrity()
     assert report["workspace_id"] == workspace_id
-    assert report["event_count"] == 1
+    assert report["event_count"] == 2
+    assert report["authority_snapshot_verified"] is True
     assert report["sequence_no"] == report["anchor_sequence_no"]
 
 
@@ -307,7 +312,7 @@ def test_ledger_reordering_fails_verification(tmp_path: Path) -> None:
     _live_seed(controller)
     with sqlite3.connect(controller.workspace.paths.database) as connection:
         rows = connection.execute(
-            "SELECT sequence_no, event_hash FROM production_ledger ORDER BY sequence_no LIMIT 2"
+            "SELECT sequence_no FROM production_ledger ORDER BY sequence_no LIMIT 2"
         ).fetchall()
         assert len(rows) == 2
         connection.execute(
