@@ -235,6 +235,27 @@ class SessionService:
             )
         return replay
 
+    @staticmethod
+    def _minimal_evidence_result(
+        result: dict[str, Any],
+        *,
+        request_fingerprint: str,
+    ) -> dict[str, Any]:
+        """Keep idempotency data useful without copying raw evidence into the ledger."""
+
+        keys = (
+            "seed_id",
+            "decision",
+            "policy_id",
+            "weight_after",
+            "status_after",
+            "evidence_count",
+        )
+        return {
+            **{key: result[key] for key in keys if key in result},
+            "_request_fingerprint": request_fingerprint,
+        }
+
     def submit_verified_evidence_authorized(
         self,
         session_id: str,
@@ -288,7 +309,10 @@ class SessionService:
             authorization=authz,
             event_type=EVIDENCE_VERIFY,
             seed_id=seed_id,
-            operation_result={**result, "_request_fingerprint": request_fingerprint},
+            operation_result=self._minimal_evidence_result(
+                result,
+                request_fingerprint=request_fingerprint,
+            ),
             event_metadata={
                 "source_ref_sha256": hashlib.sha256(
                     normalized_source.encode("utf-8")
@@ -301,7 +325,17 @@ class SessionService:
         persisted = self._validated_replay(
             persisted, expected_fingerprint=request_fingerprint
         )
-        return {**persisted, "authorization": authz}
+        ledger_fields = {
+            key: persisted[key]
+            for key in (
+                "idempotent_replay",
+                "ledger_event_id",
+                "ledger_sequence_no",
+                "ledger_event_hash",
+            )
+            if key in persisted
+        }
+        return {**result, **ledger_fields, "authorization": authz}
 
     @staticmethod
     def _normalize_source_ref(source_ref: str) -> str:
