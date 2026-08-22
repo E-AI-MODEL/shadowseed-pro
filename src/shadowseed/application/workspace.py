@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import shutil
 from dataclasses import dataclass
 from datetime import datetime
@@ -16,6 +17,7 @@ from shadowseed.application.auth import (
     ActorContext,
     require_capability,
 )
+from shadowseed.application.limits import validate_backup_file
 from shadowseed.storage.production import ProductionSQLiteWorkspaceRepository
 from shadowseed.storage.recovery import (
     import_production_backup,
@@ -70,6 +72,36 @@ class WorkspaceService:
         location_id = hashlib.sha256(str(self.paths.root).encode("utf-8")).hexdigest()[:20]
         return self.paths.root.parent / ".shadowseed-integrity" / location_id / identity
 
+    @staticmethod
+    def _restrict_path(path: Path, mode: int) -> None:
+        """Apply restrictive POSIX permissions where the platform supports them."""
+
+        if os.name == "nt" or not path.exists():
+            return
+        try:
+            path.chmod(mode)
+        except OSError:
+            # Permission hardening is best-effort at creation time; doctor/acceptance
+            # surfaces the resulting state so a production claim cannot hide drift.
+            return
+
+    def _apply_workspace_permissions(self) -> None:
+        for directory in (
+            self.paths.root,
+            self.paths.exports,
+            self.paths.attachments,
+            self.paths.logs,
+        ):
+            self._restrict_path(directory, 0o700)
+        for file in (
+            self.paths.config,
+            self.paths.identity,
+            self.paths.database,
+            Path(str(self.paths.database) + "-wal"),
+            Path(str(self.paths.database) + "-shm"),
+        ):
+            self._restrict_path(file, 0o600)
+
     def _initialize_structure(self) -> None:
         self.paths.root.mkdir(parents=True, exist_ok=True)
         for path in (self.paths.exports, self.paths.attachments, self.paths.logs):
@@ -82,6 +114,7 @@ class WorkspaceService:
                 'default_backend = "fixture"\n',
                 encoding="utf-8",
             )
+        self._apply_workspace_permissions()
 
     @staticmethod
     def _local_actor_for_workspace(
@@ -111,6 +144,7 @@ class WorkspaceService:
             integrity_dir=self._integrity_dir(workspace_id),
             bootstrap_actor_id=f"local-owner::{workspace_id.removeprefix('workspace::')}",
         )
+        self._apply_workspace_permissions()
         return self.paths
 
     @property
@@ -143,7 +177,9 @@ class WorkspaceService:
             self.paths.exports
             / f"workspace-backup-{datetime.now().strftime('%Y%m%d-%H%M%S')}.db"
         )
-        return self.repository.backup_to(target)
+        result = self.repository.backup_to(target)
+        self._restrict_path(result, 0o600)
+        return result
 
     def restore(self, source: str | Path) -> dict[str, object]:
         """Run the trusted local restore/recovery boundary.
@@ -151,12 +187,13 @@ class WorkspaceService:
         Fresh-machine imports use integrity-recovery authority because the previous
         protected anchor is unavailable. Restores into an existing workspace use the
         narrower backup/restore capability. Neither path accepts a client-supplied
-        authorization boolean.
+        authorization boolean. Oversized inputs fail before workspace mutation.
         """
 
+        source_path = validate_backup_file(source)
         fresh_target = not self.paths.database.exists() and not self.paths.identity.exists()
         if fresh_target:
-            backup = inspect_production_backup(source)
+            backup = inspect_production_backup(source_path)
             workspace_id = self._validate_workspace_id(str(backup["workspace_id"]))
             actor = self._local_actor_for_workspace(
                 workspace_id,
@@ -169,13 +206,16 @@ class WorkspaceService:
             )
             self._initialize_structure()
             self.paths.identity.write_text(f"{workspace_id}\n", encoding="utf-8")
+            self._apply_workspace_permissions()
             try:
-                return import_production_backup(
+                result = import_production_backup(
                     self.repository,
-                    source,
+                    source_path,
                     integrity_dir=self._integrity_dir(workspace_id),
                     authorization=authorization,
                 )
+                self._apply_workspace_permissions()
+                return result
             except Exception:
                 self.paths.identity.unlink(missing_ok=True)
                 raise
@@ -188,11 +228,13 @@ class WorkspaceService:
             scope_id=workspace_id,
             capability=WORKSPACE_BACKUP_RESTORE,
         )
-        return restore_production_backup(
+        result = restore_production_backup(
             self.repository,
-            source,
+            source_path,
             authorization=authorization,
         )
+        self._apply_workspace_permissions()
+        return result
 
     def delete(self) -> None:
         root = self.paths.root
