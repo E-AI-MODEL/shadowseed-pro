@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Any
 
 from shadowseed.storage.integrity import authority_digest
@@ -21,10 +22,10 @@ class ProductionSQLiteWorkspaceRepository(SQLiteWorkspaceRepository):
         self,
         *,
         workspace_id: str,
-        integrity_dir: str,
+        integrity_dir: str | Path,
         bootstrap_actor_id: str,
     ) -> dict[str, Any]:
-        report = super().bind_production(
+        super().bind_production(
             workspace_id=workspace_id,
             integrity_dir=integrity_dir,
             bootstrap_actor_id=bootstrap_actor_id,
@@ -36,6 +37,12 @@ class ProductionSQLiteWorkspaceRepository(SQLiteWorkspaceRepository):
         report = super().verify_production_integrity()
         self._verify_authority_snapshot_consistency()
         return {**report, "authority_snapshot_verified": True}
+
+    def _advance_anchor(self) -> None:
+        """Advance the protected head, then prove the mutable snapshot still matches."""
+
+        super()._advance_anchor()
+        self._verify_authority_snapshot_consistency()
 
     def _current_authority_snapshot(self, connection: Any) -> dict[str, str]:
         rows = connection.execute(
