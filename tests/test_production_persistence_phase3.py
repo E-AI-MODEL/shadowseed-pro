@@ -1,12 +1,17 @@
 from __future__ import annotations
 
+import json
+import shutil
 import sqlite3
 from pathlib import Path
 
 import pytest
 
+from shadowseed.application.auth import ActorContext, EVIDENCE_VERIFY
+from shadowseed.application.workspace import WorkspaceService
 from shadowseed.storage.schema import SCHEMA_VERSION
 from shadowseed.storage.sqlite import SQLiteWorkspaceRepository, WorkspaceStorageError
+from shadowseed.workbench.controller import WorkbenchController
 
 
 def _create_v1_workspace(path: Path) -> None:
@@ -78,6 +83,17 @@ def _create_v1_workspace(path: Path) -> None:
         )
 
 
+def _live_seed(controller: WorkbenchController) -> tuple[str, str]:
+    session_id = controller.create_session(
+        title="Phase 3 live",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+    )
+    result = controller.send_turn(session_id, "What is missing from this privacy plan?")
+    return session_id, result["session"]["seeds"][0]["id"]
+
+
 def test_new_workspace_uses_current_schema_and_production_ledger(tmp_path: Path) -> None:
     database = tmp_path / "workspace.db"
     repository = SQLiteWorkspaceRepository(database)
@@ -116,6 +132,236 @@ def test_v1_workspace_migrates_backup_first_and_preserves_state(tmp_path: Path) 
 
     repository.initialize()
     assert list(tmp_path.glob("workspace.db.pre-migration-v1-to-v2.bak")) == [backup]
+
+
+def test_v1_product_bootstrap_creates_explicit_preproduction_genesis(tmp_path: Path) -> None:
+    root = tmp_path / "workspace"
+    root.mkdir()
+    (root / "workspace.id").write_text("workspace::legacy\n", encoding="utf-8")
+    _create_v1_workspace(root / "workspace.db")
+
+    workspace = WorkspaceService(root)
+    workspace.initialize()
+
+    with sqlite3.connect(root / "workspace.db") as connection:
+        connection.row_factory = sqlite3.Row
+        meta = dict(connection.execute("SELECT key, value FROM workspace_meta").fetchall())
+        row = connection.execute(
+            "SELECT * FROM production_ledger WHERE sequence_no = 1"
+        ).fetchone()
+    assert meta["workspace_id"] == "workspace::legacy"
+    assert meta["audit_epoch"].startswith("epoch::")
+    assert row is not None
+    assert row["event_type"] == "production.bootstrap"
+    payload = json.loads(row["payload_json"])
+    assert payload["pre_production_history"] is True
+    assert payload["source_schema_version"] == 1
+    assert len(payload["source_database_sha256"]) == 64
+    assert workspace.repository.verify_production_integrity()["event_count"] == 1
+
+
+def test_new_product_workspace_binds_identity_and_anchor_outside_workspace(tmp_path: Path) -> None:
+    root = tmp_path / "workspace"
+    workspace = WorkspaceService(root)
+    workspace.initialize()
+    workspace_id = workspace.workspace_id
+
+    integrity_dir = root.parent / ".shadowseed-integrity" / workspace_id.removeprefix(
+        "workspace::"
+    )
+    assert (integrity_dir / "integrity.key").is_file()
+    assert (integrity_dir / "anchor.json").is_file()
+    assert not (root / "integrity.key").exists()
+
+    report = workspace.repository.verify_production_integrity()
+    assert report["workspace_id"] == workspace_id
+    assert report["event_count"] == 1
+    assert report["sequence_no"] == report["anchor_sequence_no"]
+
+
+def test_authorized_evidence_is_atomic_attributable_and_content_minimized(tmp_path: Path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id, seed_id = _live_seed(controller)
+    actor = controller.workspace.local_actor_context(request_id="request::phase3-evidence")
+    source_ref = "reviewer:phase3-secret-ref"
+    note = "private evidence note that must not enter the production ledger"
+
+    result = controller.sessions.submit_verified_evidence_authorized(
+        session_id,
+        seed_id,
+        source_ref=source_ref,
+        note=note,
+        actor=actor,
+    )
+
+    assert result["authorization"]["actor_id"] == actor.actor_id
+    assert result["authorization"]["capability"] == EVIDENCE_VERIFY
+    assert result["idempotent_replay"] is False
+    assert result["ledger_event_id"].startswith("ledger::")
+
+    with sqlite3.connect(controller.workspace.paths.database) as connection:
+        connection.row_factory = sqlite3.Row
+        row = connection.execute(
+            "SELECT * FROM production_ledger WHERE request_id = ?", (actor.request_id,)
+        ).fetchone()
+    assert row is not None
+    assert row["actor_id"] == actor.actor_id
+    assert row["actor_scope_id"] == actor.scope_id
+    assert row["capability"] == EVIDENCE_VERIFY
+    assert row["auth_method"] == actor.auth_method
+    assert row["policy_version"] == actor.policy_version
+    assert source_ref not in row["payload_json"]
+    assert note not in row["payload_json"]
+    payload = json.loads(row["payload_json"])
+    assert len(payload["metadata"]["source_ref_sha256"]) == 64
+    assert len(payload["metadata"]["note_sha256"]) == 64
+
+
+def test_authorized_retry_does_not_double_apply_evidence(tmp_path: Path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id, seed_id = _live_seed(controller)
+    actor = controller.workspace.local_actor_context(request_id="request::retry")
+
+    first = controller.sessions.submit_verified_evidence_authorized(
+        session_id,
+        seed_id,
+        source_ref="reviewer:retry",
+        actor=actor,
+    )
+    before = controller.session_view(session_id)
+    second = controller.sessions.submit_verified_evidence_authorized(
+        session_id,
+        seed_id,
+        source_ref="reviewer:retry",
+        actor=actor,
+    )
+    after = controller.session_view(session_id)
+
+    assert first["idempotent_replay"] is False
+    assert second["idempotent_replay"] is True
+    assert second["ledger_event_id"] == first["ledger_event_id"]
+    assert before == after
+    with sqlite3.connect(controller.workspace.paths.database) as connection:
+        count = connection.execute(
+            "SELECT COUNT(*) FROM production_ledger WHERE request_id = ?", (actor.request_id,)
+        ).fetchone()[0]
+    assert count == 1
+
+
+def test_authorized_ledger_failure_rolls_back_session_state(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id, seed_id = _live_seed(controller)
+    actor = controller.workspace.local_actor_context(request_id="request::rollback")
+    before = controller.sessions.load(session_id)["state"]
+    original = controller.workspace.repository._append_ledger_event
+
+    def fail_authority_append(*args, **kwargs):
+        if kwargs.get("request_id") == actor.request_id:
+            raise RuntimeError("synthetic ledger failure")
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(
+        controller.workspace.repository, "_append_ledger_event", fail_authority_append
+    )
+    with pytest.raises(RuntimeError, match="synthetic ledger failure"):
+        controller.sessions.submit_verified_evidence_authorized(
+            session_id,
+            seed_id,
+            source_ref="reviewer:rollback",
+            actor=actor,
+        )
+
+    after = controller.sessions.load(session_id)["state"]
+    assert after == before
+    with sqlite3.connect(controller.workspace.paths.database) as connection:
+        count = connection.execute(
+            "SELECT COUNT(*) FROM production_ledger WHERE request_id = ?", (actor.request_id,)
+        ).fetchone()[0]
+    assert count == 0
+
+
+def test_ledger_payload_mutation_fails_verification(tmp_path: Path) -> None:
+    workspace = WorkspaceService(tmp_path / "workspace")
+    workspace.initialize()
+    with sqlite3.connect(workspace.paths.database) as connection:
+        connection.execute(
+            "UPDATE production_ledger SET payload_json = '{}' WHERE sequence_no = 1"
+        )
+
+    with pytest.raises(WorkspaceStorageError, match="event hash mismatch"):
+        workspace.repository.verify_production_integrity()
+
+
+def test_ledger_deletion_fails_verification(tmp_path: Path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    _live_seed(controller)
+    with sqlite3.connect(controller.workspace.paths.database) as connection:
+        connection.execute("DELETE FROM production_ledger WHERE sequence_no = 1")
+
+    with pytest.raises(WorkspaceStorageError, match="sequence discontinuity"):
+        controller.workspace.repository.verify_production_integrity()
+
+
+def test_missing_protected_anchor_fails_closed_instead_of_recreating(tmp_path: Path) -> None:
+    root = tmp_path / "workspace"
+    workspace = WorkspaceService(root)
+    workspace.initialize()
+    workspace_id = workspace.workspace_id
+    anchor = (
+        root.parent
+        / ".shadowseed-integrity"
+        / workspace_id.removeprefix("workspace::")
+        / "anchor.json"
+    )
+    anchor.unlink()
+
+    reopened = WorkspaceService(root)
+    with pytest.raises(WorkspaceStorageError, match="integrity material is missing"):
+        reopened.initialize()
+    assert not anchor.exists()
+
+
+def test_old_valid_backup_cannot_silently_replace_newer_live_workspace(tmp_path: Path) -> None:
+    root = tmp_path / "workspace"
+    controller = WorkbenchController(root)
+    session_id, _ = _live_seed(controller)
+    backup = tmp_path / "older.db"
+    controller.workspace.backup(backup)
+
+    controller.send_turn(session_id, "Add a newer committed turn")
+    current = controller.workspace.repository.verify_production_integrity()
+
+    shutil.copy2(backup, controller.workspace.paths.database)
+    Path(str(controller.workspace.paths.database) + "-wal").unlink(missing_ok=True)
+    Path(str(controller.workspace.paths.database) + "-shm").unlink(missing_ok=True)
+
+    reopened = WorkspaceService(root)
+    with pytest.raises(WorkspaceStorageError, match="behind the protected anchor"):
+        reopened.initialize()
+    assert current["sequence_no"] > 1
+
+
+def test_database_ahead_of_anchor_recovers_only_valid_chain_extension(tmp_path: Path) -> None:
+    workspace = WorkspaceService(tmp_path / "workspace")
+    workspace.initialize()
+    before = workspace.repository.verify_production_integrity()
+
+    with workspace.repository._connect() as connection:
+        connection.execute("BEGIN IMMEDIATE")
+        workspace.repository._append_ledger_event(
+            connection,
+            workspace_id=workspace.workspace_id,
+            audit_epoch=str(before["audit_epoch"]),
+            event_type="test.crash_after_db_commit",
+            payload={"content_minimized": True},
+        )
+        connection.commit()
+
+    recovered = workspace.repository.verify_production_integrity()
+    assert recovered["sequence_no"] == before["sequence_no"] + 1
+    assert recovered["anchor_sequence_no"] == recovered["sequence_no"]
 
 
 def test_newer_workspace_schema_fails_without_mutation(tmp_path: Path) -> None:
