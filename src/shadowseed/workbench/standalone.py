@@ -73,14 +73,14 @@ def run_standalone_self_test(
     *,
     output_path: str | Path | None = None,
 ) -> dict[str, Any]:
-    """Exercise the installed product surface without opening a browser/server."""
+    """Exercise the installed production-local product surface without a server."""
 
     from shadowseed.workbench.app import build_app
-    from shadowseed.workbench.controller import WorkbenchController
+    from shadowseed.workbench.production_controller import ProductionLocalWorkbenchController
 
     service = WorkspaceService(workspace)
     paths = service.initialize()
-    controller = WorkbenchController(paths.root)
+    controller = ProductionLocalWorkbenchController(paths.root)
     session_id = controller.create_session(
         title="Standalone self-test",
         profile_id="demo",
@@ -117,6 +117,7 @@ def run_standalone_self_test(
         "comparison_generated": True,
         "report_verified": True,
         "support_verified": True,
+        "production_local_controller": True,
         "workspace": str(paths.root),
     }
     destination = Path(output_path) if output_path else paths.exports / "standalone-self-test.json"
