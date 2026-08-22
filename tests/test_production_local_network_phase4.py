@@ -16,14 +16,21 @@ def test_production_local_launcher_exposes_no_remote_host_override() -> None:
 def test_production_local_launcher_forces_loopback(monkeypatch, tmp_path: Path) -> None:
     captured: dict[str, object] = {}
 
-    def fake_launch(workspace, **kwargs):
-        captured["workspace"] = workspace
-        captured.update(kwargs)
-        return "launched"
+    class FakeApp:
+        def launch(self, **kwargs):
+            captured.update(kwargs)
+            return "launched"
 
     import shadowseed.workbench.app as app
+    import shadowseed.workbench.production_controller as production_controller
 
-    monkeypatch.setattr(app, "launch_workbench", fake_launch)
+    class FakeController:
+        def __init__(self, workspace):
+            captured["workspace"] = workspace
+
+    monkeypatch.setattr(production_controller, "ProductionLocalWorkbenchController", FakeController)
+    monkeypatch.setattr(app, "build_app", lambda *, controller: FakeApp())
+
     result = production_local.launch_production_local_workbench(
         tmp_path / "workspace",
         port=8899,
@@ -31,6 +38,6 @@ def test_production_local_launcher_forces_loopback(monkeypatch, tmp_path: Path) 
     )
 
     assert result == "launched"
-    assert captured["host"] == "127.0.0.1"
-    assert captured["allow_remote"] is False
-    assert captured["port"] == 8899
+    assert captured["server_name"] == "127.0.0.1"
+    assert captured["share"] is False
+    assert captured["server_port"] == 8899
