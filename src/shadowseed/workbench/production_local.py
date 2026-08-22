@@ -22,12 +22,14 @@ def launch_production_local_workbench(
     never upgraded into the production-local deployment contract.
     """
 
-    from shadowseed.workbench.app import launch_workbench
+    from shadowseed.workbench.app import build_app
+    from shadowseed.workbench.production_controller import ProductionLocalWorkbenchController
 
-    return launch_workbench(
-        workspace,
-        host=PRODUCTION_LOCAL_HOST,
-        port=int(port),
-        allow_remote=False,
+    controller = ProductionLocalWorkbenchController(workspace)
+    app = build_app(controller=controller)
+    return app.launch(
+        server_name=PRODUCTION_LOCAL_HOST,
+        server_port=int(port),
         inbrowser=bool(inbrowser),
+        share=False,
     )
