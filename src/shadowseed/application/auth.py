@@ -14,6 +14,8 @@ from typing import Mapping
 EVIDENCE_VERIFY = "evidence.verify"
 CONTRADICTION_SUBMIT = "contradiction.submit"
 CONTRADICTION_RESOLVE = "contradiction.resolve"
+WORKSPACE_BACKUP_RESTORE = "workspace.backup_restore"
+WORKSPACE_INTEGRITY_RECOVER = "workspace.integrity_recover"
 
 LOCAL_PRODUCTION_CAPABILITIES = frozenset(
     {
@@ -24,8 +26,8 @@ LOCAL_PRODUCTION_CAPABILITIES = frozenset(
         CONTRADICTION_SUBMIT,
         CONTRADICTION_RESOLVE,
         "export.create",
-        "workspace.backup_restore",
-        "workspace.integrity_recover",
+        WORKSPACE_BACKUP_RESTORE,
+        WORKSPACE_INTEGRITY_RECOVER,
     }
 )
 
