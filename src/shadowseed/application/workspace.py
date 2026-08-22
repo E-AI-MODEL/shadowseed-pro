@@ -18,6 +18,7 @@ from shadowseed.application.auth import (
     require_capability,
 )
 from shadowseed.application.limits import validate_backup_file
+from shadowseed.application.operations import OperationalEventLog
 from shadowseed.storage.production import ProductionSQLiteWorkspaceRepository
 from shadowseed.storage.recovery import (
     import_production_backup,
@@ -72,6 +73,9 @@ class WorkspaceService:
         location_id = hashlib.sha256(str(self.paths.root).encode("utf-8")).hexdigest()[:20]
         return self.paths.root.parent / ".shadowseed-integrity" / location_id / identity
 
+    def _operation_log(self) -> OperationalEventLog:
+        return OperationalEventLog(self.paths.logs)
+
     @staticmethod
     def _restrict_path(path: Path, mode: int) -> None:
         """Apply restrictive POSIX permissions where the platform supports them."""
@@ -81,8 +85,6 @@ class WorkspaceService:
         try:
             path.chmod(mode)
         except OSError:
-            # Permission hardening is best-effort at creation time; doctor/acceptance
-            # surfaces the resulting state so a production claim cannot hide drift.
             return
 
     def _apply_workspace_permissions(self) -> None:
@@ -177,18 +179,26 @@ class WorkspaceService:
             self.paths.exports
             / f"workspace-backup-{datetime.now().strftime('%Y%m%d-%H%M%S')}.db"
         )
-        result = self.repository.backup_to(target)
+        try:
+            result = self.repository.backup_to(target)
+        except BaseException as exc:
+            self._operation_log().emit(
+                "workspace.backup",
+                workspace_id=self._read_workspace_id(),
+                status="error",
+                error_type=type(exc).__name__,
+            )
+            raise
         self._restrict_path(result, 0o600)
+        self._operation_log().emit(
+            "workspace.backup",
+            workspace_id=self._read_workspace_id(),
+            status="ok",
+        )
         return result
 
     def restore(self, source: str | Path) -> dict[str, object]:
-        """Run the trusted local restore/recovery boundary.
-
-        Fresh-machine imports use integrity-recovery authority because the previous
-        protected anchor is unavailable. Restores into an existing workspace use the
-        narrower backup/restore capability. Neither path accepts a client-supplied
-        authorization boolean. Oversized inputs fail before workspace mutation.
-        """
+        """Run the trusted local restore/recovery boundary with bounded input."""
 
         source_path = validate_backup_file(source)
         fresh_target = not self.paths.database.exists() and not self.paths.identity.exists()
@@ -214,11 +224,22 @@ class WorkspaceService:
                     integrity_dir=self._integrity_dir(workspace_id),
                     authorization=authorization,
                 )
-                self._apply_workspace_permissions()
-                return result
-            except Exception:
+            except BaseException as exc:
+                self._operation_log().emit(
+                    "workspace.import",
+                    workspace_id=workspace_id,
+                    status="error",
+                    error_type=type(exc).__name__,
+                )
                 self.paths.identity.unlink(missing_ok=True)
                 raise
+            self._apply_workspace_permissions()
+            self._operation_log().emit(
+                "workspace.import",
+                workspace_id=workspace_id,
+                status="ok",
+            )
+            return result
 
         self.initialize()
         workspace_id = self._read_workspace_id()
@@ -228,12 +249,26 @@ class WorkspaceService:
             scope_id=workspace_id,
             capability=WORKSPACE_BACKUP_RESTORE,
         )
-        result = restore_production_backup(
-            self.repository,
-            source_path,
-            authorization=authorization,
-        )
+        try:
+            result = restore_production_backup(
+                self.repository,
+                source_path,
+                authorization=authorization,
+            )
+        except BaseException as exc:
+            self._operation_log().emit(
+                "workspace.restore",
+                workspace_id=workspace_id,
+                status="error",
+                error_type=type(exc).__name__,
+            )
+            raise
         self._apply_workspace_permissions()
+        self._operation_log().emit(
+            "workspace.restore",
+            workspace_id=workspace_id,
+            status="ok",
+        )
         return result
 
     def delete(self) -> None:
