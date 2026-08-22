@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shutil
@@ -13,7 +14,7 @@ from typing import Any, Iterator
 from uuid import uuid4
 
 from shadowseed.application.models import SessionSummary, TesterFeedback
-from shadowseed.storage.schema import DDL, SCHEMA_VERSION
+from shadowseed.storage.schema import DDL, MIGRATION_1_TO_2, SCHEMA_VERSION
 
 
 class WorkspaceStorageError(RuntimeError):
@@ -42,6 +43,14 @@ def _reject_secrets(value: Any, path: str = "config") -> None:
             _reject_secrets(item, f"{path}[{index}]")
 
 
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 class SQLiteWorkspaceRepository:
     def __init__(self, database_path: str | Path) -> None:
         self.database_path = Path(database_path).expanduser().resolve()
@@ -61,34 +70,110 @@ class SQLiteWorkspaceRepository:
         finally:
             connection.close()
 
+    def _existing_schema_version(self) -> int | None:
+        if not self.database_path.is_file() or self.database_path.stat().st_size == 0:
+            return None
+        try:
+            with sqlite3.connect(
+                f"file:{self.database_path}?mode=ro", uri=True, timeout=10.0
+            ) as connection:
+                table = connection.execute(
+                    "SELECT 1 FROM sqlite_master WHERE type='table' AND name='workspace_meta'"
+                ).fetchone()
+                if table is None:
+                    return None
+                row = connection.execute(
+                    "SELECT value FROM workspace_meta WHERE key = 'schema_version'"
+                ).fetchone()
+        except sqlite3.DatabaseError as exc:
+            raise WorkspaceStorageError(f"workspace database is invalid: {exc}") from exc
+        if row is None:
+            return None
+        try:
+            return int(row[0])
+        except (TypeError, ValueError) as exc:
+            raise WorkspaceStorageError("workspace schema version is invalid") from exc
+
+    def _pre_migration_backup(self, from_version: int) -> Path:
+        target = self.database_path.with_name(
+            f"{self.database_path.name}.pre-migration-v{from_version}-to-v{SCHEMA_VERSION}.bak"
+        )
+        if target.exists():
+            return target
+        temporary = target.with_suffix(target.suffix + ".tmp")
+        temporary.unlink(missing_ok=True)
+        try:
+            with sqlite3.connect(
+                f"file:{self.database_path}?mode=ro", uri=True, timeout=10.0
+            ) as source:
+                destination = sqlite3.connect(temporary)
+                try:
+                    source.backup(destination)
+                    destination.commit()
+                finally:
+                    destination.close()
+            with sqlite3.connect(f"file:{temporary}?mode=ro", uri=True) as candidate:
+                check = candidate.execute("PRAGMA integrity_check").fetchone()
+                if check is None or check[0] != "ok":
+                    raise WorkspaceStorageError("pre-migration backup failed integrity check")
+            os.replace(temporary, target)
+        except Exception:
+            temporary.unlink(missing_ok=True)
+            raise
+        return target
+
     def initialize(self) -> None:
+        current_version = self._existing_schema_version()
+        if current_version is not None and current_version > SCHEMA_VERSION:
+            raise WorkspaceStorageError(
+                "workspace schema is newer than this Shadowseed installation"
+            )
+        if current_version is not None and current_version < SCHEMA_VERSION:
+            if current_version != 1:
+                raise WorkspaceStorageError(
+                    f"no migration path from workspace schema {current_version} "
+                    f"to {SCHEMA_VERSION}"
+                )
+            self._pre_migration_backup(current_version)
+
         with self._connect() as connection:
             try:
                 with connection:
-                    for statement in DDL:
-                        connection.execute(statement)
-                    current = connection.execute(
-                        "SELECT value FROM workspace_meta WHERE key = 'schema_version'"
-                    ).fetchone()
-                    if current is None:
-                        connection.execute(
-                            "INSERT INTO workspace_meta(key, value) VALUES('schema_version', ?)",
-                            (str(SCHEMA_VERSION),),
-                        )
-                    elif int(current["value"]) > SCHEMA_VERSION:
-                        raise WorkspaceStorageError(
-                            "workspace schema is newer than this Shadowseed installation"
-                        )
-                    elif int(current["value"]) < SCHEMA_VERSION:
-                        self._migrate(connection, int(current["value"]))
+                    if current_version == 1:
+                        self._migrate(connection, current_version)
+                    else:
+                        for statement in DDL:
+                            connection.execute(statement)
+                        current = connection.execute(
+                            "SELECT value FROM workspace_meta WHERE key = 'schema_version'"
+                        ).fetchone()
+                        if current is None:
+                            connection.execute(
+                                "INSERT INTO workspace_meta(key, value) "
+                                "VALUES('schema_version', ?)",
+                                (str(SCHEMA_VERSION),),
+                            )
+                        elif int(current["value"]) != SCHEMA_VERSION:
+                            raise WorkspaceStorageError(
+                                "workspace schema changed during initialization"
+                            )
+                    check = connection.execute("PRAGMA integrity_check").fetchone()
+                    if check is None or check[0] != "ok":
+                        raise WorkspaceStorageError("workspace database failed integrity check")
             except sqlite3.DatabaseError as exc:
                 raise WorkspaceStorageError(f"workspace database is invalid: {exc}") from exc
 
     def _migrate(self, connection: sqlite3.Connection, from_version: int) -> None:
-        if from_version != SCHEMA_VERSION:
+        if from_version != 1 or SCHEMA_VERSION != 2:
             raise WorkspaceStorageError(
                 f"no migration path from workspace schema {from_version} to {SCHEMA_VERSION}"
             )
+        for statement in MIGRATION_1_TO_2:
+            connection.execute(statement)
+        connection.execute(
+            "UPDATE workspace_meta SET value = ? WHERE key = 'schema_version'",
+            (str(SCHEMA_VERSION),),
+        )
 
     def schema_version(self) -> int:
         self.initialize()
@@ -293,6 +378,7 @@ class SQLiteWorkspaceRepository:
                     "turns",
                     "seeds",
                     "audit_events",
+                    "production_ledger",
                     "tester_feedback",
                 )
             }
@@ -323,10 +409,13 @@ class SQLiteWorkspaceRepository:
                 row = connection.execute(
                     "SELECT value FROM workspace_meta WHERE key = 'schema_version'"
                 ).fetchone()
+                check = connection.execute("PRAGMA integrity_check").fetchone()
         except sqlite3.DatabaseError as exc:
             raise WorkspaceStorageError(f"backup is not a valid workspace database: {exc}") from exc
         if row is None or int(row[0]) > SCHEMA_VERSION:
             raise WorkspaceStorageError("backup schema is missing or unsupported")
+        if check is None or check[0] != "ok":
+            raise WorkspaceStorageError("backup failed integrity check")
         self.database_path.parent.mkdir(parents=True, exist_ok=True)
         temporary = self.database_path.with_suffix(".restore.tmp")
         temporary.unlink(missing_ok=True)
@@ -339,6 +428,10 @@ class SQLiteWorkspaceRepository:
             raise
         os.replace(temporary, self.database_path)
         self.initialize()
+
+    def database_sha256(self) -> str:
+        self.initialize()
+        return _file_sha256(self.database_path)
 
     def _sync_normalized(
         self, connection: sqlite3.Connection, session_id: str, state: dict[str, Any]
