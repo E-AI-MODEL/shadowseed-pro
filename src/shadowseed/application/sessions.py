@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -159,8 +160,29 @@ class SessionService:
         """Production contradiction submission guarded before runtime mutation."""
 
         authz = self._authorize(actor, CONTRADICTION_SUBMIT)
-        result = self.falsify(session_id, seed_id)
-        return {**result, "authorization": authz}
+        replay = self.repository.authorized_request_result(
+            actor.request_id,
+            event_type=CONTRADICTION_SUBMIT,
+            session_id=session_id,
+            seed_id=seed_id,
+        )
+        if replay is not None:
+            return {**replay, "authorization": authz}
+
+        stored = self.repository.load_session(session_id)
+        session = ShadowChatSession.from_state(stored["state"])
+        result = session.falsify(seed_id)
+        persisted = self.repository.save_authorized_session(
+            session_id,
+            session.to_state(),
+            updated_at=datetime.now().isoformat(),
+            authorization=authz,
+            event_type=CONTRADICTION_SUBMIT,
+            seed_id=seed_id,
+            operation_result=result,
+            event_metadata={"action": "operator_falsification"},
+        )
+        return {**persisted, "authorization": authz}
 
     def submit_verified_evidence(
         self,
@@ -194,13 +216,58 @@ class SessionService:
         """Production evidence submission requiring trusted attributable authorization."""
 
         authz = self._authorize(actor, EVIDENCE_VERIFY)
-        result = self._submit_verified_evidence(
-            session_id,
-            seed_id,
-            source_ref=source_ref,
-            note=note,
+        normalized_source = self._normalize_source_ref(source_ref)
+        replay = self.repository.authorized_request_result(
+            actor.request_id,
+            event_type=EVIDENCE_VERIFY,
+            session_id=session_id,
+            seed_id=seed_id,
         )
-        return {**result, "authorization": authz}
+        if replay is not None:
+            return {**replay, "authorization": authz}
+
+        stored = self.repository.load_session(session_id)
+        session = ShadowChatSession.from_state(stored["state"])
+        if session.runtime_mode != "live":
+            raise ValueError("verified evidence entry is available only for live sessions")
+        result = session.submit_evidence(
+            seed_id,
+            ValidationSignal(
+                kind=SignalKind.HUMAN_FEEDBACK,
+                direction=SignalDirection.SUPPORT,
+                verified=True,
+                independent=True,
+                source_ref=normalized_source,
+                reason=note.strip() or "verified Workbench operator support",
+            ),
+        )
+        persisted = self.repository.save_authorized_session(
+            session_id,
+            session.to_state(),
+            updated_at=datetime.now().isoformat(),
+            authorization=authz,
+            event_type=EVIDENCE_VERIFY,
+            seed_id=seed_id,
+            operation_result=result,
+            event_metadata={
+                "source_ref_sha256": hashlib.sha256(
+                    normalized_source.encode("utf-8")
+                ).hexdigest(),
+                "note_sha256": hashlib.sha256(note.strip().encode("utf-8")).hexdigest(),
+                "verified": True,
+                "independent": True,
+            },
+        )
+        return {**persisted, "authorization": authz}
+
+    @staticmethod
+    def _normalize_source_ref(source_ref: str) -> str:
+        if not isinstance(source_ref, str):
+            raise ValueError("source_ref must be a string")
+        normalized_source = source_ref.strip()
+        if not normalized_source:
+            raise ValueError("source_ref must not be empty")
+        return normalized_source
 
     def _submit_verified_evidence(
         self,
@@ -210,11 +277,7 @@ class SessionService:
         source_ref: str,
         note: str,
     ) -> dict[str, Any]:
-        if not isinstance(source_ref, str):
-            raise ValueError("source_ref must be a string")
-        normalized_source = source_ref.strip()
-        if not normalized_source:
-            raise ValueError("source_ref must not be empty")
+        normalized_source = self._normalize_source_ref(source_ref)
         stored = self.repository.load_session(session_id)
         session = ShadowChatSession.from_state(stored["state"])
         if session.runtime_mode != "live":
