@@ -151,13 +151,11 @@ def main(argv: list[str] | None = None) -> int:
             run_standalone_self_test(paths.root, output_path=args.self_test_output)
             return 0
 
-        from shadowseed.workbench.app import launch_workbench
+        from shadowseed.workbench.production_local import launch_production_local_workbench
 
-        launch_workbench(
+        launch_production_local_workbench(
             paths.root,
-            host="127.0.0.1",
             port=_choose_loopback_port(args.port),
-            allow_remote=False,
             inbrowser=not args.no_browser,
         )
         return 0
