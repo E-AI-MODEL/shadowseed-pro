@@ -2,12 +2,8 @@
 
 This talks to a running Ollama server (default ``http://localhost:11434``) so
 SSL model runs can use quantized GGUF models without pulling in the heavy
-``transformers`` / ``torch`` stack. The same local API is also used by the
-Workbench to discover models that are already installed, removing manual model
-ID entry from the normal local tester path.
-
-Decoding defaults to greedy (temperature 0, fixed seed) so the same prompt
-produces the same output across runs as far as the selected model/runtime allows.
+``transformers`` / ``torch`` stack. Requests use an explicit bounded timeout
+and are never retried automatically.
 """
 
 from __future__ import annotations
@@ -19,10 +15,12 @@ import urllib.request
 from typing import Any
 
 DEFAULT_OLLAMA_HOST = "http://localhost:11434"
+DEFAULT_PROVIDER_TIMEOUT_SECONDS = 120.0
 
 
 def ollama_host() -> str:
     """Resolve the Ollama base URL from ``OLLAMA_HOST`` or the local default."""
+
     host = os.environ.get("OLLAMA_HOST", "").strip() or DEFAULT_OLLAMA_HOST
     if not host.startswith(("http://", "https://")):
         host = "http://" + host
@@ -72,17 +70,23 @@ def list_ollama_models(
 
 
 class OllamaClient:
-    """Thin wrapper around the Ollama ``/api/generate`` endpoint."""
+    """Thin wrapper around the Ollama ``/api/generate`` endpoint.
+
+    Generation performs one HTTP attempt. Failures are surfaced immediately to
+    the application, which can then preserve the pre-call persisted state.
+    """
 
     def __init__(
         self,
         model: str,
         host: str | None = None,
-        timeout: float = 600.0,
+        timeout: float = DEFAULT_PROVIDER_TIMEOUT_SECONDS,
     ) -> None:
+        if timeout <= 0:
+            raise ValueError("provider timeout must be positive")
         self.model = model
         self.host = (host or ollama_host()).rstrip("/")
-        self.timeout = timeout
+        self.timeout = float(timeout)
 
     def generate(
         self,
@@ -93,6 +97,7 @@ class OllamaClient:
         seed: int = 0,
     ) -> str:
         """Generate a completion for ``prompt`` and return the response text."""
+
         payload = {
             "model": self.model,
             "prompt": prompt,
@@ -115,7 +120,7 @@ class OllamaClient:
         except RuntimeError as exc:  # pragma: no cover - network dependent
             raise RuntimeError(
                 f"Could not generate with Ollama model {self.model!r} at {self.host}. "
-                f"Is `ollama serve` running and has the model been pulled with "
+                "Is `ollama serve` running and has the model been pulled with "
                 f"`ollama pull {self.model}`? {exc}"
             ) from exc
         return str(body.get("response", "")).strip()

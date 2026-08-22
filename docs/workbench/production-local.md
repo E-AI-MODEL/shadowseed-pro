@@ -26,7 +26,9 @@ Do not use `-p 7860:7860`, host networking, or a public reverse proxy and call t
 
 The production-local application boundary rejects oversized or unreasonable integrity-sensitive input before state mutation. Current hard limits are defined in `shadowseed.application.limits` and cover messages, evidence references/notes, feedback notes, session/model configuration and imported backups. Export ZIP verification retains its separate file-count, per-file, aggregate-size and compression-ratio limits.
 
-A limit failure is an explicit operation failure. It may not switch Gate policy, model backend, evidence semantics or persistence mode, and tests must prove authority/session state remains unchanged when a pre-commit limit fails.
+Provider generation is also bounded. OpenAI and Ollama generation requests use a 120-second timeout by default. Automatic provider retries are disabled: Ollama performs one HTTP attempt and the OpenAI SDK is constructed with `max_retries=0`. A provider timeout or failure is surfaced to the application; it may not cause the persisted session state or production ledger head to advance.
+
+A limit or provider failure is an explicit operation failure. It may not switch Gate policy, model backend, evidence semantics or persistence mode, and tests must prove authority/session state remains unchanged when a pre-commit failure occurs.
 
 ## Workspace files and deletion
 
