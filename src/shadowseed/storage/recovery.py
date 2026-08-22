@@ -20,7 +20,9 @@ from shadowseed.storage.integrity import (
     verify_chain_rows,
     write_anchor,
 )
+from shadowseed.storage.production import verify_authority_snapshot_connection
 from shadowseed.storage.schema import SCHEMA_VERSION
+from shadowseed.storage.sqlite import WorkspaceStorageError
 
 
 _MUTABLE_TABLE_COLUMNS: dict[str, tuple[str, ...]] = {
@@ -74,46 +76,58 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _close_sqlite(connection: sqlite3.Connection | None) -> None:
+    if connection is not None:
+        connection.close()
+
+
 def _read_backup(
     path: Path,
 ) -> tuple[str, dict[str, Any], dict[str, list[tuple[Any, ...]]]]:
+    source: sqlite3.Connection | None = None
+    workspace_id = ""
+    report: dict[str, Any]
+    rows: dict[str, list[tuple[Any, ...]]] = {}
     try:
-        with sqlite3.connect(f"file:{path}?mode=ro", uri=True) as source:
-            source.row_factory = sqlite3.Row
-            check = source.execute("PRAGMA integrity_check").fetchone()
-            if check is None or check[0] != "ok":
-                raise ValueError("backup failed SQLite integrity check")
-            version = source.execute(
-                "SELECT value FROM workspace_meta WHERE key='schema_version'"
-            ).fetchone()
-            if version is None or int(version[0]) != SCHEMA_VERSION:
-                raise ValueError("production restore requires a current-schema backup")
-            workspace = source.execute(
-                "SELECT value FROM workspace_meta WHERE key='workspace_id'"
-            ).fetchone()
-            if workspace is None:
-                raise ValueError("backup has no production workspace identity")
-            ledger_rows = [
-                dict(row)
-                for row in source.execute(
-                    "SELECT * FROM production_ledger ORDER BY sequence_no"
-                ).fetchall()
+        source = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+        source.row_factory = sqlite3.Row
+        check = source.execute("PRAGMA integrity_check").fetchone()
+        if check is None or check[0] != "ok":
+            raise ValueError("backup failed SQLite integrity check")
+        version = source.execute(
+            "SELECT value FROM workspace_meta WHERE key='schema_version'"
+        ).fetchone()
+        if version is None or int(version[0]) != SCHEMA_VERSION:
+            raise ValueError("production restore requires a current-schema backup")
+        workspace = source.execute(
+            "SELECT value FROM workspace_meta WHERE key='workspace_id'"
+        ).fetchone()
+        if workspace is None:
+            raise ValueError("backup has no production workspace identity")
+        workspace_id = str(workspace[0])
+        ledger_rows = [
+            dict(row)
+            for row in source.execute(
+                "SELECT * FROM production_ledger ORDER BY sequence_no"
+            ).fetchall()
+        ]
+        report = verify_chain_rows(ledger_rows)
+        if report["event_count"] == 0:
+            raise ValueError("backup has no production ledger genesis")
+        if report["workspace_id"] != workspace_id:
+            raise ValueError("backup ledger workspace identity mismatch")
+        verify_authority_snapshot_connection(source)
+        for table, columns in _MUTABLE_TABLE_COLUMNS.items():
+            projection = ", ".join(columns)
+            rows[table] = [
+                tuple(row[column] for column in columns)
+                for row in source.execute(f"SELECT {projection} FROM {table}").fetchall()
             ]
-            report = verify_chain_rows(ledger_rows)
-            if report["event_count"] == 0:
-                raise ValueError("backup has no production ledger genesis")
-            if report["workspace_id"] != workspace[0]:
-                raise ValueError("backup ledger workspace identity mismatch")
-            rows: dict[str, list[tuple[Any, ...]]] = {}
-            for table, columns in _MUTABLE_TABLE_COLUMNS.items():
-                projection = ", ".join(columns)
-                rows[table] = [
-                    tuple(row[column] for column in columns)
-                    for row in source.execute(f"SELECT {projection} FROM {table}").fetchall()
-                ]
-    except (sqlite3.DatabaseError, ValueError) as exc:
+    except (sqlite3.DatabaseError, ValueError, WorkspaceStorageError) as exc:
         raise ValueError(f"backup is not a valid production workspace: {exc}") from exc
-    return str(workspace[0]), report, rows
+    finally:
+        _close_sqlite(source)
+    return workspace_id, report, rows
 
 
 def inspect_production_backup(source: str | Path) -> dict[str, Any]:
@@ -174,6 +188,66 @@ def _auth_fields(
     if values["actor_scope_id"] != workspace_id:
         raise ValueError("recovery authorization scope does not match workspace")
     return values
+
+
+def _verify_and_seal_stage(
+    stage: Path,
+    *,
+    label: str,
+    expected_head_hash: str,
+) -> dict[str, Any]:
+    """Validate a recovery candidate completely before it can replace live state.
+
+    The stage is checked for SQLite integrity, ledger-chain integrity and mutable
+    authority snapshot consistency. It is then checkpointed out of WAL mode so the
+    replacement is a single closed main-database file on Linux, macOS and Windows.
+    """
+
+    verification: sqlite3.Connection | None = None
+    try:
+        verification = sqlite3.connect(stage, timeout=10.0)
+        verification.row_factory = sqlite3.Row
+        verification.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+        mode = verification.execute("PRAGMA journal_mode=DELETE").fetchone()
+        if mode is None or str(mode[0]).lower() != "delete":
+            raise ValueError(f"staged {label} could not leave WAL mode safely")
+        check = verification.execute("PRAGMA integrity_check").fetchone()
+        if check is None or check[0] != "ok":
+            raise ValueError(f"staged {label} failed SQLite integrity check")
+        report = verify_chain_rows(
+            [
+                dict(row)
+                for row in verification.execute(
+                    "SELECT * FROM production_ledger ORDER BY sequence_no"
+                ).fetchall()
+            ]
+        )
+        if report["head_hash"] != expected_head_hash:
+            raise ValueError(f"staged {label} ledger head is inconsistent")
+        verify_authority_snapshot_connection(verification)
+        verification.commit()
+    finally:
+        _close_sqlite(verification)
+    for suffix in ("-wal", "-shm"):
+        Path(str(stage) + suffix).unlink(missing_ok=True)
+    return report
+
+
+def _prepare_live_replacement(database_path: Path) -> None:
+    """Close WAL state cleanly before atomically replacing the live DB file."""
+
+    connection: sqlite3.Connection | None = None
+    try:
+        connection = sqlite3.connect(database_path, timeout=10.0)
+        connection.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+        mode = connection.execute("PRAGMA journal_mode=DELETE").fetchone()
+        if mode is None or str(mode[0]).lower() != "delete":
+            raise ValueError("live workspace could not leave WAL mode for restore")
+        connection.commit()
+    finally:
+        _close_sqlite(connection)
+    for suffix in ("-wal", "-shm"):
+        Path(str(database_path) + suffix).unlink(missing_ok=True)
 
 
 def import_production_backup(
@@ -239,21 +313,11 @@ def import_production_backup(
             except Exception:
                 connection.rollback()
                 raise
-        with sqlite3.connect(f"file:{stage}?mode=ro", uri=True) as verification:
-            verification.row_factory = sqlite3.Row
-            check = verification.execute("PRAGMA integrity_check").fetchone()
-            if check is None or check[0] != "ok":
-                raise ValueError("staged import failed SQLite integrity check")
-            report = verify_chain_rows(
-                [
-                    dict(row)
-                    for row in verification.execute(
-                        "SELECT * FROM production_ledger ORDER BY sequence_no"
-                    ).fetchall()
-                ]
-            )
-        if report["head_hash"] != event["event_hash"]:
-            raise ValueError("staged import ledger head is inconsistent")
+        report = _verify_and_seal_stage(
+            stage,
+            label="import",
+            expected_head_hash=str(event["event_hash"]),
+        )
         os.replace(stage, repository.database_path)
         repository._workspace_id = workspace_id
         repository._integrity_dir = integrity_path
@@ -282,6 +346,8 @@ def import_production_backup(
         }
     except Exception:
         stage.unlink(missing_ok=True)
+        for suffix in ("-wal", "-shm"):
+            Path(str(stage) + suffix).unlink(missing_ok=True)
         if not repository.database_path.exists():
             shutil.rmtree(integrity_path, ignore_errors=True)
         raise
@@ -374,23 +440,12 @@ def restore_production_backup(
             except Exception:
                 connection.rollback()
                 raise
-        with sqlite3.connect(f"file:{stage}?mode=ro", uri=True) as verification:
-            verification.row_factory = sqlite3.Row
-            check = verification.execute("PRAGMA integrity_check").fetchone()
-            if check is None or check[0] != "ok":
-                raise ValueError("staged restore failed SQLite integrity check")
-            report = verify_chain_rows(
-                [
-                    dict(row)
-                    for row in verification.execute(
-                        "SELECT * FROM production_ledger ORDER BY sequence_no"
-                    ).fetchall()
-                ]
-            )
-        if report["head_hash"] != event["event_hash"]:
-            raise ValueError("staged restore ledger head is inconsistent")
-        for suffix in ("-wal", "-shm"):
-            Path(str(repository.database_path) + suffix).unlink(missing_ok=True)
+        report = _verify_and_seal_stage(
+            stage,
+            label="restore",
+            expected_head_hash=str(event["event_hash"]),
+        )
+        _prepare_live_replacement(repository.database_path)
         os.replace(stage, repository.database_path)
         repository._advance_anchor()
         return {
@@ -404,4 +459,6 @@ def restore_production_backup(
         }
     except Exception:
         stage.unlink(missing_ok=True)
+        for suffix in ("-wal", "-shm"):
+            Path(str(stage) + suffix).unlink(missing_ok=True)
         raise
