@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from shadowseed.storage.integrity import authority_digest
-from shadowseed.storage.schema import SCHEMA_VERSION
 from shadowseed.storage.sqlite import SQLiteWorkspaceRepository, WorkspaceStorageError
 
 
