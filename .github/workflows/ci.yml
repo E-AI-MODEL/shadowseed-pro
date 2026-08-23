@@ -2,10 +2,10 @@ name: CI
 
 # CI contract (see issue #23, "Expand CI coverage"):
 #   - `test`  : Ruff lint + full pytest matrix + CLI smoke on each Python.
-#   - `production-local` : always-reporting cross-platform Workbench + Phase 4
-#                          production-local acceptance. The required `build` job
-#                          depends on this job, so path-filtered product gates
-#                          cannot be bypassed at the repository layer.
+#   - `production-local` : always-reporting cross-platform Workbench + production
+#                          acceptance. The required `build` job depends on this job,
+#                          so path-filtered product gates cannot be bypassed at the
+#                          repository layer.
 #   - `build` : locked dependency/security validation, SBOM generation, package
 #               build, exact license inclusion, clean wheel install, and installed
 #               console entry-point smoke.
@@ -93,6 +93,7 @@ jobs:
               set(
                   glob.glob("tests/test_workbench_*.py")
                   + glob.glob("tests/test_production_*_phase4.py")
+                  + glob.glob("tests/test_production_*_phase5.py")
               )
           )
           if not tests:
