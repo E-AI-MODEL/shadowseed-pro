@@ -20,12 +20,14 @@ from shadowseed.workbench.production_controller import ProductionLocalWorkbenchC
 
 def _contradicted_seed(
     controller: ProductionLocalWorkbenchController,
+    *,
+    runtime_mode: str = "live",
 ) -> tuple[str, str]:
     session_id = controller.create_session(
         title="Resolution target",
         profile_id="demo",
         backend="fixture",
-        runtime_mode="live",
+        runtime_mode=runtime_mode,
     )
     turn = controller.send_turn(session_id, "What assumption should be checked?")
     seed_id = str(turn["session"]["seeds"][0]["id"])
@@ -54,6 +56,8 @@ def test_production_resolution_requires_distinct_capability_and_persists_gate_li
     assert result["decision"] == "contradiction_resolved"
     assert result["policy_id"] == "contradiction_resolution"
     assert result["blocking_after"] is False
+    assert result["authority_version_before"] == before_seed["authority_version"]
+    assert result["authority_version_after"] == after_seed["authority_version"]
     assert result["authorization"]["capability"] == CONTRADICTION_RESOLVE
     assert result["authorization"]["scope_id"] == controller.workspace.workspace_id
     assert after_seed["blocking"] is False
@@ -76,7 +80,16 @@ def test_production_resolution_requires_distinct_capability_and_persists_gate_li
     assert row["actor_scope_id"] == controller.workspace.workspace_id
     assert row["request_id"] == result["authorization"]["request_id"]
     assert payload["operation_result"]["gate_event_id"] == result["gate_event_id"]
+    assert payload["operation_result"]["authority_version_before"] == result[
+        "authority_version_before"
+    ]
+    assert payload["operation_result"]["authority_version_after"] == result[
+        "authority_version_after"
+    ]
     assert payload["metadata"]["action"] == "contradiction_resolution"
+    assert payload["metadata"]["contradiction_ids"] == result[
+        "resolved_contradiction_ids"
+    ]
     assert payload["metadata"]["basis_sha256"] == hashlib.sha256(
         basis.encode("utf-8")
     ).hexdigest()
@@ -120,6 +133,29 @@ def test_resolution_basis_limit_fails_before_mutation(tmp_path) -> None:
             session_id,
             seed_id,
             basis="x" * (MAX_CONTRADICTION_RESOLUTION_BASIS_CHARS + 1),
+            actor=actor,
+            scope_id=controller.workspace.workspace_id,
+        )
+
+    assert controller.workspace.repository.load_session(session_id)["state"] == before_state
+    after_integrity = controller.workspace.repository.verify_production_integrity()
+    assert after_integrity["sequence_no"] == before_integrity["sequence_no"]
+    assert after_integrity["head_hash"] == before_integrity["head_hash"]
+
+
+def test_resolution_rejects_research_session_before_mutation(tmp_path) -> None:
+    controller = ProductionLocalWorkbenchController(tmp_path / "workspace")
+    session_id, seed_id = _contradicted_seed(controller, runtime_mode="evaluation")
+    before_state = controller.workspace.repository.load_session(session_id)["state"]
+    before_integrity = controller.workspace.repository.verify_production_integrity()
+    actor = controller.workspace.local_actor_context(request_id="request::research-resolution")
+
+    with pytest.raises(ValueError, match="only for live sessions"):
+        resolve_authorized_contradiction(
+            controller.workspace.repository,
+            session_id,
+            seed_id,
+            basis="research-only resolution attempt",
             actor=actor,
             scope_id=controller.workspace.workspace_id,
         )
