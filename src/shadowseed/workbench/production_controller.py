@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from shadowseed.application.auth import SESSION_MANAGE, require_capability
+from shadowseed.application.contradiction_resolution import resolve_authorized_contradiction
 from shadowseed.application.operations import OperationalEventLog
 from shadowseed.application.provider_policy import validate_production_local_backend
 from shadowseed.storage.session_deletion import delete_authorized_session
@@ -141,6 +142,45 @@ class ProductionLocalWorkbenchController(WorkbenchController):
             session_id=session_id,
             seed_id=seed_id,
             status="ok",
+        )
+        return result
+
+    def resolve_contradiction(
+        self,
+        session_id: str,
+        seed_id: str,
+        *,
+        basis: str,
+        contradiction_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Resolve a blocking contradiction through the distinct production capability."""
+
+        actor = self.workspace.local_actor_context()
+        try:
+            result = resolve_authorized_contradiction(
+                self.workspace.repository,
+                session_id,
+                seed_id,
+                basis=basis,
+                contradiction_id=contradiction_id,
+                actor=actor,
+                scope_id=self.workspace.workspace_id,
+            )
+        except Exception as exc:
+            self._emit_failure(
+                "contradiction.resolve",
+                exc,
+                session_id=session_id,
+                seed_id=seed_id,
+            )
+            raise
+        self.operations.emit(
+            "contradiction.resolve",
+            session_id=session_id,
+            seed_id=seed_id,
+            status="ok",
+            gate_decision=str(result.get("decision") or "unknown"),
+            gate_policy_id=str(result.get("policy_id") or "unknown"),
         )
         return result
 
