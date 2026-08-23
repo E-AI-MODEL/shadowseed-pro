@@ -19,6 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from shadowseed.application.error_safety import sanitize_error_text, sanitized_exception_line
 from shadowseed.application.workspace import WorkspaceService
 
 
@@ -37,18 +38,24 @@ def _choose_loopback_port(preferred: int = 7860) -> int:
 
 
 def _write_startup_error(workspace: Path, exc: BaseException) -> Path:
-    """Persist a readable startup failure because GUI bundles may have no console."""
+    """Persist a sanitized startup failure because GUI bundles may have no console."""
 
     logs = workspace / "logs"
     logs.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     path = logs / f"standalone-startup-error-{stamp}.log"
+    trace = sanitize_error_text("".join(traceback.format_exception(exc)))
     path.write_text(
         "Shadowseed standalone startup failed.\n\n"
-        f"{type(exc).__name__}: {exc}\n\n"
-        + "".join(traceback.format_exception(exc)),
+        f"{sanitized_exception_line(exc)}\n\n"
+        f"{trace}",
         encoding="utf-8",
     )
+    if os.name != "nt":
+        try:
+            path.chmod(0o600)
+        except OSError:
+            pass
     return path
 
 
@@ -165,9 +172,13 @@ def main(argv: list[str] | None = None) -> int:
             workspace = service.paths.root
             log_path = _write_startup_error(workspace, exc)
             print(f"Shadowseed failed to start. Diagnostic log: {log_path}", file=sys.stderr)
-            traceback.print_exception(type(exc), exc, exc.__traceback__, file=sys.stderr)
-        except Exception:
-            traceback.print_exc()
+            print(sanitized_exception_line(exc), file=sys.stderr)
+        except Exception as logging_exc:
+            print(
+                "Shadowseed failed to start and the sanitized diagnostic log could not be written: "
+                f"{sanitized_exception_line(logging_exc)}",
+                file=sys.stderr,
+            )
         return 1
 
 
