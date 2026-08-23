@@ -96,6 +96,8 @@ def resolve_authorized_contradiction(
 
     stored = repository.load_session(session_id)
     session = ShadowChatSession.from_state(stored["state"])
+    if session.runtime_mode != "live":
+        raise ValueError("contradiction resolution is available only for live sessions")
     seed = session.manager.get_seed(seed_id)
     authority_version_before = seed.authority_version
     selected = session.manager.open_contradictions(seed_id)
