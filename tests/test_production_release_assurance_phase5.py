@@ -17,6 +17,7 @@ def test_required_build_transitively_requires_cross_platform_production_acceptan
     assert "os: [ubuntu-latest, macos-latest, windows-latest]" in workflow
     assert 'glob.glob("tests/test_workbench_*.py")' in workflow
     assert 'glob.glob("tests/test_production_*_phase4.py")' in workflow
+    assert 'glob.glob("tests/test_production_*_phase5.py")' in workflow
     assert "build:\n    needs: [production-local]" in workflow
 
 
