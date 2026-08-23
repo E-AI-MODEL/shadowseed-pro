@@ -83,10 +83,10 @@ jobs:
       - name: Sync locked product acceptance environment
         run: uv sync --locked --extra test --extra workbench
       - name: Workbench and production-local acceptance
-        shell: python
+        shell: bash
         run: |
+          uv run --no-sync python - <<'PY'
           import glob
-          import sys
           import pytest
 
           tests = sorted(
@@ -98,6 +98,7 @@ jobs:
           if not tests:
               raise SystemExit("production-local acceptance selected no tests")
           raise SystemExit(pytest.main(["-q", *tests]))
+          PY
       - name: Production-local CLI contract
         run: uv run --no-sync python -m shadowseed.cli workbench --help
 
