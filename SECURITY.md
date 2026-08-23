@@ -37,7 +37,9 @@ The release process is exact-SHA and fail-closed. Fixes go through a protected p
 
 ## Cryptographic and platform-signing boundary
 
-Release artifacts carry exact-source provenance, per-platform manifests and SHA-256 checksums as documented in the production-local release runbook. Native Apple notarization/Developer ID signing and Windows Authenticode signing are not claimed unless a dedicated verified workflow and signing identity are added. Do not infer OS-vendor signing from GitHub's verified merge signature.
+Release artifacts carry exact-source provenance, per-platform manifests and SHA-256 checksums as documented in the production-local release runbook. The final production-local release assurance workflow additionally creates Sigstore-backed GitHub artifact attestations for every checksum-listed release subject using an immutable pinned `actions/attest` commit and verifies those attestations through GitHub's attestation policy. That is the declared cryptographic artifact-signing path for the bounded local release.
+
+Native Apple notarization/Developer ID signing and Windows Authenticode signing are not claimed unless a dedicated verified workflow and signing identity are added. Do not infer OS-vendor signing from either GitHub's verified merge signature or the Sigstore artifact attestation.
 
 ## Commercial-use boundary
 
