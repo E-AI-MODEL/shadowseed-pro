@@ -96,6 +96,15 @@ def resolve_authorized_contradiction(
 
     stored = repository.load_session(session_id)
     session = ShadowChatSession.from_state(stored["state"])
+    seed = session.manager.get_seed(seed_id)
+    authority_version_before = seed.authority_version
+    selected = session.manager.open_contradictions(seed_id)
+    if normalized_id is not None:
+        selected = [
+            record for record in selected if record.contradiction_id == normalized_id
+        ]
+    resolved_ids = [record.contradiction_id for record in selected]
+
     event = session.manager.resolve_contradiction(
         seed_id,
         basis=normalized_basis,
@@ -106,8 +115,10 @@ def resolve_authorized_contradiction(
         "gate_event_id": event.event_id,
         "decision": event.decision.value,
         "policy_id": event.policy_id,
-        "authority_version": event.authority_version,
+        "authority_version_before": authority_version_before,
+        "authority_version_after": event.authority_version,
         "blocking_after": event.contradiction_after.blocking,
+        "resolved_contradiction_ids": resolved_ids,
         "_request_fingerprint": fingerprint,
     }
     persisted = repository.save_authorized_session(
@@ -121,7 +132,7 @@ def resolve_authorized_contradiction(
         event_metadata={
             "action": "contradiction_resolution",
             "basis_sha256": hashlib.sha256(normalized_basis.encode("utf-8")).hexdigest(),
-            "contradiction_id": normalized_id,
+            "contradiction_ids": resolved_ids,
         },
     )
     persisted = _validated_replay(
