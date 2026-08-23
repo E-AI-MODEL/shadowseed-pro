@@ -21,6 +21,16 @@ def test_required_build_transitively_requires_cross_platform_production_acceptan
     assert "build:\n    needs: [production-local]" in workflow
 
 
+def test_supplementary_portability_runs_phase4_and_phase5_acceptance() -> None:
+    workflow = _text(".github/workflows/workbench-portability.yml")
+
+    assert '"tests/test_production_*_phase4.py"' in workflow
+    assert '"tests/test_production_*_phase5.py"' in workflow
+    assert "Phase 4/5 production-local adversarial acceptance" in workflow
+    assert "tests/test_production_*_phase4.py" in workflow
+    assert "tests/test_production_*_phase5.py" in workflow
+
+
 def test_release_workflow_is_bound_to_exact_main_sha_and_post_download_verification() -> None:
     workflow = _text(".github/workflows/release-workbench.yml")
 
