@@ -24,11 +24,17 @@ Do not use `-p 7860:7860`, host networking, or a public reverse proxy and call t
 
 ## Resource limits
 
-The production-local application boundary rejects oversized or unreasonable integrity-sensitive input before state mutation. Current hard limits are defined in `shadowseed.application.limits` and cover messages, evidence references/notes, feedback notes, session/model configuration and imported backups. A comparison request is structurally bounded to one additional same-model no-SSL control generation for the current turn. Export ZIP verification retains its separate file-count, per-file, aggregate-size and compression-ratio limits and rejects an invalid bundle before it is published at the requested destination.
+The production-local application boundary rejects oversized or unreasonable integrity-sensitive input before state mutation. Current hard limits are defined in `shadowseed.application.limits` and cover messages, evidence references/notes, feedback notes, contradiction-resolution basis/identity, session/model configuration and imported backups. A comparison request is structurally bounded to one additional same-model no-SSL control generation for the current turn. Export ZIP verification retains its separate file-count, per-file, aggregate-size and compression-ratio limits and rejects an invalid bundle before it is published at the requested destination.
 
 Provider generation is also bounded. OpenAI and Ollama generation requests use a 120-second timeout by default. Automatic provider retries are disabled: Ollama performs one HTTP attempt and the OpenAI SDK is constructed with `max_retries=0`. A provider timeout or failure is surfaced to the application; it may not cause the persisted session state or production ledger head to advance.
 
 A limit or provider failure is an explicit operation failure. It may not switch Gate policy, model backend, evidence semantics or persistence mode, and tests must prove authority/session state remains unchanged when a pre-commit failure occurs.
+
+## Authority-bearing contradiction resolution
+
+Submitting a contradiction and resolving one are distinct production permissions. Resolution uses `contradiction.resolve`, a trusted local `ActorContext`, a non-empty bounded resolution basis and a stable request identity. The canonical Gate performs the resolution; the application layer cannot restore weight or promotion directly.
+
+A successful resolution stores the resulting Gate event link, authority versions and resolved contradiction identities with the actor/scope/capability request metadata in the production ledger transaction. The raw resolution rationale remains session-owned content and is represented in the content-minimized ledger only by a digest. Idempotent replay cannot apply the resolution twice, and reusing the same request id with changed resolution input fails closed.
 
 ## Workspace files and deletion
 
@@ -38,9 +44,11 @@ Session deletion removes content-bearing live state while retaining only the doc
 
 No secure physical-media erasure claim is made beyond the underlying filesystem/platform.
 
-## Operational logs
+## Operational logs and errors
 
 Production-local operational JSONL logs use an explicit metadata allow-list, bounded rotation and restrictive local file permissions where supported. Raw prompts, answers, messages, seed text, evidence references/notes, credentials and arbitrary exception payloads are not accepted as structured operational fields.
+
+Credential-like environment values are also removed from production error rendering when an underlying provider or integration error includes them. Standalone startup diagnostics sanitize both the displayed error and persisted traceback text before writing the diagnostic file. This minimization does not hide the exception type or replace the normal fail-closed behavior.
 
 ## Recovery
 
