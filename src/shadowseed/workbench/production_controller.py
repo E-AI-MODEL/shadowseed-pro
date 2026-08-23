@@ -11,6 +11,7 @@ from typing import Any
 
 from shadowseed.application.auth import SESSION_MANAGE, require_capability
 from shadowseed.application.contradiction_resolution import resolve_authorized_contradiction
+from shadowseed.application.error_safety import sanitize_error_text
 from shadowseed.application.operations import OperationalEventLog
 from shadowseed.application.provider_policy import validate_production_local_backend
 from shadowseed.storage.session_deletion import delete_authorized_session
@@ -65,11 +66,20 @@ class ProductionLocalWorkbenchController(WorkbenchController):
             **fields,
         )
 
+    @staticmethod
+    def _raise_sanitized_if_needed(exc: Exception) -> None:
+        """Prevent environment credentials from escaping through product errors."""
+
+        sanitized = sanitize_error_text(exc)
+        if sanitized != str(exc):
+            raise RuntimeError(f"{type(exc).__name__}: {sanitized}") from None
+
     def create_session(self, **kwargs: Any) -> str:
         try:
             session_id = super().create_session(**kwargs)
         except Exception as exc:
             self._emit_failure("session.create", exc)
+            self._raise_sanitized_if_needed(exc)
             raise
         self.operations.emit(
             "session.create",
@@ -97,6 +107,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
             )
         except Exception as exc:
             self._emit_failure("session.delete", exc, session_id=session_id)
+            self._raise_sanitized_if_needed(exc)
             raise
         self.operations.emit("session.delete", session_id=session_id, status="ok")
         return {**result, "authorization": authorization}
@@ -118,6 +129,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
             )
         except Exception as exc:
             self._emit_failure("session.turn", exc, session_id=session_id)
+            self._raise_sanitized_if_needed(exc)
             raise
         self.operations.emit(
             "session.turn",
@@ -136,6 +148,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
                 session_id=session_id,
                 seed_id=seed_id,
             )
+            self._raise_sanitized_if_needed(exc)
             raise
         self.operations.emit(
             "contradiction.submit",
@@ -173,6 +186,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
                 session_id=session_id,
                 seed_id=seed_id,
             )
+            self._raise_sanitized_if_needed(exc)
             raise
         self.operations.emit(
             "contradiction.resolve",
@@ -208,6 +222,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
                 session_id=session_id,
                 seed_id=seed_id,
             )
+            self._raise_sanitized_if_needed(exc)
             raise
         self.operations.emit(
             "evidence.verify",
@@ -224,6 +239,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
             result = super().export_report(session_id, destination)
         except Exception as exc:
             self._emit_failure("export.report", exc, session_id=session_id)
+            self._raise_sanitized_if_needed(exc)
             raise
         self.operations.emit("export.report", session_id=session_id, status="ok")
         return result
@@ -233,6 +249,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
             result = super().export_support_bundle(session_id, destination)
         except Exception as exc:
             self._emit_failure("export.support", exc, session_id=session_id)
+            self._raise_sanitized_if_needed(exc)
             raise
         self.operations.emit("export.support", session_id=session_id, status="ok")
         return result
