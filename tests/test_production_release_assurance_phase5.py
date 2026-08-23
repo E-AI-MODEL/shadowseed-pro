@@ -33,9 +33,23 @@ def test_release_workflow_is_bound_to_exact_main_sha_and_post_download_verificat
     assert 'test "$(git rev-list -n 1 "$RELEASE_TAG")" = "$RELEASE_SHA"' in workflow
 
 
+def test_production_release_assurance_signs_and_reverifies_published_subjects() -> None:
+    workflow = _text(".github/workflows/production-release-assurance.yml")
+
+    assert "id-token: write" in workflow
+    assert "attestations: write" in workflow
+    assert "actions/attest@508db95dd578ae2727ebd6217d5ba78e4fbda05d" in workflow
+    assert "subject-checksums: verified-release/SHA256SUMS" in workflow
+    assert 'test "$(git rev-parse origin/main)" = "$release_sha"' in workflow
+    assert 'gh attestation verify "verified-release/$filename"' in workflow
+    assert "--signer-workflow" in workflow
+    assert 'test "$(git rev-parse origin/main)" = "$RELEASE_SHA"' in workflow
+
+
 def test_release_runbook_keeps_native_signing_claims_explicitly_bounded() -> None:
     runbook = _text("docs/operations/production-local-release.md")
 
+    assert "Sigstore-backed GitHub artifact attestation" in runbook
     assert "Native Apple notarization" in runbook
     assert "Windows Authenticode signing are **not claimed**" in runbook
     assert "at least 24 hours" in runbook
