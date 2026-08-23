@@ -38,6 +38,24 @@ class WorkspacePaths:
     logs: Path
 
 
+class WorkspaceEraseError(RuntimeError):
+    """Raised after an erase attempt when one or more managed components remain."""
+
+    def __init__(
+        self,
+        failed_components: dict[str, str],
+        *,
+        component_status: dict[str, str],
+    ) -> None:
+        self.failed_components = dict(failed_components)
+        self.component_status = dict(component_status)
+        summary = ", ".join(
+            f"{name} ({error_type})"
+            for name, error_type in sorted(self.failed_components.items())
+        )
+        super().__init__(f"workspace erase incomplete; could not delete: {summary}")
+
+
 def workspace_paths(root: str | Path | None = None) -> WorkspacePaths:
     resolved = Path(root or "~/.shadowseed").expanduser().resolve()
     return WorkspacePaths(
@@ -181,7 +199,7 @@ class WorkspaceService:
         )
         try:
             result = self.repository.backup_to(target)
-        except BaseException as exc:
+        except Exception as exc:
             self._operation_log().emit(
                 "workspace.backup",
                 workspace_id=self._read_workspace_id(),
@@ -224,7 +242,7 @@ class WorkspaceService:
                     integrity_dir=self._integrity_dir(workspace_id),
                     authorization=authorization,
                 )
-            except BaseException as exc:
+            except Exception as exc:
                 self._operation_log().emit(
                     "workspace.import",
                     workspace_id=workspace_id,
@@ -255,7 +273,7 @@ class WorkspaceService:
                 source_path,
                 authorization=authorization,
             )
-        except BaseException as exc:
+        except Exception as exc:
             self._operation_log().emit(
                 "workspace.restore",
                 workspace_id=workspace_id,
@@ -271,7 +289,7 @@ class WorkspaceService:
         )
         return result
 
-    def delete(self) -> None:
+    def delete(self) -> dict[str, object]:
         root = self.paths.root
         home = Path.home().resolve()
         protected = {Path(root.anchor).resolve(), home, home.parent.resolve()}
@@ -282,16 +300,55 @@ class WorkspaceService:
             raise ValueError(
                 f"refusing to delete a directory that is not a Shadowseed workspace: {root}"
             )
+
+        failures: dict[str, str] = {}
+        component_status = {
+            "workspace": "absent" if not root.exists() else "pending",
+            "integrity_material": "not_present",
+        }
         integrity_dir: Path | None = None
         if self.paths.identity.is_file():
-            integrity_dir = self._integrity_dir(self._read_workspace_id())
-        if root.exists():
-            shutil.rmtree(root)
-        if integrity_dir is not None and integrity_dir.exists():
-            shutil.rmtree(integrity_dir)
-            location_dir = integrity_dir.parent
             try:
-                location_dir.rmdir()
-                location_dir.parent.rmdir()
-            except OSError:
-                pass
+                integrity_dir = self._integrity_dir(self._read_workspace_id())
+                component_status["integrity_material"] = (
+                    "pending" if integrity_dir.exists() else "not_present"
+                )
+            except Exception as exc:
+                failures["integrity_material"] = type(exc).__name__
+                component_status["integrity_material"] = "unresolved"
+        elif root.exists():
+            failures["integrity_material"] = "WorkspaceIdentityMissing"
+            component_status["integrity_material"] = "unresolved"
+
+        if root.exists():
+            try:
+                shutil.rmtree(root)
+                component_status["workspace"] = "deleted"
+            except Exception as exc:
+                failures["workspace"] = type(exc).__name__
+                component_status["workspace"] = "remaining"
+
+        if integrity_dir is not None and integrity_dir.exists():
+            try:
+                shutil.rmtree(integrity_dir)
+                component_status["integrity_material"] = "deleted"
+                location_dir = integrity_dir.parent
+                try:
+                    location_dir.rmdir()
+                    location_dir.parent.rmdir()
+                except OSError:
+                    pass
+            except Exception as exc:
+                failures["integrity_material"] = type(exc).__name__
+                component_status["integrity_material"] = "remaining"
+
+        if failures:
+            raise WorkspaceEraseError(
+                failures,
+                component_status=component_status,
+            )
+        return {
+            "deleted": True,
+            "components": component_status,
+            "independent_backups_and_exports_untouched": True,
+        }

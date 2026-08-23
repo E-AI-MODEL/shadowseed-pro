@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 from pathlib import Path
 
 import pytest
@@ -14,7 +15,7 @@ from shadowseed.application.limits import (
     validate_evidence,
     validate_message,
 )
-from shadowseed.application.workspace import WorkspaceService
+from shadowseed.application.workspace import WorkspaceEraseError, WorkspaceService
 from shadowseed.workbench.controller import WorkbenchController
 
 
@@ -125,8 +126,40 @@ def test_full_workspace_erase_removes_live_state_but_not_external_backup(tmp_pat
     assert integrity_dir.exists()
     assert backup.exists()
 
-    service.delete()
+    result = service.delete()
 
+    assert result["deleted"] is True
+    assert result["components"]["workspace"] == "deleted"
+    assert result["components"]["integrity_material"] == "deleted"
+    assert result["independent_backups_and_exports_untouched"] is True
     assert not root.exists()
     assert not integrity_dir.exists()
     assert backup.exists()
+
+
+def test_full_workspace_erase_reports_incomplete_integrity_cleanup(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    root = tmp_path / "workspace"
+    service = WorkspaceService(root)
+    service.initialize()
+    integrity_dir = service._integrity_dir(service.workspace_id)
+    original_rmtree = shutil.rmtree
+
+    def _selective_rmtree(path, *args, **kwargs):
+        candidate = Path(path).resolve()
+        if candidate == integrity_dir.resolve():
+            raise PermissionError("simulated protected-material cleanup failure")
+        return original_rmtree(path, *args, **kwargs)
+
+    monkeypatch.setattr(shutil, "rmtree", _selective_rmtree)
+
+    with pytest.raises(WorkspaceEraseError, match="integrity_material") as caught:
+        service.delete()
+
+    assert caught.value.failed_components == {"integrity_material": "PermissionError"}
+    assert caught.value.component_status["workspace"] == "deleted"
+    assert caught.value.component_status["integrity_material"] == "remaining"
+    assert not root.exists()
+    assert integrity_dir.exists()

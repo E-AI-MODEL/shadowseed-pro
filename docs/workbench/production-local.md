@@ -24,7 +24,7 @@ Do not use `-p 7860:7860`, host networking, or a public reverse proxy and call t
 
 ## Resource limits
 
-The production-local application boundary rejects oversized or unreasonable integrity-sensitive input before state mutation. Current hard limits are defined in `shadowseed.application.limits` and cover messages, evidence references/notes, feedback notes, session/model configuration and imported backups. Export ZIP verification retains its separate file-count, per-file, aggregate-size and compression-ratio limits.
+The production-local application boundary rejects oversized or unreasonable integrity-sensitive input before state mutation. Current hard limits are defined in `shadowseed.application.limits` and cover messages, evidence references/notes, feedback notes, session/model configuration and imported backups. A comparison request is structurally bounded to one additional same-model no-SSL control generation for the current turn. Export ZIP verification retains its separate file-count, per-file, aggregate-size and compression-ratio limits and rejects an invalid bundle before it is published at the requested destination.
 
 Provider generation is also bounded. OpenAI and Ollama generation requests use a 120-second timeout by default. Automatic provider retries are disabled: Ollama performs one HTTP attempt and the OpenAI SDK is constructed with `max_retries=0`. A provider timeout or failure is surfaced to the application; it may not cause the persisted session state or production ledger head to advance.
 
@@ -34,7 +34,7 @@ A limit or provider failure is an explicit operation failure. It may not switch 
 
 On POSIX hosts Shadowseed restricts product-managed workspace directories to owner-only access (`0700`) and primary local files to owner read/write (`0600`) where supported. Windows uses the current user/ACL security boundary rather than pretending POSIX mode bits provide the same guarantee.
 
-Session deletion removes content-bearing live state while retaining only the documented content-minimized ledger continuity/tombstone. Full workspace erase removes the live workspace and its workspace-specific protected integrity material. Independently created backups and exports are separate copies and remain untouched until explicitly deleted.
+Session deletion removes content-bearing live state while retaining only the documented content-minimized ledger continuity/tombstone. Full workspace erase attempts both the live workspace and its workspace-specific protected integrity material. A successful erase returns explicit per-component status. If any managed component cannot be removed, the erase raises `WorkspaceEraseError` naming the incomplete component instead of reporting success. Independently created backups and exports are separate copies and remain untouched until explicitly deleted.
 
 No secure physical-media erasure claim is made beyond the underlying filesystem/platform.
 
