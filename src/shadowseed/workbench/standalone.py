@@ -73,14 +73,14 @@ def run_standalone_self_test(
     *,
     output_path: str | Path | None = None,
 ) -> dict[str, Any]:
-    """Exercise the installed product surface without opening a browser/server."""
+    """Exercise the installed production-local product surface without a server."""
 
     from shadowseed.workbench.app import build_app
-    from shadowseed.workbench.controller import WorkbenchController
+    from shadowseed.workbench.production_controller import ProductionLocalWorkbenchController
 
     service = WorkspaceService(workspace)
     paths = service.initialize()
-    controller = WorkbenchController(paths.root)
+    controller = ProductionLocalWorkbenchController(paths.root)
     session_id = controller.create_session(
         title="Standalone self-test",
         profile_id="demo",
@@ -117,6 +117,7 @@ def run_standalone_self_test(
         "comparison_generated": True,
         "report_verified": True,
         "support_verified": True,
+        "production_local_controller": True,
         "workspace": str(paths.root),
     }
     destination = Path(output_path) if output_path else paths.exports / "standalone-self-test.json"
@@ -151,13 +152,11 @@ def main(argv: list[str] | None = None) -> int:
             run_standalone_self_test(paths.root, output_path=args.self_test_output)
             return 0
 
-        from shadowseed.workbench.app import launch_workbench
+        from shadowseed.workbench.production_local import launch_production_local_workbench
 
-        launch_workbench(
+        launch_production_local_workbench(
             paths.root,
-            host="127.0.0.1",
             port=_choose_loopback_port(args.port),
-            allow_remote=False,
             inbrowser=not args.no_browser,
         )
         return 0

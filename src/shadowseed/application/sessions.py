@@ -14,6 +14,14 @@ from shadowseed.application.auth import (
     ActorContext,
     require_capability,
 )
+from shadowseed.application.limits import (
+    validate_evidence,
+    validate_feedback_note,
+    validate_message,
+    validate_model_id,
+    validate_session_config,
+    validate_session_title,
+)
 from shadowseed.application.models import SessionConfig, SessionSummary, TesterFeedback
 from shadowseed.application.profiles import get_profile
 from shadowseed.chat import ShadowChatSession
@@ -42,14 +50,20 @@ class SessionService:
         backend: str | None = None,
         model_id: str | None = None,
     ) -> str:
+        normalized_title = validate_session_title(title)
+        normalized_model_id = validate_model_id(model_id)
         profile = get_profile(profile_id)
-        resolved = profile.apply(config, backend=backend, model_id=model_id)
+        resolved = profile.apply(config, backend=backend, model_id=normalized_model_id)
+        validate_session_config(
+            max_seeds_per_turn=resolved.max_seeds_per_turn,
+            max_new_tokens=resolved.max_new_tokens,
+        )
         session = ShadowChatSession(**resolved.to_dict())
         session_id = f"session::{uuid4()}"
         now = datetime.now().isoformat()
         self.repository.create_session(
             session_id=session_id,
-            title=title.strip() or "Untitled session",
+            title=normalized_title or "Untitled session",
             profile_id=profile_id,
             config=resolved.to_dict(),
             state=session.to_state(),
@@ -88,9 +102,9 @@ class SessionService:
         *,
         compare_without_ssl: bool = False,
     ) -> dict[str, Any]:
-        if not question or not question.strip():
-            raise ValueError("question must not be empty")
-        normalized_question = question.strip()
+        # Validate before loading runtime state or calling a provider so a rejected
+        # message cannot partially mutate the session or consume an expensive call.
+        normalized_question = validate_message(question)
         stored = self.repository.load_session(session_id)
         session = ShadowChatSession.from_state(stored["state"])
 
@@ -197,11 +211,12 @@ class SessionService:
 
         if not operator_verified:
             raise ValueError("operator verification must be explicitly confirmed")
+        normalized_source, normalized_note = validate_evidence(source_ref, note)
         return self._submit_verified_evidence(
             session_id,
             seed_id,
-            source_ref=source_ref,
-            note=note,
+            source_ref=normalized_source,
+            note=normalized_note,
         )
 
     @staticmethod
@@ -217,7 +232,7 @@ class SessionService:
                 session_id,
                 seed_id,
                 source_ref,
-                note.strip(),
+                note,
             )
         )
         return hashlib.sha256(material.encode("utf-8")).hexdigest()
@@ -267,13 +282,15 @@ class SessionService:
     ) -> dict[str, Any]:
         """Production evidence submission requiring trusted attributable authorization."""
 
+        # Actor authorization and resource validation both happen before runtime
+        # mutation. Neither check substitutes for the Gate's evidence decision.
         authz = self._authorize(actor, EVIDENCE_VERIFY)
-        normalized_source = self._normalize_source_ref(source_ref)
+        normalized_source, normalized_note = validate_evidence(source_ref, note)
         request_fingerprint = self._evidence_request_fingerprint(
             session_id,
             seed_id,
             normalized_source,
-            note,
+            normalized_note,
         )
         replay = self.repository.authorized_request_result(
             actor.request_id,
@@ -299,7 +316,7 @@ class SessionService:
                 verified=True,
                 independent=True,
                 source_ref=normalized_source,
-                reason=note.strip() or "verified Workbench operator support",
+                reason=normalized_note or "verified Workbench operator support",
             ),
         )
         persisted = self.repository.save_authorized_session(
@@ -317,7 +334,7 @@ class SessionService:
                 "source_ref_sha256": hashlib.sha256(
                     normalized_source.encode("utf-8")
                 ).hexdigest(),
-                "note_sha256": hashlib.sha256(note.strip().encode("utf-8")).hexdigest(),
+                "note_sha256": hashlib.sha256(normalized_note.encode("utf-8")).hexdigest(),
                 "verified": True,
                 "independent": True,
             },
@@ -339,11 +356,7 @@ class SessionService:
 
     @staticmethod
     def _normalize_source_ref(source_ref: str) -> str:
-        if not isinstance(source_ref, str):
-            raise ValueError("source_ref must be a string")
-        normalized_source = source_ref.strip()
-        if not normalized_source:
-            raise ValueError("source_ref must not be empty")
+        normalized_source, _ = validate_evidence(source_ref, "")
         return normalized_source
 
     def _submit_verified_evidence(
@@ -354,7 +367,7 @@ class SessionService:
         source_ref: str,
         note: str,
     ) -> dict[str, Any]:
-        normalized_source = self._normalize_source_ref(source_ref)
+        normalized_source, normalized_note = validate_evidence(source_ref, note)
         stored = self.repository.load_session(session_id)
         session = ShadowChatSession.from_state(stored["state"])
         if session.runtime_mode != "live":
@@ -367,7 +380,7 @@ class SessionService:
                 verified=True,
                 independent=True,
                 source_ref=normalized_source,
-                reason=note.strip() or "verified Workbench operator support",
+                reason=normalized_note or "verified Workbench operator support",
             ),
         )
         self.repository.save_session(
@@ -414,8 +427,20 @@ class SessionService:
                 "foundation release supports record_only feedback; authority-changing "
                 "feedback remains an explicit later workflow"
             )
+        normalized_note = validate_feedback_note(feedback.note)
         self.repository.load_session(feedback.session_id)
-        return self.repository.add_feedback(feedback)
+        normalized = TesterFeedback(
+            session_id=feedback.session_id,
+            turn_index=feedback.turn_index,
+            overall=feedback.overall,
+            seed_effect=feedback.seed_effect,
+            note=normalized_note,
+            action=feedback.action,
+            seed_id=feedback.seed_id,
+            created_at=feedback.created_at,
+            feedback_id=feedback.feedback_id,
+        )
+        return self.repository.add_feedback(normalized)
 
     def list_feedback(self, session_id: str) -> list[TesterFeedback]:
         return self.repository.list_feedback(session_id)

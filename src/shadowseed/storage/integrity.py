@@ -108,6 +108,21 @@ def key_id(key: bytes) -> str:
     return f"local-hmac-sha256::{hashlib.sha256(key).hexdigest()[:24]}"
 
 
+def _require_private_posix_file(path: Path, *, label: str) -> None:
+    """Reject group/other access for protected material on POSIX hosts."""
+
+    if os.name == "nt":
+        return
+    try:
+        mode = path.stat().st_mode & 0o777
+    except OSError as exc:
+        raise ValueError(f"{label} is unavailable") from exc
+    if mode & 0o077:
+        raise ValueError(
+            f"{label} permissions are too broad ({mode:o}); owner-only access is required"
+        )
+
+
 def create_integrity_key(path: Path) -> bytes:
     path.parent.mkdir(parents=True, exist_ok=True)
     try:
@@ -127,10 +142,12 @@ def create_integrity_key(path: Path) -> bytes:
     except OSError:
         pass
     os.replace(temporary, path)
+    _require_private_posix_file(path, label="protected integrity key")
     return key
 
 
 def load_integrity_key(path: Path) -> bytes:
+    _require_private_posix_file(path, label="protected integrity key")
     try:
         key = path.read_bytes()
     except OSError as exc:
@@ -161,9 +178,11 @@ def write_anchor(path: Path, state: AnchorState, key: bytes) -> None:
     except OSError:
         pass
     os.replace(temporary, path)
+    _require_private_posix_file(path, label="protected integrity anchor")
 
 
 def read_anchor(path: Path, key: bytes) -> AnchorState:
+    _require_private_posix_file(path, label="protected integrity anchor")
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
@@ -208,7 +227,6 @@ def verify_chain_rows(rows: Iterable[Mapping[str, Any]]) -> dict[str, Any]:
         if audit_epoch is None:
             audit_epoch = current_epoch
         elif current_epoch != audit_epoch:
-            # Epoch transitions are represented as events but the row carries the active epoch.
             audit_epoch = current_epoch
         stored_hash = str(row.pop("event_hash"))
         computed_hash = event_digest(row)

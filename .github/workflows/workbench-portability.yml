@@ -3,11 +3,14 @@ name: Workbench Portability
 on:
   pull_request:
     paths:
+      - "src/shadowseed/adapters/**"
       - "src/shadowseed/application/**"
+      - "src/shadowseed/storage/**"
       - "src/shadowseed/workbench/**"
       - "src/shadowseed/cli.py"
       - "src/shadowseed/cli_dispatch.py"
       - "tests/test_workbench_*.py"
+      - "tests/test_production_*_phase4.py"
       - "pyproject.toml"
       - "uv.lock"
       - "Dockerfile.workbench"
@@ -15,11 +18,14 @@ on:
   push:
     branches: [main]
     paths:
+      - "src/shadowseed/adapters/**"
       - "src/shadowseed/application/**"
+      - "src/shadowseed/storage/**"
       - "src/shadowseed/workbench/**"
       - "src/shadowseed/cli.py"
       - "src/shadowseed/cli_dispatch.py"
       - "tests/test_workbench_*.py"
+      - "tests/test_production_*_phase4.py"
       - "pyproject.toml"
       - "uv.lock"
       - "Dockerfile.workbench"
@@ -47,8 +53,8 @@ jobs:
       - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
           version: "0.8.14"
-      - name: Install locked Workbench extra
-        run: uv sync --locked --extra workbench
+      - name: Install locked Workbench and test extras
+        run: uv sync --locked --extra workbench --extra test
       - name: Installed CLI contract
         run: uv run --no-sync python -m shadowseed.cli workbench --help
       - name: End-to-end fixture, exports, and headless UI
@@ -78,6 +84,9 @@ jobs:
               assert (root / "backup.sqlite").is_file()
           print("portable Workbench smoke OK")
           PY
+      - name: Phase 4 production-local adversarial acceptance
+        shell: bash
+        run: uv run --no-sync pytest -q tests/test_production_*_phase4.py
 
   docker-build:
     name: Workbench container build

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import shutil
 from dataclasses import dataclass
 from datetime import datetime
@@ -16,6 +17,8 @@ from shadowseed.application.auth import (
     ActorContext,
     require_capability,
 )
+from shadowseed.application.limits import validate_backup_file
+from shadowseed.application.operations import OperationalEventLog
 from shadowseed.storage.production import ProductionSQLiteWorkspaceRepository
 from shadowseed.storage.recovery import (
     import_production_backup,
@@ -33,6 +36,24 @@ class WorkspacePaths:
     exports: Path
     attachments: Path
     logs: Path
+
+
+class WorkspaceEraseError(RuntimeError):
+    """Raised after an erase attempt when one or more managed components remain."""
+
+    def __init__(
+        self,
+        failed_components: dict[str, str],
+        *,
+        component_status: dict[str, str],
+    ) -> None:
+        self.failed_components = dict(failed_components)
+        self.component_status = dict(component_status)
+        summary = ", ".join(
+            f"{name} ({error_type})"
+            for name, error_type in sorted(self.failed_components.items())
+        )
+        super().__init__(f"workspace erase incomplete; could not delete: {summary}")
 
 
 def workspace_paths(root: str | Path | None = None) -> WorkspacePaths:
@@ -70,6 +91,37 @@ class WorkspaceService:
         location_id = hashlib.sha256(str(self.paths.root).encode("utf-8")).hexdigest()[:20]
         return self.paths.root.parent / ".shadowseed-integrity" / location_id / identity
 
+    def _operation_log(self) -> OperationalEventLog:
+        return OperationalEventLog(self.paths.logs)
+
+    @staticmethod
+    def _restrict_path(path: Path, mode: int) -> None:
+        """Apply restrictive POSIX permissions where the platform supports them."""
+
+        if os.name == "nt" or not path.exists():
+            return
+        try:
+            path.chmod(mode)
+        except OSError:
+            return
+
+    def _apply_workspace_permissions(self) -> None:
+        for directory in (
+            self.paths.root,
+            self.paths.exports,
+            self.paths.attachments,
+            self.paths.logs,
+        ):
+            self._restrict_path(directory, 0o700)
+        for file in (
+            self.paths.config,
+            self.paths.identity,
+            self.paths.database,
+            Path(str(self.paths.database) + "-wal"),
+            Path(str(self.paths.database) + "-shm"),
+        ):
+            self._restrict_path(file, 0o600)
+
     def _initialize_structure(self) -> None:
         self.paths.root.mkdir(parents=True, exist_ok=True)
         for path in (self.paths.exports, self.paths.attachments, self.paths.logs):
@@ -82,6 +134,7 @@ class WorkspaceService:
                 'default_backend = "fixture"\n',
                 encoding="utf-8",
             )
+        self._apply_workspace_permissions()
 
     @staticmethod
     def _local_actor_for_workspace(
@@ -111,6 +164,7 @@ class WorkspaceService:
             integrity_dir=self._integrity_dir(workspace_id),
             bootstrap_actor_id=f"local-owner::{workspace_id.removeprefix('workspace::')}",
         )
+        self._apply_workspace_permissions()
         return self.paths
 
     @property
@@ -143,20 +197,31 @@ class WorkspaceService:
             self.paths.exports
             / f"workspace-backup-{datetime.now().strftime('%Y%m%d-%H%M%S')}.db"
         )
-        return self.repository.backup_to(target)
+        try:
+            result = self.repository.backup_to(target)
+        except Exception as exc:
+            self._operation_log().emit(
+                "workspace.backup",
+                workspace_id=self._read_workspace_id(),
+                status="error",
+                error_type=type(exc).__name__,
+            )
+            raise
+        self._restrict_path(result, 0o600)
+        self._operation_log().emit(
+            "workspace.backup",
+            workspace_id=self._read_workspace_id(),
+            status="ok",
+        )
+        return result
 
     def restore(self, source: str | Path) -> dict[str, object]:
-        """Run the trusted local restore/recovery boundary.
+        """Run the trusted local restore/recovery boundary with bounded input."""
 
-        Fresh-machine imports use integrity-recovery authority because the previous
-        protected anchor is unavailable. Restores into an existing workspace use the
-        narrower backup/restore capability. Neither path accepts a client-supplied
-        authorization boolean.
-        """
-
+        source_path = validate_backup_file(source)
         fresh_target = not self.paths.database.exists() and not self.paths.identity.exists()
         if fresh_target:
-            backup = inspect_production_backup(source)
+            backup = inspect_production_backup(source_path)
             workspace_id = self._validate_workspace_id(str(backup["workspace_id"]))
             actor = self._local_actor_for_workspace(
                 workspace_id,
@@ -169,16 +234,30 @@ class WorkspaceService:
             )
             self._initialize_structure()
             self.paths.identity.write_text(f"{workspace_id}\n", encoding="utf-8")
+            self._apply_workspace_permissions()
             try:
-                return import_production_backup(
+                result = import_production_backup(
                     self.repository,
-                    source,
+                    source_path,
                     integrity_dir=self._integrity_dir(workspace_id),
                     authorization=authorization,
                 )
-            except Exception:
+            except Exception as exc:
+                self._operation_log().emit(
+                    "workspace.import",
+                    workspace_id=workspace_id,
+                    status="error",
+                    error_type=type(exc).__name__,
+                )
                 self.paths.identity.unlink(missing_ok=True)
                 raise
+            self._apply_workspace_permissions()
+            self._operation_log().emit(
+                "workspace.import",
+                workspace_id=workspace_id,
+                status="ok",
+            )
+            return result
 
         self.initialize()
         workspace_id = self._read_workspace_id()
@@ -188,13 +267,29 @@ class WorkspaceService:
             scope_id=workspace_id,
             capability=WORKSPACE_BACKUP_RESTORE,
         )
-        return restore_production_backup(
-            self.repository,
-            source,
-            authorization=authorization,
+        try:
+            result = restore_production_backup(
+                self.repository,
+                source_path,
+                authorization=authorization,
+            )
+        except Exception as exc:
+            self._operation_log().emit(
+                "workspace.restore",
+                workspace_id=workspace_id,
+                status="error",
+                error_type=type(exc).__name__,
+            )
+            raise
+        self._apply_workspace_permissions()
+        self._operation_log().emit(
+            "workspace.restore",
+            workspace_id=workspace_id,
+            status="ok",
         )
+        return result
 
-    def delete(self) -> None:
+    def delete(self) -> dict[str, object]:
         root = self.paths.root
         home = Path.home().resolve()
         protected = {Path(root.anchor).resolve(), home, home.parent.resolve()}
@@ -205,16 +300,55 @@ class WorkspaceService:
             raise ValueError(
                 f"refusing to delete a directory that is not a Shadowseed workspace: {root}"
             )
+
+        failures: dict[str, str] = {}
+        component_status = {
+            "workspace": "absent" if not root.exists() else "pending",
+            "integrity_material": "not_present",
+        }
         integrity_dir: Path | None = None
         if self.paths.identity.is_file():
-            integrity_dir = self._integrity_dir(self._read_workspace_id())
-        if root.exists():
-            shutil.rmtree(root)
-        if integrity_dir is not None and integrity_dir.exists():
-            shutil.rmtree(integrity_dir)
-            location_dir = integrity_dir.parent
             try:
-                location_dir.rmdir()
-                location_dir.parent.rmdir()
-            except OSError:
-                pass
+                integrity_dir = self._integrity_dir(self._read_workspace_id())
+                component_status["integrity_material"] = (
+                    "pending" if integrity_dir.exists() else "not_present"
+                )
+            except Exception as exc:
+                failures["integrity_material"] = type(exc).__name__
+                component_status["integrity_material"] = "unresolved"
+        elif root.exists():
+            failures["integrity_material"] = "WorkspaceIdentityMissing"
+            component_status["integrity_material"] = "unresolved"
+
+        if root.exists():
+            try:
+                shutil.rmtree(root)
+                component_status["workspace"] = "deleted"
+            except Exception as exc:
+                failures["workspace"] = type(exc).__name__
+                component_status["workspace"] = "remaining"
+
+        if integrity_dir is not None and integrity_dir.exists():
+            try:
+                shutil.rmtree(integrity_dir)
+                component_status["integrity_material"] = "deleted"
+                location_dir = integrity_dir.parent
+                try:
+                    location_dir.rmdir()
+                    location_dir.parent.rmdir()
+                except OSError:
+                    pass
+            except Exception as exc:
+                failures["integrity_material"] = type(exc).__name__
+                component_status["integrity_material"] = "remaining"
+
+        if failures:
+            raise WorkspaceEraseError(
+                failures,
+                component_status=component_status,
+            )
+        return {
+            "deleted": True,
+            "components": component_status,
+            "independent_backups_and_exports_untouched": True,
+        }
