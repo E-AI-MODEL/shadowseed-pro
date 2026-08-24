@@ -21,9 +21,16 @@ def build_production_local_app(
     from shadowseed.workbench.app import _gradio, build_app
     from shadowseed.workbench.production_controller import ProductionLocalWorkbenchController
 
-    gr = _gradio()
     ctl = controller or ProductionLocalWorkbenchController(workspace)
     workbench = build_app(controller=ctl)
+
+    # Keep the generic presentation boundary usable with lightweight controller
+    # doubles and research controllers. The supported production controller always
+    # provides this distinct authority-bearing operation, so its UI must expose it.
+    if not callable(getattr(ctl, "resolve_contradiction", None)):
+        return workbench
+
+    gr = _gradio()
 
     def session_choices() -> list[tuple[str, str]]:
         return ctl.session_choices(ctl.list_sessions())
