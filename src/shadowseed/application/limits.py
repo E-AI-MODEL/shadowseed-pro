@@ -14,6 +14,8 @@ MAX_MESSAGE_CHARS = 32_000
 MAX_EVIDENCE_SOURCE_REF_CHARS = 4_096
 MAX_EVIDENCE_NOTE_CHARS = 16_000
 MAX_FEEDBACK_NOTE_CHARS = 16_000
+MAX_CONTRADICTION_RESOLUTION_BASIS_CHARS = 16_000
+MAX_CONTRADICTION_ID_CHARS = 512
 MAX_SESSION_TITLE_CHARS = 512
 MAX_MODEL_ID_CHARS = 512
 MAX_BACKUP_BYTES = 512 * 1024 * 1024
@@ -77,6 +79,27 @@ def validate_feedback_note(note: str) -> str:
         max_chars=MAX_FEEDBACK_NOTE_CHARS,
         allow_empty=True,
     )
+
+
+def validate_contradiction_resolution(
+    basis: str,
+    contradiction_id: str | None = None,
+) -> tuple[str, str | None]:
+    normalized_basis = bounded_text(
+        basis,
+        field="contradiction resolution basis",
+        max_chars=MAX_CONTRADICTION_RESOLUTION_BASIS_CHARS,
+    )
+    normalized_id = (
+        None
+        if contradiction_id is None
+        else bounded_text(
+            contradiction_id,
+            field="contradiction id",
+            max_chars=MAX_CONTRADICTION_ID_CHARS,
+        )
+    )
+    return normalized_basis, normalized_id
 
 
 def validate_session_config(*, max_seeds_per_turn: int, max_new_tokens: int) -> None:

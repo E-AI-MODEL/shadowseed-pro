@@ -85,7 +85,11 @@ def expected_authority_snapshot_from_ledger(
             candidate = payload.get("authority_digest")
             if isinstance(candidate, str):
                 digest = candidate
-        elif event_type in {"evidence.verify", "contradiction.submit"}:
+        elif event_type in {
+            "evidence.verify",
+            "contradiction.submit",
+            "contradiction.resolve",
+        }:
             runtime_commit = payload.get("runtime_commit")
             if isinstance(runtime_commit, dict):
                 candidate = runtime_commit.get("authority_digest")

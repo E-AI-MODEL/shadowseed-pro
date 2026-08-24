@@ -11,6 +11,7 @@ on:
       - "src/shadowseed/cli_dispatch.py"
       - "tests/test_workbench_*.py"
       - "tests/test_production_*_phase4.py"
+      - "tests/test_production_*_phase5.py"
       - "pyproject.toml"
       - "uv.lock"
       - "Dockerfile.workbench"
@@ -26,6 +27,7 @@ on:
       - "src/shadowseed/cli_dispatch.py"
       - "tests/test_workbench_*.py"
       - "tests/test_production_*_phase4.py"
+      - "tests/test_production_*_phase5.py"
       - "pyproject.toml"
       - "uv.lock"
       - "Dockerfile.workbench"
@@ -84,9 +86,12 @@ jobs:
               assert (root / "backup.sqlite").is_file()
           print("portable Workbench smoke OK")
           PY
-      - name: Phase 4 production-local adversarial acceptance
+      - name: Phase 4/5 production-local adversarial acceptance
         shell: bash
-        run: uv run --no-sync pytest -q tests/test_production_*_phase4.py
+        run: >-
+          uv run --no-sync pytest -q
+          tests/test_production_*_phase4.py
+          tests/test_production_*_phase5.py
 
   docker-build:
     name: Workbench container build
