@@ -1,6 +1,10 @@
 version: 2
 updates:
-  - package-ecosystem: pip
+  # The production dependency closure is resolved from `uv.lock`, and CI enforces
+  # `uv lock --check` / `uv sync --locked`. The `pip` ecosystem edits only
+  # `pyproject.toml` and leaves `uv.lock` stale, which fails that gate on every
+  # update; the `uv` ecosystem updates the manifest and the lockfile together.
+  - package-ecosystem: uv
     directory: /
     schedule:
       interval: weekly

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 try:
@@ -8,7 +9,13 @@ except ModuleNotFoundError:  # Python 3.10
     import tomli as tomllib
 
 
-DOWNLOAD_ARTIFACT_SHA = "d3f86a106a0bac45b974a628896c90dbdf5c8093"
+# The release workflow must download build artifacts through an immutably pinned
+# action. Assert the pin *shape*, not one specific revision: freezing the exact
+# SHA here makes every legitimate Action update fail this contract test, which
+# blocks the supply-chain maintenance the pin exists to support. Coverage that no
+# workflow uses a mutable ref lives in
+# `test_claim_boundaries.test_external_github_actions_are_immutable`.
+DOWNLOAD_ARTIFACT_PIN = re.compile(r"actions/download-artifact@[0-9a-f]{40}\b")
 
 
 def test_workbench_release_metadata_stays_aligned() -> None:
@@ -33,8 +40,8 @@ def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -
     assert 'test "$(git rev-parse origin/main)" = "$RELEASE_SHA"' in workflow
     assert 'release_tag="v${release_version}"' in workflow
     assert 'notes_file="docs/workbench/release-${release_version}.md"' in workflow
-    assert f"actions/download-artifact@{DOWNLOAD_ARTIFACT_SHA}" in workflow
-    assert "actions/download-artifact@v4" not in workflow
+    assert DOWNLOAD_ARTIFACT_PIN.search(workflow) is not None
+    assert not re.search(r"actions/download-artifact@v\d", workflow)
     assert "pattern: standalone-*" in workflow
     assert "PROVENANCE.json" in workflow
     assert "SBOM.cdx.json" in workflow

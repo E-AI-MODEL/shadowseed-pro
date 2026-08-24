@@ -153,6 +153,19 @@ def test_external_github_actions_are_immutable() -> None:
     assert not mutable, "mutable external Action refs:\n" + "\n".join(mutable)
 
 
+def test_dependency_updates_keep_the_lockfile_authoritative() -> None:
+    # CI resolves the production closure from `uv.lock` and gates on
+    # `uv lock --check`. The `pip` ecosystem updates only `pyproject.toml`, so
+    # every automated bump would leave the lockfile stale and fail that gate.
+    assert (ROOT / "uv.lock").is_file()
+    assert "uv lock --check" in CI
+
+    dependabot = (ROOT / ".github/dependabot.yml").read_text(encoding="utf-8")
+    ecosystems = set(re.findall(r"^\s*-?\s*package-ecosystem:\s*(\S+)", dependabot, re.M))
+
+    assert ecosystems == {"uv", "github-actions"}
+
+
 def test_release_candidate_is_refreshed_for_every_main_push() -> None:
     push_section = STANDALONE_WORKFLOW.split("  push:\n", 1)[1].split(
         "  workflow_dispatch:", 1
