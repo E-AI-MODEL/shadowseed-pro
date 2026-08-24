@@ -10,7 +10,7 @@ def _text(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
 
 
-def test_required_build_transitively_requires_cross_platform_production_acceptance() -> None:
+def test_required_build_propagates_cross_platform_production_acceptance_result() -> None:
     workflow = _text(".github/workflows/ci.yml")
 
     assert "production-local:" in workflow
@@ -18,7 +18,10 @@ def test_required_build_transitively_requires_cross_platform_production_acceptan
     assert 'glob.glob("tests/test_workbench_*.py")' in workflow
     assert 'glob.glob("tests/test_production_*_phase4.py")' in workflow
     assert 'glob.glob("tests/test_production_*_phase5.py")' in workflow
-    assert "build:\n    needs: [production-local]" in workflow
+    assert "build:\n    if: ${{ always() }}\n    needs: [production-local]" in workflow
+    assert "Require production-local acceptance success" in workflow
+    assert "PRODUCTION_LOCAL_RESULT: ${{ needs.production-local.result }}" in workflow
+    assert 'test "$PRODUCTION_LOCAL_RESULT" = "success"' in workflow
 
 
 def test_supplementary_portability_runs_phase4_and_phase5_acceptance() -> None:
@@ -44,16 +47,35 @@ def test_release_workflow_is_bound_to_exact_main_sha_and_post_download_verificat
     assert 'test "$(git rev-list -n 1 "$RELEASE_TAG")" = "$RELEASE_SHA"' in workflow
 
 
-def test_production_release_assurance_signs_and_reverifies_published_subjects() -> None:
-    workflow = _text(".github/workflows/production-release-assurance.yml")
+def test_release_workflow_attests_subject_set_before_publication() -> None:
+    workflow = _text(".github/workflows/release-workbench.yml")
 
     assert "id-token: write" in workflow
     assert "attestations: write" in workflow
-    assert "actions/attest@508db95dd578ae2727ebd6217d5ba78e4fbda05d" in workflow
-    assert "subject-checksums: verified-release/SHA256SUMS" in workflow
-    assert 'test "$(git rev-parse origin/main)" = "$release_sha"' in workflow
+    assert workflow.count("actions/attest@508db95dd578ae2727ebd6217d5ba78e4fbda05d") == 2
+    assert "subject-checksums: release-assets/SHA256SUMS" in workflow
+    assert "subject-path: release-assets/SHA256SUMS" in workflow
+    assert workflow.index("Attest pre-publication release subjects") < workflow.index(
+        "Publish GitHub prerelease and exact source tag"
+    )
+    assert workflow.index("Attest immutable checksum manifest") < workflow.index(
+        "Publish GitHub prerelease and exact source tag"
+    )
+
+
+def test_production_release_assurance_only_verifies_trusted_build_attestations() -> None:
+    workflow = _text(".github/workflows/production-release-assurance.yml")
+
+    assert "id-token: write" not in workflow
+    assert "attestations: write" not in workflow
+    assert "actions/attest@" not in workflow
+    assert "Verify checksum manifest came from trusted pre-publication build" in workflow
+    assert "gh attestation verify verified-release/SHA256SUMS" in workflow
+    assert "checksum manifest does not exactly cover release files" in workflow
+    assert "sha256sum -c SHA256SUMS" in workflow
     assert 'gh attestation verify "verified-release/$filename"' in workflow
-    assert "--signer-workflow" in workflow
+    assert "$GITHUB_REPOSITORY/.github/workflows/release-workbench.yml" in workflow
+    assert 'test "$(git rev-parse origin/main)" = "$release_sha"' in workflow
     assert 'test "$(git rev-parse origin/main)" = "$RELEASE_SHA"' in workflow
 
 
