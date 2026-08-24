@@ -4,6 +4,8 @@ Version 0.7.0 is the production-local assurance candidate built on the existing 
 
 This file does not declare `production-ready/local`. That claim remains gated by `docs/architecture/production-acceptance.md`, exact-SHA release verification, the independent assurance record, and the required unchanged candidate soak.
 
+The existing `v0.6.0` tag and release remain immutable historical artifacts. Version 0.7.0 uses a fresh tag rather than moving or reusing prior release history.
+
 ## What changed
 
 ### Production-local authorization and authority boundaries
