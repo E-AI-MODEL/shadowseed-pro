@@ -11,6 +11,28 @@ from shadowseed.application.error_safety import sanitize_error_text
 PRODUCTION_LOCAL_HOST = "127.0.0.1"
 
 
+def _blocking_seed_choices(controller: Any, session_id: str | None) -> list[tuple[str, str]]:
+    """Return only seeds that currently have an open blocking contradiction."""
+
+    if not session_id:
+        return []
+    try:
+        session_view = controller.session_view(session_id)
+        choices = controller.seed_choices(session_view)
+    except Exception:
+        return []
+
+    blocking: list[tuple[str, str]] = []
+    for label, seed_id in choices:
+        try:
+            seed_view = controller.seed_view(session_id, seed_id)
+        except Exception:
+            continue
+        if bool(seed_view.get("blocking")):
+            blocking.append((label, seed_id))
+    return blocking
+
+
 def build_production_local_app(
     workspace: str | Path | None = None,
     *,
@@ -36,12 +58,7 @@ def build_production_local_app(
         return ctl.session_choices(ctl.list_sessions())
 
     def seed_choices_for_session(session_id: str | None) -> list[tuple[str, str]]:
-        if not session_id:
-            return []
-        try:
-            return ctl.seed_choices(ctl.session_view(session_id))
-        except Exception:
-            return []
+        return _blocking_seed_choices(ctl, session_id)
 
     def refresh_sessions(current: str | None):
         choices = session_choices()
