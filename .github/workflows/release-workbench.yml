@@ -8,6 +8,8 @@ on:
 permissions:
   contents: write
   actions: read
+  id-token: write
+  attestations: write
 
 env:
   GRADIO_ANALYTICS_ENABLED: "False"
@@ -253,6 +255,7 @@ jobs:
           assert payload["comparison_generated"] is True
           assert payload["report_verified"] is True
           assert payload["support_verified"] is True
+          assert payload["production_resolution_ui"] is True
           print("installed wheel Workbench smoke OK")
           PY
 
@@ -286,6 +289,18 @@ jobs:
           test -f SBOM.cdx.json
           test -f uv.lock
           test -f LICENSE
+
+      - name: Attest pre-publication release subjects
+        if: steps.preflight.outputs.should_release == 'true'
+        uses: actions/attest@508db95dd578ae2727ebd6217d5ba78e4fbda05d # v4.2.1
+        with:
+          subject-checksums: release-assets/SHA256SUMS
+
+      - name: Attest immutable checksum manifest
+        if: steps.preflight.outputs.should_release == 'true'
+        uses: actions/attest@508db95dd578ae2727ebd6217d5ba78e4fbda05d # v4.2.1
+        with:
+          subject-path: release-assets/SHA256SUMS
 
       - name: Publish GitHub prerelease and exact source tag
         if: steps.preflight.outputs.should_release == 'true'
