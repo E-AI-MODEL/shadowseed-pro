@@ -11,6 +11,17 @@ from shadowseed.application.error_safety import sanitize_error_text
 PRODUCTION_LOCAL_HOST = "127.0.0.1"
 
 
+def _live_session_choices(controller: Any) -> list[tuple[str, str]]:
+    """Return only live sessions eligible for production contradiction resolution."""
+
+    summaries = [
+        item
+        for item in controller.list_sessions()
+        if str(item.get("runtime_mode", "evaluation")) == "live"
+    ]
+    return controller.session_choices(summaries)
+
+
 def _blocking_seed_choices(controller: Any, session_id: str | None) -> list[tuple[str, str]]:
     """Return only seeds that currently have an open blocking contradiction."""
 
@@ -55,7 +66,7 @@ def build_production_local_app(
     gr = _gradio()
 
     def session_choices() -> list[tuple[str, str]]:
-        return ctl.session_choices(ctl.list_sessions())
+        return _live_session_choices(ctl)
 
     def seed_choices_for_session(session_id: str | None) -> list[tuple[str, str]]:
         return _blocking_seed_choices(ctl, session_id)
