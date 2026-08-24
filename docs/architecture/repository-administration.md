@@ -38,6 +38,10 @@ Python dependency resolution is recorded in `uv.lock`. The resolver version is p
 
 Dependabot checks Python and GitHub Actions dependencies weekly. Update pull requests use the same protected-main process as other changes. Mutable Action tags are not accepted in repository workflows: Actions are recorded by full immutable commit SHA with a human-readable version comment. Version comments are informative only; the SHA is the executed identity.
 
+Python updates must run through Dependabot's `uv` ecosystem, not `pip`. The `pip` ecosystem edits `pyproject.toml` alone and leaves `uv.lock` stale, so the required `uv lock --check` gate rejects every such update; the `uv` ecosystem moves the manifest and the lockfile together.
+
+Repository contract tests assert that Action references are pinned to a full commit SHA, never that a particular revision is in use. Pinning to a specific SHA inside a test would make the pin block the update process that keeps it current, so the guarantee is enforced on the shape of the reference.
+
 Dependency updates are not auto-merged. They must pass the repository checks and the dependency-security scan. A security update may be prioritized, but urgency does not convert it into a break-glass event by default.
 
 The required vulnerability gate audits the dependency closure that can ship in or build the `production-ready/local` candidate: core runtime, Workbench, build tooling and standalone-build tooling. Optional vector-store extras are not silently folded into that production claim. In particular, the current Chroma extra resolves to `chromadb 1.5.9`, for which pip-audit reports `PYSEC-2026-311`; the advisory has no fixed release listed as of 2026-08-20. `vector-chroma` therefore remains outside the `production-ready/local` supported dependency surface until a non-vulnerable upstream release is available and the lock/security gate is refreshed. This is a bounded unsupported-production dependency, not an ignored passing scan.
