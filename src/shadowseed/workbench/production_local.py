@@ -35,24 +35,33 @@ def build_production_local_app(
     def session_choices() -> list[tuple[str, str]]:
         return ctl.session_choices(ctl.list_sessions())
 
+    def seed_choices_for_session(session_id: str | None) -> list[tuple[str, str]]:
+        if not session_id:
+            return []
+        try:
+            return ctl.seed_choices(ctl.session_view(session_id))
+        except Exception:
+            return []
+
     def refresh_sessions(current: str | None):
         choices = session_choices()
         valid = {item[1] for item in choices}
         selected = current if current in valid else (choices[0][1] if choices else None)
-        return gr.update(choices=choices, value=selected)
+        seed_choices = seed_choices_for_session(selected)
+        return (
+            gr.update(choices=choices, value=selected),
+            gr.update(
+                choices=seed_choices,
+                value=seed_choices[0][1] if seed_choices else None,
+            ),
+        )
 
     def refresh_seeds(session_id: str | None):
-        if not session_id:
-            return gr.update(choices=[], value=None)
-        try:
-            view = ctl.session_view(session_id)
-            choices = ctl.seed_choices(view)
-            return gr.update(
-                choices=choices,
-                value=choices[0][1] if choices else None,
-            )
-        except Exception:
-            return gr.update(choices=[], value=None)
+        choices = seed_choices_for_session(session_id)
+        return gr.update(
+            choices=choices,
+            value=choices[0][1] if choices else None,
+        )
 
     def resolve_contradiction(
         session_id: str | None,
@@ -74,6 +83,8 @@ def build_production_local_app(
             return {"error": sanitize_error_text(f"{type(exc).__name__}: {exc}")}, None, basis
 
     initial_sessions = session_choices()
+    initial_session = initial_sessions[0][1] if initial_sessions else None
+    initial_seed_choices = seed_choices_for_session(initial_session)
     with gr.Blocks(title="Production contradiction resolution") as resolution:
         gr.Markdown("## Resolve a blocking contradiction")
         gr.Markdown(
@@ -85,11 +96,15 @@ def build_production_local_app(
         with gr.Row():
             resolution_session = gr.Dropdown(
                 choices=initial_sessions,
-                value=initial_sessions[0][1] if initial_sessions else None,
+                value=initial_session,
                 label="Live chat",
             )
             refresh_button = gr.Button("Refresh chats", variant="secondary")
-        resolution_seed = gr.Dropdown(choices=[], label="Blocked shadow seed")
+        resolution_seed = gr.Dropdown(
+            choices=initial_seed_choices,
+            value=initial_seed_choices[0][1] if initial_seed_choices else None,
+            label="Blocked shadow seed",
+        )
         contradiction_id = gr.Textbox(
             label="Contradiction ID",
             placeholder="Optional: leave empty to resolve the seed's current blocking contradiction(s)",
@@ -106,7 +121,7 @@ def build_production_local_app(
         refresh_button.click(
             refresh_sessions,
             inputs=[resolution_session],
-            outputs=[resolution_session],
+            outputs=[resolution_session, resolution_seed],
         )
         resolution_session.change(
             refresh_seeds,
