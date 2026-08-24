@@ -82,8 +82,8 @@ def run_standalone_self_test(
 ) -> dict[str, Any]:
     """Exercise the installed production-local product surface without a server."""
 
-    from shadowseed.workbench.app import build_app
     from shadowseed.workbench.production_controller import ProductionLocalWorkbenchController
+    from shadowseed.workbench.production_local import build_production_local_app
 
     service = WorkspaceService(workspace)
     paths = service.initialize()
@@ -110,8 +110,8 @@ def run_standalone_self_test(
         raise RuntimeError("standalone self-test report export failed verification")
     if not controller.verify_export(support)["valid"]:
         raise RuntimeError("standalone self-test support export failed verification")
-    if build_app(controller=controller) is None:
-        raise RuntimeError("standalone self-test could not build the chat UI")
+    if build_production_local_app(controller=controller) is None:
+        raise RuntimeError("standalone self-test could not build the production-local UI")
 
     payload: dict[str, Any] = {
         "artifact": "shadowseed_standalone_self_test",
@@ -125,6 +125,7 @@ def run_standalone_self_test(
         "report_verified": True,
         "support_verified": True,
         "production_local_controller": True,
+        "production_resolution_ui": True,
         "workspace": str(paths.root),
     }
     destination = Path(output_path) if output_path else paths.exports / "standalone-self-test.json"
