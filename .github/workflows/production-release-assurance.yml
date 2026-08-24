@@ -10,8 +10,6 @@ on:
 
 permissions:
   contents: read
-  id-token: write
-  attestations: write
 
 jobs:
   assure:
@@ -36,7 +34,7 @@ jobs:
           test "$(git rev-parse origin/main)" = "$release_sha"
           gh release view "$RELEASE_TAG" >/dev/null
           echo "RELEASE_SHA=$release_sha" >> "$GITHUB_ENV"
-      - name: Download and verify published assets
+      - name: Download published assets
         shell: bash
         run: |
           set -euo pipefail
@@ -44,7 +42,6 @@ jobs:
           gh release download "$RELEASE_TAG" --dir verified-release
           cd verified-release
           test -f SHA256SUMS
-          sha256sum -c SHA256SUMS
           test -f PROVENANCE.json
           test -f SBOM.cdx.json
           test -f uv.lock
@@ -53,6 +50,48 @@ jobs:
           test "$(find . -maxdepth 1 -name 'shadowseed-workbench-*' ! -name '*.manifest.json' | wc -l)" -eq 3
           test "$(find . -maxdepth 1 -name 'shadowseed-*.whl' | wc -l)" -eq 1
           test "$(find . -maxdepth 1 -name 'shadowseed-[0-9]*.tar.gz' | wc -l)" -eq 1
+      - name: Verify checksum manifest came from trusted pre-publication build
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh attestation verify verified-release/SHA256SUMS \
+            -R "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release-workbench.yml"
+      - name: Verify checksum manifest covers every published subject
+        shell: python
+        run: |
+          from pathlib import Path
+
+          root = Path("verified-release")
+          lines = (root / "SHA256SUMS").read_text(encoding="utf-8").splitlines()
+          recorded = set()
+          for line in lines:
+              digest, filename = line.split(maxsplit=1)
+              filename = filename.strip()
+              if len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest):
+                  raise SystemExit(f"invalid SHA-256 record for {filename!r}")
+              if not filename or "/" in filename or "\\" in filename:
+                  raise SystemExit(f"invalid release filename in checksum manifest: {filename!r}")
+              if filename in recorded:
+                  raise SystemExit(f"duplicate checksum subject: {filename}")
+              recorded.add(filename)
+          actual = {
+              path.name
+              for path in root.iterdir()
+              if path.is_file() and path.name != "SHA256SUMS"
+          }
+          if recorded != actual:
+              missing = sorted(actual - recorded)
+              extra = sorted(recorded - actual)
+              raise SystemExit(
+                  f"checksum manifest does not exactly cover release files; missing={missing}, extra={extra}"
+              )
+      - name: Verify published bytes against trusted checksum manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd verified-release
+          sha256sum -c SHA256SUMS
       - name: Verify published provenance binds every standalone to the candidate
         shell: python
         run: |
@@ -74,11 +113,7 @@ jobs:
                   raise SystemExit(f"wrong source SHA in {manifest_path.name}")
               if manifest.get("self_test", {}).get("frozen") is not True:
                   raise SystemExit(f"missing frozen self-test evidence in {manifest_path.name}")
-      - name: Generate Sigstore build-provenance attestation for checksum subjects
-        uses: actions/attest@508db95dd578ae2727ebd6217d5ba78e4fbda05d # v4.2.1
-        with:
-          subject-checksums: verified-release/SHA256SUMS
-      - name: Verify every signed release subject through GitHub attestation policy
+      - name: Verify every release subject was attested before publication
         shell: bash
         run: |
           set -euo pipefail
@@ -87,7 +122,7 @@ jobs:
             test -n "$filename"
             gh attestation verify "verified-release/$filename" \
               -R "$GITHUB_REPOSITORY" \
-              --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/production-release-assurance.yml"
+              --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release-workbench.yml"
           done < verified-release/SHA256SUMS
       - name: Recheck main after assurance
         shell: bash
