@@ -22,7 +22,7 @@ def test_workbench_release_metadata_stays_aligned() -> None:
     project = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))["project"]
     version = project["version"]
 
-    assert version == "0.6.0"
+    assert version == "0.7.0"
     assert Path(f"docs/workbench/release-{version}.md").is_file()
     assert Path("LICENSE").is_file()
     assert project["license"]["file"] == "LICENSE"

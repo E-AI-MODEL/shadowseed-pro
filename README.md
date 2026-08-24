@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/E-AI-MODEL/shadowseed-pro/actions/workflows/ci.yml"><img alt="Continuous integration" src="https://github.com/E-AI-MODEL/shadowseed-pro/actions/workflows/ci.yml/badge.svg"></a>
-  <img alt="Repository version 0.6.0" src="https://img.shields.io/badge/repository-0.6.0-2f6f5e">
+  <img alt="Repository version 0.7.0" src="https://img.shields.io/badge/repository-0.7.0-2f6f5e">
   <img alt="Python 3.10 or higher" src="https://img.shields.io/badge/Python-3.10%2B-3776AB">
   <img alt="Research status research ready" src="https://img.shields.io/badge/status-research--ready-c88719">
   <img alt="PolyForm Noncommercial 1.0.0" src="https://img.shields.io/badge/license-PolyForm_Noncommercial_1.0.0-5b4b8a">
@@ -17,7 +17,7 @@
 Shadow Seed Learning (SSL) records **bounded epistemic candidates for investigation**, not hidden truth. A candidate may be a suspected gap, doubt, missing relation or boundary, dependency, unstated assumption, alternative hypothesis, contradiction to investigate, or relevant what-if direction. A new seed starts powerless. It may be remembered, recur, be contradicted, receive independently verified support, and only influence a later answer after the configured Validation Gate and a current point-of-use authorization both allow it.
 
 > [!IMPORTANT]
-> **Shadowseed Pro is research-ready, not production-ready.** Source version 0.6.0 adds noncommercial research access and an evidence-backed paired efficacy protocol. It does not establish general answer-quality improvement, universal missing-information detection, semantic truth, hostile-network safety, or high-impact production readiness.
+> **Shadowseed Pro is research-ready, not yet production-ready.** Source version 0.7.0 is the production-local assurance candidate. It does not establish general answer-quality improvement, universal missing-information detection, semantic truth, hostile-network safety, hosted/multi-user readiness, or a completed `production-ready/local` claim before the exact-SHA release assurance and soak gates finish.
 
 > [!NOTE]
 > Repository states and releases that include [`LICENSE`](LICENSE) are source-available under **PolyForm Noncommercial License 1.0.0**. Noncommercial research, experiment, testing, modification, and distribution are permitted according to those terms. Commercial use requires separate permission. This is not an OSI open-source license. Historical artifacts keep the rights terms distributed with those versions; the new license is not retroactive.
@@ -204,12 +204,12 @@ A textual difference is not automatically an SSL effect. Attribute an observed d
 
 - Generated candidate quality is not guaranteed by normalization or by the detector being fluent.
 - A researcher/operator marking a source as verified is the external trust anchor; the runner validates signal shape and provenance, not source truth.
-- The repository does not provide durable **append-only, tamper-evident storage**; current audit records are useful for replay and inspection but are not an external immutable ledger.
+- The production-local repository provides a durable tamper-evident authority ledger with protected-anchor integrity checks and audited recovery; it is not an external immutable ledger.
 - Point-of-use checks are specific eligibility checks, not universal safety certification.
 - A support dataset is structured observational data, not automatic proof of benefit.
 - Fixture runs demonstrate mechanics, not real-model quality.
 - Platform packaging and checksum provenance do not establish model efficacy.
-- Hostile-network authentication, managed multi-user tenancy, operational incident handling, formal retention/deletion controls, and high-impact deployment assurance remain outside the current product claim.
+- Hostile-network authentication, managed multi-user tenancy, and hosted-service operational assurance remain outside the production-local claim; local lifecycle/deletion and recovery controls are covered by the production-local contract.
 
 ## Repository map
 
