@@ -1,0 +1,97 @@
+name: Production Release Assurance
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Exact published release tag to assure
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  assure:
+    name: exact-SHA release attestation
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_TAG: ${{ inputs.release_tag }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.release_tag }}
+          fetch-depth: 0
+      - name: Bind assurance to current protected main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --tags --force
+          release_sha="$(git rev-list -n 1 "$RELEASE_TAG")"
+          test -n "$release_sha"
+          test "$(git rev-parse HEAD)" = "$release_sha"
+          test "$(git rev-parse origin/main)" = "$release_sha"
+          gh release view "$RELEASE_TAG" >/dev/null
+          echo "RELEASE_SHA=$release_sha" >> "$GITHUB_ENV"
+      - name: Download and verify published assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir verified-release
+          gh release download "$RELEASE_TAG" --dir verified-release
+          cd verified-release
+          test -f SHA256SUMS
+          sha256sum -c SHA256SUMS
+          test -f PROVENANCE.json
+          test -f SBOM.cdx.json
+          test -f uv.lock
+          test -f LICENSE
+          test "$(find . -maxdepth 1 -name '*.manifest.json' | wc -l)" -eq 3
+          test "$(find . -maxdepth 1 -name 'shadowseed-workbench-*' ! -name '*.manifest.json' | wc -l)" -eq 3
+          test "$(find . -maxdepth 1 -name 'shadowseed-*.whl' | wc -l)" -eq 1
+          test "$(find . -maxdepth 1 -name 'shadowseed-[0-9]*.tar.gz' | wc -l)" -eq 1
+      - name: Verify published provenance binds every standalone to the candidate
+        shell: python
+        run: |
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path("verified-release")
+          release_sha = os.environ["RELEASE_SHA"]
+          provenance = json.loads((root / "PROVENANCE.json").read_text(encoding="utf-8"))
+          if provenance.get("source_sha") != release_sha:
+              raise SystemExit("release provenance source SHA does not match the assured tag")
+          manifests = sorted(root.glob("*.manifest.json"))
+          if len(manifests) != 3:
+              raise SystemExit(f"expected three standalone manifests, found {len(manifests)}")
+          for manifest_path in manifests:
+              manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+              if manifest.get("source_sha") != release_sha:
+                  raise SystemExit(f"wrong source SHA in {manifest_path.name}")
+              if manifest.get("self_test", {}).get("frozen") is not True:
+                  raise SystemExit(f"missing frozen self-test evidence in {manifest_path.name}")
+      - name: Generate Sigstore build-provenance attestation for checksum subjects
+        uses: actions/attest@508db95dd578ae2727ebd6217d5ba78e4fbda05d # v4.2.1
+        with:
+          subject-checksums: verified-release/SHA256SUMS
+      - name: Verify every signed release subject through GitHub attestation policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          while read -r digest filename; do
+            test -n "$digest"
+            test -n "$filename"
+            gh attestation verify "verified-release/$filename" \
+              -R "$GITHUB_REPOSITORY" \
+              --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/production-release-assurance.yml"
+          done < verified-release/SHA256SUMS
+      - name: Recheck main after assurance
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --force
+          test "$(git rev-parse origin/main)" = "$RELEASE_SHA"
