@@ -222,6 +222,7 @@ class SQLiteWorkspaceRepository:
         self._anchor_path = self._integrity_dir / "anchor.json"
         self._key_path = self._integrity_dir / "integrity.key"
 
+        bootstrap_marker_key = "production_bootstrap_pending"
         with self._connect() as connection:
             stored_workspace = connection.execute(
                 "SELECT value FROM workspace_meta WHERE key='workspace_id'"
@@ -229,42 +230,138 @@ class SQLiteWorkspaceRepository:
             ledger_count = int(
                 connection.execute("SELECT COUNT(*) FROM production_ledger").fetchone()[0]
             )
+            bootstrap_pending = connection.execute(
+                "SELECT value FROM workspace_meta WHERE key = ?",
+                (bootstrap_marker_key,),
+            ).fetchone()
 
+        pending_workspace = (
+            None if bootstrap_pending is None else str(bootstrap_pending["value"])
+        )
         if stored_workspace is not None and stored_workspace["value"] != workspace_id:
             raise WorkspaceStorageError(
                 "workspace identity does not match the production database"
             )
+        if pending_workspace is not None and pending_workspace != workspace_id:
+            raise WorkspaceStorageError(
+                "production bootstrap marker does not match workspace identity"
+            )
 
         if ledger_count == 0:
-            if self._key_path.exists() or self._anchor_path.exists():
+            if self._anchor_path.exists():
                 raise WorkspaceStorageError(
                     "production ledger history is missing while protected integrity "
                     "material exists; explicit recovery is required"
                 )
+            if self._key_path.exists() and pending_workspace != workspace_id:
+                raise WorkspaceStorageError(
+                    "production ledger history is missing while protected integrity "
+                    "material exists; explicit recovery is required"
+                )
+            if pending_workspace is None:
+                with self._connect() as connection:
+                    try:
+                        connection.execute("BEGIN IMMEDIATE")
+                        current_count = int(
+                            connection.execute(
+                                "SELECT COUNT(*) FROM production_ledger"
+                            ).fetchone()[0]
+                        )
+                        if current_count != 0:
+                            raise WorkspaceStorageError(
+                                "production ledger changed during bootstrap"
+                            )
+                        current_pending = connection.execute(
+                            "SELECT value FROM workspace_meta WHERE key = ?",
+                            (bootstrap_marker_key,),
+                        ).fetchone()
+                        if current_pending is None:
+                            connection.execute(
+                                "INSERT INTO workspace_meta(key, value) VALUES(?, ?)",
+                                (bootstrap_marker_key, workspace_id),
+                            )
+                        elif current_pending["value"] != workspace_id:
+                            raise WorkspaceStorageError(
+                                "production bootstrap marker does not match workspace identity"
+                            )
+                        connection.commit()
+                    except Exception:
+                        connection.rollback()
+                        raise
+
             key = create_integrity_key(self._key_path)
             self._create_production_genesis(
                 workspace_id=workspace_id,
                 bootstrap_actor_id=bootstrap_actor_id,
             )
             report = self._verify_chain_only()
-            epoch = str(report["audit_epoch"])
             write_anchor(
                 self._anchor_path,
                 AnchorState(
                     workspace_id=workspace_id,
-                    audit_epoch=epoch,
+                    audit_epoch=str(report["audit_epoch"]),
                     sequence_no=int(report["sequence_no"]),
                     head_hash=str(report["head_hash"]),
                     key_id=key_id(key),
                 ),
                 key,
             )
-            return self._verify_bound_integrity(recover_anchor=False)
+            verified = self._verify_bound_integrity(recover_anchor=False)
+            with self._connect() as connection:
+                connection.execute(
+                    "DELETE FROM workspace_meta WHERE key = ? AND value = ?",
+                    (bootstrap_marker_key, workspace_id),
+                )
+                connection.commit()
+            return verified
 
         if stored_workspace is None:
             raise WorkspaceStorageError(
                 "production ledger exists without bound workspace identity"
             )
+
+        if pending_workspace is not None:
+            with self._connect() as connection:
+                bootstrap_events = connection.execute(
+                    "SELECT event_type FROM production_ledger ORDER BY sequence_no"
+                ).fetchall()
+            if (
+                len(bootstrap_events) != 1
+                or bootstrap_events[0]["event_type"] != "production.bootstrap"
+            ):
+                raise WorkspaceStorageError(
+                    "incomplete production bootstrap cannot be resumed safely; "
+                    "explicit recovery is required"
+                )
+            if not self._key_path.is_file():
+                raise WorkspaceStorageError(
+                    "protected integrity material is missing; explicit recovery is required"
+                )
+            key = load_integrity_key(self._key_path)
+            if self._anchor_path.is_file():
+                verified = self._verify_bound_integrity(recover_anchor=False)
+            else:
+                report = self._verify_chain_only()
+                write_anchor(
+                    self._anchor_path,
+                    AnchorState(
+                        workspace_id=workspace_id,
+                        audit_epoch=str(report["audit_epoch"]),
+                        sequence_no=int(report["sequence_no"]),
+                        head_hash=str(report["head_hash"]),
+                        key_id=key_id(key),
+                    ),
+                    key,
+                )
+                verified = self._verify_bound_integrity(recover_anchor=False)
+            with self._connect() as connection:
+                connection.execute(
+                    "DELETE FROM workspace_meta WHERE key = ? AND value = ?",
+                    (bootstrap_marker_key, workspace_id),
+                )
+                connection.commit()
+            return verified
+
         if not self._key_path.is_file() or not self._anchor_path.is_file():
             raise WorkspaceStorageError(
                 "protected integrity material is missing; explicit recovery is required"

@@ -372,6 +372,102 @@ def test_missing_protected_anchor_fails_closed_instead_of_recreating(tmp_path: P
     assert not anchor.exists()
 
 
+def test_interrupted_initial_bootstrap_is_retryable_without_resetting_continuity(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "workspace"
+    workspace = WorkspaceService(root)
+
+    def interrupt_genesis(*, workspace_id: str, bootstrap_actor_id: str) -> None:
+        del workspace_id, bootstrap_actor_id
+        raise RuntimeError("synthetic pre-genesis interruption")
+
+    monkeypatch.setattr(
+        workspace.repository, "_create_production_genesis", interrupt_genesis
+    )
+    with pytest.raises(RuntimeError, match="synthetic pre-genesis interruption"):
+        workspace.initialize()
+
+    workspace_id = workspace._read_workspace_id()
+    integrity_dir = workspace._integrity_dir(workspace_id)
+    key = integrity_dir / "integrity.key"
+    anchor = integrity_dir / "anchor.json"
+    key_before = key.read_bytes()
+    assert not anchor.exists()
+    with sqlite3.connect(workspace.paths.database) as connection:
+        ledger_count = connection.execute(
+            "SELECT COUNT(*) FROM production_ledger"
+        ).fetchone()[0]
+        pending = connection.execute(
+            "SELECT value FROM workspace_meta "
+            "WHERE key='production_bootstrap_pending'"
+        ).fetchone()
+    assert ledger_count == 0
+    assert pending == (workspace_id,)
+
+    reopened = WorkspaceService(root)
+    reopened.initialize()
+
+    assert key.read_bytes() == key_before
+    assert anchor.is_file()
+    with sqlite3.connect(reopened.paths.database) as connection:
+        pending = connection.execute(
+            "SELECT value FROM workspace_meta "
+            "WHERE key='production_bootstrap_pending'"
+        ).fetchone()
+    assert pending is None
+    assert reopened.repository.verify_production_integrity()["sequence_no"] >= 2
+
+
+def test_interrupted_bootstrap_after_genesis_reseals_before_normal_use(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import shadowseed.storage.sqlite as sqlite_storage
+
+    root = tmp_path / "workspace"
+    workspace = WorkspaceService(root)
+    original_write_anchor = sqlite_storage.write_anchor
+
+    def interrupt_anchor(*args, **kwargs) -> None:
+        del args, kwargs
+        raise OSError("synthetic post-genesis interruption")
+
+    monkeypatch.setattr(sqlite_storage, "write_anchor", interrupt_anchor)
+    with pytest.raises(OSError, match="synthetic post-genesis interruption"):
+        workspace.initialize()
+
+    workspace_id = workspace._read_workspace_id()
+    integrity_dir = workspace._integrity_dir(workspace_id)
+    key = integrity_dir / "integrity.key"
+    anchor = integrity_dir / "anchor.json"
+    key_before = key.read_bytes()
+    assert not anchor.exists()
+    with sqlite3.connect(workspace.paths.database) as connection:
+        events = connection.execute(
+            "SELECT event_type FROM production_ledger ORDER BY sequence_no"
+        ).fetchall()
+        pending = connection.execute(
+            "SELECT value FROM workspace_meta "
+            "WHERE key='production_bootstrap_pending'"
+        ).fetchone()
+    assert events == [("production.bootstrap",)]
+    assert pending == (workspace_id,)
+
+    monkeypatch.setattr(sqlite_storage, "write_anchor", original_write_anchor)
+    reopened = WorkspaceService(root)
+    reopened.initialize()
+
+    assert key.read_bytes() == key_before
+    assert anchor.is_file()
+    with sqlite3.connect(reopened.paths.database) as connection:
+        pending = connection.execute(
+            "SELECT value FROM workspace_meta "
+            "WHERE key='production_bootstrap_pending'"
+        ).fetchone()
+    assert pending is None
+    assert reopened.repository.verify_production_integrity()["sequence_no"] >= 2
+
+
 def test_empty_replacement_database_cannot_reset_protected_history(tmp_path: Path) -> None:
     root = tmp_path / "workspace"
     workspace = WorkspaceService(root)
@@ -400,7 +496,18 @@ def test_empty_replacement_database_cannot_reset_protected_history(tmp_path: Pat
         ledger_count = connection.execute(
             "SELECT COUNT(*) FROM production_ledger"
         ).fetchone()[0]
+        pending = connection.execute(
+            "SELECT value FROM workspace_meta "
+            "WHERE key='production_bootstrap_pending'"
+        ).fetchone()
     assert ledger_count == 0
+    assert pending is None
+
+    anchor.unlink()
+    key_only_reopen = WorkspaceService(root)
+    with pytest.raises(WorkspaceStorageError, match="protected integrity material exists"):
+        key_only_reopen.initialize()
+    assert key.read_bytes() == key_before
 
 
 def test_old_valid_backup_cannot_silently_replace_newer_live_workspace(tmp_path: Path) -> None:
