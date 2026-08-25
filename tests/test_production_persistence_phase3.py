@@ -392,30 +392,22 @@ def test_interrupted_initial_bootstrap_is_retryable_without_resetting_continuity
     integrity_dir = workspace._integrity_dir(workspace_id)
     key = integrity_dir / "integrity.key"
     anchor = integrity_dir / "anchor.json"
+    marker = integrity_dir / "bootstrap.pending"
     key_before = key.read_bytes()
     assert not anchor.exists()
     with sqlite3.connect(workspace.paths.database) as connection:
         ledger_count = connection.execute(
             "SELECT COUNT(*) FROM production_ledger"
         ).fetchone()[0]
-        pending = connection.execute(
-            "SELECT value FROM workspace_meta "
-            "WHERE key='production_bootstrap_pending'"
-        ).fetchone()
     assert ledger_count == 0
-    assert pending == (workspace_id,)
+    assert marker.read_text(encoding="utf-8").strip() == workspace_id
 
     reopened = WorkspaceService(root)
     reopened.initialize()
 
     assert key.read_bytes() == key_before
     assert anchor.is_file()
-    with sqlite3.connect(reopened.paths.database) as connection:
-        pending = connection.execute(
-            "SELECT value FROM workspace_meta "
-            "WHERE key='production_bootstrap_pending'"
-        ).fetchone()
-    assert pending is None
+    assert not marker.exists()
     assert reopened.repository.verify_production_integrity()["sequence_no"] >= 2
 
 
@@ -440,18 +432,15 @@ def test_interrupted_bootstrap_after_genesis_reseals_before_normal_use(
     integrity_dir = workspace._integrity_dir(workspace_id)
     key = integrity_dir / "integrity.key"
     anchor = integrity_dir / "anchor.json"
+    marker = integrity_dir / "bootstrap.pending"
     key_before = key.read_bytes()
     assert not anchor.exists()
     with sqlite3.connect(workspace.paths.database) as connection:
         events = connection.execute(
             "SELECT event_type FROM production_ledger ORDER BY sequence_no"
         ).fetchall()
-        pending = connection.execute(
-            "SELECT value FROM workspace_meta "
-            "WHERE key='production_bootstrap_pending'"
-        ).fetchone()
     assert events == [("production.bootstrap",)]
-    assert pending == (workspace_id,)
+    assert marker.read_text(encoding="utf-8").strip() == workspace_id
 
     monkeypatch.setattr(sqlite_storage, "write_anchor", original_write_anchor)
     reopened = WorkspaceService(root)
@@ -459,12 +448,7 @@ def test_interrupted_bootstrap_after_genesis_reseals_before_normal_use(
 
     assert key.read_bytes() == key_before
     assert anchor.is_file()
-    with sqlite3.connect(reopened.paths.database) as connection:
-        pending = connection.execute(
-            "SELECT value FROM workspace_meta "
-            "WHERE key='production_bootstrap_pending'"
-        ).fetchone()
-    assert pending is None
+    assert not marker.exists()
     assert reopened.repository.verify_production_integrity()["sequence_no"] >= 2
 
 
@@ -490,24 +474,28 @@ def test_empty_replacement_database_cannot_reset_protected_history(tmp_path: Pat
     with pytest.raises(WorkspaceStorageError, match="protected integrity material exists"):
         reopened.initialize()
 
+    marker = integrity_dir / "bootstrap.pending"
     assert key.read_bytes() == key_before
     assert anchor.read_bytes() == anchor_before
     with sqlite3.connect(database) as connection:
         ledger_count = connection.execute(
             "SELECT COUNT(*) FROM production_ledger"
         ).fetchone()[0]
-        pending = connection.execute(
-            "SELECT value FROM workspace_meta "
-            "WHERE key='production_bootstrap_pending'"
-        ).fetchone()
     assert ledger_count == 0
-    assert pending is None
+    assert not marker.exists()
 
     anchor.unlink()
+    with sqlite3.connect(database) as connection:
+        connection.execute(
+            "INSERT OR REPLACE INTO workspace_meta(key, value) VALUES(?, ?)",
+            ("production_bootstrap_pending", workspace_id),
+        )
+        connection.commit()
     key_only_reopen = WorkspaceService(root)
     with pytest.raises(WorkspaceStorageError, match="protected integrity material exists"):
         key_only_reopen.initialize()
     assert key.read_bytes() == key_before
+    assert not marker.exists()
 
 
 def test_old_valid_backup_cannot_silently_replace_newer_live_workspace(tmp_path: Path) -> None:

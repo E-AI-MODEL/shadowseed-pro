@@ -200,6 +200,92 @@ class SQLiteWorkspaceRepository:
             (str(SCHEMA_VERSION),),
         )
 
+    def _bootstrap_marker_path(self) -> Path:
+        if self._integrity_dir is None:
+            raise WorkspaceStorageError("production integrity directory is not bound")
+        return self._integrity_dir / "bootstrap.pending"
+
+    def _read_bootstrap_marker(self) -> str | None:
+        path = self._bootstrap_marker_path()
+        if not path.exists():
+            return None
+        if not path.is_file():
+            raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        if os.name != "nt":
+            try:
+                mode = path.stat().st_mode & 0o777
+            except OSError as exc:
+                raise WorkspaceStorageError(
+                    "protected bootstrap marker is unavailable"
+                ) from exc
+            if mode & 0o077:
+                raise WorkspaceStorageError(
+                    "protected bootstrap marker permissions are too broad"
+                )
+        try:
+            value = path.read_text(encoding="utf-8").strip()
+        except OSError as exc:
+            raise WorkspaceStorageError(
+                "protected bootstrap marker is unavailable"
+            ) from exc
+        if not value.startswith("workspace::"):
+            raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        return value
+
+    def _ensure_bootstrap_marker(self, workspace_id: str) -> None:
+        path = self._bootstrap_marker_path()
+        existing = self._read_bootstrap_marker()
+        if existing is not None:
+            if existing != workspace_id:
+                raise WorkspaceStorageError(
+                    "protected bootstrap marker does not match workspace identity"
+                )
+            return
+
+        path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            path.parent.chmod(0o700)
+        except OSError:
+            pass
+        temporary = path.with_name(path.name + ".tmp")
+        temporary.unlink(missing_ok=True)
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+        fd = os.open(temporary, flags, 0o600)
+        try:
+            if os.name != "nt":
+                os.fchmod(fd, 0o600)
+            handle = os.fdopen(fd, "w", encoding="utf-8", newline="\n")
+            fd = -1
+            with handle:
+                handle.write(workspace_id + "\n")
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temporary, path)
+            try:
+                path.chmod(0o600)
+            except OSError:
+                pass
+        finally:
+            if fd >= 0:
+                os.close(fd)
+            temporary.unlink(missing_ok=True)
+
+        if self._read_bootstrap_marker() != workspace_id:
+            raise WorkspaceStorageError("protected bootstrap marker could not be verified")
+
+    def _clear_bootstrap_marker(self, workspace_id: str) -> None:
+        path = self._bootstrap_marker_path()
+        if self._read_bootstrap_marker() != workspace_id:
+            raise WorkspaceStorageError(
+                "protected bootstrap marker is missing or does not match workspace identity"
+            )
+        try:
+            path.unlink()
+        except OSError as exc:
+            raise WorkspaceStorageError(
+                "protected bootstrap marker could not be cleared"
+            ) from exc
+
     def bind_production(
         self,
         *,
@@ -222,7 +308,6 @@ class SQLiteWorkspaceRepository:
         self._anchor_path = self._integrity_dir / "anchor.json"
         self._key_path = self._integrity_dir / "integrity.key"
 
-        bootstrap_marker_key = "production_bootstrap_pending"
         with self._connect() as connection:
             stored_workspace = connection.execute(
                 "SELECT value FROM workspace_meta WHERE key='workspace_id'"
@@ -230,21 +315,15 @@ class SQLiteWorkspaceRepository:
             ledger_count = int(
                 connection.execute("SELECT COUNT(*) FROM production_ledger").fetchone()[0]
             )
-            bootstrap_pending = connection.execute(
-                "SELECT value FROM workspace_meta WHERE key = ?",
-                (bootstrap_marker_key,),
-            ).fetchone()
 
-        pending_workspace = (
-            None if bootstrap_pending is None else str(bootstrap_pending["value"])
-        )
+        pending_workspace = self._read_bootstrap_marker()
         if stored_workspace is not None and stored_workspace["value"] != workspace_id:
             raise WorkspaceStorageError(
                 "workspace identity does not match the production database"
             )
         if pending_workspace is not None and pending_workspace != workspace_id:
             raise WorkspaceStorageError(
-                "production bootstrap marker does not match workspace identity"
+                "protected bootstrap marker does not match workspace identity"
             )
 
         if ledger_count == 0:
@@ -259,35 +338,8 @@ class SQLiteWorkspaceRepository:
                     "material exists; explicit recovery is required"
                 )
             if pending_workspace is None:
-                with self._connect() as connection:
-                    try:
-                        connection.execute("BEGIN IMMEDIATE")
-                        current_count = int(
-                            connection.execute(
-                                "SELECT COUNT(*) FROM production_ledger"
-                            ).fetchone()[0]
-                        )
-                        if current_count != 0:
-                            raise WorkspaceStorageError(
-                                "production ledger changed during bootstrap"
-                            )
-                        current_pending = connection.execute(
-                            "SELECT value FROM workspace_meta WHERE key = ?",
-                            (bootstrap_marker_key,),
-                        ).fetchone()
-                        if current_pending is None:
-                            connection.execute(
-                                "INSERT INTO workspace_meta(key, value) VALUES(?, ?)",
-                                (bootstrap_marker_key, workspace_id),
-                            )
-                        elif current_pending["value"] != workspace_id:
-                            raise WorkspaceStorageError(
-                                "production bootstrap marker does not match workspace identity"
-                            )
-                        connection.commit()
-                    except Exception:
-                        connection.rollback()
-                        raise
+                self._ensure_bootstrap_marker(workspace_id)
+                pending_workspace = workspace_id
 
             key = create_integrity_key(self._key_path)
             self._create_production_genesis(
@@ -307,12 +359,7 @@ class SQLiteWorkspaceRepository:
                 key,
             )
             verified = self._verify_bound_integrity(recover_anchor=False)
-            with self._connect() as connection:
-                connection.execute(
-                    "DELETE FROM workspace_meta WHERE key = ? AND value = ?",
-                    (bootstrap_marker_key, workspace_id),
-                )
-                connection.commit()
+            self._clear_bootstrap_marker(workspace_id)
             return verified
 
         if stored_workspace is None:
@@ -354,12 +401,7 @@ class SQLiteWorkspaceRepository:
                     key,
                 )
                 verified = self._verify_bound_integrity(recover_anchor=False)
-            with self._connect() as connection:
-                connection.execute(
-                    "DELETE FROM workspace_meta WHERE key = ? AND value = ?",
-                    (bootstrap_marker_key, workspace_id),
-                )
-                connection.commit()
+            self._clear_bootstrap_marker(workspace_id)
             return verified
 
         if not self._key_path.is_file() or not self._anchor_path.is_file():
