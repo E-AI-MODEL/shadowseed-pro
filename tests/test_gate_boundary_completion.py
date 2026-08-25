@@ -103,50 +103,65 @@ def test_formal_resolution_unblocks_without_restoring_authority() -> None:
     assert seed.status is not SeedStatus.PROMOTED
 
 
-def _authority_calls(path: Path, class_name: str | None = None) -> dict[str, int]:
-    tree = ast.parse(path.read_text(encoding="utf-8"))
-    if class_name is None:
-        definitions = [
-            node
-            for node in tree.body
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-        ]
-    else:
-        owner = next(
-            node
-            for node in tree.body
-            if isinstance(node, ast.ClassDef) and node.name == class_name
-        )
-        definitions = [
-            node
-            for node in owner.body
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-        ]
+class _AuthorityCallCollector(ast.NodeVisitor):
+    def __init__(self) -> None:
+        self.scope: list[str] = []
+        self.calls: dict[str, int] = {}
 
-    calls: dict[str, int] = {}
-    for definition in definitions:
-        count = sum(
-            1
-            for call in ast.walk(definition)
-            if isinstance(call, ast.Call)
-            and isinstance(call.func, ast.Attribute)
-            and call.func.attr == "_set_authority"
-        )
-        if count:
-            calls[definition.name] = count
-    return calls
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        self.scope.append(node.name)
+        self.generic_visit(node)
+        self.scope.pop()
+
+    def _visit_function(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:
+        self.scope.append(node.name)
+        self.generic_visit(node)
+        self.scope.pop()
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        self._visit_function(node)
+
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
+        self._visit_function(node)
+
+    def visit_Call(self, node: ast.Call) -> None:
+        if isinstance(node.func, ast.Attribute) and node.func.attr == "_set_authority":
+            owner = ".".join(self.scope) or "<module>"
+            self.calls[owner] = self.calls.get(owner, 0) + 1
+        self.generic_visit(node)
+
+
+def _repository_authority_calls(source_root: Path) -> dict[str, dict[str, int]]:
+    locations: dict[str, dict[str, int]] = {}
+    for path in sorted(source_root.rglob("*.py")):
+        collector = _AuthorityCallCollector()
+        collector.visit(ast.parse(path.read_text(encoding="utf-8")))
+        if collector.calls:
+            locations[path.relative_to(source_root).as_posix()] = dict(
+                sorted(collector.calls.items())
+            )
+    return locations
 
 
 def test_direct_authority_transitions_are_exactly_allowlisted() -> None:
     source_root = Path(__file__).resolve().parents[1] / "src/shadowseed"
 
-    assert _authority_calls(source_root / "manager.py", "SSLManager") == {}
-    assert _authority_calls(source_root / "intake.py") == {
-        "activate_existing_seed": 1,
+    assert _repository_authority_calls(source_root) == {
+        "gate/runtime_adapter.py": {
+            "_submit_legacy_signals": 3,
+            "apply_probe_feedback": 1,
+            "resolve_contradiction": 1,
+            "submit_signals": 2,
+        },
+        "intake.py": {
+            "activate_existing_seed": 1,
+        },
+        "lifecycle.py": {
+            "decay_traces": 2,
+            "expire_vector_only_open_seeds": 1,
+            "reactivate_by_text": 1,
+        },
+        "recurrence.py": {
+            "refresh_cluster_representative": 1,
+        },
     }
-    assert _authority_calls(source_root / "lifecycle.py") == {
-        "decay_traces": 2,
-        "reactivate_by_text": 1,
-        "expire_vector_only_open_seeds": 1,
-    }
-

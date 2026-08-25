@@ -236,6 +236,11 @@ class SQLiteWorkspaceRepository:
             )
 
         if ledger_count == 0:
+            if self._key_path.exists() or self._anchor_path.exists():
+                raise WorkspaceStorageError(
+                    "production ledger history is missing while protected integrity "
+                    "material exists; explicit recovery is required"
+                )
             key = create_integrity_key(self._key_path)
             self._create_production_genesis(
                 workspace_id=workspace_id,

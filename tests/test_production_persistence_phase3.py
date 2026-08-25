@@ -372,6 +372,37 @@ def test_missing_protected_anchor_fails_closed_instead_of_recreating(tmp_path: P
     assert not anchor.exists()
 
 
+def test_empty_replacement_database_cannot_reset_protected_history(tmp_path: Path) -> None:
+    root = tmp_path / "workspace"
+    workspace = WorkspaceService(root)
+    workspace.initialize()
+    workspace_id = workspace.workspace_id
+
+    integrity_dir = workspace._integrity_dir(workspace_id)
+    key = integrity_dir / "integrity.key"
+    anchor = integrity_dir / "anchor.json"
+    key_before = key.read_bytes()
+    anchor_before = anchor.read_bytes()
+
+    database = workspace.paths.database
+    Path(str(database) + "-wal").unlink(missing_ok=True)
+    Path(str(database) + "-shm").unlink(missing_ok=True)
+    database.unlink()
+    sqlite3.connect(database).close()
+
+    reopened = WorkspaceService(root)
+    with pytest.raises(WorkspaceStorageError, match="protected integrity material exists"):
+        reopened.initialize()
+
+    assert key.read_bytes() == key_before
+    assert anchor.read_bytes() == anchor_before
+    with sqlite3.connect(database) as connection:
+        ledger_count = connection.execute(
+            "SELECT COUNT(*) FROM production_ledger"
+        ).fetchone()[0]
+    assert ledger_count == 0
+
+
 def test_old_valid_backup_cannot_silently_replace_newer_live_workspace(tmp_path: Path) -> None:
     root = tmp_path / "workspace"
     controller = WorkbenchController(root)

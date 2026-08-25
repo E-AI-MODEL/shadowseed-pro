@@ -52,3 +52,27 @@ def test_operational_log_rotates_at_bound_without_copying_content(tmp_path: Path
     assert rotated.is_file()
     assert '"event":"first"' in rotated.read_text(encoding="utf-8")
     assert '"event":"second"' in log.path.read_text(encoding="utf-8")
+
+@pytest.mark.skipif(__import__("os").name == "nt", reason="POSIX permission contract")
+def test_operational_log_is_restricted_before_first_write(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import os
+    import stat
+
+    import shadowseed.application.operations as operations
+
+    observed_modes: list[int] = []
+    original_fdopen = operations.os.fdopen
+
+    def checked_fdopen(fd: int, *args, **kwargs):
+        observed_modes.append(stat.S_IMODE(os.fstat(fd).st_mode))
+        return original_fdopen(fd, *args, **kwargs)
+
+    monkeypatch.setattr(operations.os, "fdopen", checked_fdopen)
+    log = OperationalEventLog(tmp_path / "logs")
+    log.emit("permission-check", status="ok")
+
+    assert observed_modes == [0o600]
+    assert stat.S_IMODE(log.path.stat().st_mode) == 0o600
+
