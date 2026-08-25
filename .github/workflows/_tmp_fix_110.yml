@@ -1,0 +1,109 @@
+name: Temporary issue 110 updater
+
+on:
+  push:
+    branches: [fix/production-local-integrity-guards]
+
+permissions:
+  contents: write
+
+env:
+  GRADIO_ANALYTICS_ENABLED: "False"
+
+jobs:
+  patch-test-and-clean:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: fix/production-local-integrity-guards
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
+      - name: Apply bounded fixes and regression tests
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one replacement target, found {count}")
+              target.write_text(text.replace(old, new), encoding="utf-8")
+
+          replace_once(
+              "src/shadowseed/storage/sqlite.py",
+              '''        if ledger_count == 0:\n            key = create_integrity_key(self._key_path)\n            self._create_production_genesis(\n''',
+              '''        if ledger_count == 0:\n            if self._key_path.exists() or self._anchor_path.exists():\n                raise WorkspaceStorageError(\n                    "production ledger history is missing while protected integrity "\n                    "material exists; explicit recovery is required"\n                )\n            key = create_integrity_key(self._key_path)\n            self._create_production_genesis(\n''',
+          )
+
+          replace_once(
+              "src/shadowseed/application/operations.py",
+              '''    def emit(self, event: str, **fields: Any) -> Path:\n''',
+              '''    def _append_line(self, line: str) -> None:\n        if os.name == "nt":\n            with self.path.open("a", encoding="utf-8", newline="\\n") as handle:\n                handle.write(line)\n            return\n\n        flags = os.O_WRONLY | os.O_CREAT | os.O_APPEND\n        fd = os.open(self.path, flags, 0o600)\n        try:\n            os.fchmod(fd, 0o600)\n            handle = os.fdopen(fd, "a", encoding="utf-8", newline="\\n")\n            fd = -1\n            with handle:\n                handle.write(line)\n        finally:\n            if fd >= 0:\n                os.close(fd)\n\n    def emit(self, event: str, **fields: Any) -> Path:\n''',
+          )
+          replace_once(
+              "src/shadowseed/application/operations.py",
+              '''        with self.path.open("a", encoding="utf-8", newline="\\n") as handle:\n            handle.write(json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\\n")\n        self._restrict(self.path, 0o600)\n        return self.path\n''',
+              '''        line = json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\\n"\n        self._append_line(line)\n        return self.path\n''',
+          )
+
+          gate_path = Path("tests/test_gate_boundary_completion.py")
+          gate_text = gate_path.read_text(encoding="utf-8")
+          start = gate_text.index("def _authority_calls(")
+          replacement = '''class _AuthorityCallCollector(ast.NodeVisitor):\n    def __init__(self) -> None:\n        self.scope: list[str] = []\n        self.calls: dict[str, int] = {}\n\n    def visit_ClassDef(self, node: ast.ClassDef) -> None:\n        self.scope.append(node.name)\n        self.generic_visit(node)\n        self.scope.pop()\n\n    def _visit_function(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:\n        self.scope.append(node.name)\n        self.generic_visit(node)\n        self.scope.pop()\n\n    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:\n        self._visit_function(node)\n\n    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:\n        self._visit_function(node)\n\n    def visit_Call(self, node: ast.Call) -> None:\n        if isinstance(node.func, ast.Attribute) and node.func.attr == "_set_authority":\n            owner = ".".join(self.scope) or "<module>"\n            self.calls[owner] = self.calls.get(owner, 0) + 1\n        self.generic_visit(node)\n\n\ndef _repository_authority_calls(source_root: Path) -> dict[str, dict[str, int]]:\n    locations: dict[str, dict[str, int]] = {}\n    for path in sorted(source_root.rglob("*.py")):\n        collector = _AuthorityCallCollector()\n        collector.visit(ast.parse(path.read_text(encoding="utf-8")))\n        if collector.calls:\n            locations[path.relative_to(source_root).as_posix()] = dict(\n                sorted(collector.calls.items())\n            )\n    return locations\n\n\ndef test_direct_authority_transitions_are_exactly_allowlisted() -> None:\n    source_root = Path(__file__).resolve().parents[1] / "src/shadowseed"\n\n    assert _repository_authority_calls(source_root) == {\n        "gate/runtime_adapter.py": {\n            "_submit_legacy_signals": 3,\n            "apply_probe_feedback": 1,\n            "resolve_contradiction": 1,\n            "submit_signals": 2,\n        },\n        "intake.py": {\n            "activate_existing_seed": 1,\n        },\n        "lifecycle.py": {\n            "decay_traces": 2,\n            "expire_vector_only_open_seeds": 1,\n            "reactivate_by_text": 1,\n        },\n        "recurrence.py": {\n            "refresh_cluster_representative": 1,\n        },\n    }\n'''
+          gate_path.write_text(gate_text[:start] + replacement, encoding="utf-8")
+
+          persistence = Path("tests/test_production_persistence_phase3.py")
+          persistence_text = persistence.read_text(encoding="utf-8")
+          marker = '''def test_old_valid_backup_cannot_silently_replace_newer_live_workspace(tmp_path: Path) -> None:\n'''
+          addition = '''def test_empty_replacement_database_cannot_reset_protected_history(tmp_path: Path) -> None:\n    root = tmp_path / "workspace"\n    workspace = WorkspaceService(root)\n    workspace.initialize()\n    workspace_id = workspace.workspace_id\n\n    integrity_dir = workspace._integrity_dir(workspace_id)\n    key = integrity_dir / "integrity.key"\n    anchor = integrity_dir / "anchor.json"\n    key_before = key.read_bytes()\n    anchor_before = anchor.read_bytes()\n\n    database = workspace.paths.database\n    Path(str(database) + "-wal").unlink(missing_ok=True)\n    Path(str(database) + "-shm").unlink(missing_ok=True)\n    database.unlink()\n    sqlite3.connect(database).close()\n\n    reopened = WorkspaceService(root)\n    with pytest.raises(WorkspaceStorageError, match="protected integrity material exists"):\n        reopened.initialize()\n\n    assert key.read_bytes() == key_before\n    assert anchor.read_bytes() == anchor_before\n    with sqlite3.connect(database) as connection:\n        ledger_count = connection.execute(\n            "SELECT COUNT(*) FROM production_ledger"\n        ).fetchone()[0]\n    assert ledger_count == 0\n\n\n'''
+          if persistence_text.count(marker) != 1:
+              raise SystemExit("persistence test insertion marker changed")
+          persistence.write_text(
+              persistence_text.replace(marker, addition + marker), encoding="utf-8"
+          )
+
+          operations_test = Path("tests/test_production_operations_phase4.py")
+          operations_text = operations_test.read_text(encoding="utf-8")
+          operations_addition = '''\n\n@pytest.mark.skipif(__import__("os").name == "nt", reason="POSIX permission contract")\ndef test_operational_log_is_restricted_before_first_write(\n    tmp_path: Path, monkeypatch: pytest.MonkeyPatch\n) -> None:\n    import os\n    import stat\n\n    import shadowseed.application.operations as operations\n\n    observed_modes: list[int] = []\n    original_fdopen = operations.os.fdopen\n\n    def checked_fdopen(fd: int, *args, **kwargs):\n        observed_modes.append(stat.S_IMODE(os.fstat(fd).st_mode))\n        return original_fdopen(fd, *args, **kwargs)\n\n    monkeypatch.setattr(operations.os, "fdopen", checked_fdopen)\n    log = OperationalEventLog(tmp_path / "logs")\n    log.emit("permission-check", status="ok")\n\n    assert observed_modes == [0o600]\n    assert stat.S_IMODE(log.path.stat().st_mode) == 0o600\n'''
+          if "test_operational_log_is_restricted_before_first_write" in operations_text:
+              raise SystemExit("operations permission regression test already exists")
+          operations_test.write_text(operations_text.rstrip() + operations_addition + "\n", encoding="utf-8")
+          PY
+      - name: Sync locked test environment
+        run: uv sync --locked --extra test
+      - name: Run targeted regressions
+        run: >-
+          uv run --no-sync python -m pytest -q
+          tests/test_gate_boundary_completion.py
+          tests/test_production_persistence_phase3.py
+          tests/test_production_operations_phase4.py
+      - name: Lint changed Python files
+        run: >-
+          uv run --no-sync ruff check
+          src/shadowseed/storage/sqlite.py
+          src/shadowseed/application/operations.py
+          tests/test_gate_boundary_completion.py
+          tests/test_production_persistence_phase3.py
+          tests/test_production_operations_phase4.py
+      - name: Commit clean final diff
+        run: |
+          rm .github/workflows/_tmp_fix_110.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/shadowseed/storage/sqlite.py \
+                  src/shadowseed/application/operations.py \
+                  tests/test_gate_boundary_completion.py \
+                  tests/test_production_persistence_phase3.py \
+                  tests/test_production_operations_phase4.py \
+                  .github/workflows/_tmp_fix_110.yml
+          git commit -m "fix: close production-local integrity guard gaps"
+          git push origin HEAD:fix/production-local-integrity-guards
