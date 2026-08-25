@@ -200,6 +200,26 @@ class SQLiteWorkspaceRepository:
             (str(SCHEMA_VERSION),),
         )
 
+    @staticmethod
+    def _fsync_directory(path: Path) -> None:
+        if os.name == "nt":
+            return
+        flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+        try:
+            fd = os.open(path, flags)
+        except OSError as exc:
+            raise WorkspaceStorageError(
+                "protected integrity directory is unavailable for durability sync"
+            ) from exc
+        try:
+            os.fsync(fd)
+        except OSError as exc:
+            raise WorkspaceStorageError(
+                "protected integrity directory durability sync failed"
+            ) from exc
+        finally:
+            os.close(fd)
+
     def _bootstrap_marker_path(self) -> Path:
         if self._integrity_dir is None:
             raise WorkspaceStorageError("production integrity directory is not bound")
@@ -261,6 +281,7 @@ class SQLiteWorkspaceRepository:
                 handle.flush()
                 os.fsync(handle.fileno())
             os.replace(temporary, path)
+            self._fsync_directory(path.parent)
             try:
                 path.chmod(0o600)
             except OSError:
@@ -281,6 +302,7 @@ class SQLiteWorkspaceRepository:
             )
         try:
             path.unlink()
+            self._fsync_directory(path.parent)
         except OSError as exc:
             raise WorkspaceStorageError(
                 "protected bootstrap marker could not be cleared"

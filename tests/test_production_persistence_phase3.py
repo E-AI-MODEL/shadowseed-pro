@@ -377,6 +377,18 @@ def test_interrupted_initial_bootstrap_is_retryable_without_resetting_continuity
 ) -> None:
     root = tmp_path / "workspace"
     workspace = WorkspaceService(root)
+    durability_barriers: list[Path] = []
+    original_fsync_directory = SQLiteWorkspaceRepository._fsync_directory
+
+    def record_fsync_directory(path: Path) -> None:
+        durability_barriers.append(path)
+        original_fsync_directory(path)
+
+    monkeypatch.setattr(
+        SQLiteWorkspaceRepository,
+        "_fsync_directory",
+        staticmethod(record_fsync_directory),
+    )
 
     def interrupt_genesis(*, workspace_id: str, bootstrap_actor_id: str) -> None:
         del workspace_id, bootstrap_actor_id
@@ -408,6 +420,7 @@ def test_interrupted_initial_bootstrap_is_retryable_without_resetting_continuity
     assert key.read_bytes() == key_before
     assert anchor.is_file()
     assert not marker.exists()
+    assert durability_barriers == [integrity_dir, integrity_dir]
     assert reopened.repository.verify_production_integrity()["sequence_no"] >= 2
 
 
