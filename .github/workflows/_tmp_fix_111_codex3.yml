@@ -55,17 +55,30 @@ jobs:
 
           tests_path = Path("tests/test_production_persistence_phase3.py")
           tests_text = tests_path.read_text(encoding="utf-8")
+          test_start = tests_text.index(
+              "def test_interrupted_initial_bootstrap_is_retryable_without_resetting_continuity("
+          )
+          test_end = tests_text.index(
+              "def test_interrupted_bootstrap_after_genesis_reseals_before_normal_use(",
+              test_start,
+          )
+          test_block = tests_text[test_start:test_end]
+
           old_setup = '''    root = tmp_path / "workspace"\n    workspace = WorkspaceService(root)\n\n    def interrupt_genesis(*, workspace_id: str, bootstrap_actor_id: str) -> None:\n'''
           new_setup = '''    root = tmp_path / "workspace"\n    workspace = WorkspaceService(root)\n    durability_barriers: list[Path] = []\n    original_fsync_directory = SQLiteWorkspaceRepository._fsync_directory\n\n    def record_fsync_directory(path: Path) -> None:\n        durability_barriers.append(path)\n        original_fsync_directory(path)\n\n    monkeypatch.setattr(\n        SQLiteWorkspaceRepository,\n        "_fsync_directory",\n        staticmethod(record_fsync_directory),\n    )\n\n    def interrupt_genesis(*, workspace_id: str, bootstrap_actor_id: str) -> None:\n'''
-          if tests_text.count(old_setup) != 1:
+          if test_block.count(old_setup) != 1:
               raise SystemExit("interrupted-bootstrap setup target changed")
-          tests_text = tests_text.replace(old_setup, new_setup)
+          test_block = test_block.replace(old_setup, new_setup)
 
           old_assert = '''    assert key.read_bytes() == key_before\n    assert anchor.is_file()\n    assert not marker.exists()\n    assert reopened.repository.verify_production_integrity()["sequence_no"] >= 2\n'''
           new_assert = '''    assert key.read_bytes() == key_before\n    assert anchor.is_file()\n    assert not marker.exists()\n    assert durability_barriers == [integrity_dir, integrity_dir]\n    assert reopened.repository.verify_production_integrity()["sequence_no"] >= 2\n'''
-          if tests_text.count(old_assert) != 1:
+          if test_block.count(old_assert) != 1:
               raise SystemExit("interrupted-bootstrap durability assertion target changed")
-          tests_path.write_text(tests_text.replace(old_assert, new_assert), encoding="utf-8")
+          test_block = test_block.replace(old_assert, new_assert)
+          tests_path.write_text(
+              tests_text[:test_start] + test_block + tests_text[test_end:],
+              encoding="utf-8",
+          )
           PY
       - name: Sync locked test environment
         run: uv sync --locked --extra test
