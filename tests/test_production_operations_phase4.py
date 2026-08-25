@@ -65,6 +65,7 @@ def test_operational_log_is_restricted_before_first_write(
     original_fdopen = operations.os.fdopen
 
     def checked_fdopen(fd: int, *args, **kwargs):
+        # fdopen is the last boundary before the append can write log bytes.
         observed_modes.append(stat.S_IMODE(os.fstat(fd).st_mode))
         return original_fdopen(fd, *args, **kwargs)
 
