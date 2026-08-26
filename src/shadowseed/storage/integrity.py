@@ -123,6 +123,17 @@ def _require_private_posix_file(path: Path, *, label: str) -> None:
         )
 
 
+def _fsync_parent_directory(path: Path) -> None:
+    if os.name == "nt":
+        return
+    flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+    fd = os.open(path.parent, flags)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
 def create_integrity_key(path: Path) -> bytes:
     path.parent.mkdir(parents=True, exist_ok=True)
     try:
@@ -142,6 +153,7 @@ def create_integrity_key(path: Path) -> bytes:
     except OSError:
         pass
     os.replace(temporary, path)
+    _fsync_parent_directory(path)
     _require_private_posix_file(path, label="protected integrity key")
     return key
 
@@ -178,6 +190,7 @@ def write_anchor(path: Path, state: AnchorState, key: bytes) -> None:
     except OSError:
         pass
     os.replace(temporary, path)
+    _fsync_parent_directory(path)
     _require_private_posix_file(path, label="protected integrity anchor")
 
 

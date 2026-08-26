@@ -377,17 +377,28 @@ def test_interrupted_initial_bootstrap_is_retryable_without_resetting_continuity
 ) -> None:
     root = tmp_path / "workspace"
     workspace = WorkspaceService(root)
+    import shadowseed.storage.integrity as integrity_storage
+
     durability_barriers: list[Path] = []
+    protected_file_barriers: list[Path] = []
     original_fsync_directory = SQLiteWorkspaceRepository._fsync_directory
+    original_fsync_parent = integrity_storage._fsync_parent_directory
 
     def record_fsync_directory(path: Path) -> None:
         durability_barriers.append(path)
         original_fsync_directory(path)
 
+    def record_fsync_parent(path: Path) -> None:
+        protected_file_barriers.append(path)
+        original_fsync_parent(path)
+
     monkeypatch.setattr(
         SQLiteWorkspaceRepository,
         "_fsync_directory",
         staticmethod(record_fsync_directory),
+    )
+    monkeypatch.setattr(
+        integrity_storage, "_fsync_parent_directory", record_fsync_parent
     )
 
     def interrupt_genesis(*, workspace_id: str, bootstrap_actor_id: str) -> None:
@@ -413,6 +424,10 @@ def test_interrupted_initial_bootstrap_is_retryable_without_resetting_continuity
         ).fetchone()[0]
     assert ledger_count == 0
     assert marker.read_text(encoding="utf-8").strip() == workspace_id
+    # Genesis was interrupted at function entry, so this proves the protected
+    # key rename was directory-synced before any genesis DB commit could run.
+    assert durability_barriers == [integrity_dir]
+    assert protected_file_barriers == [key]
 
     reopened = WorkspaceService(root)
     reopened.initialize()
@@ -421,6 +436,9 @@ def test_interrupted_initial_bootstrap_is_retryable_without_resetting_continuity
     assert anchor.is_file()
     assert not marker.exists()
     assert durability_barriers == [integrity_dir, integrity_dir]
+    assert protected_file_barriers[0] == key
+    assert protected_file_barriers[1:]
+    assert all(path == anchor for path in protected_file_barriers[1:])
     assert reopened.repository.verify_production_integrity()["sequence_no"] >= 2
 
 
