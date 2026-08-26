@@ -1,0 +1,63 @@
+name: PR 111 Codex round 8 fixes
+
+on:
+  push:
+    branches:
+      - fix/production-local-integrity-guards
+    paths:
+      - .github/workflows/pr111-codex-round8.yml
+
+permissions:
+  contents: write
+
+env:
+  GRADIO_ANALYTICS_ENABLED: "False"
+
+jobs:
+  patch-test-and-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: fix/production-local-integrity-guards
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.8.14"
+      - name: Apply round 8 fixes
+        run: python .github/scripts/pr111_round8_fix.py
+      - name: Compile changed Python
+        run: python -m py_compile src/shadowseed/storage/sqlite.py src/shadowseed/storage/production.py tests/test_production_persistence_phase3.py
+      - name: Sync locked test environment
+        run: uv sync --locked --extra test
+      - name: Run targeted regressions
+        run: >-
+          uv run --no-sync python -m pytest -q
+          tests/test_production_persistence_phase3.py
+          tests/test_gate_boundary_completion.py
+          tests/test_production_operations_phase4.py
+      - name: Lint changed Python files
+        run: >-
+          uv run --no-sync ruff check
+          src/shadowseed/storage/sqlite.py
+          src/shadowseed/storage/production.py
+          src/shadowseed/storage/integrity.py
+          src/shadowseed/application/operations.py
+          tests/test_production_persistence_phase3.py
+          tests/test_gate_boundary_completion.py
+          tests/test_production_operations_phase4.py
+      - name: Commit tested fixes and cleanup
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -f .github/workflows/pr111-codex-round8.yml
+          git rm -f .github/scripts/pr111_round8_fix.py
+          git add src/shadowseed/storage/sqlite.py
+          git add src/shadowseed/storage/production.py
+          git add tests/test_production_persistence_phase3.py
+          git commit -m "fix: bind bootstrap recovery to live authority state"
+          git push origin HEAD:fix/production-local-integrity-guards
