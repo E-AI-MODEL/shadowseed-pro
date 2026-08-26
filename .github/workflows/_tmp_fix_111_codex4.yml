@@ -70,13 +70,13 @@ jobs:
           block = block.replace(old_setup, new_setup)
 
           old_mid = '''    assert ledger_count == 0\n    assert marker.read_text(encoding="utf-8").strip() == workspace_id\n\n    reopened = WorkspaceService(root)\n'''
-          new_mid = '''    assert ledger_count == 0\n    assert marker.read_text(encoding="utf-8").strip() == workspace_id\n    assert durability_barriers == [integrity_dir]\n    assert protected_file_barriers == [key]\n\n    reopened = WorkspaceService(root)\n'''
+          new_mid = '''    assert ledger_count == 0\n    assert marker.read_text(encoding="utf-8").strip() == workspace_id\n    # Genesis was interrupted at function entry, so this proves the protected\n    # key rename was directory-synced before any genesis DB commit could run.\n    assert durability_barriers == [integrity_dir]\n    assert protected_file_barriers == [key]\n\n    reopened = WorkspaceService(root)\n'''
           if block.count(old_mid) != 1:
               raise SystemExit("bootstrap pre-genesis durability assertion target changed")
           block = block.replace(old_mid, new_mid)
 
           old_final = '''    assert anchor.is_file()\n    assert not marker.exists()\n    assert durability_barriers == [integrity_dir, integrity_dir]\n    assert reopened.repository.verify_production_integrity()["sequence_no"] >= 2\n'''
-          new_final = '''    assert anchor.is_file()\n    assert not marker.exists()\n    assert durability_barriers == [integrity_dir, integrity_dir]\n    assert protected_file_barriers == [key, anchor]\n    assert reopened.repository.verify_production_integrity()["sequence_no"] >= 2\n'''
+          new_final = '''    assert anchor.is_file()\n    assert not marker.exists()\n    assert durability_barriers == [integrity_dir, integrity_dir]\n    assert protected_file_barriers[0] == key\n    assert protected_file_barriers[1:]\n    assert all(path == anchor for path in protected_file_barriers[1:])\n    assert reopened.repository.verify_production_integrity()["sequence_no"] >= 2\n'''
           if block.count(old_final) != 1:
               raise SystemExit("bootstrap final durability assertion target changed")
           tests_path.write_text(
