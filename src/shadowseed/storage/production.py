@@ -215,13 +215,155 @@ class ProductionSQLiteWorkspaceRepository(SQLiteWorkspaceRepository):
             raise WorkspaceStorageError("production workspace_id is invalid")
         self._integrity_dir = Path(integrity_dir).expanduser().resolve()
         with self._bootstrap_lock():
-            self._bind_production_locked(
-                workspace_id=workspace_id,
-                integrity_dir=self._integrity_dir,
-                bootstrap_actor_id=bootstrap_actor_id,
+            self._hold_bootstrap_marker = True
+            try:
+                try:
+                    binding_report = self._bind_production_locked(
+                        workspace_id=workspace_id,
+                        integrity_dir=self._integrity_dir,
+                        bootstrap_actor_id=bootstrap_actor_id,
+                    )
+                except WorkspaceStorageError as exc:
+                    if str(exc) != (
+                        "incomplete production bootstrap cannot be resumed safely; "
+                        "explicit recovery is required"
+                    ):
+                        raise
+                    binding_report = self._resume_pending_authority_checkpoint(
+                        workspace_id=workspace_id,
+                        bootstrap_actor_id=bootstrap_actor_id,
+                    )
+                    if binding_report is None:
+                        raise exc
+
+                pending = self._read_bootstrap_marker()
+                if int(binding_report["event_count"]) == 1 and pending is None:
+                    raise WorkspaceStorageError(
+                        "protected bootstrap marker disappeared before authority checkpoint "
+                        "sealing; explicit recovery is required"
+                    )
+
+                self._ensure_authority_checkpoint(bootstrap_actor_id=bootstrap_actor_id)
+                report = self.verify_production_integrity()
+                if pending is not None:
+                    self._hold_bootstrap_marker = False
+                    super()._clear_bootstrap_marker(workspace_id)
+                return report
+            finally:
+                self._hold_bootstrap_marker = False
+
+    def _clear_bootstrap_marker(self, workspace_id: str) -> None:
+        """Retain bootstrap commitment until the first authority anchor is sealed."""
+
+        if getattr(self, "_hold_bootstrap_marker", False):
+            marker = self._read_bootstrap_marker()
+            if marker is None or marker["workspace_id"] != workspace_id:
+                raise WorkspaceStorageError(
+                    "protected bootstrap marker is missing or does not match workspace identity"
+                )
+            return
+        super()._clear_bootstrap_marker(workspace_id)
+
+    def _resume_pending_authority_checkpoint(
+        self,
+        *,
+        workspace_id: str,
+        bootstrap_actor_id: str,
+    ) -> dict[str, Any] | None:
+        """Validate the only safe two-row bootstrap resume state without anchoring it."""
+
+        marker = self._read_bootstrap_marker()
+        if marker is None:
+            return None
+        if (
+            marker["workspace_id"] != workspace_id
+            or marker["bootstrap_actor_id"] != bootstrap_actor_id
+        ):
+            return None
+
+        with self._connect() as connection:
+            try:
+                connection.execute("BEGIN IMMEDIATE")
+                rows = connection.execute(
+                    "SELECT * FROM production_ledger ORDER BY sequence_no"
+                ).fetchall()
+                if len(rows) != 2:
+                    connection.rollback()
+                    return None
+                bootstrap, checkpoint = rows
+                if (
+                    int(bootstrap["sequence_no"]) != 1
+                    or bootstrap["event_type"] != "production.bootstrap"
+                    or str(bootstrap["event_hash"])
+                    != str(marker["expected_genesis_hash"])
+                    or int(checkpoint["sequence_no"]) != 2
+                    or checkpoint["event_type"] != "production.authority_checkpoint"
+                ):
+                    connection.rollback()
+                    return None
+
+                live_authority_baseline = self._workspace_authority_baseline(connection)
+                protected_authority_baseline = str(
+                    marker["bootstrap_payload"]["authority_baseline"]
+                )
+                if live_authority_baseline != protected_authority_baseline:
+                    raise WorkspaceStorageError(
+                        "production bootstrap authority baseline changed before checkpoint "
+                        "sealing; explicit recovery is required"
+                    )
+                self._validate_pending_checkpoint_row(
+                    checkpoint,
+                    marker=marker,
+                    workspace_id=workspace_id,
+                    bootstrap_actor_id=bootstrap_actor_id,
+                )
+                verify_authority_snapshot_connection(connection)
+                connection.commit()
+            except Exception:
+                connection.rollback()
+                raise
+
+        report = self._verify_chain_only()
+        if (
+            int(report["event_count"]) != 2
+            or report["workspace_id"] != workspace_id
+            or str(report["audit_epoch"]) != str(marker["audit_epoch"])
+        ):
+            raise WorkspaceStorageError(
+                "pending production authority checkpoint does not match protected bootstrap "
+                "commitment; explicit recovery is required"
             )
-            self._ensure_authority_checkpoint(bootstrap_actor_id=bootstrap_actor_id)
-            return self.verify_production_integrity()
+        return report
+
+    @staticmethod
+    def _validate_pending_checkpoint_row(
+        checkpoint: Mapping[str, Any],
+        *,
+        marker: Mapping[str, Any],
+        workspace_id: str,
+        bootstrap_actor_id: str,
+    ) -> None:
+        expected = {
+            "sequence_no": 2,
+            "workspace_id": workspace_id,
+            "audit_epoch": str(marker["audit_epoch"]),
+            "session_id": None,
+            "seed_id": None,
+            "event_type": "production.authority_checkpoint",
+            "request_id": None,
+            "actor_id": bootstrap_actor_id,
+            "actor_scope_id": workspace_id,
+            "capability": None,
+            "auth_method": "local-install-bootstrap",
+            "policy_version": "production-bootstrap-v1",
+            "previous_hash": str(marker["expected_genesis_hash"]),
+        }
+        for field, expected_value in expected.items():
+            if checkpoint[field] != expected_value:
+                raise WorkspaceStorageError(
+                    "pending production authority checkpoint does not match protected bootstrap "
+                    "commitment; explicit recovery is required"
+                )
 
     def verify_production_integrity(self) -> dict[str, Any]:
         report = super().verify_production_integrity()
@@ -248,38 +390,71 @@ class ProductionSQLiteWorkspaceRepository(SQLiteWorkspaceRepository):
     def _ensure_authority_checkpoint(self, *, bootstrap_actor_id: str) -> None:
         if self._workspace_id is None:
             raise WorkspaceStorageError("production workspace is not bound")
+        marker = self._read_bootstrap_marker()
+        should_advance_anchor = False
         with self._connect() as connection:
             try:
                 connection.execute("BEGIN IMMEDIATE")
+                if marker is not None:
+                    if (
+                        marker["workspace_id"] != self._workspace_id
+                        or marker["bootstrap_actor_id"] != bootstrap_actor_id
+                    ):
+                        raise WorkspaceStorageError(
+                            "protected bootstrap marker does not match checkpoint sealing"
+                        )
+                    live_authority_baseline = self._workspace_authority_baseline(connection)
+                    protected_authority_baseline = str(
+                        marker["bootstrap_payload"]["authority_baseline"]
+                    )
+                    if live_authority_baseline != protected_authority_baseline:
+                        raise WorkspaceStorageError(
+                            "production bootstrap authority baseline changed before checkpoint "
+                            "sealing; explicit recovery is required"
+                        )
+
                 existing = connection.execute(
-                    "SELECT 1 FROM production_ledger "
+                    "SELECT * FROM production_ledger "
                     "WHERE event_type='production.authority_checkpoint' LIMIT 1"
                 ).fetchone()
                 if existing is not None:
+                    if marker is None:
+                        connection.rollback()
+                        return
+                    self._validate_pending_checkpoint_row(
+                        existing,
+                        marker=marker,
+                        workspace_id=self._workspace_id,
+                        bootstrap_actor_id=bootstrap_actor_id,
+                    )
+                    verify_authority_snapshot_connection(connection)
                     connection.rollback()
-                    return
-                snapshot = self._current_authority_snapshot(connection)
-                epoch_row = connection.execute(
-                    "SELECT value FROM workspace_meta WHERE key='audit_epoch'"
-                ).fetchone()
-                if epoch_row is None:
-                    raise WorkspaceStorageError("workspace audit epoch is missing")
-                self._append_ledger_event(
-                    connection,
-                    workspace_id=self._workspace_id,
-                    audit_epoch=str(epoch_row["value"]),
-                    event_type="production.authority_checkpoint",
-                    payload={"authority_snapshot": self._snapshot_payload(snapshot)},
-                    actor_id=bootstrap_actor_id,
-                    actor_scope_id=self._workspace_id,
-                    auth_method="local-install-bootstrap",
-                    policy_version="production-bootstrap-v1",
-                )
-                connection.commit()
+                    should_advance_anchor = True
+                else:
+                    snapshot = self._current_authority_snapshot(connection)
+                    epoch_row = connection.execute(
+                        "SELECT value FROM workspace_meta WHERE key='audit_epoch'"
+                    ).fetchone()
+                    if epoch_row is None:
+                        raise WorkspaceStorageError("workspace audit epoch is missing")
+                    self._append_ledger_event(
+                        connection,
+                        workspace_id=self._workspace_id,
+                        audit_epoch=str(epoch_row["value"]),
+                        event_type="production.authority_checkpoint",
+                        payload={"authority_snapshot": self._snapshot_payload(snapshot)},
+                        actor_id=bootstrap_actor_id,
+                        actor_scope_id=self._workspace_id,
+                        auth_method="local-install-bootstrap",
+                        policy_version="production-bootstrap-v1",
+                    )
+                    connection.commit()
+                    should_advance_anchor = True
             except Exception:
                 connection.rollback()
                 raise
-        self._advance_anchor()
+        if should_advance_anchor:
+            self._advance_anchor()
 
     def _verify_authority_snapshot_consistency(self) -> None:
         with self._connect() as connection:
