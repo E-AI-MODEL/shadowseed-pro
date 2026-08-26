@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import shutil
 import sqlite3
+import threading
 from pathlib import Path
 
 import pytest
@@ -10,6 +11,7 @@ import pytest
 from shadowseed.application.auth import ActorContext, EVIDENCE_VERIFY
 from shadowseed.application.workspace import WorkspaceService
 from shadowseed.storage.integrity import canonical_json, event_digest
+from shadowseed.storage.production import ProductionSQLiteWorkspaceRepository
 from shadowseed.storage.schema import SCHEMA_VERSION
 from shadowseed.storage.sqlite import SQLiteWorkspaceRepository, WorkspaceStorageError
 from shadowseed.workbench.controller import WorkbenchController
@@ -133,6 +135,97 @@ def test_v1_workspace_migrates_backup_first_and_preserves_state(tmp_path: Path) 
 
     repository.initialize()
     assert list(tmp_path.glob("workspace.db.pre-migration-v1-to-v2.bak")) == [backup]
+
+
+
+def test_v1_interrupted_bootstrap_replays_protected_payload_without_backup(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "workspace"
+    root.mkdir()
+    (root / "workspace.id").write_text("workspace::legacy\n", encoding="utf-8")
+    _create_v1_workspace(root / "workspace.db")
+    workspace = WorkspaceService(root)
+
+    def interrupt_genesis(*, workspace_id: str, bootstrap_actor_id: str) -> None:
+        del workspace_id, bootstrap_actor_id
+        raise RuntimeError("synthetic v1 pre-genesis interruption")
+
+    monkeypatch.setattr(
+        workspace.repository, "_create_production_genesis", interrupt_genesis
+    )
+    with pytest.raises(RuntimeError, match="synthetic v1 pre-genesis interruption"):
+        workspace.initialize()
+
+    workspace_id = workspace._read_workspace_id()
+    marker = workspace._integrity_dir(workspace_id) / "bootstrap.pending"
+    marker_payload = json.loads(marker.read_text(encoding="utf-8"))
+    planned_payload = marker_payload["bootstrap_payload"]
+    backup = root / "workspace.db.pre-migration-v1-to-v2.bak"
+    assert planned_payload["pre_production_history"] is True
+    assert len(planned_payload["source_database_sha256"]) == 64
+    backup.unlink()
+
+    reopened = WorkspaceService(root)
+    reopened.initialize()
+    with sqlite3.connect(reopened.paths.database) as connection:
+        committed = json.loads(
+            connection.execute(
+                "SELECT payload_json FROM production_ledger WHERE sequence_no = 1"
+            ).fetchone()[0]
+        )
+    assert committed == planned_payload
+    assert not marker.exists()
+
+
+def test_concurrent_production_bind_serializes_bootstrap(tmp_path: Path) -> None:
+    database = tmp_path / "workspace.db"
+    seed_repository = ProductionSQLiteWorkspaceRepository(database)
+    seed_repository.initialize()
+    first = ProductionSQLiteWorkspaceRepository(database)
+    second = ProductionSQLiteWorkspaceRepository(database)
+    workspace_id = "workspace::concurrent"
+    bootstrap_actor_id = "local-owner::concurrent"
+    integrity_dir = tmp_path / "integrity"
+    barrier = threading.Barrier(2)
+    reports: list[dict[str, object]] = []
+    errors: list[BaseException] = []
+
+    def bind(repository: ProductionSQLiteWorkspaceRepository) -> None:
+        try:
+            barrier.wait(timeout=5)
+            reports.append(
+                repository.bind_production(
+                    workspace_id=workspace_id,
+                    integrity_dir=integrity_dir,
+                    bootstrap_actor_id=bootstrap_actor_id,
+                )
+            )
+        except BaseException as exc:
+            errors.append(exc)
+
+    threads = [
+        threading.Thread(target=bind, args=(first,)),
+        threading.Thread(target=bind, args=(second,)),
+    ]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=20)
+
+    assert all(not thread.is_alive() for thread in threads)
+    assert errors == []
+    assert len(reports) == 2
+    with sqlite3.connect(database) as connection:
+        events = connection.execute(
+            "SELECT event_type, COUNT(*) FROM production_ledger "
+            "GROUP BY event_type ORDER BY event_type"
+        ).fetchall()
+    assert events == [
+        ("production.authority_checkpoint", 1),
+        ("production.bootstrap", 1),
+    ]
+    assert not (integrity_dir / "bootstrap.pending").exists()
 
 
 def test_v1_product_bootstrap_creates_explicit_preproduction_genesis(tmp_path: Path) -> None:

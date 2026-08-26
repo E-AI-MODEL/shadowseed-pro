@@ -186,6 +186,7 @@ class ProductionSQLiteWorkspaceRepository(SQLiteWorkspaceRepository):
             candidate.close()
             candidate = None
             os.replace(temporary, target)
+            self._fsync_directory(target.parent)
         except Exception:
             temporary.unlink(missing_ok=True)
             raise
@@ -244,20 +245,21 @@ class ProductionSQLiteWorkspaceRepository(SQLiteWorkspaceRepository):
         if self._workspace_id is None:
             raise WorkspaceStorageError("production workspace is not bound")
         with self._connect() as connection:
-            existing = connection.execute(
-                "SELECT 1 FROM production_ledger "
-                "WHERE event_type='production.authority_checkpoint' LIMIT 1"
-            ).fetchone()
-            if existing is not None:
-                return
-            snapshot = self._current_authority_snapshot(connection)
-            epoch_row = connection.execute(
-                "SELECT value FROM workspace_meta WHERE key='audit_epoch'"
-            ).fetchone()
-            if epoch_row is None:
-                raise WorkspaceStorageError("workspace audit epoch is missing")
             try:
                 connection.execute("BEGIN IMMEDIATE")
+                existing = connection.execute(
+                    "SELECT 1 FROM production_ledger "
+                    "WHERE event_type='production.authority_checkpoint' LIMIT 1"
+                ).fetchone()
+                if existing is not None:
+                    connection.rollback()
+                    return
+                snapshot = self._current_authority_snapshot(connection)
+                epoch_row = connection.execute(
+                    "SELECT value FROM workspace_meta WHERE key='audit_epoch'"
+                ).fetchone()
+                if epoch_row is None:
+                    raise WorkspaceStorageError("workspace audit epoch is missing")
                 self._append_ledger_event(
                     connection,
                     workspace_id=self._workspace_id,
