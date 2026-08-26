@@ -715,6 +715,16 @@ class SQLiteWorkspaceRepository:
                         "workspace identity mismatch during bootstrap"
                     )
 
+                live_authority_baseline = self._workspace_authority_baseline(connection)
+                protected_authority_baseline = str(
+                    marker["bootstrap_payload"]["authority_baseline"]
+                )
+                if live_authority_baseline != protected_authority_baseline:
+                    raise WorkspaceStorageError(
+                        "production bootstrap authority baseline changed after protected "
+                        "commitment; explicit recovery is required"
+                    )
+
                 planned = self._bootstrap_event_row(connection, marker)
                 expected_hash = str(marker["expected_genesis_hash"])
                 if event_digest(planned) != expected_hash:

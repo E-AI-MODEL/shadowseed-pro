@@ -211,13 +211,17 @@ class ProductionSQLiteWorkspaceRepository(SQLiteWorkspaceRepository):
         integrity_dir: str | Path,
         bootstrap_actor_id: str,
     ) -> dict[str, Any]:
-        super().bind_production(
-            workspace_id=workspace_id,
-            integrity_dir=integrity_dir,
-            bootstrap_actor_id=bootstrap_actor_id,
-        )
-        self._ensure_authority_checkpoint(bootstrap_actor_id=bootstrap_actor_id)
-        return self.verify_production_integrity()
+        if not workspace_id.startswith("workspace::"):
+            raise WorkspaceStorageError("production workspace_id is invalid")
+        self._integrity_dir = Path(integrity_dir).expanduser().resolve()
+        with self._bootstrap_lock():
+            self._bind_production_locked(
+                workspace_id=workspace_id,
+                integrity_dir=self._integrity_dir,
+                bootstrap_actor_id=bootstrap_actor_id,
+            )
+            self._ensure_authority_checkpoint(bootstrap_actor_id=bootstrap_actor_id)
+            return self.verify_production_integrity()
 
     def verify_production_integrity(self) -> dict[str, Any]:
         report = super().verify_production_integrity()
