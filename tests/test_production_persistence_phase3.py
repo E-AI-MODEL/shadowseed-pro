@@ -9,6 +9,7 @@ import pytest
 
 from shadowseed.application.auth import ActorContext, EVIDENCE_VERIFY
 from shadowseed.application.workspace import WorkspaceService
+from shadowseed.storage.integrity import canonical_json, event_digest
 from shadowseed.storage.schema import SCHEMA_VERSION
 from shadowseed.storage.sqlite import SQLiteWorkspaceRepository, WorkspaceStorageError
 from shadowseed.workbench.controller import WorkbenchController
@@ -423,10 +424,15 @@ def test_interrupted_initial_bootstrap_is_retryable_without_resetting_continuity
             "SELECT COUNT(*) FROM production_ledger"
         ).fetchone()[0]
     assert ledger_count == 0
-    assert marker.read_text(encoding="utf-8").strip() == workspace_id
-    # Genesis was interrupted at function entry, so this proves the protected
-    # key rename was directory-synced before any genesis DB commit could run.
-    assert durability_barriers == [integrity_dir]
+    marker_payload = json.loads(marker.read_text(encoding="utf-8"))
+    assert marker_payload["workspace_id"] == workspace_id
+    assert len(marker_payload["expected_genesis_hash"]) == 64
+    integrity_location = integrity_dir.parent
+    integrity_root = integrity_location.parent
+    assert integrity_dir in durability_barriers
+    assert integrity_location in durability_barriers
+    assert integrity_root in durability_barriers
+    assert integrity_root.parent in durability_barriers
     assert protected_file_barriers == [key]
 
     reopened = WorkspaceService(root)
@@ -435,7 +441,7 @@ def test_interrupted_initial_bootstrap_is_retryable_without_resetting_continuity
     assert key.read_bytes() == key_before
     assert anchor.is_file()
     assert not marker.exists()
-    assert durability_barriers == [integrity_dir, integrity_dir]
+    assert durability_barriers[-1] == integrity_dir
     assert protected_file_barriers[0] == key
     assert protected_file_barriers[1:]
     assert all(path == anchor for path in protected_file_barriers[1:])
@@ -471,7 +477,13 @@ def test_interrupted_bootstrap_after_genesis_reseals_before_normal_use(
             "SELECT event_type FROM production_ledger ORDER BY sequence_no"
         ).fetchall()
     assert events == [("production.bootstrap",)]
-    assert marker.read_text(encoding="utf-8").strip() == workspace_id
+    marker_payload = json.loads(marker.read_text(encoding="utf-8"))
+    assert marker_payload["workspace_id"] == workspace_id
+    with sqlite3.connect(workspace.paths.database) as connection:
+        committed_hash = connection.execute(
+            "SELECT event_hash FROM production_ledger WHERE sequence_no = 1"
+        ).fetchone()[0]
+    assert committed_hash == marker_payload["expected_genesis_hash"]
 
     monkeypatch.setattr(sqlite_storage, "write_anchor", original_write_anchor)
     reopened = WorkspaceService(root)
@@ -481,6 +493,62 @@ def test_interrupted_bootstrap_after_genesis_reseals_before_normal_use(
     assert anchor.is_file()
     assert not marker.exists()
     assert reopened.repository.verify_production_integrity()["sequence_no"] >= 2
+
+
+def test_interrupted_bootstrap_rejects_rewritten_genesis_before_reseal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import shadowseed.storage.sqlite as sqlite_storage
+
+    root = tmp_path / "workspace"
+    workspace = WorkspaceService(root)
+    original_write_anchor = sqlite_storage.write_anchor
+
+    def interrupt_anchor(*args, **kwargs) -> None:
+        del args, kwargs
+        raise OSError("synthetic post-genesis interruption")
+
+    monkeypatch.setattr(sqlite_storage, "write_anchor", interrupt_anchor)
+    with pytest.raises(OSError, match="synthetic post-genesis interruption"):
+        workspace.initialize()
+
+    workspace_id = workspace._read_workspace_id()
+    integrity_dir = workspace._integrity_dir(workspace_id)
+    anchor = integrity_dir / "anchor.json"
+    marker = integrity_dir / "bootstrap.pending"
+    marker_payload = json.loads(marker.read_text(encoding="utf-8"))
+    assert not anchor.exists()
+
+    with sqlite3.connect(workspace.paths.database) as connection:
+        connection.row_factory = sqlite3.Row
+        row = dict(
+            connection.execute(
+                "SELECT * FROM production_ledger WHERE sequence_no = 1"
+            ).fetchone()
+        )
+        payload = json.loads(row["payload_json"])
+        payload["authority_baseline"] = "f" * 64
+        row["payload_json"] = canonical_json(payload)
+        digest_input = {
+            key: value for key, value in row.items() if key != "event_hash"
+        }
+        rewritten_hash = event_digest(digest_input)
+        assert rewritten_hash != marker_payload["expected_genesis_hash"]
+        connection.execute(
+            "UPDATE production_ledger SET payload_json = ?, event_hash = ? "
+            "WHERE sequence_no = 1",
+            (row["payload_json"], rewritten_hash),
+        )
+        connection.commit()
+
+    monkeypatch.setattr(sqlite_storage, "write_anchor", original_write_anchor)
+    reopened = WorkspaceService(root)
+    with pytest.raises(
+        WorkspaceStorageError, match="protected genesis commitment"
+    ):
+        reopened.initialize()
+    assert not anchor.exists()
+    assert marker.exists()
 
 
 def test_empty_replacement_database_cannot_reset_protected_history(tmp_path: Path) -> None:
