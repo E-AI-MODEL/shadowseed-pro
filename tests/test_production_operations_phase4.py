@@ -65,7 +65,7 @@ def test_operational_log_is_restricted_before_first_write(
     original_fdopen = operations.os.fdopen
 
     def checked_fdopen(fd: int, *args, **kwargs):
-        # Observe the descriptor mode before fdopen can write the first JSON line.
+        # Observe mode at the final boundary before the first JSON bytes can be written.
         observed_modes.append(stat.S_IMODE(os.fstat(fd).st_mode))
         return original_fdopen(fd, *args, **kwargs)
 
