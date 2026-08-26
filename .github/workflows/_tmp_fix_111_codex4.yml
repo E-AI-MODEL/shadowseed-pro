@@ -1,0 +1,114 @@
+name: Temporary PR 111 integrity key durability updater
+
+on:
+  push:
+    branches: [fix/production-local-integrity-guards]
+
+permissions:
+  contents: write
+
+env:
+  GRADIO_ANALYTICS_ENABLED: "False"
+
+jobs:
+  patch-test-and-clean:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: fix/production-local-integrity-guards
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
+      - name: Apply integrity key durability fix
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          integrity_path = Path("src/shadowseed/storage/integrity.py")
+          integrity_text = integrity_path.read_text(encoding="utf-8")
+          anchor = '''def create_integrity_key(path: Path) -> bytes:\n'''
+          helper = '''def _fsync_parent_directory(path: Path) -> None:\n    if os.name == "nt":\n        return\n    flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)\n    fd = os.open(path.parent, flags)\n    try:\n        os.fsync(fd)\n    finally:\n        os.close(fd)\n\n\n'''
+          if "def _fsync_parent_directory(" in integrity_text:
+              raise SystemExit("integrity parent fsync helper already exists")
+          if integrity_text.count(anchor) != 1:
+              raise SystemExit("create_integrity_key anchor changed")
+          integrity_text = integrity_text.replace(anchor, helper + anchor)
+
+          old_key = '''    os.replace(temporary, path)\n    _require_private_posix_file(path, label="protected integrity key")\n'''
+          new_key = '''    os.replace(temporary, path)\n    _fsync_parent_directory(path)\n    _require_private_posix_file(path, label="protected integrity key")\n'''
+          if integrity_text.count(old_key) != 1:
+              raise SystemExit("integrity key rename target changed")
+          integrity_text = integrity_text.replace(old_key, new_key)
+
+          old_anchor = '''    os.replace(temporary, path)\n    _require_private_posix_file(path, label="protected integrity anchor")\n'''
+          new_anchor = '''    os.replace(temporary, path)\n    _fsync_parent_directory(path)\n    _require_private_posix_file(path, label="protected integrity anchor")\n'''
+          if integrity_text.count(old_anchor) != 1:
+              raise SystemExit("integrity anchor rename target changed")
+          integrity_path.write_text(integrity_text.replace(old_anchor, new_anchor), encoding="utf-8")
+
+          tests_path = Path("tests/test_production_persistence_phase3.py")
+          tests_text = tests_path.read_text(encoding="utf-8")
+          start = tests_text.index(
+              "def test_interrupted_initial_bootstrap_is_retryable_without_resetting_continuity("
+          )
+          end = tests_text.index(
+              "def test_interrupted_bootstrap_after_genesis_reseals_before_normal_use(",
+              start,
+          )
+          block = tests_text[start:end]
+
+          old_setup = '''    durability_barriers: list[Path] = []\n    original_fsync_directory = SQLiteWorkspaceRepository._fsync_directory\n\n    def record_fsync_directory(path: Path) -> None:\n        durability_barriers.append(path)\n        original_fsync_directory(path)\n\n    monkeypatch.setattr(\n        SQLiteWorkspaceRepository,\n        "_fsync_directory",\n        staticmethod(record_fsync_directory),\n    )\n\n'''
+          new_setup = '''    import shadowseed.storage.integrity as integrity_storage\n\n    durability_barriers: list[Path] = []\n    protected_file_barriers: list[Path] = []\n    original_fsync_directory = SQLiteWorkspaceRepository._fsync_directory\n    original_fsync_parent = integrity_storage._fsync_parent_directory\n\n    def record_fsync_directory(path: Path) -> None:\n        durability_barriers.append(path)\n        original_fsync_directory(path)\n\n    def record_fsync_parent(path: Path) -> None:\n        protected_file_barriers.append(path)\n        original_fsync_parent(path)\n\n    monkeypatch.setattr(\n        SQLiteWorkspaceRepository,\n        "_fsync_directory",\n        staticmethod(record_fsync_directory),\n    )\n    monkeypatch.setattr(\n        integrity_storage, "_fsync_parent_directory", record_fsync_parent\n    )\n\n'''
+          if block.count(old_setup) != 1:
+              raise SystemExit("bootstrap durability setup target changed")
+          block = block.replace(old_setup, new_setup)
+
+          old_mid = '''    assert ledger_count == 0\n    assert marker.read_text(encoding="utf-8").strip() == workspace_id\n\n    reopened = WorkspaceService(root)\n'''
+          new_mid = '''    assert ledger_count == 0\n    assert marker.read_text(encoding="utf-8").strip() == workspace_id\n    assert durability_barriers == [integrity_dir]\n    assert protected_file_barriers == [key]\n\n    reopened = WorkspaceService(root)\n'''
+          if block.count(old_mid) != 1:
+              raise SystemExit("bootstrap pre-genesis durability assertion target changed")
+          block = block.replace(old_mid, new_mid)
+
+          old_final = '''    assert anchor.is_file()\n    assert not marker.exists()\n    assert durability_barriers == [integrity_dir, integrity_dir]\n    assert reopened.repository.verify_production_integrity()["sequence_no"] >= 2\n'''
+          new_final = '''    assert anchor.is_file()\n    assert not marker.exists()\n    assert durability_barriers == [integrity_dir, integrity_dir]\n    assert protected_file_barriers == [key, anchor]\n    assert reopened.repository.verify_production_integrity()["sequence_no"] >= 2\n'''
+          if block.count(old_final) != 1:
+              raise SystemExit("bootstrap final durability assertion target changed")
+          tests_path.write_text(
+              tests_text[:start] + block.replace(old_final, new_final) + tests_text[end:],
+              encoding="utf-8",
+          )
+          PY
+      - name: Sync locked test environment
+        run: uv sync --locked --extra test
+      - name: Run targeted regressions
+        run: >-
+          uv run --no-sync python -m pytest -q
+          tests/test_production_persistence_phase3.py
+          tests/test_production_integrity_permissions_phase4.py
+          tests/test_gate_boundary_completion.py
+          tests/test_production_operations_phase4.py
+      - name: Lint changed Python files
+        run: >-
+          uv run --no-sync ruff check
+          src/shadowseed/storage/integrity.py
+          src/shadowseed/storage/sqlite.py
+          tests/test_production_persistence_phase3.py
+          src/shadowseed/application/operations.py
+          tests/test_gate_boundary_completion.py
+          tests/test_production_operations_phase4.py
+      - name: Commit clean final diff
+        run: |
+          rm .github/workflows/_tmp_fix_111_codex4.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/shadowseed/storage/integrity.py \
+                  tests/test_production_persistence_phase3.py \
+                  .github/workflows/_tmp_fix_111_codex4.yml
+          git commit -m "fix: make protected key and anchor renames durable"
+          git push origin HEAD:fix/production-local-integrity-guards
