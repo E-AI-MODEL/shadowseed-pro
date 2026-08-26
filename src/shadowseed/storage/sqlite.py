@@ -629,17 +629,32 @@ class SQLiteWorkspaceRepository:
 
         if pending is not None:
             with self._connect() as connection:
-                bootstrap_events = connection.execute(
-                    "SELECT event_type FROM production_ledger ORDER BY sequence_no"
-                ).fetchall()
-            if (
-                len(bootstrap_events) != 1
-                or bootstrap_events[0]["event_type"] != "production.bootstrap"
-            ):
-                raise WorkspaceStorageError(
-                    "incomplete production bootstrap cannot be resumed safely; "
-                    "explicit recovery is required"
-                )
+                try:
+                    connection.execute("BEGIN IMMEDIATE")
+                    bootstrap_events = connection.execute(
+                        "SELECT event_type FROM production_ledger ORDER BY sequence_no"
+                    ).fetchall()
+                    if (
+                        len(bootstrap_events) != 1
+                        or bootstrap_events[0]["event_type"] != "production.bootstrap"
+                    ):
+                        raise WorkspaceStorageError(
+                            "incomplete production bootstrap cannot be resumed safely; "
+                            "explicit recovery is required"
+                        )
+                    live_authority_baseline = self._workspace_authority_baseline(connection)
+                    protected_authority_baseline = str(
+                        pending["bootstrap_payload"]["authority_baseline"]
+                    )
+                    if live_authority_baseline != protected_authority_baseline:
+                        raise WorkspaceStorageError(
+                            "production bootstrap authority baseline changed after protected "
+                            "commitment; explicit recovery is required"
+                        )
+                    connection.commit()
+                except Exception:
+                    connection.rollback()
+                    raise
             report = self._verify_chain_only()
             if report["head_hash"] != pending["expected_genesis_hash"]:
                 raise WorkspaceStorageError(

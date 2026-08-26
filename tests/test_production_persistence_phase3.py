@@ -699,6 +699,77 @@ def test_interrupted_bootstrap_after_genesis_reseals_before_normal_use(
     assert reopened.repository.verify_production_integrity()["sequence_no"] >= 2
 
 
+
+def test_interrupted_bootstrap_after_genesis_rejects_live_authority_drift(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import shadowseed.storage.sqlite as sqlite_storage
+
+    root = tmp_path / "workspace"
+    root.mkdir()
+    (root / "workspace.id").write_text("workspace::legacy\n", encoding="utf-8")
+    _create_v1_workspace(root / "workspace.db")
+    workspace = WorkspaceService(root)
+    original_write_anchor = sqlite_storage.write_anchor
+
+    def interrupt_anchor(*args, **kwargs) -> None:
+        del args, kwargs
+        raise OSError("synthetic post-genesis interruption")
+
+    monkeypatch.setattr(sqlite_storage, "write_anchor", interrupt_anchor)
+    with pytest.raises(OSError, match="synthetic post-genesis interruption"):
+        workspace.initialize()
+
+    workspace_id = workspace._read_workspace_id()
+    integrity_dir = workspace._integrity_dir(workspace_id)
+    marker = integrity_dir / "bootstrap.pending"
+    anchor = integrity_dir / "anchor.json"
+    assert marker.is_file()
+    assert not anchor.exists()
+
+    with sqlite3.connect(root / "workspace.db") as connection:
+        events = connection.execute(
+            "SELECT event_type FROM production_ledger ORDER BY sequence_no"
+        ).fetchall()
+        assert events == [("production.bootstrap",)]
+        connection.execute(
+            "UPDATE sessions SET state_json = ? WHERE session_id = 'session::legacy'",
+            (
+                json.dumps(
+                    {
+                        "turn": 0,
+                        "manager": {
+                            "seeds": [
+                                {
+                                    "id": "seed::post-genesis-forged",
+                                    "status": "active",
+                                    "weight": 1.0,
+                                    "trace": [],
+                                    "authority_version": 1,
+                                    "evidence_count": 0,
+                                }
+                            ]
+                        },
+                    }
+                ),
+            ),
+        )
+        connection.commit()
+
+    monkeypatch.setattr(sqlite_storage, "write_anchor", original_write_anchor)
+    reopened = WorkspaceService(root)
+    with pytest.raises(WorkspaceStorageError, match="authority baseline changed"):
+        reopened.initialize()
+
+    assert marker.is_file()
+    assert not anchor.exists()
+    with sqlite3.connect(root / "workspace.db") as connection:
+        events = connection.execute(
+            "SELECT event_type FROM production_ledger ORDER BY sequence_no"
+        ).fetchall()
+    assert events == [("production.bootstrap",)]
+
+
 def test_interrupted_bootstrap_rejects_rewritten_genesis_before_reseal(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
