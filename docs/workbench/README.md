@@ -1,6 +1,6 @@
 # Shadowseed Tester Workbench
 
-The Workbench is the local-first chat surface for testing Shadow Seed Learning in an ordinary LLM conversation. Version 0.7.0 carries forward the low-friction mass-tester path, noncommercial research access, and evidence-measurement tooling while serving as the current production-local assurance candidate. It is not `production-ready/local` until the exact-SHA release-assurance and unchanged-candidate soak requirements are complete.
+The Workbench is the local-first chat surface for testing Shadow Seed Learning in an ordinary LLM conversation. Version 0.7.1 carries forward the low-friction mass-tester path, noncommercial research access, and evidence-measurement tooling while serving as the current production-local assurance candidate. It is not `production-ready/local` until the exact-SHA release-assurance and unchanged-candidate soak requirements are complete.
 
 ```text
 download -> extract/open -> choose model -> create chat -> chat with SSL -> optionally compare one message with SSL off
@@ -20,7 +20,7 @@ Use the download/open route only when a verified GitHub release for the version 
 
 Model weights are intentionally separate. Fixture works offline for mechanics. Ollama uses local installed models. Hugging Face/Sentence Transformers may acquire model material on first use. Hosted OpenAI is explicit and credential-dependent.
 
-A valid 0.7.0 prerelease contains three standalone archives and manifests, `PROVENANCE.json`, `SHA256SUMS`, a Python wheel, source distribution, and `LICENSE`. Frozen bundles must pass their packaged product self-test and carry the exact repository license hash before upload.
+A valid 0.7.1 prerelease contains three standalone archives and manifests, `PROVENANCE.json`, `SHA256SUMS`, a Python wheel, source distribution, and `LICENSE`. Frozen bundles must pass their packaged product self-test and carry the exact repository license hash before upload. The macOS archive must additionally preserve a valid final application seal after every bundle mutation, survive archive extraction, and pass the frozen self-test from the round-tripped app before release.
 
 ## Research access
 
@@ -88,7 +88,7 @@ This makes mass-test data technically collectable and auditable. It does not cre
 
 ## Evidence-efficacy studies are separate
 
-Version 0.6.0 introduced `python -m shadowseed.benchmark.evidence_efficacy` for preregistered research on answer-level effects after verified external support has passed through the canonical `evidence_backed` Gate. That research harness remains available in 0.7.0.
+Version 0.6.0 introduced `python -m shadowseed.benchmark.evidence_efficacy` for preregistered research on answer-level effects after verified external support has passed through the canonical `evidence_backed` Gate. That research harness remains available in 0.7.1.
 
 This is not a Workbench support-data feature. Evidence-efficacy bundles contain content-bearing research data and use baseline-isolated evaluation mechanics. They must not be treated as privacy-minimized support bundles.
 
@@ -126,17 +126,17 @@ shadowseed-workbench
 The optional container route remains available for development/testing:
 
 ```bash
-docker build -f Dockerfile.workbench -t shadowseed-workbench:0.7.0 .
+docker build -f Dockerfile.workbench -t shadowseed-workbench:0.7.1 .
 docker run --rm \
   -p 127.0.0.1:7860:7860 \
   -v shadowseed-data:/data \
-  shadowseed-workbench:0.7.0
+  shadowseed-workbench:0.7.1
 ```
 
 Do not expose this preview directly to an untrusted network.
 
 ## Claim boundary
 
-Version 0.7.0 is the current production-local assurance candidate. Packaging, licensing, tester observations, support-dataset aggregation, release hardening and the existence of an efficacy runner do not establish general answer-quality benefit, semantic truth, hostile-network production security or high-impact deployment readiness. The `production-ready/local` claim remains gated on the exact protected-main release evidence and unchanged-candidate soak defined by the production acceptance contract.
+Version 0.7.1 is the current production-local assurance candidate. Packaging, licensing, tester observations, support-dataset aggregation, release hardening and the existence of an efficacy runner do not establish general answer-quality benefit, semantic truth, hostile-network production security or high-impact deployment readiness. The `production-ready/local` claim remains gated on the exact protected-main release evidence and unchanged-candidate soak defined by the production acceptance contract.
 
 The scientific/authority constraints remain in the canonical runtime. Historical evaluation sessions, benchmark artifacts and compatibility surfaces remain research/provenance material rather than product prerequisites.

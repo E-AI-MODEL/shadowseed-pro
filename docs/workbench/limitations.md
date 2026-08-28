@@ -1,6 +1,6 @@
-# Workbench 0.7.0 limitations
+# Workbench 0.7.1 limitations
 
-Shadowseed Workbench 0.7.0 remains a local research preview and production-local assurance candidate for single-user use. It is not yet a completed `production-ready/local` release, a hostile-network service, a multi-user authorization boundary, or a scientific evidence generator by itself. The noncommercial research access and efficacy instrumentation introduced in 0.6.0 remain available; neither feature upgrades the assurance claim automatically.
+Shadowseed Workbench 0.7.1 remains a local research preview and production-local assurance candidate for single-user use. It is not yet a completed `production-ready/local` release, a hostile-network service, a multi-user authorization boundary, or a scientific evidence generator by itself. The noncommercial research access and efficacy instrumentation introduced in 0.6.0 remain available; neither feature upgrades the assurance claim automatically.
 
 ## Security and deployment
 
@@ -9,6 +9,7 @@ Shadowseed Workbench 0.7.0 remains a local research preview and production-local
 - Remote binding is only for controlled environments that provide their own network/access controls.
 - The Docker image listens on `0.0.0.0` internally; the documented mapping publishes host loopback only.
 - Platform-vendor signing/notarization is separate from checksum/provenance verification and is not implied by the standalone build contract.
+- macOS standalone builds now re-seal the final application after bundle mutations and verify the exact archive after extraction, but native Apple Developer ID signing and notarization are still not claimed unless a release explicitly provides that evidence.
 
 ## Data handling
 
@@ -61,6 +62,7 @@ Shadowseed Workbench 0.7.0 remains a local research preview and production-local
 - Windows, macOS and Linux receive standalone build/self-test coverage.
 - The standalone contract targets Windows amd64, Linux x86_64 and macOS Apple Silicon arm64. Intel/universal macOS support is not implied.
 - Frozen bundles must pass their packaged self-test before upload.
+- macOS bundles must also pass strict code-signature verification before archiving and after the exact ZIP is re-extracted.
 - Model weights are not bundled. Model acquisition, provider availability and credentials remain separate dependencies.
 - The browser UI uses Gradio 6 through the `[workbench]` extra.
 - Workspace schema migration remains conservative; back up valuable prerelease workspaces before upgrades.

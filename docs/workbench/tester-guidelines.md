@@ -1,6 +1,6 @@
 # Workbench tester guidelines
 
-Shadowseed Workbench 0.7.0 is a local research preview and production-local assurance candidate for using Shadow Seed Learning in an ordinary chat. It is not yet a completed `production-ready/local` release. A normal tester should not need to understand the research harness, author a baseline answer, prepare benchmark JSON, install Git, or install a system Python runtime when a verified standalone release is available.
+Shadowseed Workbench 0.7.1 is a local research preview and production-local assurance candidate for using Shadow Seed Learning in an ordinary chat. It is not yet a completed `production-ready/local` release. A normal tester should not need to understand the research harness, author a baseline answer, prepare benchmark JSON, install Git, or install a system Python runtime when a verified standalone release is available.
 
 Repository states/releases containing `LICENSE` are available under PolyForm Noncommercial License 1.0.0. Read the terms before copying, modifying or redistributing the software. Commercial use requires separate permission.
 
@@ -9,6 +9,7 @@ Repository states/releases containing `LICENSE` are available under PolyForm Non
 Useful tester questions include:
 
 - Can a new tester download, open and start the Workbench without Python setup?
+- On macOS, can the exact published ZIP be downloaded, extracted and opened without modifying quarantine attributes or bypassing Gatekeeper?
 - Is it clear which provider and model are active?
 - Can local Ollama models be discovered and selected without copying model IDs by hand?
 - Can a chat be closed and resumed without losing visible turns or audit state?
@@ -63,7 +64,7 @@ When contributing to an actual study, use the collection/study identifier and in
 
 ## Evidence-efficacy studies are not routine tester exports
 
-The evidence-efficacy runner, introduced in 0.6.0 and retained in 0.7.0, is a research harness, not an automatic mode for ordinary tester sessions. Its bundles can contain questions, baseline/SSL answers, seed metadata, Gate decisions and external source references. Do not submit them through the privacy-minimized support-bundle collection path.
+The evidence-efficacy runner, introduced in 0.6.0 and retained in 0.7.1, is a research harness, not an automatic mode for ordinary tester sessions. Its bundles can contain questions, baseline/SSL answers, seed metadata, Gate decisions and external source references. Do not submit them through the privacy-minimized support-bundle collection path.
 
 A valid evidence-efficacy study must be preregistered before interpreting results. A human/researcher must attest external support independently of model output. A blind A/B item is created only when that support passes the normal `evidence_backed` Gate and the authorized seed later surfaces.
 

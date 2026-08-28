@@ -4,7 +4,7 @@
 
 The repository is **research-ready, locally mass-testable, able to produce structured privacy-minimized tester datasets, and equipped for preregistered evidence-backed paired efficacy studies**. Core mechanics, benchmark harnesses, a broad regression suite, a chat-first local Workbench, standalone build contracts, verifiable exports, support-bundle aggregation, candidate review packets, and influence-opportunity accounting are present. This status does not by itself imply `production-ready/local` or general answer-quality benefit.
 
-Source version 0.7.0 is the current production-local assurance candidate. Version identity, production status, and public release availability remain separate facts: describe `v0.7.0` as published only after the fresh immutable tag and verified release assets actually exist, and describe it as `production-ready/local` only after the exact-SHA acceptance and unchanged-candidate soak requirements are complete. The existing `v0.6.0` release and older tags remain immutable historical software references and are not rewritten by this upgrade.
+Source version 0.7.1 is the current production-local assurance candidate. Version identity, production status, and public release availability remain separate facts: describe `v0.7.1` as published only after the fresh immutable tag and verified release assets actually exist, and describe it as `production-ready/local` only after the exact-SHA acceptance and unchanged-candidate soak requirements are complete. The existing `v0.7.0` release and older tags remain immutable historical software references and are not rewritten by this upgrade.
 
 ## Research access
 
@@ -82,9 +82,9 @@ Issue #63 remains the natural home for high-end capability/evidence follow-up. C
 
 The first production target is `production-ready/local`. Its remaining work is release evidence rather than a new SSL authority architecture:
 
-- land the production-local integrity guard fixes on protected `main` and refresh the 0.7.0 candidate from that exact head;
+- land the 0.7.1 release-candidate preparation on protected `main` from the exact macOS sealing fix;
 - obtain successful exact-head required CI plus Linux/macOS/Windows production-local and standalone evidence;
-- create a fresh immutable `v0.7.0` tag on the exact protected-main candidate SHA;
+- create a fresh immutable `v0.7.1` tag on the exact protected-main candidate SHA;
 - publish and verify checksums, provenance, SBOM, lockfile, wheel/sdist, standalone artifacts, license delivery, and trusted pre-publication attestations;
 - pass the read-only Production Release Assurance workflow against that exact tag;
 - complete the required unchanged-candidate soak of at least 24 hours with normal local Workbench use and `shadowseed doctor` evidence;
@@ -94,4 +94,4 @@ Protected-main quality gates are active. Hosted production remains a separate ta
 
 ## Appropriate use today
 
-Appropriate uses include local tester studies, mechanism inspection, controlled experiments, benchmark development, structured support-data collection, candidate-quality review, and preregistered evidence-backed paired studies. The 0.7.0 branch is a production-local assurance candidate, not yet a completed `production-ready/local` release. Do not treat Shadowseed Pro as a certified safety layer for healthcare, finance, employment, law, public administration, education decisions, or autonomous high-impact action.
+Appropriate uses include local tester studies, mechanism inspection, controlled experiments, benchmark development, structured support-data collection, candidate-quality review, and preregistered evidence-backed paired studies. Source version 0.7.1 is a production-local assurance candidate, not yet a completed `production-ready/local` release. Do not treat Shadowseed Pro as a certified safety layer for healthcare, finance, employment, law, public administration, education decisions, or autonomous high-impact action.
