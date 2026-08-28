@@ -8,13 +8,13 @@ Shadowseed Workbench 0.7.1 is a production-local assurance candidate that repair
 - The build fails unless `codesign --verify --deep --strict` accepts the final application bundle.
 - The release ZIP is created only after the final seal is valid.
 - CI re-extracts the exact distributable ZIP, verifies the extracted app seal again, and runs the packaged frozen self-test from that round-tripped application.
-- The standalone manifest records the macOS signature mode and archive round-trip evidence so release verification is tied to the bytes that are actually distributed.
+- The standalone manifest records the final seal-verification and archive round-trip evidence so release verification is tied to the bytes that are actually distributed.
 
 ## macOS acceptance boundary
 
 The 0.7.0 ZIP checksum matched the published release exactly, but the extracted application failed strict code-signature verification because resources had been added after the PyInstaller application seal. Version 0.7.1 closes that packaging and CI gap.
 
-This release does **not** claim native Apple Developer ID signing or notarization unless the published release evidence explicitly demonstrates those controls. The default CI path can use an ad-hoc application signature. Therefore the real acceptance test remains a normal Internet-download path on a supported Mac: download the published ZIP, verify its checksum, extract it normally, and open Shadowseed without removing quarantine attributes or bypassing Gatekeeper.
+This release does **not** claim native Apple Developer ID signing or notarization unless the published release evidence explicitly demonstrates those controls. The current standalone build re-seals the app with an ad-hoc signature. Therefore the real acceptance test remains a normal Internet-download path on a supported Mac: download the published ZIP, verify its checksum, extract it normally, and open Shadowseed without removing quarantine attributes or bypassing Gatekeeper.
 
 ## Production-local status
 
