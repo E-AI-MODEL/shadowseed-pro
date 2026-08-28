@@ -105,6 +105,24 @@ class OperationalEventLog:
                 os.replace(source, target)
         os.replace(self.path, self.path.with_name(f"{self.path.name}.1"))
 
+    def _append_line(self, line: str) -> None:
+        if os.name == "nt":
+            with self.path.open("a", encoding="utf-8", newline="\n") as handle:
+                handle.write(line)
+            return
+
+        flags = os.O_WRONLY | os.O_CREAT | os.O_APPEND
+        fd = os.open(self.path, flags, 0o600)
+        try:
+            os.fchmod(fd, 0o600)
+            handle = os.fdopen(fd, "a", encoding="utf-8", newline="\n")
+            fd = -1
+            with handle:
+                handle.write(line)
+        finally:
+            if fd >= 0:
+                os.close(fd)
+
     def emit(self, event: str, **fields: Any) -> Path:
         event_name = str(event).strip()
         if not event_name or len(event_name) > 128:
@@ -117,7 +135,6 @@ class OperationalEventLog:
         self.logs_dir.mkdir(parents=True, exist_ok=True)
         self._restrict(self.logs_dir, 0o700)
         self._rotate_if_needed()
-        with self.path.open("a", encoding="utf-8", newline="\n") as handle:
-            handle.write(json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n")
-        self._restrict(self.path, 0o600)
+        line = json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n"
+        self._append_line(line)
         return self.path

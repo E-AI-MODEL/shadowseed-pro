@@ -37,6 +37,7 @@ class WorkspaceStorageError(RuntimeError):
 
 
 _SECRET_FRAGMENTS = ("api_key", "apikey", "access_token", "secret", "password")
+_BOOTSTRAP_MARKER_FORMAT_VERSION = 1
 
 
 def _json(value: Any) -> str:
@@ -139,6 +140,7 @@ class SQLiteWorkspaceRepository:
                 if check is None or check[0] != "ok":
                     raise WorkspaceStorageError("pre-migration backup failed integrity check")
             os.replace(temporary, target)
+            self._fsync_directory(target.parent)
         except Exception:
             temporary.unlink(missing_ok=True)
             raise
@@ -200,7 +202,339 @@ class SQLiteWorkspaceRepository:
             (str(SCHEMA_VERSION),),
         )
 
+    @staticmethod
+    def _fsync_directory(path: Path) -> None:
+        if os.name == "nt":
+            return
+        flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+        try:
+            fd = os.open(path, flags)
+        except OSError as exc:
+            raise WorkspaceStorageError(
+                "protected integrity directory is unavailable for durability sync"
+            ) from exc
+        try:
+            os.fsync(fd)
+        except OSError as exc:
+            raise WorkspaceStorageError(
+                "protected integrity directory durability sync failed"
+            ) from exc
+        finally:
+            os.close(fd)
+
+    def _ensure_durable_directory(self, path: Path) -> None:
+        path = Path(path)
+        if path.exists():
+            if not path.is_dir():
+                raise WorkspaceStorageError(
+                    "protected integrity directory path is not a directory"
+                )
+            try:
+                path.chmod(0o700)
+            except OSError:
+                pass
+            return
+
+        missing: list[Path] = []
+        cursor = path
+        while not cursor.exists():
+            parent = cursor.parent
+            if parent == cursor:
+                raise WorkspaceStorageError(
+                    "protected integrity directory has no existing ancestor"
+                )
+            missing.append(cursor)
+            cursor = parent
+        if not cursor.is_dir():
+            raise WorkspaceStorageError(
+                "protected integrity directory ancestor is not a directory"
+            )
+
+        for directory in reversed(missing):
+            try:
+                directory.mkdir()
+            except FileExistsError:
+                if not directory.is_dir():
+                    raise WorkspaceStorageError(
+                        "protected integrity directory path is not a directory"
+                    )
+            try:
+                directory.chmod(0o700)
+            except OSError:
+                pass
+            self._fsync_directory(directory)
+            self._fsync_directory(directory.parent)
+
+    @contextmanager
+    def _bootstrap_lock(self) -> Iterator[None]:
+        if self._integrity_dir is None:
+            raise WorkspaceStorageError("production integrity directory is not bound")
+        self._ensure_durable_directory(self._integrity_dir)
+        path = self._integrity_dir / "bootstrap.lock"
+        connection: sqlite3.Connection | None = None
+        try:
+            connection = sqlite3.connect(path, timeout=30.0, isolation_level=None)
+            connection.execute("BEGIN EXCLUSIVE")
+        except sqlite3.Error as exc:
+            if connection is not None:
+                connection.close()
+            raise WorkspaceStorageError(
+                "production bootstrap lock could not be acquired"
+            ) from exc
+        assert connection is not None
+        try:
+            yield
+        finally:
+            try:
+                connection.rollback()
+            finally:
+                connection.close()
+
+    def _bootstrap_marker_path(self) -> Path:
+        if self._integrity_dir is None:
+            raise WorkspaceStorageError("production integrity directory is not bound")
+        return self._integrity_dir / "bootstrap.pending"
+
+    @staticmethod
+    def _validate_bootstrap_marker_payload(payload: Any) -> dict[str, Any]:
+        if not isinstance(payload, dict):
+            raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        expected_keys = {
+            "format_version",
+            "workspace_id",
+            "audit_epoch",
+            "event_id",
+            "created_at",
+            "bootstrap_actor_id",
+            "bootstrap_payload",
+            "expected_genesis_hash",
+        }
+        if set(payload) != expected_keys:
+            raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        if payload.get("format_version") != _BOOTSTRAP_MARKER_FORMAT_VERSION:
+            raise WorkspaceStorageError("protected bootstrap marker format is unsupported")
+        workspace_id = payload.get("workspace_id")
+        audit_epoch = payload.get("audit_epoch")
+        event_id = payload.get("event_id")
+        created_at = payload.get("created_at")
+        bootstrap_actor_id = payload.get("bootstrap_actor_id")
+        bootstrap_payload = payload.get("bootstrap_payload")
+        expected_genesis_hash = payload.get("expected_genesis_hash")
+        if not isinstance(workspace_id, str) or not workspace_id.startswith("workspace::"):
+            raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        if not isinstance(audit_epoch, str) or not audit_epoch.startswith("epoch::"):
+            raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        if not isinstance(event_id, str) or not event_id.startswith("ledger::"):
+            raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        if not isinstance(created_at, str) or not created_at:
+            raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        if not isinstance(bootstrap_actor_id, str) or not bootstrap_actor_id:
+            raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        if not isinstance(bootstrap_payload, dict) or set(bootstrap_payload) != {
+            "pre_production_history",
+            "source_schema_version",
+            "source_database_sha256",
+            "authority_baseline",
+        }:
+            raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        pre_production_history = bootstrap_payload.get("pre_production_history")
+        source_schema_version = bootstrap_payload.get("source_schema_version")
+        source_database_sha256 = bootstrap_payload.get("source_database_sha256")
+        authority_baseline = bootstrap_payload.get("authority_baseline")
+        if not isinstance(pre_production_history, bool):
+            raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        if source_schema_version not in {1, SCHEMA_VERSION}:
+            raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        if pre_production_history != (source_schema_version == 1):
+            raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        if pre_production_history:
+            if (
+                not isinstance(source_database_sha256, str)
+                or len(source_database_sha256) != 64
+                or any(
+                    character not in "0123456789abcdef"
+                    for character in source_database_sha256
+                )
+            ):
+                raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        elif source_database_sha256 is not None:
+            raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        if (
+            not isinstance(authority_baseline, str)
+            or len(authority_baseline) != 64
+            or any(
+                character not in "0123456789abcdef"
+                for character in authority_baseline
+            )
+        ):
+            raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        if (
+            not isinstance(expected_genesis_hash, str)
+            or len(expected_genesis_hash) != 64
+            or any(character not in "0123456789abcdef" for character in expected_genesis_hash)
+        ):
+            raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        return dict(payload)
+
+    def _read_bootstrap_marker(self) -> dict[str, Any] | None:
+        path = self._bootstrap_marker_path()
+        if not path.exists():
+            return None
+        if not path.is_file():
+            raise WorkspaceStorageError("protected bootstrap marker is invalid")
+        if os.name != "nt":
+            try:
+                mode = path.stat().st_mode & 0o777
+            except OSError as exc:
+                raise WorkspaceStorageError(
+                    "protected bootstrap marker is unavailable"
+                ) from exc
+            if mode & 0o077:
+                raise WorkspaceStorageError(
+                    "protected bootstrap marker permissions are too broad"
+                )
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise WorkspaceStorageError(
+                "protected bootstrap marker is unavailable or malformed"
+            ) from exc
+        return self._validate_bootstrap_marker_payload(payload)
+
+    def _production_bootstrap_payload(
+        self, connection: sqlite3.Connection
+    ) -> dict[str, Any]:
+        backup = self._pre_migration_backup_path(1)
+        pre_production_history = backup.is_file()
+        source_schema = 1 if pre_production_history else SCHEMA_VERSION
+        source_digest = _file_sha256(backup) if pre_production_history else None
+        return {
+            "pre_production_history": pre_production_history,
+            "source_schema_version": source_schema,
+            "source_database_sha256": source_digest,
+            "authority_baseline": self._workspace_authority_baseline(connection),
+        }
+
+    def _bootstrap_event_row(
+        self,
+        connection: sqlite3.Connection,
+        marker: Mapping[str, Any],
+    ) -> dict[str, Any]:
+        return {
+            "sequence_no": 1,
+            "event_id": str(marker["event_id"]),
+            "workspace_id": str(marker["workspace_id"]),
+            "audit_epoch": str(marker["audit_epoch"]),
+            "session_id": None,
+            "seed_id": None,
+            "event_type": "production.bootstrap",
+            "request_id": None,
+            "actor_id": str(marker["bootstrap_actor_id"]),
+            "actor_scope_id": str(marker["workspace_id"]),
+            "capability": None,
+            "auth_method": "local-install-bootstrap",
+            "policy_version": "production-bootstrap-v1",
+            "payload_json": _json(marker["bootstrap_payload"]),
+            "previous_hash": GENESIS_HASH,
+            "created_at": str(marker["created_at"]),
+            "event_format_version": EVENT_FORMAT_VERSION,
+        }
+
+    def _prepare_bootstrap_marker(
+        self, *, workspace_id: str, bootstrap_actor_id: str
+    ) -> dict[str, Any]:
+        with self._connect() as connection:
+            existing = connection.execute(
+                "SELECT COUNT(*) FROM production_ledger"
+            ).fetchone()
+            if existing is None or int(existing[0]) != 0:
+                raise WorkspaceStorageError("production genesis already exists")
+            marker: dict[str, Any] = {
+                "format_version": _BOOTSTRAP_MARKER_FORMAT_VERSION,
+                "workspace_id": workspace_id,
+                "audit_epoch": f"epoch::{uuid4()}",
+                "event_id": f"ledger::{uuid4()}",
+                "created_at": datetime.now().isoformat(),
+                "bootstrap_actor_id": bootstrap_actor_id,
+                "bootstrap_payload": self._production_bootstrap_payload(connection),
+                "expected_genesis_hash": "0" * 64,
+            }
+            planned = self._bootstrap_event_row(connection, marker)
+        marker["expected_genesis_hash"] = event_digest(planned)
+        return self._validate_bootstrap_marker_payload(marker)
+
+    def _ensure_bootstrap_marker(self, marker: Mapping[str, Any]) -> None:
+        marker_payload = self._validate_bootstrap_marker_payload(dict(marker))
+        path = self._bootstrap_marker_path()
+        existing = self._read_bootstrap_marker()
+        if existing is not None:
+            if existing != marker_payload:
+                raise WorkspaceStorageError(
+                    "protected bootstrap marker does not match pending genesis"
+                )
+            return
+
+        self._ensure_durable_directory(path.parent)
+        temporary = path.with_name(path.name + ".tmp")
+        temporary.unlink(missing_ok=True)
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+        fd = os.open(temporary, flags, 0o600)
+        try:
+            if os.name != "nt":
+                os.fchmod(fd, 0o600)
+            handle = os.fdopen(fd, "w", encoding="utf-8", newline="\n")
+            fd = -1
+            with handle:
+                handle.write(_json(marker_payload) + "\n")
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temporary, path)
+            self._fsync_directory(path.parent)
+            try:
+                path.chmod(0o600)
+            except OSError:
+                pass
+        finally:
+            if fd >= 0:
+                os.close(fd)
+            temporary.unlink(missing_ok=True)
+
+        if self._read_bootstrap_marker() != marker_payload:
+            raise WorkspaceStorageError("protected bootstrap marker could not be verified")
+
+    def _clear_bootstrap_marker(self, workspace_id: str) -> None:
+        path = self._bootstrap_marker_path()
+        marker = self._read_bootstrap_marker()
+        if marker is None or marker["workspace_id"] != workspace_id:
+            raise WorkspaceStorageError(
+                "protected bootstrap marker is missing or does not match workspace identity"
+            )
+        try:
+            path.unlink()
+            self._fsync_directory(path.parent)
+        except OSError as exc:
+            raise WorkspaceStorageError(
+                "protected bootstrap marker could not be cleared"
+            ) from exc
+
     def bind_production(
+        self,
+        *,
+        workspace_id: str,
+        integrity_dir: str | Path,
+        bootstrap_actor_id: str,
+    ) -> dict[str, Any]:
+        if not workspace_id.startswith("workspace::"):
+            raise WorkspaceStorageError("production workspace_id is invalid")
+        self._integrity_dir = Path(integrity_dir).expanduser().resolve()
+        with self._bootstrap_lock():
+            return self._bind_production_locked(
+                workspace_id=workspace_id,
+                integrity_dir=self._integrity_dir,
+                bootstrap_actor_id=bootstrap_actor_id,
+            )
+
+    def _bind_production_locked(
         self,
         *,
         workspace_id: str,
@@ -230,36 +564,126 @@ class SQLiteWorkspaceRepository:
                 connection.execute("SELECT COUNT(*) FROM production_ledger").fetchone()[0]
             )
 
+        pending = self._read_bootstrap_marker()
         if stored_workspace is not None and stored_workspace["value"] != workspace_id:
             raise WorkspaceStorageError(
                 "workspace identity does not match the production database"
             )
+        if pending is not None and pending["workspace_id"] != workspace_id:
+            raise WorkspaceStorageError(
+                "protected bootstrap marker does not match workspace identity"
+            )
+        if pending is not None and pending["bootstrap_actor_id"] != bootstrap_actor_id:
+            raise WorkspaceStorageError(
+                "protected bootstrap marker does not match bootstrap actor"
+            )
 
         if ledger_count == 0:
+            if self._anchor_path.exists():
+                raise WorkspaceStorageError(
+                    "production ledger history is missing while protected integrity "
+                    "material exists; explicit recovery is required"
+                )
+            if self._key_path.exists() and pending is None:
+                raise WorkspaceStorageError(
+                    "production ledger history is missing while protected integrity "
+                    "material exists; explicit recovery is required"
+                )
+            if pending is None:
+                pending = self._prepare_bootstrap_marker(
+                    workspace_id=workspace_id,
+                    bootstrap_actor_id=bootstrap_actor_id,
+                )
+                self._ensure_bootstrap_marker(pending)
+
             key = create_integrity_key(self._key_path)
             self._create_production_genesis(
                 workspace_id=workspace_id,
                 bootstrap_actor_id=bootstrap_actor_id,
             )
             report = self._verify_chain_only()
-            epoch = str(report["audit_epoch"])
+            if report["head_hash"] != pending["expected_genesis_hash"]:
+                raise WorkspaceStorageError(
+                    "production bootstrap genesis does not match protected commitment; "
+                    "explicit recovery is required"
+                )
             write_anchor(
                 self._anchor_path,
                 AnchorState(
                     workspace_id=workspace_id,
-                    audit_epoch=epoch,
+                    audit_epoch=str(report["audit_epoch"]),
                     sequence_no=int(report["sequence_no"]),
                     head_hash=str(report["head_hash"]),
                     key_id=key_id(key),
                 ),
                 key,
             )
-            return self._verify_bound_integrity(recover_anchor=False)
+            verified = self._verify_bound_integrity(recover_anchor=False)
+            self._clear_bootstrap_marker(workspace_id)
+            return verified
 
         if stored_workspace is None:
             raise WorkspaceStorageError(
                 "production ledger exists without bound workspace identity"
             )
+
+        if pending is not None:
+            with self._connect() as connection:
+                try:
+                    connection.execute("BEGIN IMMEDIATE")
+                    bootstrap_events = connection.execute(
+                        "SELECT event_type FROM production_ledger ORDER BY sequence_no"
+                    ).fetchall()
+                    if (
+                        len(bootstrap_events) != 1
+                        or bootstrap_events[0]["event_type"] != "production.bootstrap"
+                    ):
+                        raise WorkspaceStorageError(
+                            "incomplete production bootstrap cannot be resumed safely; "
+                            "explicit recovery is required"
+                        )
+                    live_authority_baseline = self._workspace_authority_baseline(connection)
+                    protected_authority_baseline = str(
+                        pending["bootstrap_payload"]["authority_baseline"]
+                    )
+                    if live_authority_baseline != protected_authority_baseline:
+                        raise WorkspaceStorageError(
+                            "production bootstrap authority baseline changed after protected "
+                            "commitment; explicit recovery is required"
+                        )
+                    connection.commit()
+                except Exception:
+                    connection.rollback()
+                    raise
+            report = self._verify_chain_only()
+            if report["head_hash"] != pending["expected_genesis_hash"]:
+                raise WorkspaceStorageError(
+                    "incomplete production bootstrap does not match protected genesis "
+                    "commitment; explicit recovery is required"
+                )
+            if not self._key_path.is_file():
+                raise WorkspaceStorageError(
+                    "protected integrity material is missing; explicit recovery is required"
+                )
+            key = load_integrity_key(self._key_path)
+            if self._anchor_path.is_file():
+                verified = self._verify_bound_integrity(recover_anchor=False)
+            else:
+                write_anchor(
+                    self._anchor_path,
+                    AnchorState(
+                        workspace_id=workspace_id,
+                        audit_epoch=str(report["audit_epoch"]),
+                        sequence_no=int(report["sequence_no"]),
+                        head_hash=str(report["head_hash"]),
+                        key_id=key_id(key),
+                    ),
+                    key,
+                )
+                verified = self._verify_bound_integrity(recover_anchor=False)
+            self._clear_bootstrap_marker(workspace_id)
+            return verified
+
         if not self._key_path.is_file() or not self._anchor_path.is_file():
             raise WorkspaceStorageError(
                 "protected integrity material is missing; explicit recovery is required"
@@ -272,12 +696,19 @@ class SQLiteWorkspaceRepository:
         workspace_id: str,
         bootstrap_actor_id: str,
     ) -> None:
-        backup = self._pre_migration_backup_path(1)
-        pre_production_history = backup.is_file()
-        source_schema = 1 if pre_production_history else SCHEMA_VERSION
-        source_digest = _file_sha256(backup) if pre_production_history else None
-        audit_epoch = f"epoch::{uuid4()}"
-        now = datetime.now().isoformat()
+        marker = self._read_bootstrap_marker()
+        if marker is None:
+            raise WorkspaceStorageError(
+                "production bootstrap requires a protected genesis commitment"
+            )
+        if (
+            marker["workspace_id"] != workspace_id
+            or marker["bootstrap_actor_id"] != bootstrap_actor_id
+        ):
+            raise WorkspaceStorageError(
+                "protected bootstrap marker does not match production bootstrap"
+            )
+
         with self._connect() as connection:
             try:
                 connection.execute("BEGIN IMMEDIATE")
@@ -295,28 +726,48 @@ class SQLiteWorkspaceRepository:
                         (workspace_id,),
                     )
                 elif stored_workspace["value"] != workspace_id:
-                    raise WorkspaceStorageError("workspace identity mismatch during bootstrap")
-                connection.execute(
-                    "INSERT OR REPLACE INTO workspace_meta(key, value) VALUES('audit_epoch', ?)",
-                    (audit_epoch,),
+                    raise WorkspaceStorageError(
+                        "workspace identity mismatch during bootstrap"
+                    )
+
+                live_authority_baseline = self._workspace_authority_baseline(connection)
+                protected_authority_baseline = str(
+                    marker["bootstrap_payload"]["authority_baseline"]
                 )
-                payload = {
-                    "pre_production_history": pre_production_history,
-                    "source_schema_version": source_schema,
-                    "source_database_sha256": source_digest,
-                    "authority_baseline": self._workspace_authority_baseline(connection),
-                }
-                self._append_ledger_event(
-                    connection,
-                    workspace_id=workspace_id,
-                    audit_epoch=audit_epoch,
-                    event_type="production.bootstrap",
-                    payload=payload,
-                    actor_id=bootstrap_actor_id,
-                    actor_scope_id=workspace_id,
-                    auth_method="local-install-bootstrap",
-                    policy_version="production-bootstrap-v1",
-                    created_at=now,
+                if live_authority_baseline != protected_authority_baseline:
+                    raise WorkspaceStorageError(
+                        "production bootstrap authority baseline changed after protected "
+                        "commitment; explicit recovery is required"
+                    )
+
+                planned = self._bootstrap_event_row(connection, marker)
+                expected_hash = str(marker["expected_genesis_hash"])
+                if event_digest(planned) != expected_hash:
+                    raise WorkspaceStorageError(
+                        "production bootstrap state changed after protected commitment; "
+                        "explicit recovery is required"
+                    )
+                row = {**planned, "event_hash": expected_hash}
+                connection.execute(
+                    "INSERT OR REPLACE INTO workspace_meta(key, value) "
+                    "VALUES('audit_epoch', ?)",
+                    (str(marker["audit_epoch"]),),
+                )
+                connection.execute(
+                    """
+                    INSERT INTO production_ledger(
+                        sequence_no, event_id, workspace_id, audit_epoch, session_id,
+                        seed_id, event_type, request_id, actor_id, actor_scope_id,
+                        capability, auth_method, policy_version, payload_json,
+                        previous_hash, event_hash, created_at, event_format_version
+                    ) VALUES(
+                        :sequence_no, :event_id, :workspace_id, :audit_epoch, :session_id,
+                        :seed_id, :event_type, :request_id, :actor_id, :actor_scope_id,
+                        :capability, :auth_method, :policy_version, :payload_json,
+                        :previous_hash, :event_hash, :created_at, :event_format_version
+                    )
+                    """,
+                    row,
                 )
                 connection.commit()
             except Exception:
