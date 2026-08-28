@@ -30,6 +30,17 @@ def test_workbench_release_metadata_stays_aligned() -> None:
     assert f"repository-{version}-2f6f5e" in readme
     assert "PolyForm_Noncommercial_1.0.0" in readme
 
+    workbench_readme = Path("docs/workbench/README.md").read_text(encoding="utf-8")
+    limitations = Path("docs/workbench/limitations.md").read_text(encoding="utf-8")
+    tester_guidelines = Path("docs/workbench/tester-guidelines.md").read_text(encoding="utf-8")
+    privacy = Path("docs/workbench/privacy.md").read_text(encoding="utf-8")
+    assert f"Version {version}" in workbench_readme
+    assert f"shadowseed-workbench:{version}" in workbench_readme
+    assert f"# Workbench {version} limitations" in limitations
+    assert f"Shadowseed Workbench {version}" in limitations
+    assert f"Shadowseed Workbench {version}" in tester_guidelines
+    assert f"Shadowseed Workbench {version}" in privacy
+
 
 def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -> None:
     workflow = Path(".github/workflows/release-workbench.yml").read_text(encoding="utf-8")
