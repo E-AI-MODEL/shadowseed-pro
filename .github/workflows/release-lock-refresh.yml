@@ -1,0 +1,41 @@
+name: Release Lock Refresh
+
+on:
+  push:
+    branches: [chore/release-0.7.0]
+    paths:
+      - "pyproject.toml"
+      - ".github/workflows/release-lock-refresh.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: chore/release-0.7.0
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
+      - name: Refresh lock without dependency upgrades
+        run: uv lock
+      - name: Require version-only lock drift
+        shell: python
+        run: |
+          import subprocess
+          diff = subprocess.check_output(["git", "diff", "--", "uv.lock"], text=True)
+          removed = [line for line in diff.splitlines() if line.startswith("-") and not line.startswith("---")]
+          added = [line for line in diff.splitlines() if line.startswith("+") and not line.startswith("+++")]
+          assert removed == ['-version = "0.7.0"'], removed
+          assert added == ['+version = "0.7.1"'], added
+          print(diff)
+      - name: Commit refreshed lock
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add uv.lock
+          git commit -m "Refresh uv lock for 0.7.1"
+          git push origin HEAD:chore/release-0.7.0
