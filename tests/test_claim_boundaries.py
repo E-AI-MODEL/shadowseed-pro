@@ -63,7 +63,8 @@ def test_non_bypassable_claim_is_scoped_to_supported_runtime_decisions() -> None
 
 
 def test_audit_and_point_of_use_claims_keep_their_limits_visible() -> None:
-    assert "append-only, tamper-evident storage" in README
+    assert "durable tamper-evident authority ledger" in README
+    assert "not an external immutable ledger" in README
     assert "append-only or tamper-evident" in LIFECYCLE
     assert "specific eligibility checks, not universal safety" in LIFECYCLE
     assert "ordinary mutable Python objects" in LIFECYCLE
@@ -71,7 +72,7 @@ def test_audit_and_point_of_use_claims_keep_their_limits_visible() -> None:
     assert "both public configuration options" not in LIFECYCLE
     assert "both configurable" not in README
     assert "both are public opt-outs" not in README
-    assert "not production-ready" in README
+    assert "not yet production-ready" in README
 
 
 def test_claim_table_links_to_canonical_modules_after_modularization() -> None:
@@ -91,7 +92,7 @@ def test_readme_keeps_onboarding_visible_and_details_balanced() -> None:
     first_screen = "\n".join(README.splitlines()[:100])
 
     assert "## Quick start" in first_screen
-    assert "research-ready, not production-ready" in first_screen
+    assert "research-ready, not yet production-ready" in first_screen
     assert "PolyForm Noncommercial License 1.0.0" in first_screen
     assert "This is not an OSI open-source license" in first_screen
     assert "```mermaid" in README

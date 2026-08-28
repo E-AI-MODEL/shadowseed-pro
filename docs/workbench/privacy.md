@@ -1,6 +1,6 @@
 # Workbench privacy guidance
 
-Shadowseed Workbench 0.6.0 is local-first, but local-first does not make all entered or exported data non-sensitive. Testers and study owners remain responsible for the content they enter and for artifacts they choose to share.
+Shadowseed Workbench 0.7.0 is local-first, but local-first does not make all entered or exported data non-sensitive. Version 0.7.0 is the current production-local assurance candidate, not yet a completed `production-ready/local` release. Testers and study owners remain responsible for the content they enter and for artifacts they choose to share.
 
 ## Local workspace
 
@@ -57,9 +57,9 @@ The collector:
 
 The resulting dataset is therefore suitable for **structured collection**, not automatically anonymous or scientifically conclusive. A study owner remains responsible for consent where applicable, data minimization, lawful/ethical handling, retention and deletion policy, access control, protocol design, and interpretation.
 
-## Evidence-efficacy bundles in 0.6.0
+## Evidence-efficacy bundles
 
-Evidence-efficacy bundles are **not privacy-minimized support bundles**. They are research artifacts and can contain:
+Evidence-efficacy bundles, introduced with the 0.6.0 research harness and retained in 0.7.0, are **not privacy-minimized support bundles**. They are research artifacts and can contain:
 
 - full study questions;
 - baseline and SSL answers;
@@ -100,4 +100,4 @@ Integrity verification proves the recorded files match the manifest. It does not
 7. Do not describe pseudonymous support data as anonymous unless a separate privacy assessment justifies that claim.
 8. Keep evidence source references free of credentials and unnecessary personal/confidential data.
 
-Version 0.6.0 has no automatic cloud workspace upload. Hosted model/embedding calls remain explicit provider interactions rather than workspace synchronization.
+Version 0.7.0 has no automatic cloud workspace upload. Hosted model/embedding calls remain explicit provider interactions rather than workspace synchronization.

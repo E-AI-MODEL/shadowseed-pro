@@ -1,6 +1,6 @@
-# Workbench 0.6.0 limitations
+# Workbench 0.7.0 limitations
 
-Shadowseed Workbench 0.6.0 remains a local research preview for single-user use. It is not a production service, a multi-user authorization boundary, or a scientific evidence generator by itself. Version 0.6.0 adds noncommercial research access and stronger efficacy instrumentation; neither change upgrades the assurance claim automatically.
+Shadowseed Workbench 0.7.0 remains a local research preview and production-local assurance candidate for single-user use. It is not yet a completed `production-ready/local` release, a hostile-network service, a multi-user authorization boundary, or a scientific evidence generator by itself. The noncommercial research access and efficacy instrumentation introduced in 0.6.0 remain available; neither feature upgrades the assurance claim automatically.
 
 ## Security and deployment
 
@@ -50,7 +50,7 @@ Shadowseed Workbench 0.6.0 remains a local research preview for single-user use.
 
 - Repository states/releases containing `LICENSE` are subject to PolyForm Noncommercial License 1.0.0. Commercial use is not granted by that license.
 - The software license is source-available, not an OSI open-source claim.
-- Historical artifacts retain the rights terms distributed with those versions; the new license is not retroactive.
+- Historical artifacts retain the rights terms distributed with those versions; the 0.6.0 license change is not retroactive.
 - Third-party dependencies, model weights, datasets, the manuscript and separately identified material can have different rights terms.
 - Python wheel/sdist builds are checked for the exact repository license.
 - Frozen standalone bundles include the license and record its SHA-256 in their manifest.
