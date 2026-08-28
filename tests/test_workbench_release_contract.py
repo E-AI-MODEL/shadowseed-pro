@@ -24,11 +24,18 @@ def test_workbench_release_metadata_stays_aligned() -> None:
 
     assert version == "0.7.1"
     assert Path(f"docs/workbench/release-{version}.md").is_file()
+    assert Path("docs/workbench/release-0.7.0.md").is_file()
     assert Path("LICENSE").is_file()
     assert project["license"]["file"] == "LICENSE"
     readme = Path("README.md").read_text(encoding="utf-8")
     assert f"repository-{version}-2f6f5e" in readme
     assert "PolyForm_Noncommercial_1.0.0" in readme
+
+    citation = Path("CITATION.cff").read_text(encoding="utf-8")
+    research_status = Path("docs/research/status.md").read_text(encoding="utf-8")
+    assert f'version: "{version}"' in citation
+    assert f"Source version {version} is the current production-local assurance candidate." in research_status
+    assert f"create a fresh immutable `v{version}` tag" in research_status
 
     workbench_readme = Path("docs/workbench/README.md").read_text(encoding="utf-8")
     limitations = Path("docs/workbench/limitations.md").read_text(encoding="utf-8")
