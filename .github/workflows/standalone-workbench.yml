@@ -117,6 +117,15 @@ jobs:
           assert manifest["license_sha256"] == expected_license
           digest = hashlib.sha256(archive.read_bytes()).hexdigest()
           assert digest == manifest["archive_sha256"]
+          if manifest["system"] == "darwin":
+              assert manifest["macos_bundle_seal_verified"] is True
+              assert manifest["macos_archive_roundtrip_verified"] is True
+              assert manifest["archive_roundtrip_self_test"]["frozen"] is True
+              assert manifest["archive_roundtrip_self_test"]["runtime_mode"] == "live"
+          else:
+              assert manifest["macos_bundle_seal_verified"] is None
+              assert manifest["macos_archive_roundtrip_verified"] is None
+              assert manifest["archive_roundtrip_self_test"] is None
           print(json.dumps(manifest, indent=2, sort_keys=True))
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:

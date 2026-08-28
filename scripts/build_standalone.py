@@ -148,6 +148,41 @@ def _install_license(root: Path, bundle: Path, *, macos: bool | None = None) -> 
     return target
 
 
+def _verify_macos_bundle(bundle: Path, *, macos: bool | None = None) -> None:
+    """Fail closed if the final macOS application resource seal is invalid."""
+
+    if macos is None:
+        macos = sys.platform == "darwin"
+    if not macos:
+        return
+    _run(
+        ["codesign", "--verify", "--deep", "--strict", "--verbose=4", str(bundle)],
+        cwd=bundle.parent,
+    )
+
+
+def _seal_macos_bundle(bundle: Path, *, macos: bool | None = None) -> bool:
+    """Re-seal the complete app after Shadowseed has added its final resources.
+
+    PyInstaller constructs and ad-hoc signs the macOS bundle before Shadowseed
+    copies its required license into Contents/Resources. That post-build
+    mutation invalidates the application resource seal. Re-signing the final
+    top-level bundle regenerates the seal while preserving the project's
+    existing non-notarized distribution boundary.
+    """
+
+    if macos is None:
+        macos = sys.platform == "darwin"
+    if not macos:
+        return False
+    _run(
+        ["codesign", "--force", "--sign", "-", "--timestamp=none", str(bundle)],
+        cwd=bundle.parent,
+    )
+    _verify_macos_bundle(bundle, macos=True)
+    return True
+
+
 def _archive_bundle(bundle: Path, output_dir: Path, stem: str) -> Path:
     if sys.platform == "darwin":
         archive = output_dir / f"{stem}.zip"
@@ -182,7 +217,31 @@ def _archive_bundle(bundle: Path, output_dir: Path, stem: str) -> Path:
     return archive
 
 
+def _verify_macos_archive_round_trip(
+    archive: Path,
+    work_dir: Path,
+    *,
+    macos: bool | None = None,
+) -> Path | None:
+    """Extract the distributable ZIP and verify the seal users actually receive."""
+
+    if macos is None:
+        macos = sys.platform == "darwin"
+    if not macos:
+        return None
+    extract_dir = work_dir / "archive-roundtrip"
+    shutil.rmtree(extract_dir, ignore_errors=True)
+    extract_dir.mkdir(parents=True, exist_ok=True)
+    _run(["ditto", "-x", "-k", str(archive), str(extract_dir)], cwd=work_dir)
+    bundle = extract_dir / "Shadowseed.app"
+    if not bundle.is_dir():
+        raise RuntimeError("macOS archive round-trip is missing Shadowseed.app")
+    _verify_macos_bundle(bundle, macos=True)
+    return bundle
+
+
 def _verify_frozen(executable: Path, root: Path, work_dir: Path) -> dict[str, object]:
+    work_dir.mkdir(parents=True, exist_ok=True)
     workspace = work_dir / "self-test-workspace"
     result_file = work_dir / "standalone-self-test.json"
     command = [
@@ -245,11 +304,25 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
     license_relative = str(license_path.relative_to(bundle))
     license_sha256 = _sha256(license_path)
     self_test = None if skip_self_test else _verify_frozen(executable, root, work_dir)
+    macos_bundle_seal_verified = _seal_macos_bundle(bundle)
+
     version = _project_version(root)
     machine = platform.machine().lower() or "unknown"
     system = platform.system().lower() or sys.platform
     stem = f"shadowseed-workbench-{version}-{system}-{machine}"
     archive = _archive_bundle(bundle, output_dir, stem)
+
+    roundtrip_bundle = _verify_macos_archive_round_trip(archive, work_dir)
+    archive_roundtrip_self_test = None
+    if roundtrip_bundle is not None and not skip_self_test:
+        roundtrip_executable = roundtrip_bundle / "Contents" / "MacOS" / "Shadowseed"
+        if not roundtrip_executable.is_file():
+            raise RuntimeError("round-tripped macOS bundle is missing its executable")
+        archive_roundtrip_self_test = _verify_frozen(
+            roundtrip_executable,
+            root,
+            work_dir / "archive-roundtrip-self-test",
+        )
 
     manifest: dict[str, object] = {
         "artifact": "shadowseed_standalone_bundle",
@@ -269,6 +342,9 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
         "self_contained_python_runtime": True,
         "loopback_only_default": True,
         "gradio_source_files_bundled": True,
+        "macos_bundle_seal_verified": macos_bundle_seal_verified if system == "darwin" else None,
+        "macos_archive_roundtrip_verified": roundtrip_bundle is not None if system == "darwin" else None,
+        "archive_roundtrip_self_test": archive_roundtrip_self_test,
         "self_test": self_test,
     }
     manifest_path = output_dir / f"{stem}.manifest.json"
