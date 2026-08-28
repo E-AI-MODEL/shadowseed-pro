@@ -2,9 +2,9 @@
 
 ## Defensible status
 
-The repository is **research-ready, locally mass-testable, able to produce structured privacy-minimized tester datasets, and equipped for preregistered evidence-backed paired efficacy studies**. Core mechanics, benchmark harnesses, a broad regression suite, a chat-first local Workbench, standalone build contracts, verifiable exports, support-bundle aggregation, candidate review packets, and influence-opportunity accounting are present. This status does not imply production readiness or general answer-quality benefit.
+The repository is **research-ready, locally mass-testable, able to produce structured privacy-minimized tester datasets, and equipped for preregistered evidence-backed paired efficacy studies**. Core mechanics, benchmark harnesses, a broad regression suite, a chat-first local Workbench, standalone build contracts, verifiable exports, support-bundle aggregation, candidate review packets, and influence-opportunity accounting are present. This status does not by itself imply `production-ready/local` or general answer-quality benefit.
 
-Source version 0.6.0 is the current upgrade candidate. Version identity and public release availability remain separate facts: describe `v0.6.0` as published only after the immutable tag and verified release assets actually exist. The `v0.5.1` tag remains an immutable historical software reference and is not rewritten by this upgrade.
+Source version 0.7.0 is the current production-local assurance candidate. Version identity, production status, and public release availability remain separate facts: describe `v0.7.0` as published only after the fresh immutable tag and verified release assets actually exist, and describe it as `production-ready/local` only after the exact-SHA acceptance and unchanged-candidate soak requirements are complete. The existing `v0.6.0` release and older tags remain immutable historical software references and are not rewritten by this upgrade.
 
 ## Research access
 
@@ -12,7 +12,7 @@ Repository states and software releases that include the root `LICENSE` file are
 
 The new license is not retroactive. Historical repository states and artifacts retain the rights terms distributed with those versions. Third-party dependencies, model weights, datasets, the manuscript, and separately identified material retain their own applicable terms.
 
-The release pipeline now treats license delivery as a distribution contract: standalone manifests record the license hash, Python wheel/sdist builds are checked for exact license inclusion, and a public release includes `LICENSE` as a checksum-covered asset.
+The release pipeline treats license delivery as a distribution contract: standalone manifests record the license hash, Python wheel/sdist builds are checked for exact license inclusion, and a public release includes `LICENSE` as a checksum-covered asset.
 
 ## Supported claims
 
@@ -30,6 +30,7 @@ The release pipeline now treats license delivery as a distribution contract: sta
 - The evidence-efficacy runner can submit predeclared operator-attested external support only through the canonical `ShadowChatSession.submit_evidence` boundary while keeping the `evidence_backed` Gate policy.
 - Evidence-efficacy A/B items are created only on later turns where an authorized seed actually surfaces.
 - `opportunity_audit.json` separates candidate observation, evidence submission, Gate authority, selection, point-of-use authorization, surfacing, and A/B generation instead of treating every no-A/B path as one undifferentiated failure.
+- Production-local hardening now includes actor-attributable authorization, durable tamper-evident authority audit state, migrations/recovery controls, loopback-local deployment boundaries, lifecycle/deletion operations, and release/supply-chain assurance paths. These controls are necessary for, but do not by themselves complete, the `production-ready/local` claim.
 
 ## Existing post-alignment evidence
 
@@ -45,7 +46,7 @@ This makes multi-tester collection practical, but collection is not inference. A
 
 ## Evidence-backed efficacy boundary
 
-The v0.6.0 efficacy protocol adds a third research view next to the live no-evidence negative control and the exploratory recurrence counterfactual.
+The efficacy protocol introduced in v0.6.0 adds a third research view next to the live no-evidence negative control and the exploratory recurrence counterfactual.
 
 The efficacy runner uses baseline-isolated evaluation mechanics so a baseline answer and SSL answer can be compared without changing later baseline history, but it explicitly selects the shipped `evidence_backed` Gate policy. External support is submitted through `ShadowChatSession.submit_evidence` with an external signal kind, supporting direction, explicit verification attestation, and stable `source_ref`.
 
@@ -63,7 +64,7 @@ A failed predeclared selector, blocked Gate decision, point-of-use denial, or ab
 - A general internal neural signal for missing context.
 - Safety against all prompt-injection, evidence-poisoning, or seed-spam attacks.
 - Hostile-network or high-impact production readiness.
-- General efficacy from the existence of the new runner alone; real-model results and independent review are still required.
+- General efficacy from the existence of the runner alone; real-model results and independent review are still required.
 
 ## Next evidence work
 
@@ -75,22 +76,22 @@ The highest-value follow-up is empirical rather than architectural:
 4. blind-review only surfaced A/B pairs and report null/unmatched/blocked opportunities alongside positive comparisons;
 5. decide whether candidate generation, prompts, thresholds, or product direction need changes only after those results are available.
 
-Issue #63 remains the natural home for high-end capability/evidence follow-up. Candidate-quality review is research work, not a hidden prerequisite for the already delivered v0.5.1 mechanism/release contract.
+Issue #63 remains the natural home for high-end capability/evidence follow-up. Candidate-quality review is research work, not a hidden prerequisite for the production-local release-assurance sequence.
 
 ## Remaining production work
 
-Production hardening remains separate from research efficacy:
+The first production target is `production-ready/local`. Its remaining work is release evidence rather than a new SSL authority architecture:
 
-- durable append-only or tamper-evident audit persistence;
-- deterministic replay assurance and migration guarantees across future versions;
-- hostile-network authentication, tenancy, TLS/CSRF controls, rate limits, and backend isolation;
-- managed secrets plus explicit privacy, retention, deletion, and access-control operations;
-- operational monitoring, rollback, and incident handling;
-- platform vendor signing/notarization and a decision on Intel macOS support;
-- real-world usability and safety evaluation.
+- land the production-local integrity guard fixes on protected `main` and refresh the 0.7.0 candidate from that exact head;
+- obtain successful exact-head required CI plus Linux/macOS/Windows production-local and standalone evidence;
+- create a fresh immutable `v0.7.0` tag on the exact protected-main candidate SHA;
+- publish and verify checksums, provenance, SBOM, lockfile, wheel/sdist, standalone artifacts, license delivery, and trusted pre-publication attestations;
+- pass the read-only Production Release Assurance workflow against that exact tag;
+- complete the required unchanged-candidate soak of at least 24 hours with normal local Workbench use and `shadowseed doctor` evidence;
+- keep the candidate free of unresolved P0/P1 production findings through promotion.
 
-Repository administration is also incomplete: `main` should be protected with required pull-request and quality gates as tracked in issue #66. That is an assurance/governance gap rather than an SSL runtime defect.
+Protected-main quality gates are active. Hosted production remains a separate target and still requires its own authentication, tenancy, hostile-network, abuse-control, managed-secret, and service-operation controls. Native Apple notarization/Developer ID signing, Windows Authenticode signing, and broader real-world usability/safety evaluation also remain outside the current local production claim.
 
 ## Appropriate use today
 
-Appropriate uses include local tester studies, mechanism inspection, controlled experiments, benchmark development, structured support-data collection, candidate-quality review, and preregistered evidence-backed paired studies. Do not treat Shadowseed Pro as a certified safety layer for healthcare, finance, employment, law, public administration, education decisions, or autonomous high-impact action.
+Appropriate uses include local tester studies, mechanism inspection, controlled experiments, benchmark development, structured support-data collection, candidate-quality review, and preregistered evidence-backed paired studies. The 0.7.0 branch is a production-local assurance candidate, not yet a completed `production-ready/local` release. Do not treat Shadowseed Pro as a certified safety layer for healthcare, finance, employment, law, public administration, education decisions, or autonomous high-impact action.
