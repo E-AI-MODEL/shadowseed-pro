@@ -167,6 +167,19 @@ def test_dependency_updates_keep_the_lockfile_authoritative() -> None:
     assert ecosystems == {"uv", "github-actions"}
 
 
+def test_readme_paper_section_names_the_current_software_version() -> None:
+    # The paper section previously named a software version that release bumps
+    # left behind, so the README described 0.6.0 while the badge said 0.7.1.
+    # Bind the prose to pyproject rather than to a human remembering.
+    version = re.search(
+        r'^version\s*=\s*"([^"]+)"', (ROOT / "pyproject.toml").read_text(encoding="utf-8"), re.M
+    ).group(1)
+    section = README.split("## Research paper and evidence", 1)[1].split("\n## ", 1)[0]
+
+    assert f"software {version}" in section
+    assert "paper/references-verification.md" in section
+
+
 def test_release_candidate_is_refreshed_for_every_main_push() -> None:
     push_section = STANDALONE_WORKFLOW.split("  push:\n", 1)[1].split(
         "  workflow_dispatch:", 1

@@ -13,13 +13,24 @@ This `paper/` directory is the canonical manuscript location. The manuscript is 
 
 - `main.tex` - manuscript source
 - `references.bib` - bibliography
+- `references-verification.md` - per-entry verification record for the bibliography
 - `shadowseed-paper.pdf` - compiled manuscript generated from that source revision
+
+Every bibliography entry must appear in `references-verification.md` with the
+venue it was checked against and the level of that check.
+`tests/test_paper_citations.py` fails on an unrecorded entry, an uncited entry,
+or a citation with no entry.
 
 `main.tex`, `references.bib`, and `shadowseed-paper.pdf` must change together when the manuscript itself is revised. Do not edit only the visible PDF version/commit text to make it match a newer software badge.
 
 ## Relationship to current software v0.7.1
 
-The current software version is **0.7.1**. The checked-in manuscript remains intentionally pinned to the reviewed software source version **0.5.0** and implementation commit printed inside `main.tex` and the compiled PDF.
+The current software version is **0.7.1**. The manuscript carries two explicit anchors, both printed inside `main.tex` and the compiled PDF:
+
+- the **reviewed SSL core** stays pinned to source version **0.5.0** and its implementation commit. The trace/weight separation, evidence identity, Gate, contradiction, lifecycle, and point-of-use model were reviewed against that snapshot and are unchanged since;
+- the **assurance anchor** is source version **0.7.1** and covers only the persistence, audit, and release-assurance sections, which describe the append-only authority ledger, the protected anti-rollback anchor, and the supply-chain gates added after 0.5.0.
+
+Splitting the anchors keeps a later hardening layer from silently backdating itself into the reviewed core, and keeps the core from having to be re-reviewed every time the product layer moves.
 
 Software releases after 0.5.0 extend the product, research instrumentation, persistence, operational safety, and release-assurance layers around the reviewed SSL core. They do **not** redefine the paper's core trace/weight separation, Validation Gate, evidence identity, contradiction, lifecycle, or point-of-use authority model.
 

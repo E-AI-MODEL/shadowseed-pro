@@ -31,6 +31,8 @@
 \newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\implcommit}{\nolinkurl{745ea31486f3d287a1f2bd97a7896f92a8ed6257}}
 \newcommand{\sourceversion}{0.5.0}
+\newcommand{\assurancecommit}{\nolinkurl{1b3e42b6317480cf6fe4cf31827346346d972496}}
+\newcommand{\assuranceversion}{0.7.1}
 
 \title{\textbf{Shadowseed: Remembering Without Trusting}\\[0.45em]
 \large A Validation-Gated Memory Architecture for Language Model Systems}
@@ -161,7 +163,7 @@ The independence qualification matters. A detector observation produced after th
 
 \subsection{External evidence identity}
 
-Validation signals are typed for provenance and policy handling. Examples include trusted-source evidence, retrieval results, human feedback, probes, task outcomes, recurrence, contradiction, and contradiction resolution. Signal kind records how information entered the system; it is not the underlying authority identity.
+Validation signals are typed for provenance and policy handling. The reference vocabulary is closed: trusted-source evidence, retrieval results, human feedback, dialectic, probes, task outcomes, recurrence, contradiction, and contradiction resolution. Only the first three count as external evidence. Signal kind records how information entered the system; it is not the underlying authority identity.
 
 For external evidence signal $e$, define the authority identity as
 \begin{equation}
@@ -185,7 +187,7 @@ where $P$ names the policy and $g_t$ is an immutable Gate event. The event recor
 
 The Gate owns policy decisions that grant, reduce, block, or otherwise change steering authority in response to validation inputs. This claim is intentionally scoped. Mechanical lifecycle expiry can clear authority without a new policy decision, and durable-state restoration can reinstate a previously recorded validated state. Unsupported test hooks are outside the product contract and cannot be used to redefine runtime authority semantics.
 
-Contradictions are explicit blocking records. An unresolved contradiction prevents positive influence even when prior support exists. Resolution is itself typed and auditable. The architecture therefore avoids reducing support and contradiction to a single scalar confidence number that could hide why authority is blocked.
+Contradictions are explicit blocking records. An unresolved contradiction prevents positive influence even when prior support exists. Resolution is itself typed and auditable. The architecture therefore avoids reducing support and contradiction to a single scalar confidence number that could hide why authority is blocked. Work on retrieval-augmented fact-checking under conflicting evidence reports that credibility-weighted aggregation is itself difficult and error-prone \citep{ge2025conflicting}; SSL does not attempt to adjudicate which side of a conflict is true, and instead makes the unresolved state itself blocking and visible.
 
 \subsection{Authority version and point-of-use authorization}
 
@@ -225,14 +227,18 @@ This design reduces one class of comparison contamination. It does not make the 
 
 The reference implementation separates four kinds of artifact authority. The software source of truth defines executable behavior. The model/architecture specification explains intended contracts. Decision logs capture runtime evidence. Validation artifacts and benchmarks support bounded claims. Execution plans and historical migration reports do not override current runtime or accepted architecture decisions \citep{shadowseed2026}.
 
-The reviewed implementation for this manuscript is source version \sourceversion{} at commit \implcommit{}. The version string identifies the source tree. It is not, by itself, evidence that a public binary release with the matching tag or assets exists. The manuscript source revision is a separate publication artifact and should be cited by its own repository commit when archived.
+This manuscript uses two explicit anchors. The \emph{reviewed SSL core} is source version \sourceversion{} at commit \implcommit{}: the trace/weight separation, evidence identity, Gate, contradiction, lifecycle, and point-of-use model described in Section~\ref{sec:method} were reviewed against that snapshot and are unchanged since. The \emph{assurance anchor} is source version \assuranceversion{} at commit \assurancecommit{}, and covers only the persistence, audit, and release-assurance properties described in this section and in Section~\ref{sec:evaluation}. A version string identifies a source tree. It is not, by itself, evidence that a public binary release with the matching tag or assets exists. The manuscript source revision is a separate publication artifact and should be cited by its own repository commit when archived.
 
 Audit records are designed to answer questions such as: What candidate was created? Which observation produced recurrence? Which underlying sources counted as evidence? Was a contradiction open? Which policy made the authority decision? Which authority version was checked at point of use? Was influence allowed or denied? This is an accountability objective, not a guarantee that the recorded evidence was semantically correct.
+
+At the reviewed SSL-core anchor these records were mutable projections rebuilt from session state, which makes them legible but not tamper-evident. At the assurance anchor the authority history is additionally committed to an append-only hash-chained ledger: each entry carries a sequence number, a canonical payload digest, and the digest of its predecessor. A protected local anchor holding the workspace identity, audit epoch, latest sequence number and chain head is stored outside the ordinary workspace database, so that replacing the database with an older or emptied copy is detected rather than silently accepted. This raises the audit claim from ``legible'' to ``tampering with recorded authority history is detectable on a single machine.'' It is not a claim of external immutability: an adversary who controls both the database and the protected anchor material is outside the stated boundary.
 
 \section{Executable assurance and claim boundary}
 \label{sec:evaluation}
 
 The current artifact is evaluated primarily through executable contracts rather than open-ended answer-quality experiments. The repository includes unit and integration tests, multi-version Python CI, linting, build checks, branch-coverage enforcement, Workbench tests, portability checks, and standalone build checks \citep{shadowseed2026}. These gates are useful for detecting contract regressions such as accidental authority mutation, evidence double-counting, unsupported recurrence, stale authorization, conversation-control contamination, or packaging drift.
+
+At the assurance anchor the same principle is extended from behaviour to supply chain. Dependency resolution is locked and the lock is verified in CI, so a build is reproducible from a recorded closure rather than from whatever resolves that day. That closure is scanned for known vulnerabilities and emitted as a CycloneDX bill of materials. External CI actions are pinned to immutable commit digests rather than moving tags. Release artifacts carry exact-source provenance, checksums, and signed attestations, and a production-local acceptance matrix runs on Linux, macOS and Windows. The point is not that these controls are novel. It is that an architecture whose central claim is ``authority must be earned and auditable'' is not credible if the artifact carrying it is assembled from unpinned inputs.
 
 This assurance supports claims of the form ``the tested implementation enforces this contract under covered conditions.'' It does not support stronger claims such as ``the detector finds all important missing information'' or ``SSL improves answer quality.'' In particular, the following remain outside the evidence provided by the current artifact:
 \begin{itemize}[leftmargin=1.5em]
@@ -259,7 +265,9 @@ The same principle provides a useful way to position SSL relative to recent lear
 
 The architecture introduces additional state, policy logic, logging, and tests. These create engineering cost. The source-reference identity rule is intentionally conservative but cannot detect hidden dependence among distinct sources. Observation-scoped recurrence prevents obvious within-observation inflation but does not prove that separate observations are causally independent. Candidate normalization can merge distinct ideas or split one idea into several seeds. Point-of-use relevance is itself a model or rule-based judgment and can be wrong. Hosted model APIs can change behavior over time. The optional SSL-off control doubles model calls for compared turns and therefore changes cost and latency.
 
-The present implementation is research-ready in the bounded sense used in the repository: contracts are explicit and testable. It should not be described as production-ready without additional security review, scale testing, incident handling, operational monitoring, data-governance analysis, and domain-specific evaluation.
+The present implementation is research-ready in the bounded sense used in the repository: contracts are explicit and testable.
+
+Since the reviewed SSL-core anchor, the repository has pursued a deliberately bounded deployment claim rather than an unqualified one. A documented threat model, an actor-attributable authorization boundary for authority-bearing operations, versioned migrations with recovery tests, enforced loopback binding, resource limits, content-minimized operational logging, and the release-assurance controls above now exist and are gated in CI. That work targets a single-user local profile only. It is not evidence of readiness for hostile networks, multi-tenant hosting, or scale, and it does not by itself complete even the local claim: that status is governed by the repository's production-acceptance contract, which additionally requires exact-source release evidence, independent review, and an unchanged-candidate soak. Domain-specific evaluation and human-factor study remain absent. This manuscript therefore continues to make no production claim of any kind.
 
 \section{Conclusion}
 
