@@ -24,15 +24,27 @@ VERIFICATION = (ROOT / "paper/references-verification.md").read_text(encoding="u
 
 _ENTRY = re.compile(r"^@[A-Za-z]+\{([^,\s]+)\s*,", re.M)
 _CITE = re.compile(r"\\cite[a-zA-Z]*\*?(?:\[[^\]]*\])*\{([^}]+)\}")
+# Only a table row counts as a verification record. Searching the whole
+# document would let a deleted row pass because the key still appears in the
+# corrections or open-item prose.
+_RECORD_ROW = re.compile(r"^\|\s*`([^`]+)`\s*\|", re.M)
+# A commented-out \citep{...} is not a citation in the compiled manuscript.
+# `\%` is an escaped percent, not a comment opener.
+_LATEX_COMMENT = re.compile(r"(?<!\\)%.*$", re.M)
 
 
 def bibliography_keys() -> set[str]:
     return set(_ENTRY.findall(BIB))
 
 
+def recorded_keys() -> set[str]:
+    return set(_RECORD_ROW.findall(VERIFICATION))
+
+
 def cited_keys() -> set[str]:
+    body = _LATEX_COMMENT.sub("", MANUSCRIPT)
     keys: set[str] = set()
-    for group in _CITE.findall(MANUSCRIPT):
+    for group in _CITE.findall(body):
         keys.update(key.strip() for key in group.split(",") if key.strip())
     return keys
 
@@ -42,16 +54,23 @@ def test_bibliography_is_not_empty() -> None:
     # other assertion in this module vacuously true.
     assert len(bibliography_keys()) >= 20
     assert len(cited_keys()) >= 20
+    assert len(recorded_keys()) >= 20
 
 
 def test_every_bibliography_entry_has_a_verification_record() -> None:
-    missing = sorted(
-        key for key in bibliography_keys() if f"`{key}`" not in VERIFICATION
-    )
+    missing = sorted(bibliography_keys() - recorded_keys())
 
     assert not missing, (
-        "bibliography entries without a record in paper/references-verification.md:\n"
-        + "\n".join(missing)
+        "bibliography entries without a table row in "
+        "paper/references-verification.md:\n" + "\n".join(missing)
+    )
+
+
+def test_verification_record_has_no_rows_for_absent_entries() -> None:
+    stale = sorted(recorded_keys() - bibliography_keys())
+
+    assert not stale, (
+        "verification rows for keys no longer in references.bib:\n" + "\n".join(stale)
     )
 
 
