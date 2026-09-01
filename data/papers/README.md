@@ -2,7 +2,9 @@
 
 This directory contains external source-reference material used during Shadowseed research and review. It is not part of the Shadowseed manuscript itself.
 
-- `conflicting_evidence_fact_checking_arxiv_2505_17762.pdf`: *Resolving Conflicting Evidence in Automated Fact-Checking: A Study on Retrieval-Augmented LLMs* (Ge et al., arXiv:2505.17762).
+- `conflicting_evidence_fact_checking_arxiv_2505_17762.pdf`: *Resolving Conflicting Evidence in Automated Fact-Checking: A Study on Retrieval-Augmented LLMs* (Ge et al., arXiv:2505.17762, IJCAI 2025). Cited by the manuscript as `ge2025conflicting` in the contradiction discussion.
+
+A paper kept here is a research input. It becomes a manuscript reference only when it is added to `paper/references.bib`, recorded in `paper/references-verification.md`, and actually cited in `main.tex`.
 
 Repository boundary:
 

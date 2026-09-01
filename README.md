@@ -124,9 +124,11 @@ Real-model runs must pin the model and embedding provenance required by the sele
 **Shadowseed: Remembering Without Trusting**  
 *A Validation-Gated Memory Architecture for Language Model Systems*
 
-[Paper PDF](paper/shadowseed-paper.pdf) · [LaTeX source](paper/main.tex) · [Bibliography](paper/references.bib) · [Paper notes](paper/README.md)
+[Paper PDF](paper/shadowseed-paper.pdf) · [LaTeX source](paper/main.tex) · [Bibliography](paper/references.bib) · [Bibliography verification](paper/references-verification.md) · [Paper notes](paper/README.md)
 
-The manuscript is a reviewed methods/systems snapshot, not a moving release brochure. Its source version and implementation commit remain explicit inside the manuscript. Software 0.6.0 extends research access and evidence instrumentation without changing the paper's core authority model. We do not rewrite the compiled paper merely to make a release badge match; a future manuscript revision must rebuild `main.tex`, bibliography, and PDF together.
+The manuscript is a reviewed methods/systems snapshot, not a moving release brochure. It carries two explicit anchors: the reviewed SSL core at source version 0.5.0, and a separate assurance anchor at software 0.7.1 covering only the persistence, audit, and release-assurance sections. Releases after 0.5.0 extend the product, research instrumentation, persistence, and release-assurance layers around that reviewed core without redefining its authority model. We do not rewrite the compiled paper merely to make a release badge match; a manuscript revision must rebuild `main.tex`, bibliography, and PDF together.
+
+Every entry in the bibliography is recorded in [`paper/references-verification.md`](paper/references-verification.md) with the venue it was checked against and the level of that check. A contract test fails if a citation is added without a verification record.
 
 Canonical research status is documented in [`docs/research/status.md`](docs/research/status.md). Historical benchmark results and immutable evidence bundles remain under `benchmarks/results/**`; ordinary tester exports do not silently become benchmark evidence.
 
