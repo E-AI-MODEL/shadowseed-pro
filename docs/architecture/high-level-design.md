@@ -1,300 +1,249 @@
-# Shadowseed Pro High-Level Design
+# Shadowseed Pro: The Product We Are Building
 
-**Authority flow, local deployment, persistence, and trust boundaries**
+**A product walkthrough of gated shadow memory for ordinary LLM conversations**
 
 | Field | Value |
 |---|---|
 | Product version | 0.7.1 |
 | Runtime source anchor | `3627ed0df08c3a22e36da047b888291400deb312` |
-| Document type | As-built high-level design |
-| Deployment described | Local, single-user Workbench |
+| Primary user | Tester or researcher working with an LLM |
+| Main product | Local standalone chat Workbench |
+| Default experience | Live chat with the `evidence_backed` Gate policy |
 | Product status | Research-ready; production-local assurance candidate |
-| Explicitly not described as current | Hosted production, multi-user service, proven general answer-quality improvement |
 
-This document explains how the shipped Shadowseed Pro product is assembled and how a possible omission can be remembered without silently becoming trusted guidance. It translates the canonical architecture into a compact visual model. The detailed contracts in [`docs/architecture/`](./) and the runtime remain authoritative when this summary omits implementation detail.
+Shadowseed Pro is a chat application for testing a different kind of model memory. It lets a model record a possible omission, uncertainty, dependency, contradiction, or missing question without treating that observation as truth. The user can inspect what was remembered, add independently checked support, challenge a candidate, compare one answer with Shadowseed switched off, and export an auditable record.
 
-## 1. What Shadowseed Pro does
+The product should feel like a normal chatbot first. The shadow layer is available when the user wants to understand or test what happened.
 
-Shadowseed Pro adds a controlled memory path beside ordinary model generation. A detector may identify a bounded epistemic candidate: a possible missing condition, causal boundary, stakeholder, contradiction, dependency, or question worth investigating.
+## 1. The end product in one sentence
 
-The candidate is not accepted as fact. It enters shadow memory with presence but no steering authority:
+> Shadowseed Pro is a local chat application that remembers possible missing angles without silently trusting them, and lets a tester see whether validated memory improves a later answer.
+
+The product is built for a tester or researcher who wants to answer five practical questions:
+
+1. What is it like to chat with a model while Shadow Seed Learning runs in the background?
+2. What did the detector notice and remember?
+3. Why was a seed allowed or blocked from influencing an answer?
+4. Did the answer differ from the same model with SSL switched off?
+5. Can the session be reviewed or shared without losing its evidence trail?
+
+```mermaid
+flowchart LR
+    A[Choose a model] --> B[Create a chat]
+    B --> C[Chat normally]
+    C --> D[Inspect shadow memory]
+    D --> E[Compare or export]
+```
+
+No benchmark file, authored baseline, Python installation, or understanding of Gate internals is required for the ordinary tester path.
+
+## 2. What the user opens
+
+The standalone application opens a local browser interface with four clear areas:
+
+| Area | What the user does |
+|---|---|
+| **Chat** | Choose a model, create or open a conversation, send messages, and optionally compare one message with SSL off |
+| **Shadow** | Inspect candidate seeds, their current status, plain-language explanation, evidence, contradictions, and audit timeline |
+| **Feedback and export** | Record whether a turn was better, worse, helpful, harmful, or unclear, then export a full or privacy-minimized bundle |
+| **Advanced / research** | Run controlled scenarios, inspect raw diagnostics, and perform blinded comparisons without cluttering normal chat |
+
+The default screen remains the conversation. A status line shows the chosen model, turn count, number of shadow seeds, and number of promoted seeds. Technical JSON is kept behind an advanced control.
+
+### Starting a chat
+
+```text
+download -> extract/open -> choose model -> create chat -> send a message
+```
+
+The model may be:
+
+- a deterministic offline fixture for checking product mechanics;
+- a local Ollama model;
+- a local Hugging Face Transformers model;
+- an explicitly selected hosted OpenAI model.
+
+Model quality and seed authority remain separate. A stronger model does not make its own observations trusted evidence.
+
+## 3. What Shadowseed adds to a normal conversation
+
+The user sees one normal answer. Behind it, Shadowseed runs a separate observation path.
+
+```mermaid
+flowchart TD
+    A[User message] --> B[Visible model answer]
+    B --> C[Candidate detector]
+    C --> D[Possible missing angle]
+    D --> E[Shadow memory: trace above 0]
+    E --> F[Authority remains weight 0]
+```
+
+A new seed can be remembered across turns, decay when it is not reinforced, reactivate when a later message matches it, or expire. None of those events makes it true.
 
 ```text
 trace > 0   means remembered
 weight = 0  means no steering authority
 ```
 
-Only verified external support can grant authority in the ordinary live `evidence_backed` policy. Even an authorized seed must pass contextual surfacing and a fresh point-of-use check before it can be supplied to a model.
+The ordinary product uses an `evidence_backed` Gate policy. Recurrence is visible, but recurrence alone does not grant authority. Independently verified support may grant bounded authority. A contradiction may block or reduce it. A current point-of-use check still decides whether an authorized seed is relevant to a particular later question.
 
-```mermaid
-flowchart TD
-    A[Model answer] --> B[Candidate detector]
-    B --> C[Weightless shadow seed]
-    C --> D[Evidence, recurrence, or contradiction]
-    D --> E[Validation Gate]
-    E -->|Blocked| F[No influence]
-    E -->|Authority granted| G[Point-of-use check]
-    G -->|Denied| F
-    G -->|Allowed| H[Optional bounded influence]
-```
+## 4. Concrete example: a candidate is remembered
 
-This is a memory-and-authority architecture, not a conventional document-retrieval RAG service. Optional vector stores support similarity and retrieval workflows, but they do not decide truth or authority.
+Imagine this message in the Chat tab:
 
-## 2. As-built product architecture
+> Should an organisation use an AI detector score as proof that somebody used generative AI?
 
-The shipped product is one local Python application. The Gradio Workbench calls UI-independent application services, which coordinate the canonical SSL runtime. Storage, model providers, and optional vector backends remain adapters around that runtime.
+The model produces a plausible answer. The detector notices that the answer may omit a relevant boundary:
 
-```mermaid
-flowchart TD
-    U[Local user] --> W[Gradio Workbench]
-    W --> A[Application services]
+> The answer may omit that people can adopt AI-like writing patterns, which weakens authorship inference from style alone.
 
-    subgraph R[Canonical SSL runtime]
-        direction TD
-        C[Chat orchestration]
-        D[Detection and intake]
-        L[Lifecycle and recurrence]
-        G[Validation Gate]
-        S[Surfacing and point-of-use]
-        C --> S
-        C --> D
-        D --> L
-        L --> G
-        G --> S
-    end
+Shadowseed stores this as a candidate:
 
-    A --> C
-    C --> M[Model adapters]
-    A --> P[SQLite production repository]
-    D --> V[Optional vector store]
-```
-
-### Layer responsibilities
-
-| Layer | Responsibility | Main code |
+| Field | Initial value | Meaning for the user |
 |---|---|---|
-| Workbench | Chat-first local interface, session inspection, comparison, evidence and export controls | `shadowseed.workbench` |
-| Application services | Session, workspace, authorization, limits, provider policy, health, feedback, exports and recovery coordination | `shadowseed.application` |
-| Canonical runtime | Candidate intake, lifecycle, recurrence, Gate decisions, surfacing and conversation behavior | `shadowseed.*`, `shadowseed.gate` |
-| Point of use | Final eligibility decision and influence audit | `shadowseed_agent` |
-| Persistence | Versioned SQLite state, production ledger, integrity verification, backup and recovery | `shadowseed.storage` |
-| Adapters | Fixture, Ollama, Hugging Face, OpenAI, embeddings and optional vector stores | `shadowseed.adapters`, `shadowseed.vectorstore` |
+| Status | Active | Available for investigation |
+| Trace | Above zero | Present in shadow memory |
+| Weight | `0.0` | Cannot steer an answer |
+| Evidence | None | No independently checked support |
+| Contradiction | None | No explicit challenge recorded yet |
 
-The Workbench may present controls, but it cannot create a second authority engine. Gate-controlled authority changes remain inside the canonical Validation Gate.
+The first answer is not retroactively changed. The seed is visible in the Shadow tab, but it has no influence.
 
-## 3. One live chat turn
+This is the main product difference: ordinary memory often stores something because it was said. Shadowseed can store that something may be missing while withholding permission to use it.
 
-A live turn separates visible conversation, optional influence, candidate detection, and durable state. The answer shown to the user becomes normal conversation history. Candidate detection occurs after generation and produces observations, not trusted facts.
+## 5. A seed can earn bounded authority
 
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant A as Workbench + app
-    participant S as SSL runtime
-    participant M as Model
-    participant D as Storage
-    U->>A: Submit message
-    A->>D: Load workspace and session
-    A->>S: Start live turn
-    S->>S: Select eligible seeds
-    S->>S: Point-of-use decision
-    S->>M: History + allowed seed context
-    M-->>S: Visible answer
-    S->>S: Detect bounded candidates
-    S->>S: Add or update weightless seeds
-    S->>D: Commit session and audit state
-    S-->>A: Answer + inspection data
-    A-->>U: Render result
-```
-
-### Same-message SSL-off comparison
-
-The optional control branch starts from the same pre-turn visible history and uses the same model configuration. It receives no surfaced seeds and cannot create candidates, recurrence, Gate events, or later conversation history.
+The tester opens the seed and chooses what to do next.
 
 ```mermaid
 flowchart TD
-    A[Pre-turn visible history] --> B{Comparison requested?}
-    B -->|No| C[One live SSL turn]
-    B -->|Yes| D[Non-mutating SSL-off control]
-    D --> E[Comparison output only]
-    B -->|Yes| C
-    C --> F[Only live turn changes state]
+    A[Inspect candidate] --> B{Tester action}
+    B -->|Leave it open| C[Remembered, weight 0]
+    B -->|Add checked support| D[Validation Gate]
+    B -->|Submit contradiction| D
+    D -->|Blocked| E[No influence]
+    D -->|Authority granted| F[Eligible for later use]
+    F --> G[Point-of-use check]
+    G -->|Relevant and allowed| H[Optional influence]
 ```
 
-A textual difference between both answers is not automatically an SSL effect. Such an attribution is defensible only when an authorized seed actually surfaced in the live arm.
+For verified support, the tester provides a stable source reference and confirms that the support was checked outside model output. The application verifies that the local actor may request this action. The Validation Gate then decides what it means for authority.
 
-## 4. From candidate to possible influence
+Promotion is not a command to use the seed. It only makes the seed eligible for consideration. A later message must still be relevant, and the point-of-use contract may deny it. Allowed and denied influence attempts remain visible in the audit trail.
 
-Shadowseed separates observation from authority. `trace` records remembered presence and recurrence. `weight` represents bounded steering authority. Recurrence may strengthen an observation under an exploratory research policy, but it is not external evidence and cannot grant authority in the ordinary live policy.
+A contradiction has its own lifecycle. Resolving it requires a recorded basis. Resolution reopens the possibility of later validation; it does not silently restore authority.
 
-```mermaid
-stateDiagram-v2
-    [*] --> New: detector candidate
-    New --> Active: stored with weight 0
-    Active --> Decaying: no reinforcement
-    Decaying --> Dormant: trace below threshold
-    Dormant --> Active: trigger or semantic match
-    Active --> Promoted: Gate grants authority
-    Promoted --> Decaying: authority reduced
-    Active --> Expired: terminal expiry
-    Decaying --> Expired: terminal expiry
-    Dormant --> Expired: terminal expiry
-```
+## 6. What the Shadow screen explains
 
-### Decision path
+The Shadow tab turns internal state into an inspectable product surface. A tester selects a chat and seed, then sees:
 
-```mermaid
-flowchart TD
-    A[Typed observation] --> B{Signal type}
-    B -->|Recurrence| C[Remember, no live authority]
-    B -->|Verified support| D[Validation Gate]
-    B -->|Contradiction| D
-    D -->|Reject or block| E[Weight 0 or reduced]
-    D -->|Grant authority| F[Promoted + positive weight]
-    F --> G[Contextual surfacing]
-    G --> H[Current point-of-use authorization]
-    H -->|Deny| I[No influence + audit]
-    H -->|Allow| J[Optional influence + audit]
-```
+- the candidate text;
+- its plain-language status explanation;
+- trace, weight, lifecycle status, and authority version;
+- evidence source identity and Gate verdicts;
+- open or resolved contradictions;
+- when the seed was detected, updated, promoted, blocked, surfaced, allowed, or denied;
+- a chronological audit timeline.
 
-Three protections matter:
+The screen supports two deliberate actions:
 
-- Authority fields cannot be assigned through the normal public API.
-- A Gate event is tied to the current `authority_version`; stale authorization does not remain valid after authority changes.
-- Promotion permits consideration. It does not force use in an answer.
-
-## 5. Permission to request is not authority to decide
-
-The local production profile assumes one logical workspace owner inside one operating-system account. It does not need a multi-user login screen, but authority-bearing actions still require a trusted local actor identity and an explicit capability.
-
-```mermaid
-flowchart LR
-    A[Trusted local ActorContext] --> B[Application authorization]
-    B -->|Denied| C[No mutation]
-    B -->|Allowed| D[Typed signal or action]
-    D --> E[Validation Gate]
-    E --> F[Atomic state + ledger result]
-```
-
-| Action | Required capability | What authorization permits | What it cannot do |
-|---|---|---|---|
-| Use chat | `chat.use` | Start a normal product turn | Grant seed authority |
-| Verify evidence | `evidence.verify` | Submit operator-verified support | Force Gate promotion |
-| Submit contradiction | `contradiction.submit` | Create an attributable blocking challenge | Edit weight directly |
-| Resolve contradiction | `contradiction.resolve` | Close a contradiction with a recorded basis | Restore authority silently |
-| Export | `export.create` | Create an explicit user-controlled export | Change runtime state |
-| Backup or restore | `workspace.backup_restore` | Run the supported recovery workflow | Bypass integrity checks |
-
-Application authorization answers who may request an operation. The Validation Gate separately decides what that operation means for seed authority. A checkbox or client-supplied boolean is never sufficient production authorization.
-
-## 6. The ledger makes authority history verifiable
-
-The local production repository uses SQLite for current state and an append-only authority ledger. Authority mutations and their ledger events share one database transaction. A protected anchor outside the ordinary workspace detects replacement with an older, internally valid database.
-
-```mermaid
-flowchart TD
-    A[Application operation] --> B[Production SQLite transaction]
-    subgraph DB[Local workspace database]
-        direction LR
-        C[Session snapshot]
-        D[Normalized projections]
-        E[Append-only authority ledger]
-    end
-    B --> C
-    B --> D
-    B --> E
-    E --> F[Protected live anchor]
-    DB --> G[Verified backup or export]
-    G --> H[Supported restore or import]
-```
-
-### Stored information
-
-| Store | Purpose | Content rule |
+| Action | User supplies | Possible result |
 |---|---|---|
-| Session snapshot | Resume current conversation and SSL state | May contain prompts, answers and seed text |
-| Normalized projections | Query current turns, seeds and feedback | Replaceable view of application state |
-| Authority ledger | Verify authority and influence history | Minimal typed metadata and cryptographic commitments |
-| Protected anchor | Detect rollback of the workspace ledger | Kept outside normal database, backups and exports |
-| Support bundle | Privacy-minimized tester diagnostics | Omits prompts, answers, seed text and free notes |
-| Full report | Detailed research review | Content-bearing and treated as sensitive |
+| Submit independently verified support | Stable source reference, optional note, explicit verification | Gate may grant bounded authority |
+| Mark seed contradicted | Selected seed through the trusted local product boundary | Influence becomes blocked or reduced |
 
-Normal operational logs reject raw prompts, answers, seed text, evidence notes and credential-like values. Session deletion removes declared session content while retaining only the minimal ledger continuity required by the documented audit model. Full workspace erase also removes the workspace-specific protected integrity material, subject to platform behavior.
+The interface does not provide an editable weight field or a manual “promote” button. The user can submit evidence or a challenge; the Gate owns the authority decision.
 
-## 7. Deployment and provider boundaries
+## 7. Compare one message with SSL off
 
-The supported production-local launcher binds the Workbench to `127.0.0.1`. The operating-system user boundary protects the local product. Exposing the generic development server remotely does not turn it into a hosted production service.
+The Chat tab includes **Compare this message with SSL off**. The tester enables it before sending a message.
 
-```mermaid
-flowchart TD
-    U[One local OS user] --> W[Workbench on 127.0.0.1]
-    W --> R[Canonical Shadowseed runtime]
-    R --> L[Local providers: fixture, Ollama, Hugging Face]
-    R --> H[Optional hosted OpenAI provider]
-    R --> S[Local SQLite and vector storage]
-```
+Shadowseed then produces two answers from the same model configuration and the same pre-turn visible history:
 
-| Dependency | Location | Data movement | Product rule |
-|---|---|---|---|
-| Deterministic fixture | In process | No external model traffic | Mechanics only, not quality evidence |
-| Ollama | Local service | Prompt and context stay on configured local endpoint | One bounded request, no automatic fallback |
-| Hugging Face Transformers | Local process | Model files may be acquired; generation remains local | Explicit model provenance for research runs |
-| OpenAI | Hosted provider | Relevant chat or embedding content leaves the local boundary | Explicit selection, credential and provider confirmation |
-| Memory / FAISS / Chroma | Local adapter | Embeddings and vector records remain in selected store | Similarity does not grant authority |
-
-The current profile has no built-in multi-user authentication, tenant isolation, hostile-network security boundary, public TLS termination, or hosted abuse protection.
-
-## 8. Product, research, and future hosted work
-
-The repository contains three different concerns. They share code and concepts, but they do not make the same claims.
-
-```mermaid
-flowchart TD
-    A[Canonical SSL runtime] --> B[Current local product]
-    A --> C[Research and benchmark harnesses]
-    A --> D[Future hosted architecture]
-    B --> E[Live evidence-backed chat]
-    C --> F[Evaluation, falsification, efficacy studies]
-    D --> G[Separate service boundary required]
-```
-
-| Concern | Current state | Valid claim |
-|---|---|---|
-| Local product | Implemented and packaged | Research-ready and locally mass-testable |
-| Production-local assurance | Implemented candidate controls; release and soak gates still govern the final label | Candidate, not an unqualified production-ready claim |
-| Research harnesses | Implemented | Can measure declared protocols; results depend on the actual study |
-| General answer-quality benefit | Not established | No universal improvement claim |
-| Hosted multi-user product | Architecture requirements accepted, runtime not implemented | No hosted-production claim |
-
-A hosted version may reuse the canonical runtime and Gate. It requires a new service boundary with authenticated principals, tenant-safe storage, authorization on every object, TLS, rate and cost limits, managed secrets, retention and deletion workflows, monitoring, incident procedures, and cross-tenant adversarial testing. The local Gradio process is not that boundary.
-
-## 9. Technology and component map
-
-| Area | Current implementation |
+| SSL on | SSL off |
 |---|---|
-| Language and packaging | Python 3.10+, setuptools, wheel/sdist and standalone PyInstaller bundles |
-| User interface | Gradio 6 Workbench |
-| Local persistence | SQLite with versioned schema, recovery and integrity support |
-| Model backends | Fixture, Ollama, Hugging Face Transformers, OpenAI |
-| Embeddings | Lexical, Sentence Transformers, OpenAI where explicitly selected |
-| Vector backends | In-memory, optional FAISS, optional Chroma |
-| Validation | Typed signals, named Gate policies, immutable Gate events |
-| Point of use | `shadowseed_agent.AgentSafetyContract` |
-| Quality controls | Pytest contracts, Ruff, packaging checks, exact-source release verification |
-| Distribution status | PolyForm Noncommercial 1.0.0; commercial rights require separate permission |
+| Real live turn | Non-mutating control |
+| May receive an authorized, relevant seed | Receives no surfaced seeds |
+| May create new candidate observations after generation | Does not enter candidate detection |
+| Becomes conversation history | Does not become conversation history |
 
-### Source map
+```mermaid
+flowchart TD
+    A[Same message and pre-turn history] --> B[SSL-on live answer]
+    A --> C[SSL-off control answer]
+    B --> D[Only live answer changes state]
+    C --> E[Comparison data only]
+```
 
-- [`overview.md`](overview.md): canonical runtime structure and authority model.
-- [`lifecycle-and-gate.md`](lifecycle-and-gate.md): lifecycle, Gate, contradiction, and point-of-use contracts.
-- [`production-actor-authorization.md`](production-actor-authorization.md): actor context and capabilities.
-- [`production-persistence-and-audit.md`](production-persistence-and-audit.md): ledger, anchor, backup, recovery, and deletion.
-- [`ADR-005`](adr/ADR-005-chat-first-product-surface.md): chat-first product behavior and SSL-off comparison.
-- [`ADR-006`](adr/ADR-006-production-local-boundary.md): local single-user production boundary.
-- [`ADR-007`](adr/ADR-007-hosted-production-boundary.md): separate requirements for future hosted production.
-- [`production-local.md`](../workbench/production-local.md): supported launcher, limits, logging, and recovery behavior.
-- [`status.md`](../research/status.md): current scientific evidence and bounded claims.
+The product reports whether an authorized seed actually surfaced. A textual difference counts as possible SSL influence only when that happened. Without a surfaced seed, normal model variation remains a possible explanation.
 
-## Interpretation rule
+The user may also load a stored comparison as a blinded A/B pair in the Advanced / research tab.
 
-Use this document as a readable map. Use the linked canonical documents and runtime tests for exact behavior. A later code or architecture change can make this snapshot stale; update the source anchor and regenerate the PDF after such a change.
+## 8. Feedback, reports, and multi-tester studies
+
+After a turn, the tester can record an overall impression and the visible seed effect. This feedback is `record_only`: it supports evaluation but cannot change weight, promotion, or Gate authority.
+
+The product offers two exports:
+
+| Export | Intended use | Contains |
+|---|---|---|
+| Full report | Detailed session review and qualitative research | Prompts, answers, comparison controls, seeds, Gate and influence records, and free-text feedback |
+| Privacy-minimized support bundle | Technical support and collection across many testers | Pseudonymous identity, model and configuration metadata, environment metadata, structural counts, and integrity manifest |
+
+The support bundle omits prompts, answers, seed text, comparison text, session title, direct session identity, and free tester notes. It is privacy-minimized, not formally anonymous.
+
+Researchers can combine verified support bundles into one dataset. The collector verifies every bundle, rejects duplicates and full reports, records each source hash, and preserves model and environment provenance. Collection creates structured observational data, not proof that Shadowseed improves answers.
+
+## 9. How the end product is delivered
+
+The target tester experience is a standalone desktop download for Windows, macOS, or Linux:
+
+```text
+download -> verify when practical -> extract/open -> choose model -> chat
+```
+
+The bundle contains its own Python runtime and Workbench dependencies. A normal tester does not need Git, system Python, `pip`, benchmark JSON, or an authored baseline answer. Model weights remain separate.
+
+The application creates a local workspace and binds the UI to `127.0.0.1`. Conversation state, seeds, feedback, and audit data live in local SQLite storage. A production-local workspace adds versioned migrations, an append-only authority ledger, backup and recovery checks, and a protected local anchor for rollback detection.
+
+Hosted OpenAI use is optional and explicit. Relevant content leaves the local device only when the tester chooses that provider and confirms the boundary. The current product is not a public hosted service and does not provide multi-user login or tenant isolation.
+
+## 10. The complete product definition
+
+Shadowseed Pro combines five things in one product:
+
+| Product part | What it gives the user |
+|---|---|
+| Normal chat | A familiar multi-turn conversation with the chosen model |
+| Gated shadow memory | Remembered candidates that begin without authority |
+| Inspection and intervention | Visible seed history, independently verified support, and contradiction workflows |
+| Paired comparison | A same-message SSL-off control without preparing a baseline |
+| Auditable research output | Feedback, full reports, privacy-minimized bundles, and controlled research tools |
+
+### What success looks like
+
+A fresh tester can download the application, select a model, start chatting, inspect what Shadowseed noticed, understand why a seed did or did not influence an answer, compare the same message with SSL off, and export a verifiable record.
+
+### What the product does not promise
+
+- It does not automatically discover every missing fact or question.
+- It does not turn recurrence or fluent model output into truth.
+- It does not guarantee that every promoted seed improves an answer.
+- It is not a conventional document-knowledge RAG system.
+- It is not currently a hosted, multi-user service.
+- It is not a certified safety layer for high-impact decisions.
+
+## Source map
+
+This product description is grounded in:
+
+- [`ADR-005`](adr/ADR-005-chat-first-product-surface.md): the chat-first product experience and same-message comparison.
+- [`overview.md`](overview.md): the canonical runtime and authority model.
+- [`lifecycle-and-gate.md`](lifecycle-and-gate.md): seed lifecycle, Gate, contradiction, and point-of-use behavior.
+- [`production-actor-authorization.md`](production-actor-authorization.md): trusted local actor and capabilities.
+- [`production-persistence-and-audit.md`](production-persistence-and-audit.md): local state, ledger, anchor, backup, recovery, and deletion.
+- [`production-local.md`](../workbench/production-local.md): supported local launcher and operational behavior.
+- [`Workbench README`](../workbench/README.md): tester journey, comparison, feedback, exports, and research separation.
+- [`research status`](../research/status.md): current evidence and bounded claims.
+
+Use the linked canonical documents and runtime tests for exact behavior. Update the runtime source anchor and regenerate the PDF after a product or architecture change.
