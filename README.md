@@ -126,6 +126,8 @@ Real-model runs must pin the model and embedding provenance required by the sele
 
 [Paper PDF](paper/shadowseed-paper.pdf) · [LaTeX source](paper/main.tex) · [Bibliography](paper/references.bib) · [Bibliography verification](paper/references-verification.md) · [Paper notes](paper/README.md)
 
+For a visual walkthrough of the product experience, including chat, shadow-memory inspection, evidence review, SSL-on/off comparison, exports, and local delivery, see the [product high-level design](docs/architecture/high-level-design.md) or its [rendered PDF](docs/architecture/shadowseed-pro-hld.pdf).
+
 The manuscript is a reviewed methods/systems snapshot, not a moving release brochure. It carries two explicit anchors: the reviewed SSL core at source version 0.5.0, and a separate assurance anchor at software 0.7.1 covering only the persistence, audit, and release-assurance sections. Releases after 0.5.0 extend the product, research instrumentation, persistence, and release-assurance layers around that reviewed core without redefining its authority model. We do not rewrite the compiled paper merely to make a release badge match; a manuscript revision must rebuild `main.tex`, bibliography, and PDF together.
 
 Every entry in the bibliography is recorded in [`paper/references-verification.md`](paper/references-verification.md) with the venue it was checked against and the level of that check. A contract test fails if a citation is added without a verification record.
