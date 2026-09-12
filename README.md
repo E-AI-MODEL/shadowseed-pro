@@ -1,7 +1,7 @@
 # Shadowseed Pro
 
 <p align="center">
-  <strong>Auditable Shadow Seed Learning for research, local testing, and evidence-disciplined evaluation.</strong>
+  <strong>A model-independent, auditable memory and validation engine for language-model applications.</strong>
 </p>
 
 <p align="center">
@@ -16,6 +16,11 @@
 
 Shadow Seed Learning (SSL) records **bounded epistemic candidates for investigation**, not hidden truth. A candidate may be a suspected gap, doubt, missing relation or boundary, dependency, unstated assumption, alternative hypothesis, contradiction to investigate, or relevant what-if direction. A new seed starts powerless. It may be remembered, recur, be contradicted, receive independently verified support, and only influence a later answer after the configured Validation Gate and a current point-of-use authorization both allow it.
 
+The product now has an explicit split. `ShadowseedEngine` is the reusable SSL
+pipeline and never calls a language model. The local Workbench is the first
+complete client of that pipeline: it provides chat, inspection, comparison,
+feedback, export, and standalone packaging.
+
 > [!IMPORTANT]
 > **Shadowseed Pro is research-ready, not yet production-ready.** Source version 0.7.1 is the production-local assurance candidate. It does not establish general answer-quality improvement, universal missing-information detection, semantic truth, hostile-network safety, hosted/multi-user readiness, or a completed `production-ready/local` claim before the exact-SHA release assurance and soak gates finish.
 
@@ -24,7 +29,36 @@ Shadow Seed Learning (SSL) records **bounded epistemic candidates for investigat
 
 ## Quick start
 
-### 1. Test Shadowseed as a normal chat application
+### 1. Add the SSL engine to an existing model application
+
+```python
+from shadowseed import ShadowseedEngine
+
+engine = ShadowseedEngine()
+prepared = engine.prepare_turn("Which boundary may be missing here?")
+
+# Your application owns this call, provider, credentials, and conversation history.
+try:
+    answer = host_model.generate(
+        message=prepared.question,
+        additional_context=prepared.model_context,
+    )
+except Exception:
+    engine.abort_turn(prepared)
+    raise
+
+report = engine.observe_turn(prepared, answer)
+print(report["seeds_born_weightless"])
+```
+
+`prepare_turn` performs lifecycle, relevance selection, and the recorded
+point-of-use check. `observe_turn` performs post-generation detection, intake,
+recurrence handling, Gate routing, and audit recording. Call `abort_turn` when
+the host model fails or abandons the request; it restores the exact state from
+before preparation so the conversation can continue. See the
+[engine integration guide](docs/engine/README.md) for the complete contract.
+
+### 2. Test Shadowseed as a normal chat application
 
 For a verified GitHub release, the intended tester path is:
 
@@ -36,7 +70,7 @@ The standalone release contract builds Windows, macOS, and Linux archives with a
 
 Source and release availability are separate facts. Treat a version as publicly released only after its immutable tag and verified release assets exist.
 
-### 2. Run from source
+### 3. Run from source
 
 ```bash
 git clone https://github.com/E-AI-MODEL/shadowseed-pro.git
@@ -67,7 +101,7 @@ For falsification research:
 shadowseed run-dialectic-falsification --help
 ```
 
-### 3. Collect privacy-minimized tester data
+### 4. Collect privacy-minimized tester data
 
 Each Workbench session can export a full auditable report and a privacy-minimized support bundle. Full reports contain conversation content and should be treated as sensitive. Support bundles omit the direct session identifier, free session title, prompts, generated answers, comparison text, seed text, and free-text tester notes. They retain pseudonymous session identity, model/backend/configuration metadata, environment metadata, and structural counts.
 

@@ -96,7 +96,12 @@ shadowseed-pro/
 
 ## Product and research surfaces
 
-The ordinary Workbench product surface lives in `src/shadowseed/workbench/` and delegates to canonical runtime/application/storage modules. New ordinary sessions are live/evidence-backed. The optional same-message SSL-off control is generated automatically and cannot mutate detector, recurrence, Gate, seed, or later conversation-history state.
+The reusable product boundary lives in `src/shadowseed/engine.py`. It exposes a
+model-independent two-phase live API and delegates to the canonical chat,
+runtime, Gate, lifecycle, surfacing, and audit implementation. The engine never
+calls a language model.
+
+The ordinary Workbench product surface lives in `src/shadowseed/workbench/` and delegates to canonical runtime/application/storage modules. It is the first complete client and demonstration environment for the engine behavior, not the definition of the engine itself. New ordinary sessions are live/evidence-backed. The optional same-message SSL-off control is generated automatically and cannot mutate detector, recurrence, Gate, seed, or later conversation-history state.
 
 Historical evaluation sessions, authored baseline fixtures, scenario JSON, benchmark outputs and other controlled comparison tooling remain research/evaluation material. They are not prerequisites for the product flow.
 
