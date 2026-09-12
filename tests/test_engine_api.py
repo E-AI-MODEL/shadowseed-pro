@@ -14,11 +14,15 @@ class StaticDetector:
     name = "static-detector"
     prompt_variant = "test"
 
-    def __init__(self, candidate: str | None) -> None:
+    def __init__(self, candidate: str | list[str] | None) -> None:
         self.candidate = candidate
 
     def detect_seeds(self, item, max_seeds=5):
-        return [] if self.candidate is None else [self.candidate]
+        if self.candidate is None:
+            return []
+        if isinstance(self.candidate, list):
+            return self.candidate[:max_seeds]
+        return [self.candidate]
 
 
 def _embedding(text: str) -> np.ndarray:
@@ -131,6 +135,91 @@ def test_prepared_turn_is_single_use_and_bound_to_one_engine():
     first_engine.observe_turn(first, "Visible answer")
     with pytest.raises(RuntimeError, match="no prepared turn"):
         first_engine.observe_turn(first, "Replay")
+
+
+def test_abort_turn_restores_preparation_state_and_allows_retry():
+    candidate = "Privacy as a missing decision boundary."
+    engine = _engine(candidate)
+    first = engine.prepare_turn("What should this data process consider?")
+    seed_id = engine.observe_turn(first, "A visible answer.")[
+        "seeds_born_weightless"
+    ][0]
+    for index in range(3):
+        engine.submit_evidence(seed_id, _verified_support(f"reviewer:{index}"))
+
+    state_before = engine.export_state()
+    prepared = engine.prepare_turn("Which privacy boundary applies to this data?")
+    assert engine.has_pending_turn is True
+    assert prepared.surfaced_seed_ids == (seed_id,)
+
+    engine.abort_turn(prepared)
+
+    assert engine.has_pending_turn is False
+    assert engine.export_state() == state_before
+    with pytest.raises(RuntimeError, match="no prepared turn"):
+        engine.abort_turn(prepared)
+
+    retried = engine.prepare_turn("Which privacy boundary applies to this data?")
+    assert retried.surfaced_seed_ids == (seed_id,)
+    engine.observe_turn(retried, "A visible answer after retry.")
+    assert engine.audit() == 1
+
+
+def test_abort_turn_rejects_a_prepared_turn_from_another_engine():
+    first_engine = _engine()
+    second_engine = _engine()
+    first = first_engine.prepare_turn("First question")
+    second = second_engine.prepare_turn("Second question")
+
+    with pytest.raises(ValueError, match="does not match"):
+        first_engine.abort_turn(second)
+    assert first_engine.has_pending_turn is True
+
+    first_engine.abort_turn(first)
+    second_engine.abort_turn(second)
+
+
+def test_surfaced_ids_match_the_bounded_model_context():
+    candidates = [f"Privacy boundary candidate {index}." for index in range(6)]
+
+    def embedding(text: str) -> np.ndarray:
+        vector = np.zeros(7)
+        for index, candidate in enumerate(candidates):
+            if text == candidate:
+                vector[0] = 0.5
+                vector[index + 1] = np.sqrt(0.75)
+                return vector
+        vector[0] = 1.0
+        return vector
+
+    engine = ShadowseedEngine(
+        embedding_fn=embedding,
+        detector_backend=StaticDetector(candidates),
+        recurrence_mode="pairwise",
+        max_seeds_per_turn=6,
+        surface_top_k=None,
+    )
+    first = engine.prepare_turn("Initial question")
+    seed_ids = engine.observe_turn(first, "Initial visible answer.")[
+        "seeds_born_weightless"
+    ]
+    assert len(seed_ids) == 6
+    for seed_id in seed_ids:
+        for index in range(3):
+            engine.submit_evidence(
+                seed_id, _verified_support(f"reviewer:{seed_id}:{index}")
+            )
+
+    prepared = engine.prepare_turn("Which privacy boundaries apply?")
+
+    assert prepared.surfaced_seed_ids == tuple(seed_ids[:5])
+    assert prepared.selected_seed_ids == tuple(seed_ids[:5])
+    assert len(prepared.influence_decisions) == 5
+    assert candidates[5] not in prepared.model_context
+
+    report = engine.observe_turn(prepared, "A bounded visible answer.")
+    assert report["surfaced_seed_ids"] == seed_ids[:5]
+    assert engine.audit() == 5
 
 
 def test_authority_cannot_change_during_a_pending_turn():

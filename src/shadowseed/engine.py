@@ -63,7 +63,7 @@ class ShadowseedEngine:
         embedding_fn: EmbedFn | None = None,
         detector_backend: DetectorBackend | None = None,
         surface_threshold: float = 0.30,
-        surface_top_k: int = 2,
+        surface_top_k: int | None = 2,
         early_turn_margin: float = 0.10,
         early_turn_history: int = 5,
         resurface_margin: float = 0.15,
@@ -157,6 +157,11 @@ class ShadowseedEngine:
         """Observe the host's visible answer and advance shadow state once."""
 
         return self._session.observe_turn(prepared, answer)
+
+    def abort_turn(self, prepared: PreparedTurn) -> None:
+        """Cancel a prepared turn and restore its pre-prepare engine state."""
+
+        self._session.abort_turn(prepared)
 
     def submit_evidence(
         self,

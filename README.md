@@ -38,10 +38,14 @@ engine = ShadowseedEngine()
 prepared = engine.prepare_turn("Which boundary may be missing here?")
 
 # Your application owns this call, provider, credentials, and conversation history.
-answer = host_model.generate(
-    message=prepared.question,
-    additional_context=prepared.model_context,
-)
+try:
+    answer = host_model.generate(
+        message=prepared.question,
+        additional_context=prepared.model_context,
+    )
+except Exception:
+    engine.abort_turn(prepared)
+    raise
 
 report = engine.observe_turn(prepared, answer)
 print(report["seeds_born_weightless"])
@@ -49,7 +53,9 @@ print(report["seeds_born_weightless"])
 
 `prepare_turn` performs lifecycle, relevance selection, and the recorded
 point-of-use check. `observe_turn` performs post-generation detection, intake,
-recurrence handling, Gate routing, and audit recording. See the
+recurrence handling, Gate routing, and audit recording. Call `abort_turn` when
+the host model fails or abandons the request; it restores the exact state from
+before preparation so the conversation can continue. See the
 [engine integration guide](docs/engine/README.md) for the complete contract.
 
 ### 2. Test Shadowseed as a normal chat application

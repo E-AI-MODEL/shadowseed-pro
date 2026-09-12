@@ -29,6 +29,7 @@ evidence layer. Claim boundaries in the research docs are unchanged.
 
 from __future__ import annotations
 
+from copy import deepcopy
 import json
 import math
 from dataclasses import asdict, dataclass
@@ -57,6 +58,7 @@ from shadowseed.gate.signals import (
 )
 from shadowseed.recurrence import refresh_cluster_representative
 from shadowseed.surfacing import (
+    DEFAULT_PROMPT_BOUNDARY,
     SurfacingCandidate,
     SurfacingPolicy,
     apply_prompt_boundary,
@@ -92,8 +94,9 @@ class PreparedTurn:
     """Authorized SSL context for one host-managed model call.
 
     The object is created by :meth:`ShadowChatSession.prepare_turn` and can be
-    consumed exactly once by :meth:`ShadowChatSession.observe_turn`.  It carries
-    candidate context, never an instruction to use every surfaced seed.
+    consumed exactly once by :meth:`ShadowChatSession.observe_turn` or cancelled
+    by :meth:`ShadowChatSession.abort_turn`. It carries candidate context, never
+    an instruction to use every surfaced seed.
     """
 
     turn_id: str
@@ -122,6 +125,29 @@ class PreparedTurn:
             ],
             "reactivated_trtl": list(self.reactivated_trtl),
         }
+
+
+@dataclass(frozen=True)
+class _PreparedTurnRollback:
+    """Private in-memory snapshot used to cancel one prepared live turn."""
+
+    manager_seeds: dict[str, Any]
+    manager_validation_log: list[ValidationGateResult]
+    manager_event_log: list[SeedEvent]
+    manager_feedback_log: list[ProbeFeedbackResult]
+    manager_gate_events: list[GateEvent]
+    manager_gate_sequence: int
+    manager_contradictions: Any
+    history: list[tuple[str, str]]
+    influence_records: list[AgentInfluenceRecord]
+    turn_reports: list[dict[str, Any]]
+    observation_ledger: CandidateObservationLedger
+    turn: int
+    born_turn: dict[str, int]
+    last_surfaced: dict[str, int]
+    seed_to_cluster: dict[str, int]
+    cluster_rep: dict[int, str]
+    clusterer: RecurrenceClusterer | None
 
 
 class ShadowChatSession:
@@ -240,6 +266,7 @@ class ShadowChatSession:
         self.observation_ledger = CandidateObservationLedger()
         self._turn = 0
         self._pending_live_turn: PreparedTurn | None = None
+        self._pending_live_turn_rollback: _PreparedTurnRollback | None = None
         # SSL->RAG bridge (vision item 2): promoted seeds probe this corpus so
         # the report can show what the seed finds that the question does not.
         self.probe_top_k = probe_top_k
@@ -436,12 +463,68 @@ class ShadowChatSession:
                 list(prepared.surfaced_seeds),
             )
         except Exception:
-            # Preparation performs observable lifecycle and point-of-use work,
-            # just as the former monolithic turn did before a provider call.
-            # Clear only the in-process reservation so the caller may retry.
-            self._pending_live_turn = None
+            self.abort_turn(prepared)
             raise
         return self.observe_turn(prepared, final_answer)
+
+    def _capture_prepared_turn_rollback(self) -> _PreparedTurnRollback:
+        """Capture all mutable live state before preparation starts."""
+
+        return _PreparedTurnRollback(
+            manager_seeds=deepcopy(self.manager._seeds),
+            manager_validation_log=deepcopy(self.manager.validation_log),
+            manager_event_log=deepcopy(self.manager.event_log),
+            manager_feedback_log=deepcopy(self.manager.feedback_log),
+            manager_gate_events=deepcopy(self.manager.gate_events),
+            manager_gate_sequence=self.manager._gate_sequence,
+            manager_contradictions=deepcopy(self.manager._contradictions),
+            history=deepcopy(self.history),
+            influence_records=deepcopy(self.influence_records),
+            turn_reports=deepcopy(self.turn_reports),
+            observation_ledger=deepcopy(self.observation_ledger),
+            turn=self._turn,
+            born_turn=deepcopy(self.born_turn),
+            last_surfaced=deepcopy(self.last_surfaced),
+            seed_to_cluster=deepcopy(self.seed_to_cluster),
+            cluster_rep=deepcopy(self.cluster_rep),
+            clusterer=deepcopy(self.clusterer),
+        )
+
+    def _restore_prepared_turn_rollback(
+        self, snapshot: _PreparedTurnRollback
+    ) -> None:
+        """Restore a captured turn snapshot without replacing runtime adapters."""
+
+        current_seed_ids = set(self.manager._seeds)
+        restored_seed_ids = set(snapshot.manager_seeds)
+        vector_constellation = self.manager.vector_constellation
+        if vector_constellation is not None:
+            for seed_id in current_seed_ids - restored_seed_ids:
+                vector_constellation.store.delete(seed_id)
+
+        self.manager._seeds = snapshot.manager_seeds
+        self.manager.validation_log = snapshot.manager_validation_log
+        self.manager.event_log = snapshot.manager_event_log
+        self.manager.feedback_log = snapshot.manager_feedback_log
+        self.manager.gate_events = snapshot.manager_gate_events
+        self.manager._gate_sequence = snapshot.manager_gate_sequence
+        self.manager._contradictions = snapshot.manager_contradictions
+        if vector_constellation is not None:
+            for seed_id in restored_seed_ids:
+                self.manager._sync_seed(seed_id)
+
+        self.history = snapshot.history
+        self.influence_records = snapshot.influence_records
+        self.turn_reports = snapshot.turn_reports
+        self.observation_ledger = snapshot.observation_ledger
+        self._turn = snapshot.turn
+        self.born_turn = snapshot.born_turn
+        self.last_surfaced = snapshot.last_surfaced
+        self.seed_to_cluster = snapshot.seed_to_cluster
+        self.cluster_rep = snapshot.cluster_rep
+        self.clusterer = snapshot.clusterer
+        self._pending_live_turn = None
+        self._pending_live_turn_rollback = None
 
     def prepare_turn(self, question: str) -> PreparedTurn:
         """Prepare authorized context without calling a language model.
@@ -462,54 +545,88 @@ class ShadowChatSession:
         if self._pending_live_turn is not None:
             raise RuntimeError("a prepared turn is already awaiting observe_turn")
 
-        turn = self._turn
-        if turn > 0:
-            self.manager.decay_traces(turns_passed=1)
-        reactivated = self.manager.scan_trtl_triggers(question)
+        rollback = self._capture_prepared_turn_rollback()
+        try:
+            turn = self._turn
+            if turn > 0:
+                self.manager.decay_traces(turns_passed=1)
+            reactivated = self.manager.scan_trtl_triggers(question)
 
-        def _is_cluster_representative(seed_id: str) -> bool:
-            if self.clusterer is None:
-                return True
-            cluster_id = self.seed_to_cluster.get(seed_id)
-            return cluster_id is None or self.cluster_rep.get(cluster_id) == seed_id
+            def _is_cluster_representative(seed_id: str) -> bool:
+                if self.clusterer is None:
+                    return True
+                cluster_id = self.seed_to_cluster.get(seed_id)
+                return cluster_id is None or self.cluster_rep.get(cluster_id) == seed_id
 
-        eligible = collect_eligible_promoted_seeds(
-            self.manager,
-            question,
-            turn=turn,
-            born_turn=self.born_turn,
-            last_surfaced=self.last_surfaced,
-            policy=self.surfacing_policy,
-            include_seed=_is_cluster_representative,
-        )
-        selected = select_cross_turn_seeds(eligible, self.surfacing_policy.surface_top_k)
-        allowed = self._contract_filter(selected)
-        surfaced = [text for _similarity, _seed_id, text in allowed]
-        surfaced_seed_ids = [seed_id for _similarity, seed_id, _text in allowed]
-        mark_surfaced(self.last_surfaced, allowed, turn)
+            eligible = collect_eligible_promoted_seeds(
+                self.manager,
+                question,
+                turn=turn,
+                born_turn=self.born_turn,
+                last_surfaced=self.last_surfaced,
+                policy=self.surfacing_policy,
+                include_seed=_is_cluster_representative,
+            )
+            configured_limit = self.surfacing_policy.surface_top_k
+            boundary_limit = max(0, DEFAULT_PROMPT_BOUNDARY.max_seeds)
+            selection_limit = (
+                boundary_limit
+                if configured_limit is None or configured_limit > boundary_limit
+                else configured_limit
+            )
+            selected = select_cross_turn_seeds(eligible, selection_limit)
+            allowed = self._contract_filter(selected)
+            surfaced = [text for _similarity, _seed_id, text in allowed]
+            bounded_surfaced, prompt_boundary_markers = apply_prompt_boundary(surfaced)
+            bounded_allowed = allowed[: len(bounded_surfaced)]
+            surfaced_seed_ids = [
+                seed_id for _similarity, seed_id, _text in bounded_allowed
+            ]
+            mark_surfaced(self.last_surfaced, bounded_allowed, turn)
 
-        model_context, prompt_boundary_markers = build_candidate_context(surfaced)
-        prepared = PreparedTurn(
-            turn_id=f"turn::{uuid4()}",
-            turn=turn,
-            question=question,
-            surfaced_seeds=tuple(surfaced),
-            surfaced_seed_ids=tuple(surfaced_seed_ids),
-            selected_seed_ids=tuple(
-                seed_id for _similarity, seed_id, _text in selected
-            ),
-            influence_decisions=tuple(
-                record.__dict__.copy()
-                for record in (
-                    self.influence_records[-len(selected):] if selected else []
-                )
-            ),
-            model_context=model_context,
-            prompt_boundary_markers=tuple(prompt_boundary_markers),
-            reactivated_trtl=tuple(reactivated),
-        )
+            model_context, _ = build_candidate_context(bounded_surfaced)
+            prepared = PreparedTurn(
+                turn_id=f"turn::{uuid4()}",
+                turn=turn,
+                question=question,
+                surfaced_seeds=tuple(bounded_surfaced),
+                surfaced_seed_ids=tuple(surfaced_seed_ids),
+                selected_seed_ids=tuple(
+                    seed_id for _similarity, seed_id, _text in selected
+                ),
+                influence_decisions=tuple(
+                    record.__dict__.copy()
+                    for record in (
+                        self.influence_records[-len(selected):] if selected else []
+                    )
+                ),
+                model_context=model_context,
+                prompt_boundary_markers=tuple(prompt_boundary_markers),
+                reactivated_trtl=tuple(reactivated),
+            )
+        except Exception:
+            self._restore_prepared_turn_rollback(rollback)
+            raise
         self._pending_live_turn = prepared
+        self._pending_live_turn_rollback = rollback
         return prepared
+
+    def abort_turn(self, prepared: PreparedTurn) -> None:
+        """Cancel a prepared turn and restore the exact pre-prepare state."""
+
+        if self.runtime_mode != "live":
+            raise ValueError("abort_turn is available only for the live SSL runtime")
+        if not isinstance(prepared, PreparedTurn):
+            raise TypeError("prepared must be a PreparedTurn")
+        pending = self._pending_live_turn
+        if pending is None:
+            raise RuntimeError("no prepared turn is awaiting observation")
+        if prepared != pending:
+            raise ValueError("prepared turn does not match the pending session turn")
+        rollback = self._pending_live_turn_rollback
+        if rollback is None:
+            raise RuntimeError("prepared turn has no rollback snapshot")
+        self._restore_prepared_turn_rollback(rollback)
 
     def observe_turn(
         self,
@@ -664,6 +781,7 @@ class ShadowChatSession:
         }
         self.turn_reports.append(report)
         self._pending_live_turn = None
+        self._pending_live_turn_rollback = None
         return report
 
     def _turn_evaluation(self, question: str) -> dict[str, Any]:

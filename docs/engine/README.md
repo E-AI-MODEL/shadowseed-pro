@@ -21,12 +21,13 @@ The host owns generation. The engine owns:
 host message
     -> engine.prepare_turn
     -> host model call with optional bounded candidate context
-    -> engine.observe_turn with the visible answer
+       -> success: engine.observe_turn with the visible answer
+       -> failure/cancellation: engine.abort_turn
     -> updated shadow and audit state
 ```
 
 One engine instance represents one ordered conversation or task stream. A host
-must finish `observe_turn` before preparing another message.
+must finish `observe_turn` or `abort_turn` before preparing another message.
 
 ## Minimal integration
 
@@ -38,10 +39,14 @@ engine = ShadowseedEngine()
 prepared = engine.prepare_turn("What should this decision account for?")
 
 # This function belongs to the host application. Shadowseed does not call it.
-visible_answer = host_model.generate(
-    message=prepared.question,
-    additional_context=prepared.model_context,
-)
+try:
+    visible_answer = host_model.generate(
+        message=prepared.question,
+        additional_context=prepared.model_context,
+    )
+except Exception:
+    engine.abort_turn(prepared)
+    raise
 
 turn_report = engine.observe_turn(prepared, visible_answer)
 ```
@@ -54,6 +59,11 @@ retain precise provenance without parsing the text block.
 The host may use another prompt format or structured model input. It should
 preserve the candidate-data boundary and must not treat every surfaced seed as
 mandatory guidance.
+
+Preparation performs lifecycle and recorded point-of-use work before the host
+model runs. `abort_turn(prepared)` rolls all of that work back when generation
+fails, is cancelled, or is abandoned. It also releases the pending-turn lock,
+so the host can retry or export the prior state without fabricating an answer.
 
 ## Supplying real detector and embedding adapters
 
