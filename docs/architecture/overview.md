@@ -15,6 +15,25 @@ Shadow Seed Learning separates detection, storage, validation, and influence. A 
 9. `AgentSafetyContract` checks the seed again at the point of use.
 10. Allowed and denied influence attempts are recorded for replay and audit.
 
+## Standalone engine boundary
+
+`ShadowseedEngine` exposes the live pipeline without owning model generation.
+A host first calls `prepare_turn(message)`, passes the returned bounded
+`model_context` to its own model when appropriate, and then calls
+`observe_turn(prepared, visible_answer)`. This two-phase contract keeps model
+choice, credentials, history, and provider operations in the host while the
+engine owns memory, lifecycle, Gate decisions, point-of-use authorization, and
+audit state.
+
+The existing `ShadowChatSession.turn` uses the same two methods around its model
+adapter. The Workbench and embedded clients therefore share one pipeline. There
+is no Workbench-specific Gate or second recurrence implementation.
+
+One engine instance represents one ordered task or conversation stream. Only
+one prepared turn may be outstanding. Authority-bearing evidence or
+contradiction changes are rejected while a prepared turn is pending, so the
+context returned to a host cannot become stale before observation.
+
 ## Authority model
 
 Authority, meaning whether a seed may eventually influence behavior, is governed by one Gate-controlled decision engine on the supported runtime API. Restoration and explicitly unsafe test hooks remain outside that new-decision guarantee.
@@ -30,6 +49,7 @@ Authority, meaning whether a seed may eventually influence behavior, is governed
 
 | Module | Responsibility |
 |---|---|
+| `shadowseed.engine` | Public model-independent `prepare_turn` / `observe_turn` integration API over the canonical live runtime |
 | `shadowseed.manager` | `SSLManager` runtime orchestration, configuration/state registry, audit logs, serialization, guarded authority mutation primitive, and compatibility facades |
 | `shadowseed.models` | Stable seed, lifecycle, validation-result, constellation, and probe data contracts |
 | `shadowseed.contradictions` | Contradiction records, blocking-state derivation, formal lifecycle workflows, sequencing, and legacy migration |

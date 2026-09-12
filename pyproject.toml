@@ -1,7 +1,7 @@
 [project]
 name = "shadowseed"
 version = "0.7.1"
-description = "Auditable Shadow Seed Learning runtime and local tester"
+description = "Model-independent Shadow Seed Learning engine and local Workbench"
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.10"

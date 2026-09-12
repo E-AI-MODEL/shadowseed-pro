@@ -31,9 +31,10 @@ from __future__ import annotations
 
 import json
 import math
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 import numpy as np
 
@@ -59,6 +60,7 @@ from shadowseed.surfacing import (
     SurfacingCandidate,
     SurfacingPolicy,
     apply_prompt_boundary,
+    build_candidate_context,
     build_chat_prompt,
     collect_eligible_promoted_seeds,
     mark_surfaced,
@@ -83,6 +85,43 @@ from shadowseed_agent import (
 )
 
 SESSION_STATE_SCHEMA_VERSION = 2
+
+
+@dataclass(frozen=True)
+class PreparedTurn:
+    """Authorized SSL context for one host-managed model call.
+
+    The object is created by :meth:`ShadowChatSession.prepare_turn` and can be
+    consumed exactly once by :meth:`ShadowChatSession.observe_turn`.  It carries
+    candidate context, never an instruction to use every surfaced seed.
+    """
+
+    turn_id: str
+    turn: int
+    question: str
+    surfaced_seeds: tuple[str, ...]
+    surfaced_seed_ids: tuple[str, ...]
+    selected_seed_ids: tuple[str, ...]
+    influence_decisions: tuple[dict[str, Any], ...]
+    model_context: str
+    prompt_boundary_markers: tuple[dict[str, object], ...]
+    reactivated_trtl: tuple[str, ...]
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "turn_id": self.turn_id,
+            "turn": self.turn,
+            "question": self.question,
+            "surfaced_seeds": list(self.surfaced_seeds),
+            "surfaced_seed_ids": list(self.surfaced_seed_ids),
+            "selected_seed_ids": list(self.selected_seed_ids),
+            "influence_decisions": [dict(item) for item in self.influence_decisions],
+            "model_context": self.model_context,
+            "prompt_boundary_markers": [
+                dict(item) for item in self.prompt_boundary_markers
+            ],
+            "reactivated_trtl": list(self.reactivated_trtl),
+        }
 
 
 class ShadowChatSession:
@@ -200,6 +239,7 @@ class ShadowChatSession:
         self.turn_reports: list[dict[str, Any]] = []
         self.observation_ledger = CandidateObservationLedger()
         self._turn = 0
+        self._pending_live_turn: PreparedTurn | None = None
         # SSL->RAG bridge (vision item 2): promoted seeds probe this corpus so
         # the report can show what the seed finds that the question does not.
         self.probe_top_k = probe_top_k
@@ -381,6 +421,47 @@ class ShadowChatSession:
 
     def _turn_live(self, question: str) -> dict[str, Any]:
         """Production-oriented one-generation loop with visible-history continuity."""
+        prepared = self.prepare_turn(question)
+        fixture_answer = f"Fixture echo answer to: {question}"
+        try:
+            final_answer = self.model.generate(
+                build_chat_prompt(
+                    self.history,
+                    question,
+                    list(prepared.surfaced_seeds),
+                    response_language="the same language as the user's current question",
+                ),
+                {"question": question, "turn": prepared.turn, "baseline_answer": fixture_answer},
+                "ssl" if prepared.surfaced_seeds else "baseline",
+                list(prepared.surfaced_seeds),
+            )
+        except Exception:
+            # Preparation performs observable lifecycle and point-of-use work,
+            # just as the former monolithic turn did before a provider call.
+            # Clear only the in-process reservation so the caller may retry.
+            self._pending_live_turn = None
+            raise
+        return self.observe_turn(prepared, final_answer)
+
+    def prepare_turn(self, question: str) -> PreparedTurn:
+        """Prepare authorized context without calling a language model.
+
+        This is the first half of the standalone SSL pipeline.  It performs
+        lifecycle maintenance, contextual seed selection, and the mandatory
+        recorded point-of-use decision.  A host application remains responsible
+        for its own model call and must return the visible answer through
+        :meth:`observe_turn`.
+
+        Only one prepared turn may be outstanding for a session.  The returned
+        object is bound to this exact session state and cannot be reused.
+        """
+        if self.runtime_mode != "live":
+            raise ValueError("prepare_turn is available only for the live SSL runtime")
+        if not isinstance(question, str):
+            raise TypeError("question must be a string")
+        if self._pending_live_turn is not None:
+            raise RuntimeError("a prepared turn is already awaiting observe_turn")
+
         turn = self._turn
         if turn > 0:
             self.manager.decay_traces(turns_passed=1)
@@ -407,15 +488,57 @@ class ShadowChatSession:
         surfaced_seed_ids = [seed_id for _similarity, seed_id, _text in allowed]
         mark_surfaced(self.last_surfaced, allowed, turn)
 
-        fixture_answer = f"Fixture echo answer to: {question}"
-        final_answer = self.model.generate(
-            build_chat_prompt(
-                self.history, question, surfaced, response_language="the same language as the user's current question"
+        model_context, prompt_boundary_markers = build_candidate_context(surfaced)
+        prepared = PreparedTurn(
+            turn_id=f"turn::{uuid4()}",
+            turn=turn,
+            question=question,
+            surfaced_seeds=tuple(surfaced),
+            surfaced_seed_ids=tuple(surfaced_seed_ids),
+            selected_seed_ids=tuple(
+                seed_id for _similarity, seed_id, _text in selected
             ),
-            {"question": question, "turn": turn, "baseline_answer": fixture_answer},
-            "ssl" if surfaced else "baseline",
-            surfaced,
+            influence_decisions=tuple(
+                record.__dict__.copy()
+                for record in (
+                    self.influence_records[-len(selected):] if selected else []
+                )
+            ),
+            model_context=model_context,
+            prompt_boundary_markers=tuple(prompt_boundary_markers),
+            reactivated_trtl=tuple(reactivated),
         )
+        self._pending_live_turn = prepared
+        return prepared
+
+    def observe_turn(
+        self,
+        prepared: PreparedTurn,
+        answer: str,
+    ) -> dict[str, Any]:
+        """Observe one host-generated answer and advance the SSL pipeline.
+
+        Candidate detection runs after generation.  A turn that received SSL
+        context is handled fail-closed: detected candidates are recorded for
+        inspection but do not create recurrence or new authority-bearing state.
+        """
+        if self.runtime_mode != "live":
+            raise ValueError("observe_turn is available only for the live SSL runtime")
+        if not isinstance(prepared, PreparedTurn):
+            raise TypeError("prepared must be a PreparedTurn")
+        pending = self._pending_live_turn
+        if pending is None:
+            raise RuntimeError("no prepared turn is awaiting observation")
+        if prepared != pending:
+            raise ValueError("prepared turn does not match the pending session turn")
+        if not isinstance(answer, str):
+            raise TypeError("answer must be a string")
+
+        turn = prepared.turn
+        question = prepared.question
+        final_answer = answer
+        surfaced = list(prepared.surfaced_seeds)
+        surfaced_seed_ids = list(prepared.surfaced_seed_ids)
 
         raw_candidates = self.detector.detect_seeds(
             {"text": final_answer}, max_seeds=self.max_seeds_per_turn
@@ -520,24 +643,27 @@ class ShadowChatSession:
             "ssl_answer": final_answer if surfaced else None,
             "surfaced_seeds": surfaced,
             "surfaced_seed_ids": surfaced_seed_ids,
-            "selected_seed_ids": [seed_id for _sim, seed_id, _text in selected],
-            "influence_decisions": (
-                [record.__dict__.copy() for record in self.influence_records[-len(selected):]]
-                if selected else []
-            ),
+            "selected_seed_ids": list(prepared.selected_seed_ids),
+            "influence_decisions": [
+                dict(item) for item in prepared.influence_decisions
+            ],
             "detected_candidates": raw_candidates,
             "suppressed_self_attributed_candidates": suppressed_self,
             "candidate_observations": [
                 observation.to_dict() for observation in turn_observations
             ],
             "seeds_born_weightless": born,
-            "prompt_boundary_markers": apply_prompt_boundary(surfaced)[1] if surfaced else [],
+            "prompt_boundary_markers": [
+                dict(item) for item in prepared.prompt_boundary_markers
+            ],
             "promoted_this_turn": promoted_now,
-            "reactivated_trtl": reactivated,
+            "reactivated_trtl": list(prepared.reactivated_trtl),
             "shadow_size": len(self.manager.seeds),
             "retrieval_probe": self._run_retrieval_probe(question),
+            "prepared_turn_id": prepared.turn_id,
         }
         self.turn_reports.append(report)
+        self._pending_live_turn = None
         return report
 
     def _turn_evaluation(self, question: str) -> dict[str, Any]:
@@ -875,8 +1001,21 @@ class ShadowChatSession:
         }
 
     @classmethod
-    def from_state(cls, state: dict[str, Any]) -> "ShadowChatSession":
-        """Restore a session snapshot without treating restoration as authority."""
+    def from_state(
+        cls,
+        state: dict[str, Any],
+        *,
+        model_backend: ModelBackend | None = None,
+        detector_backend: DetectorBackend | None = None,
+        embedding_fn: EmbedFn | None = None,
+    ) -> "ShadowChatSession":
+        """Restore a session snapshot without treating restoration as authority.
+
+        Optional runtime adapters let a detached engine restore state without
+        constructing the Workbench's model provider.  They change execution
+        wiring only; persisted authority state is still restored through the
+        canonical manager contracts below.
+        """
 
         schema_version = int(state.get("schema_version", 1))
         if schema_version not in {1, SESSION_STATE_SCHEMA_VERSION}:
@@ -889,7 +1028,13 @@ class ShadowChatSession:
             # current live default during restoration.
             config["runtime_mode"] = "evaluation"
         contract = AgentSafetyContract(**dict(state.get("contract", {})))
-        session = cls(**config, contract=contract)
+        session = cls(
+            **config,
+            contract=contract,
+            model_backend=model_backend,
+            detector_backend=detector_backend,
+            embedding_fn=embedding_fn,
+        )
         manager_data = dict(state.get("manager", {}))
         core_config_data = dict(manager_data.get("config", {}))
         if (
@@ -905,11 +1050,13 @@ class ShadowChatSession:
                 float(core_config_data["half_life_turns"]) * math.log(2.0)
             )
         core_config = SSLCoreConfig(**core_config_data)
-        embed_fn, _dimension = make_embedding_fn(
-            config.get("embedding_backend", "lexical"),
-            config.get("embedding_model"),
-        )
-        manager = SSLManager(embedding_fn=embed_fn, config=core_config)
+        restored_embedding_fn = embedding_fn
+        if restored_embedding_fn is None:
+            restored_embedding_fn, _dimension = make_embedding_fn(
+                config.get("embedding_backend", "lexical"),
+                config.get("embedding_model"),
+            )
+        manager = SSLManager(embedding_fn=restored_embedding_fn, config=core_config)
         for seed_data in manager_data.get("seeds", []):
             manager.restore_seed(seed_data)
         manager.validation_log = [

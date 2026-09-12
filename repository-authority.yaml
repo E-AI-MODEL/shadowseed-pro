@@ -79,6 +79,16 @@ entries:
       guarded authority mutation primitive, and compatibility method facade.
       Focused domain logic belongs in the explicit canonical modules below.
 
+  - path: src/shadowseed/engine.py
+    authority: RUNTIME_IMPLEMENTATION
+    owner: engine-api
+    runtime_import_allowed: true
+    modifications_allowed: true
+    notes: >
+      Public model-independent engine facade. It delegates to the canonical live
+      session, Gate, lifecycle, surfacing, and audit paths and must not duplicate
+      their authority decisions.
+
   - path: src/shadowseed/models.py
     authority: RUNTIME_IMPLEMENTATION
     owner: data-contracts
