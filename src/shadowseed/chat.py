@@ -132,22 +132,9 @@ class _PreparedTurnRollback:
     """Private in-memory snapshot used to cancel one prepared live turn."""
 
     manager_seeds: dict[str, Any]
-    manager_validation_log: list[ValidationGateResult]
-    manager_event_log: list[SeedEvent]
-    manager_feedback_log: list[ProbeFeedbackResult]
-    manager_gate_events: list[GateEvent]
-    manager_gate_sequence: int
-    manager_contradictions: Any
-    history: list[tuple[str, str]]
-    influence_records: list[AgentInfluenceRecord]
-    turn_reports: list[dict[str, Any]]
-    observation_ledger: CandidateObservationLedger
-    turn: int
-    born_turn: dict[str, int]
+    manager_event_log_length: int
+    influence_record_length: int
     last_surfaced: dict[str, int]
-    seed_to_cluster: dict[str, int]
-    cluster_rep: dict[int, str]
-    clusterer: RecurrenceClusterer | None
 
 
 class ShadowChatSession:
@@ -472,22 +459,9 @@ class ShadowChatSession:
 
         return _PreparedTurnRollback(
             manager_seeds=deepcopy(self.manager._seeds),
-            manager_validation_log=deepcopy(self.manager.validation_log),
-            manager_event_log=deepcopy(self.manager.event_log),
-            manager_feedback_log=deepcopy(self.manager.feedback_log),
-            manager_gate_events=deepcopy(self.manager.gate_events),
-            manager_gate_sequence=self.manager._gate_sequence,
-            manager_contradictions=deepcopy(self.manager._contradictions),
-            history=deepcopy(self.history),
-            influence_records=deepcopy(self.influence_records),
-            turn_reports=deepcopy(self.turn_reports),
-            observation_ledger=deepcopy(self.observation_ledger),
-            turn=self._turn,
-            born_turn=deepcopy(self.born_turn),
+            manager_event_log_length=len(self.manager.event_log),
+            influence_record_length=len(self.influence_records),
             last_surfaced=deepcopy(self.last_surfaced),
-            seed_to_cluster=deepcopy(self.seed_to_cluster),
-            cluster_rep=deepcopy(self.cluster_rep),
-            clusterer=deepcopy(self.clusterer),
         )
 
     def _restore_prepared_turn_rollback(
@@ -503,26 +477,13 @@ class ShadowChatSession:
                 vector_constellation.store.delete(seed_id)
 
         self.manager._seeds = snapshot.manager_seeds
-        self.manager.validation_log = snapshot.manager_validation_log
-        self.manager.event_log = snapshot.manager_event_log
-        self.manager.feedback_log = snapshot.manager_feedback_log
-        self.manager.gate_events = snapshot.manager_gate_events
-        self.manager._gate_sequence = snapshot.manager_gate_sequence
-        self.manager._contradictions = snapshot.manager_contradictions
+        del self.manager.event_log[snapshot.manager_event_log_length :]
         if vector_constellation is not None:
             for seed_id in restored_seed_ids:
                 self.manager._sync_seed(seed_id)
 
-        self.history = snapshot.history
-        self.influence_records = snapshot.influence_records
-        self.turn_reports = snapshot.turn_reports
-        self.observation_ledger = snapshot.observation_ledger
-        self._turn = snapshot.turn
-        self.born_turn = snapshot.born_turn
+        del self.influence_records[snapshot.influence_record_length :]
         self.last_surfaced = snapshot.last_surfaced
-        self.seed_to_cluster = snapshot.seed_to_cluster
-        self.cluster_rep = snapshot.cluster_rep
-        self.clusterer = snapshot.clusterer
         self._pending_live_turn = None
         self._pending_live_turn_rollback = None
 
