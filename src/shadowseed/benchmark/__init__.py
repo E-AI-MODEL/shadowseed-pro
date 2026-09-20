@@ -1,21 +1,23 @@
-"""Benchmark helpers for Shadow Seed Learning."""
+"""Compatibility bridge for historical shadowseed.benchmark imports.
 
-from .absencebench import (
-    AbsenceBenchPreparation,
-    AbsenceBenchRunCard,
-    build_preparation_record,
-    build_run_card,
-    load_gap_test_suite,
-)
-from .absencebench_runner import AbsenceBenchRunner
-from .execution_status import ExecutionDecision, resolve_execution_status
-from .host_verification import HostVerification, build_host_verification
-from .result_writer import ResultWriter
-from .run_types import ExecutionStatus, HostStatus, RunType, RunnerStatus
-from .runner import BenchmarkPlan, BenchmarkRunner
-from .schemas import BenchmarkResult
+Canonical research and evaluation code lives in the repository-only
+shadowseed_benchmark package under research/. Product distributions retain
+only this bridge and the documented runtime compatibility facades.
+"""
 
-__all__ = [
+from __future__ import annotations
+
+try:
+    import shadowseed_benchmark as _research
+except ModuleNotFoundError:
+    _research = None
+
+if _research is not None:
+    for _research_path in _research.__path__:
+        if _research_path not in __path__:
+            __path__.append(_research_path)
+
+_LEGACY_EXPORTS = {
     "AbsenceBenchPreparation",
     "AbsenceBenchRunCard",
     "AbsenceBenchRunner",
@@ -34,4 +36,13 @@ __all__ = [
     "build_run_card",
     "load_gap_test_suite",
     "resolve_execution_status",
-]
+}
+
+
+def __getattr__(name: str):
+    if name not in _LEGACY_EXPORTS or _research is None:
+        raise AttributeError(name)
+    return getattr(_research, name)
+
+
+__all__ = sorted(_LEGACY_EXPORTS)

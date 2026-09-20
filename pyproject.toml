@@ -98,7 +98,7 @@ where = ["src"]
 shadowseed = ["data/*.json"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["src", "research/src"]
 testpaths = ["tests"]
 
 [tool.ruff]
