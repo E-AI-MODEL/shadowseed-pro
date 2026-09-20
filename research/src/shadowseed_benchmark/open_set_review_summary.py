@@ -7,7 +7,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from shadowseed.benchmark.open_set_seed_review import (
+from shadowseed_benchmark.open_set_seed_review import (
     EVIDENCE_LAYER,
     REJECT_CODES,
     REVIEW_CRITERIA,

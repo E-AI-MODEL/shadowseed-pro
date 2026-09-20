@@ -23,7 +23,7 @@ from typing import Any
 
 from shadowseed.adapters.embedding import make_embedding_fn
 from shadowseed.adapters.models import make_backend
-from shadowseed.benchmark.capability_scaling import (
+from shadowseed_benchmark.capability_scaling import (
     DEFAULT_REVIEWERS,
     REVIEW_SCHEMA,
     _blank_answer_scores,
@@ -34,7 +34,7 @@ from shadowseed.benchmark.capability_scaling import (
     _write_environment_manifest,
     _write_json,
 )
-from shadowseed.benchmark.ssl45_model_benefit_suite import blind_order
+from shadowseed_benchmark.ssl45_model_benefit_suite import blind_order
 from shadowseed.chat import ShadowChatSession
 from shadowseed.detection.model_detector import (
     OPEN_SET_GENERATIVE_DETECTOR_ID,

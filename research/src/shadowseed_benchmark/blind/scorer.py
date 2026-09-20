@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 
-from shadowseed.benchmark.blind.schemas import BlindScore, HiddenLabel
+from shadowseed_benchmark.blind.schemas import BlindScore, HiddenLabel
 
 
 STOPWORDS = {

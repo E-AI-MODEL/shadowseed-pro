@@ -19,7 +19,7 @@ from typing import Any
 
 from shadowseed.detection.model_detector import make_detector_backend
 from shadowseed.adapters.models import make_backend
-from shadowseed.benchmark.ssl45_model_benefit_suite import blind_order, word_count
+from shadowseed_benchmark.ssl45_model_benefit_suite import blind_order, word_count
 
 
 def build_generative_baseline_prompt(question: str) -> str:
@@ -89,7 +89,7 @@ def run_generative_payoff_suite(
         baseline_cov = None
         novel_frames = None
         if embed_fn is not None and frames:
-            from shadowseed.benchmark.semantic_coverage import semantic_coverage
+            from shadowseed_benchmark.semantic_coverage import semantic_coverage
 
             frac, _cov, per = semantic_coverage(baseline, frames, embed_fn, semantic_threshold)
             baseline_cov = frac

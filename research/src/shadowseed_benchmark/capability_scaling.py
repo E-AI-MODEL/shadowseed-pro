@@ -34,7 +34,7 @@ import numpy as np
 
 from shadowseed.adapters.embedding import make_embedding_fn
 from shadowseed.adapters.models import make_backend
-from shadowseed.benchmark.ssl45_model_benefit_suite import blind_order
+from shadowseed_benchmark.ssl45_model_benefit_suite import blind_order
 from shadowseed.chat import ShadowChatSession
 from shadowseed.core_config import SSLCoreConfig
 from shadowseed.detection.model_detector import (
