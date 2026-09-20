@@ -20,11 +20,11 @@ import json
 from pathlib import Path
 from typing import Any
 
-from shadowseed.benchmark.evidence_layers import (
+from shadowseed_benchmark.evidence_layers import (
     ADVERSARIAL_NOISE_CONTROL,
     assert_valid_layer,
 )
-from shadowseed.benchmark.ssl45_false_positive_suite import evaluate_adversarial_candidate
+from shadowseed_benchmark.ssl45_false_positive_suite import evaluate_adversarial_candidate
 
 EVIDENCE_LAYER = assert_valid_layer(ADVERSARIAL_NOISE_CONTROL)
 

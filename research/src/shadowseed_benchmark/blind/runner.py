@@ -7,10 +7,10 @@ from pathlib import Path
 
 import numpy as np
 
-from shadowseed.benchmark.blind.detector import detect_blind_candidates, tokenize
-from shadowseed.benchmark.blind.loader import load_hidden_labels, load_public_suite
-from shadowseed.benchmark.blind.schemas import BlindScenarioResult
-from shadowseed.benchmark.blind.scorer import score_blind_result
+from shadowseed_benchmark.blind.detector import detect_blind_candidates, tokenize
+from shadowseed_benchmark.blind.loader import load_hidden_labels, load_public_suite
+from shadowseed_benchmark.blind.schemas import BlindScenarioResult
+from shadowseed_benchmark.blind.scorer import score_blind_result
 from shadowseed.hash_utils import stable_bucket_index
 from shadowseed.manager import SSLManager, SeedStatus
 

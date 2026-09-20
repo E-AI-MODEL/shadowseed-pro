@@ -19,7 +19,7 @@ from typing import Any
 
 import numpy as np
 
-from shadowseed.benchmark.dialectic_falsification import (
+from shadowseed_benchmark.dialectic_falsification import (
     VERDICT_HOUDT_STAND,
     VERDICT_WEERLEGD,
     FixtureDialecticBackend,

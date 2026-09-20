@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from shadowseed.adapters.models import make_backend
-from shadowseed.benchmark.ssl45_model_benefit_suite import (
+from shadowseed_benchmark.ssl45_model_benefit_suite import (
     blind_order,
     build_baseline_prompt,
     build_ssl_revision_prompt,

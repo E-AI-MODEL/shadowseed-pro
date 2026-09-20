@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from shadowseed.benchmark.blind.schemas import BlindScenario, HiddenLabel
+from shadowseed_benchmark.blind.schemas import BlindScenario, HiddenLabel
 
 
 class BlindBenchmarkInputError(ValueError):
