@@ -27,3 +27,38 @@ print('acyclic public imports OK')
     )
     assert completed.returncode == 0, completed.stderr
     assert "acyclic public imports OK" in completed.stdout
+
+def test_product_imports_do_not_load_benchmark_package():
+    code = """
+import sys
+
+class BlockBenchmarkImports:
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname == "shadowseed.benchmark" or fullname.startswith("shadowseed.benchmark."):
+            raise AssertionError(f"product import crossed into research package: {fullname}")
+        return None
+
+sys.meta_path.insert(0, BlockBenchmarkImports())
+
+from shadowseed import ShadowseedEngine
+from shadowseed.cli import build_parser
+from shadowseed.cli_dispatch import COMMAND_HANDLERS
+
+assert ShadowseedEngine is not None
+assert build_parser().parse_args(["chat", "--backend", "fixture"]).command == "chat"
+assert "chat" in COMMAND_HANDLERS
+assert not any(
+    name == "shadowseed.benchmark" or name.startswith("shadowseed.benchmark.")
+    for name in sys.modules
+)
+print("product imports are benchmark-free")
+"""
+    completed = subprocess.run(
+        [sys.executable, "-c", code],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert "product imports are benchmark-free" in completed.stdout
+
