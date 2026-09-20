@@ -72,10 +72,23 @@ jobs:
       - name: Import research namespace
         run: |
           uv run --no-sync python - <<'PY'
+          import importlib
+          import pkgutil
+
           import shadowseed
           import shadowseed_research
+          import shadowseed_research.benchmark as benchmark_package
           from shadowseed_research.benchmark import AbsenceBenchRunner
 
+          imported = []
+          for module in pkgutil.walk_packages(
+              benchmark_package.__path__,
+              benchmark_package.__name__ + ".",
+          ):
+              importlib.import_module(module.name)
+              imported.append(module.name)
+
+          assert imported
           assert shadowseed.ShadowseedEngine is not None
           assert AbsenceBenchRunner is not None
 
