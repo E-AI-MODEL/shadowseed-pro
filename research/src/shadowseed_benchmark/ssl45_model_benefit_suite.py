@@ -16,12 +16,12 @@ from pathlib import Path
 import re
 from typing import Protocol
 
-from shadowseed.benchmark.ssl45_benefit_suite import (
+from shadowseed_benchmark.ssl45_benefit_suite import (
     UNSUPPORTED_ADDITION_PENALTY_WEIGHT,
     coverage_delta_per_100_added_words,
     penalized_coverage_delta,
 )
-from shadowseed.benchmark.ssl45_gap_suite import (
+from shadowseed_benchmark.ssl45_gap_suite import (
     detect_candidate_seeds,
     jaccard,
     score_seed,
@@ -161,7 +161,7 @@ def ssl_append_answer(baseline_answer: str, ssl_seeds: list[str]) -> str:
 def promoted_ssl_seeds(scenario: dict, baseline_answer: str, turns: int) -> tuple[list[str], list[dict], list[list[str]]]:
     manager = SSLManager(
         embedding_fn=lambda text: __import__(
-            "shadowseed.benchmark.ssl45_gap_suite",
+            "shadowseed_benchmark.ssl45_gap_suite",
             fromlist=["lexical_embedding"],
         ).lexical_embedding(text),
         config=SSLCoreConfig(min_occurrences_for_gate=2),
@@ -276,7 +276,7 @@ def run_ssl45_model_benefit_suite(
 
         semantic_block: dict | None = None
         if semantic_embed_fn is not None:
-            from shadowseed.benchmark.semantic_coverage import semantic_coverage
+            from shadowseed_benchmark.semantic_coverage import semantic_coverage
 
             exp = scenario["expected_ssl_additions"]
             b_sem, _b_cov, b_pergap = semantic_coverage(

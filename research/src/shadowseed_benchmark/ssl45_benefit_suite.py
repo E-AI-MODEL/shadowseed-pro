@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 import re
 
-from shadowseed.benchmark.ssl45_gap_suite import (
+from shadowseed_benchmark.ssl45_gap_suite import (
     detect_candidate_seeds,
     jaccard,
     score_seed,
@@ -101,7 +101,7 @@ def run_ssl45_benefit_suite(input_path: str, output_path: str, turns: int = 4) -
 
         manager = SSLManager(
             embedding_fn=lambda text: __import__(
-                "shadowseed.benchmark.ssl45_gap_suite",
+                "shadowseed_benchmark.ssl45_gap_suite",
                 fromlist=["lexical_embedding"],
             ).lexical_embedding(text),
             config=SSLCoreConfig(min_occurrences_for_gate=2),

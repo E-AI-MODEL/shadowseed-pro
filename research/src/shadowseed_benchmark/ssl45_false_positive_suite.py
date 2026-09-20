@@ -17,7 +17,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from shadowseed.benchmark.ssl45_gap_suite import detect_candidate_seeds, lexical_embedding, tokenize
+from shadowseed_benchmark.ssl45_gap_suite import detect_candidate_seeds, lexical_embedding, tokenize
 from shadowseed.gate.signals import SignalKind, ValidationSignal
 from shadowseed.manager import SSLManager, SeedStatus
 

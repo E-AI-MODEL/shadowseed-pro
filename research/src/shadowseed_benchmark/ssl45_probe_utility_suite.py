@@ -17,7 +17,7 @@ import json
 from pathlib import Path
 import re
 
-from shadowseed.benchmark.evidence_layers import PROBE_UTILITY, assert_valid_layer
+from shadowseed_benchmark.evidence_layers import PROBE_UTILITY, assert_valid_layer
 
 EVIDENCE_LAYER = assert_valid_layer(PROBE_UTILITY)
 
