@@ -235,4 +235,12 @@ jobs:
         run: |
           cd /tmp
           /tmp/ci-wheel-env/bin/shadowseed --help
-          /tmp/ci-wheel-env/bin/python -c "import shadowseed; print('import ok', shadowseed.__name__)"
+          /tmp/ci-wheel-env/bin/python - <<'PY'
+          import importlib.util
+          import shadowseed
+
+          assert importlib.util.find_spec("shadowseed_benchmark") is None
+          assert importlib.util.find_spec("shadowseed.benchmark.capability_scaling") is None
+          assert importlib.util.find_spec("shadowseed.benchmark.embedding_backends") is not None
+          print("import ok", shadowseed.__name__, "research package absent from product wheel")
+          PY

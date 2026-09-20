@@ -42,6 +42,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[models]"
+          pip install --no-deps -e ./research
 
       - name: Install and start Ollama
         run: |
@@ -127,7 +128,7 @@ jobs:
 
       - name: Smoke-test canonical live capability path
         run: |
-          GITHUB_SHA="$(git rev-parse HEAD)" python -m shadowseed.benchmark.capability_scaling run \
+          GITHUB_SHA="$(git rev-parse HEAD)" python -m shadowseed_benchmark.capability_scaling run \
             --backend ollama \
             --model-id "$MODEL_ID" \
             --model-reference "$MODEL_ID" \
@@ -142,12 +143,12 @@ jobs:
             --preregistration "$PREREG" \
             --output-dir /tmp/capability-scaling-qwen7b-smoke-v2 \
             --run-id qwen7b-post-alignment-smoke-v2
-          python -m shadowseed.benchmark.capability_scaling verify /tmp/capability-scaling-qwen7b-smoke-v2
+          python -m shadowseed_benchmark.capability_scaling verify /tmp/capability-scaling-qwen7b-smoke-v2
 
       - name: Run preregistered primary plus transfer measurement
         run: |
           rm -rf "$RUN_DIR"
-          GITHUB_SHA="$(git rev-parse HEAD)" python -m shadowseed.benchmark.capability_scaling run \
+          GITHUB_SHA="$(git rev-parse HEAD)" python -m shadowseed_benchmark.capability_scaling run \
             --backend ollama \
             --model-id "$MODEL_ID" \
             --model-reference "$MODEL_ID" \
@@ -203,7 +204,7 @@ jobs:
 
       - name: Verify bundle and fail closed on authority and protocol drift
         run: |
-          python -m shadowseed.benchmark.capability_scaling verify "$RUN_DIR"
+          python -m shadowseed_benchmark.capability_scaling verify "$RUN_DIR"
           python - <<'PY'
           import json
           import os

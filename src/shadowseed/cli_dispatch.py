@@ -17,16 +17,16 @@ CommandHandler = Callable[[argparse.Namespace], str]
 def _research_attr(module: str, name: str):
     """Load research/evaluation code only when a research command is executed."""
 
-    qualified = f"shadowseed.benchmark.{module}"
+    qualified = f"shadowseed_benchmark.{module}"
     try:
         return getattr(import_module(qualified), name)
     except ModuleNotFoundError as exc:
         missing = exc.name or ""
-        if missing == "shadowseed.benchmark" or missing.startswith("shadowseed.benchmark."):
+        if missing == "shadowseed_benchmark" or missing.startswith("shadowseed_benchmark."):
             raise RuntimeError(
                 "This command belongs to the Shadowseed research/evaluation surface "
                 "and is unavailable in a product-only installation. Run it from a "
-                "repository research environment that includes shadowseed.benchmark."
+                "repository research environment that includes shadowseed_benchmark."
             ) from exc
         raise
 

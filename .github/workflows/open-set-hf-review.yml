@@ -72,6 +72,7 @@ jobs:
           else
             pip install -e .
           fi
+          pip install --no-deps -e ./research
       - name: Fetch input batch
         run: |
           shadowseed fetch-open-set-hf-batch \
