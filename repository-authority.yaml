@@ -276,13 +276,38 @@ entries:
 
   # --- Evaluation implementation -----------------------------------------
   - path: src/shadowseed/benchmark/**
-    authority: EVALUATION_IMPLEMENTATION
-    owner: benchmark
-    runtime_import_allowed: true
+    authority: COMPATIBILITY_ONLY
+    owner: compatibility
+    runtime_import_allowed: false
     modifications_allowed: true
     notes: >
-      Canonical benchmark and evaluation suites. Excludes the seven
-      COMPATIBILITY_ONLY facades above (which win by most-specific match).
+      Historical benchmark namespace bridge plus the runtime compatibility
+      facades declared above. Canonical evaluation implementation does not
+      live in the product package.
+
+  - path: research/src/shadowseed_benchmark/**
+    authority: EVALUATION_IMPLEMENTATION
+    owner: benchmark
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: >
+      Canonical repository-only benchmark and evaluation implementation.
+      This package is installable separately for research work and is excluded
+      from the normal Shadowseed product distribution.
+
+  - path: research/pyproject.toml
+    authority: EVALUATION_IMPLEMENTATION
+    owner: benchmark
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: Packaging metadata for the repository-only research package.
+
+  - path: research/README.md
+    authority: EVALUATION_IMPLEMENTATION
+    owner: benchmark
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: Installation and boundary guidance for research tooling.
 
   - path: src/shadowseed/evaluation/**
     authority: EVALUATION_IMPLEMENTATION

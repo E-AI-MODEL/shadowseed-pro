@@ -77,6 +77,7 @@ git clone https://github.com/E-AI-MODEL/shadowseed-pro.git
 cd shadowseed-pro
 python -m pip install --upgrade pip
 pip install -e ".[test,workbench]"
+pip install --no-deps -e ./research  # only for benchmark/research commands
 python -m pytest -q
 python -m ruff check .
 shadowseed --help
@@ -139,7 +140,7 @@ src/shadowseed/data/evidence_efficacy_preregistration_v1.json
 Run and verify a study bundle:
 
 ```bash
-python -m shadowseed.benchmark.evidence_efficacy run \
+python -m shadowseed_benchmark.evidence_efficacy run \
   --backend <fixture|ollama|hf-transformers|openai> \
   --model-id <model> \
   --suite path/to/evidence-efficacy-suite.json \
@@ -147,7 +148,7 @@ python -m shadowseed.benchmark.evidence_efficacy run \
   --output-dir results/evidence-efficacy/<run> \
   --embedding-backend <lexical|sentence-transformers|openai>
 
-python -m shadowseed.benchmark.evidence_efficacy verify \
+python -m shadowseed_benchmark.evidence_efficacy verify \
   results/evidence-efficacy/<run>
 ```
 
@@ -232,7 +233,7 @@ A textual difference is not automatically an SSL effect. Attribute an observed d
 | Influence requires current authority and point-of-use authorization | [`AgentSafetyContract`](src/shadowseed_agent/agent_contract.py) | [`test_point_of_use.py`](tests/test_point_of_use.py) |
 | Live history stores the visible answer; evaluation preserves isolated research controls | [`shadowseed.chat`](src/shadowseed/chat.py) | [`test_live_runtime.py`](tests/test_live_runtime.py) |
 | Support datasets accept verified minimized bundles only | [`shadowseed.support_collection`](src/shadowseed/support_collection.py) | [`test_workbench_support_collection.py`](tests/test_workbench_support_collection.py) |
-| Evidence efficacy uses the canonical evidence-backed trust boundary | [`shadowseed.benchmark.evidence_efficacy`](src/shadowseed/benchmark/evidence_efficacy.py), [`ShadowChatSession.submit_evidence`](src/shadowseed/chat.py) | [`test_evidence_efficacy.py`](tests/test_evidence_efficacy.py) |
+| Evidence efficacy uses the canonical evidence-backed trust boundary | [`shadowseed_benchmark.evidence_efficacy`](research/src/shadowseed_benchmark/evidence_efficacy.py), [`ShadowChatSession.submit_evidence`](src/shadowseed/chat.py) | [`test_evidence_efficacy.py`](tests/test_evidence_efficacy.py) |
 
 > **"Non-bypassable" is a public-API property** over supported new authority decisions, not a claim about arbitrary in-process Python mutation, validated state restoration, or explicitly unsafe test hooks.
 
@@ -274,8 +275,8 @@ shadowseed run-adversarial-gate-benchmark
 shadowseed run-probe-utility-benchmark
 shadowseed run-probe-feedback-behavior-suite
 shadowseed analyze-results
-python -m shadowseed.benchmark.capability_scaling --help
-python -m shadowseed.benchmark.evidence_efficacy --help
+python -m shadowseed_benchmark.capability_scaling --help
+python -m shadowseed_benchmark.evidence_efficacy --help
 ```
 
 Optional stacks:

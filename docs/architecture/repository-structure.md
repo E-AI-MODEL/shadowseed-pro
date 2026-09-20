@@ -39,10 +39,12 @@ shadowseed-pro/
 │   │   ├── analysis/               result analyzer + artifact snapshot
 │   │   ├── vectorstore/            memory + optional FAISS/Chroma stores
 │   │   ├── data/                   packaged curated input data
-│   │   ├── benchmark/              evaluation suites + 7 compatibility facades
+│   │   ├── benchmark/              compatibility bridge + runtime facades
 │   │   ├── evaluation/             evaluation-area docs/placeholders
 │   │   └── *.py                    chat, CLI, SSOT, retrieval, prompts, surfacing, etc.
 │   └── shadowseed_agent/           point-of-use contract and audit policy
+├── research/                       repository-only research package
+│   └── src/shadowseed_benchmark/   EVALUATION_IMPLEMENTATION
 ├── tests/                          CONTRACT_TEST
 ├── benchmarks/                     EVALUATION_IMPLEMENTATION
 │   └── results/                    EVIDENCE_ARTIFACT result snapshots
@@ -85,7 +87,8 @@ shadowseed-pro/
 | `src/shadowseed/detection/` | Open-set model detector | RUNTIME_IMPLEMENTATION |
 | `src/shadowseed/analysis/` | Result analysis and artifact precedence | RUNTIME_IMPLEMENTATION |
 | `src/shadowseed/vectorstore/` | Vector store backends | RUNTIME_IMPLEMENTATION |
-| `src/shadowseed/benchmark/` | Benchmark/evaluation suites | EVALUATION_IMPLEMENTATION |
+| `src/shadowseed/benchmark/` | Historical namespace bridge and runtime compatibility facades | COMPATIBILITY_ONLY |
+| `research/src/shadowseed_benchmark/` | Benchmark and evaluation implementation | EVALUATION_IMPLEMENTATION |
 | `src/shadowseed_agent/` | Point-of-use contract and policies | RUNTIME_IMPLEMENTATION |
 | `tests/` | Contract and regression tests | CONTRACT_TEST |
 | `benchmarks/results/`, `results/`, `data/` | Generated or curated research evidence/reference material | EVIDENCE_ARTIFACT |
@@ -107,7 +110,7 @@ Historical evaluation sessions, authored baseline fixtures, scenario JSON, bench
 
 The import boundary follows the same rule. `shadowseed`, `ShadowseedEngine`, the CLI parser, and ordinary product dispatch do not import `shadowseed.benchmark` during startup. Research commands resolve their benchmark modules lazily only when that command is executed. Shared command metadata that the product parser needs lives in small runtime-neutral contract modules rather than making the product depend on evaluation implementations. A fresh-interpreter contract test blocks every `shadowseed.benchmark` import while loading the product surface.
 
-This is an import/dependency split, not yet the final distribution split. The benchmark implementation still lives in the repository under `src/shadowseed/benchmark/`; moving or separately packaging that research surface is the next bounded step after this dependency boundary is stable.
+The distribution boundary now follows that import boundary. Canonical benchmark code lives under `research/src/shadowseed_benchmark/` and is not discovered by the product package build. `src/shadowseed/benchmark/` remains only as a historical namespace bridge plus the documented runtime compatibility facades. Research commands require the separate repository research package; the normal wheel and standalone product do not contain the benchmark implementation.
 
 The `paper/` directory is a publication bundle. `main.tex` is manuscript source and `shadowseed-paper.pdf` is its compiled artifact. Any manuscript refresh must update source claims against an exact reviewed commit and regenerate the PDF. Neither the manuscript nor its bibliography may silently supersede `docs/architecture/**` or the runtime.
 
@@ -157,7 +160,7 @@ The original `manager.py` combined data contracts, contradiction workflows, Gate
 
 Runtime modules and subpackages under `src/shadowseed/` are discovered by the package configuration. The Workbench extra and standalone build include the additional product dependencies explicitly. Public manager imports, CLI entry points and package data remain controlled through `pyproject.toml`.
 
-`archive/`, `benchmarks/`, `paper/`, `scripts/`, `experiments/`, historical plans, and rebuild audit records are not runtime package code. Paper and benchmark artifacts may be shipped or published separately without becoming runtime authority.
+`research/`, `archive/`, `benchmarks/`, `paper/`, `scripts/`, `experiments/`, historical plans, and rebuild audit records are not normal product package code. The research package can be installed separately for benchmark work. Paper and benchmark artifacts may be shipped or published separately without becoming runtime authority.
 
 ## If you move files later
 
