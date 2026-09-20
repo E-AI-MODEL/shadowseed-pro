@@ -105,6 +105,10 @@ The ordinary Workbench product surface lives in `src/shadowseed/workbench/` and 
 
 Historical evaluation sessions, authored baseline fixtures, scenario JSON, benchmark outputs and other controlled comparison tooling remain research/evaluation material. They are not prerequisites for the product flow.
 
+The import boundary follows the same rule. `shadowseed`, `ShadowseedEngine`, the CLI parser, and ordinary product dispatch do not import `shadowseed.benchmark` during startup. Research commands resolve their benchmark modules lazily only when that command is executed. Shared command metadata that the product parser needs lives in small runtime-neutral contract modules rather than making the product depend on evaluation implementations. A fresh-interpreter contract test blocks every `shadowseed.benchmark` import while loading the product surface.
+
+This is an import/dependency split, not yet the final distribution split. The benchmark implementation still lives in the repository under `src/shadowseed/benchmark/`; moving or separately packaging that research surface is the next bounded step after this dependency boundary is stable.
+
 The `paper/` directory is a publication bundle. `main.tex` is manuscript source and `shadowseed-paper.pdf` is its compiled artifact. Any manuscript refresh must update source claims against an exact reviewed commit and regenerate the PDF. Neither the manuscript nor its bibliography may silently supersede `docs/architecture/**` or the runtime.
 
 Execution plans preserve sequence and rationale, not current authority. Current contract questions should be answered from architecture/runtime first. Current claim questions should be answered from `docs/research/status.md`; current product questions should be answered from the Workbench/usage docs.

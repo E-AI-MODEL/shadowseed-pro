@@ -5,36 +5,90 @@ from __future__ import annotations
 import argparse
 import json
 from collections.abc import Callable
+from importlib import import_module
 
 from shadowseed.analysis.ssl45_result_analyzer import analyze_results
-from shadowseed.benchmark.absencebench_hf import fetch_absencebench_sample
-from shadowseed.benchmark.absencebench_local import run_local_absencebench
-from shadowseed.benchmark.absencebench_runner import AbsenceBenchRunner
-from shadowseed.benchmark.adversarial_gate_benchmark import run_adversarial_gate_benchmark
-from shadowseed.benchmark.adversarial_payoff_suite import run_adversarial_payoff_suite
-from shadowseed.benchmark.wild_payoff_suite import run_wild_payoff_suite
-from shadowseed.benchmark.generative_payoff_suite import run_generative_payoff_suite
-from shadowseed.benchmark.ssl_session_suite import run_ssl_session
 from shadowseed.chat import run_chat
-from shadowseed.benchmark.blind.runner import run_blind_benchmark
-from shadowseed.benchmark.open_set_review_summary import summarize_open_set_seed_review
-from shadowseed.benchmark.open_set_seed_review import run_open_set_seed_review
-from shadowseed.benchmark.ssl_vs_rag_benchmark import run_ssl_vs_rag_benchmark
-from shadowseed.benchmark.result_writer import ResultWriter
-from shadowseed.benchmark.retrieval_benchmark import run_retrieval_benchmark
-from shadowseed.benchmark.retrieval_model_benchmark import run_retrieval_model_benchmark
-from shadowseed.benchmark.run_types import RunType
-from shadowseed.benchmark.ssl45_benefit_suite import run_ssl45_benefit_suite
-from shadowseed.benchmark.ssl45_false_positive_suite import run_ssl45_false_positive_suite
-from shadowseed.benchmark.ssl45_gap_suite import run_ssl45_gap_suite
-from shadowseed.benchmark.ssl45_model_benefit_suite import run_ssl45_model_benefit_suite
-from shadowseed.benchmark.probe_feedback_behavior_suite import run_probe_feedback_behavior_suite
-from shadowseed.benchmark.ssl45_probe_utility_suite import run_ssl45_probe_utility_suite
-from shadowseed.benchmark.ssot_smoke import run_ssot_smoke
-from shadowseed.benchmark.vectorstore_smoke import run_vectorstore_smoke
 
 
 CommandHandler = Callable[[argparse.Namespace], str]
+
+
+def _research_attr(module: str, name: str):
+    """Load research/evaluation code only when a research command is executed."""
+
+    qualified = f"shadowseed.benchmark.{module}"
+    try:
+        return getattr(import_module(qualified), name)
+    except ModuleNotFoundError as exc:
+        missing = exc.name or ""
+        if missing == "shadowseed.benchmark" or missing.startswith("shadowseed.benchmark."):
+            raise RuntimeError(
+                "This command belongs to the Shadowseed research/evaluation surface "
+                "and is unavailable in a product-only installation. Run it from a "
+                "repository research environment that includes shadowseed.benchmark."
+            ) from exc
+        raise
+
+
+def _research_callable(module: str, name: str):
+    def invoke(*args, **kwargs):
+        return _research_attr(module, name)(*args, **kwargs)
+
+    return invoke
+
+
+fetch_absencebench_sample = _research_callable(
+    "absencebench_hf", "fetch_absencebench_sample"
+)
+run_local_absencebench = _research_callable(
+    "absencebench_local", "run_local_absencebench"
+)
+run_adversarial_gate_benchmark = _research_callable(
+    "adversarial_gate_benchmark", "run_adversarial_gate_benchmark"
+)
+run_adversarial_payoff_suite = _research_callable(
+    "adversarial_payoff_suite", "run_adversarial_payoff_suite"
+)
+run_wild_payoff_suite = _research_callable("wild_payoff_suite", "run_wild_payoff_suite")
+run_generative_payoff_suite = _research_callable(
+    "generative_payoff_suite", "run_generative_payoff_suite"
+)
+run_ssl_session = _research_callable("ssl_session_suite", "run_ssl_session")
+run_blind_benchmark = _research_callable("blind.runner", "run_blind_benchmark")
+summarize_open_set_seed_review = _research_callable(
+    "open_set_review_summary", "summarize_open_set_seed_review"
+)
+run_open_set_seed_review = _research_callable(
+    "open_set_seed_review", "run_open_set_seed_review"
+)
+run_ssl_vs_rag_benchmark = _research_callable(
+    "ssl_vs_rag_benchmark", "run_ssl_vs_rag_benchmark"
+)
+run_retrieval_benchmark = _research_callable(
+    "retrieval_benchmark", "run_retrieval_benchmark"
+)
+run_retrieval_model_benchmark = _research_callable(
+    "retrieval_model_benchmark", "run_retrieval_model_benchmark"
+)
+run_ssl45_benefit_suite = _research_callable(
+    "ssl45_benefit_suite", "run_ssl45_benefit_suite"
+)
+run_ssl45_false_positive_suite = _research_callable(
+    "ssl45_false_positive_suite", "run_ssl45_false_positive_suite"
+)
+run_ssl45_gap_suite = _research_callable("ssl45_gap_suite", "run_ssl45_gap_suite")
+run_ssl45_model_benefit_suite = _research_callable(
+    "ssl45_model_benefit_suite", "run_ssl45_model_benefit_suite"
+)
+run_probe_feedback_behavior_suite = _research_callable(
+    "probe_feedback_behavior_suite", "run_probe_feedback_behavior_suite"
+)
+run_ssl45_probe_utility_suite = _research_callable(
+    "ssl45_probe_utility_suite", "run_ssl45_probe_utility_suite"
+)
+run_ssot_smoke = _research_callable("ssot_smoke", "run_ssot_smoke")
+run_vectorstore_smoke = _research_callable("vectorstore_smoke", "run_vectorstore_smoke")
 
 
 COMMAND_ALIASES = {
@@ -46,10 +100,13 @@ COMMAND_ALIASES = {
 
 
 def _prepare_absencebench_bundle(args: argparse.Namespace) -> str:
-    bundle = AbsenceBenchRunner().build_execution_bundle(
-        requested_run_type=RunType.PREPARATION.value
+    runner_cls = _research_attr("absencebench_runner", "AbsenceBenchRunner")
+    run_type = _research_attr("run_types", "RunType")
+    writer_cls = _research_attr("result_writer", "ResultWriter")
+    bundle = runner_cls().build_execution_bundle(
+        requested_run_type=run_type.PREPARATION.value
     )
-    return ResultWriter().write_payload(bundle.result, args.output)
+    return writer_cls().write_payload(bundle.result, args.output)
 
 
 def _run_absencebench_local(args: argparse.Namespace) -> str:
@@ -101,13 +158,7 @@ def _run_blind_benchmark(args: argparse.Namespace) -> str:
 
 
 def _fetch_open_set_hf_batch(args: argparse.Namespace) -> str:
-    try:
-        from shadowseed.benchmark.open_set_hf import fetch_open_set_hf_batch
-    except ModuleNotFoundError as exc:
-        raise RuntimeError(
-            "HF open-set intake is not available in this checkout. "
-            "Merge or restore src/shadowseed/benchmark/open_set_hf.py first."
-        ) from exc
+    fetch_open_set_hf_batch = _research_attr("open_set_hf", "fetch_open_set_hf_batch")
     return str(
         fetch_open_set_hf_batch(
             args.output,
@@ -176,8 +227,9 @@ def _run_generative_payoff_suite(args: argparse.Namespace) -> str:
 
 
 def _run_dialectic_falsification(args: argparse.Namespace) -> str:
-    from shadowseed.benchmark.dialectic_falsification import run_dialectic_falsification
-
+    run_dialectic_falsification = _research_attr(
+        "dialectic_falsification", "run_dialectic_falsification"
+    )
     run_dialectic_falsification(
         args.input,
         output_path=args.output,
@@ -189,8 +241,7 @@ def _run_dialectic_falsification(args: argparse.Namespace) -> str:
 
 
 def _run_activation_probe(args: argparse.Namespace) -> str:
-    from shadowseed.benchmark.activation_probe import run_activation_probe
-
+    run_activation_probe = _research_attr("activation_probe", "run_activation_probe")
     run_activation_probe(
         args.input,
         output_path=args.output,
@@ -295,8 +346,9 @@ def _run_probe_utility_benchmark(args: argparse.Namespace) -> str:
 
 
 def _list_open_set_models(args: argparse.Namespace) -> str:
-    from shadowseed.benchmark.open_set_models import run_list_open_set_models
-
+    run_list_open_set_models = _research_attr(
+        "open_set_models", "run_list_open_set_models"
+    )
     return run_list_open_set_models(output_path=args.output, registry_path=args.registry)
 
 

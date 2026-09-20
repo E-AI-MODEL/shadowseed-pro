@@ -28,6 +28,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from shadowseed.research_contracts import SUPPORTED_DETECTORS
+
 
 OPEN_SET_CANDIDATE_ADAPTER_ID = "ssl45_open_set_candidate_adapter_v0.1"
 EXPLICIT_CANDIDATE_SOURCE = "explicit_candidate_seeds"
@@ -234,8 +236,6 @@ def detect_open_set_candidates(item: dict[str, Any], max_seeds: int = 5) -> list
 
     return candidates[:max_seeds]
 
-
-SUPPORTED_DETECTORS: tuple[str, ...] = ("adapter_v1", "adapter_v2", "model")
 
 
 def raw_open_set_candidates(
