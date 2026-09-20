@@ -45,6 +45,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[models]"
+          pip install --no-deps -e ./research
       - name: Run model benefit suite
         run: |
           shadowseed run-model-benefit-suite \
