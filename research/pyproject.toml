@@ -1,0 +1,26 @@
+[project]
+name = "shadowseed-research"
+version = "0.7.1"
+description = "Research and evaluation tooling for Shadowseed"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+dependencies = [
+  "shadowseed>=0.7.1,<0.8",
+]
+
+[project.optional-dependencies]
+models = ["shadowseed[models]>=0.7.1,<0.8"]
+openai = ["shadowseed[openai]>=0.7.1,<0.8"]
+vector = ["shadowseed[vector]>=0.7.1,<0.8"]
+all = ["shadowseed[models,openai,vector]>=0.7.1,<0.8"]
+
+[build-system]
+requires = ["setuptools==83.0.0", "wheel==0.47.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
