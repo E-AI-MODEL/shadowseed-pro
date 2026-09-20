@@ -25,8 +25,8 @@ def test_absencebench_aliases_map_to_canonical_commands() -> None:
 def test_open_set_detector_choices_track_the_canonical_enums() -> None:
     """Drift guard: the CLI --detector / --model-backend choices must come
     from the canonical enums, not a hardcoded copy. ADR 0001."""
-    from shadowseed.benchmark.open_set_candidate_adapter import SUPPORTED_DETECTORS
     from shadowseed.detection.model_detector import SUPPORTED_MODEL_BACKENDS
+    from shadowseed.research_contracts import SUPPORTED_DETECTORS
 
     parser = build_parser()
     subparsers_action = next(
