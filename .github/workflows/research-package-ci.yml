@@ -50,21 +50,26 @@ jobs:
           from pathlib import Path
 
           violations = []
-          for path in Path("research/src/shadowseed_research").rglob("*.py"):
-              tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-              for node in ast.walk(tree):
-                  module = None
-                  if isinstance(node, ast.ImportFrom):
-                      module = node.module
-                  elif isinstance(node, ast.Import):
-                      for alias in node.names:
-                          if alias.name == "shadowseed.benchmark" or alias.name.startswith("shadowseed.benchmark."):
-                              violations.append(f"{path}:{node.lineno}: {alias.name}")
-                  if module and (
-                      module == "shadowseed.benchmark"
-                      or module.startswith("shadowseed.benchmark.")
-                  ):
-                      violations.append(f"{path}:{node.lineno}: {module}")
+          roots = [
+              Path("research/src/shadowseed_research"),
+              Path("research/tests"),
+          ]
+          for root in roots:
+              for path in root.rglob("*.py"):
+                  tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+                  for node in ast.walk(tree):
+                      module = None
+                      if isinstance(node, ast.ImportFrom):
+                          module = node.module
+                      elif isinstance(node, ast.Import):
+                          for alias in node.names:
+                              if alias.name == "shadowseed.benchmark" or alias.name.startswith("shadowseed.benchmark."):
+                                  violations.append(f"{path}:{node.lineno}: {alias.name}")
+                      if module and (
+                          module == "shadowseed.benchmark"
+                          or module.startswith("shadowseed.benchmark.")
+                      ):
+                          violations.append(f"{path}:{node.lineno}: {module}")
 
           if violations:
               raise SystemExit(
@@ -133,6 +138,9 @@ jobs:
           print("product and research namespaces import independently")
           print("installed package resources resolve outside the repository checkout")
           PY
+
+      - name: Run research tests
+        run: uv run --no-sync python -m pytest -q research/tests
 
       - name: Verify migration parity
         run: |
