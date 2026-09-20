@@ -284,6 +284,17 @@ entries:
       Canonical benchmark and evaluation suites. Excludes the seven
       COMPATIBILITY_ONLY facades above (which win by most-specific match).
 
+  - path: research/**
+    authority: EVALUATION_IMPLEMENTATION
+    owner: benchmark
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: >
+      Separate installable Shadowseed research distribution. It may depend on
+      the product/runtime package; the product/runtime package must never depend
+      on this research distribution. During migration it mirrors the canonical
+      benchmark implementation before ownership moves out of src/shadowseed/benchmark.
+
   - path: src/shadowseed/evaluation/**
     authority: EVALUATION_IMPLEMENTATION
     owner: benchmark

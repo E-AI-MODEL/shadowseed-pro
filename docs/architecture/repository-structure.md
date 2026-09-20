@@ -107,7 +107,9 @@ Historical evaluation sessions, authored baseline fixtures, scenario JSON, bench
 
 The import boundary follows the same rule. `shadowseed`, `ShadowseedEngine`, the CLI parser, and ordinary product dispatch do not import `shadowseed.benchmark` during startup. Research commands resolve their benchmark modules lazily only when that command is executed. Shared command metadata that the product parser needs lives in small runtime-neutral contract modules rather than making the product depend on evaluation implementations. A fresh-interpreter contract test blocks every `shadowseed.benchmark` import while loading the product surface.
 
-This is an import/dependency split, not yet the final distribution split. The benchmark implementation still lives in the repository under `src/shadowseed/benchmark/`; moving or separately packaging that research surface is the next bounded step after this dependency boundary is stable.
+The repository now also contains an installable research distribution under `research/`, with the `shadowseed_research` namespace. It depends on the product/runtime package, never the reverse. During migration it mirrors the benchmark implementation so research workflows can move to the new namespace without breaking the historical `shadowseed.benchmark` surface in the same change.
+
+The final distribution split is therefore staged: first establish the independent research package and prove it builds; then move research workflows and imports; finally reduce `shadowseed.benchmark` to compatibility facades and remove evaluation implementation from the product wheel.
 
 The `paper/` directory is a publication bundle. `main.tex` is manuscript source and `shadowseed-paper.pdf` is its compiled artifact. Any manuscript refresh must update source claims against an exact reviewed commit and regenerate the PDF. Neither the manuscript nor its bibliography may silently supersede `docs/architecture/**` or the runtime.
 

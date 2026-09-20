@@ -1,0 +1,156 @@
+name: Research Package CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "research/**"
+      - ".github/workflows/research-package-ci.yml"
+  push:
+    branches:
+      - main
+      - "refactor/**"
+    paths:
+      - "research/**"
+      - ".github/workflows/research-package-ci.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: research-package-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  research-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+
+      - name: Install product runtime
+        run: uv sync --frozen --extra test --extra build
+
+      - name: Install research package without resolving published product
+        run: uv pip install --python .venv/bin/python --no-deps -e ./research
+
+      - name: Enforce research import boundary
+        run: |
+          uv run --no-sync python - <<'PY'
+          import ast
+          from pathlib import Path
+
+          violations = []
+          for path in Path("research/src/shadowseed_research").rglob("*.py"):
+              tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+              for node in ast.walk(tree):
+                  module = None
+                  if isinstance(node, ast.ImportFrom):
+                      module = node.module
+                  elif isinstance(node, ast.Import):
+                      for alias in node.names:
+                          if alias.name == "shadowseed.benchmark" or alias.name.startswith("shadowseed.benchmark."):
+                              violations.append(f"{path}:{node.lineno}: {alias.name}")
+                  if module and (
+                      module == "shadowseed.benchmark"
+                      or module.startswith("shadowseed.benchmark.")
+                  ):
+                      violations.append(f"{path}:{node.lineno}: {module}")
+
+          if violations:
+              raise SystemExit(
+                  "research package imports legacy benchmark namespace:\n"
+                  + "\n".join(violations)
+              )
+          print("research package does not import shadowseed.benchmark")
+          PY
+
+      - name: Import research namespace
+        run: |
+          uv run --no-sync python - <<'PY'
+          import importlib
+          import pkgutil
+
+          import shadowseed
+          import shadowseed_research
+          import shadowseed_research.benchmark as benchmark_package
+          from shadowseed_research.benchmark import AbsenceBenchRunner
+
+          imported = []
+          for module in pkgutil.walk_packages(
+              benchmark_package.__path__,
+              benchmark_package.__name__ + ".",
+          ):
+              importlib.import_module(module.name)
+              imported.append(module.name)
+
+          assert imported
+          assert shadowseed.ShadowseedEngine is not None
+          assert AbsenceBenchRunner is not None
+
+          import os
+          import tempfile
+          from shadowseed_research.benchmark.open_set_hf import (
+              DEFAULT_SOURCE_REGISTRY,
+              _load_source,
+          )
+          from shadowseed_research.benchmark.open_set_models import load_models
+          from shadowseed_research.benchmark.capability_scaling import _git_provenance
+          from shadowseed_research.benchmark.live_session_measurement import _provenance
+
+          original_cwd = os.getcwd()
+          saved_workspace = os.environ.pop("GITHUB_WORKSPACE", None)
+          saved_sha = os.environ.pop("GITHUB_SHA", None)
+          try:
+              os.chdir(tempfile.mkdtemp())
+              assert load_models()
+              assert _load_source(DEFAULT_SOURCE_REGISTRY, "ag_news_test")["id"] == "ag_news_test"
+              assert "package_version" in _git_provenance()
+              assert "package_version" in _provenance()
+          finally:
+              os.chdir(original_cwd)
+              if saved_workspace is not None:
+                  os.environ["GITHUB_WORKSPACE"] = saved_workspace
+              if saved_sha is not None:
+                  os.environ["GITHUB_SHA"] = saved_sha
+
+          print("product and research namespaces import independently")
+          print("installed package resources resolve outside the repository checkout")
+          PY
+
+      - name: Verify migration parity
+        run: |
+          uv run --no-sync python - <<'PY'
+          from shadowseed.benchmark.ssl45_gap_suite import detect_candidate_seeds as legacy
+          from shadowseed_research.benchmark.ssl45_gap_suite import (
+              detect_candidate_seeds as research,
+          )
+
+          scenario = {
+              "domain": "recht en jurisdictie",
+              "input": (
+                  "Een Nederlandse consument koopt online bij een Amerikaanse "
+                  "retailer. De winkel verwijst naar EU-consumentenrechten."
+              ),
+          }
+          assert research(scenario) == legacy(scenario)
+          print("research mirror matches legacy deterministic benchmark")
+          PY
+
+      - name: Build research distribution
+        run: uv run --no-sync python -m build research
+
+      - name: Verify research distribution license
+        run: |
+          uv run --no-sync python scripts/verify_distribution_license.py \
+            --dist-dir research/dist \
+            --license research/LICENSE
