@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from shadowseed.benchmark.paper_scenario_smoke import load_paper_scenarios
+from shadowseed_benchmark.paper_scenario_smoke import load_paper_scenarios
 
 
 def coverage(answer: str, expected_additions: list[str]) -> float:

@@ -25,7 +25,7 @@ import math
 from pathlib import Path
 from typing import Any
 
-from shadowseed.benchmark.evidence_layers import PROBE_UTILITY, assert_valid_layer
+from shadowseed_benchmark.evidence_layers import PROBE_UTILITY, assert_valid_layer
 from shadowseed.text_similarity import lexical_embedding
 from shadowseed.manager import ProbeOutcome, ProbeType, SSLManager, SeedStatus
 

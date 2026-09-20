@@ -19,7 +19,7 @@ import json
 from pathlib import Path
 
 from shadowseed.text_similarity import lexical_embedding
-from shadowseed.benchmark.ssl45_model_benefit_suite import (
+from shadowseed_benchmark.ssl45_model_benefit_suite import (
     HFTransformersBackend,
     OpenAIBackend,
     coverage,

@@ -16,11 +16,11 @@ from typing import Any
 
 import numpy as np
 
-from shadowseed.benchmark.evidence_layers import (
+from shadowseed_benchmark.evidence_layers import (
     OPEN_SET_SEED_QUALITY,
     assert_valid_layer,
 )
-from shadowseed.benchmark.open_set_candidate_adapter import (
+from shadowseed_benchmark.open_set_candidate_adapter import (
     OPEN_SET_CANDIDATE_ADAPTER_ID,
     SUPPORTED_DETECTORS,
     raw_open_set_candidates,

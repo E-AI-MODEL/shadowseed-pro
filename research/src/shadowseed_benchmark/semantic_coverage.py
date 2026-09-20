@@ -23,7 +23,7 @@ from typing import Any
 
 import numpy as np
 
-from shadowseed.benchmark.ssl45_model_benefit_suite import answer_fragments
+from shadowseed_benchmark.ssl45_model_benefit_suite import answer_fragments
 
 EmbedFn = Callable[[str], np.ndarray]
 
