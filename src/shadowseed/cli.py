@@ -5,8 +5,8 @@ from __future__ import annotations
 import argparse
 from importlib import resources
 
-from shadowseed.benchmark.open_set_candidate_adapter import SUPPORTED_DETECTORS
 from shadowseed.detection.model_detector import SUPPORTED_MODEL_BACKENDS
+from shadowseed.research_contracts import SUPPORTED_DETECTORS
 from shadowseed.cli_dispatch import execute_command
 
 
