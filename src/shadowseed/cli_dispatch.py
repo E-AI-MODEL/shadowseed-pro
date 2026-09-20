@@ -15,18 +15,34 @@ CommandHandler = Callable[[argparse.Namespace], str]
 
 
 def _research_attr(module: str, name: str):
-    """Load research/evaluation code only when a research command is executed."""
+    """Load research code lazily, preferring the separate research package."""
 
-    qualified = f"shadowseed.benchmark.{module}"
+    preferred = f"shadowseed_research.benchmark.{module}"
     try:
-        return getattr(import_module(qualified), name)
+        return getattr(import_module(preferred), name)
     except ModuleNotFoundError as exc:
         missing = exc.name or ""
-        if missing == "shadowseed.benchmark" or missing.startswith("shadowseed.benchmark."):
+        research_package_missing = (
+            missing == "shadowseed_research"
+            or missing.startswith("shadowseed_research.benchmark")
+        )
+        if not research_package_missing:
+            raise
+
+    legacy = f"shadowseed.benchmark.{module}"
+    try:
+        return getattr(import_module(legacy), name)
+    except ModuleNotFoundError as exc:
+        missing = exc.name or ""
+        legacy_missing = (
+            missing == "shadowseed.benchmark"
+            or missing.startswith("shadowseed.benchmark.")
+        )
+        if legacy_missing:
             raise RuntimeError(
-                "This command belongs to the Shadowseed research/evaluation surface "
-                "and is unavailable in a product-only installation. Run it from a "
-                "repository research environment that includes shadowseed.benchmark."
+                "This command belongs to the Shadowseed research/evaluation surface. "
+                "Install the shadowseed-research distribution or run it from a "
+                "repository checkout that still contains the legacy benchmark package."
             ) from exc
         raise
 

@@ -97,6 +97,13 @@ jobs:
           assert shadowseed.ShadowseedEngine is not None
           assert AbsenceBenchRunner is not None
 
+          from shadowseed.cli_dispatch import _research_attr
+
+          routed = _research_attr("ssl45_gap_suite", "detect_candidate_seeds")
+          assert routed.__module__ == (
+              "shadowseed_research.benchmark.ssl45_gap_suite"
+          )
+
           import os
           import tempfile
           from shadowseed_research.benchmark.open_set_hf import (

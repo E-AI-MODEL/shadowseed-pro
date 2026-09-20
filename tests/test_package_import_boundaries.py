@@ -32,13 +32,19 @@ def test_product_imports_do_not_load_benchmark_package():
     code = """
 import sys
 
-class BlockBenchmarkImports:
+class BlockResearchImports:
     def find_spec(self, fullname, path=None, target=None):
-        if fullname == "shadowseed.benchmark" or fullname.startswith("shadowseed.benchmark."):
+        legacy = fullname == "shadowseed.benchmark" or fullname.startswith(
+            "shadowseed.benchmark."
+        )
+        separate = fullname == "shadowseed_research" or fullname.startswith(
+            "shadowseed_research."
+        )
+        if legacy or separate:
             raise AssertionError(f"product import crossed into research package: {fullname}")
         return None
 
-sys.meta_path.insert(0, BlockBenchmarkImports())
+sys.meta_path.insert(0, BlockResearchImports())
 
 from shadowseed import ShadowseedEngine
 from shadowseed.cli import build_parser
@@ -48,10 +54,13 @@ assert ShadowseedEngine is not None
 assert build_parser().parse_args(["chat", "--backend", "fixture"]).command == "chat"
 assert "chat" in COMMAND_HANDLERS
 assert not any(
-    name == "shadowseed.benchmark" or name.startswith("shadowseed.benchmark.")
+    name == "shadowseed.benchmark"
+    or name.startswith("shadowseed.benchmark.")
+    or name == "shadowseed_research"
+    or name.startswith("shadowseed_research.")
     for name in sys.modules
 )
-print("product imports are benchmark-free")
+print("product imports are research-free")
 """
     completed = subprocess.run(
         [sys.executable, "-c", code],
@@ -60,5 +69,5 @@ print("product imports are benchmark-free")
         text=True,
     )
     assert completed.returncode == 0, completed.stderr
-    assert "product imports are benchmark-free" in completed.stdout
+    assert "product imports are research-free" in completed.stdout
 
