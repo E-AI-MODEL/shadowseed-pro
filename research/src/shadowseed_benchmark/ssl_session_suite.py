@@ -39,7 +39,7 @@ from shadowseed.gate.signals import recurrence_signal
 from shadowseed.adapters.embedding import make_embedding_fn
 from shadowseed.detection.model_detector import make_detector_backend
 from shadowseed.adapters.models import make_backend
-from shadowseed.benchmark.ssl45_model_benefit_suite import blind_order, word_count
+from shadowseed_benchmark.ssl45_model_benefit_suite import blind_order, word_count
 from shadowseed.manager import SSLManager, SeedStatus
 from shadowseed.recurrence import refresh_cluster_representative
 from shadowseed.surfacing import (
@@ -77,7 +77,7 @@ def run_ssl_session(
 ) -> Path:
     data = json.loads(Path(input_path).read_text(encoding="utf-8"))
     if runtime_mode == "live":
-        from shadowseed.benchmark.live_session_measurement import (
+        from shadowseed_benchmark.live_session_measurement import (
             run_live_session_measurement,
         )
 

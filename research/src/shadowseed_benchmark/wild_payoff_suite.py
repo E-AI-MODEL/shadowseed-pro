@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from shadowseed.adapters.models import make_backend
-from shadowseed.benchmark.ssl45_model_benefit_suite import blind_order, word_count
+from shadowseed_benchmark.ssl45_model_benefit_suite import blind_order, word_count
 
 
 def build_wild_baseline_prompt(text: str) -> str:
@@ -76,7 +76,7 @@ def run_wild_payoff_suite(
         baseline_cov = None
         novel_gaps = None
         if embed_fn is not None:
-            from shadowseed.benchmark.semantic_coverage import semantic_coverage
+            from shadowseed_benchmark.semantic_coverage import semantic_coverage
 
             frac, covered, per_gap = semantic_coverage(baseline, seeds, embed_fn, semantic_threshold)
             baseline_cov = frac

@@ -25,14 +25,14 @@ from pathlib import Path
 from typing import Any
 
 from shadowseed.adapters.embedding import make_embedding_fn
-from shadowseed.benchmark.retrieval_model_benchmark import (
+from shadowseed_benchmark.retrieval_model_benchmark import (
     build_retrieval_prompt,
     index_retrieval_corpus,
     make_output_model,
     model_generate,
 )
 from shadowseed.retrieval_probe import retrieval_probe_vs_question
-from shadowseed.benchmark.ssl45_model_benefit_suite import blind_order, word_count
+from shadowseed_benchmark.ssl45_model_benefit_suite import blind_order, word_count
 from shadowseed.vectorstore import create_vector_store
 
 
