@@ -284,6 +284,16 @@ entries:
       Canonical benchmark and evaluation suites. Excludes the seven
       COMPATIBILITY_ONLY facades above (which win by most-specific match).
 
+  - path: research/tests/**
+    authority: CONTRACT_TEST
+    owner: research-qa
+    runtime_import_allowed: false
+    modifications_allowed: true
+    notes: >
+      Contract and regression tests for the separate research/evaluation
+      distribution. These tests may depend on shadowseed_research and the
+      product runtime, but product tests must not depend on the research package.
+
   - path: research/**
     authority: EVALUATION_IMPLEMENTATION
     owner: benchmark
