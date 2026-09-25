@@ -1,6 +1,6 @@
-# Workbench 0.7.1 limitations
+# Workbench 0.7.2 limitations
 
-Shadowseed Workbench 0.7.1 remains a local research preview and production-local assurance candidate for single-user use. It is not yet a completed `production-ready/local` release, a hostile-network service, a multi-user authorization boundary, or a scientific evidence generator by itself. The noncommercial research access and efficacy instrumentation introduced in 0.6.0 remain available; neither feature upgrades the assurance claim automatically.
+Shadowseed Workbench 0.7.2 remains a local research preview and production-local assurance candidate for single-user use. It is not yet a completed `production-ready/local` release, a hostile-network service, a multi-user authorization boundary, or a scientific evidence generator by itself. The noncommercial research access and efficacy instrumentation introduced in 0.6.0 remain available; neither feature upgrades the assurance claim automatically.
 
 ## Security and deployment
 
@@ -9,7 +9,7 @@ Shadowseed Workbench 0.7.1 remains a local research preview and production-local
 - Remote binding is only for controlled environments that provide their own network/access controls.
 - The Docker image listens on `0.0.0.0` internally; the documented mapping publishes host loopback only.
 - Platform-vendor signing/notarization is separate from checksum/provenance verification and is not implied by the standalone build contract.
-- macOS standalone builds now re-seal the final application after bundle mutations and verify the exact archive after extraction, but native Apple Developer ID signing and notarization are still not claimed unless a release explicitly provides that evidence.
+- macOS standalone builds re-seal the final application after bundle mutations, verify the exact archive after extraction, and include the credential-free first-launch helper. Apple Developer ID signing and notarization are not claimed for this distribution.
 
 ## Data handling
 

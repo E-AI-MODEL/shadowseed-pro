@@ -161,31 +161,82 @@ def _verify_macos_bundle(bundle: Path, *, macos: bool | None = None) -> None:
     )
 
 
-def _seal_macos_bundle(bundle: Path, *, macos: bool | None = None) -> bool:
-    """Re-seal the complete app after Shadowseed has added its final resources.
+def _seal_macos_bundle(bundle: Path, *, macos: bool | None = None) -> str | None:
+    """Apply and verify an ad-hoc macOS resource seal.
 
-    PyInstaller constructs and ad-hoc signs the macOS bundle before Shadowseed
-    copies its required license into Contents/Resources. That post-build
-    mutation invalidates the application resource seal. Re-signing the final
-    top-level bundle regenerates the seal while preserving the project's
-    existing non-notarized distribution boundary.
+    This project deliberately does not require Apple Developer ID credentials.
+    Browser-downloaded archives may therefore retain macOS quarantine. The
+    distributable ZIP includes a first-launch helper that removes quarantine
+    only from the bundled Shadowseed.app before opening it.
     """
 
     if macos is None:
         macos = sys.platform == "darwin"
     if not macos:
-        return False
+        return None
     _run(
-        ["codesign", "--force", "--sign", "-", "--timestamp=none", str(bundle)],
+        [
+            "codesign",
+            "--force",
+            "--sign",
+            "-",
+            "--timestamp=none",
+            str(bundle),
+        ],
         cwd=bundle.parent,
     )
     _verify_macos_bundle(bundle, macos=True)
-    return True
+    return "adhoc"
+
+
+def _install_macos_first_launch_files(distribution_dir: Path) -> tuple[Path, Path]:
+    """Create the no-credentials first-launch helper and user instructions."""
+
+    helper = distribution_dir / "Open Shadowseed.command"
+    helper.write_text(
+        "#!/bin/bash\n"
+        "set -euo pipefail\n"
+        "HERE=\"$(cd \"$(dirname \"$0\")\" && pwd)\"\n"
+        "APP=\"$HERE/Shadowseed.app\"\n"
+        "if [ ! -d \"$APP\" ]; then\n"
+        "  echo \"Shadowseed.app was not found next to this helper.\" >&2\n"
+        "  exit 1\n"
+        "fi\n"
+        "xattr -dr com.apple.quarantine \"$APP\" 2>/dev/null || true\n"
+        "open \"$APP\"\n",
+        encoding="utf-8",
+    )
+    helper.chmod(0o755)
+
+    readme = distribution_dir / "README_FIRST_START.txt"
+    readme.write_text(
+        "Shadowseed Workbench for macOS\n"
+        "=============================\n\n"
+        "This build is ad-hoc signed and does not require an Apple Developer ID.\n"
+        "Because browsers may add a macOS quarantine flag, the first launch can\n"
+        "be blocked by Gatekeeper even though the app bundle seal is valid.\n\n"
+        "First launch:\n"
+        "1. Keep Shadowseed.app and Open Shadowseed.command in this folder.\n"
+        "2. Double-click Open Shadowseed.command.\n"
+        "3. If macOS asks whether Terminal may open it, allow it.\n"
+        "4. Later launches can use Shadowseed.app normally.\n\n"
+        "The helper removes com.apple.quarantine only from this Shadowseed.app\n"
+        "and then opens the app. It does not change global macOS security.\n",
+        encoding="utf-8",
+    )
+    return helper, readme
 
 
 def _archive_bundle(bundle: Path, output_dir: Path, stem: str) -> Path:
     if sys.platform == "darwin":
         archive = output_dir / f"{stem}.zip"
+        distribution_dir = output_dir / "Shadowseed Workbench"
+        shutil.rmtree(distribution_dir, ignore_errors=True)
+        distribution_dir.mkdir(parents=True)
+        copied_bundle = distribution_dir / bundle.name
+        _run(["ditto", str(bundle), str(copied_bundle)], cwd=bundle.parent)
+        _verify_macos_bundle(copied_bundle, macos=True)
+        _install_macos_first_launch_files(distribution_dir)
         _run(
             [
                 "ditto",
@@ -193,11 +244,12 @@ def _archive_bundle(bundle: Path, output_dir: Path, stem: str) -> Path:
                 "-k",
                 "--sequesterRsrc",
                 "--keepParent",
-                str(bundle),
+                str(distribution_dir),
                 str(archive),
             ],
-            cwd=bundle.parent,
+            cwd=output_dir,
         )
+        shutil.rmtree(distribution_dir)
         return archive
     if os.name == "nt":
         archive_base = output_dir / stem
@@ -223,7 +275,7 @@ def _verify_macos_archive_round_trip(
     *,
     macos: bool | None = None,
 ) -> Path | None:
-    """Extract the distributable ZIP and verify the seal users actually receive."""
+    """Extract the distributable ZIP and verify the exact macOS user bundle."""
 
     if macos is None:
         macos = sys.platform == "darwin"
@@ -233,10 +285,19 @@ def _verify_macos_archive_round_trip(
     shutil.rmtree(extract_dir, ignore_errors=True)
     extract_dir.mkdir(parents=True, exist_ok=True)
     _run(["ditto", "-x", "-k", str(archive), str(extract_dir)], cwd=work_dir)
-    bundle = extract_dir / "Shadowseed.app"
-    if not bundle.is_dir():
-        raise RuntimeError("macOS archive round-trip is missing Shadowseed.app")
+    bundles = list(extract_dir.rglob("Shadowseed.app"))
+    if len(bundles) != 1:
+        raise RuntimeError(
+            f"macOS archive round-trip expected one Shadowseed.app, found {len(bundles)}"
+        )
+    bundle = bundles[0]
     _verify_macos_bundle(bundle, macos=True)
+    helper = bundle.parent / "Open Shadowseed.command"
+    readme = bundle.parent / "README_FIRST_START.txt"
+    if not helper.is_file() or not os.access(helper, os.X_OK):
+        raise RuntimeError("macOS archive round-trip is missing executable first-launch helper")
+    if not readme.is_file():
+        raise RuntimeError("macOS archive round-trip is missing first-launch README")
     return bundle
 
 
@@ -304,7 +365,8 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
     license_relative = str(license_path.relative_to(bundle))
     license_sha256 = _sha256(license_path)
     self_test = None if skip_self_test else _verify_frozen(executable, root, work_dir)
-    macos_bundle_seal_verified = _seal_macos_bundle(bundle)
+    macos_signature_mode = _seal_macos_bundle(bundle)
+    macos_notarized = False if sys.platform == "darwin" else None
 
     version = _project_version(root)
     machine = platform.machine().lower() or "unknown"
@@ -312,7 +374,10 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
     stem = f"shadowseed-workbench-{version}-{system}-{machine}"
     archive = _archive_bundle(bundle, output_dir, stem)
 
-    roundtrip_bundle = _verify_macos_archive_round_trip(archive, work_dir)
+    roundtrip_bundle = _verify_macos_archive_round_trip(
+        archive,
+        work_dir,
+    )
     archive_roundtrip_self_test = None
     if roundtrip_bundle is not None and not skip_self_test:
         roundtrip_executable = roundtrip_bundle / "Contents" / "MacOS" / "Shadowseed"
@@ -342,7 +407,11 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
         "self_contained_python_runtime": True,
         "loopback_only_default": True,
         "gradio_source_files_bundled": True,
-        "macos_bundle_seal_verified": macos_bundle_seal_verified if system == "darwin" else None,
+        "macos_signature_mode": macos_signature_mode if system == "darwin" else None,
+        "macos_bundle_seal_verified": macos_signature_mode is not None if system == "darwin" else None,
+        "macos_notarized": macos_notarized if system == "darwin" else None,
+        "macos_gatekeeper_assessed": False if system == "darwin" else None,
+        "macos_first_launch_helper": roundtrip_bundle is not None if system == "darwin" else None,
         "macos_archive_roundtrip_verified": roundtrip_bundle is not None if system == "darwin" else None,
         "archive_roundtrip_self_test": archive_roundtrip_self_test,
         "self_test": self_test,

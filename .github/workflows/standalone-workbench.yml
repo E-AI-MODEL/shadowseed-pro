@@ -85,10 +85,12 @@ jobs:
           version: "0.8.14"
       - name: Install locked Workbench and frozen-build tooling
         run: uv sync --locked --extra workbench --extra standalone-build
+
       - name: Build and execute frozen self-test
         env:
           SHADOWSEED_SOURCE_SHA: ${{ github.sha }}
         run: uv run --no-sync python scripts/build_standalone.py --output-dir release-assets
+
       - name: Validate release manifest
         shell: python
         run: |
@@ -118,15 +120,24 @@ jobs:
           digest = hashlib.sha256(archive.read_bytes()).hexdigest()
           assert digest == manifest["archive_sha256"]
           if manifest["system"] == "darwin":
+              assert manifest["macos_signature_mode"] == "adhoc"
               assert manifest["macos_bundle_seal_verified"] is True
+              assert manifest["macos_notarized"] is False
+              assert manifest["macos_gatekeeper_assessed"] is False
+              assert manifest["macos_first_launch_helper"] is True
               assert manifest["macos_archive_roundtrip_verified"] is True
               assert manifest["archive_roundtrip_self_test"]["frozen"] is True
               assert manifest["archive_roundtrip_self_test"]["runtime_mode"] == "live"
           else:
+              assert manifest["macos_signature_mode"] is None
               assert manifest["macos_bundle_seal_verified"] is None
+              assert manifest["macos_notarized"] is None
+              assert manifest["macos_gatekeeper_assessed"] is None
+              assert manifest["macos_first_launch_helper"] is None
               assert manifest["macos_archive_roundtrip_verified"] is None
               assert manifest["archive_roundtrip_self_test"] is None
           print(json.dumps(manifest, indent=2, sort_keys=True))
+
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ${{ matrix.artifact }}
