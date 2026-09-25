@@ -57,7 +57,6 @@ def test_macos_bundle_is_resealed_after_final_resource_mutation(
         assert cwd == bundle.parent
         commands.append(command)
 
-    monkeypatch.delenv("SHADOWSEED_MACOS_CODESIGN_IDENTITY", raising=False)
     monkeypatch.setattr(build_standalone, "_run", fake_run)
 
     assert build_standalone._seal_macos_bundle(bundle, macos=True) == "adhoc"
@@ -67,137 +66,26 @@ def test_macos_bundle_is_resealed_after_final_resource_mutation(
     ]
 
 
-def test_macos_developer_id_signing_uses_hardened_runtime_and_timestamp(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    bundle = tmp_path / "Shadowseed.app"
-    bundle.mkdir()
-    commands: list[list[str]] = []
-    identity = "Developer ID Application: Example Org (TEAMID1234)"
 
-    def fake_run(command: list[str], *, cwd: Path) -> None:
-        assert cwd == bundle.parent
-        commands.append(command)
+def test_macos_first_launch_helper_is_local_and_explicit(tmp_path: Path) -> None:
+    distribution = tmp_path / "Shadowseed Workbench"
+    distribution.mkdir()
 
-    monkeypatch.setenv("SHADOWSEED_MACOS_CODESIGN_IDENTITY", identity)
-    monkeypatch.setattr(build_standalone, "_run", fake_run)
+    helper, readme = build_standalone._install_macos_first_launch_files(distribution)
 
-    assert build_standalone._seal_macos_bundle(bundle, macos=True) == "developer-id"
-    assert commands == [
-        [
-            "codesign",
-            "--force",
-            "--sign",
-            identity,
-            "--options",
-            "runtime",
-            "--timestamp",
-            str(bundle),
-        ],
-        ["codesign", "--verify", "--deep", "--strict", "--verbose=4", str(bundle)],
-    ]
+    helper_text = helper.read_text(encoding="utf-8")
+    readme_text = readme.read_text(encoding="utf-8")
 
+    assert helper.name == "Open Shadowseed.command"
+    assert helper.stat().st_mode & 0o111
+    assert 'APP="$HERE/Shadowseed.app"' in helper_text
+    assert 'xattr -dr com.apple.quarantine "$APP"' in helper_text
+    assert 'open "$APP"' in helper_text
+    assert "spctl --master-disable" not in helper_text
+    assert "sudo" not in helper_text
+    assert "does not require an Apple Developer ID" in readme_text
+    assert "does not change global macOS security" in readme_text
 
-def test_non_macos_bundle_does_not_attempt_codesign(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    bundle = tmp_path / "Shadowseed"
-    bundle.mkdir()
-
-    def fail_run(command: list[str], *, cwd: Path) -> None:
-        raise AssertionError(f"unexpected command: {command} in {cwd}")
-
-    monkeypatch.setattr(build_standalone, "_run", fail_run)
-    assert build_standalone._seal_macos_bundle(bundle, macos=False) is None
-
-
-def test_notarization_is_optional_without_profile(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    bundle = tmp_path / "Shadowseed.app"
-    bundle.mkdir()
-    work_dir = tmp_path / "work"
-    work_dir.mkdir()
-
-    monkeypatch.delenv("SHADOWSEED_MACOS_NOTARY_PROFILE", raising=False)
-
-    def fail_run(command: list[str], *, cwd: Path) -> None:
-        raise AssertionError(f"unexpected command: {command} in {cwd}")
-
-    monkeypatch.setattr(build_standalone, "_run", fail_run)
-    assert (
-        build_standalone._notarize_macos_bundle(
-            bundle,
-            work_dir,
-            signature_mode="developer-id",
-            macos=True,
-        )
-        is False
-    )
-
-
-def test_notarization_requires_developer_id(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    bundle = tmp_path / "Shadowseed.app"
-    bundle.mkdir()
-    work_dir = tmp_path / "work"
-    work_dir.mkdir()
-    monkeypatch.setenv("SHADOWSEED_MACOS_NOTARY_PROFILE", "shadowseed-notary")
-
-    with pytest.raises(RuntimeError, match="requires Developer ID signing"):
-        build_standalone._notarize_macos_bundle(
-            bundle,
-            work_dir,
-            signature_mode="adhoc",
-            macos=True,
-        )
-
-
-def test_notarization_submits_staples_and_assesses(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    bundle = tmp_path / "Shadowseed.app"
-    bundle.mkdir()
-    work_dir = tmp_path / "work"
-    work_dir.mkdir()
-    keychain = tmp_path / "signing.keychain-db"
-    commands: list[list[str]] = []
-
-    def fake_run(command: list[str], *, cwd: Path) -> None:
-        commands.append(command)
-
-    monkeypatch.setenv("SHADOWSEED_MACOS_NOTARY_PROFILE", "shadowseed-notary")
-    monkeypatch.setenv("SHADOWSEED_MACOS_NOTARY_KEYCHAIN", str(keychain))
-    monkeypatch.setattr(build_standalone, "_run", fake_run)
-
-    assert (
-        build_standalone._notarize_macos_bundle(
-            bundle,
-            work_dir,
-            signature_mode="developer-id",
-            macos=True,
-        )
-        is True
-    )
-    submit_zip = work_dir / "Shadowseed-notarization.zip"
-    assert commands == [
-        ["ditto", "-c", "-k", "--keepParent", str(bundle), str(submit_zip)],
-        [
-            "xcrun",
-            "notarytool",
-            "submit",
-            str(submit_zip),
-            "--keychain-profile",
-            "shadowseed-notary",
-            "--wait",
-            "--keychain",
-            str(keychain),
-        ],
-        ["xcrun", "stapler", "staple", str(bundle)],
-        ["xcrun", "stapler", "validate", str(bundle)],
-        ["spctl", "--assess", "--type", "execute", "--verbose=4", str(bundle)],
-    ]
 
 
 def test_macos_archive_roundtrip_requires_extracted_app(
@@ -215,7 +103,7 @@ def test_macos_archive_roundtrip_requires_extracted_app(
 
     monkeypatch.setattr(build_standalone, "_run", fake_run)
 
-    with pytest.raises(RuntimeError, match="missing Shadowseed.app"):
+    with pytest.raises(RuntimeError, match="expected one Shadowseed.app"):
         build_standalone._verify_macos_archive_round_trip(
             archive,
             work_dir,
