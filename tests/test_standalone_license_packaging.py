@@ -67,6 +67,18 @@ def test_macos_bundle_is_resealed_after_final_resource_mutation(
 
 
 
+def test_non_macos_bundle_does_not_attempt_codesign(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    bundle = tmp_path / "Shadowseed"
+    bundle.mkdir()
+
+    def fail_run(command: list[str], *, cwd: Path) -> None:
+        raise AssertionError(f"unexpected command: {command} in {cwd}")
+
+    monkeypatch.setattr(build_standalone, "_run", fail_run)
+    assert build_standalone._seal_macos_bundle(bundle, macos=False) is None
+
 def test_macos_first_launch_helper_is_local_and_explicit(tmp_path: Path) -> None:
     distribution = tmp_path / "Shadowseed Workbench"
     distribution.mkdir()
@@ -85,7 +97,6 @@ def test_macos_first_launch_helper_is_local_and_explicit(tmp_path: Path) -> None
     assert "sudo" not in helper_text
     assert "does not require an Apple Developer ID" in readme_text
     assert "does not change global macOS security" in readme_text
-
 
 
 def test_macos_archive_roundtrip_requires_extracted_app(
