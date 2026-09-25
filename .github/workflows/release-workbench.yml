@@ -175,12 +175,16 @@ jobs:
               if not payload.get("license_file"):
                   raise SystemExit(f"missing bundled license path in {path.name}")
               if payload.get("system") == "darwin":
-                  if payload.get("macos_signature_mode") != "developer-id":
-                      raise SystemExit(f"macOS artifact is not Developer ID signed: {path.name}")
-                  if payload.get("macos_notarized") is not True:
-                      raise SystemExit(f"macOS artifact is not notarized: {path.name}")
-                  if payload.get("macos_gatekeeper_assessed") is not True:
-                      raise SystemExit(f"macOS artifact did not pass Gatekeeper: {path.name}")
+                  if payload.get("macos_signature_mode") != "adhoc":
+                      raise SystemExit(f"macOS artifact is not ad-hoc sealed: {path.name}")
+                  if payload.get("macos_notarized") is not False:
+                      raise SystemExit(f"macOS artifact unexpectedly claims notarization: {path.name}")
+                  if payload.get("macos_gatekeeper_assessed") is not False:
+                      raise SystemExit(f"macOS artifact unexpectedly claims Gatekeeper acceptance: {path.name}")
+                  if payload.get("macos_first_launch_helper") is not True:
+                      raise SystemExit(f"macOS artifact is missing first-launch helper evidence: {path.name}")
+                  if payload.get("macos_archive_roundtrip_verified") is not True:
+                      raise SystemExit(f"macOS artifact did not pass archive round-trip verification: {path.name}")
               archive = source / payload["archive"]
               if not archive.is_file():
                   raise SystemExit(f"missing standalone archive {archive}")
