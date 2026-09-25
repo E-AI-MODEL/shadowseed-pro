@@ -109,7 +109,8 @@ def _pyinstaller_command(root: Path, dist_dir: Path, work_dir: Path) -> list[str
         "torch",
         "openai",
     ):
-        command.extend(["--copy-metadata", package])    command.append(str(root / "src" / "shadowseed" / "workbench" / "standalone.py"))
+        command.extend(["--copy-metadata", package])
+    command.append(str(root / "src" / "shadowseed" / "workbench" / "standalone.py"))
     return command
 
 
