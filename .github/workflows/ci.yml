@@ -231,6 +231,26 @@ jobs:
           uv export --locked --no-emit-project --no-hashes --format requirements.txt --output-file /tmp/runtime-constraints.txt
           uv venv /tmp/ci-wheel-env --python 3.12
           uv pip install --python /tmp/ci-wheel-env/bin/python --constraints /tmp/runtime-constraints.txt dist/*.whl
+      - name: Verify product wheel excludes research implementation
+        run: |
+          cd /tmp
+          /tmp/ci-wheel-env/bin/python - <<'PY'
+          from importlib.util import find_spec
+
+          assert find_spec("shadowseed_research") is None
+          assert find_spec("shadowseed.benchmark.ssl45_gap_suite") is None
+          for module in (
+              "shadowseed.benchmark.embedding_backends",
+              "shadowseed.benchmark.openai_client",
+              "shadowseed.benchmark.ollama_client",
+              "shadowseed.benchmark.open_set_model_detector",
+              "shadowseed.benchmark.recurrence_clustering",
+              "shadowseed.benchmark.seed_retrieval_probe",
+          ):
+              assert find_spec(module) is not None, module
+          print("product wheel contains compatibility facades only")
+          PY
+
       - name: CLI smoke (installed package, outside the source tree)
         run: |
           cd /tmp

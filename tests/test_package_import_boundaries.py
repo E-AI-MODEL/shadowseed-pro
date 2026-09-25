@@ -5,6 +5,10 @@ from __future__ import annotations
 import subprocess
 import sys
 
+import pytest
+
+from shadowseed import cli_dispatch
+
 
 def test_storage_and_application_public_imports_work_in_fresh_interpreter():
     code = """
@@ -70,4 +74,26 @@ print("product imports are research-free")
     )
     assert completed.returncode == 0, completed.stderr
     assert "product imports are research-free" in completed.stdout
+
+def test_research_command_reports_missing_research_distribution(monkeypatch) -> None:
+    def missing_research(_qualified: str):
+        raise ModuleNotFoundError(
+            "No module named 'shadowseed_research'",
+            name="shadowseed_research",
+        )
+
+    monkeypatch.setattr(cli_dispatch, "import_module", missing_research)
+
+    with pytest.raises(RuntimeError, match="shadowseed-research"):
+        cli_dispatch._research_attr("ssl45_gap_suite", "run_ssl45_gap_suite")
+
+
+def test_research_dependency_errors_are_not_hidden(monkeypatch) -> None:
+    def missing_dependency(_qualified: str):
+        raise ModuleNotFoundError("No module named 'optional_backend'", name="optional_backend")
+
+    monkeypatch.setattr(cli_dispatch, "import_module", missing_dependency)
+
+    with pytest.raises(ModuleNotFoundError, match="optional_backend"):
+        cli_dispatch._research_attr("ssl45_gap_suite", "run_ssl45_gap_suite")
 

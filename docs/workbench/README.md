@@ -88,7 +88,7 @@ This makes mass-test data technically collectable and auditable. It does not cre
 
 ## Evidence-efficacy studies are separate
 
-Version 0.6.0 introduced `python -m shadowseed.benchmark.evidence_efficacy` for preregistered research on answer-level effects after verified external support has passed through the canonical `evidence_backed` Gate. That research harness remains available in 0.7.1.
+Version 0.6.0 introduced a preregistered evidence-efficacy research path for answer-level effects after verified external support has passed through the canonical `evidence_backed` Gate. In the current repository that harness lives in the separate `shadowseed-research` distribution and runs as `python -m shadowseed_research.benchmark.evidence_efficacy`.
 
 This is not a Workbench support-data feature. Evidence-efficacy bundles contain content-bearing research data and use baseline-isolated evaluation mechanics. They must not be treated as privacy-minimized support bundles.
 

@@ -68,7 +68,7 @@ This arm asks whether a carried-over epistemic direction can add value under a r
 
 Do not inject external evidence into the capability-scaling live arm merely to force A/B data. That would destroy its value as a negative authority control.
 
-Use `shadowseed.benchmark.evidence_efficacy` instead. That protocol:
+Use `shadowseed_research.benchmark.evidence_efficacy` instead. That protocol:
 
 - runs baseline-isolated evaluation mechanics with `gate_policy_id = evidence_backed`;
 - accepts only predeclared external support submitted through `ShadowChatSession.submit_evidence`;
@@ -181,7 +181,7 @@ A GitHub reference bundle additionally records the external runner layer, includ
 The runner can verify a moved bundle without access to the original working directory:
 
 ```bash
-python -m shadowseed.benchmark.capability_scaling verify results/capability-scaling/<run>
+python -m shadowseed_research.benchmark.capability_scaling verify results/capability-scaling/<run>
 ```
 
 Any changed or missing hashed artifact fails verification.
@@ -191,7 +191,7 @@ Any changed or missing hashed artifact fails verification.
 Example with a locally served model:
 
 ```bash
-python -m shadowseed.benchmark.capability_scaling run \
+python -m shadowseed_research.benchmark.capability_scaling run \
   --backend ollama \
   --model-id qwen2.5:7b-instruct-q4_K_M \
   --model-reference qwen2.5:7b-instruct-q4_K_M \
@@ -234,7 +234,7 @@ Provider price, latency, GPU memory, and wall time belong in resource reporting.
 After independent reviewers fill the generated packets:
 
 ```bash
-python -m shadowseed.benchmark.capability_scaling summarize-reviews \
+python -m shadowseed_research.benchmark.capability_scaling summarize-reviews \
   --candidate-packet review/candidate_review_packet.json \
   --candidate-key review/candidate_review_key.json \
   --answer-packet review/answer_review_packet.json \

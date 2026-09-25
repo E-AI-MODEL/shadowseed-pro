@@ -6,6 +6,10 @@ on:
       - main
     paths:
       - "research/**"
+      - "src/shadowseed/**"
+      - "src/shadowseed_agent/**"
+      - "pyproject.toml"
+      - "uv.lock"
       - ".github/workflows/research-package-ci.yml"
   push:
     branches:
@@ -13,6 +17,10 @@ on:
       - "refactor/**"
     paths:
       - "research/**"
+      - "src/shadowseed/**"
+      - "src/shadowseed_agent/**"
+      - "pyproject.toml"
+      - "uv.lock"
       - ".github/workflows/research-package-ci.yml"
 
 permissions:
@@ -142,23 +150,15 @@ jobs:
       - name: Run research tests
         run: uv run --no-sync python -m pytest -q research/tests
 
-      - name: Verify migration parity
+      - name: Verify legacy evaluation implementation is absent
         run: |
           uv run --no-sync python - <<'PY'
-          from shadowseed.benchmark.ssl45_gap_suite import detect_candidate_seeds as legacy
-          from shadowseed_research.benchmark.ssl45_gap_suite import (
-              detect_candidate_seeds as research,
-          )
+          from importlib.util import find_spec
 
-          scenario = {
-              "domain": "recht en jurisdictie",
-              "input": (
-                  "Een Nederlandse consument koopt online bij een Amerikaanse "
-                  "retailer. De winkel verwijst naar EU-consumentenrechten."
-              ),
-          }
-          assert research(scenario) == legacy(scenario)
-          print("research mirror matches legacy deterministic benchmark")
+          assert find_spec("shadowseed.benchmark.ssl45_gap_suite") is None
+          assert find_spec("shadowseed.benchmark.embedding_backends") is not None
+          assert find_spec("shadowseed_research.benchmark.ssl45_gap_suite") is not None
+          print("product namespace contains compatibility only; research owns evaluation")
           PY
 
       - name: Build research distribution

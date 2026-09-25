@@ -22,7 +22,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from shadowseed.benchmark.ssl45_gap_suite import lexical_embedding
+from shadowseed.text_similarity import lexical_embedding
 from shadowseed.manager import SSLManager
 from shadowseed.vector_constellation import VectorConstellation
 from shadowseed.vectorstore import InMemoryVectorStore, create_vector_store
@@ -345,22 +345,3 @@ def test_sync_seed_updates_existing_and_adds_new():
     seed.trace = 2.5
     constellation.sync_seed(seed)  # present -> metadata update
     assert constellation.store.get_metadata(sid)["trace"] == 2.5
-
-
-# ---------------------------------------------------------------------------
-# Smoke runner end-to-end on the dependency-free backend
-# ---------------------------------------------------------------------------
-
-
-def test_vectorstore_smoke_runs_and_passes(tmp_path: Path):
-    from shadowseed.benchmark.vectorstore_smoke import run_vectorstore_smoke
-
-    out = run_vectorstore_smoke(str(tmp_path / "smoke.json"), backend="memory")
-    import json
-
-    payload = json.loads(Path(out).read_text(encoding="utf-8"))
-    summary = payload["summary"]
-    assert summary["passed"] is True
-    assert summary["created_weight"] == 0.0  # weightless at birth
-    assert summary["promoted_weight"] >= 0.5  # influence only via the Gate
-    assert summary["contradicted_weight"] < summary["promoted_weight"]

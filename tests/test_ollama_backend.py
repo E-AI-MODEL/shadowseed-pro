@@ -1,9 +1,4 @@
-"""Tests for the Ollama model backends (no network).
-
-The HTTP path is exercised with a fake ``urlopen`` so the tests stay offline.
-The backend wiring in both factories (model-benefit suite and open-set
-detector) is checked for construction-time validation and name shape.
-"""
+"""Product tests for the Ollama runtime adapter and detector (offline)."""
 
 from __future__ import annotations
 
@@ -18,10 +13,6 @@ from shadowseed.detection.model_detector import (
     SUPPORTED_MODEL_BACKENDS,
     OllamaDetectorBackend,
     make_detector_backend,
-)
-from shadowseed.benchmark.ssl45_model_benefit_suite import (
-    OllamaBackend,
-    make_backend,
 )
 
 
@@ -76,15 +67,6 @@ def test_client_generate_posts_expected_payload(monkeypatch):
     assert body["options"]["seed"] == 0
 
 
-def test_benefit_ollama_backend_generates(monkeypatch):
-    urlopen, _ = _fake_urlopen("een antwoord")
-    monkeypatch.setattr(ollama_client.urllib.request, "urlopen", urlopen)
-
-    backend = OllamaBackend(model_id="tinyllama", max_new_tokens=32)
-    assert backend.name == "ollama:tinyllama"
-    assert backend.generate("prompt", {}, "baseline", []) == "een antwoord"
-
-
 def test_detector_ollama_backend_parses_seeds(monkeypatch):
     urlopen, _ = _fake_urlopen("Ontbrekende toelichting bij Federal Mogul.")
     monkeypatch.setattr(ollama_client.urllib.request, "urlopen", urlopen)
@@ -98,16 +80,13 @@ def test_detector_ollama_backend_parses_seeds(monkeypatch):
 
 
 def test_detector_ollama_backend_empty_text_skips_network(monkeypatch):
-    def _boom(*args, **kwargs):  # pragma: no cover - must not be called
+    def _boom(*args, **kwargs):
         raise AssertionError("network should not be hit for empty text")
 
     monkeypatch.setattr(ollama_client.urllib.request, "urlopen", _boom)
-    assert OllamaDetectorBackend(model_id="tinyllama").detect_seeds({"text": ""}) == []
-
-
-def test_make_backend_ollama_requires_model_id():
-    with pytest.raises(ValueError, match="model-id is required for backend ollama"):
-        make_backend("ollama", None, 220)
+    assert OllamaDetectorBackend(model_id="tinyllama").detect_seeds(
+        {"text": ""}
+    ) == []
 
 
 def test_make_detector_backend_ollama_requires_model_id():

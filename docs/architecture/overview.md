@@ -72,7 +72,7 @@ Authority, meaning whether a seed may eventually influence behavior, is governed
 | `shadowseed.storage` | Local tester persistence, backup/restore, and normalized audit storage without authority decisions |
 | `shadowseed.workbench` | Local chat-first tester UI and standalone launcher |
 | `shadowseed_agent.agent_contract` | Bounded point-of-use eligibility with a mandatory current-version Gate-event link |
-| `shadowseed.benchmark` | Evaluation harnesses, regression suites, and compatibility wrappers |
+| `shadowseed_research.benchmark` | Canonical benchmark/evaluation harnesses in the separate research distribution |
 
 ## Conversation modes and product comparison
 

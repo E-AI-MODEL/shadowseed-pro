@@ -39,12 +39,15 @@ shadowseed-pro/
 │   │   ├── analysis/               result analyzer + artifact snapshot
 │   │   ├── vectorstore/            memory + optional FAISS/Chroma stores
 │   │   ├── data/                   packaged curated input data
-│   │   ├── benchmark/              evaluation suites + 7 compatibility facades
+│   │   ├── benchmark/              legacy namespace; 6 compatibility facades only
 │   │   ├── evaluation/             evaluation-area docs/placeholders
 │   │   └── *.py                    chat, CLI, SSOT, retrieval, prompts, surfacing, etc.
 │   └── shadowseed_agent/           point-of-use contract and audit policy
-├── tests/                          CONTRACT_TEST
-├── benchmarks/                     EVALUATION_IMPLEMENTATION
+├── research/                       EVALUATION_IMPLEMENTATION installable distribution
+│   ├── src/shadowseed_research/    canonical benchmark/evaluation implementation
+│   └── tests/                      CONTRACT_TEST for the research distribution
+├── tests/                          CONTRACT_TEST for product/runtime
+├── benchmarks/                     EVALUATION_IMPLEMENTATION inputs/artifacts
 │   └── results/                    EVIDENCE_ARTIFACT result snapshots
 ├── results/                        EVIDENCE_ARTIFACT analysis output
 ├── data/                           EVIDENCE_ARTIFACT source/reference material
@@ -85,7 +88,9 @@ shadowseed-pro/
 | `src/shadowseed/detection/` | Open-set model detector | RUNTIME_IMPLEMENTATION |
 | `src/shadowseed/analysis/` | Result analysis and artifact precedence | RUNTIME_IMPLEMENTATION |
 | `src/shadowseed/vectorstore/` | Vector store backends | RUNTIME_IMPLEMENTATION |
-| `src/shadowseed/benchmark/` | Benchmark/evaluation suites | EVALUATION_IMPLEMENTATION |
+| `src/shadowseed/benchmark/` | Legacy package marker and six explicit runtime compatibility facades; no evaluation implementation | COMPATIBILITY_ONLY |
+| `research/src/shadowseed_research/` | Canonical benchmark/evaluation implementation | EVALUATION_IMPLEMENTATION |
+| `research/tests/` | Research/evaluation contract and regression tests | CONTRACT_TEST |
 | `src/shadowseed_agent/` | Point-of-use contract and policies | RUNTIME_IMPLEMENTATION |
 | `tests/` | Contract and regression tests | CONTRACT_TEST |
 | `benchmarks/results/`, `results/`, `data/` | Generated or curated research evidence/reference material | EVIDENCE_ARTIFACT |
@@ -105,11 +110,11 @@ The ordinary Workbench product surface lives in `src/shadowseed/workbench/` and 
 
 Historical evaluation sessions, authored baseline fixtures, scenario JSON, benchmark outputs and other controlled comparison tooling remain research/evaluation material. They are not prerequisites for the product flow.
 
-The import boundary follows the same rule. `shadowseed`, `ShadowseedEngine`, the CLI parser, and ordinary product dispatch do not import either `shadowseed_research` or `shadowseed.benchmark` during startup. Research commands resolve their modules lazily only when that command is executed. When the separate research distribution is installed, the CLI resolves `shadowseed_research.benchmark` first. During migration only, it may fall back to the historical `shadowseed.benchmark` implementation in a source checkout. Shared command metadata that the product parser needs lives in small runtime-neutral contract modules rather than making the product depend on evaluation implementations. A fresh-interpreter contract test blocks both research namespaces while loading the product surface.
+The import boundary follows the same rule. `shadowseed`, `ShadowseedEngine`, the CLI parser, and ordinary product dispatch do not import either `shadowseed_research` or `shadowseed.benchmark` during startup. Research commands resolve their modules lazily only when that command is executed and require the separate `shadowseed-research` distribution. Shared command metadata that the product parser needs lives in small runtime-neutral contract modules rather than making the product depend on evaluation implementations. A fresh-interpreter contract test blocks both research namespaces while loading the product surface.
 
-The repository now also contains an installable research distribution under `research/`, with the `shadowseed_research` namespace. It depends on the product/runtime package, never the reverse. During migration it mirrors the benchmark implementation so research workflows can move to the new namespace without breaking the historical `shadowseed.benchmark` surface in the same change.
+The canonical benchmark and evaluation implementation lives in the installable `research/` distribution under the `shadowseed_research` namespace. It depends on the product/runtime package, never the reverse. Its regression suite lives in `research/tests/` and is run by the dedicated Research Package CI workflow.
 
-The final distribution split is therefore staged: first establish the independent research package and prove it builds; then move research workflows and imports; finally reduce `shadowseed.benchmark` to compatibility facades and remove evaluation implementation from the product wheel.
+The distribution split is complete at source level: `src/shadowseed/benchmark/` contains only the legacy package marker and six explicit `COMPATIBILITY_ONLY` runtime facades. It contains no benchmark or evaluation implementation. Product wheel CI verifies the same boundary after installation, while Research Package CI verifies that evaluation modules remain available from `shadowseed_research.benchmark`.
 
 The `paper/` directory is a publication bundle. `main.tex` is manuscript source and `shadowseed-paper.pdf` is its compiled artifact. Any manuscript refresh must update source claims against an exact reviewed commit and regenerate the PDF. Neither the manuscript nor its bibliography may silently supersede `docs/architecture/**` or the runtime.
 

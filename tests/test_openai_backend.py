@@ -1,11 +1,4 @@
-"""Tests for the OpenAI model backends (no network, no SDK required).
-
-The wrapper accepts an injected client, so these tests exercise the chat and
-embedding paths with a fake that mimics the OpenAI SDK response shapes. The
-backend wiring in all three factories (model-benefit suite, open-set detector,
-retrieval/ssl-vs-rag output model) is checked for construction-time validation
-and name shape. No test reads OPENAI_API_KEY or hits the network.
-"""
+"""Product tests for the OpenAI runtime adapter and detector (offline)."""
 
 from __future__ import annotations
 
@@ -19,15 +12,10 @@ from shadowseed.detection.model_detector import (
     OpenAIDetectorBackend,
     make_detector_backend,
 )
-from shadowseed.benchmark.retrieval_model_benchmark import make_output_model
-from shadowseed.benchmark.ssl45_model_benefit_suite import (
-    OpenAIBackend,
-    make_backend,
-)
 
 
 class _FakeChatCompletions:
-    def __init__(self, text: str, captured: dict) -> None:
+    def __init__(self, text: str | None, captured: dict) -> None:
         self._text = text
         self._captured = captured
 
@@ -44,7 +32,9 @@ class _FakeEmbeddings:
 
     def create(self, **kwargs):
         self._captured.update(kwargs)
-        return SimpleNamespace(data=[SimpleNamespace(embedding=v) for v in self._vectors])
+        return SimpleNamespace(
+            data=[SimpleNamespace(embedding=v) for v in self._vectors]
+        )
 
 
 class _FakeOpenAISDK:
@@ -54,7 +44,9 @@ class _FakeOpenAISDK:
         self.chat = SimpleNamespace(
             completions=_FakeChatCompletions(text, self.captured)
         )
-        self.embeddings = _FakeEmbeddings(vectors or [[0.1, 0.2]], self.embed_captured)
+        self.embeddings = _FakeEmbeddings(
+            vectors or [[0.1, 0.2]], self.embed_captured
+        )
 
 
 def test_openai_api_key_missing_raises(monkeypatch):
@@ -106,46 +98,33 @@ def test_client_embed_empty_skips_call():
     assert sdk.embed_captured == {}
 
 
-def test_benefit_openai_backend_generates():
-    backend = OpenAIBackend(model_id="gpt-4o-mini")
-    backend.client = OpenAIClient(model="gpt-4o-mini", client=_FakeOpenAISDK(text="x"))
-    assert backend.name == "openai:gpt-4o-mini"
-    assert backend.generate("prompt", {}, "baseline", []) == "x"
-
-
 def test_detector_openai_backend_parses_seeds():
     backend = OpenAIDetectorBackend(model_id="gpt-4o-mini")
     backend.client = OpenAIClient(
-        client=_FakeOpenAISDK(text="Ontbrekende toelichting bij Federal Mogul.")
+        client=_FakeOpenAISDK(
+            text="Ontbrekende toelichting bij Federal Mogul."
+        )
     )
     assert backend.name == "openai:gpt-4o-mini"
-    seeds = backend.detect_seeds({"text": "Federal Mogul is a stricken parent firm."})
+    seeds = backend.detect_seeds(
+        {"text": "Federal Mogul is a stricken parent firm."}
+    )
     assert seeds and any("Federal Mogul" in seed for seed in seeds)
 
 
 def test_detector_openai_backend_empty_text_skips_call():
     backend = OpenAIDetectorBackend(model_id="gpt-4o-mini")
 
-    def _boom(*args, **kwargs):  # pragma: no cover - must not be called
+    def _boom(*args, **kwargs):
         raise AssertionError("client should not be used for empty text")
 
     backend.client = SimpleNamespace(generate=_boom)
     assert backend.detect_seeds({"text": ""}) == []
 
 
-def test_make_backend_openai_requires_model_id():
-    with pytest.raises(ValueError, match="model-id is required for backend openai"):
-        make_backend("openai", None, 220)
-
-
 def test_make_detector_backend_openai_requires_model_id():
     with pytest.raises(ValueError, match="model-id is required"):
         make_detector_backend("openai", None)
-
-
-def test_make_output_model_openai_requires_model_id():
-    with pytest.raises(ValueError, match="model-id is required for openai"):
-        make_output_model("openai", None, 220)
 
 
 def test_supported_model_backends_includes_openai():

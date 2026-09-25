@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 
-from shadowseed.benchmark.vectorstore_smoke import run_vectorstore_smoke
 from shadowseed.vectorstore.chroma_store import _as_list
 
 
@@ -17,17 +16,6 @@ def test_as_list_handles_numpy_arrays_without_ambiguous_truth_value():
     assert np.allclose(rows[0], [0.1, 0.2])
     # plain lists pass through unchanged
     assert _as_list(["a", "b"]) == ["a", "b"]
-
-
-@pytest.mark.parametrize("backend", ["faiss", "chroma"])
-def test_optional_vector_backend_smoke_if_installed(tmp_path, backend):
-    try:
-        output = run_vectorstore_smoke(str(tmp_path / f"{backend}.json"), backend=backend)
-    except RuntimeError as exc:
-        pytest.skip(str(exc))
-
-    assert output.exists()
-    assert backend in output.read_text(encoding="utf-8")
 
 
 def _chroma_store_or_skip(collection_name: str, persist_directory: str):

@@ -2,32 +2,60 @@ import json
 from pathlib import Path
 
 from shadowseed.analysis.ssl45_result_analyzer import analyze_results
-from shadowseed.benchmark.ssl45_benefit_suite import run_ssl45_benefit_suite
-from shadowseed.benchmark.ssl45_false_positive_suite import run_ssl45_false_positive_suite
-from shadowseed.benchmark.ssl45_gap_suite import run_ssl45_gap_suite
-from shadowseed.benchmark.ssl45_model_benefit_suite import run_ssl45_model_benefit_suite
+
+
+def _write_result(path: Path, summary: dict, results: list[dict] | None = None) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload: dict = {"summary": summary}
+    if results is not None:
+        payload["results"] = results
+    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
 def test_result_analyzer_writes_report_json_and_charts(tmp_path: Path):
     results_dir = tmp_path / "results"
     output_dir = results_dir / "analysis"
+    promoted = [
+        {
+            "scenario_id": "GAP_001",
+            "title": "Fixture gap",
+            "domain": "test",
+            "promoted_seeds": [{"text": "Missing evidence source."}],
+        }
+    ]
 
-    run_ssl45_gap_suite(
-        "src/shadowseed/data/gap_test_suite_4_5.json",
-        str(results_dir / "ssl45_gap_suite.json"),
+    _write_result(
+        results_dir / "ssl45_gap_suite.json",
+        {"mean_scenario_score": 2.0, "promoted_hits": 1},
+        promoted,
     )
-    run_ssl45_false_positive_suite(
-        "src/shadowseed/data/gap_test_suite_false_positive_4_5.json",
-        str(results_dir / "ssl45_false_positive_suite.json"),
+    _write_result(
+        results_dir / "ssl45_false_positive_suite.json",
+        {
+            "candidate_false_positive_rate": 0.0,
+            "promoted_false_positive_rate": 0.0,
+        },
     )
-    run_ssl45_benefit_suite(
-        "src/shadowseed/data/ssl45_benefit_suite.json",
-        str(results_dir / "ssl45_benefit_suite.json"),
+    _write_result(
+        results_dir / "ssl45_benefit_suite.json",
+        {
+            "baseline_mean_gap_coverage": 0.2,
+            "ssl_mean_gap_coverage": 0.8,
+            "coverage_delta": 0.6,
+        },
+        promoted,
     )
-    run_ssl45_model_benefit_suite(
-        "src/shadowseed/data/ssl45_model_benefit_suite.json",
-        str(results_dir / "ssl45_model_benefit_suite.json"),
-        backend="fixture",
+    _write_result(
+        results_dir / "ssl45_model_benefit_suite.json",
+        {
+            "backend": "fixture",
+            "baseline_mean_gap_coverage": 0.3,
+            "ssl_mean_gap_coverage": 0.7,
+            "coverage_delta": 0.4,
+            "unsupported_ssl_addition_rate": 0.0,
+            "mean_answer_length_delta_words": 2.0,
+        },
+        promoted,
     )
 
     report = analyze_results(str(results_dir), str(output_dir))
@@ -97,16 +125,9 @@ def _write_open_set_summary(path: Path, seed_acceptance_rate: float) -> None:
 def test_result_analyzer_prefers_canonical_open_set_summary_over_legacy(
     tmp_path: Path,
 ) -> None:
-    """When both the canonical and legacy summaries exist, canonical wins.
-
-    Regression guard for artifact precedence: the canonical
-    ``open_set_seed_review_summary.json`` must take precedence over the legacy
-    ``open_review/open_set_review_summary.json`` fallback.
-    """
     results_dir = tmp_path / "results"
     output_dir = results_dir / "analysis"
 
-    # Distinguishable values so the winning source is unambiguous.
     _write_open_set_summary(
         results_dir / "open_set_seed_review_summary.json",
         seed_acceptance_rate=0.9,
