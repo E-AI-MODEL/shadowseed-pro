@@ -59,24 +59,33 @@ def test_macos_bundle_is_resealed_after_final_resource_mutation(
 
     monkeypatch.setattr(build_standalone, "_run", fake_run)
 
-    assert build_standalone._seal_macos_bundle(bundle, macos=True) is True
+    assert build_standalone._seal_macos_bundle(bundle, macos=True) == "adhoc"
     assert commands == [
         ["codesign", "--force", "--sign", "-", "--timestamp=none", str(bundle)],
         ["codesign", "--verify", "--deep", "--strict", "--verbose=4", str(bundle)],
     ]
 
 
-def test_non_macos_bundle_does_not_attempt_codesign(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    bundle = tmp_path / "Shadowseed"
-    bundle.mkdir()
 
-    def fail_run(command: list[str], *, cwd: Path) -> None:
-        raise AssertionError(f"unexpected command: {command} in {cwd}")
+def test_macos_first_launch_helper_is_local_and_explicit(tmp_path: Path) -> None:
+    distribution = tmp_path / "Shadowseed Workbench"
+    distribution.mkdir()
 
-    monkeypatch.setattr(build_standalone, "_run", fail_run)
-    assert build_standalone._seal_macos_bundle(bundle, macos=False) is False
+    helper, readme = build_standalone._install_macos_first_launch_files(distribution)
+
+    helper_text = helper.read_text(encoding="utf-8")
+    readme_text = readme.read_text(encoding="utf-8")
+
+    assert helper.name == "Open Shadowseed.command"
+    assert helper.stat().st_mode & 0o111
+    assert 'APP="$HERE/Shadowseed.app"' in helper_text
+    assert 'xattr -dr com.apple.quarantine "$APP"' in helper_text
+    assert 'open "$APP"' in helper_text
+    assert "spctl --master-disable" not in helper_text
+    assert "sudo" not in helper_text
+    assert "does not require an Apple Developer ID" in readme_text
+    assert "does not change global macOS security" in readme_text
+
 
 
 def test_macos_archive_roundtrip_requires_extracted_app(
@@ -94,7 +103,7 @@ def test_macos_archive_roundtrip_requires_extracted_app(
 
     monkeypatch.setattr(build_standalone, "_run", fake_run)
 
-    with pytest.raises(RuntimeError, match="missing Shadowseed.app"):
+    with pytest.raises(RuntimeError, match="expected one Shadowseed.app"):
         build_standalone._verify_macos_archive_round_trip(
             archive,
             work_dir,
