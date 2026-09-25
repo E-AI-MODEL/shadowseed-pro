@@ -53,6 +53,10 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _macos_signing_identity() -> str:
+    return (os.environ.get("SHADOWSEED_MACOS_CODESIGN_IDENTITY") or "").strip() or "-"
+
+
 def _pyinstaller_command(root: Path, dist_dir: Path, work_dir: Path) -> list[str]:
     command = [
         sys.executable,
@@ -110,6 +114,10 @@ def _pyinstaller_command(root: Path, dist_dir: Path, work_dir: Path) -> list[str
         "openai",
     ):
         command.extend(["--copy-metadata", package])
+    if sys.platform == "darwin":
+        identity = _macos_signing_identity()
+        if identity != "-":
+            command.extend(["--codesign-identity", identity])
     command.append(str(root / "src" / "shadowseed" / "workbench" / "standalone.py"))
     return command
 
@@ -161,25 +169,101 @@ def _verify_macos_bundle(bundle: Path, *, macos: bool | None = None) -> None:
     )
 
 
-def _seal_macos_bundle(bundle: Path, *, macos: bool | None = None) -> bool:
-    """Re-seal the complete app after Shadowseed has added its final resources.
+def _verify_macos_gatekeeper(bundle: Path, *, macos: bool | None = None) -> None:
+    """Require Gatekeeper to accept the final notarized application."""
 
-    PyInstaller constructs and ad-hoc signs the macOS bundle before Shadowseed
-    copies its required license into Contents/Resources. That post-build
-    mutation invalidates the application resource seal. Re-signing the final
-    top-level bundle regenerates the seal while preserving the project's
-    existing non-notarized distribution boundary.
+    if macos is None:
+        macos = sys.platform == "darwin"
+    if not macos:
+        return
+    _run(["xcrun", "stapler", "validate", str(bundle)], cwd=bundle.parent)
+    _run(
+        ["spctl", "--assess", "--type", "execute", "--verbose=4", str(bundle)],
+        cwd=bundle.parent,
+    )
+
+
+def _seal_macos_bundle(bundle: Path, *, macos: bool | None = None) -> str | None:
+    """Sign the complete app after Shadowseed has added its final resources.
+
+    Pull-request builds default to an ad-hoc resource seal. Release-capable
+    builds can provide SHADOWSEED_MACOS_CODESIGN_IDENTITY so PyInstaller signs
+    nested code with Developer ID and this final pass regenerates the outer
+    application seal with Hardened Runtime and a trusted timestamp.
     """
 
     if macos is None:
         macos = sys.platform == "darwin"
     if not macos:
+        return None
+    identity = _macos_signing_identity()
+    if identity == "-":
+        command = [
+            "codesign",
+            "--force",
+            "--sign",
+            "-",
+            "--timestamp=none",
+            str(bundle),
+        ]
+        mode = "adhoc"
+    else:
+        command = [
+            "codesign",
+            "--force",
+            "--sign",
+            identity,
+            "--options",
+            "runtime",
+            "--timestamp",
+            str(bundle),
+        ]
+        mode = "developer-id"
+    _run(command, cwd=bundle.parent)
+    _verify_macos_bundle(bundle, macos=True)
+    return mode
+
+
+def _notarize_macos_bundle(
+    bundle: Path,
+    work_dir: Path,
+    *,
+    signature_mode: str | None,
+    macos: bool | None = None,
+) -> bool:
+    """Submit a Developer ID-signed app to Apple, staple, and assess it."""
+
+    if macos is None:
+        macos = sys.platform == "darwin"
+    if not macos:
         return False
+    profile = (os.environ.get("SHADOWSEED_MACOS_NOTARY_PROFILE") or "").strip()
+    if not profile:
+        return False
+    if signature_mode != "developer-id":
+        raise RuntimeError("macOS notarization requires Developer ID signing")
+
+    submit_zip = work_dir / "Shadowseed-notarization.zip"
+    submit_zip.unlink(missing_ok=True)
     _run(
-        ["codesign", "--force", "--sign", "-", "--timestamp=none", str(bundle)],
+        ["ditto", "-c", "-k", "--keepParent", str(bundle), str(submit_zip)],
         cwd=bundle.parent,
     )
-    _verify_macos_bundle(bundle, macos=True)
+    command = [
+        "xcrun",
+        "notarytool",
+        "submit",
+        str(submit_zip),
+        "--keychain-profile",
+        profile,
+        "--wait",
+    ]
+    keychain = (os.environ.get("SHADOWSEED_MACOS_NOTARY_KEYCHAIN") or "").strip()
+    if keychain:
+        command.extend(["--keychain", keychain])
+    _run(command, cwd=work_dir)
+    _run(["xcrun", "stapler", "staple", str(bundle)], cwd=bundle.parent)
+    _verify_macos_gatekeeper(bundle, macos=True)
     return True
 
 
@@ -222,8 +306,9 @@ def _verify_macos_archive_round_trip(
     work_dir: Path,
     *,
     macos: bool | None = None,
+    require_notarized: bool = False,
 ) -> Path | None:
-    """Extract the distributable ZIP and verify the seal users actually receive."""
+    """Extract the distributable ZIP and verify the app users actually receive."""
 
     if macos is None:
         macos = sys.platform == "darwin"
@@ -237,6 +322,8 @@ def _verify_macos_archive_round_trip(
     if not bundle.is_dir():
         raise RuntimeError("macOS archive round-trip is missing Shadowseed.app")
     _verify_macos_bundle(bundle, macos=True)
+    if require_notarized:
+        _verify_macos_gatekeeper(bundle, macos=True)
     return bundle
 
 
@@ -304,7 +391,12 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
     license_relative = str(license_path.relative_to(bundle))
     license_sha256 = _sha256(license_path)
     self_test = None if skip_self_test else _verify_frozen(executable, root, work_dir)
-    macos_bundle_seal_verified = _seal_macos_bundle(bundle)
+    macos_signature_mode = _seal_macos_bundle(bundle)
+    macos_notarized = _notarize_macos_bundle(
+        bundle,
+        work_dir,
+        signature_mode=macos_signature_mode,
+    )
 
     version = _project_version(root)
     machine = platform.machine().lower() or "unknown"
@@ -312,7 +404,11 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
     stem = f"shadowseed-workbench-{version}-{system}-{machine}"
     archive = _archive_bundle(bundle, output_dir, stem)
 
-    roundtrip_bundle = _verify_macos_archive_round_trip(archive, work_dir)
+    roundtrip_bundle = _verify_macos_archive_round_trip(
+        archive,
+        work_dir,
+        require_notarized=macos_notarized,
+    )
     archive_roundtrip_self_test = None
     if roundtrip_bundle is not None and not skip_self_test:
         roundtrip_executable = roundtrip_bundle / "Contents" / "MacOS" / "Shadowseed"
@@ -342,7 +438,10 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
         "self_contained_python_runtime": True,
         "loopback_only_default": True,
         "gradio_source_files_bundled": True,
-        "macos_bundle_seal_verified": macos_bundle_seal_verified if system == "darwin" else None,
+        "macos_signature_mode": macos_signature_mode if system == "darwin" else None,
+        "macos_bundle_seal_verified": macos_signature_mode is not None if system == "darwin" else None,
+        "macos_notarized": macos_notarized if system == "darwin" else None,
+        "macos_gatekeeper_assessed": macos_notarized if system == "darwin" else None,
         "macos_archive_roundtrip_verified": roundtrip_bundle is not None if system == "darwin" else None,
         "archive_roundtrip_self_test": archive_roundtrip_self_test,
         "self_test": self_test,

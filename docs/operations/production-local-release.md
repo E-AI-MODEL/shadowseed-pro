@@ -61,9 +61,20 @@ Required provenance is:
 
 The artifact attestation is the declared cryptographic signing path for the distributed production-local release subjects. It proves repository/workflow provenance and subject digests; it does not establish that the code is vulnerability-free or grant extra seed authority.
 
-Native Apple notarization, Apple Developer ID signing and Windows Authenticode signing are **not claimed** unless certificates and the corresponding verified workflow are explicitly added. An archive without native platform signing must not be described as OS-vendor-signed or notarized. This boundary is a release limitation, not evidence that checksum/provenance/attestation verification is optional.
+The macOS release lane additionally requires native Apple platform verification. A publishable macOS archive must be Developer ID signed with Hardened Runtime and a trusted timestamp, accepted by Apple notarization, stapled, and accepted by Gatekeeper after the exact distributable archive has been re-extracted. The standalone manifest records these results, and `Release Workbench` rejects publication unless all three release fields are true.
 
-If native signing is later enabled, the signing identity, certificate lifecycle and verification command become mandatory release evidence and must be added here through a protected PR.
+The signing credentials are a separate trust boundary. Before this workflow may be merged or used for a release, GitHub must contain a protected environment named `macos-release-signing` with required reviewer approval and a deployment-branch restriction to protected `main`. The following six values must exist **only as environment secrets** in that environment, not as repository or organization secrets available to ordinary jobs:
+
+- `MACOS_CERTIFICATE_P12_BASE64`
+- `MACOS_CERTIFICATE_PASSWORD`
+- `MACOS_SIGNING_IDENTITY`
+- `APPLE_NOTARY_API_KEY_P8_BASE64`
+- `APPLE_NOTARY_KEY_ID`
+- `APPLE_NOTARY_ISSUER_ID`
+
+Pull-request and `workflow_dispatch` standalone builds remain ad-hoc, receive no Apple credentials, and cannot enter the release-publication workflow. Only the macOS job from a successful push to protected `main` targets `macos-release-signing`. Release publication independently requires the triggering Standalone run to be a `push` on `main`.
+
+Mandatory macOS release evidence includes successful strict `codesign --verify`, `xcrun stapler validate`, `spctl --assess`, notarization acceptance, archive round-trip verification, and the corresponding manifest fields. Windows Authenticode signing is not currently claimed. An unsigned Windows archive must not be described as OS-vendor-signed. These platform boundaries do not make checksum, provenance, SBOM, or artifact-attestation verification optional.
 
 ## Rollback
 
