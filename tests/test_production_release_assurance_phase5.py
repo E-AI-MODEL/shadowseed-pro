@@ -83,13 +83,15 @@ def test_release_runbook_keeps_native_signing_claims_explicitly_bounded() -> Non
     runbook = _text("docs/operations/production-local-release.md")
 
     assert "Sigstore-backed GitHub artifact attestation" in runbook
-    assert "Developer ID signed" in runbook
-    assert "accepted by Apple notarization" in runbook
-    assert "macos-release-signing" in runbook
-    assert "required reviewer approval" in runbook
-    assert "only as environment secrets" in runbook
-    assert "workflow_dispatch" in runbook
-    assert "Windows Authenticode signing is not currently claimed" in runbook
+    assert "ad-hoc signed" in runbook
+    assert "does not require Apple Developer ID certificates" in runbook
+    assert "Open Shadowseed.command" in runbook
+    assert "com.apple.quarantine" in runbook
+    assert "does not disable Gatekeeper globally" in runbook
+    assert "macos_signature_mode=adhoc" in runbook
+    assert "macos_first_launch_helper=true" in runbook
+    assert "Apple Developer ID signing and notarization are **not claimed**" in runbook
+    assert "Windows Authenticode signing is also not currently claimed" in runbook
     assert "at least 24 hours" in runbook
     assert "#95" in runbook
     assert "#97" in runbook
