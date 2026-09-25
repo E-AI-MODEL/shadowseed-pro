@@ -274,16 +274,18 @@ entries:
     modifications_allowed: false
     notes: Legacy import facade. Re-export only.
 
-  # --- Evaluation implementation -----------------------------------------
+  # --- Legacy benchmark namespace ----------------------------------------
   - path: src/shadowseed/benchmark/**
-    authority: EVALUATION_IMPLEMENTATION
-    owner: benchmark
-    runtime_import_allowed: true
-    modifications_allowed: true
+    authority: COMPATIBILITY_ONLY
+    owner: compatibility
+    runtime_import_allowed: false
+    modifications_allowed: false
     notes: >
-      Canonical benchmark and evaluation suites. Excludes the seven
-      COMPATIBILITY_ONLY facades above (which win by most-specific match).
+      Legacy namespace only. The product distribution may contain only the
+      explicit runtime compatibility facades above plus the package marker.
+      Benchmark and evaluation implementations belong under research/.
 
+  # --- Evaluation implementation -----------------------------------------
   - path: research/tests/**
     authority: CONTRACT_TEST
     owner: research-qa
@@ -300,10 +302,10 @@ entries:
     runtime_import_allowed: false
     modifications_allowed: true
     notes: >
-      Separate installable Shadowseed research distribution. It may depend on
-      the product/runtime package; the product/runtime package must never depend
-      on this research distribution. During migration it mirrors the canonical
-      benchmark implementation before ownership moves out of src/shadowseed/benchmark.
+      Canonical installable Shadowseed research/evaluation distribution. It may
+      depend on the product/runtime package; the product/runtime package must
+      never depend on this research distribution. Benchmark implementations
+      live here, not under src/shadowseed/benchmark.
 
   - path: src/shadowseed/evaluation/**
     authority: EVALUATION_IMPLEMENTATION

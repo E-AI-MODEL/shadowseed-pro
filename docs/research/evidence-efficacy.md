@@ -125,7 +125,7 @@ This prevents `0 A/B items` from being collapsed into the vague statement that S
 Fixture runs prove mechanics only:
 
 ```bash
-python -m shadowseed.benchmark.evidence_efficacy run \
+python -m shadowseed_research.benchmark.evidence_efficacy run \
   --backend fixture \
   --model-id fixture \
   --embedding-backend lexical \
@@ -137,7 +137,7 @@ python -m shadowseed.benchmark.evidence_efficacy run \
 Verify the moved bundle:
 
 ```bash
-python -m shadowseed.benchmark.evidence_efficacy verify \
+python -m shadowseed_research.benchmark.evidence_efficacy verify \
   results/evidence-efficacy/fixture
 ```
 

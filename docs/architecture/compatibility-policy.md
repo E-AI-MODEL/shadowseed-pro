@@ -28,6 +28,11 @@ re-export the canonical objects. These modules contain **no implementation**.
 
 ## 3. Public compatibility boundary
 
+The `shadowseed.benchmark` package itself is only a namespace for the explicit
+legacy modules listed above. It does not expose package-level benchmark classes,
+runners, or evaluation suites. Those implementations live in the separate
+`shadowseed-research` distribution under `shadowseed_research.benchmark`.
+
 Each compatibility module declares an explicit `__all__`. Only the names in
 `__all__` are supported through the legacy path. For every supported name:
 

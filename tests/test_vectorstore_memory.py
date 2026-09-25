@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from shadowseed.benchmark.ssl45_gap_suite import lexical_embedding
+from shadowseed.text_similarity import lexical_embedding
 from shadowseed.manager import SSLManager, SeedStatus
 from shadowseed.vector_constellation import VectorConstellation
 from shadowseed.vectorstore import InMemoryVectorStore

@@ -9,13 +9,15 @@ import sys
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = REPO_ROOT / "src"
-if str(SRC_ROOT) not in sys.path:
-    sys.path.insert(0, str(SRC_ROOT))
+RESEARCH_SRC = REPO_ROOT / "research" / "src"
+for source_root in (SRC_ROOT, RESEARCH_SRC):
+    if str(source_root) not in sys.path:
+        sys.path.insert(0, str(source_root))
 
-from shadowseed.benchmark.absencebench import build_preparation_record, build_run_card
-from shadowseed.benchmark.result_writer import ResultWriter
-from shadowseed.benchmark.run_types import ExecutionStatus, RunType
-from shadowseed.benchmark.schemas import BenchmarkResult
+from shadowseed_research.benchmark.absencebench import build_preparation_record, build_run_card
+from shadowseed_research.benchmark.result_writer import ResultWriter
+from shadowseed_research.benchmark.run_types import ExecutionStatus, RunType
+from shadowseed_research.benchmark.schemas import BenchmarkResult
 
 
 def parse_args() -> argparse.Namespace:

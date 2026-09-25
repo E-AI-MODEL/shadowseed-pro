@@ -75,18 +75,3 @@ def test_mixed_winrate_half():
     r = apw.score(p)
     assert r["ssl_wins"] == 1 and r["baseline_wins"] == 1
     assert r["ssl_win_rate"] == 0.5
-
-
-def test_ssl_append_answer_is_no_harm():
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("mb", "src/shadowseed/benchmark/ssl45_model_benefit_suite.py")
-    mb = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mb)
-    base = "Het basisantwoord blijft staan."
-    out = mb.ssl_append_answer(base, ["Seed een.", "Seed twee."])
-    # baseline preserved verbatim (no-harm), seeds appended as a bounded block
-    assert out.startswith(base)
-    assert "Additional relevant points" in out
-    assert "Seed een." in out and "Seed twee." in out
-    # empty seeds -> baseline unchanged
-    assert mb.ssl_append_answer(base, []) == base

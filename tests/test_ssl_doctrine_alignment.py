@@ -7,7 +7,6 @@ import sqlite3
 import numpy as np
 import pytest
 
-from shadowseed.benchmark.live_session_measurement import _normalized_candidates
 from shadowseed.chat import ShadowChatSession
 from shadowseed.core_config import SSLCoreConfig
 from shadowseed.gate.events import GateDecision
@@ -77,11 +76,6 @@ def test_real_detector_short_fragment_is_not_rewritten_into_dutch(runtime_mode):
     seed = session.manager.seeds[report["seeds_born_weightless"][0]]
     assert seed.text == "Alternative causal boundary."
     assert "ontbreekt" not in seed.text.casefold()
-
-
-def test_live_measurement_uses_model_output_normalization_contract():
-    candidate = "Market power, rather than technology, as an alternative explanatory frame."
-    assert _normalized_candidates(candidate, max_seed_words=18) == [candidate]
 
 
 def test_empty_and_whitespace_candidates_are_not_atomic():

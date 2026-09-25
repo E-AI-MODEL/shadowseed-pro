@@ -84,7 +84,7 @@ Every Workbench export includes a SHA-256 manifest. `shadowseed verify-workbench
 Evidence-efficacy bundles use their own hash manifest and can be verified after moving them:
 
 ```bash
-python -m shadowseed.benchmark.evidence_efficacy verify <bundle-directory>
+python -m shadowseed_research.benchmark.evidence_efficacy verify <bundle-directory>
 ```
 
 Integrity verification proves the recorded files match the manifest. It does not make the content anonymous, truthful or scientifically valid.

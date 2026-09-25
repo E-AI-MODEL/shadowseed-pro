@@ -95,11 +95,14 @@ Real local model example:
 shadowseed chat --backend ollama --model-id <model> --embedding-backend sentence-transformers
 ```
 
-For falsification research:
+For research/evaluation tooling, install the separate research distribution on top of the product checkout:
 
 ```bash
+pip install --no-deps -e ./research
 shadowseed run-dialectic-falsification --help
 ```
+
+The `shadowseed` CLI stays the entry point, but research commands load their implementation from `shadowseed_research`. A product-only install does not ship benchmark/evaluation implementation.
 
 ### 4. Collect privacy-minimized tester data
 
@@ -139,7 +142,7 @@ src/shadowseed/data/evidence_efficacy_preregistration_v1.json
 Run and verify a study bundle:
 
 ```bash
-python -m shadowseed.benchmark.evidence_efficacy run \
+python -m shadowseed_research.benchmark.evidence_efficacy run \
   --backend <fixture|ollama|hf-transformers|openai> \
   --model-id <model> \
   --suite path/to/evidence-efficacy-suite.json \
@@ -147,7 +150,7 @@ python -m shadowseed.benchmark.evidence_efficacy run \
   --output-dir results/evidence-efficacy/<run> \
   --embedding-backend <lexical|sentence-transformers|openai>
 
-python -m shadowseed.benchmark.evidence_efficacy verify \
+python -m shadowseed_research.benchmark.evidence_efficacy verify \
   results/evidence-efficacy/<run>
 ```
 
@@ -232,7 +235,7 @@ A textual difference is not automatically an SSL effect. Attribute an observed d
 | Influence requires current authority and point-of-use authorization | [`AgentSafetyContract`](src/shadowseed_agent/agent_contract.py) | [`test_point_of_use.py`](tests/test_point_of_use.py) |
 | Live history stores the visible answer; evaluation preserves isolated research controls | [`shadowseed.chat`](src/shadowseed/chat.py) | [`test_live_runtime.py`](tests/test_live_runtime.py) |
 | Support datasets accept verified minimized bundles only | [`shadowseed.support_collection`](src/shadowseed/support_collection.py) | [`test_workbench_support_collection.py`](tests/test_workbench_support_collection.py) |
-| Evidence efficacy uses the canonical evidence-backed trust boundary | [`shadowseed.benchmark.evidence_efficacy`](src/shadowseed/benchmark/evidence_efficacy.py), [`ShadowChatSession.submit_evidence`](src/shadowseed/chat.py) | [`test_evidence_efficacy.py`](tests/test_evidence_efficacy.py) |
+| Evidence efficacy uses the canonical evidence-backed trust boundary | [`shadowseed_research.benchmark.evidence_efficacy`](research/src/shadowseed_research/benchmark/evidence_efficacy.py), [`ShadowChatSession.submit_evidence`](src/shadowseed/chat.py) | [`test_evidence_efficacy.py`](research/tests/test_evidence_efficacy.py) |
 
 > **"Non-bypassable" is a public-API property** over supported new authority decisions, not a claim about arbitrary in-process Python mutation, validated state restoration, or explicitly unsafe test hooks.
 
@@ -251,6 +254,7 @@ A textual difference is not automatically an SSL effect. Attribute an observed d
 
 - `src/shadowseed/` - canonical SSL runtime, chat/application services, export and collection contracts
 - `src/shadowseed_agent/` - point-of-use agent authorization and influence audit
+- `research/` - installable benchmark/evaluation distribution (`shadowseed_research`) and research regression tests
 - `paper/` - manuscript source, bibliography, and compiled reviewed snapshot
 - `benchmarks/` - benchmark suites and immutable evidence artifacts
 - `experiments/`, `results/` - reproducibility and development research outputs
@@ -265,6 +269,14 @@ Historical compatibility surfaces are retained when they protect replay or publi
 <details>
 <summary><strong>Research and benchmark commands</strong></summary>
 
+Install the separate research component first:
+
+```bash
+pip install --no-deps -e ./research
+```
+
+The product CLI then routes research commands to `shadowseed_research`:
+
 ```bash
 shadowseed run-gap-suite
 shadowseed run-false-positive-suite
@@ -274,8 +286,8 @@ shadowseed run-adversarial-gate-benchmark
 shadowseed run-probe-utility-benchmark
 shadowseed run-probe-feedback-behavior-suite
 shadowseed analyze-results
-python -m shadowseed.benchmark.capability_scaling --help
-python -m shadowseed.benchmark.evidence_efficacy --help
+python -m shadowseed_research.benchmark.capability_scaling --help
+python -m shadowseed_research.benchmark.evidence_efficacy --help
 ```
 
 Optional stacks:

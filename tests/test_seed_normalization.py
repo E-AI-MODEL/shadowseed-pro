@@ -1,6 +1,5 @@
 import numpy as np
 
-from shadowseed.benchmark.open_set_seed_review import detect_embedding
 from shadowseed.manager import SSLManager
 from shadowseed.seed_normalization import normalize_detection_candidates, split_broad_seed_text
 
@@ -129,7 +128,7 @@ def test_ingest_model_mode_keeps_unique_seed_ids_for_paraphrases():
 
 
 def test_ingest_model_mode_rejects_short_stub_and_exact_duplicate():
-    manager = SSLManager(embedding_fn=detect_embedding)
+    manager = SSLManager(embedding_fn=lambda _text: np.array([1.0, 0.0, 0.0]))
     result = manager.ingest_detection_candidates(
         [
             "De #36;10 miljoen Ansari X Prize wordt niet genoemd.",

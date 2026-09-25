@@ -1,8 +1,10 @@
 import json
 from pathlib import Path
 
-from shadowseed_research.benchmark.ssl45_model_benefit_suite import run_ssl45_model_benefit_suite
-
+from shadowseed_research.benchmark.ssl45_model_benefit_suite import (
+    run_ssl45_model_benefit_suite,
+    ssl_append_answer,
+)
 
 def test_model_benefit_fixture_improves_gap_coverage(tmp_path: Path):
     output = tmp_path / "model_benefit_results.json"
@@ -32,3 +34,13 @@ def test_model_benefit_fixture_improves_gap_coverage(tmp_path: Path):
     assert first["coverage_delta_raw"] == first["coverage_delta"]
     assert "coverage_delta_per_100_added_words" in first
     assert "penalized_coverage_delta" in first
+
+def test_ssl_append_answer_is_no_harm():
+    base = "Het basisantwoord blijft staan."
+    out = ssl_append_answer(base, ["Seed een.", "Seed twee."])
+
+    assert out.startswith(base)
+    assert "Additional relevant points" in out
+    assert "Seed een." in out and "Seed twee." in out
+    assert ssl_append_answer(base, []) == base
+
