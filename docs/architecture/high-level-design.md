@@ -4,7 +4,7 @@
 
 | Field | Value |
 |---|---|
-| Product version | 0.7.1 |
+| Product version | 0.7.2 |
 | Runtime source anchor | `b238f52c04de004d01ac1ca83b83a4b95422040b` |
 | Primary user | Tester or researcher working with an LLM |
 | Main product | Local standalone chat Workbench |
