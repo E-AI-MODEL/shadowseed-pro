@@ -23,9 +23,9 @@ or a citation with no entry.
 
 `main.tex`, `references.bib`, and `shadowseed-paper.pdf` must change together when the manuscript itself is revised. Do not edit only the visible PDF version/commit text to make it match a newer software badge.
 
-## Relationship to current software v0.7.1
+## Relationship to current software v0.7.2
 
-The current software version is **0.7.1**. The manuscript carries two explicit anchors, both printed inside `main.tex` and the compiled PDF:
+The current software version is **0.7.2**. The manuscript carries two explicit anchors, both printed inside `main.tex` and the compiled PDF:
 
 - the **reviewed SSL core** stays pinned to source version **0.5.0** and its implementation commit. The trace/weight separation, evidence identity, Gate, contradiction, lifecycle, and point-of-use model were reviewed against that snapshot and are unchanged since;
 - the **assurance anchor** is source version **0.7.1** and covers only the persistence, audit, and release-assurance sections, which describe the append-only authority ledger, the protected anti-rollback anchor, and the supply-chain gates added after 0.5.0.
@@ -39,7 +39,8 @@ In particular:
 - **0.5.1** adds support-dataset collection for research use;
 - **0.6.0** adds noncommercial research access, license-delivery checks, and evidence-backed paired efficacy instrumentation;
 - **0.7.x** adds production-local persistence, recovery, authorization, operational limits, candidate-observation provenance, and release-assurance hardening;
-- **0.7.1** repairs the macOS standalone sealing and archive round-trip verification path while leaving the SSL authority model unchanged.
+- **0.7.1** repairs the macOS standalone sealing and archive round-trip verification path while leaving the SSL authority model unchanged;
+- **0.7.2** adds the credential-free macOS first-launch flow while keeping the app ad-hoc signed and the release boundary explicit.
 
 The later efficacy and production-assurance paths deliberately reuse the existing runtime authority boundaries rather than creating manuscript-only, benchmark-only, or product-only Gate semantics.
 
@@ -87,7 +88,7 @@ The root software repository contains PolyForm Noncommercial License 1.0.0 for r
 
 A source version is not proof that a corresponding public release exists. Release publication, provenance, license delivery, checksums, attestations, and prerelease/production status are governed by the repository's release workflow and release records, not by this manuscript.
 
-The 0.7.1 research preview is a production-local assurance candidate. Its existence does not by itself complete a `production-ready/local` claim; that status remains governed by the repository production-acceptance contract.
+The 0.7.2 research preview is the current production-local assurance candidate. Its existence does not by itself complete a `production-ready/local` claim; that status remains governed by the repository production-acceptance contract.
 
 ## Authorship and LLM disclosure
 
