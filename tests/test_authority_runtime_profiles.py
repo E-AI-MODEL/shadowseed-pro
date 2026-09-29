@@ -449,3 +449,87 @@ def test_open_gate_self_reinforcement_can_refine_the_same_visible_turn() -> None
     assert feedback["self_reinforcement_draft_answer"]
     assert feedback["surfaced_seed_ids"]
     assert "SSL-guided revision:" in feedback["answer"]
+
+
+
+class _RefinementFailingModel:
+    name = "refinement-failing-test"
+
+    def generate(self, _prompt, scenario, _mode, _ssl_seeds):
+        if scenario.get("self_reinforcement"):
+            raise RuntimeError("refinement unavailable")
+        return "Alpha identifies a missing explanatory boundary."
+
+
+def test_same_turn_refinement_uses_draft_specific_provenance() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="autonomous",
+        embedding_backend="lexical",
+        detector_backend=_NearDuplicateDetector(),
+        embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+        core_config=SSLCoreConfig(
+            min_occurrences_for_gate=1,
+            promotion_threshold=0.2,
+        ),
+        surface_threshold=0.0,
+        early_turn_margin=0.0,
+        resurface_margin=0.0,
+        allow_self_reinforcement=True,
+    )
+
+    report = session.turn("Which explanatory boundary matters?")
+
+    assert report["self_reinforcement_applied"] is True
+    assert report["first_pass_context_ref"].endswith(":draft_answer")
+    assert report["candidate_observations"]
+    assert all(
+        item["context_ref"].endswith(":draft_answer")
+        for item in report["candidate_observations"]
+    )
+    assert any(
+        seed.origin is not None
+        and seed.origin.context_ref is not None
+        and seed.origin.context_ref.endswith(":draft_answer")
+        for seed in session.manager.seeds.values()
+    )
+
+
+def test_refinement_failure_finalizes_draft_and_keeps_session_usable() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="autonomous",
+        embedding_backend="lexical",
+        detector_backend=_NearDuplicateDetector(),
+        embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+        core_config=SSLCoreConfig(
+            min_occurrences_for_gate=1,
+            promotion_threshold=0.2,
+        ),
+        surface_threshold=0.0,
+        early_turn_margin=0.0,
+        resurface_margin=0.0,
+        allow_self_reinforcement=True,
+        model_backend=_RefinementFailingModel(),
+    )
+
+    report = session.turn("Which explanatory boundary matters?")
+
+    assert report["answer"] == "Alpha identifies a missing explanatory boundary."
+    assert report["self_reinforcement_applied"] is False
+    assert report["self_reinforcement_error"] == (
+        "RuntimeError: refinement unavailable"
+    )
+    assert report["surfaced_seed_ids"] == []
+    assert session.history == [
+        (
+            "Which explanatory boundary matters?",
+            "Alpha identifies a missing explanatory boundary.",
+        )
+    ]
+    assert session._pending_live_turn is None
+
+    prepared = session.prepare_turn("Can the session continue?")
+    session.abort_turn(prepared)
