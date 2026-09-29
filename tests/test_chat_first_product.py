@@ -209,3 +209,45 @@ def test_assisted_session_view_exposes_review_requests(tmp_path) -> None:
     )
     assert seed["review_required"] is True
     assert seed["effective_gate_policy_id"] == "evidence_backed"
+
+
+
+def test_assisted_promoted_seed_does_not_return_to_review(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Assisted promoted seed",
+        profile_id="demo",
+        authority_profile_id="assisted",
+        backend="fixture",
+    )
+
+    for _ in range(3):
+        controller.ingest_sources(
+            session_id,
+            pasted_text="Alpha provides a recurring explanatory perspective.",
+        )
+
+    view = controller.session_view(session_id)
+    seed_id = view["authority_review_seed_ids"][0]
+
+    for index in range(3):
+        controller.submit_verified_evidence(
+            session_id,
+            seed_id,
+            source_ref=f"reviewer:independent:{index}",
+            note="Independently checked.",
+            operator_verified=True,
+        )
+
+    promoted = controller.seed_view(session_id, seed_id)
+    assert promoted["status"] == "PROMOTED"
+    assert promoted["review_required"] is False
+
+    controller.ingest_sources(
+        session_id,
+        pasted_text="Alpha provides a recurring explanatory perspective.",
+    )
+    refreshed = controller.session_view(session_id)
+
+    assert seed_id not in refreshed["authority_review_seed_ids"]
+    assert controller.seed_view(session_id, seed_id)["review_required"] is False
