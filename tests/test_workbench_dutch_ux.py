@@ -5,6 +5,8 @@ from pathlib import Path
 from shadowseed.workbench.simple_app import (
     _authority_explainer,
     _chat_status,
+    _control_preset_values,
+    _control_state_summary,
     _recommended_setup,
     _source_summary,
     _ssl_intensity_explainer,
@@ -188,3 +190,28 @@ def test_dashboard_preserves_custom_slider_labels() -> None:
     assert "Gate **aangepast**" in headline
     assert "SSL **0%**" not in headline
     assert "Gate **0%**" not in headline
+
+
+
+def test_modern_workbench_visual_contract() -> None:
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+
+    assert "position: sticky" in source
+    assert "#ss-composer" in source
+    assert ".ss-control-card" in source
+    assert ".ss-regie-summary" in source
+    assert "@media (max-width: 900px)" in source
+    assert "theme=gr.themes.Soft()" in source
+    assert 'label="Snelle stand"' in source
+    assert 'with gr.Accordion("Model en geavanceerd", open=False)' in source
+
+
+def test_control_presets_make_complex_regimes_one_click() -> None:
+    assert _control_preset_values("observeren") == (0, 100, False)
+    assert _control_preset_values("gebalanceerd") == (60, 70, False)
+    assert _control_preset_values("vrij") == (100, 0, True)
+    assert _control_preset_values("strikt") == (100, 100, False)
+
+    assert "Observeren" in _control_state_summary(0, 100, False)
+    assert "Vrij experiment" in _control_state_summary(100, 0, True)
+    assert "Strikt" in _control_state_summary(100, 100, False)
