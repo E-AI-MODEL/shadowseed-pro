@@ -166,3 +166,25 @@ def test_self_reinforcement_is_explicit_experimental_toggle() -> None:
     assert 'label="Zelfversterking toestaan · experimenteel"' in source
     assert "SSL-beïnvloede antwoorden mogen recurrence en autoriteit" in source
     assert "feedbacklus" in source.lower()
+
+
+
+def test_dashboard_preserves_custom_slider_labels() -> None:
+    headline, *_rest = _dashboard_summary(
+        {
+            "title": "Legacy",
+            "backend": "fixture",
+            "ssl_intensity": None,
+            "gate_strictness": None,
+            "allow_self_reinforcement": False,
+            "turn": 0,
+            "authority_review_seed_ids": [],
+            "seeds": [],
+            "turn_reports": [],
+        }
+    )
+
+    assert "SSL **aangepast**" in headline
+    assert "Gate **aangepast**" in headline
+    assert "SSL **0%**" not in headline
+    assert "Gate **0%**" not in headline
