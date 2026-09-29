@@ -237,8 +237,7 @@ def _control_overview_markdown(
     review_count = len(view.get("authority_review_seed_ids", []) or [])
     recurrence = (
         "automatic authority path"
-        if bool(selected.get("auto_validate_recurrence", False))
-        and gate == "exploratory"
+        if gate == "exploratory"
         else "observed, but cannot raise authority by itself"
     )
     system_evidence = (
