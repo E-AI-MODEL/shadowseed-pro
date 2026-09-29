@@ -15,6 +15,7 @@ recorded after the fact.
 
 from __future__ import annotations
 
+import os
 from collections.abc import Callable
 from typing import Any
 
@@ -78,6 +79,8 @@ def make_embedding_fn(
             ) from exc
         model = model_id or "sentence-transformers/all-MiniLM-L6-v2"
         kwargs = {"revision": revision} if revision is not None else {}
+        if os.environ.get("SHADOWSEED_HF_CPU_TEST", "").strip() == "1":
+            kwargs["device"] = "cpu"
         encoder = SentenceTransformer(model, **kwargs)
         dimension = int(encoder.get_sentence_embedding_dimension())
 
