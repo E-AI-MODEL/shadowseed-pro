@@ -712,8 +712,12 @@ class ShadowChatSession:
             for cluster_id, representative_id in self.cluster_rep.items():
                 if representative_id in self.manager.seeds:
                     representative = self.manager.seeds[representative_id]
-                    representative.occurrence_count = max(
-                        representative.occurrence_count, self.clusterer.recurrence(cluster_id)
+                    # Cluster recurrence is observation-scoped and therefore
+                    # authoritative for the representative. Manager intake may
+                    # see several near-duplicate candidates from one detector
+                    # call; those must never become multiple recurrence credits.
+                    representative.occurrence_count = self.clusterer.recurrence(
+                        cluster_id
                     )
 
         changed_seed_ids = {
@@ -902,9 +906,12 @@ class ShadowChatSession:
             for cluster_id, representative_id in self.cluster_rep.items():
                 if representative_id in self.manager.seeds:
                     representative = self.manager.seeds[representative_id]
-                    representative.occurrence_count = max(
-                        representative.occurrence_count,
-                        self.clusterer.recurrence(cluster_id),
+                    # Cluster recurrence is observation-scoped and therefore
+                    # authoritative for the representative. Manager intake may
+                    # see several near-duplicate candidates from one detector
+                    # call; those must never become multiple recurrence credits.
+                    representative.occurrence_count = self.clusterer.recurrence(
+                        cluster_id
                     )
 
         # 6. Recurrence is a first-class SSL signal: under the exploratory policy
@@ -1063,9 +1070,12 @@ class ShadowChatSession:
             for cluster_id, representative_id in self.cluster_rep.items():
                 if representative_id in self.manager.seeds:
                     representative = self.manager.seeds[representative_id]
-                    representative.occurrence_count = max(
-                        representative.occurrence_count,
-                        self.clusterer.recurrence(cluster_id),
+                    # Cluster recurrence is observation-scoped and therefore
+                    # authoritative for the representative. Manager intake may
+                    # see several near-duplicate candidates from one detector
+                    # call; those must never become multiple recurrence credits.
+                    representative.occurrence_count = self.clusterer.recurrence(
+                        cluster_id
                     )
 
         changed_seed_ids = {
