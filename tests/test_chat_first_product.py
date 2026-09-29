@@ -590,3 +590,50 @@ def test_gate_hundred_requires_recurrence_and_three_verified_sources(tmp_path) -
 
     assert final["status_after"] == "PROMOTED"
     assert final["evidence_count"] == 3
+
+
+
+def test_regie_controls_reconfigure_existing_chat_without_losing_state(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Live Regie",
+        profile_id="balanced",
+        backend="fixture",
+        ssl_intensity=100,
+        gate_strictness=100,
+        allow_self_reinforcement=False,
+    )
+
+    controller.send_turn(session_id, "Remember this conversation state.")
+    before = controller.sessions.load(session_id)
+    history_before = list(before["state"]["history"])
+    seeds_before = list(before["state"]["manager"]["seeds"])
+
+    view = controller.update_session_controls(
+        session_id,
+        ssl_intensity=0,
+        gate_strictness=0,
+        allow_self_reinforcement=True,
+    )
+    stored = controller.sessions.load(session_id)
+
+    assert view["ssl_intensity"] == 0
+    assert view["gate_strictness"] == 0
+    assert view["allow_self_reinforcement"] is True
+
+    assert stored["config"]["ssl_intensity"] == 0
+    assert stored["config"]["gate_strictness"] == 0
+    assert stored["config"]["allow_self_reinforcement"] is True
+    assert stored["config"]["surface_top_k"] == 0
+    assert stored["config"]["gate_policy_id"] == "exploratory"
+    assert stored["config"]["min_occurrences_for_gate"] == 1
+
+    state_config = stored["state"]["session_config"]
+    assert state_config["surface_top_k"] == 0
+    assert state_config["gate_policy_id"] == "exploratory"
+    assert state_config["authority_profile_id"] == "autonomous"
+    assert state_config["allow_self_reinforcement"] is True
+    assert stored["state"]["manager"]["config"]["min_occurrences_for_gate"] == 1
+
+    assert stored["state"]["history"] == history_before
+    assert stored["state"]["manager"]["seeds"] == seeds_before
