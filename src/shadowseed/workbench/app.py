@@ -778,6 +778,58 @@ def build_app(
                 ],
             )
 
+
+        with gr.Tab("About SSL"):
+            gr.Markdown("## What is Shadow Seed Learning?")
+            gr.Markdown(
+                "Shadow Seed Learning (SSL) is a model-independent learning layer that runs "
+                "alongside an LLM. It observes candidate perspectives or missing context, stores "
+                "them as shadow seeds, lets those seeds gain or lose authority over time, and may "
+                "surface an authorized seed later when it is relevant."
+            )
+            with gr.Row():
+                with gr.Column():
+                    gr.Markdown(
+                        "### What SSL does\n"
+                        "- observes possible missing perspectives\n"
+                        "- stores them as traceable seeds\n"
+                        "- tracks recurrence, evidence and contradictions\n"
+                        "- uses a Validation Gate before authority can increase\n"
+                        "- checks relevance again at point of use\n"
+                        "- keeps an audit trail of what happened"
+                    )
+                with gr.Column():
+                    gr.Markdown(
+                        "### What SSL is not\n"
+                        "- it does not retrain the base model weights\n"
+                        "- a seed is not automatically a fact\n"
+                        "- a promoted seed is not automatically used\n"
+                        "- a different answer is not automatically caused by SSL\n"
+                        "- more text is not automatically better memory"
+                    )
+            gr.Markdown("### The lifecycle")
+            gr.Markdown(
+                "**Observe → Seed → Recur / gather evidence → Validate → Promote → "
+                "Relevance check → Point-of-use influence**\n\n"
+                "Every stage remains inspectable. In Controlled mode, authority-bearing checks "
+                "remain in the user's hands. Assisted and Autonomous modes progressively automate "
+                "those steps while keeping the Gate and audit trail."
+            )
+            with gr.Accordion("Why this can become different from the base LLM", open=False):
+                gr.Markdown(
+                    "SSL builds an external, persistent experience layer around the same base "
+                    "model. Two installations can therefore diverge over time when they process "
+                    "different conversations or corpora, even though the underlying LLM weights "
+                    "remain unchanged. Unlike fine-tuning, that experience stays inspectable, "
+                    "reversible and attributable."
+                )
+            with gr.Accordion("How do I check whether it is working?", open=False):
+                gr.Markdown(
+                    "Use **Shadow** to inspect seeds and their lifecycle, **Verify** to compare "
+                    "stored SSL-on / SSL-off turns and attribution, and **Technical inspection** "
+                    "to open the exact JSON, Gate events, traces and influence records."
+                )
+
         with gr.Tab("Shadow"):
             gr.Markdown("## What is Shadowseed seeing?")
             gr.Markdown(
