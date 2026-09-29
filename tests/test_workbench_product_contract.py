@@ -5,7 +5,13 @@ from pathlib import Path
 
 import pytest
 
-from shadowseed.workbench.app import _authority_profile_markdown, _seed_story_markdown, launch_workbench
+from shadowseed.workbench.app import (
+    _authority_profile_markdown,
+    _ingest_summary_markdown,
+    _seed_story_markdown,
+    _shadow_overview_markdown,
+    launch_workbench,
+)
 from shadowseed.workbench.controller import WorkbenchController
 
 
@@ -165,3 +171,52 @@ def test_authority_profile_explainer_makes_control_model_visible() -> None:
     assert "Autonomous" in autonomous
     assert "Validate: **auto**" in autonomous
     assert "Promote: **gate**" in autonomous
+
+
+
+def test_ingest_summary_explains_corpus_result() -> None:
+    empty = _ingest_summary_markdown(None)
+    assert "Feed the shadow memory" in empty
+
+    error = _ingest_summary_markdown({"error": "bad upload"})
+    assert "Could not process sources" in error
+
+    summary = _ingest_summary_markdown(
+        {
+            "sources": 2,
+            "chunks": 7,
+            "characters": 12345,
+            "seeds_before": 3,
+            "seeds_after": 11,
+            "new_seed_count": 8,
+            "source_names": ["a.md", "b.csv"],
+        }
+    )
+    assert "2** source(s)" in summary
+    assert "7** chunks" in summary
+    assert "3 → 11" in summary
+    assert "a.md, b.csv" in summary
+    assert "not trusted evidence" in summary
+
+
+def test_shadow_overview_summarizes_lifecycle_and_usage() -> None:
+    text = _shadow_overview_markdown(
+        {
+            "authority_profile_id": "autonomous",
+            "seeds": [
+                {"id": "ss_1", "status": "PROMOTED", "blocking": False},
+                {"id": "ss_2", "status": "ACTIVE", "blocking": True},
+            ],
+            "turn_reports": [
+                {"surfaced_seed_ids": ["ss_1"]},
+                {"surfaced_seed_ids": ["ss_1"]},
+            ],
+        }
+    )
+    assert "autonomous" in text
+    assert "Seeds:** 2" in text
+    assert "Promoted:** 1" in text
+    assert "Used:** 1" in text
+    assert "Blocked:** 1" in text
+
+    assert "Select a run" in _shadow_overview_markdown(None)
