@@ -161,6 +161,7 @@ class ShadowChatSession:
         probe_top_k: int = 3,
         runtime_mode: str = "live",
         gate_policy_id: str | None = None,
+        authority_profile_id: str = "strict",
         allow_toy_embedder: bool = False,
         model_backend: ModelBackend | None = None,
         detector_backend: DetectorBackend | None = None,
@@ -178,6 +179,7 @@ class ShadowChatSession:
         if runtime_mode not in {"evaluation", "live"}:
             raise ValueError("runtime_mode must be 'evaluation' or 'live'")
         self.runtime_mode = runtime_mode
+        self.authority_profile_id = str(authority_profile_id or "strict")
         self.gate_policy_id = gate_policy_id or (
             "evidence_backed" if runtime_mode == "live" else "exploratory"
         )
@@ -1190,6 +1192,7 @@ class ShadowChatSession:
                 "probe_top_k": self.probe_top_k,
                 "runtime_mode": self.runtime_mode,
                 "gate_policy_id": self.gate_policy_id,
+                "authority_profile_id": self.authority_profile_id,
                 "allow_toy_embedder": self.allow_toy_embedder,
             },
             "contract": asdict(self.contract),
