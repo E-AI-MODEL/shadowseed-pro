@@ -350,7 +350,7 @@ def _authority_explainer(profile_id: str | None) -> str:
         _AUTHORITY_UI["strict"],
     )
     return (
-        f"**{label}**  \\n{explanation}\\n\\n"
+        f"**{label}**  \n{explanation}\n\n"
         "De technische autoriteitsregels blijven op de achtergrond volledig auditbaar."
     )
 
@@ -394,7 +394,7 @@ def _ssl_intensity_explainer(percent: int | float) -> str:
         label = "Volledig aan"
         detail = "Shadowseed krijgt de volledige normale ruimte om toegestane relevante punten te gebruiken."
     return (
-        f"**SSL-invloed {value}% · {label}**  \\n{detail}\\n\\n"
+        f"**SSL-invloed {value}% · {label}**  \n{detail}\n\n"
         "Deze schuif bepaalt **hoeveel invloed** toegestane geheugenpunten krijgen."
     )
 
@@ -426,7 +426,7 @@ def _gate_strictness_explainer(percent: int | float) -> str:
             "onafhankelijke geverifieerde bewijsbronnen hebben. Tegenspraak blijft blokkeren."
         )
     return (
-        f"**Validation Gate {value}% · {label}**  \\n{detail}\\n\\n"
+        f"**Validation Gate {value}% · {label}**  \n{detail}\n\n"
         "0% = lage toegangsdrempel · 100% = keiharde bewijsdrempel. "
         "Audittrail en tegenspraakcontrole blijven altijd actief."
     )
@@ -463,8 +463,8 @@ def _control_state_summary(
         detail = "Je combineert invloed, Gate en feedbacklus handmatig."
     loop = "aan" if self_reinforcement else "uit"
     return (
-        f"**{mode}**  \\n"
-        f"SSL **{ssl_value}%** · Gate **{gate_value}%** · feedbacklus **{loop}**  \\n"
+        f"**{mode}**  \n"
+        f"SSL **{ssl_value}%** · Gate **{gate_value}%** · feedbacklus **{loop}**  \n"
         f"{detail}"
     )
 
@@ -475,7 +475,7 @@ def _model_note(backend: str, model_id: str | None = None) -> str:
         (backend or "Onbekend model", ""),
     )
     model = f" · `{model_id}`" if model_id else ""
-    return f"**{label}**{model}  \\n{explanation}"
+    return f"**{label}**{model}  \n{explanation}"
 
 
 def _chat_status(view: dict[str, Any] | None) -> str:
@@ -507,7 +507,7 @@ def _chat_status(view: dict[str, Any] | None) -> str:
 
     loop = " · feedbacklus **aan**" if view.get("allow_self_reinforcement") else ""
     return (
-        f"**{model}** · {turns} bericht(en) · SSL **{ssl_level}** · Gate **{gate_level}**{loop}  \\n"
+        f"**{model}** · {turns} bericht(en) · SSL **{ssl_level}** · Gate **{gate_level}**{loop}  \n"
         f"Shadowseed: {seed_text}"
     )
 
@@ -527,7 +527,7 @@ def _memory_overview(view: dict[str, Any] | None) -> str:
         f"**{len(seeds)}** geheugenpunt(en) · "
         f"**{promoted}** mag meedenken · "
         f"**{len(used)}** daadwerkelijk gebruikt · "
-        f"**{blocked}** geblokkeerd\\n\\n"
+        f"**{blocked}** geblokkeerd\n\n"
         "Een geheugenpunt is een mogelijke ontbrekende invalshoek. Het is niet automatisch een feit."
     )
 
@@ -607,7 +607,7 @@ def _dashboard_summary(view: dict[str, Any] | None) -> tuple[str, str, str, str,
 def _seed_story(view: dict[str, Any] | None) -> str:
     if not view:
         return (
-            "## Kies een geheugenpunt\\n"
+            "## Kies een geheugenpunt\n"
             "Je ziet hier in gewone taal wat Shadowseed heeft opgemerkt en wat ermee is gebeurd."
         )
 
@@ -648,9 +648,9 @@ def _seed_story(view: dict[str, Any] | None) -> str:
         )
 
     return (
-        f"### {status}\\n"
-        f"## {text}\\n\\n"
-        f"**Gezien:** {occurrences}× · **onderbouwing:** {evidence} · **gebruikt:** {used}×\\n\\n"
+        f"### {status}\n"
+        f"## {text}\n\n"
+        f"**Gezien:** {occurrences}× · **onderbouwing:** {evidence} · **gebruikt:** {used}×\n\n"
         f"{action}"
     )
 
@@ -658,7 +658,7 @@ def _seed_story(view: dict[str, Any] | None) -> str:
 def _source_summary(result: dict[str, Any] | None) -> str:
     if not result:
         return (
-            "## Nog niets toegevoegd\\n"
+            "## Nog niets toegevoegd\n"
             "Plak tekst of kies bestanden. Shadowseed leest de inhoud in stukken en bouwt "
             "daarmee het geheugen van het gekozen gesprek op."
         )
@@ -669,12 +669,12 @@ def _source_summary(result: dict[str, Any] | None) -> str:
     review = len(result.get("authority_review_seed_ids", []) or [])
     names = ", ".join(result.get("source_names", []) or []) or "bron"
     return (
-        "## Klaar\\n"
+        "## Klaar\n"
         f"**{int(result.get('sources', 0))}** bron(nen) · "
         f"**{int(result.get('chunks', 0))}** tekstdeel/delen · "
-        f"**{int(result.get('new_seed_count', 0))}** nieuwe geheugenpunten  \\n"
-        f"**{promoted}** mag meedenken · **{review}** vraagt controle  \\n"
-        f"Bronnen: {names}\\n\\n"
+        f"**{int(result.get('new_seed_count', 0))}** nieuwe geheugenpunten  \n"
+        f"**{promoted}** mag meedenken · **{review}** vraagt controle  \n"
+        f"Bronnen: {names}\n\n"
         "**Belangrijk:** een upload wordt niet automatisch waarheid of bewijs. "
         "De normale autoriteitsregels blijven gelden."
     )
@@ -709,7 +709,7 @@ def _comparison_view(comparison: dict[str, Any] | None) -> tuple[str, str, str]:
 def _verify_summary(comparison: dict[str, Any] | None) -> str:
     if not comparison:
         return (
-            "## Nog niets gecontroleerd\\n"
+            "## Nog niets gecontroleerd\n"
             "Kies een gesprek en berichtnummer. Een controle is alleen beschikbaar als voor dat "
             "bericht vooraf een vergelijking zonder Shadowseed is opgeslagen."
         )
@@ -718,15 +718,15 @@ def _verify_summary(comparison: dict[str, Any] | None) -> str:
     question = str(comparison.get("question", "")).strip()
     if influenced:
         verdict = (
-            "### Ja, Shadowseed heeft hier aantoonbaar meegedacht\\n"
+            "### Ja, Shadowseed heeft hier aantoonbaar meegedacht\n"
             f"Er zijn **{len(surfaced)}** geautoriseerde geheugenpunt(en) gebruikt."
         )
     else:
         verdict = (
-            "### Nee, voor dit antwoord is geen Shadowseed-invloed aangetoond\\n"
+            "### Nee, voor dit antwoord is geen Shadowseed-invloed aangetoond\n"
             "Eventuele verschillen tussen twee generaties kunnen normale modelvariatie zijn."
         )
-    return verdict + (f"\\n\\n**Vraag:** {question}" if question else "")
+    return verdict + (f"\n\n**Vraag:** {question}" if question else "")
 
 
 def build_simple_app(
@@ -778,13 +778,13 @@ def build_simple_app(
             except Exception as exc:
                 return (
                     gr.update(choices=[], value=current_model or None),
-                    _model_note("ollama") + f"\\n\\n**Lokaal model zoeken lukte niet:** {exc}",
+                    _model_note("ollama") + f"\n\n**Lokaal model zoeken lukte niet:** {exc}",
                     ctl.default_embedding_backend("ollama"),
                 )
             selected = current_model if current_model in models else (models[0] if models else None)
             note = _model_note("ollama", selected)
             if not models:
-                note += "\\n\\nGeen lokaal Ollama-model gevonden."
+                note += "\n\nGeen lokaal Ollama-model gevonden."
             return (
                 gr.update(choices=models, value=selected),
                 note,
@@ -1065,7 +1065,7 @@ def build_simple_app(
             return _verify_summary(comparison), comparison
         except Exception as exc:
             return (
-                "### Geen opgeslagen vergelijking beschikbaar\\n"
+                "### Geen opgeslagen vergelijking beschikbaar\n"
                 "Zet in de chat vóór het versturen **Vergelijk dit antwoord zonder Shadowseed** aan. "
                 f"Technische melding: {type(exc).__name__}: {exc}",
                 {"error": f"{type(exc).__name__}: {exc}"},
@@ -1361,7 +1361,7 @@ def build_simple_app(
                                 label="Gesprekstoestand · technisch",
                             )
 
-            control_preset.change(
+            control_preset.input(
                 apply_control_preset,
                 inputs=[control_preset],
                 outputs=[
@@ -1373,17 +1373,17 @@ def build_simple_app(
                     control_summary,
                 ],
             )
-            ssl_intensity.change(
+            ssl_intensity.input(
                 update_ssl_control,
                 inputs=[ssl_intensity, gate_strictness, allow_self_reinforcement],
                 outputs=[ssl_intensity_help, control_preset, control_summary],
             )
-            gate_strictness.change(
+            gate_strictness.input(
                 update_gate_control,
                 inputs=[gate_strictness, ssl_intensity, allow_self_reinforcement],
                 outputs=[gate_strictness_help, control_preset, control_summary],
             )
-            allow_self_reinforcement.change(
+            allow_self_reinforcement.input(
                 update_loop_control,
                 inputs=[allow_self_reinforcement, ssl_intensity, gate_strictness],
                 outputs=[control_preset, control_summary],
@@ -1706,12 +1706,12 @@ def build_simple_app(
                 )
             with gr.Accordion("10 · Technische woorden vertaald", open=False):
                 gr.Markdown(
-                    "**Shadow seed** — mogelijk ontbrekende invalshoek.  \\n"
-                    "**Shadow memory** — verzameling geheugenpunten met hun geschiedenis.  \\n"
-                    "**Trace** — afnemende maat voor hoe levend een punt nog is.  \\n"
-                    "**Validation Gate** — beslisgrens voor autoriteit.  \\n"
-                    "**Promoted** — mag later meedenken als het relevant is.  \\n"
-                    "**Surfacing** — een toegestaan punt wordt voor een nieuwe vraag beschikbaar gemaakt.  \\n"
+                    "**Shadow seed** — mogelijk ontbrekende invalshoek.  \n"
+                    "**Shadow memory** — verzameling geheugenpunten met hun geschiedenis.  \n"
+                    "**Trace** — afnemende maat voor hoe levend een punt nog is.  \n"
+                    "**Validation Gate** — beslisgrens voor autoriteit.  \n"
+                    "**Promoted** — mag later meedenken als het relevant is.  \n"
+                    "**Surfacing** — een toegestaan punt wordt voor een nieuwe vraag beschikbaar gemaakt.  \n"
                     "**Point of use** — laatste controle vlak voordat een punt invloed kan hebben."
                 )
 
