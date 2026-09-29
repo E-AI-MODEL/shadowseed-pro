@@ -70,6 +70,39 @@ body {
 }
 #ss-hero p { margin: .12rem 0 .22rem; max-width: 1000px; }
 
+#ss-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .65rem;
+  margin: .35rem 0 .65rem;
+}
+#ss-menu-button button {
+  border-radius: 14px !important;
+  font-weight: 760 !important;
+  min-width: 112px;
+}
+#ss-menu-panel {
+  border: 1px solid var(--ss-border);
+  border-radius: 18px;
+  padding: .65rem;
+  margin: 0 0 .8rem;
+  background: color-mix(in srgb, var(--background-fill-primary) 94%, transparent);
+  box-shadow: var(--ss-shadow-soft);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+#ss-menu-panel button {
+  justify-content: flex-start !important;
+  text-align: left !important;
+  border-radius: 12px !important;
+}
+.ss-menu-copy {
+  opacity: .68;
+  font-size: .82rem;
+  padding: .05rem .15rem .35rem;
+}
+
 .tab-nav {
   position: sticky !important;
   top: .55rem;
@@ -1385,7 +1418,29 @@ def build_simple_app(
                 elem_classes=["ss-muted"],
             )
 
-        with gr.Tab("Overzicht"):
+        with gr.Row(elem_id="ss-topbar"):
+            gr.Markdown(
+                "**Werkruimte** · kies een onderdeel via de tabs of het menu.",
+                elem_classes=["ss-muted"],
+            )
+            menu_button = gr.Button("☰ Menu", variant="secondary", elem_id="ss-menu-button")
+
+        with gr.Column(visible=False, elem_id="ss-menu-panel") as menu_panel:
+            gr.Markdown(
+                "Ga direct naar een onderdeel",
+                elem_classes=["ss-menu-copy"],
+            )
+            with gr.Row():
+                menu_overview = gr.Button("Overzicht", variant="secondary")
+                menu_chat = gr.Button("Chat", variant="secondary")
+                menu_memory = gr.Button("Geheugen", variant="secondary")
+                menu_sources = gr.Button("Bronnen", variant="secondary")
+            with gr.Row():
+                menu_verify = gr.Button("Controleren", variant="secondary")
+                menu_about = gr.Button("Uitleg", variant="secondary")
+                menu_more = gr.Button("Meer", variant="secondary")
+
+        with gr.Tab("Overzicht", id="overzicht", elem_id="ss-tab-overzicht"):
             with gr.Row():
                 dashboard_session = gr.Dropdown(
                     choices=initial_sessions,
@@ -1474,7 +1529,7 @@ def build_simple_app(
                 ],
             )
 
-        with gr.Tab("Chat"):
+        with gr.Tab("Chat", id="chat", elem_id="ss-tab-chat"):
             with gr.Row():
                 with gr.Column(scale=1, min_width=300):
                     with gr.Group(elem_id="ss-side"):
@@ -1749,7 +1804,7 @@ def build_simple_app(
                 ],
             )
 
-        with gr.Tab("Bronnen"):
+        with gr.Tab("Bronnen", id="bronnen", elem_id="ss-tab-bronnen"):
             gr.Markdown("## Voeg materiaal toe aan hetzelfde geheugen")
             gr.Markdown(
                 "Plak tekst of voeg bestanden toe. Shadowseed verwerkt ze op de achtergrond zonder "
@@ -1804,7 +1859,7 @@ def build_simple_app(
                 outputs=[source_result, source_seed_preview, source_state, source_paste],
             )
 
-        with gr.Tab("Geheugen"):
+        with gr.Tab("Geheugen", id="geheugen", elem_id="ss-tab-geheugen"):
             gr.Markdown("## Wat heeft Shadowseed onthouden?")
             gr.Markdown(
                 "Hier zie je mogelijke ontbrekende invalshoeken in gewone taal. "
@@ -1891,7 +1946,7 @@ def build_simple_app(
                 ],
             )
 
-        with gr.Tab("Controleren"):
+        with gr.Tab("Controleren", id="controleren", elem_id="ss-tab-controleren"):
             gr.Markdown("## Heeft Shadowseed dit antwoord echt beïnvloed?")
             gr.Markdown(
                 "Twee verschillende antwoorden bewijzen niets. Shadowseed kan alleen als oorzaak "
@@ -1917,7 +1972,7 @@ def build_simple_app(
                 outputs=[verify_summary, verify_json],
             )
 
-        with gr.Tab("Uitleg"):
+        with gr.Tab("Uitleg", id="uitleg", elem_id="ss-tab-uitleg"):
             gr.Markdown("# Wat is Shadowseed?")
             gr.Markdown(
                 "Shadowseed is **geen nieuw taalmodel en geen fine-tuning**. Het is een aparte, "
@@ -2012,7 +2067,7 @@ def build_simple_app(
                     "**Point of use** — laatste controle vlak voordat een punt invloed kan hebben."
                 )
 
-        with gr.Tab("Meer"):
+        with gr.Tab("Meer", id="meer", elem_id="ss-tab-meer"):
             gr.Markdown("## Feedback, export en onderzoek")
             gr.Markdown(
                 "Deze onderdelen zijn nuttig voor testers en onderzoekers, maar niet nodig om gewoon te chatten."
@@ -2111,5 +2166,35 @@ def build_simple_app(
                     inputs=[scenario_json, scenario_confirm],
                     outputs=[scenario_result],
                 )
+
+        menu_button.click(
+            lambda: gr.update(visible=True),
+            outputs=[menu_panel],
+            queue=False,
+        )
+
+        def _close_menu():
+            return gr.update(visible=False)
+
+        for _button, _tab_elem_id in (
+            (menu_overview, "ss-tab-overzicht"),
+            (menu_chat, "ss-tab-chat"),
+            (menu_memory, "ss-tab-geheugen"),
+            (menu_sources, "ss-tab-bronnen"),
+            (menu_verify, "ss-tab-controleren"),
+            (menu_about, "ss-tab-uitleg"),
+            (menu_more, "ss-tab-meer"),
+        ):
+            _button.click(
+                _close_menu,
+                outputs=[menu_panel],
+                queue=False,
+                js=(
+                    f"() => {{ "
+                    f"document.getElementById('{_tab_elem_id}-button')?.click(); "
+                    f"window.scrollTo({{ top: 0, behavior: 'smooth' }}); "
+                    f"}}"
+                ),
+            )
 
     return app
