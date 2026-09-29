@@ -132,7 +132,12 @@ class InspectionService:
             for seed in decorated:
                 seed_id = str(seed.get("id", ""))
                 event = latest_gate_by_seed.get(seed_id)
-                if not event or seed_id in blocking_ids:
+                status = str(seed.get("status", "")).upper()
+                if (
+                    not event
+                    or seed_id in blocking_ids
+                    or status in {"PROMOTED", "EXPIRED"}
+                ):
                     continue
                 signals = event.get("signals", [])
                 mature_recurrence = any(
