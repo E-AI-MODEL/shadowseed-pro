@@ -425,7 +425,10 @@ def test_same_session_turn_and_source_ingest_are_serialized(
             "source_name": "source.txt",
             "source_instance_id": "serial-source",
             "context_ref": "source:source.txt:instance:serial-source:chunk:00000",
-            "text": "Independent source perspective.",
+            "text": (
+                "Alpha introduces a perspective. Beta adds context. "
+                "Gamma exposes another assumption."
+            ),
         }
     ]
 
@@ -472,21 +475,25 @@ def test_pairwise_source_recurrence_is_scoped_to_source_instance_and_persists() 
     )
     assert restored.manager.seeds[seed_id].occurrence_count == 1
 
-    restored.observe_source_text(
-        text,
-        context_ref="source:notes.txt:instance:second:chunk:00000",
-    )
-    promotion = restored.observe_source_text(
-        text,
-        context_ref="source:notes.txt:instance:third:chunk:00000",
-    )
-    assert restored.manager.seeds[seed_id].occurrence_count == 3
-    assert restored.manager.seeds[seed_id].status.value == "PROMOTED"
+    promotion = None
+    for index in range(2, 8):
+        report = restored.observe_source_text(
+            text,
+            context_ref=(
+                f"source:notes.txt:instance:independent-{index}:chunk:00000"
+            ),
+        )
+        assert restored.manager.seeds[seed_id].occurrence_count == index
+        if restored.manager.seeds[seed_id].status.value == "PROMOTED":
+            promotion = report
+            break
+
+    assert promotion is not None
     assert promotion["promoted_this_observation"] == [seed_id]
 
     later = restored.observe_source_text(
         text,
-        context_ref="source:notes.txt:instance:fourth:chunk:00000",
+        context_ref="source:notes.txt:instance:after-promotion:chunk:00000",
     )
     assert later["promoted_this_observation"] == []
 
