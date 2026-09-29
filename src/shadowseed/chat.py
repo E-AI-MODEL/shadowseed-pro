@@ -67,6 +67,7 @@ from shadowseed.surfacing import (
     build_chat_prompt,
     collect_eligible_promoted_seeds,
     mark_surfaced,
+    seed_threshold,
     select_cross_turn_seeds,
 )
 from shadowseed.manager import SSLManager, SeedStatus
@@ -760,8 +761,13 @@ class ShadowChatSession:
         turn = prepared.turn
         question = prepared.question
         final_answer = answer
+        draft_answer = answer
         surfaced = list(prepared.surfaced_seeds)
         surfaced_seed_ids = list(prepared.surfaced_seed_ids)
+        self_reinforcement_applied = False
+        self_reinforcement_seed_ids: list[str] = []
+        self_reinforcement_decisions: list[dict[str, Any]] = []
+        self_reinforcement_prompt_boundary_markers: list[dict[str, object]] = []
 
         raw_candidates = self.detector.detect_seeds(
             {"text": final_answer}, max_seeds=self.max_seeds_per_turn
@@ -844,6 +850,94 @@ class ShadowChatSession:
             if self._gate_review_required(seed_id, event):
                 authority_review_seed_ids.append(seed_id)
 
+        # Experimental bounded same-turn feedback pass. A newly promoted seed
+        # may immediately participate in one revised answer to the *same* user
+        # question. This is intentionally capped at one pass: the revised answer
+        # is not detected again, preventing an unbounded recursive generation loop.
+        if (
+            self.allow_self_reinforcement
+            and promoted_now
+            and self.surfacing_policy.surface_top_k != 0
+        ):
+            question_embedding = self.manager.get_embedding(question)
+            refinement_candidates: list[SurfacingCandidate] = []
+            for seed_id in promoted_now:
+                seed = self.manager.seeds.get(seed_id)
+                if seed is None or seed.status != SeedStatus.PROMOTED:
+                    continue
+                if self.clusterer is not None:
+                    cluster_id = self.seed_to_cluster.get(seed_id)
+                    if cluster_id is not None and self.cluster_rep.get(cluster_id) != seed_id:
+                        continue
+                similarity = float(np.dot(question_embedding, seed.embedding))
+                if similarity >= seed_threshold(
+                    turn,
+                    seed_id,
+                    self.surfacing_policy,
+                    self.last_surfaced,
+                ):
+                    refinement_candidates.append((similarity, seed_id, seed.text))
+
+            selected_refinement = select_cross_turn_seeds(
+                refinement_candidates,
+                self.surfacing_policy.surface_top_k,
+            )
+            influence_before = len(self.influence_records)
+            allowed_refinement = self._contract_filter(selected_refinement)
+            self_reinforcement_decisions = [
+                record.__dict__.copy()
+                for record in self.influence_records[influence_before:]
+            ]
+
+            if allowed_refinement:
+                combined: list[tuple[str, str]] = list(zip(surfaced_seed_ids, surfaced))
+                known_ids = {seed_id for seed_id, _text in combined}
+                for _similarity, seed_id, text in allowed_refinement:
+                    if seed_id not in known_ids:
+                        combined.append((seed_id, text))
+                        known_ids.add(seed_id)
+
+                bounded_texts, self_reinforcement_prompt_boundary_markers = (
+                    apply_prompt_boundary([text for _seed_id, text in combined])
+                )
+                bounded_pairs = combined[: len(bounded_texts)]
+                if bounded_pairs:
+                    surfaced_seed_ids = [seed_id for seed_id, _text in bounded_pairs]
+                    surfaced = list(bounded_texts)
+                    self_reinforcement_seed_ids = [
+                        seed_id
+                        for _similarity, seed_id, _text in allowed_refinement
+                        if seed_id in set(surfaced_seed_ids)
+                    ]
+                    mark_surfaced(
+                        self.last_surfaced,
+                        [
+                            item
+                            for item in allowed_refinement
+                            if item[1] in set(self_reinforcement_seed_ids)
+                        ],
+                        turn,
+                    )
+                    final_answer = self.model.generate(
+                        build_chat_prompt(
+                            self.history,
+                            question,
+                            surfaced,
+                            response_language=(
+                                "the same language as the user's current question"
+                            ),
+                        ),
+                        {
+                            "question": question,
+                            "turn": turn,
+                            "baseline_answer": draft_answer,
+                            "self_reinforcement": True,
+                        },
+                        "ssl",
+                        surfaced,
+                    )
+                    self_reinforcement_applied = True
+
         self.history.append((question, final_answer))
         self._turn += 1
         report = {
@@ -858,10 +952,18 @@ class ShadowChatSession:
             "selected_seed_ids": list(prepared.selected_seed_ids),
             "influence_decisions": [
                 dict(item) for item in prepared.influence_decisions
-            ],
+            ] + self_reinforcement_decisions,
             "detected_candidates": raw_candidates,
             "suppressed_self_attributed_candidates": suppressed_self,
             "self_reinforcement_enabled": self.allow_self_reinforcement,
+            "self_reinforcement_applied": self_reinforcement_applied,
+            "self_reinforcement_seed_ids": self_reinforcement_seed_ids,
+            "self_reinforcement_draft_answer": (
+                draft_answer if self_reinforcement_applied else None
+            ),
+            "self_reinforcement_prompt_boundary_markers": (
+                self_reinforcement_prompt_boundary_markers
+            ),
             "candidate_observations": [
                 observation.to_dict() for observation in turn_observations
             ],
