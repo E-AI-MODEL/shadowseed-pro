@@ -15,6 +15,8 @@ SUPPORTED_TEXT_SUFFIXES = {".txt", ".md", ".markdown", ".json", ".csv"}
 DEFAULT_CHUNK_CHARS = 4000
 DEFAULT_CHUNK_OVERLAP = 300
 MAX_UPLOAD_BYTES = 25 * 1024 * 1024
+MAX_SOURCE_BATCH_BYTES = 25 * 1024 * 1024
+MAX_SOURCE_BATCH_CHUNKS = 256
 
 
 @dataclass(frozen=True)
@@ -142,6 +144,19 @@ def prepare_sources(
     pasted_text: str = "",
     file_paths: Iterable[str | Path] = (),
 ) -> list[IngestChunk]:
+    paths = [Path(path) for path in file_paths]
+    pasted_bytes = len(pasted_text.encode("utf-8"))
+    file_bytes = 0
+    for source in paths:
+        if source.exists() and source.is_file():
+            file_bytes += source.stat().st_size
+    total_input_bytes = pasted_bytes + file_bytes
+    if total_input_bytes > MAX_SOURCE_BATCH_BYTES:
+        raise ValueError(
+            "source batch exceeds "
+            f"{MAX_SOURCE_BATCH_BYTES // (1024 * 1024)} MB total input limit"
+        )
+
     chunks: list[IngestChunk] = []
     ingest_id = uuid.uuid4().hex[:12]
     source_ordinal = 0
@@ -162,7 +177,7 @@ def prepare_sources(
             )
         )
 
-    for path in file_paths:
+    for path in paths:
         source_name, text = read_source_file(path)
         chunks.extend(
             chunk_text(
@@ -173,4 +188,9 @@ def prepare_sources(
         )
     if not chunks:
         raise ValueError("paste text or upload at least one supported file")
+    if len(chunks) > MAX_SOURCE_BATCH_CHUNKS:
+        raise ValueError(
+            "source batch would create "
+            f"{len(chunks)} chunks; maximum is {MAX_SOURCE_BATCH_CHUNKS} per ingest"
+        )
     return chunks
