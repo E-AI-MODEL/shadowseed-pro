@@ -295,6 +295,10 @@ def _ingest_summary_markdown(result: dict[str, Any] | None) -> str:
         return f"**Could not process sources:** {result['error']}"
 
     source_names = ", ".join(result.get("source_names", [])) or "source"
+    runtime = dict(result.get("authority_runtime") or {})
+    gate = str(runtime.get("gate_policy_id", "unknown"))
+    promoted = len(result.get("promoted_seed_ids", []) or [])
+    review = len(result.get("authority_review_seed_ids", []) or [])
     return (
         "## Sources processed\n"
         f"**{int(result.get('sources', 0))}** source(s) · "
@@ -302,7 +306,9 @@ def _ingest_summary_markdown(result: dict[str, Any] | None) -> str:
         f"**{int(result.get('characters', 0)):,}** characters  \n"
         f"Shadow memory: **{int(result.get('seeds_before', 0))} → "
         f"{int(result.get('seeds_after', 0))}** seeds · "
-        f"**{int(result.get('new_seed_count', 0))}** new  \n\n"
+        f"**{int(result.get('new_seed_count', 0))}** new · "
+        f"**{promoted}** promoted · **{review}** need review  \n"
+        f"Gate: **{gate}**  \n\n"
         f"**Sources:** {source_names}\n\n"
         "Uploaded text is observation input, not trusted evidence. Seeds still follow the "
         "selected authority profile, Validation Gate and point-of-use checks."
