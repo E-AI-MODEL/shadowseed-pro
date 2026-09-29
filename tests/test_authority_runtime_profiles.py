@@ -172,5 +172,23 @@ def test_one_observation_cannot_self_promote_via_near_duplicate_candidates() -> 
         context_ref="source:test:instance:third:chunk:00000",
     )
     assert seed.occurrence_count == 3
+    assert seed.status is SeedStatus.ACTIVE
+    assert seed.weight == 0.2
+    assert third["promoted_this_observation"] == []
+
+    fourth = session.observe_source_text(
+        "Fourth independent observation.",
+        context_ref="source:test:instance:fourth:chunk:00000",
+    )
+    assert seed.occurrence_count == 4
+    assert seed.status is SeedStatus.ACTIVE
+    assert seed.weight == 0.4
+    assert fourth["promoted_this_observation"] == []
+
+    fifth = session.observe_source_text(
+        "Fifth independent observation.",
+        context_ref="source:test:instance:fifth:chunk:00000",
+    )
+    assert seed.occurrence_count == 5
     assert seed.status is SeedStatus.PROMOTED
-    assert seed.id in third["promoted_this_observation"]
+    assert seed.id in fifth["promoted_this_observation"]
