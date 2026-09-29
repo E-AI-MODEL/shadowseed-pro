@@ -141,6 +141,14 @@ body {
   background: color-mix(in srgb, var(--button-primary-background-fill) 5%, var(--ss-surface)) !important;
   margin-bottom: .45rem !important;
 }
+.ss-regie-summary {
+  border: 1px solid color-mix(in srgb, var(--button-primary-background-fill) 28%, var(--ss-border));
+  border-radius: 16px;
+  padding: .72rem .82rem;
+  margin: .2rem 0 .6rem;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--button-primary-background-fill) 7%, transparent), transparent);
+}
+.ss-regie-summary p { margin: .1rem 0 !important; }
 
 #ss-chat {
   border: 1px solid var(--ss-border);
@@ -421,6 +429,43 @@ def _gate_strictness_explainer(percent: int | float) -> str:
         f"**Validation Gate {value}% · {label}**  \\n{detail}\\n\\n"
         "0% = lage toegangsdrempel · 100% = keiharde bewijsdrempel. "
         "Audittrail en tegenspraakcontrole blijven altijd actief."
+    )
+
+
+def _control_preset_values(preset: str | None) -> tuple[int, int, bool]:
+    presets = {
+        "observeren": (0, 100, False),
+        "gebalanceerd": (60, 70, False),
+        "vrij": (100, 0, True),
+        "strikt": (100, 100, False),
+    }
+    return presets.get(str(preset or "strikt"), presets["strikt"])
+
+
+def _control_state_summary(
+    ssl_intensity: int | float,
+    gate_strictness: int | float,
+    self_reinforcement: bool,
+) -> str:
+    ssl_value = max(0, min(100, int(round(float(ssl_intensity)))))
+    gate_value = max(0, min(100, int(round(float(gate_strictness)))))
+    if self_reinforcement and gate_value <= 20 and ssl_value >= 80:
+        mode = "Vrij experiment"
+        detail = "Snelle promotie, hoge invloed en een actieve feedbacklus."
+    elif ssl_value == 0:
+        mode = "Observeren"
+        detail = "Shadowseed leert en auditeert, maar beïnvloedt het antwoord niet."
+    elif gate_value >= 90 and not self_reinforcement:
+        mode = "Strikt"
+        detail = "Invloed is mogelijk, maar alleen na een zware autoriteitsdrempel."
+    else:
+        mode = "Aangepast"
+        detail = "Je combineert invloed, Gate en feedbacklus handmatig."
+    loop = "aan" if self_reinforcement else "uit"
+    return (
+        f"**{mode}**  \\n"
+        f"SSL **{ssl_value}%** · Gate **{gate_value}%** · feedbacklus **{loop}**  \\n"
+        f"{detail}"
     )
 
 
@@ -755,6 +800,37 @@ def build_simple_app(
     def refresh_models(backend: str, current_model: str | None):
         model_update, note, _embedding = provider_changed(backend, current_model)
         return model_update, note
+
+    def apply_control_preset(preset: str):
+        ssl_value, gate_value, loop = _control_preset_values(preset)
+        return (
+            gr.update(value=ssl_value),
+            _ssl_intensity_explainer(ssl_value),
+            gr.update(value=gate_value),
+            _gate_strictness_explainer(gate_value),
+            gr.update(value=loop),
+            _control_state_summary(ssl_value, gate_value, loop),
+        )
+
+    def update_ssl_control(value: float, gate: float, loop: bool):
+        return (
+            _ssl_intensity_explainer(value),
+            gr.update(value=None),
+            _control_state_summary(value, gate, loop),
+        )
+
+    def update_gate_control(value: float, ssl: float, loop: bool):
+        return (
+            _gate_strictness_explainer(value),
+            gr.update(value=None),
+            _control_state_summary(ssl, value, loop),
+        )
+
+    def update_loop_control(loop: bool, ssl: float, gate: float):
+        return (
+            gr.update(value=None),
+            _control_state_summary(ssl, gate, loop),
+        )
 
     def create_chat(
         title: str,
@@ -1160,6 +1236,20 @@ def build_simple_app(
                         new_chat = gr.Button("＋ Nieuwe chat", variant="primary")
 
                         gr.Markdown("Regie", elem_classes=["ss-kicker"])
+                        control_preset = gr.Dropdown(
+                            choices=[
+                                ("Observeren", "observeren"),
+                                ("Gebalanceerd", "gebalanceerd"),
+                                ("Vrij experiment", "vrij"),
+                                ("Strikt", "strikt"),
+                            ],
+                            value="strikt",
+                            label="Snelle stand",
+                        )
+                        control_summary = gr.Markdown(
+                            _control_state_summary(100, 100, False),
+                            elem_classes=["ss-regie-summary"],
+                        )
                         ssl_intensity = gr.Slider(
                             minimum=0,
                             maximum=100,
@@ -1271,15 +1361,32 @@ def build_simple_app(
                                 label="Gesprekstoestand · technisch",
                             )
 
+            control_preset.change(
+                apply_control_preset,
+                inputs=[control_preset],
+                outputs=[
+                    ssl_intensity,
+                    ssl_intensity_help,
+                    gate_strictness,
+                    gate_strictness_help,
+                    allow_self_reinforcement,
+                    control_summary,
+                ],
+            )
             ssl_intensity.change(
-                lambda value: _ssl_intensity_explainer(value),
-                inputs=[ssl_intensity],
-                outputs=[ssl_intensity_help],
+                update_ssl_control,
+                inputs=[ssl_intensity, gate_strictness, allow_self_reinforcement],
+                outputs=[ssl_intensity_help, control_preset, control_summary],
             )
             gate_strictness.change(
-                lambda value: _gate_strictness_explainer(value),
-                inputs=[gate_strictness],
-                outputs=[gate_strictness_help],
+                update_gate_control,
+                inputs=[gate_strictness, ssl_intensity, allow_self_reinforcement],
+                outputs=[gate_strictness_help, control_preset, control_summary],
+            )
+            allow_self_reinforcement.change(
+                update_loop_control,
+                inputs=[allow_self_reinforcement, ssl_intensity, gate_strictness],
+                outputs=[control_preset, control_summary],
             )
             backend.change(
                 provider_changed,
