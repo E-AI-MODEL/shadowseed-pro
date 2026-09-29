@@ -157,3 +157,12 @@ def test_sliders_explain_two_independent_dimensions() -> None:
     assert 'label="SSL-invloed"' in source
     assert 'label="Validation Gate"' in source
     assert 'step=10' in source
+
+
+
+def test_self_reinforcement_is_explicit_experimental_toggle() -> None:
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+
+    assert 'label="Zelfversterking toestaan · experimenteel"' in source
+    assert "SSL-beïnvloede antwoorden mogen recurrence en autoriteit" in source
+    assert "feedbacklus" in source.lower()
