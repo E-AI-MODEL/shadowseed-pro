@@ -55,11 +55,17 @@ class SessionService:
         config: SessionConfig | None = None,
         backend: str | None = None,
         model_id: str | None = None,
+        config_overrides: dict[str, Any] | None = None,
     ) -> str:
         normalized_title = validate_session_title(title)
         normalized_model_id = validate_model_id(model_id)
         profile = get_profile(profile_id)
-        resolved = profile.apply(config, backend=backend, model_id=normalized_model_id)
+        resolved = profile.apply(
+            config,
+            backend=backend,
+            model_id=normalized_model_id,
+            **dict(config_overrides or {}),
+        )
         validate_session_config(
             max_seeds_per_turn=resolved.max_seeds_per_turn,
             max_new_tokens=resolved.max_new_tokens,
