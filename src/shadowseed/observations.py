@@ -36,12 +36,20 @@ class CandidateObservation:
     surfaced_seed_ids: tuple[str, ...]
     recurrence_eligible: bool
     created_at: str
+    self_reinforcement_allowed: bool = False
     legacy_projection: bool = False
     schema_version: int = OBSERVATION_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
-        if self.ssl_exposed and self.recurrence_eligible:
-            raise ValueError("SSL-exposed observations cannot be recurrence-eligible")
+        if (
+            self.ssl_exposed
+            and self.recurrence_eligible
+            and not self.self_reinforcement_allowed
+        ):
+            raise ValueError(
+                "SSL-exposed observations require explicit self-reinforcement "
+                "permission to be recurrence-eligible"
+            )
         if self.schema_version != OBSERVATION_SCHEMA_VERSION:
             raise ValueError("unsupported candidate-observation schema")
 
@@ -73,6 +81,9 @@ class CandidateObservation:
             ),
             recurrence_eligible=bool(payload.get("recurrence_eligible", False)),
             created_at=str(payload.get("created_at", "")),
+            self_reinforcement_allowed=bool(
+                payload.get("self_reinforcement_allowed", False)
+            ),
             legacy_projection=bool(payload.get("legacy_projection", False)),
             schema_version=int(
                 payload.get("schema_version", OBSERVATION_SCHEMA_VERSION)
@@ -160,13 +171,15 @@ class CandidateObservationLedger:
         ssl_exposed: bool,
         surfaced_seed_ids: Iterable[str] = (),
         created_at: str,
+        allow_ssl_recurrence: bool = False,
         legacy_projection: bool = False,
     ) -> list[CandidateObservation]:
         """Append detector observations and return the records for this batch.
 
-        `ssl_exposed=True` always forces `recurrence_eligible=False`. Clean
-        observations are recurrence-eligible, but this ledger itself never
-        increments recurrence or calls the Gate.
+        SSL-exposed observations are non-recurrence by default. The explicit
+        experimental `allow_ssl_recurrence` flag records when the caller has
+        deliberately opened the self-reinforcement boundary. This ledger itself
+        never increments recurrence or calls the Gate.
         """
 
         surfaced = tuple(str(item) for item in surfaced_seed_ids)
@@ -185,8 +198,11 @@ class CandidateObservationLedger:
                 candidate_type=candidate_type,
                 ssl_exposed=ssl_exposed,
                 surfaced_seed_ids=surfaced,
-                recurrence_eligible=not ssl_exposed,
+                recurrence_eligible=(not ssl_exposed or bool(allow_ssl_recurrence)),
                 created_at=created_at,
+                self_reinforcement_allowed=bool(
+                    ssl_exposed and allow_ssl_recurrence
+                ),
                 legacy_projection=legacy_projection,
             )
             if observation.observation_id in self._observation_ids:
