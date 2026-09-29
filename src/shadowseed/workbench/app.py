@@ -202,13 +202,16 @@ def _shadow_overview_markdown(view: dict[str, Any] | None) -> str:
             used_ids.add(str(seed_id))
 
     profile = str(view.get("authority_profile_id", "strict"))
+    gate = str(view.get("effective_gate_policy_id", "unknown"))
+    review_count = len(view.get("authority_review_seed_ids", []) or [])
     lifecycle = " · ".join(f"{name.title()} {count}" for name, count in sorted(counts.items()))
     if not lifecycle:
         lifecycle = "No seeds yet"
 
     return (
-        f"**Authority:** `{profile}`  ·  **Seeds:** {len(seeds)}  ·  "
-        f"**Promoted:** {promoted}  ·  **Used:** {len(used_ids)}  ·  **Blocked:** {blocked}\n\n"
+        f"**Authority:** `{profile}`  ·  **Gate:** `{gate}`  ·  **Seeds:** {len(seeds)}  ·  "
+        f"**Promoted:** {promoted}  ·  **Used:** {len(used_ids)}  ·  **Blocked:** {blocked}  ·  "
+        f"**Review:** {review_count}\n\n"
         f"{lifecycle}"
     )
 
