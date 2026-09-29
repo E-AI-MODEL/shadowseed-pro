@@ -6,6 +6,7 @@ import pytest
 
 import shadowseed.application.ingest as ingest_module
 from shadowseed.application.ingest import chunk_text, prepare_sources, read_source_file
+from shadowseed.chat import ShadowChatSession
 from shadowseed.workbench.controller import WorkbenchController
 
 
@@ -339,3 +340,29 @@ def test_csv_upload_accepts_large_field_within_upload_limit(tmp_path: Path) -> N
 
     assert name == "large-field.csv"
     assert large_field in text
+
+
+
+def test_source_observation_rejects_pending_live_turn_without_mutation() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        embedding_backend="lexical",
+    )
+    prepared = session.prepare_turn("What should be considered next?")
+    before = session.to_state()
+
+    with pytest.raises(RuntimeError, match="prepared turn"):
+        session.observe_source_text(
+            "Independent source material.",
+            context_ref="source:test:instance:blocked:chunk:00000",
+        )
+
+    assert session.to_state() == before
+
+    session.abort_turn(prepared)
+    report = session.observe_source_text(
+        "Independent source material.",
+        context_ref="source:test:instance:allowed:chunk:00000",
+    )
+    assert report["context_ref"] == "source:test:instance:allowed:chunk:00000"
