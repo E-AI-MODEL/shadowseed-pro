@@ -216,7 +216,10 @@ def resolve_authority_runtime(
     return AuthorityRuntimePolicy(
         profile_id=profile.id,
         gate_policy_id=gate_policy_id,
-        proactive_review=profile.id is AuthorityProfileId.ASSISTED,
+        proactive_review=(
+            profile.id is AuthorityProfileId.ASSISTED
+            and gate_policy_id == "evidence_backed"
+        ),
         auto_surface_when_relevant=profile.auto_surface_when_relevant,
         allow_unreviewed_system_evidence=profile.allow_unreviewed_system_evidence,
     )
