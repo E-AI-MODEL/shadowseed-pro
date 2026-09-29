@@ -7,6 +7,8 @@ from shadowseed.workbench.simple_app import (
     _chat_status,
     _recommended_setup,
     _source_summary,
+    _ssl_intensity_explainer,
+    _gate_strictness_explainer,
 )
 
 
@@ -79,12 +81,14 @@ def test_visible_authority_language_is_plain_dutch() -> None:
     assert "terugkerende patronen" in autonomous.lower()
 
 
-def test_chat_status_hides_gate_jargon_from_normal_user() -> None:
+def test_chat_status_shows_simple_slider_state_without_policy_jargon() -> None:
     status = _chat_status(
         {
             "backend": "fixture",
             "authority_profile_id": "assisted",
             "effective_gate_policy_id": "evidence_backed",
+            "ssl_intensity": 80,
+            "gate_strictness": 70,
             "turn": 4,
             "authority_review_seed_ids": ["ss_2"],
             "seeds": [
@@ -95,12 +99,12 @@ def test_chat_status_hides_gate_jargon_from_normal_user() -> None:
     )
 
     assert "4 bericht(en)" in status
-    assert "Meedenkend" in status
+    assert "SSL **80%**" in status
+    assert "Gate **70%**" in status
     assert "2 geheugenpunt(en)" in status
     assert "1 mag later meedenken" in status
     assert "1 vraagt controle" in status
     assert "evidence_backed" not in status
-    assert "Gate" not in status
 
 
 def test_source_summary_explains_result_without_treating_upload_as_truth() -> None:
@@ -131,3 +135,25 @@ def test_dashboard_supports_progressive_disclosure_and_drilldown() -> None:
     assert 'with gr.Accordion("Technische audit van dit punt", open=False)' in source
     assert 'elem_classes=["ss-metric"]' in source
     assert 'elem_classes=["ss-detail"]' in source
+
+
+
+def test_sliders_explain_two_independent_dimensions() -> None:
+    ssl_off = _ssl_intensity_explainer(0)
+    ssl_full = _ssl_intensity_explainer(100)
+    gate_open = _gate_strictness_explainer(0)
+    gate_strict = _gate_strictness_explainer(100)
+
+    assert "SSL-invloed 0%" in ssl_off
+    assert "leert wel" in ssl_off
+    assert "SSL-invloed 100%" in ssl_full
+    assert "Validation Gate 0%" in gate_open
+    assert "eerste waarneming" in gate_open
+    assert "Validation Gate 100%" in gate_strict
+    assert "vier keer" in gate_strict
+    assert "drie onafhankelijke" in gate_strict
+
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+    assert 'label="SSL-invloed"' in source
+    assert 'label="Validation Gate"' in source
+    assert 'step=10' in source
