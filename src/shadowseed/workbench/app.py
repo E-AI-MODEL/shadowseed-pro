@@ -37,9 +37,32 @@ _PRODUCT_CSS = """
 }
 #authority-card {
   border: 1px solid var(--border-color-primary);
-  border-radius: 16px;
-  padding: .8rem .9rem .35rem .9rem;
-  background: var(--background-fill-secondary);
+  border-radius: 20px;
+  padding: 1rem 1rem .6rem 1rem;
+  background: linear-gradient(145deg, var(--background-fill-secondary), rgba(255,255,255,.025));
+}
+#authority-profile-picker {
+  margin-top: .45rem;
+}
+#authority-profile-picker label {
+  border-radius: 14px !important;
+}
+#authority-explainer {
+  margin-top: .55rem;
+  padding: .7rem .8rem;
+  border-radius: 12px;
+  background: rgba(255,255,255,.035);
+}
+#setup-step {
+  opacity: .68;
+  font-size: .78rem;
+  font-weight: 650;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: .15rem;
+}
+#advanced-setup {
+  margin-top: .45rem;
 }
 .comparison-note { font-size: 0.9rem; opacity: 0.82; }
 .section-kicker { opacity: .72; font-size: .9rem; }
@@ -84,6 +107,27 @@ def _is_loopback(host: str) -> bool:
 
 def _error_text(exc: Exception) -> str:
     return f"**Error:** {type(exc).__name__}: {exc}"
+
+
+def _authority_profile_markdown(profile_id: str | None, profiles: list[dict[str, Any]]) -> str:
+    selected = next(
+        (item for item in profiles if str(item.get("id")) == str(profile_id or "strict")),
+        profiles[0] if profiles else {},
+    )
+    if not selected:
+        return ""
+
+    label = str(selected.get("label", profile_id or "Controlled"))
+    description = str(selected.get("description", ""))
+    validate = str(selected.get("validate_mode", "manual")).replace("_", " ")
+    promote = str(selected.get("promote_mode", "gate")).replace("_", " ")
+    contradiction = str(selected.get("contradiction_mode", "block")).replace("_", " ")
+
+    return (
+        f"**{label}**  \n{description}\n\n"
+        f"Detect: **automatic** · Validate: **{validate}** · "
+        f"Promote: **{promote}** · Contradictions: **{contradiction}**"
+    )
 
 
 def _status_markdown(view: dict[str, Any] | None) -> str:
@@ -247,6 +291,9 @@ def build_app(
         ("Hugging Face Transformers — local model", "hf-transformers"),
         ("Offline demo — deterministic fixture", "fixture"),
     ]
+
+    def explain_authority_profile(profile_id: str):
+        return _authority_profile_markdown(profile_id, authority_profiles)
 
     def session_choices() -> list[tuple[str, str]]:
         return ctl.session_choices(ctl.list_sessions())
@@ -546,29 +593,27 @@ def build_app(
                         value=initial_choices[0][1] if initial_choices else None,
                     )
                     refresh_sessions = gr.Button("Refresh chats", variant="secondary")
-                    gr.Markdown("### New run")
+                    gr.Markdown("### Start a new run")
                     gr.Markdown(
-                        "Choose how much autonomy Shadowseed gets. You can inspect everything later.",
+                        "Three choices are enough to begin. Everything technical stays available under Advanced.",
                         elem_classes=["section-kicker"],
                     )
                     title = gr.Textbox(label="Run name", value="New Shadowseed run")
+
+                    gr.Markdown("Step 1 · Choose autonomy", elem_id="setup-step")
                     with gr.Group(elem_id="authority-card"):
-                        authority_profile = gr.Dropdown(
-                            choices=authority_choices,
+                        authority_profile = gr.Radio(
+                            choices=[(item["label"], item["id"]) for item in authority_profiles],
                             value="strict",
-                            label="How autonomous may Shadowseed be?",
-                            info=(
-                                "Controlled matches today's production behavior. Other modes are "
-                                "opt-in and will gain automation only as their runtime wiring is enabled."
-                            ),
+                            label="How much may Shadowseed do on its own?",
+                            elem_id="authority-profile-picker",
                         )
-                        gr.Markdown(
-                            "**Controlled** keeps authority-bearing validation in your hands. "
-                            "**Assisted** asks only when needed. **Autonomous** is intended to let "
-                            "Shadowseed validate and promote itself within the Gate. "
-                            "**Open research** is the least restrictive experimental profile.",
-                            elem_classes=["section-kicker"],
+                        authority_explainer = gr.Markdown(
+                            _authority_profile_markdown("strict", authority_profiles),
+                            elem_id="authority-explainer",
                         )
+
+                    gr.Markdown("Step 2 · Choose the model", elem_id="setup-step")
                     backend = gr.Dropdown(
                         choices=backend_choices,
                         value="ollama",
@@ -585,7 +630,8 @@ def build_app(
                     backend_note = gr.Markdown(
                         next(item["note"] for item in ctl.backends() if item["backend"] == "ollama")
                     )
-                    with gr.Accordion("Model and SSL settings", open=False):
+                    gr.Markdown("Step 3 · Start, or tune Advanced settings", elem_id="setup-step")
+                    with gr.Accordion("Advanced · relevance, embeddings and research controls", open=False, elem_id="advanced-setup"):
                         profile = gr.Dropdown(
                             choices=profile_choices,
                             value="balanced",
@@ -645,6 +691,11 @@ def build_app(
                         visible=False,
                     )
 
+            authority_profile.change(
+                explain_authority_profile,
+                inputs=[authority_profile],
+                outputs=[authority_explainer],
+            )
             backend.change(
                 backend_defaults,
                 inputs=[backend, model_id],
