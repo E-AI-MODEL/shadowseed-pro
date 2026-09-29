@@ -230,6 +230,7 @@ class WorkbenchController:
         external_confirmed: bool = False,
         ssl_intensity: int | float | None = None,
         gate_strictness: int | float | None = None,
+        allow_self_reinforcement: bool = False,
     ) -> str:
         resolved_embedding = embedding_backend or self.default_embedding_backend(backend)
         gate_settings = (
@@ -261,6 +262,7 @@ class WorkbenchController:
                 embedding_backend=resolved_embedding,
                 embedding_model=embedding_model or None,
                 allow_toy_embedder=allow_toy_embedder,
+                allow_self_reinforcement=bool(allow_self_reinforcement),
             ),
             backend=backend,
             model_id=model_id or None,
