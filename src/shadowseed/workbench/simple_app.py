@@ -556,6 +556,19 @@ def build_simple_app(
     ctl = controller or WorkbenchController(workspace)
 
     initial_sessions = ctl.session_choices(ctl.list_sessions())
+    initial_session_id = initial_sessions[0][1] if initial_sessions else None
+    try:
+        initial_view = (
+            ctl.session_view(initial_session_id)
+            if initial_session_id is not None
+            else None
+        )
+    except Exception:
+        initial_view = None
+    initial_chat_messages = ctl.chat_messages(initial_view) if initial_view else []
+    initial_dashboard = _dashboard_summary(initial_view)
+    initial_seed_choices = ctl.seed_choices(initial_view) if initial_view else []
+
     auto_backend, auto_model, auto_setup_note = _recommended_setup(ctl)
 
     provider_choices = [
@@ -593,9 +606,9 @@ def build_simple_app(
                 note,
                 ctl.default_embedding_backend("ollama"),
             )
-        selected = None if backend == "fixture" else current_model or None
+        selected = None
         return (
-            gr.update(choices=[], value=selected),
+            gr.update(choices=[], value=None),
             _model_note(backend, selected),
             ctl.default_embedding_backend(backend),
         )
