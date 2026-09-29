@@ -165,8 +165,8 @@ def test_sliders_explain_two_independent_dimensions() -> None:
 def test_self_reinforcement_is_explicit_experimental_toggle() -> None:
     source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
 
-    assert 'label="Zelfversterking toestaan · experimenteel"' in source
-    assert "SSL-beïnvloede antwoorden mogen recurrence en autoriteit" in source
+    assert 'label="Zelfversterking · experimenteel"' in source
+    assert "Laat SSL-beïnvloede antwoorden de geheugenlus opnieuw voeden." in source
     assert "feedbacklus" in source.lower()
 
 
@@ -243,3 +243,16 @@ def test_regie_controls_are_bound_to_selected_session() -> None:
     assert "initial_ssl" in source
     assert "initial_gate" in source
     assert "initial_loop" in source
+
+
+
+def test_loop_toggle_uses_loop_only_backend_update() -> None:
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+
+    start = source.index("def update_loop_control(")
+    end = source.index("def create_chat(", start)
+    body = source[start:end]
+
+    assert "ctl.update_session_self_reinforcement(" in body
+    assert "ctl.update_session_controls(" not in body
+    assert "SSL- en Gate-instellingen blijven ongewijzigd" in body
