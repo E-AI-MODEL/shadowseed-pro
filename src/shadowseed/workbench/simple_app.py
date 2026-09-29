@@ -323,8 +323,9 @@ def _chat_status(view: dict[str, Any] | None) -> str:
         + (f" · {' · '.join(extras)}" if extras else "")
     )
 
+    loop = " · feedbacklus **aan**" if view.get("allow_self_reinforcement") else ""
     return (
-        f"**{model}** · {turns} bericht(en) · SSL **{ssl_level}** · Gate **{gate_level}**  \\n"
+        f"**{model}** · {turns} bericht(en) · SSL **{ssl_level}** · Gate **{gate_level}**{loop}  \\n"
         f"Shadowseed: {seed_text}"
     )
 
@@ -376,7 +377,9 @@ def _dashboard_summary(view: dict[str, Any] | None) -> tuple[str, str, str, str,
 
     headline = (
         f"## {view.get('title') or 'Gesprek'}\n"
-        f"Model **{model}** · SSL **{ssl_level}** · Gate **{gate_level}** · **{turns}** bericht(en)"
+        f"Model **{model}** · SSL **{ssl_level}** · Gate **{gate_level}** · "
+        f"feedbacklus **{'aan' if view.get('allow_self_reinforcement') else 'uit'}** · "
+        f"**{turns}** bericht(en)"
     )
     conversation = (
         f"### {turns}\n"
@@ -607,6 +610,7 @@ def build_simple_app(
         model_id: str,
         ssl_intensity: float,
         gate_strictness: float,
+        allow_self_reinforcement: bool,
         embedding_backend: str,
         embedding_model: str,
         hosted_confirmed: bool,
@@ -626,6 +630,7 @@ def build_simple_app(
                 external_confirmed=bool(hosted_confirmed),
                 ssl_intensity=ssl_intensity,
                 gate_strictness=gate_strictness,
+                allow_self_reinforcement=bool(allow_self_reinforcement),
             )
             view = ctl.session_view(session_id)
             return (
@@ -990,6 +995,19 @@ def build_simple_app(
                                 _gate_strictness_explainer(100),
                                 elem_classes=["ss-card"],
                             )
+                            allow_self_reinforcement = gr.Checkbox(
+                                label="Zelfversterking toestaan · experimenteel",
+                                value=False,
+                                info=(
+                                    "Aan: SSL-beïnvloede antwoorden mogen recurrence en autoriteit "
+                                    "terugvoeden. Uit: zulke kandidaten worden alleen gelogd."
+                                ),
+                            )
+                            gr.Markdown(
+                                "**Feedbacklus:** met deze optie aan kan Shadowseed zijn eigen invloed "
+                                "op volgende beurten versterken. Herkomst blijft zichtbaar in de audittrail.",
+                                elem_classes=["ss-card"],
+                            )
                             backend = gr.Dropdown(
                                 choices=provider_choices,
                                 value=auto_backend,
@@ -1079,6 +1097,7 @@ def build_simple_app(
                     model_id,
                     ssl_intensity,
                     gate_strictness,
+                    allow_self_reinforcement,
                     embedding_backend,
                     embedding_model,
                     hosted_confirm,
@@ -1344,21 +1363,30 @@ def build_simple_app(
                     "herkennen → Gate → geheugen**. Een document wordt dus niet automatisch een "
                     "waarheidsbron. De herkomst blijft gekoppeld aan de waarneming."
                 )
-            with gr.Accordion("7 · Is dit hetzelfde als RAG of fine-tuning?", open=False):
+            with gr.Accordion("7 · Wat is de experimentele feedbacklus?", open=False):
+                gr.Markdown(
+                    "Normaal telt een antwoord dat al door Shadowseed is beïnvloed niet opnieuw mee als "
+                    "onafhankelijke recurrence. Met **Zelfversterking toestaan** zet je die bescherming "
+                    "bewust uit. Een SSL-beïnvloed antwoord kan dan nieuwe of terugkerende geheugenpunten "
+                    "opnieuw voeden, waardoor een zelfversterkende lus kan ontstaan. De audittrail bewaart "
+                    "dat dit uit een SSL-beïnvloede beurt kwam. Het reeds getoonde antwoord wordt niet "
+                    "achteraf veranderd; het effect werkt door naar volgende beurten."
+                )
+            with gr.Accordion("8 · Is dit hetzelfde als RAG of fine-tuning?", open=False):
                 gr.Markdown(
                     "**Fine-tuning** verandert modelgewichten; Shadowseed niet. **RAG** zoekt meestal "
                     "informatie naar aanleiding van de huidige vraag. Shadowseed bouwt juist door de tijd "
                     "heen een geschiedenis op van mogelijke ontbrekende perspectieven. De technieken kunnen "
                     "naast elkaar bestaan."
                 )
-            with gr.Accordion("8 · Wat kan Shadowseed níet bewijzen?", open=False):
+            with gr.Accordion("9 · Wat kan Shadowseed níet bewijzen?", open=False):
                 gr.Markdown(
                     "Een geheugenpunt is niet automatisch waar. Meer tekst betekent niet automatisch beter "
                     "geheugen. Twee verschillende antwoorden bewijzen geen Shadowseed-effect. En een "
                     "gepromoveerd punt hoeft niet gebruikt te worden. Daarom blijven herkomst, Gate-besluiten, "
                     "tegenspraken en daadwerkelijke influence-events inspecteerbaar."
                 )
-            with gr.Accordion("9 · Technische woorden vertaald", open=False):
+            with gr.Accordion("10 · Technische woorden vertaald", open=False):
                 gr.Markdown(
                     "**Shadow seed** — mogelijk ontbrekende invalshoek.  \\n"
                     "**Shadow memory** — verzameling geheugenpunten met hun geschiedenis.  \\n"
