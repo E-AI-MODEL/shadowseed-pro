@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from shadowseed.workbench.app import _seed_story_markdown, launch_workbench
+from shadowseed.workbench.app import _authority_profile_markdown, _seed_story_markdown, launch_workbench
 from shadowseed.workbench.controller import WorkbenchController
 
 
@@ -134,3 +134,34 @@ def test_seed_story_surfaces_blocking_contradiction_as_next_action() -> None:
 
     assert "Needs attention" in story
     assert "contradiction" in story.lower()
+
+
+def test_authority_profile_explainer_makes_control_model_visible() -> None:
+    profiles = [
+        {
+            "id": "strict",
+            "label": "Controlled",
+            "description": "User-controlled validation.",
+            "validate_mode": "manual",
+            "promote_mode": "gate_after_manual_validation",
+            "contradiction_mode": "block_and_manual_resolution",
+        },
+        {
+            "id": "autonomous",
+            "label": "Autonomous",
+            "description": "Automatic lifecycle where policy allows.",
+            "validate_mode": "auto",
+            "promote_mode": "gate",
+            "contradiction_mode": "block_and_auto_check",
+        },
+    ]
+
+    strict = _authority_profile_markdown("strict", profiles)
+    autonomous = _authority_profile_markdown("autonomous", profiles)
+
+    assert "Controlled" in strict
+    assert "Validate: **manual**" in strict
+    assert "gate after manual validation" in strict
+    assert "Autonomous" in autonomous
+    assert "Validate: **auto**" in autonomous
+    assert "Promote: **gate**" in autonomous
