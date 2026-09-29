@@ -125,13 +125,26 @@ class InspectionService:
         if authority_profile_id == "assisted":
             manager_config = dict(manager.get("config", {}))
             recurrence_threshold = int(manager_config.get("min_occurrences_for_gate", 3))
+            seed_to_cluster = {
+                str(key): int(value)
+                for key, value in dict(state.get("seed_to_cluster", {})).items()
+            }
+            cluster_rep = {
+                int(key): str(value)
+                for key, value in dict(state.get("cluster_rep", {})).items()
+            }
             for seed in decorated:
                 seed_id = str(seed.get("id", ""))
                 status = str(seed.get("status", "")).upper()
                 occurrence_count = int(seed.get("occurrence_count", 0))
+                cluster_id = seed_to_cluster.get(seed_id)
+                is_representative = (
+                    cluster_id is None or cluster_rep.get(cluster_id) == seed_id
+                )
                 if (
                     seed_id not in blocking_ids
                     and status not in {"PROMOTED", "EXPIRED"}
+                    and is_representative
                     and occurrence_count >= recurrence_threshold
                 ):
                     review_seed_ids.append(seed_id)
