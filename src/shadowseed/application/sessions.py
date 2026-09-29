@@ -168,6 +168,8 @@ class SessionService:
         characters = 0
         seeds_before = len(session.manager.seeds)
         promoted_ids: set[str] = set()
+        review_ids: set[str] = set()
+        authority_runtime: dict[str, Any] | None = None
         for item in chunks:
             text = str(item.get("text", "")).strip()
             context_ref = str(item.get("context_ref", "")).strip()
@@ -179,6 +181,9 @@ class SessionService:
             source_names.add(source_name)
             characters += len(text)
             promoted_ids.update(report.get("promoted_this_observation", []))
+            review_ids.update(report.get("authority_review_seed_ids", []))
+            if isinstance(report.get("authority_runtime"), dict):
+                authority_runtime = dict(report["authority_runtime"])
 
         self.repository.save_session(
             session_id,
@@ -195,6 +200,8 @@ class SessionService:
             "seeds_after": len(session.manager.seeds),
             "new_seed_count": max(0, len(session.manager.seeds) - seeds_before),
             "promoted_seed_ids": sorted(promoted_ids),
+            "authority_review_seed_ids": sorted(review_ids),
+            "authority_runtime": authority_runtime,
             "reports": reports,
         }
 
