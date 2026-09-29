@@ -151,6 +151,53 @@ class SessionService:
         )
         return report
 
+    def ingest_source_chunks(
+        self,
+        session_id: str,
+        chunks: list[dict[str, str]],
+    ) -> dict[str, Any]:
+        """Observe source chunks without generating chat answers."""
+
+        if not chunks:
+            raise ValueError("at least one source chunk is required")
+        stored = self.repository.load_session(session_id)
+        session = ShadowChatSession.from_state(stored["state"])
+
+        reports: list[dict[str, Any]] = []
+        source_names: set[str] = set()
+        characters = 0
+        seeds_before = len(session.manager.seeds)
+        promoted_ids: set[str] = set()
+        for item in chunks:
+            text = str(item.get("text", "")).strip()
+            context_ref = str(item.get("context_ref", "")).strip()
+            source_name = str(item.get("source_name", "source")).strip() or "source"
+            if not text or not context_ref:
+                raise ValueError("source chunks require non-empty text and context_ref")
+            report = session.observe_source_text(text, context_ref=context_ref)
+            reports.append(report)
+            source_names.add(source_name)
+            characters += len(text)
+            promoted_ids.update(report.get("promoted_this_observation", []))
+
+        self.repository.save_session(
+            session_id,
+            session.to_state(),
+            updated_at=datetime.now().isoformat(),
+        )
+        return {
+            "session_id": session_id,
+            "sources": len(source_names),
+            "source_names": sorted(source_names),
+            "chunks": len(reports),
+            "characters": characters,
+            "seeds_before": seeds_before,
+            "seeds_after": len(session.manager.seeds),
+            "new_seed_count": max(0, len(session.manager.seeds) - seeds_before),
+            "promoted_seed_ids": sorted(promoted_ids),
+            "reports": reports,
+        }
+
     def falsify(self, session_id: str, seed_id: str) -> dict[str, Any]:
         """Research compatibility path; not production authorization."""
 
