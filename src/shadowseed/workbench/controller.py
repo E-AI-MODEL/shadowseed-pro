@@ -201,7 +201,18 @@ class WorkbenchController:
         *,
         pasted_text: str = "",
         file_paths: list[str] | None = None,
+        external_confirmed: bool = False,
     ) -> dict[str, Any]:
+        stored = self.sessions.load(session_id)
+        config = dict(stored.get("config", {}))
+        self._validate_backend(
+            str(stored["backend"]),
+            model_id=stored.get("model_id"),
+            runtime_mode=str(config.get("runtime_mode", "evaluation")),
+            embedding_backend=str(config.get("embedding_backend", "lexical")),
+            allow_toy_embedder=bool(config.get("allow_toy_embedder", False)),
+            external_confirmed=external_confirmed,
+        )
         chunks = prepare_sources(
             pasted_text=pasted_text or "",
             file_paths=file_paths or [],
