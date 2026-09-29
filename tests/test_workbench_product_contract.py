@@ -7,6 +7,7 @@ import pytest
 
 from shadowseed.workbench.app import (
     _authority_profile_markdown,
+    _control_overview_markdown,
     _ingest_summary_markdown,
     _seed_story_markdown,
     _shadow_overview_markdown,
@@ -220,3 +221,49 @@ def test_shadow_overview_summarizes_lifecycle_and_usage() -> None:
     assert "Blocked:** 1" in text
 
     assert "Select a run" in _shadow_overview_markdown(None)
+
+
+
+def test_control_overview_explains_effective_runtime_policy() -> None:
+    profiles = [
+        {
+            "id": "assisted",
+            "label": "Assisted",
+            "description": "Review mature recurrence.",
+            "auto_validate_recurrence": True,
+            "allow_unreviewed_system_evidence": False,
+        },
+        {
+            "id": "autonomous",
+            "label": "Autonomous",
+            "description": "Automatic recurrence authority.",
+            "auto_validate_recurrence": True,
+            "allow_unreviewed_system_evidence": False,
+        },
+    ]
+
+    assisted = _control_overview_markdown(
+        {
+            "authority_profile_id": "assisted",
+            "effective_gate_policy_id": "evidence_backed",
+            "authority_review_seed_ids": ["ss_1", "ss_2"],
+        },
+        profiles,
+    )
+    autonomous = _control_overview_markdown(
+        {
+            "authority_profile_id": "autonomous",
+            "effective_gate_policy_id": "exploratory",
+            "authority_review_seed_ids": [],
+        },
+        profiles,
+    )
+
+    assert "Assisted" in assisted
+    assert "evidence_backed" in assisted
+    assert "cannot raise authority by itself" in assisted
+    assert "2" in assisted
+    assert "Autonomous" in autonomous
+    assert "exploratory" in autonomous
+    assert "automatic authority path" in autonomous
+    assert "Profile changes are run-level decisions" in autonomous
