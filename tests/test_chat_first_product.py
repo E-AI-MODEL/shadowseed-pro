@@ -650,3 +650,43 @@ def test_regie_reconfiguration_does_not_rehydrate_model_backend() -> None:
 
     assert "ShadowChatSession.from_state" not in body
     assert "save_session_configuration" in body
+
+
+
+def test_loop_only_update_preserves_legacy_custom_regie(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Legacy-style custom Regie",
+        profile_id="balanced",
+        backend="fixture",
+    )
+
+    before = controller.sessions.load(session_id)
+    config_before = dict(before["config"])
+    state_config_before = dict(before["state"]["session_config"])
+    manager_config_before = dict(before["state"]["manager"]["config"])
+
+    assert config_before["ssl_intensity"] is None
+    assert config_before["gate_strictness"] is None
+
+    view = controller.update_session_self_reinforcement(
+        session_id,
+        allow_self_reinforcement=True,
+    )
+    after = controller.sessions.load(session_id)
+
+    assert view["allow_self_reinforcement"] is True
+    assert after["config"]["ssl_intensity"] is None
+    assert after["config"]["gate_strictness"] is None
+    assert after["config"]["surface_threshold"] == config_before["surface_threshold"]
+    assert after["config"]["surface_top_k"] == config_before["surface_top_k"]
+    assert after["config"]["gate_policy_id"] == config_before["gate_policy_id"]
+    assert after["state"]["session_config"]["surface_threshold"] == (
+        state_config_before["surface_threshold"]
+    )
+    assert after["state"]["session_config"]["surface_top_k"] == (
+        state_config_before["surface_top_k"]
+    )
+    assert after["state"]["manager"]["config"] == manager_config_before
+    assert after["config"]["allow_self_reinforcement"] is True
+    assert after["state"]["session_config"]["allow_self_reinforcement"] is True
