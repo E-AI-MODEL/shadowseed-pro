@@ -174,3 +174,38 @@ def test_default_authority_profile_is_strict(tmp_path) -> None:
     stored = controller.sessions.load(session_id)
 
     assert stored["config"]["authority_profile_id"] == "strict"
+
+
+
+def test_assisted_session_view_exposes_review_requests(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Assisted review",
+        profile_id="demo",
+        authority_profile_id="assisted",
+        backend="fixture",
+    )
+    chunks = [
+        {
+            "source_name": "recurrence.txt",
+            "context_ref": f"source:recurrence.txt:chunk:{index:05d}",
+            "text": "Alpha provides a recurring explanatory perspective.",
+        }
+        for index in range(6)
+    ]
+
+    ingest = controller.sessions.ingest_source_chunks(session_id, chunks)
+    view = controller.session_view(session_id)
+
+    assert ingest["authority_runtime"]["gate_policy_id"] == "evidence_backed"
+    assert ingest["authority_review_seed_ids"]
+    assert view["authority_profile_id"] == "assisted"
+    assert view["effective_gate_policy_id"] == "evidence_backed"
+    assert set(view["authority_review_seed_ids"]) == set(ingest["authority_review_seed_ids"])
+
+    seed = controller.inspection.seed_view(
+        session_id,
+        view["authority_review_seed_ids"][0],
+    )
+    assert seed["review_required"] is True
+    assert seed["effective_gate_policy_id"] == "evidence_backed"
