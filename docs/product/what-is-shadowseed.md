@@ -332,23 +332,30 @@ The current backwards-compatible mode.
 
 ### Assisted
 
-Intended to automate low-risk lifecycle work while asking the user at genuine
-authority decisions or uncertainty.
+Mature recurrence is tracked automatically, but live authority remains
+evidence-backed. When recurrence is strong enough to deserve attention while
+verified support is still missing, Shadowseed raises a review request instead of
+silently granting authority.
 
 ### Autonomous
 
-Intended to let SSL validate, activate, promote and surface seeds automatically
-where provenance, policy, Gate and point-of-use checks permit it.
+Live sessions default to the existing exploratory Validation Gate. Recurrence is
+submitted as recurrence, never relabeled as external evidence, and may therefore
+raise authority automatically under that Gate. Promotion and later use still
+require the canonical Gate, relevance selection and point-of-use safety checks.
 
 ### Open research
 
-Intended for the least restrictive experimental runs while retaining provenance,
-Gate decisions and audit records.
+Uses the same recurrence-capable exploratory Gate path as Autonomous and keeps
+the least restrictive research permissions. The profile may permit future
+unreviewed system evidence only when an explicit auditable producer exists and a
+Gate policy explicitly accepts that signal.
 
-**Release-candidate note:** in 0.8.0rc1 the profile model and UI are being built
-first. Controlled preserves the existing runtime behavior. Assisted, Autonomous
-and Open research should not be assumed to have their full automation semantics
-until that runtime wiring is explicitly completed and tested.
+**Release-candidate note:** Controlled preserves the existing production
+behavior. Assisted review semantics and Autonomous/Open recurrence authority are
+now wired through the canonical runtime. Machine-generated evidence producers
+and automated contradiction resolution are not silently implied by these
+profiles and remain separate future work.
 
 ---
 
