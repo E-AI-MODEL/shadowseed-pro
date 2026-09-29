@@ -122,7 +122,10 @@ class InspectionService:
         ]
 
         review_seed_ids: list[str] = []
-        if authority_profile_id == "assisted":
+        if (
+            authority_profile_id == "assisted"
+            and effective_gate_policy_id == "evidence_backed"
+        ):
             manager_config = dict(manager.get("config", {}))
             recurrence_threshold = int(manager_config.get("min_occurrences_for_gate", 3))
             seed_to_cluster = {
