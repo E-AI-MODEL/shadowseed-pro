@@ -411,3 +411,41 @@ def test_self_reinforcement_toggle_controls_ssl_attributed_recurrence() -> None:
     assert guarded.turn_reports[-1]["self_reinforcement_enabled"] is False
     assert open_loop.turn_reports[-1]["suppressed_self_attributed_candidates"] == []
     assert open_loop.turn_reports[-1]["self_reinforcement_enabled"] is True
+
+
+
+def test_open_gate_self_reinforcement_can_refine_the_same_visible_turn() -> None:
+    def make(enabled: bool) -> ShadowChatSession:
+        return ShadowChatSession(
+            backend="fixture",
+            runtime_mode="live",
+            authority_profile_id="autonomous",
+            embedding_backend="lexical",
+            detector_backend=_NearDuplicateDetector(),
+            embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+            core_config=SSLCoreConfig(
+                min_occurrences_for_gate=1,
+                promotion_threshold=0.2,
+            ),
+            surface_threshold=0.0,
+            early_turn_margin=0.0,
+            resurface_margin=0.0,
+            allow_self_reinforcement=enabled,
+        )
+
+    guarded = make(False).turn("Which explanatory boundary matters?")
+    feedback = make(True).turn("Which explanatory boundary matters?")
+
+    assert guarded["promoted_this_turn"]
+    assert guarded["self_reinforcement_enabled"] is False
+    assert guarded["self_reinforcement_applied"] is False
+    assert guarded["self_reinforcement_draft_answer"] is None
+    assert guarded["surfaced_seed_ids"] == []
+
+    assert feedback["promoted_this_turn"]
+    assert feedback["self_reinforcement_enabled"] is True
+    assert feedback["self_reinforcement_applied"] is True
+    assert feedback["self_reinforcement_seed_ids"]
+    assert feedback["self_reinforcement_draft_answer"]
+    assert feedback["surfaced_seed_ids"]
+    assert "SSL-guided revision:" in feedback["answer"]
