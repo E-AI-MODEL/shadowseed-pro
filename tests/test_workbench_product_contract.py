@@ -228,6 +228,13 @@ def test_shadow_overview_summarizes_lifecycle_and_usage() -> None:
 def test_control_overview_explains_effective_runtime_policy() -> None:
     profiles = [
         {
+            "id": "strict",
+            "label": "Controlled",
+            "description": "User-controlled validation.",
+            "auto_validate_recurrence": False,
+            "allow_unreviewed_system_evidence": False,
+        },
+        {
             "id": "assisted",
             "label": "Assisted",
             "description": "Review mature recurrence.",
@@ -259,6 +266,14 @@ def test_control_overview_explains_effective_runtime_policy() -> None:
         },
         profiles,
     )
+    controlled_evaluation = _control_overview_markdown(
+        {
+            "authority_profile_id": "strict",
+            "effective_gate_policy_id": "exploratory",
+            "authority_review_seed_ids": [],
+        },
+        profiles,
+    )
 
     assert "Assisted" in assisted
     assert "evidence_backed" in assisted
@@ -267,6 +282,10 @@ def test_control_overview_explains_effective_runtime_policy() -> None:
     assert "Autonomous" in autonomous
     assert "exploratory" in autonomous
     assert "automatic authority path" in autonomous
+    assert "Controlled" in controlled_evaluation
+    assert "exploratory" in controlled_evaluation
+    assert "automatic authority path" in controlled_evaluation
+    assert "cannot raise authority by itself" not in controlled_evaluation
     assert "Profile changes are run-level decisions" in autonomous
 
 
