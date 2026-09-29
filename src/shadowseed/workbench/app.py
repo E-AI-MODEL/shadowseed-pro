@@ -95,6 +95,28 @@ _PRODUCT_CSS = """
   min-height: 180px;
   background: var(--background-fill-secondary);
 }
+#about-hero {
+  border: 1px solid var(--border-color-primary);
+  border-radius: 24px;
+  padding: 1.25rem 1.4rem;
+  background: linear-gradient(145deg, rgba(255,255,255,.06), rgba(255,255,255,.018));
+  box-shadow: 0 16px 48px rgba(0,0,0,.14);
+  margin-bottom: 1rem;
+}
+#about-principle {
+  border-left: 3px solid var(--border-color-primary);
+  padding: .7rem 1rem;
+  margin: .5rem 0 .85rem 0;
+  background: rgba(255,255,255,.025);
+  border-radius: 0 14px 14px 0;
+}
+.about-card {
+  border: 1px solid var(--border-color-primary);
+  border-radius: 18px;
+  padding: .85rem 1rem;
+  background: var(--background-fill-secondary);
+  min-height: 190px;
+}
 """
 
 
@@ -928,54 +950,199 @@ def build_app(
             )
 
         with gr.Tab("About SSL"):
-            gr.Markdown("## What is Shadow Seed Learning?")
-            gr.Markdown(
-                "Shadow Seed Learning (SSL) is a model-independent learning layer that runs "
-                "alongside an LLM. It observes candidate perspectives or missing context, stores "
-                "them as shadow seeds, lets those seeds gain or lose authority over time, and may "
-                "surface an authorized seed later when it is relevant."
-            )
+            with gr.Group(elem_id="about-hero"):
+                gr.Markdown("## Shadow Seed Learning, explained")
+                gr.Markdown(
+                    "SSL is an **external, inspectable experience layer around an LLM**. "
+                    "It watches for potentially missing perspectives, stores them as shadow seeds, "
+                    "lets those seeds earn or lose authority over time, and may bring an authorized "
+                    "seed back when it becomes relevant later."
+                )
+                gr.Markdown(
+                    "**One sentence:** Shadowseed remembers *what may have been missing*, not just "
+                    "what was said, and keeps the entire path to later influence inspectable.",
+                    elem_id="about-principle",
+                )
+                gr.Markdown(
+                    "**Observe → Seed → Recur / Evidence → Validate → Promote → Relevance → Influence**"
+                )
+
             with gr.Row():
                 with gr.Column():
                     gr.Markdown(
                         "### What SSL does\n"
-                        "- observes possible missing perspectives\n"
-                        "- stores them as traceable seeds\n"
+                        "- detects candidate missing perspectives\n"
+                        "- gives each candidate a traceable lifecycle\n"
                         "- tracks recurrence, evidence and contradictions\n"
-                        "- uses a Validation Gate before authority can increase\n"
-                        "- checks relevance again at point of use\n"
-                        "- keeps an audit trail of what happened"
+                        "- separates authority from relevance\n"
+                        "- uses a Validation Gate before authority increases\n"
+                        "- checks relevance again when a later question arrives\n"
+                        "- records whether a seed actually surfaced",
+                        elem_classes=["about-card"],
                     )
                 with gr.Column():
                     gr.Markdown(
-                        "### What SSL is not\n"
-                        "- it does not retrain the base model weights\n"
-                        "- a seed is not automatically a fact\n"
-                        "- a promoted seed is not automatically used\n"
-                        "- a different answer is not automatically caused by SSL\n"
-                        "- more text is not automatically better memory"
+                        "### What SSL does not do\n"
+                        "- it does **not** retrain the LLM weights\n"
+                        "- a seed is **not** automatically a fact\n"
+                        "- PROMOTED does **not** mean USED\n"
+                        "- uploaded text is **not** automatically trusted evidence\n"
+                        "- two different answers do **not** prove SSL influence\n"
+                        "- more text does **not** automatically mean better memory",
+                        elem_classes=["about-card"],
                     )
-            gr.Markdown("### The lifecycle")
-            gr.Markdown(
-                "**Observe → Seed → Recur / gather evidence → Validate → Promote → "
-                "Relevance check → Point-of-use influence**\n\n"
-                "Every stage remains inspectable. In Controlled mode, authority-bearing checks "
-                "remain in the user's hands. Assisted and Autonomous modes progressively automate "
-                "those steps while keeping the Gate and audit trail."
-            )
-            with gr.Accordion("Why this can become different from the base LLM", open=False):
+
+            with gr.Accordion("1 · Why add a shadow layer to an LLM?", open=True):
                 gr.Markdown(
-                    "SSL builds an external, persistent experience layer around the same base "
-                    "model. Two installations can therefore diverge over time when they process "
-                    "different conversations or corpora, even though the underlying LLM weights "
-                    "remain unchanged. Unlike fine-tuning, that experience stays inspectable, "
-                    "reversible and attributable."
+                    "A normal LLM answers from its trained weights, the current prompt and the "
+                    "context it can currently see. SSL adds a separate persistent layer that can "
+                    "track candidate omissions, alternative frames and recurring missing context "
+                    "across time. The LLM remains the language model; SSL is the memory, authority "
+                    "and selective-surfacing layer around it.\n\n"
+                    "The goal is not to remember everything. The goal is to remember a small number "
+                    "of potentially useful perspectives **with a history attached to them**."
                 )
-            with gr.Accordion("How do I check whether it is working?", open=False):
+
+            with gr.Accordion("2 · What exactly is a shadow seed?", open=False):
                 gr.Markdown(
-                    "Use **Shadow** to inspect seeds and their lifecycle, **Verify** to compare "
-                    "stored SSL-on / SSL-off turns and attribution, and **Technical inspection** "
-                    "to open the exact JSON, Gate events, traces and influence records."
+                    "A shadow seed is a **hypothesis or candidate perspective**, not an instruction "
+                    "and not a truth claim. A seed can accumulate an embedding, recurrence count, "
+                    "trace, evidence, contradictions, Gate decisions, authority versions, provenance "
+                    "and a record of whether it ever surfaced.\n\n"
+                    "That history is what makes a seed different from simply adding another sentence "
+                    "to the prompt."
+                )
+
+            with gr.Accordion("3 · The lifecycle, step by step", open=False):
+                gr.Markdown(
+                    "**Observe** — SSL detects a possible missing perspective in a chat turn or source chunk.\n\n"
+                    "**Seed** — the candidate is stored as a traceable shadow seed.\n\n"
+                    "**Recur / Evidence** — the same idea may reappear semantically, gain support or be challenged.\n\n"
+                    "**Validate** — configured signals are evaluated by the Validation Gate.\n\n"
+                    "**Promote** — a seed that satisfies policy becomes eligible for later use.\n\n"
+                    "**Relevance** — on a later question, promoted seeds are compared with the current need.\n\n"
+                    "**Influence** — only an authorized and relevant seed may be surfaced as bounded "
+                    "candidate context for answer generation."
+                )
+
+            with gr.Accordion("4 · Authority is not the same as relevance", open=False):
+                gr.Markdown(
+                    "This is one of the most important SSL ideas. A seed can be **relevant but not "
+                    "authorized**, or **authorized but irrelevant** to the current question. Only a "
+                    "seed that satisfies both sides should normally influence a response.\n\n"
+                    "That is why a promoted seed can sit silently in shadow memory for many turns. "
+                    "Promotion means *eligible*, not *always inject this idea*."
+                )
+
+            with gr.Accordion("5 · The Validation Gate and contradictions", open=False):
+                gr.Markdown(
+                    "The Validation Gate protects the jump from observation to authority. It records "
+                    "which signals were considered, under which policy, and what state or weight "
+                    "change followed. Contradictions are first-class signals too: they may weaken, "
+                    "block or require explicit resolution of a seed.\n\n"
+                    "**Design principle:** authority decisions may become automated, but they should "
+                    "never become invisible."
+                )
+
+            with gr.Accordion("6 · Is this training or fine-tuning?", open=False):
+                gr.Markdown(
+                    "**No, not in the classic ML sense.** Fine-tuning changes model weights. SSL "
+                    "keeps its experience outside those weights. The same base LLM can therefore "
+                    "remain unchanged while its Shadowseed memory becomes different over time.\n\n"
+                    "Two installations using the same model can diverge because they processed "
+                    "different conversations or corpora. That is better described as **inspectable "
+                    "experience accumulation** than as ordinary training."
+                )
+
+            with gr.Accordion("7 · How is SSL different from RAG?", open=False):
+                gr.Markdown(
+                    "RAG typically begins with the current question and retrieves source material "
+                    "that appears relevant. SSL begins earlier: it builds a persistent history of "
+                    "candidate perspectives that were previously missing, recurring, supported or "
+                    "contradicted.\n\n"
+                    "**RAG:** question → retrieve material → answer  \n"
+                    "**SSL:** observe → develop seed → authorize → later surface when relevant → answer\n\n"
+                    "The two approaches can complement each other."
+                )
+
+            with gr.Accordion("8 · What happens when I upload lots of text?", open=False):
+                gr.Markdown(
+                    "The **Sources** workspace follows a separate non-chat path: **extract → chunk → "
+                    "detect → cluster / recur → Gate → shadow memory**. Uploaded chunks do not become "
+                    "fake chat turns and the upload itself is not automatically treated as trusted evidence.\n\n"
+                    "With large corpora, useful differentiation comes from selection over time: many "
+                    "candidates may disappear, some recur, some are contradicted, some are promoted, "
+                    "and only a small subset should ever surface.\n\n"
+                    "**More text is only useful when memory hygiene works:** deduplication, clustering, "
+                    "provenance, contradiction handling, decay and selective surfacing."
+                )
+
+            with gr.Accordion("9 · Controlled, Assisted, Autonomous and Open research", open=False):
+                gr.Markdown(
+                    "**Controlled** is the backwards-compatible mode: authority-bearing evidence "
+                    "remains user-controlled.\n\n"
+                    "**Assisted** is intended to automate low-risk lifecycle work and ask when a true "
+                    "authority decision still needs confirmation.\n\n"
+                    "**Autonomous** is intended to let SSL validate, promote and surface automatically "
+                    "where provenance, policy, Gate and point-of-use checks allow.\n\n"
+                    "**Open research** is intended for the least restrictive experimental runs while "
+                    "retaining provenance and audit records.\n\n"
+                    "**0.8.0rc1 note:** the profile model and UI exist now. Controlled preserves the "
+                    "current runtime behavior. Do not assume the other profiles have their full "
+                    "automation semantics until their runtime wiring is completed and tested."
+                )
+
+            with gr.Accordion("10 · How can I prove SSL actually influenced an answer?", open=False):
+                gr.Markdown(
+                    "Do **not** judge this from wording differences alone. Two stochastic generations "
+                    "can differ even when no seed surfaced.\n\n"
+                    "A proper check asks: Was the seed promoted? Was it eligible? Was it selected? "
+                    "Did it actually surface? Did the point-of-use check authorize it?\n\n"
+                    "Use **Shadow** for the lifecycle, **Verify** for SSL-on / SSL-off attribution, "
+                    "and **Technical inspection** for the exact JSON, Gate events, trace, relevance "
+                    "and influence records."
+                )
+
+            with gr.Accordion("11 · A concrete example", open=False):
+                gr.Markdown(
+                    "Suppose repeated discussion about AI policy keeps underweighting long-term "
+                    "implementation costs. SSL detects that as a candidate seed. Later the idea "
+                    "recurs, gains support and passes the Gate. Weeks later the user asks about the "
+                    "cost of scaling the policy. The promoted seed is now relevant and may surface.\n\n"
+                    "If the next question is about the weather, the same promoted seed should stay "
+                    "silent. That is the point of selective surfacing."
+                )
+
+            with gr.Accordion("12 · What can I inspect?", open=False):
+                gr.Markdown(
+                    "For an important seed you should be able to answer: **What was noticed? Where "
+                    "did it come from? How often did it recur? What supports or contradicts it? Why "
+                    "does it have this status? Which Gate event changed its authority? Has it ever "
+                    "surfaced? Which answer did it influence? Why was it relevant then?**\n\n"
+                    "The human-readable interface and the raw JSON are two views of the same event "
+                    "history."
+                )
+
+            with gr.Accordion("13 · Limits and non-claims", open=False):
+                gr.Markdown(
+                    "SSL does not make every answer correct. It does not guarantee seeds are true, "
+                    "does not make uploaded documents trustworthy, does not remove normal LLM "
+                    "uncertainty, and does not automatically improve just because it has seen more "
+                    "text. Its value depends on detection quality, memory hygiene, evidence, "
+                    "contradiction handling, authority policy and point-of-use selection."
+                )
+
+            with gr.Accordion("14 · Mini glossary", open=False):
+                gr.Markdown(
+                    "**Shadow seed** — traceable candidate perspective or missing-context hypothesis.\n\n"
+                    "**Shadow memory** — persistent collection of seeds and lifecycle state.\n\n"
+                    "**Trace** — a decaying lifecycle measure.\n\n"
+                    "**Validation Gate** — policy boundary that decides whether signals may change authority.\n\n"
+                    "**Promoted** — authorized enough to become eligible for later use.\n\n"
+                    "**Surfacing** — selecting an authorized seed as candidate context for a later turn.\n\n"
+                    "**Point of use** — final decision point before a seed may influence generation.\n\n"
+                    "**Authority profile** — configuration determining which lifecycle actions are manual, "
+                    "assisted or automated."
                 )
 
         with gr.Tab("Shadow"):
