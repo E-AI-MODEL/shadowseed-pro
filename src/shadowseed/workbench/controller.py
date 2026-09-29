@@ -112,6 +112,7 @@ class WorkbenchController:
         value = max(0.0, min(100.0, float(percent)))
         if value == 0.0:
             return {
+                "ssl_intensity": 0,
                 "surface_threshold": 1.0,
                 "surface_top_k": 0,
                 "early_turn_margin": 0.0,
@@ -119,10 +120,84 @@ class WorkbenchController:
             }
         ratio = value / 100.0
         return {
+            "ssl_intensity": int(round(value)),
             "surface_threshold": round(0.65 - (0.45 * ratio), 3),
             "surface_top_k": 1 if value <= 40.0 else (2 if value <= 80.0 else 3),
             "early_turn_margin": round(0.20 - (0.15 * ratio), 3),
             "resurface_margin": round(0.25 - (0.15 * ratio), 3),
+        }
+
+    @staticmethod
+    def gate_strictness_settings(percent: int | float) -> dict[str, Any]:
+        """Map 0-100% Gate strictness onto the canonical Validation Gate."""
+
+        value = max(0.0, min(100.0, float(percent)))
+        common: dict[str, Any] = {"gate_strictness": int(round(value))}
+
+        if value <= 10.0:
+            return {
+                **common,
+                "authority_profile_id": "autonomous",
+                "gate_policy_id": "exploratory",
+                "min_occurrences_for_gate": 1,
+                "min_evidence_for_gate": 0,
+                "min_trace_for_gate": 0.0,
+                "promotion_threshold": 0.2,
+                "validation_increment": 0.2,
+            }
+        if value <= 30.0:
+            return {
+                **common,
+                "authority_profile_id": "autonomous",
+                "gate_policy_id": "exploratory",
+                "min_occurrences_for_gate": 2,
+                "min_evidence_for_gate": 0,
+                "min_trace_for_gate": 0.0,
+                "promotion_threshold": 0.2,
+                "validation_increment": 0.2,
+            }
+        if value <= 50.0:
+            return {
+                **common,
+                "authority_profile_id": "autonomous",
+                "gate_policy_id": "exploratory",
+                "min_occurrences_for_gate": 3,
+                "min_evidence_for_gate": 0,
+                "min_trace_for_gate": 0.0,
+                "promotion_threshold": 0.4,
+                "validation_increment": 0.2,
+            }
+        if value <= 70.0:
+            return {
+                **common,
+                "authority_profile_id": "assisted",
+                "gate_policy_id": "evidence_backed",
+                "min_occurrences_for_gate": 3,
+                "min_evidence_for_gate": 1,
+                "min_trace_for_gate": 0.0,
+                "promotion_threshold": 0.2,
+                "validation_increment": 0.2,
+            }
+        if value < 100.0:
+            return {
+                **common,
+                "authority_profile_id": "assisted",
+                "gate_policy_id": "evidence_backed",
+                "min_occurrences_for_gate": 3,
+                "min_evidence_for_gate": 2 if value <= 85.0 else 3,
+                "min_trace_for_gate": 0.0,
+                "promotion_threshold": 0.4 if value <= 85.0 else 0.6,
+                "validation_increment": 0.2,
+            }
+        return {
+            **common,
+            "authority_profile_id": "strict",
+            "gate_policy_id": "legacy_evidence_required",
+            "min_occurrences_for_gate": 4,
+            "min_evidence_for_gate": 3,
+            "min_trace_for_gate": 0.5,
+            "promotion_threshold": 0.5,
+            "validation_increment": 0.5,
         }
 
     @staticmethod
@@ -154,8 +229,16 @@ class WorkbenchController:
         allow_toy_embedder: bool = False,
         external_confirmed: bool = False,
         ssl_intensity: int | float | None = None,
+        gate_strictness: int | float | None = None,
     ) -> str:
         resolved_embedding = embedding_backend or self.default_embedding_backend(backend)
+        gate_settings = (
+            self.gate_strictness_settings(gate_strictness)
+            if gate_strictness is not None
+            else {}
+        )
+        if "authority_profile_id" in gate_settings:
+            authority_profile_id = str(gate_settings.pop("authority_profile_id"))
         authority_profile = get_authority_profile(authority_profile_id)
         self._validate_backend(
             backend,
@@ -165,11 +248,10 @@ class WorkbenchController:
             allow_toy_embedder=allow_toy_embedder,
             external_confirmed=external_confirmed,
         )
-        config_overrides = (
-            self.ssl_intensity_settings(ssl_intensity)
-            if ssl_intensity is not None
-            else None
-        )
+        config_overrides: dict[str, Any] = {}
+        if ssl_intensity is not None:
+            config_overrides.update(self.ssl_intensity_settings(ssl_intensity))
+        config_overrides.update(gate_settings)
         return self.sessions.create_session(
             title=title,
             profile_id=profile_id,
@@ -182,7 +264,7 @@ class WorkbenchController:
             ),
             backend=backend,
             model_id=model_id or None,
-            config_overrides=config_overrides,
+            config_overrides=config_overrides or None,
         )
 
     def send_turn(
