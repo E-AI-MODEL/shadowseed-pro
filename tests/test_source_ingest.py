@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from threading import Event, Lock
 
 import pytest
 
 import shadowseed.application.ingest as ingest_module
 from shadowseed.application.ingest import chunk_text, prepare_sources, read_source_file
+from shadowseed.application.sessions import service_for_workspace
 from shadowseed.chat import ShadowChatSession
 from shadowseed.workbench.controller import WorkbenchController
 
@@ -385,3 +388,151 @@ def test_source_observation_rejects_pending_live_turn_without_mutation() -> None
         context_ref="source:test:instance:allowed:chunk:00000",
     )
     assert report["context_ref"] == "source:test:instance:allowed:chunk:00000"
+
+
+
+def test_same_session_turn_and_source_ingest_are_serialized(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    sessions = service_for_workspace(tmp_path / "workspace")
+    session_id = sessions.create_session(title="Serialized mutation", profile_id="demo")
+    original_load = sessions.repository.load_session
+    first_loaded = Event()
+    release_first = Event()
+    second_loaded = Event()
+    counter_lock = Lock()
+    load_count = 0
+
+    def coordinated_load(target_session_id: str):
+        nonlocal load_count
+        stored = original_load(target_session_id)
+        if target_session_id != session_id:
+            return stored
+        with counter_lock:
+            load_count += 1
+            index = load_count
+        if index == 1:
+            first_loaded.set()
+            release_first.wait(timeout=1.0)
+        elif index == 2:
+            second_loaded.set()
+        return stored
+
+    monkeypatch.setattr(sessions.repository, "load_session", coordinated_load)
+    chunks = [
+        {
+            "source_name": "source.txt",
+            "source_instance_id": "serial-source",
+            "context_ref": "source:source.txt:instance:serial-source:chunk:00000",
+            "text": "Independent source perspective.",
+        }
+    ]
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        turn_future = pool.submit(sessions.run_turn, session_id, "What should be considered?")
+        assert first_loaded.wait(timeout=1.0)
+        ingest_future = pool.submit(sessions.ingest_source_chunks, session_id, chunks)
+        assert not second_loaded.wait(timeout=0.1)
+        release_first.set()
+        turn_future.result(timeout=2.0)
+        ingest = ingest_future.result(timeout=2.0)
+
+    stored = original_load(session_id)
+    assert stored["state"]["turn"] == 1
+    assert ingest["new_seed_count"] > 0
+
+
+def test_pairwise_source_recurrence_is_scoped_to_source_instance_and_persists() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="autonomous",
+        recurrence_mode="pairwise",
+        embedding_backend="lexical",
+    )
+    text = "Alpha provides a recurring explanatory perspective."
+
+    first = session.observe_source_text(
+        text,
+        context_ref="source:notes.txt:instance:same:chunk:00000",
+    )
+    seed_id = first["seeds_born_weightless"][0]
+    second = session.observe_source_text(
+        text,
+        context_ref="source:notes.txt:instance:same:chunk:00001",
+    )
+    assert session.manager.seeds[seed_id].occurrence_count == 1
+    assert second["promoted_this_observation"] == []
+
+    restored = ShadowChatSession.from_state(session.to_state())
+    restored.observe_source_text(
+        text,
+        context_ref="source:notes.txt:instance:same:chunk:00002",
+    )
+    assert restored.manager.seeds[seed_id].occurrence_count == 1
+
+    restored.observe_source_text(
+        text,
+        context_ref="source:notes.txt:instance:second:chunk:00000",
+    )
+    promotion = restored.observe_source_text(
+        text,
+        context_ref="source:notes.txt:instance:third:chunk:00000",
+    )
+    assert restored.manager.seeds[seed_id].occurrence_count == 3
+    assert restored.manager.seeds[seed_id].status.value == "PROMOTED"
+    assert promotion["promoted_this_observation"] == [seed_id]
+
+    later = restored.observe_source_text(
+        text,
+        context_ref="source:notes.txt:instance:fourth:chunk:00000",
+    )
+    assert later["promoted_this_observation"] == []
+
+
+def test_ingest_summary_reports_each_promotion_only_on_transition(tmp_path: Path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Promotion transition",
+        profile_id="demo",
+        authority_profile_id="autonomous",
+        backend="fixture",
+        runtime_mode="live",
+        embedding_backend="lexical",
+    )
+    text = "Alpha provides a recurring explanatory perspective."
+    promoted_id = None
+
+    for index in range(1, 7):
+        result = controller.sessions.ingest_source_chunks(
+            session_id,
+            [
+                {
+                    "source_name": "notes.txt",
+                    "source_instance_id": f"instance-{index}",
+                    "context_ref": (
+                        f"source:notes.txt:instance:instance-{index}:chunk:00000"
+                    ),
+                    "text": text,
+                }
+            ],
+        )
+        if result["promoted_seed_ids"]:
+            promoted_id = result["promoted_seed_ids"][0]
+            break
+
+    assert promoted_id is not None
+
+    later = controller.sessions.ingest_source_chunks(
+        session_id,
+        [
+            {
+                "source_name": "notes.txt",
+                "source_instance_id": "after-promotion",
+                "context_ref": "source:notes.txt:instance:after-promotion:chunk:00000",
+                "text": text,
+            }
+        ],
+    )
+    assert promoted_id not in later["promoted_seed_ids"]

@@ -251,6 +251,7 @@ class ShadowChatSession:
         )
         self.seed_to_cluster: dict[str, int] = {}
         self.cluster_rep: dict[int, str] = {}
+        self.pairwise_seen_observation_refs: dict[str, set[str]] = {}
         self.born_turn: dict[str, int] = {}
         self.last_surfaced: dict[str, int] = {}
         self.history: list[tuple[str, str]] = []
@@ -319,6 +320,35 @@ class ShadowChatSession:
         if context_ref.startswith("source:") and ":chunk:" in context_ref:
             return context_ref.rsplit(":chunk:", 1)[0]
         return context_ref
+
+    def _scope_pairwise_source_recurrence(
+        self,
+        occurrence_before: dict[str, int],
+        observation_ref: str,
+    ) -> None:
+        """Credit at most one pairwise recurrence per physical source instance."""
+
+        if self.clusterer is not None:
+            return
+        for seed_id, seed in self.manager.seeds.items():
+            before = occurrence_before.get(seed_id)
+            seen_refs = self.pairwise_seen_observation_refs.setdefault(seed_id, set())
+            if before is None:
+                if seed.occurrence_count > 1:
+                    seed.occurrence_count = 1
+                    self.manager._sync_seed(seed_id)
+                seen_refs.add(observation_ref)
+                continue
+            if seed.occurrence_count == before:
+                continue
+            if observation_ref in seen_refs:
+                seed.occurrence_count = before
+                self.manager._sync_seed(seed_id)
+                continue
+            seen_refs.add(observation_ref)
+            if seed.occurrence_count > before + 1:
+                seed.occurrence_count = before + 1
+                self.manager._sync_seed(seed_id)
 
     def _gate_review_required(self, seed_id: str, event: GateEvent) -> bool:
         """Compatibility helper for Gate-triggered product reports.
@@ -762,7 +792,11 @@ class ShadowChatSession:
                 [recurrence_signal(seed.occurrence_count, threshold=recurrence_threshold)],
                 policy_id=self.gate_policy_id,
             )
-            if event.decision is GateDecision.PROMOTED and seed.status == SeedStatus.PROMOTED:
+            if (
+                event.decision is GateDecision.PROMOTED
+                and event.status_before != SeedStatus.PROMOTED.value
+                and event.status_after == SeedStatus.PROMOTED.value
+            ):
                 promoted_now.append(seed_id)
             if self._gate_review_required(seed_id, event):
                 authority_review_seed_ids.append(seed_id)
@@ -956,7 +990,11 @@ class ShadowChatSession:
                 )],
                 policy_id=self.gate_policy_id,
             )
-            if event.decision is GateDecision.PROMOTED and seed.status == SeedStatus.PROMOTED:
+            if (
+                event.decision is GateDecision.PROMOTED
+                and event.status_before != SeedStatus.PROMOTED.value
+                and event.status_after == SeedStatus.PROMOTED.value
+            ):
                 promoted_now.append(seed_id)
 
         # 7. The baseline is the stable conversation history. SSL remains a
@@ -1107,6 +1145,11 @@ class ShadowChatSession:
                         cluster_id
                     )
 
+        self._scope_pairwise_source_recurrence(
+            occurrence_before,
+            recurrence_observation_ref,
+        )
+
         changed_seed_ids = {
             seed_id
             for seed_id, seed in self.manager.seeds.items()
@@ -1128,7 +1171,11 @@ class ShadowChatSession:
                 [recurrence_signal(seed.occurrence_count, threshold=recurrence_threshold)],
                 policy_id=self.gate_policy_id,
             )
-            if event.decision is GateDecision.PROMOTED and seed.status == SeedStatus.PROMOTED:
+            if (
+                event.decision is GateDecision.PROMOTED
+                and event.status_before != SeedStatus.PROMOTED.value
+                and event.status_after == SeedStatus.PROMOTED.value
+            ):
                 promoted_now.append(seed_id)
             if self._gate_review_required(seed_id, event):
                 authority_review_seed_ids.append(seed_id)
@@ -1294,6 +1341,10 @@ class ShadowChatSession:
             "last_surfaced": dict(self.last_surfaced),
             "seed_to_cluster": dict(self.seed_to_cluster),
             "cluster_rep": dict(self.cluster_rep),
+            "pairwise_seen_observation_refs": {
+                seed_id: sorted(refs)
+                for seed_id, refs in self.pairwise_seen_observation_refs.items()
+            },
             "cluster_state": cluster_state,
         }
 
@@ -1410,6 +1461,10 @@ class ShadowChatSession:
         }
         session.cluster_rep = {
             int(key): str(value) for key, value in state.get("cluster_rep", {}).items()
+        }
+        session.pairwise_seen_observation_refs = {
+            str(seed_id): {str(ref) for ref in refs}
+            for seed_id, refs in state.get("pairwise_seen_observation_refs", {}).items()
         }
 
         cluster_state = state.get("cluster_state")
