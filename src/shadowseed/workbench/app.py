@@ -392,7 +392,7 @@ def _comparison_outputs(comparison: dict[str, Any] | None) -> tuple[str, str, st
     return ssl_on, ssl_off, note
 
 
-def build_app(
+def _build_legacy_app(
     workspace: str | Path | None = None,
     *,
     controller: WorkbenchController | None = None,
@@ -1503,6 +1503,19 @@ def build_app(
                 )
 
     return app
+
+
+
+def build_app(
+    workspace: str | Path | None = None,
+    *,
+    controller: WorkbenchController | None = None,
+):
+    """Build the default Dutch, chat-first Workbench interface."""
+
+    from shadowseed.workbench.simple_app import build_simple_app
+
+    return build_simple_app(workspace, controller=controller)
 
 
 def launch_workbench(
