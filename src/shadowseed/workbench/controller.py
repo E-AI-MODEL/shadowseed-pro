@@ -319,6 +319,23 @@ class WorkbenchController:
         )
         return self.inspection.session_view(session_id)
 
+    def update_session_self_reinforcement(
+        self,
+        session_id: str,
+        *,
+        allow_self_reinforcement: bool,
+    ) -> dict[str, Any]:
+        """Toggle only the experimental feedback loop on an existing chat."""
+
+        loop = bool(allow_self_reinforcement)
+        self.sessions.update_controls(
+            session_id,
+            config_updates={"allow_self_reinforcement": loop},
+            session_config_updates={"allow_self_reinforcement": loop},
+            core_config_updates={},
+        )
+        return self.inspection.session_view(session_id)
+
     def send_turn(
         self,
         session_id: str,
