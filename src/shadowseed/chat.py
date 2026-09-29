@@ -998,6 +998,9 @@ class ShadowChatSession:
             ssl_exposed=bool(first_pass_surfaced_seed_ids),
             surfaced_seed_ids=first_pass_surfaced_seed_ids,
             created_at=self.manager._now_iso(),
+            allow_ssl_recurrence=bool(
+                first_pass_surfaced_seed_ids and self.allow_self_reinforcement
+            ),
         )
 
         self.history.append((question, final_answer))
