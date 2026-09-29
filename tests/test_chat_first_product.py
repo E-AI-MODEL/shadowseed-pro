@@ -637,3 +637,16 @@ def test_regie_controls_reconfigure_existing_chat_without_losing_state(tmp_path)
 
     assert stored["state"]["history"] == history_before
     assert stored["state"]["manager"]["seeds"] == seeds_before
+
+
+
+def test_regie_reconfiguration_does_not_rehydrate_model_backend() -> None:
+    from pathlib import Path
+
+    source = Path("src/shadowseed/application/sessions.py").read_text(encoding="utf-8")
+    start = source.index("def update_controls(")
+    end = source.index("@staticmethod", start)
+    body = source[start:end]
+
+    assert "ShadowChatSession.from_state" not in body
+    assert "save_session_configuration" in body
