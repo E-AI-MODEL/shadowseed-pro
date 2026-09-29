@@ -150,6 +150,7 @@ def ingest_detection_candidates(
                 trigger_keywords=trigger_keywords,
                 deduplicate=deduplicate,
                 origin=origin,
+                suppress_reinforcement_for=accepted_ids,
             )
         except ValueError:
             rejected.append({"text": candidate, "reason": "not_atomic"})
@@ -243,6 +244,7 @@ def add_or_update_seed(
     trigger_keywords: Iterable[str] | None = None,
     deduplicate: bool = True,
     origin: SeedOrigin | None = None,
+    suppress_reinforcement_for: set[str] | None = None,
 ) -> str:
     """Validate and either create or mechanically reinforce one seed."""
 
@@ -256,6 +258,11 @@ def add_or_update_seed(
         deduplicated = manager._maybe_deduplicate_seed(new_embedding)
         if deduplicated is not None:
             seed_id, similarity = deduplicated
+            if (
+                suppress_reinforcement_for is not None
+                and seed_id in suppress_reinforcement_for
+            ):
+                return seed_id
             return manager._activate_existing_seed(seed_id, similarity)
 
     return manager._create_seed(

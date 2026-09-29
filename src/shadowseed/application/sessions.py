@@ -24,6 +24,7 @@ from shadowseed.application.limits import (
 )
 from shadowseed.application.models import SessionConfig, SessionSummary, TesterFeedback
 from shadowseed.application.profiles import get_profile
+from shadowseed.application.session_lock import session_mutation_lock
 from shadowseed.chat import ShadowChatSession
 from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal
 from shadowseed.storage.sqlite import SQLiteWorkspaceRepository, WorkspaceStorageError
@@ -40,6 +41,11 @@ class SessionService:
         self.repository = repository
         self.scope_id = scope_id
         self.repository.initialize()
+
+    def _session_lock(self, session_id: str):
+        """Return the repository-wide process-local lock for one session."""
+
+        return session_mutation_lock(self.repository, session_id)
 
     def create_session(
         self,
@@ -105,64 +111,142 @@ class SessionService:
         # Validate before loading runtime state or calling a provider so a rejected
         # message cannot partially mutate the session or consume an expensive call.
         normalized_question = validate_message(question)
-        stored = self.repository.load_session(session_id)
-        session = ShadowChatSession.from_state(stored["state"])
+        with self._session_lock(session_id):
+            stored = self.repository.load_session(session_id)
+            session = ShadowChatSession.from_state(stored["state"])
 
-        control_answer: str | None = None
-        if compare_without_ssl and session.runtime_mode == "live":
-            control_answer = self._generate_live_no_ssl_control(session, normalized_question)
+            control_answer: str | None = None
+            if compare_without_ssl and session.runtime_mode == "live":
+                control_answer = self._generate_live_no_ssl_control(session, normalized_question)
 
-        report = session.turn(normalized_question)
+            report = session.turn(normalized_question)
 
-        if compare_without_ssl:
-            if session.runtime_mode == "evaluation":
-                baseline = report.get("baseline_answer")
-                if baseline is None:
-                    raise RuntimeError(
-                        "evaluation comparison requested but the turn has no baseline answer"
-                    )
-                control_answer = str(baseline)
-            if control_answer is None:
-                raise RuntimeError("comparison requested but no no-SSL control was generated")
-            comparison_fields = {
-                "comparison_requested": True,
-                "comparison_kind": (
-                    "paired_live_no_ssl_control"
-                    if session.runtime_mode == "live"
-                    else "evaluation_control"
-                ),
-                "comparison_control_answer": control_answer,
-                "comparison_ssl_answer": str(report.get("answer", "")),
-                "comparison_ssl_influence_observed": bool(report.get("surfaced_seed_ids", [])),
-                "comparison_interpretation": (
-                    "The control used the same pre-turn visible history and model configuration "
-                    "without surfaced Shadow Seeds. When no authorized seed surfaced, textual "
-                    "differences must not be attributed to SSL."
-                ),
+            if compare_without_ssl:
+                if session.runtime_mode == "evaluation":
+                    baseline = report.get("baseline_answer")
+                    if baseline is None:
+                        raise RuntimeError(
+                            "evaluation comparison requested but the turn has no baseline answer"
+                        )
+                    control_answer = str(baseline)
+                if control_answer is None:
+                    raise RuntimeError("comparison requested but no no-SSL control was generated")
+                comparison_fields = {
+                    "comparison_requested": True,
+                    "comparison_kind": (
+                        "paired_live_no_ssl_control"
+                        if session.runtime_mode == "live"
+                        else "evaluation_control"
+                    ),
+                    "comparison_control_answer": control_answer,
+                    "comparison_ssl_answer": str(report.get("answer", "")),
+                    "comparison_ssl_influence_observed": bool(report.get("surfaced_seed_ids", [])),
+                    "comparison_interpretation": (
+                        "The control used the same pre-turn visible history and model configuration "
+                        "without surfaced Shadow Seeds. When no authorized seed surfaced, textual "
+                        "differences must not be attributed to SSL."
+                    ),
+                }
+                report.update(comparison_fields)
+                if session.turn_reports:
+                    session.turn_reports[-1].update(comparison_fields)
+
+            self.repository.save_session(
+                session_id,
+                session.to_state(),
+                updated_at=datetime.now().isoformat(),
+            )
+            return report
+
+    def ingest_source_chunks(
+        self,
+        session_id: str,
+        chunks: list[dict[str, str]],
+    ) -> dict[str, Any]:
+        """Observe source chunks without generating chat answers."""
+
+        with self._session_lock(session_id):
+            if not chunks:
+                raise ValueError("at least one source chunk is required")
+            stored = self.repository.load_session(session_id)
+            session = ShadowChatSession.from_state(stored["state"])
+
+            reports: list[dict[str, Any]] = []
+            source_names: set[str] = set()
+            source_instances: set[str] = set()
+            characters = 0
+            seeds_before = len(session.manager.seeds)
+            promoted_ids: set[str] = set()
+            review_ids: set[str] = set()
+            authority_runtime: dict[str, Any] | None = None
+            for item in chunks:
+                text = str(item.get("text", "")).strip()
+                context_ref = str(item.get("context_ref", "")).strip()
+                source_name = str(item.get("source_name", "source")).strip() or "source"
+                source_instance_id = str(item.get("source_instance_id", "")).strip()
+                if not text or not context_ref:
+                    raise ValueError("source chunks require non-empty text and context_ref")
+                report = session.observe_source_text(text, context_ref=context_ref)
+                reports.append(report)
+                source_names.add(source_name)
+                if source_instance_id:
+                    source_instances.add(source_instance_id)
+                elif ":chunk:" in context_ref:
+                    # Backward-compatible fallback for older callers that only
+                    # provide a context reference. All chunks from the same source
+                    # prefix count as one source instance.
+                    source_instances.add(context_ref.rsplit(":chunk:", 1)[0])
+                else:
+                    source_instances.add(context_ref)
+                characters += len(text)
+                promoted_ids.update(report.get("promoted_this_observation", []))
+                review_ids.update(report.get("authority_review_seed_ids", []))
+                if isinstance(report.get("authority_runtime"), dict):
+                    authority_runtime = dict(report["authority_runtime"])
+
+            # Report the complete post-ingest review state, not only review
+            # requests created by this batch. Review remains outstanding through
+            # partial verified validation until the seed is actually promoted.
+            review_ids = {
+                seed_id
+                for seed_id in session.manager.seeds
+                if session._seed_review_required(seed_id)
             }
-            report.update(comparison_fields)
-            if session.turn_reports:
-                session.turn_reports[-1].update(comparison_fields)
 
-        self.repository.save_session(
-            session_id,
-            session.to_state(),
-            updated_at=datetime.now().isoformat(),
-        )
-        return report
+            self.repository.save_session(
+                session_id,
+                session.to_state(),
+                updated_at=datetime.now().isoformat(),
+            )
+            return {
+                "session_id": session_id,
+                "sources": len(source_instances),
+                "source_names": sorted(source_names),
+                "source_instance_count": len(source_instances),
+                "chunks": len(reports),
+                "characters": characters,
+                "seeds_before": seeds_before,
+                "seeds_after": len(session.manager.seeds),
+                "new_seed_count": max(0, len(session.manager.seeds) - seeds_before),
+                "promoted_seed_ids": sorted(promoted_ids),
+                "authority_review_seed_ids": sorted(review_ids),
+                "authority_runtime": authority_runtime,
+                "reports": reports,
+            }
 
     def falsify(self, session_id: str, seed_id: str) -> dict[str, Any]:
         """Research compatibility path; not production authorization."""
 
-        stored = self.repository.load_session(session_id)
-        session = ShadowChatSession.from_state(stored["state"])
-        result = session.falsify(seed_id)
-        self.repository.save_session(
-            session_id,
-            session.to_state(),
-            updated_at=datetime.now().isoformat(),
-        )
-        return result
+        with self._session_lock(session_id):
+            stored = self.repository.load_session(session_id)
+            session = ShadowChatSession.from_state(stored["state"])
+            result = session.falsify(seed_id)
+            self.repository.save_session(
+                session_id,
+                session.to_state(),
+                updated_at=datetime.now().isoformat(),
+            )
+            return result
 
     def falsify_authorized(
         self,
@@ -174,29 +258,30 @@ class SessionService:
         """Production contradiction submission guarded before runtime mutation."""
 
         authz = self._authorize(actor, CONTRADICTION_SUBMIT)
-        replay = self.repository.authorized_request_result(
-            actor.request_id,
-            event_type=CONTRADICTION_SUBMIT,
-            session_id=session_id,
-            seed_id=seed_id,
-        )
-        if replay is not None:
-            return {**replay, "authorization": authz}
+        with self._session_lock(session_id):
+            replay = self.repository.authorized_request_result(
+                actor.request_id,
+                event_type=CONTRADICTION_SUBMIT,
+                session_id=session_id,
+                seed_id=seed_id,
+            )
+            if replay is not None:
+                return {**replay, "authorization": authz}
 
-        stored = self.repository.load_session(session_id)
-        session = ShadowChatSession.from_state(stored["state"])
-        result = session.falsify(seed_id)
-        persisted = self.repository.save_authorized_session(
-            session_id,
-            session.to_state(),
-            updated_at=datetime.now().isoformat(),
-            authorization=authz,
-            event_type=CONTRADICTION_SUBMIT,
-            seed_id=seed_id,
-            operation_result=result,
-            event_metadata={"action": "operator_falsification"},
-        )
-        return {**persisted, "authorization": authz}
+            stored = self.repository.load_session(session_id)
+            session = ShadowChatSession.from_state(stored["state"])
+            result = session.falsify(seed_id)
+            persisted = self.repository.save_authorized_session(
+                session_id,
+                session.to_state(),
+                updated_at=datetime.now().isoformat(),
+                authorization=authz,
+                event_type=CONTRADICTION_SUBMIT,
+                seed_id=seed_id,
+                operation_result=result,
+                event_metadata={"action": "operator_falsification"},
+            )
+            return {**persisted, "authorization": authz}
 
     def submit_verified_evidence(
         self,
@@ -292,67 +377,68 @@ class SessionService:
             normalized_source,
             normalized_note,
         )
-        replay = self.repository.authorized_request_result(
-            actor.request_id,
-            event_type=EVIDENCE_VERIFY,
-            session_id=session_id,
-            seed_id=seed_id,
-        )
-        if replay is not None:
-            replay = self._validated_replay(
-                replay, expected_fingerprint=request_fingerprint
+        with self._session_lock(session_id):
+            replay = self.repository.authorized_request_result(
+                actor.request_id,
+                event_type=EVIDENCE_VERIFY,
+                session_id=session_id,
+                seed_id=seed_id,
             )
-            return {**replay, "authorization": authz}
+            if replay is not None:
+                replay = self._validated_replay(
+                    replay, expected_fingerprint=request_fingerprint
+                )
+                return {**replay, "authorization": authz}
 
-        stored = self.repository.load_session(session_id)
-        session = ShadowChatSession.from_state(stored["state"])
-        if session.runtime_mode != "live":
-            raise ValueError("verified evidence entry is available only for live sessions")
-        result = session.submit_evidence(
-            seed_id,
-            ValidationSignal(
-                kind=SignalKind.HUMAN_FEEDBACK,
-                direction=SignalDirection.SUPPORT,
-                verified=True,
-                independent=True,
-                source_ref=normalized_source,
-                reason=normalized_note or "verified Workbench operator support",
-            ),
-        )
-        persisted = self.repository.save_authorized_session(
-            session_id,
-            session.to_state(),
-            updated_at=datetime.now().isoformat(),
-            authorization=authz,
-            event_type=EVIDENCE_VERIFY,
-            seed_id=seed_id,
-            operation_result=self._minimal_evidence_result(
-                result,
-                request_fingerprint=request_fingerprint,
-            ),
-            event_metadata={
-                "source_ref_sha256": hashlib.sha256(
-                    normalized_source.encode("utf-8")
-                ).hexdigest(),
-                "note_sha256": hashlib.sha256(normalized_note.encode("utf-8")).hexdigest(),
-                "verified": True,
-                "independent": True,
-            },
-        )
-        persisted = self._validated_replay(
-            persisted, expected_fingerprint=request_fingerprint
-        )
-        ledger_fields = {
-            key: persisted[key]
-            for key in (
-                "idempotent_replay",
-                "ledger_event_id",
-                "ledger_sequence_no",
-                "ledger_event_hash",
+            stored = self.repository.load_session(session_id)
+            session = ShadowChatSession.from_state(stored["state"])
+            if session.runtime_mode != "live":
+                raise ValueError("verified evidence entry is available only for live sessions")
+            result = session.submit_evidence(
+                seed_id,
+                ValidationSignal(
+                    kind=SignalKind.HUMAN_FEEDBACK,
+                    direction=SignalDirection.SUPPORT,
+                    verified=True,
+                    independent=True,
+                    source_ref=normalized_source,
+                    reason=normalized_note or "verified Workbench operator support",
+                ),
             )
-            if key in persisted
-        }
-        return {**result, **ledger_fields, "authorization": authz}
+            persisted = self.repository.save_authorized_session(
+                session_id,
+                session.to_state(),
+                updated_at=datetime.now().isoformat(),
+                authorization=authz,
+                event_type=EVIDENCE_VERIFY,
+                seed_id=seed_id,
+                operation_result=self._minimal_evidence_result(
+                    result,
+                    request_fingerprint=request_fingerprint,
+                ),
+                event_metadata={
+                    "source_ref_sha256": hashlib.sha256(
+                        normalized_source.encode("utf-8")
+                    ).hexdigest(),
+                    "note_sha256": hashlib.sha256(normalized_note.encode("utf-8")).hexdigest(),
+                    "verified": True,
+                    "independent": True,
+                },
+            )
+            persisted = self._validated_replay(
+                persisted, expected_fingerprint=request_fingerprint
+            )
+            ledger_fields = {
+                key: persisted[key]
+                for key in (
+                    "idempotent_replay",
+                    "ledger_event_id",
+                    "ledger_sequence_no",
+                    "ledger_event_hash",
+                )
+                if key in persisted
+            }
+            return {**result, **ledger_fields, "authorization": authz}
 
     @staticmethod
     def _normalize_source_ref(source_ref: str) -> str:
@@ -367,28 +453,29 @@ class SessionService:
         source_ref: str,
         note: str,
     ) -> dict[str, Any]:
-        normalized_source, normalized_note = validate_evidence(source_ref, note)
-        stored = self.repository.load_session(session_id)
-        session = ShadowChatSession.from_state(stored["state"])
-        if session.runtime_mode != "live":
-            raise ValueError("verified evidence entry is available only for live sessions")
-        result = session.submit_evidence(
-            seed_id,
-            ValidationSignal(
-                kind=SignalKind.HUMAN_FEEDBACK,
-                direction=SignalDirection.SUPPORT,
-                verified=True,
-                independent=True,
-                source_ref=normalized_source,
-                reason=normalized_note or "verified Workbench operator support",
-            ),
-        )
-        self.repository.save_session(
-            session_id,
-            session.to_state(),
-            updated_at=datetime.now().isoformat(),
-        )
-        return result
+        with self._session_lock(session_id):
+            normalized_source, normalized_note = validate_evidence(source_ref, note)
+            stored = self.repository.load_session(session_id)
+            session = ShadowChatSession.from_state(stored["state"])
+            if session.runtime_mode != "live":
+                raise ValueError("verified evidence entry is available only for live sessions")
+            result = session.submit_evidence(
+                seed_id,
+                ValidationSignal(
+                    kind=SignalKind.HUMAN_FEEDBACK,
+                    direction=SignalDirection.SUPPORT,
+                    verified=True,
+                    independent=True,
+                    source_ref=normalized_source,
+                    reason=normalized_note or "verified Workbench operator support",
+                ),
+            )
+            self.repository.save_session(
+                session_id,
+                session.to_state(),
+                updated_at=datetime.now().isoformat(),
+            )
+            return result
 
     def _authorize(self, actor: ActorContext, capability: str) -> dict[str, object]:
         if not self.scope_id:
@@ -446,7 +533,8 @@ class SessionService:
         return self.repository.list_feedback(session_id)
 
     def delete_session(self, session_id: str) -> None:
-        self.repository.delete_session(session_id)
+        with self._session_lock(session_id):
+            self.repository.delete_session(session_id)
 
 
 def service_for_workspace(workspace: str | Path | None = None) -> SessionService:

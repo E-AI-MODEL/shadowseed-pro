@@ -77,3 +77,34 @@ def test_standalone_startup_diagnostic_redacts_environment_secret(
 
     assert sentinel not in text
     assert "<redacted-secret>" in text
+
+
+
+def test_production_source_ingest_redacts_environment_secret(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    sentinel = "sk-PRODUCTION-SOURCE-SECRET-SENTINEL"
+    monkeypatch.setenv("OPENAI_API_KEY", sentinel)
+    controller = ProductionLocalWorkbenchController(tmp_path / "workspace")
+
+    def _leaking_source_failure(*args, **kwargs):
+        raise RuntimeError(f"source provider rejected api_key={sentinel}")
+
+    monkeypatch.setattr(WorkbenchController, "ingest_sources", _leaking_source_failure)
+
+    with pytest.raises(RuntimeError) as caught:
+        controller.ingest_sources(
+            "session::synthetic",
+            pasted_text="private source text",
+            external_confirmed=True,
+        )
+
+    rendered = str(caught.value)
+    assert sentinel not in rendered
+    assert "<redacted-secret>" in rendered
+
+    log_text = controller.operations.path.read_text(encoding="utf-8")
+    assert sentinel not in log_text
+    assert "private source text" not in log_text
+    assert '"event":"source.ingest"' in log_text

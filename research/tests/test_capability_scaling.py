@@ -31,6 +31,7 @@ def _suite(path: Path) -> Path:
                     {"question": "Alpha is still the recurring topic."},
                     {"question": "Alpha continues as the recurring topic."},
                     {"question": "Alpha closes the recurring topic."},
+                    {"question": "Alpha remains independently recurring."},
                 ],
             }
         ],

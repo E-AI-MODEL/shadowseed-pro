@@ -100,11 +100,12 @@ class ProductionLocalWorkbenchController(WorkbenchController):
             capability=SESSION_MANAGE,
         )
         try:
-            result = delete_authorized_session(
-                self.workspace.repository,
-                session_id,
-                authorization=authorization,
-            )
+            with self.sessions._session_lock(session_id):
+                result = delete_authorized_session(
+                    self.workspace.repository,
+                    session_id,
+                    authorization=authorization,
+                )
         except Exception as exc:
             self._emit_failure("session.delete", exc, session_id=session_id)
             self._raise_sanitized_if_needed(exc)
@@ -135,6 +136,36 @@ class ProductionLocalWorkbenchController(WorkbenchController):
             "session.turn",
             session_id=session_id,
             status="ok",
+        )
+        return result
+
+    def ingest_sources(
+        self,
+        session_id: str,
+        *,
+        pasted_text: str = "",
+        file_paths: list[str] | None = None,
+        external_confirmed: bool = False,
+    ) -> dict[str, Any]:
+        """Ingest sources through the production-local safety/logging boundary."""
+
+        try:
+            result = super().ingest_sources(
+                session_id,
+                pasted_text=pasted_text,
+                file_paths=file_paths,
+                external_confirmed=external_confirmed,
+            )
+        except Exception as exc:
+            self._emit_failure("source.ingest", exc, session_id=session_id)
+            self._raise_sanitized_if_needed(exc)
+            raise
+        self.operations.emit(
+            "source.ingest",
+            session_id=session_id,
+            status="ok",
+            sources=int(result.get("sources", 0)),
+            chunks=int(result.get("chunks", 0)),
         )
         return result
 

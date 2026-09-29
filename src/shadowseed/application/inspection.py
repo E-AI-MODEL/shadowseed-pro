@@ -96,6 +96,15 @@ class InspectionService:
             runtime_mode = "evaluation"
         manager = dict(state.get("manager", {}))
         seeds = [dict(seed) for seed in manager.get("seeds", [])]
+        authority_profile_id = str(
+            session_config.get("authority_profile_id")
+            or persisted_config.get("authority_profile_id", "strict")
+        )
+        effective_gate_policy_id = str(
+            session_config.get("gate_policy_id")
+            or persisted_config.get("gate_policy_id")
+            or ("evidence_backed" if runtime_mode == "live" else "exploratory")
+        )
         blocking_ids = {
             str(item.get("seed_id"))
             for item in manager.get("contradiction_records", [])
@@ -104,12 +113,45 @@ class InspectionService:
         decorated = [
             {
                 **seed,
+                "blocking": str(seed.get("id")) in blocking_ids,
                 "plain_explanation": explain_seed(
                     seed, blocking=str(seed.get("id")) in blocking_ids
                 ),
             }
             for seed in seeds
         ]
+
+        review_seed_ids: list[str] = []
+        if (
+            authority_profile_id == "assisted"
+            and effective_gate_policy_id == "evidence_backed"
+        ):
+            manager_config = dict(manager.get("config", {}))
+            recurrence_threshold = int(manager_config.get("min_occurrences_for_gate", 3))
+            seed_to_cluster = {
+                str(key): int(value)
+                for key, value in dict(state.get("seed_to_cluster", {})).items()
+            }
+            cluster_rep = {
+                int(key): str(value)
+                for key, value in dict(state.get("cluster_rep", {})).items()
+            }
+            for seed in decorated:
+                seed_id = str(seed.get("id", ""))
+                status = str(seed.get("status", "")).upper()
+                occurrence_count = int(seed.get("occurrence_count", 0))
+                cluster_id = seed_to_cluster.get(seed_id)
+                is_representative = (
+                    cluster_id is None or cluster_rep.get(cluster_id) == seed_id
+                )
+                if (
+                    seed_id not in blocking_ids
+                    and status not in {"PROMOTED", "EXPIRED"}
+                    and is_representative
+                    and occurrence_count >= recurrence_threshold
+                ):
+                    review_seed_ids.append(seed_id)
+
         return {
             "session_id": stored["session_id"],
             "title": stored["title"],
@@ -117,6 +159,9 @@ class InspectionService:
             "backend": stored["backend"],
             "model_id": stored["model_id"],
             "runtime_mode": runtime_mode,
+            "authority_profile_id": authority_profile_id,
+            "effective_gate_policy_id": effective_gate_policy_id,
+            "authority_review_seed_ids": review_seed_ids,
             "created_at": stored["created_at"],
             "updated_at": stored["updated_at"],
             "turn": int(state.get("turn", len(state.get("turn_reports", [])))),
@@ -127,8 +172,13 @@ class InspectionService:
 
     def seed_view(self, session_id: str, seed_id: str) -> dict[str, Any]:
         seed = self.sessions.inspect_seed(session_id, seed_id)
+        session = self.session_view(session_id)
+        review_ids = {str(item) for item in session.get("authority_review_seed_ids", [])}
         return {
             **seed,
+            "authority_profile_id": session.get("authority_profile_id", "strict"),
+            "effective_gate_policy_id": session.get("effective_gate_policy_id"),
+            "review_required": str(seed_id) in review_ids,
             "plain_explanation": explain_seed(seed, blocking=bool(seed.get("blocking"))),
             "timeline": self.seed_timeline(session_id, seed_id),
         }

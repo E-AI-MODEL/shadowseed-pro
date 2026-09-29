@@ -11,6 +11,8 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
+from shadowseed.authority_profiles import AUTHORITY_PROFILES, get_authority_profile
+from shadowseed.application.ingest import prepare_sources
 from shadowseed.application.comparison import ComparisonService
 from shadowseed.application.exports import ExportService, verify_workbench_export
 from shadowseed.application.feedback import FeedbackService
@@ -77,6 +79,10 @@ class WorkbenchController:
             for profile in list_profiles()
         ]
 
+    @staticmethod
+    def authority_profiles() -> list[dict[str, Any]]:
+        return [profile.to_dict() for profile in AUTHORITY_PROFILES.values()]
+
     def backends(self) -> list[dict[str, str]]:
         return [
             {"backend": backend, "note": _BACKEND_NOTES[backend]}
@@ -122,12 +128,14 @@ class WorkbenchController:
         backend: str,
         model_id: str | None = None,
         runtime_mode: str = "live",
+        authority_profile_id: str = "strict",
         embedding_backend: str | None = None,
         embedding_model: str | None = None,
         allow_toy_embedder: bool = False,
         external_confirmed: bool = False,
     ) -> str:
         resolved_embedding = embedding_backend or self.default_embedding_backend(backend)
+        authority_profile = get_authority_profile(authority_profile_id)
         self._validate_backend(
             backend,
             model_id=model_id,
@@ -141,6 +149,7 @@ class WorkbenchController:
             profile_id=profile_id,
             config=SessionConfig(
                 runtime_mode=runtime_mode,
+                authority_profile_id=authority_profile.id.value,
                 embedding_backend=resolved_embedding,
                 embedding_model=embedding_model or None,
                 allow_toy_embedder=allow_toy_embedder,
@@ -185,6 +194,41 @@ class WorkbenchController:
             "comparison": comparison,
             "session": self.inspection.session_view(session_id),
         }
+
+    def ingest_sources(
+        self,
+        session_id: str,
+        *,
+        pasted_text: str = "",
+        file_paths: list[str] | None = None,
+        external_confirmed: bool = False,
+    ) -> dict[str, Any]:
+        stored = self.sessions.load(session_id)
+        config = dict(stored.get("config", {}))
+        self._validate_backend(
+            str(stored["backend"]),
+            model_id=stored.get("model_id"),
+            runtime_mode=str(config.get("runtime_mode", "evaluation")),
+            embedding_backend=str(config.get("embedding_backend", "lexical")),
+            allow_toy_embedder=bool(config.get("allow_toy_embedder", False)),
+            external_confirmed=external_confirmed,
+        )
+        chunks = prepare_sources(
+            pasted_text=pasted_text or "",
+            file_paths=file_paths or [],
+        )
+        payload = [
+            {
+                "source_name": chunk.source_name,
+                "source_instance_id": chunk.source_instance_id,
+                "context_ref": chunk.context_ref,
+                "text": chunk.text,
+            }
+            for chunk in chunks
+        ]
+        result = self.sessions.ingest_source_chunks(session_id, payload)
+        result["session"] = self.inspection.session_view(session_id)
+        return result
 
     def session_view(self, session_id: str) -> dict[str, Any]:
         return self.inspection.session_view(session_id)

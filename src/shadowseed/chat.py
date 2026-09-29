@@ -40,6 +40,7 @@ from uuid import uuid4
 import numpy as np
 
 from shadowseed.adapters.embedding import EmbedFn, make_embedding_fn
+from shadowseed.authority_profiles import resolve_authority_runtime
 from shadowseed.detection.model_detector import DetectorBackend, make_detector_backend
 from shadowseed.recurrence_clustering import (
     DEFAULT_CLUSTER_THRESHOLD,
@@ -161,6 +162,7 @@ class ShadowChatSession:
         probe_top_k: int = 3,
         runtime_mode: str = "live",
         gate_policy_id: str | None = None,
+        authority_profile_id: str = "strict",
         allow_toy_embedder: bool = False,
         model_backend: ModelBackend | None = None,
         detector_backend: DetectorBackend | None = None,
@@ -178,9 +180,13 @@ class ShadowChatSession:
         if runtime_mode not in {"evaluation", "live"}:
             raise ValueError("runtime_mode must be 'evaluation' or 'live'")
         self.runtime_mode = runtime_mode
-        self.gate_policy_id = gate_policy_id or (
-            "evidence_backed" if runtime_mode == "live" else "exploratory"
+        self.authority_runtime = resolve_authority_runtime(
+            authority_profile_id,
+            runtime_mode=runtime_mode,
+            configured_gate_policy_id=gate_policy_id,
         )
+        self.authority_profile_id = self.authority_runtime.profile_id.value
+        self.gate_policy_id = self.authority_runtime.gate_policy_id
         self.allow_toy_embedder = allow_toy_embedder
         if (
             runtime_mode == "live"
@@ -245,6 +251,7 @@ class ShadowChatSession:
         )
         self.seed_to_cluster: dict[str, int] = {}
         self.cluster_rep: dict[int, str] = {}
+        self.pairwise_seen_observation_refs: dict[str, set[str]] = {}
         self.born_turn: dict[str, int] = {}
         self.last_surfaced: dict[str, int] = {}
         self.history: list[tuple[str, str]] = []
@@ -284,6 +291,138 @@ class ShadowChatSession:
             if record.allowed:
                 allowed.append((similarity, seed_id, text))
         return allowed
+
+    def _seed_review_required(self, seed_id: str) -> bool:
+        """Return whether Assisted mode still needs authority-bearing review.
+
+        Review state is persistent product metadata derived from the seed's
+        mature recurrence and current authority state. It must survive partial
+        verified validation until the Gate actually promotes the seed.
+        """
+
+        if not self.authority_runtime.proactive_review:
+            return False
+        seed = self.manager.seeds.get(seed_id)
+        if seed is None or seed.status in {SeedStatus.PROMOTED, SeedStatus.EXPIRED}:
+            return False
+        if self.manager.is_blocking_contradiction(seed_id):
+            return False
+        if self.clusterer is not None:
+            cluster_id = self.seed_to_cluster.get(seed_id)
+            if cluster_id is not None and self.cluster_rep.get(cluster_id) != seed_id:
+                return False
+        return seed.occurrence_count >= self.manager.config.min_occurrences_for_gate
+
+    @staticmethod
+    def _source_observation_ref(context_ref: str) -> str:
+        """Collapse chunk-level provenance to one recurrence observation per source instance."""
+
+        if context_ref.startswith("source:") and ":chunk:" in context_ref:
+            return context_ref.rsplit(":chunk:", 1)[0]
+        return context_ref
+
+    def _scope_pairwise_source_recurrence(
+        self,
+        occurrence_before: dict[str, int],
+        observation_ref: str,
+    ) -> None:
+        """Credit at most one pairwise recurrence per physical source instance."""
+
+        if self.clusterer is not None:
+            return
+        for seed_id, seed in self.manager.seeds.items():
+            before = occurrence_before.get(seed_id)
+            seen_refs = self.pairwise_seen_observation_refs.setdefault(seed_id, set())
+            if before is None:
+                if seed.occurrence_count > 1:
+                    seed.occurrence_count = 1
+                    self.manager._sync_seed(seed_id)
+                seen_refs.add(observation_ref)
+                continue
+            if seed.occurrence_count == before:
+                continue
+            if observation_ref in seen_refs:
+                seed.occurrence_count = before
+                self.manager._sync_seed(seed_id)
+                continue
+            seen_refs.add(observation_ref)
+            if seed.occurrence_count > before + 1:
+                seed.occurrence_count = before + 1
+                self.manager._sync_seed(seed_id)
+
+    def _register_cluster_observation(
+        self,
+        seed_id: str,
+        *,
+        observation_ref: str,
+    ) -> int | None:
+        """Register one accepted seed and keep the cluster representative live."""
+
+        if self.clusterer is None:
+            return None
+        seed = self.manager.seeds.get(seed_id)
+        if seed is None:
+            return None
+
+        if seed_id not in self.seed_to_cluster:
+            cluster_id = self.clusterer.add(
+                seed.text,
+                seed.embedding,
+                observation_ref=observation_ref,
+            )
+            self.seed_to_cluster[seed_id] = cluster_id
+        else:
+            cluster_id = self.seed_to_cluster[seed_id]
+            self.clusterer.bump(cluster_id, observation_ref=observation_ref)
+
+        representative_id = self.cluster_rep.get(cluster_id)
+        representative = (
+            self.manager.seeds.get(representative_id)
+            if representative_id is not None
+            else None
+        )
+        if representative is None or representative.status == SeedStatus.EXPIRED:
+            previous_id = representative_id
+            self.cluster_rep[cluster_id] = seed_id
+            if previous_id != seed_id:
+                self.manager._record_event(
+                    "cluster_representative_replaced",
+                    seed_id,
+                    cluster_id=cluster_id,
+                    previous_seed_id=previous_id,
+                    reason=(
+                        "missing_representative"
+                        if representative is None
+                        else "expired_representative"
+                    ),
+                )
+        elif representative is not seed:
+            refresh_cluster_representative(self.manager, representative, seed)
+
+        return cluster_id
+
+    def _sync_cluster_recurrence(self) -> None:
+        """Project observation-scoped cluster recurrence onto each live representative."""
+
+        if self.clusterer is None:
+            return
+        for cluster_id, representative_id in self.cluster_rep.items():
+            representative = self.manager.seeds.get(representative_id)
+            if representative is None or representative.status == SeedStatus.EXPIRED:
+                continue
+            representative.occurrence_count = self.clusterer.recurrence(cluster_id)
+            self.manager._sync_seed(representative_id)
+
+    def _gate_review_required(self, seed_id: str, event: GateEvent) -> bool:
+        """Compatibility helper for Gate-triggered product reports.
+
+        The event remains part of the audit trail, but review state is derived
+        from persistent seed state so a later VALIDATED event cannot hide an
+        outstanding Assisted review request.
+        """
+
+        del event
+        return self._seed_review_required(seed_id)
 
     def audit(self) -> int:
         """Replay every influence decision against all point-of-use invariants;
@@ -519,14 +658,18 @@ class ShadowChatSession:
                 cluster_id = self.seed_to_cluster.get(seed_id)
                 return cluster_id is None or self.cluster_rep.get(cluster_id) == seed_id
 
-            eligible = collect_eligible_promoted_seeds(
-                self.manager,
-                question,
-                turn=turn,
-                born_turn=self.born_turn,
-                last_surfaced=self.last_surfaced,
-                policy=self.surfacing_policy,
-                include_seed=_is_cluster_representative,
+            eligible = (
+                collect_eligible_promoted_seeds(
+                    self.manager,
+                    question,
+                    turn=turn,
+                    born_turn=self.born_turn,
+                    last_surfaced=self.last_surfaced,
+                    policy=self.surfacing_policy,
+                    include_seed=_is_cluster_representative,
+                )
+                if self.authority_runtime.auto_surface_when_relevant
+                else []
             )
             configured_limit = self.surfacing_policy.surface_top_k
             boundary_limit = max(0, DEFAULT_PROMPT_BOUNDARY.max_seeds)
@@ -659,33 +802,11 @@ class ShadowChatSession:
 
         if self.clusterer is not None:
             for accepted in ingest.get("accepted", []):
-                seed_id = accepted["seed_id"]
-                seed = self.manager.seeds.get(seed_id)
-                if seed is None:
-                    continue
-                if seed_id not in self.seed_to_cluster:
-                    cluster_id = self.clusterer.add(seed.text, seed.embedding, observation_ref=f"turn:{turn}")
-                    had_representative = cluster_id in self.cluster_rep
-                    self.seed_to_cluster[seed_id] = cluster_id
-                    self.cluster_rep.setdefault(cluster_id, seed_id)
-                    representative_id = self.cluster_rep.get(cluster_id)
-                    if had_representative and representative_id is not None and representative_id != seed_id:
-                        representative = self.manager.seeds.get(representative_id)
-                        if representative is not None:
-                            refresh_cluster_representative(self.manager, representative, seed)
-                else:
-                    cluster_id = self.seed_to_cluster[seed_id]
-                    self.clusterer.bump(cluster_id, observation_ref=f"turn:{turn}")
-                    representative = self.manager.seeds.get(self.cluster_rep.get(cluster_id, ""))
-                    if representative is not None and representative is not seed:
-                        refresh_cluster_representative(self.manager, representative, seed)
-
-            for cluster_id, representative_id in self.cluster_rep.items():
-                if representative_id in self.manager.seeds:
-                    representative = self.manager.seeds[representative_id]
-                    representative.occurrence_count = max(
-                        representative.occurrence_count, self.clusterer.recurrence(cluster_id)
-                    )
+                self._register_cluster_observation(
+                    accepted["seed_id"],
+                    observation_ref=f"turn:{turn}",
+                )
+            self._sync_cluster_recurrence()
 
         changed_seed_ids = {
             seed_id
@@ -693,6 +814,7 @@ class ShadowChatSession:
             if occurrence_before.get(seed_id) != seed.occurrence_count
         }
         promoted_now: list[str] = []
+        authority_review_seed_ids: list[str] = []
         recurrence_threshold = self.manager.config.min_occurrences_for_gate
         for seed_id in sorted(changed_seed_ids):
             seed = self.manager.seeds[seed_id]
@@ -707,8 +829,14 @@ class ShadowChatSession:
                 [recurrence_signal(seed.occurrence_count, threshold=recurrence_threshold)],
                 policy_id=self.gate_policy_id,
             )
-            if event.decision is GateDecision.PROMOTED and seed.status == SeedStatus.PROMOTED:
+            if (
+                event.decision is GateDecision.PROMOTED
+                and event.status_before != SeedStatus.PROMOTED.value
+                and event.status_after == SeedStatus.PROMOTED.value
+            ):
                 promoted_now.append(seed_id)
+            if self._gate_review_required(seed_id, event):
+                authority_review_seed_ids.append(seed_id)
 
         self.history.append((question, final_answer))
         self._turn += 1
@@ -735,6 +863,8 @@ class ShadowChatSession:
                 dict(item) for item in prepared.prompt_boundary_markers
             ],
             "promoted_this_turn": promoted_now,
+            "authority_review_seed_ids": authority_review_seed_ids,
+            "authority_runtime": self.authority_runtime.to_dict(),
             "reactivated_trtl": list(prepared.reactivated_trtl),
             "shadow_size": len(self.manager.seeds),
             "retrieval_probe": self._run_retrieval_probe(question),
@@ -838,40 +968,11 @@ class ShadowChatSession:
         # 5. Credit semantic recurrence to one cluster representative.
         if self.clusterer is not None:
             for accepted in ingest.get("accepted", []):
-                seed_id = accepted["seed_id"]
-                seed = self.manager.seeds.get(seed_id)
-                if seed is None:
-                    continue
-                if seed_id not in self.seed_to_cluster:
-                    cluster_id = self.clusterer.add(seed.text, seed.embedding, observation_ref=f"turn:{turn}")
-                    had_representative = cluster_id in self.cluster_rep
-                    self.seed_to_cluster[seed_id] = cluster_id
-                    self.cluster_rep.setdefault(cluster_id, seed_id)
-                    representative_id = self.cluster_rep.get(cluster_id)
-                    if (
-                        had_representative
-                        and representative_id is not None
-                        and representative_id != seed_id
-                    ):
-                        representative = self.manager.seeds.get(representative_id)
-                        if representative is not None:
-                            refresh_cluster_representative(self.manager, representative, seed)
-                else:
-                    cluster_id = self.seed_to_cluster[seed_id]
-                    self.clusterer.bump(cluster_id, observation_ref=f"turn:{turn}")
-                    representative = self.manager.seeds.get(
-                        self.cluster_rep.get(cluster_id, "")
-                    )
-                    if representative is not None and representative is not seed:
-                        refresh_cluster_representative(self.manager, representative, seed)
-
-            for cluster_id, representative_id in self.cluster_rep.items():
-                if representative_id in self.manager.seeds:
-                    representative = self.manager.seeds[representative_id]
-                    representative.occurrence_count = max(
-                        representative.occurrence_count,
-                        self.clusterer.recurrence(cluster_id),
-                    )
+                self._register_cluster_observation(
+                    accepted["seed_id"],
+                    observation_ref=f"turn:{turn}",
+                )
+            self._sync_cluster_recurrence()
 
         # 6. Recurrence is a first-class SSL signal: under the exploratory policy
         # it may drive promotion on its own, and only the Validation Gate raises
@@ -894,7 +995,11 @@ class ShadowChatSession:
                 )],
                 policy_id=self.gate_policy_id,
             )
-            if event.decision is GateDecision.PROMOTED and seed.status == SeedStatus.PROMOTED:
+            if (
+                event.decision is GateDecision.PROMOTED
+                and event.status_before != SeedStatus.PROMOTED.value
+                and event.status_after == SeedStatus.PROMOTED.value
+            ):
                 promoted_now.append(seed_id)
 
         # 7. The baseline is the stable conversation history. SSL remains a
@@ -923,12 +1028,132 @@ class ShadowChatSession:
             "seeds_born_weightless": born,
             "prompt_boundary_markers": apply_prompt_boundary(surfaced)[1] if surfaced else [],
             "promoted_this_turn": promoted_now,
+            "authority_review_seed_ids": [],
+            "authority_runtime": self.authority_runtime.to_dict(),
             "reactivated_trtl": reactivated,
             "shadow_size": len(self.manager.seeds),
             "retrieval_probe": self._run_retrieval_probe(question),
         }
         self.turn_reports.append(report)
         return report
+
+    def observe_source_text(
+        self,
+        text: str,
+        *,
+        context_ref: str,
+    ) -> dict[str, Any]:
+        """Observe non-chat source text and add candidate seeds to shadow memory.
+
+        This path never generates an answer and never treats uploaded text as
+        authority by itself. It only runs candidate detection, recurrence
+        tracking and the configured Validation Gate. Source provenance is
+        retained through the context reference.
+        """
+
+        if self._pending_live_turn is not None:
+            raise RuntimeError(
+                "source observation is unavailable while a prepared turn is awaiting "
+                "observe_turn or abort_turn"
+            )
+        if not isinstance(text, str) or not text.strip():
+            raise ValueError("source text must be non-empty")
+        if not isinstance(context_ref, str) or not context_ref.strip():
+            raise ValueError("context_ref must be non-empty")
+
+        source_text = text.strip()
+        recurrence_observation_ref = self._source_observation_ref(context_ref)
+        raw_candidates = self.detector.detect_seeds(
+            {"text": source_text}, max_seeds=self.max_seeds_per_turn
+        )
+        observations = self.observation_ledger.record_batch(
+            raw_candidates,
+            context_ref=context_ref,
+            detector_backend=str(getattr(self.detector, "name", "unknown")),
+            detector_prompt_provenance=(
+                None
+                if getattr(self.detector, "prompt_variant", None) is None
+                else str(getattr(self.detector, "prompt_variant"))
+            ),
+            candidate_type=CandidateType.POSSIBLE_COMPLETION.value,
+            ssl_exposed=False,
+            created_at=self.manager._now_iso(),
+        )
+        occurrence_before = {
+            seed_id: seed.occurrence_count for seed_id, seed in self.manager.seeds.items()
+        }
+        origin = SeedOrigin(
+            candidate_type=CandidateType.POSSIBLE_COMPLETION,
+            detection_basis="uploaded_source_text",
+            context_ref=context_ref,
+        )
+        ingest = self.manager.ingest_detection_candidates(
+            raw_candidates,
+            expand_short_fragments=False,
+            split_broad=False,
+            origin=origin,
+        )
+
+        born: list[str] = []
+        for accepted in ingest.get("accepted", []):
+            seed_id = accepted["seed_id"]
+            self.born_turn.setdefault(seed_id, -1)
+            born.append(seed_id)
+
+        if self.clusterer is not None:
+            for accepted in ingest.get("accepted", []):
+                self._register_cluster_observation(
+                    accepted["seed_id"],
+                    observation_ref=recurrence_observation_ref,
+                )
+            self._sync_cluster_recurrence()
+
+        self._scope_pairwise_source_recurrence(
+            occurrence_before,
+            recurrence_observation_ref,
+        )
+
+        changed_seed_ids = {
+            seed_id
+            for seed_id, seed in self.manager.seeds.items()
+            if occurrence_before.get(seed_id) != seed.occurrence_count
+        }
+        promoted_now: list[str] = []
+        authority_review_seed_ids: list[str] = []
+        recurrence_threshold = self.manager.config.min_occurrences_for_gate
+        for seed_id in sorted(changed_seed_ids):
+            seed = self.manager.seeds[seed_id]
+            if seed.status == SeedStatus.EXPIRED or seed.occurrence_count < recurrence_threshold:
+                continue
+            if self.clusterer is not None:
+                cluster_id = self.seed_to_cluster.get(seed_id)
+                if cluster_id is not None and self.cluster_rep.get(cluster_id) != seed_id:
+                    continue
+            event = self.manager.submit_signals(
+                seed_id,
+                [recurrence_signal(seed.occurrence_count, threshold=recurrence_threshold)],
+                policy_id=self.gate_policy_id,
+            )
+            if (
+                event.decision is GateDecision.PROMOTED
+                and event.status_before != SeedStatus.PROMOTED.value
+                and event.status_after == SeedStatus.PROMOTED.value
+            ):
+                promoted_now.append(seed_id)
+            if self._gate_review_required(seed_id, event):
+                authority_review_seed_ids.append(seed_id)
+
+        return {
+            "context_ref": context_ref,
+            "characters": len(source_text),
+            "detected_candidates": raw_candidates,
+            "candidate_observations": [item.to_dict() for item in observations],
+            "seeds_born_weightless": born,
+            "promoted_this_observation": promoted_now,
+            "authority_review_seed_ids": authority_review_seed_ids,
+            "authority_runtime": self.authority_runtime.to_dict(),
+            "shadow_size": len(self.manager.seeds),
+        }
 
     # -- explicit evidence and falsification -----------------------------------
 
@@ -1014,6 +1239,8 @@ class ShadowChatSession:
             )
         return {
             "runtime_mode": self.runtime_mode,
+            "authority_profile_id": self.authority_profile_id,
+            "authority_runtime": self.authority_runtime.to_dict(),
             "turns": self._turn,
             "seeds": seeds,
             "influence_records": [asdict(r) for r in self.influence_records],
@@ -1055,6 +1282,7 @@ class ShadowChatSession:
                 "probe_top_k": self.probe_top_k,
                 "runtime_mode": self.runtime_mode,
                 "gate_policy_id": self.gate_policy_id,
+                "authority_profile_id": self.authority_profile_id,
                 "allow_toy_embedder": self.allow_toy_embedder,
             },
             "contract": asdict(self.contract),
@@ -1076,6 +1304,10 @@ class ShadowChatSession:
             "last_surfaced": dict(self.last_surfaced),
             "seed_to_cluster": dict(self.seed_to_cluster),
             "cluster_rep": dict(self.cluster_rep),
+            "pairwise_seen_observation_refs": {
+                seed_id: sorted(refs)
+                for seed_id, refs in self.pairwise_seen_observation_refs.items()
+            },
             "cluster_state": cluster_state,
         }
 
@@ -1192,6 +1424,10 @@ class ShadowChatSession:
         }
         session.cluster_rep = {
             int(key): str(value) for key, value in state.get("cluster_rep", {}).items()
+        }
+        session.pairwise_seen_observation_refs = {
+            str(seed_id): {str(ref) for ref in refs}
+            for seed_id, refs in state.get("pairwise_seen_observation_refs", {}).items()
         }
 
         cluster_state = state.get("cluster_state")

@@ -12,6 +12,7 @@ from shadowseed.application.auth import (
     require_capability,
 )
 from shadowseed.application.limits import validate_contradiction_resolution
+from shadowseed.application.session_lock import session_mutation_lock
 from shadowseed.chat import ShadowChatSession
 from shadowseed.storage.sqlite import SQLiteWorkspaceRepository, WorkspaceStorageError
 
@@ -82,63 +83,64 @@ def resolve_authorized_contradiction(
         normalized_id,
     )
 
-    replay = repository.authorized_request_result(
-        actor.request_id,
-        event_type=CONTRADICTION_RESOLVE,
-        session_id=session_id,
-        seed_id=seed_id,
-    )
-    if replay is not None:
-        return {
-            **_validated_replay(replay, expected_fingerprint=fingerprint),
-            "authorization": authorization,
+    with session_mutation_lock(repository, session_id):
+        replay = repository.authorized_request_result(
+            actor.request_id,
+            event_type=CONTRADICTION_RESOLVE,
+            session_id=session_id,
+            seed_id=seed_id,
+        )
+        if replay is not None:
+            return {
+                **_validated_replay(replay, expected_fingerprint=fingerprint),
+                "authorization": authorization,
+            }
+
+        stored = repository.load_session(session_id)
+        session = ShadowChatSession.from_state(stored["state"])
+        if session.runtime_mode != "live":
+            raise ValueError("contradiction resolution is available only for live sessions")
+        seed = session.manager.get_seed(seed_id)
+        authority_version_before = seed.authority_version
+        selected = session.manager.open_contradictions(seed_id)
+        if normalized_id is not None:
+            selected = [
+                record for record in selected if record.contradiction_id == normalized_id
+            ]
+        resolved_ids = [record.contradiction_id for record in selected]
+
+        event = session.manager.resolve_contradiction(
+            seed_id,
+            basis=normalized_basis,
+            contradiction_id=normalized_id,
+            resolver=actor.actor_id,
+        )
+        result = {
+            "gate_event_id": event.event_id,
+            "decision": event.decision.value,
+            "policy_id": event.policy_id,
+            "authority_version_before": authority_version_before,
+            "authority_version_after": event.authority_version,
+            "blocking_after": event.contradiction_after.blocking,
+            "resolved_contradiction_ids": resolved_ids,
+            "_request_fingerprint": fingerprint,
         }
-
-    stored = repository.load_session(session_id)
-    session = ShadowChatSession.from_state(stored["state"])
-    if session.runtime_mode != "live":
-        raise ValueError("contradiction resolution is available only for live sessions")
-    seed = session.manager.get_seed(seed_id)
-    authority_version_before = seed.authority_version
-    selected = session.manager.open_contradictions(seed_id)
-    if normalized_id is not None:
-        selected = [
-            record for record in selected if record.contradiction_id == normalized_id
-        ]
-    resolved_ids = [record.contradiction_id for record in selected]
-
-    event = session.manager.resolve_contradiction(
-        seed_id,
-        basis=normalized_basis,
-        contradiction_id=normalized_id,
-        resolver=actor.actor_id,
-    )
-    result = {
-        "gate_event_id": event.event_id,
-        "decision": event.decision.value,
-        "policy_id": event.policy_id,
-        "authority_version_before": authority_version_before,
-        "authority_version_after": event.authority_version,
-        "blocking_after": event.contradiction_after.blocking,
-        "resolved_contradiction_ids": resolved_ids,
-        "_request_fingerprint": fingerprint,
-    }
-    persisted = repository.save_authorized_session(
-        session_id,
-        session.to_state(),
-        updated_at=datetime.now().isoformat(),
-        authorization=authorization,
-        event_type=CONTRADICTION_RESOLVE,
-        seed_id=seed_id,
-        operation_result=result,
-        event_metadata={
-            "action": "contradiction_resolution",
-            "basis_sha256": hashlib.sha256(normalized_basis.encode("utf-8")).hexdigest(),
-            "contradiction_ids": resolved_ids,
-        },
-    )
-    persisted = _validated_replay(
-        persisted,
-        expected_fingerprint=fingerprint,
-    )
-    return {**persisted, "authorization": authorization}
+        persisted = repository.save_authorized_session(
+            session_id,
+            session.to_state(),
+            updated_at=datetime.now().isoformat(),
+            authorization=authorization,
+            event_type=CONTRADICTION_RESOLVE,
+            seed_id=seed_id,
+            operation_result=result,
+            event_metadata={
+                "action": "contradiction_resolution",
+                "basis_sha256": hashlib.sha256(normalized_basis.encode("utf-8")).hexdigest(),
+                "contradiction_ids": resolved_ids,
+            },
+        )
+        persisted = _validated_replay(
+            persisted,
+            expected_fingerprint=fingerprint,
+        )
+        return {**persisted, "authorization": authorization}
