@@ -37,6 +37,7 @@ class SessionConfig:
     probe_top_k: int = 3
     runtime_mode: str = "live"
     gate_policy_id: str | None = None
+    authority_profile_id: str = "strict"
     allow_toy_embedder: bool = False
 
     def to_dict(self) -> dict[str, Any]:
