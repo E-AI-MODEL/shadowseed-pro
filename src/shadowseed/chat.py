@@ -291,27 +291,33 @@ class ShadowChatSession:
                 allowed.append((similarity, seed_id, text))
         return allowed
 
-    def _gate_review_required(self, seed_id: str, event: GateEvent) -> bool:
-        """Return whether Assisted mode should proactively ask for human review.
+    def _seed_review_required(self, seed_id: str) -> bool:
+        """Return whether Assisted mode still needs authority-bearing review.
 
-        This is presentation metadata only. It never changes authority and is
-        derived from the Gate event that already refused automatic promotion.
+        Review state is persistent product metadata derived from the seed's
+        mature recurrence and current authority state. It must survive partial
+        verified validation until the Gate actually promotes the seed.
         """
 
         if not self.authority_runtime.proactive_review:
-            return False
-        if event.decision is not GateDecision.BLOCKED:
             return False
         seed = self.manager.seeds.get(seed_id)
         if seed is None or seed.status in {SeedStatus.PROMOTED, SeedStatus.EXPIRED}:
             return False
         if self.manager.is_blocking_contradiction(seed_id):
             return False
-        return any(
-            signal.kind is SignalKind.RECURRENCE
-            and signal.direction is SignalDirection.SUPPORT
-            for signal in event.signals
-        )
+        return seed.occurrence_count >= self.manager.config.min_occurrences_for_gate
+
+    def _gate_review_required(self, seed_id: str, event: GateEvent) -> bool:
+        """Compatibility helper for Gate-triggered product reports.
+
+        The event remains part of the audit trail, but review state is derived
+        from persistent seed state so a later VALIDATED event cannot hide an
+        outstanding Assisted review request.
+        """
+
+        del event
+        return self._seed_review_required(seed_id)
 
     def audit(self) -> int:
         """Replay every influence decision against all point-of-use invariants;
