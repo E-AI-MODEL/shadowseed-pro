@@ -164,6 +164,7 @@ class ShadowChatSession:
         gate_policy_id: str | None = None,
         authority_profile_id: str = "strict",
         allow_toy_embedder: bool = False,
+        allow_self_reinforcement: bool = False,
         model_backend: ModelBackend | None = None,
         detector_backend: DetectorBackend | None = None,
         embedding_fn: EmbedFn | None = None,
@@ -188,6 +189,7 @@ class ShadowChatSession:
         self.authority_profile_id = self.authority_runtime.profile_id.value
         self.gate_policy_id = self.authority_runtime.gate_policy_id
         self.allow_toy_embedder = allow_toy_embedder
+        self.allow_self_reinforcement = bool(allow_self_reinforcement)
         if (
             runtime_mode == "live"
             and backend != "fixture"
@@ -559,16 +561,15 @@ class ShadowChatSession:
         candidates: list[str],
         surfaced_seed_ids: list[str],
     ) -> tuple[list[str], list[str]]:
-        """Fail closed on same-turn recurrence after SSL influenced generation.
+        """Apply the configurable self-reinforcement boundary.
 
-        Once a surfaced seed is present in the prompt, provenance applies to the
-        whole generated answer. Embedding similarity can identify close
-        paraphrases but cannot prove that a semantically different candidate was
-        not derived from that seed. Live mode therefore defers every detected
-        candidate on such a turn. The next answer generated without surfaced SSL
-        context can establish recurrence independently.
+        By default, a turn that already received SSL context cannot credit its
+        own generated candidates back into recurrence or authority. Experimental
+        self-reinforcement deliberately opens that boundary: those candidates
+        are accepted and may strengthen the same memory loop on later turns.
+        Provenance remains recorded so the feedback chain stays inspectable.
         """
-        if not surfaced_seed_ids:
+        if not surfaced_seed_ids or self.allow_self_reinforcement:
             return list(candidates), []
         return [], list(candidates)
 
@@ -739,9 +740,10 @@ class ShadowChatSession:
     ) -> dict[str, Any]:
         """Observe one host-generated answer and advance the SSL pipeline.
 
-        Candidate detection runs after generation.  A turn that received SSL
-        context is handled fail-closed: detected candidates are recorded for
-        inspection but do not create recurrence or new authority-bearing state.
+        Candidate detection runs after generation. A turn that received SSL
+        context is fail-closed by default. Experimental self-reinforcement can
+        deliberately open that boundary so SSL-attributed candidates feed
+        recurrence and authority on later turns.
         """
         if self.runtime_mode != "live":
             raise ValueError("observe_turn is available only for the live SSL runtime")
@@ -786,7 +788,11 @@ class ShadowChatSession:
         }
         origin = SeedOrigin(
             candidate_type=CandidateType.POSSIBLE_COMPLETION,
-            detection_basis="visible_answer_non_ssl_attributed",
+            detection_basis=(
+                "visible_answer_self_reinforcement_allowed"
+                if surfaced_seed_ids and self.allow_self_reinforcement
+                else "visible_answer_non_ssl_attributed"
+            ),
             context_ref=f"turn:{turn}:visible_answer",
         )
         ingest = self.manager.ingest_detection_candidates(
@@ -855,6 +861,7 @@ class ShadowChatSession:
             ],
             "detected_candidates": raw_candidates,
             "suppressed_self_attributed_candidates": suppressed_self,
+            "self_reinforcement_enabled": self.allow_self_reinforcement,
             "candidate_observations": [
                 observation.to_dict() for observation in turn_observations
             ],
@@ -1284,6 +1291,7 @@ class ShadowChatSession:
                 "gate_policy_id": self.gate_policy_id,
                 "authority_profile_id": self.authority_profile_id,
                 "allow_toy_embedder": self.allow_toy_embedder,
+                "allow_self_reinforcement": self.allow_self_reinforcement,
             },
             "contract": asdict(self.contract),
             "manager": self.manager.to_dict(),
