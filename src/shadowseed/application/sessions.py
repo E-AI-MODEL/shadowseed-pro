@@ -26,6 +26,7 @@ from shadowseed.application.models import SessionConfig, SessionSummary, TesterF
 from shadowseed.application.profiles import get_profile
 from shadowseed.application.session_lock import session_mutation_lock
 from shadowseed.chat import ShadowChatSession
+from shadowseed.core_config import SSLCoreConfig
 from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal
 from shadowseed.storage.sqlite import SQLiteWorkspaceRepository, WorkspaceStorageError
 from shadowseed.surfacing import build_chat_prompt
@@ -70,7 +71,19 @@ class SessionService:
             max_seeds_per_turn=resolved.max_seeds_per_turn,
             max_new_tokens=resolved.max_new_tokens,
         )
-        session = ShadowChatSession(**resolved.to_dict())
+        runtime_config = resolved.to_dict()
+        core_config = SSLCoreConfig(
+            min_occurrences_for_gate=int(runtime_config.pop("min_occurrences_for_gate")),
+            min_evidence_for_gate=int(runtime_config.pop("min_evidence_for_gate")),
+            min_trace_for_gate=float(runtime_config.pop("min_trace_for_gate")),
+            promotion_threshold=float(runtime_config.pop("promotion_threshold")),
+            validation_increment=float(runtime_config.pop("validation_increment")),
+        )
+        # Product-facing slider values are persisted in the application config,
+        # while the runtime consumes the concrete Gate and surfacing settings.
+        runtime_config.pop("ssl_intensity", None)
+        runtime_config.pop("gate_strictness", None)
+        session = ShadowChatSession(**runtime_config, core_config=core_config)
         session_id = f"session::{uuid4()}"
         now = datetime.now().isoformat()
         self.repository.create_session(
