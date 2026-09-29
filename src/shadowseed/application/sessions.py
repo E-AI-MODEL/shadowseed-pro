@@ -122,15 +122,15 @@ class SessionService:
             manager_state["config"] = manager_config
             state["manager"] = manager_state
 
-            # Rehydrate once before saving so invalid combinations fail here and
-            # the persisted snapshot is canonical for the current runtime.
-            session = ShadowChatSession.from_state(state)
-            canonical_state = session.to_state()
+            # Regie updates are configuration-only. Do not rehydrate the
+            # model backend here: moving a slider must never load a local model
+            # or initialize a hosted provider. The controller supplies bounded,
+            # canonical mappings for all updated fields.
             updated_at = datetime.now().isoformat()
             self.repository.save_session_configuration(
                 session_id,
                 config=config,
-                state=canonical_state,
+                state=state,
                 updated_at=updated_at,
             )
             return self.repository.load_session(session_id)
