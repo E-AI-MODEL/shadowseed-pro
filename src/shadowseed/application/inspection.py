@@ -117,6 +117,7 @@ class InspectionService:
             "backend": stored["backend"],
             "model_id": stored["model_id"],
             "runtime_mode": runtime_mode,
+            "authority_profile_id": str(persisted_config.get("authority_profile_id", "strict")),
             "created_at": stored["created_at"],
             "updated_at": stored["updated_at"],
             "turn": int(state.get("turn", len(state.get("turn_reports", [])))),
