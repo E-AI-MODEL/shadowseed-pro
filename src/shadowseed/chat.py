@@ -1085,7 +1085,9 @@ class ShadowChatSession:
                             )
                 else:
                     cluster_id = self.seed_to_cluster[seed_id]
-                    self.clusterer.bump(cluster_id, observation_ref=context_ref)
+                    self.clusterer.bump(
+                        cluster_id, observation_ref=recurrence_observation_ref
+                    )
                     representative = self.manager.seeds.get(
                         self.cluster_rep.get(cluster_id, "")
                     )
