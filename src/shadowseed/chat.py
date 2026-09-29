@@ -768,6 +768,12 @@ class ShadowChatSession:
         self_reinforcement_seed_ids: list[str] = []
         self_reinforcement_decisions: list[dict[str, Any]] = []
         self_reinforcement_prompt_boundary_markers: list[dict[str, object]] = []
+        self_reinforcement_error: str | None = None
+        first_pass_context_ref = (
+            f"turn:{turn}:draft_answer"
+            if self.allow_self_reinforcement
+            else f"turn:{turn}:visible_answer"
+        )
 
         raw_candidates = self.detector.detect_seeds(
             {"text": final_answer}, max_seeds=self.max_seeds_per_turn
@@ -777,7 +783,7 @@ class ShadowChatSession:
         )
         turn_observations = self.observation_ledger.record_batch(
             raw_candidates,
-            context_ref=f"turn:{turn}:visible_answer",
+            context_ref=first_pass_context_ref,
             detector_backend=str(getattr(self.detector, "name", "unknown")),
             detector_prompt_provenance=(
                 None
@@ -795,11 +801,15 @@ class ShadowChatSession:
         origin = SeedOrigin(
             candidate_type=CandidateType.POSSIBLE_COMPLETION,
             detection_basis=(
-                "visible_answer_self_reinforcement_allowed"
+                "draft_answer_ssl_exposed_self_reinforcement_allowed"
                 if surfaced_seed_ids and self.allow_self_reinforcement
-                else "visible_answer_non_ssl_attributed"
+                else (
+                    "draft_answer_self_reinforcement_enabled"
+                    if self.allow_self_reinforcement
+                    else "visible_answer_non_ssl_attributed"
+                )
             ),
-            context_ref=f"turn:{turn}:visible_answer",
+            context_ref=first_pass_context_ref,
         )
         ingest = self.manager.ingest_detection_candidates(
             candidates,
@@ -883,6 +893,9 @@ class ShadowChatSession:
                 self.surfacing_policy.surface_top_k,
             )
             influence_before = len(self.influence_records)
+            refinement_last_surfaced_before = deepcopy(self.last_surfaced)
+            base_surfaced = list(surfaced)
+            base_surfaced_seed_ids = list(surfaced_seed_ids)
             allowed_refinement = self._contract_filter(selected_refinement)
             self_reinforcement_decisions = [
                 record.__dict__.copy()
@@ -918,25 +931,38 @@ class ShadowChatSession:
                         ],
                         turn,
                     )
-                    final_answer = self.model.generate(
-                        build_chat_prompt(
-                            self.history,
-                            question,
-                            surfaced,
-                            response_language=(
-                                "the same language as the user's current question"
+                    try:
+                        final_answer = self.model.generate(
+                            build_chat_prompt(
+                                self.history,
+                                question,
+                                surfaced,
+                                response_language=(
+                                    "the same language as the user's current question"
+                                ),
                             ),
-                        ),
-                        {
-                            "question": question,
-                            "turn": turn,
-                            "baseline_answer": draft_answer,
-                            "self_reinforcement": True,
-                        },
-                        "ssl",
-                        surfaced,
-                    )
-                    self_reinforcement_applied = True
+                            {
+                                "question": question,
+                                "turn": turn,
+                                "baseline_answer": draft_answer,
+                                "self_reinforcement": True,
+                            },
+                            "ssl",
+                            surfaced,
+                        )
+                        self_reinforcement_applied = True
+                    except Exception as exc:
+                        del self.influence_records[influence_before:]
+                        self.last_surfaced = refinement_last_surfaced_before
+                        surfaced = base_surfaced
+                        surfaced_seed_ids = base_surfaced_seed_ids
+                        self_reinforcement_seed_ids = []
+                        self_reinforcement_decisions = []
+                        self_reinforcement_prompt_boundary_markers = []
+                        self_reinforcement_error = (
+                            f"{type(exc).__name__}: {exc}"
+                        )
+                        final_answer = draft_answer
 
         self.history.append((question, final_answer))
         self._turn += 1
@@ -961,6 +987,8 @@ class ShadowChatSession:
             "self_reinforcement_draft_answer": (
                 draft_answer if self_reinforcement_applied else None
             ),
+            "self_reinforcement_error": self_reinforcement_error,
+            "first_pass_context_ref": first_pass_context_ref,
             "self_reinforcement_prompt_boundary_markers": (
                 self_reinforcement_prompt_boundary_markers
             ),
