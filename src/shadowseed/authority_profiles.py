@@ -21,6 +21,31 @@ class AuthorityProfileId(str, Enum):
 
 
 @dataclass(frozen=True)
+class AuthorityRuntimePolicy:
+    """Resolved runtime behavior for one persisted authority profile.
+
+    This object selects existing Gate policy semantics; it never implements a
+    second authority decision path. An explicitly configured Gate policy always
+    wins so research/compatibility callers remain deterministic.
+    """
+
+    profile_id: AuthorityProfileId
+    gate_policy_id: str
+    proactive_review: bool
+    auto_surface_when_relevant: bool
+    allow_unreviewed_system_evidence: bool
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "profile_id": self.profile_id.value,
+            "gate_policy_id": self.gate_policy_id,
+            "proactive_review": self.proactive_review,
+            "auto_surface_when_relevant": self.auto_surface_when_relevant,
+            "allow_unreviewed_system_evidence": self.allow_unreviewed_system_evidence,
+        }
+
+
+@dataclass(frozen=True)
 class AuthorityProfile:
     id: AuthorityProfileId
     label: str
@@ -79,8 +104,8 @@ ASSISTED_PROFILE = AuthorityProfile(
     id=AuthorityProfileId.ASSISTED,
     label="Assisted",
     description=(
-        "Shadowseed automates low-risk lifecycle steps and asks the user only "
-        "for authority-bearing checks that still need human confirmation."
+        "Shadowseed tracks mature recurrence automatically and brings the user "
+        "in when verified authority-bearing support is still required."
     ),
     detect_mode="auto",
     validate_mode="mixed",
@@ -98,8 +123,8 @@ AUTONOMOUS_PROFILE = AuthorityProfile(
     id=AuthorityProfileId.AUTONOMOUS,
     label="Autonomous",
     description=(
-        "Shadowseed may validate, activate, promote and surface seeds "
-        "automatically when the configured Gate and point-of-use checks allow it."
+        "Shadowseed may let recurring seeds earn authority automatically through "
+        "the exploratory Gate, then surface them only when point-of-use checks allow."
     ),
     detect_mode="auto",
     validate_mode="auto",
@@ -117,9 +142,9 @@ OPEN_PROFILE = AuthorityProfile(
     id=AuthorityProfileId.OPEN,
     label="Open research",
     description=(
-        "Maximum autonomy for exploratory runs. Gate and audit events remain "
-        "active, but the runtime may accept unreviewed system evidence when the "
-        "selected policy permits it."
+        "Maximum autonomy for exploratory runs. Recurrence may earn authority "
+        "automatically; unreviewed system evidence is permitted only when an "
+        "explicit producer and Gate policy support it."
     ),
     detect_mode="auto",
     validate_mode="auto",
@@ -154,3 +179,44 @@ def get_authority_profile(profile_id: str | AuthorityProfileId | None) -> Author
     except ValueError as exc:
         raise ValueError(f"unknown authority profile: {profile_id}") from exc
     return AUTHORITY_PROFILES[key]
+
+
+
+def resolve_authority_runtime(
+    profile_id: str | AuthorityProfileId | None,
+    *,
+    runtime_mode: str,
+    configured_gate_policy_id: str | None = None,
+) -> AuthorityRuntimePolicy:
+    """Resolve profile intent onto the canonical Gate and surfacing machinery.
+
+    Controlled remains exactly on the existing live evidence_backed policy.
+    Assisted also keeps evidence-backed authority but can proactively surface
+    review needs. Autonomous/Open opt into the existing exploratory Gate,
+    where recurrence is a first-class support signal and can therefore raise
+    authority without being mislabeled as external evidence.
+
+    Evaluation sessions preserve their historical exploratory default. An
+    explicit configured_gate_policy_id always wins.
+    """
+
+    if runtime_mode not in {"live", "evaluation"}:
+        raise ValueError("runtime_mode must be 'live' or 'evaluation'")
+    profile = get_authority_profile(profile_id)
+
+    if configured_gate_policy_id:
+        gate_policy_id = str(configured_gate_policy_id)
+    elif runtime_mode == "evaluation":
+        gate_policy_id = "exploratory"
+    elif profile.id in {AuthorityProfileId.AUTONOMOUS, AuthorityProfileId.OPEN}:
+        gate_policy_id = "exploratory"
+    else:
+        gate_policy_id = "evidence_backed"
+
+    return AuthorityRuntimePolicy(
+        profile_id=profile.id,
+        gate_policy_id=gate_policy_id,
+        proactive_review=profile.id is AuthorityProfileId.ASSISTED,
+        auto_surface_when_relevant=profile.auto_surface_when_relevant,
+        allow_unreviewed_system_evidence=profile.allow_unreviewed_system_evidence,
+    )
