@@ -197,16 +197,12 @@ class SessionService:
                 authority_runtime = dict(report["authority_runtime"])
 
         # Report the complete post-ingest review state, not only review
-        # requests created by this batch. A later unrelated ingest must not hide
-        # an outstanding Assisted review request from the product summary.
-        latest_gate_by_seed = {
-            event.seed_id: event
-            for event in session.manager.gate_events
-        }
+        # requests created by this batch. Review remains outstanding through
+        # partial verified validation until the seed is actually promoted.
         review_ids = {
             seed_id
-            for seed_id, event in latest_gate_by_seed.items()
-            if session._gate_review_required(seed_id, event)
+            for seed_id in session.manager.seeds
+            if session._seed_review_required(seed_id)
         }
 
         self.repository.save_session(
