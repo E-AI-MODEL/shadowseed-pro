@@ -100,11 +100,12 @@ class ProductionLocalWorkbenchController(WorkbenchController):
             capability=SESSION_MANAGE,
         )
         try:
-            result = delete_authorized_session(
-                self.workspace.repository,
-                session_id,
-                authorization=authorization,
-            )
+            with self.sessions._session_lock(session_id):
+                result = delete_authorized_session(
+                    self.workspace.repository,
+                    session_id,
+                    authorization=authorization,
+                )
         except Exception as exc:
             self._emit_failure("session.delete", exc, session_id=session_id)
             self._raise_sanitized_if_needed(exc)
