@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 
 from shadowseed.chat import ShadowChatSession
@@ -533,3 +535,16 @@ def test_refinement_failure_finalizes_draft_and_keeps_session_usable() -> None:
 
     prepared = session.prepare_turn("Can the session continue?")
     session.abort_turn(prepared)
+
+
+
+def test_refinement_audit_is_capped_before_contract_filter() -> None:
+    source = Path("src/shadowseed/chat.py").read_text(encoding="utf-8")
+
+    boundary = source.index("remaining_boundary_slots = max(")
+    selection = source.index("selected_refinement = select_cross_turn_seeds(", boundary)
+    influence = source.index("influence_before = len(self.influence_records)", selection)
+
+    assert boundary < selection < influence
+    assert "DEFAULT_PROMPT_BOUNDARY.max_seeds - len(surfaced_seed_ids)" in source
+    assert "refinement_limit" in source[boundary:influence]
