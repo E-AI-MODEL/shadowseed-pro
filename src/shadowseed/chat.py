@@ -40,6 +40,7 @@ from uuid import uuid4
 import numpy as np
 
 from shadowseed.adapters.embedding import EmbedFn, make_embedding_fn
+from shadowseed.authority_profiles import resolve_authority_runtime
 from shadowseed.detection.model_detector import DetectorBackend, make_detector_backend
 from shadowseed.recurrence_clustering import (
     DEFAULT_CLUSTER_THRESHOLD,
@@ -179,10 +180,13 @@ class ShadowChatSession:
         if runtime_mode not in {"evaluation", "live"}:
             raise ValueError("runtime_mode must be 'evaluation' or 'live'")
         self.runtime_mode = runtime_mode
-        self.authority_profile_id = str(authority_profile_id or "strict")
-        self.gate_policy_id = gate_policy_id or (
-            "evidence_backed" if runtime_mode == "live" else "exploratory"
+        self.authority_runtime = resolve_authority_runtime(
+            authority_profile_id,
+            runtime_mode=runtime_mode,
+            configured_gate_policy_id=gate_policy_id,
         )
+        self.authority_profile_id = self.authority_runtime.profile_id.value
+        self.gate_policy_id = self.authority_runtime.gate_policy_id
         self.allow_toy_embedder = allow_toy_embedder
         if (
             runtime_mode == "live"
@@ -286,6 +290,25 @@ class ShadowChatSession:
             if record.allowed:
                 allowed.append((similarity, seed_id, text))
         return allowed
+
+    def _gate_review_required(self, seed_id: str, event: GateEvent) -> bool:
+        """Return whether Assisted mode should proactively ask for human review.
+
+        This is presentation metadata only. It never changes authority and is
+        derived from the Gate event that already refused automatic promotion.
+        """
+
+        if not self.authority_runtime.proactive_review:
+            return False
+        if event.decision is not GateDecision.BLOCKED:
+            return False
+        if self.manager.is_blocking_contradiction(seed_id):
+            return False
+        return any(
+            signal.kind is SignalKind.RECURRENCE
+            and signal.direction is SignalDirection.SUPPORT
+            for signal in event.signals
+        )
 
     def audit(self) -> int:
         """Replay every influence decision against all point-of-use invariants;
@@ -521,14 +544,18 @@ class ShadowChatSession:
                 cluster_id = self.seed_to_cluster.get(seed_id)
                 return cluster_id is None or self.cluster_rep.get(cluster_id) == seed_id
 
-            eligible = collect_eligible_promoted_seeds(
-                self.manager,
-                question,
-                turn=turn,
-                born_turn=self.born_turn,
-                last_surfaced=self.last_surfaced,
-                policy=self.surfacing_policy,
-                include_seed=_is_cluster_representative,
+            eligible = (
+                collect_eligible_promoted_seeds(
+                    self.manager,
+                    question,
+                    turn=turn,
+                    born_turn=self.born_turn,
+                    last_surfaced=self.last_surfaced,
+                    policy=self.surfacing_policy,
+                    include_seed=_is_cluster_representative,
+                )
+                if self.authority_runtime.auto_surface_when_relevant
+                else []
             )
             configured_limit = self.surfacing_policy.surface_top_k
             boundary_limit = max(0, DEFAULT_PROMPT_BOUNDARY.max_seeds)
@@ -695,6 +722,7 @@ class ShadowChatSession:
             if occurrence_before.get(seed_id) != seed.occurrence_count
         }
         promoted_now: list[str] = []
+        authority_review_seed_ids: list[str] = []
         recurrence_threshold = self.manager.config.min_occurrences_for_gate
         for seed_id in sorted(changed_seed_ids):
             seed = self.manager.seeds[seed_id]
@@ -711,6 +739,8 @@ class ShadowChatSession:
             )
             if event.decision is GateDecision.PROMOTED and seed.status == SeedStatus.PROMOTED:
                 promoted_now.append(seed_id)
+            if self._gate_review_required(seed_id, event):
+                authority_review_seed_ids.append(seed_id)
 
         self.history.append((question, final_answer))
         self._turn += 1
@@ -737,6 +767,8 @@ class ShadowChatSession:
                 dict(item) for item in prepared.prompt_boundary_markers
             ],
             "promoted_this_turn": promoted_now,
+            "authority_review_seed_ids": authority_review_seed_ids,
+            "authority_runtime": self.authority_runtime.to_dict(),
             "reactivated_trtl": list(prepared.reactivated_trtl),
             "shadow_size": len(self.manager.seeds),
             "retrieval_probe": self._run_retrieval_probe(question),
@@ -925,6 +957,8 @@ class ShadowChatSession:
             "seeds_born_weightless": born,
             "prompt_boundary_markers": apply_prompt_boundary(surfaced)[1] if surfaced else [],
             "promoted_this_turn": promoted_now,
+            "authority_review_seed_ids": [],
+            "authority_runtime": self.authority_runtime.to_dict(),
             "reactivated_trtl": reactivated,
             "shadow_size": len(self.manager.seeds),
             "retrieval_probe": self._run_retrieval_probe(question),
@@ -1040,6 +1074,7 @@ class ShadowChatSession:
             if occurrence_before.get(seed_id) != seed.occurrence_count
         }
         promoted_now: list[str] = []
+        authority_review_seed_ids: list[str] = []
         recurrence_threshold = self.manager.config.min_occurrences_for_gate
         for seed_id in sorted(changed_seed_ids):
             seed = self.manager.seeds[seed_id]
@@ -1056,6 +1091,8 @@ class ShadowChatSession:
             )
             if event.decision is GateDecision.PROMOTED and seed.status == SeedStatus.PROMOTED:
                 promoted_now.append(seed_id)
+            if self._gate_review_required(seed_id, event):
+                authority_review_seed_ids.append(seed_id)
 
         return {
             "context_ref": context_ref,
@@ -1064,6 +1101,8 @@ class ShadowChatSession:
             "candidate_observations": [item.to_dict() for item in observations],
             "seeds_born_weightless": born,
             "promoted_this_observation": promoted_now,
+            "authority_review_seed_ids": authority_review_seed_ids,
+            "authority_runtime": self.authority_runtime.to_dict(),
             "shadow_size": len(self.manager.seeds),
         }
 
@@ -1151,6 +1190,8 @@ class ShadowChatSession:
             )
         return {
             "runtime_mode": self.runtime_mode,
+            "authority_profile_id": self.authority_profile_id,
+            "authority_runtime": self.authority_runtime.to_dict(),
             "turns": self._turn,
             "seeds": seeds,
             "influence_records": [asdict(r) for r in self.influence_records],
