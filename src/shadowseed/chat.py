@@ -930,6 +930,141 @@ class ShadowChatSession:
         self.turn_reports.append(report)
         return report
 
+    def observe_source_text(
+        self,
+        text: str,
+        *,
+        context_ref: str,
+    ) -> dict[str, Any]:
+        """Observe non-chat source text and add candidate seeds to shadow memory.
+
+        This path never generates an answer and never treats uploaded text as
+        authority by itself. It only runs candidate detection, recurrence
+        tracking and the configured Validation Gate. Source provenance is
+        retained through the context reference.
+        """
+
+        if not isinstance(text, str) or not text.strip():
+            raise ValueError("source text must be non-empty")
+        if not isinstance(context_ref, str) or not context_ref.strip():
+            raise ValueError("context_ref must be non-empty")
+
+        source_text = text.strip()
+        raw_candidates = self.detector.detect_seeds(
+            {"text": source_text}, max_seeds=self.max_seeds_per_turn
+        )
+        observations = self.observation_ledger.record_batch(
+            raw_candidates,
+            context_ref=context_ref,
+            detector_backend=str(getattr(self.detector, "name", "unknown")),
+            detector_prompt_provenance=(
+                None
+                if getattr(self.detector, "prompt_variant", None) is None
+                else str(getattr(self.detector, "prompt_variant"))
+            ),
+            candidate_type=CandidateType.POSSIBLE_COMPLETION.value,
+            ssl_exposed=False,
+            created_at=self.manager._now_iso(),
+        )
+        occurrence_before = {
+            seed_id: seed.occurrence_count for seed_id, seed in self.manager.seeds.items()
+        }
+        origin = SeedOrigin(
+            candidate_type=CandidateType.POSSIBLE_COMPLETION,
+            detection_basis="uploaded_source_text",
+            context_ref=context_ref,
+        )
+        ingest = self.manager.ingest_detection_candidates(
+            raw_candidates,
+            expand_short_fragments=False,
+            split_broad=False,
+            origin=origin,
+        )
+
+        born: list[str] = []
+        for accepted in ingest.get("accepted", []):
+            seed_id = accepted["seed_id"]
+            self.born_turn.setdefault(seed_id, -1)
+            born.append(seed_id)
+
+        if self.clusterer is not None:
+            for accepted in ingest.get("accepted", []):
+                seed_id = accepted["seed_id"]
+                seed = self.manager.seeds.get(seed_id)
+                if seed is None:
+                    continue
+                if seed_id not in self.seed_to_cluster:
+                    cluster_id = self.clusterer.add(
+                        seed.text,
+                        seed.embedding,
+                        observation_ref=context_ref,
+                    )
+                    had_representative = cluster_id in self.cluster_rep
+                    self.seed_to_cluster[seed_id] = cluster_id
+                    self.cluster_rep.setdefault(cluster_id, seed_id)
+                    representative_id = self.cluster_rep.get(cluster_id)
+                    if (
+                        had_representative
+                        and representative_id is not None
+                        and representative_id != seed_id
+                    ):
+                        representative = self.manager.seeds.get(representative_id)
+                        if representative is not None:
+                            refresh_cluster_representative(
+                                self.manager, representative, seed
+                            )
+                else:
+                    cluster_id = self.seed_to_cluster[seed_id]
+                    self.clusterer.bump(cluster_id, observation_ref=context_ref)
+                    representative = self.manager.seeds.get(
+                        self.cluster_rep.get(cluster_id, "")
+                    )
+                    if representative is not None and representative is not seed:
+                        refresh_cluster_representative(
+                            self.manager, representative, seed
+                        )
+
+            for cluster_id, representative_id in self.cluster_rep.items():
+                if representative_id in self.manager.seeds:
+                    representative = self.manager.seeds[representative_id]
+                    representative.occurrence_count = max(
+                        representative.occurrence_count,
+                        self.clusterer.recurrence(cluster_id),
+                    )
+
+        changed_seed_ids = {
+            seed_id
+            for seed_id, seed in self.manager.seeds.items()
+            if occurrence_before.get(seed_id) != seed.occurrence_count
+        }
+        promoted_now: list[str] = []
+        recurrence_threshold = self.manager.config.min_occurrences_for_gate
+        for seed_id in sorted(changed_seed_ids):
+            seed = self.manager.seeds[seed_id]
+            if seed.status == SeedStatus.EXPIRED or seed.occurrence_count < recurrence_threshold:
+                continue
+            if self.clusterer is not None:
+                cluster_id = self.seed_to_cluster.get(seed_id)
+                if cluster_id is not None and self.cluster_rep.get(cluster_id) != seed_id:
+                    continue
+            event = self.manager.submit_signals(
+                seed_id,
+                [recurrence_signal(seed.occurrence_count, threshold=recurrence_threshold)],
+                policy_id=self.gate_policy_id,
+            )
+            if event.decision is GateDecision.PROMOTED and seed.status == SeedStatus.PROMOTED:
+                promoted_now.append(seed_id)
+
+        return {
+            "context_ref": context_ref,
+            "characters": len(source_text),
+            "detected_candidates": raw_candidates,
+            "candidate_observations": [item.to_dict() for item in observations],
+            "seeds_born_weightless": born,
+            "promoted_this_observation": promoted_now,
+            "shadow_size": len(self.manager.seeds),
+        }
+
     # -- explicit evidence and falsification -----------------------------------
 
     def submit_evidence(
