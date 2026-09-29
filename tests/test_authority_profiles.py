@@ -3,6 +3,7 @@ from shadowseed.authority_profiles import (
     AuthorityProfileId,
     STRICT_PROFILE,
     get_authority_profile,
+    resolve_authority_runtime,
 )
 
 
@@ -49,3 +50,38 @@ def test_unknown_profile_is_rejected():
         assert "unknown authority profile" in str(exc)
     else:
         raise AssertionError("unknown profile must be rejected")
+
+
+
+def test_authority_profile_enum_roundtrips():
+    assert get_authority_profile(AuthorityProfileId.AUTONOMOUS).id is AuthorityProfileId.AUTONOMOUS
+
+
+def test_runtime_resolution_maps_profiles_without_bypassing_gate():
+    strict = resolve_authority_runtime("strict", runtime_mode="live")
+    assisted = resolve_authority_runtime("assisted", runtime_mode="live")
+    autonomous = resolve_authority_runtime("autonomous", runtime_mode="live")
+    open_research = resolve_authority_runtime("open", runtime_mode="live")
+
+    assert strict.gate_policy_id == "evidence_backed"
+    assert strict.proactive_review is False
+    assert assisted.gate_policy_id == "evidence_backed"
+    assert assisted.proactive_review is True
+    assert autonomous.gate_policy_id == "exploratory"
+    assert autonomous.proactive_review is False
+    assert open_research.gate_policy_id == "exploratory"
+    assert open_research.allow_unreviewed_system_evidence is True
+
+
+def test_explicit_gate_policy_overrides_profile_default():
+    policy = resolve_authority_runtime(
+        "autonomous",
+        runtime_mode="live",
+        configured_gate_policy_id="evidence_backed",
+    )
+    assert policy.gate_policy_id == "evidence_backed"
+
+
+def test_evaluation_preserves_exploratory_default():
+    policy = resolve_authority_runtime("strict", runtime_mode="evaluation")
+    assert policy.gate_policy_id == "exploratory"
