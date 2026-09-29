@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
@@ -18,12 +20,16 @@ MAX_UPLOAD_BYTES = 25 * 1024 * 1024
 @dataclass(frozen=True)
 class IngestChunk:
     source_name: str
+    source_instance_id: str
     chunk_index: int
     text: str
 
     @property
     def context_ref(self) -> str:
-        return f"source:{self.source_name}:chunk:{self.chunk_index:05d}"
+        return (
+            f"source:{self.source_name}:instance:{self.source_instance_id}:"
+            f"chunk:{self.chunk_index:05d}"
+        )
 
 
 def _json_strings(value: object, prefix: str = "") -> list[str]:
@@ -80,6 +86,7 @@ def chunk_text(
     text: str,
     *,
     source_name: str,
+    source_instance_id: str | None = None,
     max_chars: int = DEFAULT_CHUNK_CHARS,
     overlap_chars: int = DEFAULT_CHUNK_OVERLAP,
 ) -> list[IngestChunk]:
@@ -89,6 +96,9 @@ def chunk_text(
     if max_chars < 500:
         raise ValueError("max_chars must be at least 500")
     overlap = max(0, min(int(overlap_chars), max_chars // 3))
+    instance_id = source_instance_id or hashlib.sha256(
+        normalized.encode("utf-8")
+    ).hexdigest()[:16]
 
     chunks: list[IngestChunk] = []
     start = 0
@@ -111,7 +121,14 @@ def chunk_text(
                 end = start + split_at + 1
         chunk = normalized[start:end].strip()
         if chunk:
-            chunks.append(IngestChunk(source_name=source_name, chunk_index=index, text=chunk))
+            chunks.append(
+                IngestChunk(
+                    source_name=source_name,
+                    source_instance_id=instance_id,
+                    chunk_index=index,
+                    text=chunk,
+                )
+            )
             index += 1
         if end >= length:
             break
@@ -126,12 +143,34 @@ def prepare_sources(
     file_paths: Iterable[str | Path] = (),
 ) -> list[IngestChunk]:
     chunks: list[IngestChunk] = []
+    ingest_id = uuid.uuid4().hex[:12]
+    source_ordinal = 0
+
+    def source_instance_id(source_name: str, text: str) -> str:
+        nonlocal source_ordinal
+        source_ordinal += 1
+        digest = hashlib.sha256(text.encode("utf-8")).hexdigest()[:12]
+        return f"{digest}-{ingest_id}-{source_ordinal:03d}"
+
     if pasted_text.strip():
-        chunks.extend(chunk_text(pasted_text, source_name="pasted-text"))
+        normalized_paste = pasted_text.strip()
+        chunks.extend(
+            chunk_text(
+                normalized_paste,
+                source_name="pasted-text",
+                source_instance_id=source_instance_id("pasted-text", normalized_paste),
+            )
+        )
 
     for path in file_paths:
         source_name, text = read_source_file(path)
-        chunks.extend(chunk_text(text, source_name=source_name))
+        chunks.extend(
+            chunk_text(
+                text,
+                source_name=source_name,
+                source_instance_id=source_instance_id(source_name, text),
+            )
+        )
     if not chunks:
         raise ValueError("paste text or upload at least one supported file")
     return chunks
