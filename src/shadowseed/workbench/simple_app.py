@@ -508,8 +508,10 @@ def _dashboard_summary(view: dict[str, Any] | None) -> tuple[str, str, str, str,
     for report in view.get("turn_reports", []) or []:
         used.update(str(seed_id) for seed_id in report.get("surfaced_seed_ids", []) or [])
 
-    ssl_level = int(view.get("ssl_intensity", 100) or 0)
-    gate_level = int(view.get("gate_strictness", 100) or 0)
+    ssl_raw = view.get("ssl_intensity")
+    gate_raw = view.get("gate_strictness")
+    ssl_level = f"{int(ssl_raw)}%" if ssl_raw is not None else "aangepast"
+    gate_level = f"{int(gate_raw)}%" if gate_raw is not None else "aangepast"
     model = str(view.get("model_id") or view.get("backend") or "model")
 
     headline = (
