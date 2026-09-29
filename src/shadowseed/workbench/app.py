@@ -16,12 +16,33 @@ from shadowseed.workbench.controller import WorkbenchController
 
 
 _PRODUCT_CSS = """
-.gradio-container { max-width: 1480px !important; margin: 0 auto; }
-#product-title { margin-bottom: 0.25rem; }
-#product-subtitle { opacity: 0.78; margin-bottom: 1rem; }
+.gradio-container { max-width: 1480px !important; margin: 0 auto; padding-top: 1.2rem !important; }
+#product-hero {
+  border: 1px solid var(--border-color-primary);
+  border-radius: 22px;
+  padding: 1.25rem 1.4rem;
+  background: linear-gradient(135deg, rgba(255,255,255,.055), rgba(255,255,255,.015));
+  box-shadow: 0 18px 50px rgba(0,0,0,.16);
+  margin-bottom: 1rem;
+}
+#product-title { margin-bottom: 0.15rem; letter-spacing: -0.025em; }
+#product-subtitle { opacity: 0.82; margin-bottom: .7rem; max-width: 980px; }
+#journey { opacity: .9; font-size: .94rem; }
 #chat-shell { min-height: 560px; }
-#chat-status { font-size: 0.92rem; }
+#chat-status {
+  font-size: 0.92rem;
+  padding: .65rem .8rem;
+  border-radius: 12px;
+  background: var(--background-fill-secondary);
+}
+#authority-card {
+  border: 1px solid var(--border-color-primary);
+  border-radius: 16px;
+  padding: .8rem .9rem .35rem .9rem;
+  background: var(--background-fill-secondary);
+}
 .comparison-note { font-size: 0.9rem; opacity: 0.82; }
+.section-kicker { opacity: .72; font-size: .9rem; }
 """
 
 
@@ -103,6 +124,11 @@ def build_app(
         (f"{item['label']} — {item['description']}", item["profile_id"])
         for item in ctl.profiles()
     ]
+    authority_profiles = ctl.authority_profiles()
+    authority_choices = [
+        (f"{item['label']} — {item['description']}", item["id"])
+        for item in authority_profiles
+    ]
     backend_choices = [
         ("Ollama — local model", "ollama"),
         ("OpenAI — hosted model", "openai"),
@@ -157,6 +183,7 @@ def build_app(
     def create_chat(
         title: str,
         profile_id: str,
+        authority_profile_id: str,
         backend: str,
         model_id: str,
         embedding_backend: str,
@@ -169,6 +196,7 @@ def build_app(
             session_id = ctl.create_session(
                 title=title,
                 profile_id=profile_id,
+                authority_profile_id=authority_profile_id,
                 backend=backend,
                 model_id=model_id or None,
                 runtime_mode="evaluation" if research_evaluation else "live",
@@ -378,12 +406,19 @@ def build_app(
     initial_choices = session_choices()
 
     with gr.Blocks(title="Shadowseed", css=_PRODUCT_CSS) as app:
-        gr.Markdown("# Shadowseed", elem_id="product-title")
-        gr.Markdown(
-            "Chat normally with an LLM while Shadow Seed Learning runs as a gated shadow layer. "
-            "When you want a direct check, generate the same turn with SSL off automatically.",
-            elem_id="product-subtitle",
-        )
+        with gr.Group(elem_id="product-hero"):
+            gr.Markdown("# Shadowseed", elem_id="product-title")
+            gr.Markdown(
+                "A learning shadow layer that notices candidate perspectives, lets them earn "
+                "authority, and can bring them back when they are relevant later.",
+                elem_id="product-subtitle",
+            )
+            gr.Markdown(
+                "**Start → Run → Observe → Understand → Verify → Control → Inspect**  \n"
+                "You can stay in normal chat, or open every seed, decision and raw JSON event when "
+                "you want to check exactly what happened.",
+                elem_id="journey",
+            )
 
         with gr.Tab("Chat"):
             with gr.Row(elem_id="chat-shell"):
@@ -394,8 +429,29 @@ def build_app(
                         value=initial_choices[0][1] if initial_choices else None,
                     )
                     refresh_sessions = gr.Button("Refresh chats", variant="secondary")
-                    gr.Markdown("### New chat")
-                    title = gr.Textbox(label="Chat name", value="New SSL chat")
+                    gr.Markdown("### New run")
+                    gr.Markdown(
+                        "Choose how much autonomy Shadowseed gets. You can inspect everything later.",
+                        elem_classes=["section-kicker"],
+                    )
+                    title = gr.Textbox(label="Run name", value="New Shadowseed run")
+                    with gr.Group(elem_id="authority-card"):
+                        authority_profile = gr.Dropdown(
+                            choices=authority_choices,
+                            value="strict",
+                            label="How autonomous may Shadowseed be?",
+                            info=(
+                                "Controlled matches today's production behavior. Other modes are "
+                                "opt-in and will gain automation only as their runtime wiring is enabled."
+                            ),
+                        )
+                        gr.Markdown(
+                            "**Controlled** keeps authority-bearing validation in your hands. "
+                            "**Assisted** asks only when needed. **Autonomous** is intended to let "
+                            "Shadowseed validate and promote itself within the Gate. "
+                            "**Open research** is the least restrictive experimental profile.",
+                            elem_classes=["section-kicker"],
+                        )
                     backend = gr.Dropdown(
                         choices=backend_choices,
                         value="ollama",
@@ -492,6 +548,7 @@ def build_app(
                 inputs=[
                     title,
                     profile,
+                    authority_profile,
                     backend,
                     model_id,
                     embedding_backend,
@@ -554,18 +611,21 @@ def build_app(
             )
 
         with gr.Tab("Shadow"):
+            gr.Markdown("## What is Shadowseed seeing?")
             gr.Markdown(
-                "Inspect candidate seeds and their audit history. Seed text is a hypothesis to "
-                "investigate, not an instruction or a fact."
+                "Each seed is a candidate perspective, not a fact. Open one to see where it came "
+                "from, why it has its current status, whether it ever influenced an answer, and "
+                "the complete audit trail."
             )
             with gr.Row():
                 shadow_session = gr.Dropdown(choices=initial_choices, label="Chat")
                 shadow_refresh = gr.Button("Refresh")
             shadow_status = gr.Markdown("Select a chat.")
             seed_select = gr.Dropdown(choices=[], label="Shadow seed")
-            with gr.Row():
-                seed_json = gr.JSON(label="Seed snapshot")
-                seed_timeline = gr.JSON(label="Audit timeline")
+            with gr.Accordion("Technical inspection", open=False):
+                with gr.Row():
+                    seed_json = gr.JSON(label="Raw seed JSON")
+                    seed_timeline = gr.JSON(label="Raw audit timeline")
             inspect_button = gr.Button("Inspect seed")
             falsify_button = gr.Button("Mark seed contradicted", variant="stop")
             falsify_result = gr.JSON(label="Falsification result")
@@ -629,7 +689,7 @@ def build_app(
             )
             turn_index = gr.Number(value=0, precision=0, label="Turn index")
             overall = gr.Dropdown(
-                choices=["better", "neutral", "worse", "helpful", "unhelpful"],
+                choices=["better", "neutral", "worse"],
                 value="neutral",
                 label="Overall impression",
             )
