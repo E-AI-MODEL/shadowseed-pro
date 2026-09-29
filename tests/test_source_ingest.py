@@ -340,6 +340,25 @@ def test_csv_upload_accepts_large_field_within_upload_limit(tmp_path: Path) -> N
 
     assert name == "large-field.csv"
     assert large_field in text
+    assert ingest_module.csv.field_size_limit() >= ingest_module.MAX_UPLOAD_BYTES
+
+
+def test_csv_read_does_not_mutate_process_field_limit_per_request(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = tmp_path / "concurrent-safe.csv"
+    source.write_text("id,body\n1,Alpha\n", encoding="utf-8")
+
+    def _unexpected_field_limit_call(*_args):
+        raise AssertionError("CSV reads must not mutate the process-global field limit")
+
+    monkeypatch.setattr(ingest_module.csv, "field_size_limit", _unexpected_field_limit_call)
+
+    name, text = read_source_file(source)
+
+    assert name == "concurrent-safe.csv"
+    assert "Alpha" in text
 
 
 
