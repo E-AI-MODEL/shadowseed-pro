@@ -36,16 +36,17 @@ def test_default_workbench_is_dutch_chat_first_surface() -> None:
     assert "return build_simple_app(workspace, controller=controller)" in app_source
 
     for label in (
-        'with gr.Tab("Overzicht")',
-        'with gr.Tab("Chat")',
-        'with gr.Tab("Bronnen")',
-        'with gr.Tab("Geheugen")',
-        'with gr.Tab("Controleren")',
-        'with gr.Tab("Uitleg")',
-        'with gr.Tab("Meer")',
+        'with gr.Tab("Overzicht", id="overzicht", elem_id="ss-tab-overzicht")',
+        'with gr.Tab("Chat", id="chat", elem_id="ss-tab-chat")',
+        'with gr.Tab("Bronnen", id="bronnen", elem_id="ss-tab-bronnen")',
+        'with gr.Tab("Geheugen", id="geheugen", elem_id="ss-tab-geheugen")',
+        'with gr.Tab("Controleren", id="controleren", elem_id="ss-tab-controleren")',
+        'with gr.Tab("Uitleg", id="uitleg", elem_id="ss-tab-uitleg")',
+        'with gr.Tab("Meer", id="meer", elem_id="ss-tab-meer")',
         'gr.Button("＋ Nieuwe chat"',
         'gr.Button("Versturen"',
         'gr.Button("Open detail"',
+        'gr.Button("☰ Menu"',
     ):
         assert label in simple_source
 
@@ -256,3 +257,31 @@ def test_loop_toggle_uses_loop_only_backend_update() -> None:
     assert "ctl.update_session_self_reinforcement(" in body
     assert "ctl.update_session_controls(" not in body
     assert "SSL- en Gate-instellingen blijven ongewijzigd" in body
+
+
+
+def test_menu_navigation_is_packaged_with_default_workbench() -> None:
+    simple = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+    production = Path("src/shadowseed/workbench/production_local.py").read_text(
+        encoding="utf-8"
+    )
+    standalone = Path("src/shadowseed/workbench/standalone.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert 'gr.Button("☰ Menu"' in simple
+    for elem_id in (
+        "ss-tab-overzicht",
+        "ss-tab-chat",
+        "ss-tab-geheugen",
+        "ss-tab-bronnen",
+        "ss-tab-controleren",
+        "ss-tab-uitleg",
+        "ss-tab-meer",
+    ):
+        assert f"{elem_id}-button" in simple
+
+    # The packaged launcher -> production-local shell -> default build_app chain
+    # must keep using the Dutch Workbench rather than a separate legacy UI.
+    assert "workbench = build_app(controller=ctl)" in production
+    assert "launch_production_local_workbench" in standalone
