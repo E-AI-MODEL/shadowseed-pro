@@ -231,6 +231,62 @@ def _recommended_setup(controller: WorkbenchController) -> tuple[str, str | None
     )
 
 
+def _ssl_intensity_explainer(percent: int | float) -> str:
+    value = max(0, min(100, int(round(float(percent)))))
+    if value == 0:
+        label = "Alleen meekijken"
+        detail = "Shadowseed leert wel, maar niets uit het geheugen mag een antwoord beïnvloeden."
+    elif value <= 25:
+        label = "Zeer terughoudend"
+        detail = "Alleen uitzonderlijk relevante toegestane geheugenpunten mogen meedoen."
+    elif value <= 50:
+        label = "Beperkt"
+        detail = "Shadowseed kan af en toe een sterk relevant geheugenpunt laten meedenken."
+    elif value <= 75:
+        label = "Actief"
+        detail = "Relevante toegestane geheugenpunten kunnen normaal meedoen."
+    else:
+        label = "Volledig aan"
+        detail = "Shadowseed krijgt de volledige normale ruimte om toegestane relevante punten te gebruiken."
+    return (
+        f"**SSL-invloed {value}% · {label}**  \\n{detail}\\n\\n"
+        "Deze schuif bepaalt **hoeveel invloed** toegestane geheugenpunten krijgen."
+    )
+
+
+def _gate_strictness_explainer(percent: int | float) -> str:
+    value = max(0, min(100, int(round(float(percent)))))
+    if value <= 10:
+        label = "Open"
+        detail = (
+            "De eerste waarneming kan direct autoriteit krijgen en vanaf een volgende "
+            "relevante beurt invloed hebben."
+        )
+    elif value <= 30:
+        label = "Licht"
+        detail = "Een idee moet minimaal terugkomen voordat het autoriteit kan krijgen."
+    elif value <= 50:
+        label = "Herhaling vereist"
+        detail = "Meerdere onafhankelijke herhalingen zijn nodig voordat invloed mogelijk wordt."
+    elif value <= 70:
+        label = "Bewijs vereist"
+        detail = "Herhaling alleen is niet genoeg; geverifieerde externe onderbouwing is nodig."
+    elif value < 100:
+        label = "Zwaar bewijs"
+        detail = "Meerdere onafhankelijke geverifieerde bronnen zijn nodig voor promotie."
+    else:
+        label = "Maximaal strikt"
+        detail = (
+            "Een geheugenpunt moet minstens vier keer onafhankelijk terugkomen én drie "
+            "onafhankelijke geverifieerde bewijsbronnen hebben. Tegenspraak blijft blokkeren."
+        )
+    return (
+        f"**Validation Gate {value}% · {label}**  \\n{detail}\\n\\n"
+        "0% = lage toegangsdrempel · 100% = keiharde bewijsdrempel. "
+        "Audittrail en tegenspraakcontrole blijven altijd actief."
+    )
+
+
 def _model_note(backend: str, model_id: str | None = None) -> str:
     label, explanation = _BACKEND_UI.get(
         backend,
@@ -250,10 +306,8 @@ def _chat_status(view: dict[str, Any] | None) -> str:
     review = len(view.get("authority_review_seed_ids", []) or [])
     turns = int(view.get("turn", 0) or 0)
     model = str(view.get("model_id") or view.get("backend") or "model")
-    profile = _AUTHORITY_UI.get(
-        str(view.get("authority_profile_id", "strict")),
-        ("Aangepast", ""),
-    )[0]
+    ssl_level = int(view.get("ssl_intensity", 100) or 0)
+    gate_level = int(view.get("gate_strictness", 100) or 0)
 
     extras: list[str] = []
     if promoted:
@@ -268,7 +322,7 @@ def _chat_status(view: dict[str, Any] | None) -> str:
     )
 
     return (
-        f"**{model}** · {turns} bericht(en) · werkwijze **{profile}**  \\n"
+        f"**{model}** · {turns} bericht(en) · SSL **{ssl_level}%** · Gate **{gate_level}%**  \\n"
         f"Shadowseed: {seed_text}"
     )
 
@@ -314,15 +368,13 @@ def _dashboard_summary(view: dict[str, Any] | None) -> tuple[str, str, str, str,
     for report in view.get("turn_reports", []) or []:
         used.update(str(seed_id) for seed_id in report.get("surfaced_seed_ids", []) or [])
 
-    profile = _AUTHORITY_UI.get(
-        str(view.get("authority_profile_id", "strict")),
-        ("Aangepast", ""),
-    )[0]
+    ssl_level = int(view.get("ssl_intensity", 100) or 0)
+    gate_level = int(view.get("gate_strictness", 100) or 0)
     model = str(view.get("model_id") or view.get("backend") or "model")
 
     headline = (
         f"## {view.get('title') or 'Gesprek'}\n"
-        f"Model **{model}** · werkwijze **{profile}** · **{turns}** bericht(en)"
+        f"Model **{model}** · SSL **{ssl_level}%** · Gate **{gate_level}%** · **{turns}** bericht(en)"
     )
     conversation = (
         f"### {turns}\n"
@@ -501,19 +553,9 @@ def build_simple_app(
     initial_sessions = ctl.session_choices(ctl.list_sessions())
     auto_backend, auto_model, auto_setup_note = _recommended_setup(ctl)
 
-    authority_choices = [
-        (f"{label} — {description}", profile_id)
-        for profile_id, (label, description) in _AUTHORITY_UI.items()
-    ]
     provider_choices = [
         (_BACKEND_UI[key][0], key)
         for key in ("ollama", "openai", "hf-transformers", "fixture")
-    ]
-    relevance_choices = [
-        (f"{_PROFILE_UI.get(item['profile_id'], (item['label'], ''))[0]} — "
-         f"{_PROFILE_UI.get(item['profile_id'], (item['label'], item['description']))[1]}",
-         item["profile_id"])
-        for item in ctl.profiles()
     ]
 
     def session_choices() -> list[tuple[str, str]]:
@@ -559,10 +601,10 @@ def build_simple_app(
 
     def create_chat(
         title: str,
-        authority_profile_id: str,
         backend: str,
         model_id: str,
-        profile_id: str,
+        ssl_intensity: float,
+        gate_strictness: float,
         embedding_backend: str,
         embedding_model: str,
         hosted_confirmed: bool,
@@ -571,8 +613,8 @@ def build_simple_app(
             clean_title = (title or "").strip() or "Nieuwe chat"
             session_id = ctl.create_session(
                 title=clean_title,
-                profile_id=profile_id or "balanced",
-                authority_profile_id=authority_profile_id or "strict",
+                profile_id="balanced",
+                authority_profile_id="strict",
                 backend=backend,
                 model_id=(None if backend == "fixture" else (model_id or None)),
                 runtime_mode="live",
@@ -580,6 +622,8 @@ def build_simple_app(
                 embedding_model=embedding_model or None,
                 allow_toy_embedder=False,
                 external_confirmed=bool(hosted_confirmed),
+                ssl_intensity=ssl_intensity,
+                gate_strictness=gate_strictness,
             )
             view = ctl.session_view(session_id)
             return (
@@ -919,12 +963,31 @@ def build_simple_app(
                                 label="Naam van het gesprek",
                                 value="Nieuwe chat",
                             )
-                            authority_profile = gr.Radio(
-                                choices=authority_choices,
-                                value="strict",
-                                label="Hoe zelfstandig mag Shadowseed werken?",
+                            gr.Markdown("### Twee simpele schuiven")
+                            ssl_intensity = gr.Slider(
+                                minimum=0,
+                                maximum=100,
+                                step=10,
+                                value=100,
+                                label="SSL-invloed",
+                                info="0% = alleen leren · 100% = maximale toegestane invloed",
                             )
-                            authority_help = gr.Markdown(_authority_explainer("strict"))
+                            ssl_intensity_help = gr.Markdown(
+                                _ssl_intensity_explainer(100),
+                                elem_classes=["ss-card"],
+                            )
+                            gate_strictness = gr.Slider(
+                                minimum=0,
+                                maximum=100,
+                                step=10,
+                                value=100,
+                                label="Validation Gate",
+                                info="0% = vrijwel direct door · 100% = harde herhaling + onafhankelijk bewijs",
+                            )
+                            gate_strictness_help = gr.Markdown(
+                                _gate_strictness_explainer(100),
+                                elem_classes=["ss-card"],
+                            )
                             backend = gr.Dropdown(
                                 choices=provider_choices,
                                 value=auto_backend,
@@ -945,11 +1008,6 @@ def build_simple_app(
                                 value=False,
                             )
                             with gr.Accordion("Technische instellingen", open=False):
-                                profile = gr.Dropdown(
-                                    choices=relevance_choices,
-                                    value="balanced",
-                                    label="Relevantieprofiel",
-                                )
                                 embedding_backend = gr.Dropdown(
                                     choices=list(ctl.embedding_backends()),
                                     value=ctl.default_embedding_backend(auto_backend),
@@ -986,10 +1044,15 @@ def build_simple_app(
                             last_turn_json = gr.JSON(label="Laatste beurt · technisch")
                             session_json = gr.JSON(label="Gesprekstoestand · technisch")
 
-            authority_profile.change(
-                lambda profile_id: _authority_explainer(profile_id),
-                inputs=[authority_profile],
-                outputs=[authority_help],
+            ssl_intensity.change(
+                lambda value: _ssl_intensity_explainer(value),
+                inputs=[ssl_intensity],
+                outputs=[ssl_intensity_help],
+            )
+            gate_strictness.change(
+                lambda value: _gate_strictness_explainer(value),
+                inputs=[gate_strictness],
+                outputs=[gate_strictness_help],
             )
             backend.change(
                 provider_changed,
@@ -1010,10 +1073,10 @@ def build_simple_app(
                 create_chat,
                 inputs=[
                     title,
-                    authority_profile,
                     backend,
                     model_id,
-                    profile,
+                    ssl_intensity,
+                    gate_strictness,
                     embedding_backend,
                     embedding_model,
                     hosted_confirm,
