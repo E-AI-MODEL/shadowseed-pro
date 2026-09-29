@@ -1329,9 +1329,12 @@ def build_simple_app(
                 gr.Markdown(
                     "In de normale interface worden zoveel mogelijk technische keuzes automatisch gedaan: "
                     "een lokaal model wordt gezocht, een passend embeddingtype wordt gekozen, tekst wordt "
-                    "opgedeeld, kandidaten worden gededupliceerd en geclusterd, herhaling wordt bijgehouden "
-                    "en alleen relevante geautoriseerde punten worden aangeboden. Welke autoriteitsstappen "
-                    "automatisch mogen verlopen hangt af van **Veilig, Meedenkend, Zelfstandig of Onderzoek**."
+                    "opgedeeld, kandidaten worden gededupliceerd en geclusterd en herhaling wordt bijgehouden. "
+                    "Je stuurt vervolgens twee dingen zelf: **SSL-invloed** bepaalt hoeveel toegestane "
+                    "geheugenpunten in antwoorden mogen meedoen; **Validation Gate** bepaalt hoeveel "
+                    "herhaling en onafhankelijk bewijs nodig is voordat zo'n punt überhaupt autoriteit krijgt. "
+                    "Daardoor kun je bijvoorbeeld een heel open Gate combineren met 0% invloed, of juist "
+                    "100% SSL combineren met een maximaal strikte bewijsdrempel."
                 )
             with gr.Accordion("6 · Wat gebeurt er met uploads?", open=False):
                 gr.Markdown(
