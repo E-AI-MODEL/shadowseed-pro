@@ -12,7 +12,7 @@ def _feed_recurrence(session: ShadowChatSession, *, count: int = 6) -> list[dict
         reports.append(
             session.observe_source_text(
                 "Alpha provides a recurring explanatory perspective.",
-                context_ref=f"source:authority-test:chunk:{index:05d}",
+                context_ref=f"source:authority-test:instance:{index:05d}:chunk:00000",
             )
         )
     return reports
@@ -192,3 +192,78 @@ def test_one_observation_cannot_self_promote_via_near_duplicate_candidates() -> 
     assert seed.occurrence_count == 5
     assert seed.status is SeedStatus.PROMOTED
     assert seed.id in fifth["promoted_this_observation"]
+
+
+
+def test_source_chunk_overlap_counts_once_per_source_instance() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="autonomous",
+        embedding_backend="lexical",
+        detector_backend=_NearDuplicateDetector(),
+        embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+    )
+
+    session.observe_source_text(
+        "Boundary occurrence at the end of a chunk.",
+        context_ref="source:overlap.md:instance:one:chunk:00000",
+    )
+    representative = next(iter(session.manager.seeds.values()))
+    assert representative.occurrence_count == 1
+
+    session.observe_source_text(
+        "The same physical boundary occurrence repeated by overlap.",
+        context_ref="source:overlap.md:instance:one:chunk:00001",
+    )
+    assert representative.occurrence_count == 1
+    assert representative.status is not SeedStatus.PROMOTED
+
+    session.observe_source_text(
+        "An independent source occurrence.",
+        context_ref="source:overlap.md:instance:two:chunk:00000",
+    )
+    assert representative.occurrence_count == 2
+
+
+class _ClusterPairDetector:
+    name = "cluster-pair-test"
+    prompt_variant = "test"
+
+    def detect_seeds(self, _payload, *, max_seeds=5):
+        return [
+            "Alpha primary boundary matters.",
+            "Beta related boundary matters.",
+        ][:max_seeds]
+
+
+def _cluster_pair_embedding(text: str) -> np.ndarray:
+    if text.startswith("Alpha"):
+        return np.asarray([1.0, 0.0], dtype=float)
+    return np.asarray([0.7, 0.714142842854285], dtype=float)
+
+
+def test_assisted_review_excludes_cluster_nonrepresentatives() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="assisted",
+        embedding_backend="lexical",
+        detector_backend=_ClusterPairDetector(),
+        embedding_fn=_cluster_pair_embedding,
+    )
+
+    for index in range(3):
+        session.observe_source_text(
+            "Independent source observation.",
+            context_ref=f"source:cluster-test:instance:{index}:chunk:00000",
+        )
+
+    assert len(session.manager.seeds) == 2
+    representative_id = next(iter(session.cluster_rep.values()))
+    nonrepresentative_id = next(
+        seed_id for seed_id in session.manager.seeds if seed_id != representative_id
+    )
+    assert session.manager.seeds[nonrepresentative_id].occurrence_count >= 3
+    assert session._seed_review_required(representative_id) is True
+    assert session._seed_review_required(nonrepresentative_id) is False
