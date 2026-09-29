@@ -1203,9 +1203,10 @@ def build_app(
                     "where provenance, policy, Gate and point-of-use checks allow.\n\n"
                     "**Open research** is intended for the least restrictive experimental runs while "
                     "retaining provenance and audit records.\n\n"
-                    "**0.8.0rc1 note:** the profile model and UI exist now. Controlled preserves the "
-                    "current runtime behavior. Do not assume the other profiles have their full "
-                    "automation semantics until their runtime wiring is completed and tested."
+                    "**0.8.0:** Controlled preserves the previous production behavior. Assisted "
+                    "review semantics and Autonomous/Open recurrence authority are wired through "
+                    "the canonical Gate. Machine-generated evidence still requires an explicit, "
+                    "auditable producer and is never invented by the profile itself."
                 )
 
             with gr.Accordion("10 · How can I prove SSL actually influenced an answer?", open=False):
