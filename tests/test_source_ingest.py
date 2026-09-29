@@ -245,3 +245,30 @@ def test_repeated_independent_source_submissions_can_recur(tmp_path: Path) -> No
     assert len(context_refs) == len(set(context_refs))
     assert alpha["occurrence_count"] >= 3
     assert alpha["status"] == "PROMOTED"
+
+
+
+def test_corpus_summary_counts_same_named_files_as_distinct_sources(tmp_path: Path) -> None:
+    left = tmp_path / "left"
+    right = tmp_path / "right"
+    left.mkdir()
+    right.mkdir()
+    first_file = left / "notes.md"
+    second_file = right / "notes.md"
+    first_file.write_text("Alpha perspective.", encoding="utf-8")
+    second_file.write_text("Beta perspective.", encoding="utf-8")
+
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Same basename corpus",
+        profile_id="demo",
+        backend="fixture",
+    )
+    result = controller.ingest_sources(
+        session_id,
+        file_paths=[str(first_file), str(second_file)],
+    )
+
+    assert result["sources"] == 2
+    assert result["source_instance_count"] == 2
+    assert result["source_names"] == ["notes.md"]
