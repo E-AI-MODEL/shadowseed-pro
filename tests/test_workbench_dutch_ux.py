@@ -32,6 +32,7 @@ def test_default_workbench_is_dutch_chat_first_surface() -> None:
     assert "return build_simple_app(workspace, controller=controller)" in app_source
 
     for label in (
+        'with gr.Tab("Overzicht")',
         'with gr.Tab("Chat")',
         'with gr.Tab("Bronnen")',
         'with gr.Tab("Geheugen")',
@@ -40,6 +41,7 @@ def test_default_workbench_is_dutch_chat_first_surface() -> None:
         'with gr.Tab("Meer")',
         'gr.Button("＋ Nieuwe chat"',
         'gr.Button("Versturen"',
+        'gr.Button("Open detail"',
     ):
         assert label in simple_source
 
@@ -117,3 +119,15 @@ def test_source_summary_explains_result_without_treating_upload_as_truth() -> No
     assert "7** tekstdeel/delen" in text
     assert "4** nieuwe geheugenpunten" in text
     assert "wordt niet automatisch waarheid of bewijs" in text
+
+
+
+def test_dashboard_supports_progressive_disclosure_and_drilldown() -> None:
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+
+    assert "def _dashboard_summary" in source
+    assert 'label="Geheugenpunt"' in source
+    assert 'gr.Button("Open detail"' in source
+    assert 'with gr.Accordion("Technische audit van dit punt", open=False)' in source
+    assert 'elem_classes=["ss-metric"]' in source
+    assert 'elem_classes=["ss-detail"]' in source
