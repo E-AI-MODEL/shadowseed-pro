@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from typing import Protocol
 
 class ModelBackend(Protocol):
@@ -55,11 +56,18 @@ class HFTransformersBackend:
         self.revision = revision
         tokenizer_kwargs = {"revision": revision} if revision is not None else {}
         self.tokenizer = AutoTokenizer.from_pretrained(model_id, **tokenizer_kwargs)
-        if torch.cuda.is_available():
+        hosted_cpu_test = os.environ.get("SHADOWSEED_HF_CPU_TEST", "").strip() == "1"
+        if hosted_cpu_test:
+            # Hugging Face ZeroGPU exposes a CUDA-emulation layer outside
+            # @spaces.GPU functions. The hosted functional-test profile keeps
+            # Shadowseed itself CPU-only so ordinary Workbench callbacks never
+            # trigger low-level CUDA initialization.
+            model_kwargs = {"torch_dtype": "auto"}
+        elif torch.cuda.is_available():
             model_kwargs = {"torch_dtype": torch.float16, "device_map": "auto"}
         else:
-            # CPU: keep the checkpoint's native (half) precision instead of
-            # upcasting to float32 — halves memory on CPU-only runners.
+            # CPU: keep the checkpoint's native precision instead of forcing
+            # a CUDA-oriented dtype.
             model_kwargs = {"torch_dtype": "auto"}
         if revision is not None:
             model_kwargs["revision"] = revision
@@ -68,7 +76,7 @@ class HFTransformersBackend:
             "text-generation",
             model=model,
             tokenizer=self.tokenizer,
-            device=0 if torch.cuda.is_available() else -1,
+            device=-1 if hosted_cpu_test else (0 if torch.cuda.is_available() else -1),
         )
 
     def generate(self, prompt: str, scenario: dict, mode: str, ssl_seeds: list[str]) -> str:
