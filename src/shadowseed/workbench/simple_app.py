@@ -945,11 +945,37 @@ def build_simple_app(
         ssl: float,
         gate: float,
     ):
-        status, view = _persist_controls(session_id, ssl, gate, loop)
+        if not session_id:
+            return (
+                gr.update(value=None),
+                _control_state_summary(ssl, gate, loop),
+                gr.update(),
+                gr.update(),
+            )
+        view = ctl.update_session_self_reinforcement(
+            session_id,
+            allow_self_reinforcement=bool(loop),
+        )
+        ssl_raw = view.get("ssl_intensity")
+        gate_raw = view.get("gate_strictness")
+        if ssl_raw is None or gate_raw is None:
+            loop_label = "aan" if loop else "uit"
+            summary = (
+                "**Aangepaste/legacy-regie**  \n"
+                f"feedbacklus **{loop_label}**  \n"
+                "SSL- en Gate-instellingen blijven ongewijzigd; kies een snelle stand "
+                "of beweeg een schuif om ze expliciet over te nemen."
+            )
+            preset = None
+        else:
+            ssl_value = int(ssl_raw)
+            gate_value = int(gate_raw)
+            preset = _control_preset_id(ssl_value, gate_value, loop)
+            summary = _control_state_summary(ssl_value, gate_value, loop)
         return (
-            gr.update(value=None),
-            _control_state_summary(ssl, gate, loop),
-            status,
+            gr.update(value=preset),
+            summary,
+            _chat_status(view),
             view,
         )
 
