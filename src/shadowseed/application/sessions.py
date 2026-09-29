@@ -96,6 +96,45 @@ class SessionService:
         )
         return session_id
 
+    def update_controls(
+        self,
+        session_id: str,
+        *,
+        config_updates: dict[str, Any],
+        session_config_updates: dict[str, Any],
+        core_config_updates: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Apply product controls to an existing session without changing seed authority."""
+
+        with self._session_lock(session_id):
+            stored = self.repository.load_session(session_id)
+            config = dict(stored.get("config", {}))
+            config.update(config_updates)
+
+            state = dict(stored["state"])
+            state_session_config = dict(state.get("session_config", {}))
+            state_session_config.update(session_config_updates)
+            state["session_config"] = state_session_config
+
+            manager_state = dict(state.get("manager", {}))
+            manager_config = dict(manager_state.get("config", {}))
+            manager_config.update(core_config_updates)
+            manager_state["config"] = manager_config
+            state["manager"] = manager_state
+
+            # Rehydrate once before saving so invalid combinations fail here and
+            # the persisted snapshot is canonical for the current runtime.
+            session = ShadowChatSession.from_state(state)
+            canonical_state = session.to_state()
+            updated_at = datetime.now().isoformat()
+            self.repository.save_session_configuration(
+                session_id,
+                config=config,
+                state=canonical_state,
+                updated_at=updated_at,
+            )
+            return self.repository.load_session(session_id)
+
     @staticmethod
     def _generate_live_no_ssl_control(
         session: ShadowChatSession,
