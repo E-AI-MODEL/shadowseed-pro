@@ -216,6 +216,51 @@ def _shadow_overview_markdown(view: dict[str, Any] | None) -> str:
     )
 
 
+def _control_overview_markdown(
+    view: dict[str, Any] | None,
+    profiles: list[dict[str, Any]],
+) -> str:
+    if not view:
+        return (
+            "## Control this run\n"
+            "Select a run to see exactly how much authority Shadowseed has."
+        )
+
+    profile_id = str(view.get("authority_profile_id", "strict"))
+    selected = next(
+        (item for item in profiles if str(item.get("id")) == profile_id),
+        {},
+    )
+    label = str(selected.get("label", profile_id))
+    description = str(selected.get("description", ""))
+    gate = str(view.get("effective_gate_policy_id", "unknown"))
+    review_count = len(view.get("authority_review_seed_ids", []) or [])
+    recurrence = (
+        "automatic authority path"
+        if bool(selected.get("auto_validate_recurrence", False))
+        and gate == "exploratory"
+        else "observed, but cannot raise authority by itself"
+    )
+    system_evidence = (
+        "permitted only when an auditable producer and Gate policy accept it"
+        if bool(selected.get("allow_unreviewed_system_evidence", False))
+        else "must satisfy the normal verified-evidence boundary"
+    )
+
+    return (
+        f"## {label}\n"
+        f"{description}\n\n"
+        f"**Effective Gate:** `{gate}`  \n"
+        f"**Recurrence:** {recurrence}  \n"
+        f"**System evidence:** {system_evidence}  \n"
+        f"**Seeds currently asking for review:** {review_count}\n\n"
+        "**Profile changes are run-level decisions.** This release does not silently "
+        "change authority rules inside an existing run; create a new run when you "
+        "want a different autonomy profile. Raw Gate and influence records remain "
+        "available in Shadow and Verify."
+    )
+
+
 def _seed_story_markdown(view: dict[str, Any] | None) -> str:
     """Turn a technical seed snapshot into a compact human-readable lifecycle card."""
 
@@ -537,6 +582,17 @@ def build_app(
             return dropdown_update(ctl.seed_choices(view)), _shadow_overview_markdown(view)
         except Exception as exc:
             return gr.update(), _error_text(exc)
+
+    def control_session_changed(session_id: str | None):
+        if not session_id:
+            return _control_overview_markdown(None, authority_profiles)
+        try:
+            return _control_overview_markdown(
+                ctl.session_view(session_id),
+                authority_profiles,
+            )
+        except Exception as exc:
+            return _error_text(exc)
 
     def inspect_seed(session_id: str | None, seed_id: str | None):
         if not session_id or not seed_id:
@@ -967,6 +1023,46 @@ def build_app(
                     source_seed_preview,
                     source_paste,
                 ],
+            )
+
+        with gr.Tab("Control"):
+            gr.Markdown("## Authority and autonomy")
+            gr.Markdown(
+                "Authority profiles choose **how Shadowseed may move through the existing "
+                "Gate and point-of-use pipeline**. They never create a second Gate."
+            )
+            with gr.Row():
+                control_session = gr.Dropdown(
+                    choices=initial_choices,
+                    label="Run",
+                    value=initial_choices[0][1] if initial_choices else None,
+                )
+                control_refresh = gr.Button("Refresh runs", variant="secondary")
+            control_overview = gr.Markdown(
+                _control_overview_markdown(None, authority_profiles),
+                elem_id="source-result",
+            )
+            with gr.Accordion("Compare the four profiles", open=False):
+                gr.Markdown(
+                    "**Controlled** — verified authority support stays user-controlled.  \n"
+                    "**Assisted** — mature recurrence is detected and surfaced for review; "
+                    "verified support still decides authority.  \n"
+                    "**Autonomous** — recurrence may earn authority through the exploratory "
+                    "Gate and later surface when relevant.  \n"
+                    "**Open research** — same auditable Gate path with the least restrictive "
+                    "research permissions; unreviewed system evidence still requires an explicit "
+                    "producer and a policy that accepts it."
+                )
+
+            control_refresh.click(
+                refresh_session_dropdown,
+                inputs=[control_session],
+                outputs=[control_session],
+            )
+            control_session.change(
+                control_session_changed,
+                inputs=[control_session],
+                outputs=[control_overview],
             )
 
         with gr.Tab("About SSL"):
