@@ -70,12 +70,17 @@ def read_source_file(path: str | Path) -> tuple[str, str]:
         text = "\n".join(_json_strings(data))
     else:
         rows: list[str] = []
-        with source.open("r", encoding="utf-8-sig", newline="") as handle:
-            reader = csv.reader(handle)
-            for row in reader:
-                values = [value.strip() for value in row if value.strip()]
-                if values:
-                    rows.append(" | ".join(values))
+        previous_field_limit = csv.field_size_limit()
+        try:
+            csv.field_size_limit(MAX_UPLOAD_BYTES)
+            with source.open("r", encoding="utf-8-sig", newline="") as handle:
+                reader = csv.reader(handle)
+                for row in reader:
+                    values = [value.strip() for value in row if value.strip()]
+                    if values:
+                        rows.append(" | ".join(values))
+        finally:
+            csv.field_size_limit(previous_field_limit)
         text = "\n".join(rows)
 
     normalized = text.strip()
