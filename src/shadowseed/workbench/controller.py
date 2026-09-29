@@ -220,6 +220,7 @@ class WorkbenchController:
         payload = [
             {
                 "source_name": chunk.source_name,
+                "source_instance_id": chunk.source_instance_id,
                 "context_ref": chunk.context_ref,
                 "text": chunk.text,
             }
