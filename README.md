@@ -1,3 +1,15 @@
+---
+title: Shadowseed Pro Test
+emoji: 🧪
+colorFrom: blue
+colorTo: indigo
+sdk: gradio
+sdk_version: 6.0.0
+app_file: app.py
+pinned: false
+private: true
+---
+
 # Shadowseed Pro
 
 <p align="center">
