@@ -483,3 +483,110 @@ def test_persisted_assisted_exploratory_gate_does_not_show_review_request() -> N
 
     assert view["effective_gate_policy_id"] == "exploratory"
     assert view["authority_review_seed_ids"] == []
+
+
+
+def test_product_sliders_are_independent_and_persisted(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+
+    open_id = controller.create_session(
+        title="Open gate, no surfacing",
+        profile_id="balanced",
+        backend="fixture",
+        ssl_intensity=0,
+        gate_strictness=0,
+    )
+    strict_id = controller.create_session(
+        title="Full SSL, strict gate",
+        profile_id="balanced",
+        backend="fixture",
+        ssl_intensity=100,
+        gate_strictness=100,
+    )
+
+    open_stored = controller.sessions.load(open_id)
+    strict_stored = controller.sessions.load(strict_id)
+
+    assert open_stored["config"]["ssl_intensity"] == 0
+    assert open_stored["config"]["gate_strictness"] == 0
+    assert open_stored["config"]["surface_top_k"] == 0
+    assert open_stored["config"]["gate_policy_id"] == "exploratory"
+    assert open_stored["config"]["min_occurrences_for_gate"] == 1
+    assert open_stored["config"]["promotion_threshold"] == 0.2
+
+    assert strict_stored["config"]["ssl_intensity"] == 100
+    assert strict_stored["config"]["gate_strictness"] == 100
+    assert strict_stored["config"]["surface_top_k"] == 3
+    assert strict_stored["config"]["gate_policy_id"] == "legacy_evidence_required"
+    assert strict_stored["config"]["min_occurrences_for_gate"] == 4
+    assert strict_stored["config"]["min_evidence_for_gate"] == 3
+    assert strict_stored["config"]["promotion_threshold"] == 0.5
+
+    open_view = controller.session_view(open_id)
+    strict_view = controller.session_view(strict_id)
+    assert open_view["ssl_intensity"] == 0
+    assert open_view["gate_strictness"] == 0
+    assert strict_view["ssl_intensity"] == 100
+    assert strict_view["gate_strictness"] == 100
+
+
+def test_gate_zero_promotes_first_observation_but_ssl_zero_never_surfaces(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Open gate observation only",
+        profile_id="balanced",
+        backend="fixture",
+        ssl_intensity=0,
+        gate_strictness=0,
+    )
+
+    first = controller.send_turn(session_id, "What important perspective could be missing?")
+    assert first["report"]["surfaced_seed_ids"] == []
+    assert any(seed["status"] == "PROMOTED" for seed in first["session"]["seeds"])
+
+    second = controller.send_turn(session_id, "What important perspective could be missing again?")
+    assert second["report"]["surfaced_seed_ids"] == []
+
+
+def test_gate_hundred_requires_recurrence_and_three_verified_sources(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Strict Gate",
+        profile_id="balanced",
+        backend="fixture",
+        ssl_intensity=100,
+        gate_strictness=100,
+    )
+
+    for index in range(4):
+        controller.ingest_sources(
+            session_id,
+            pasted_text="Alpha provides a recurring explanatory perspective.",
+        )
+
+    view = controller.session_view(session_id)
+    seed = max(view["seeds"], key=lambda item: int(item.get("occurrence_count", 0)))
+    seed_id = seed["id"]
+    assert int(seed["occurrence_count"]) >= 4
+    assert seed["status"] != "PROMOTED"
+
+    for index in range(2):
+        result = controller.submit_verified_evidence(
+            session_id,
+            seed_id,
+            source_ref=f"reviewer:strict:{index}",
+            note="Independent verified source.",
+            operator_verified=True,
+        )
+        assert result["status_after"] != "PROMOTED"
+
+    final = controller.submit_verified_evidence(
+        session_id,
+        seed_id,
+        source_ref="reviewer:strict:2",
+        note="Third independent verified source.",
+        operator_verified=True,
+    )
+
+    assert final["status_after"] == "PROMOTED"
+    assert final["evidence_count"] == 3
