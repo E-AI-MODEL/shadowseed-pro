@@ -230,3 +230,16 @@ def test_markdown_uses_real_line_break_escapes_and_user_only_control_events() ->
     assert "ssl_intensity.change(" not in source
     assert "gate_strictness.change(" not in source
     assert "allow_self_reinforcement.change(" not in source
+
+
+
+def test_regie_controls_are_bound_to_selected_session() -> None:
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+
+    assert "ctl.update_session_controls(" in source
+    assert "inputs=[session_select, control_preset]" in source
+    assert "session_select," in source
+    assert "def _control_view_state(" in source
+    assert "initial_ssl" in source
+    assert "initial_gate" in source
+    assert "initial_loop" in source
