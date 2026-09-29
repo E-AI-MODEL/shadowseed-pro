@@ -525,6 +525,7 @@ class SSLManager:
         trigger_keywords: Iterable[str] | None = None,
         deduplicate: bool = True,
         origin: SeedOrigin | None = None,
+        suppress_reinforcement_for: set[str] | None = None,
     ) -> str:
         """Compatibility facade for canonical seed intake and deduplication."""
 
@@ -534,6 +535,7 @@ class SSLManager:
             trigger_keywords=trigger_keywords,
             deduplicate=deduplicate,
             origin=origin,
+            suppress_reinforcement_for=suppress_reinforcement_for,
         )
 
     def _status_after_decay(self, seed: ShadowSeed) -> SeedStatus:

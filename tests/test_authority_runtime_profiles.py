@@ -267,3 +267,96 @@ def test_assisted_review_excludes_cluster_nonrepresentatives() -> None:
     assert session.manager.seeds[nonrepresentative_id].occurrence_count >= 3
     assert session._seed_review_required(representative_id) is True
     assert session._seed_review_required(nonrepresentative_id) is False
+
+
+
+def test_near_duplicate_batch_writes_only_real_recurrence_audit_events() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="autonomous",
+        embedding_backend="lexical",
+        detector_backend=_NearDuplicateDetector(),
+        embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+    )
+
+    session.observe_source_text(
+        "First independent observation.",
+        context_ref="source:audit-test:instance:first:chunk:00000",
+    )
+    seed = next(iter(session.manager.seeds.values()))
+    assert seed.occurrence_count == 1
+    assert [
+        event
+        for event in session.manager.event_log
+        if event.seed_id == seed.id and event.event_type == "deduplicated"
+    ] == []
+
+    session.observe_source_text(
+        "Second independent observation.",
+        context_ref="source:audit-test:instance:second:chunk:00000",
+    )
+    recurrence_events = [
+        event
+        for event in session.manager.event_log
+        if event.seed_id == seed.id and event.event_type == "deduplicated"
+    ]
+
+    assert seed.occurrence_count == 2
+    assert len(recurrence_events) == 1
+    assert recurrence_events[0].detail["occurrence_count"] == 2
+
+
+def test_expired_cluster_representative_is_replaced_by_live_redetection() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="autonomous",
+        embedding_backend="lexical",
+        detector_backend=_NearDuplicateDetector(),
+        embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+    )
+
+    session.observe_source_text(
+        "Initial observation.",
+        context_ref="source:expiry-test:instance:first:chunk:00000",
+    )
+    expired_id = next(iter(session.cluster_rep.values()))
+    expired_seed = session.manager.seeds[expired_id]
+    session.manager._set_authority(
+        expired_seed,
+        status=SeedStatus.EXPIRED,
+        weight=0.0,
+    )
+
+    second = session.observe_source_text(
+        "Independent observation after expiry.",
+        context_ref="source:expiry-test:instance:second:chunk:00000",
+    )
+    replacement_id = next(iter(session.cluster_rep.values()))
+
+    assert replacement_id != expired_id
+    assert session.manager.seeds[replacement_id].status is not SeedStatus.EXPIRED
+    assert session.manager.seeds[replacement_id].occurrence_count == 2
+    assert any(
+        event.event_type == "cluster_representative_replaced"
+        and event.seed_id == replacement_id
+        and event.detail["previous_seed_id"] == expired_id
+        for event in session.manager.event_log
+    )
+    assert second["promoted_this_observation"] == []
+
+    promoted = None
+    for index in range(3, 7):
+        report = session.observe_source_text(
+            f"Independent recurrence {index}.",
+            context_ref=(
+                f"source:expiry-test:instance:independent-{index}:chunk:00000"
+            ),
+        )
+        if replacement_id in report["promoted_this_observation"]:
+            promoted = report
+            break
+
+    assert promoted is not None
+    assert session.manager.seeds[replacement_id].status is SeedStatus.PROMOTED

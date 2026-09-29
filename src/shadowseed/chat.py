@@ -350,6 +350,69 @@ class ShadowChatSession:
                 seed.occurrence_count = before + 1
                 self.manager._sync_seed(seed_id)
 
+    def _register_cluster_observation(
+        self,
+        seed_id: str,
+        *,
+        observation_ref: str,
+    ) -> int | None:
+        """Register one accepted seed and keep the cluster representative live."""
+
+        if self.clusterer is None:
+            return None
+        seed = self.manager.seeds.get(seed_id)
+        if seed is None:
+            return None
+
+        if seed_id not in self.seed_to_cluster:
+            cluster_id = self.clusterer.add(
+                seed.text,
+                seed.embedding,
+                observation_ref=observation_ref,
+            )
+            self.seed_to_cluster[seed_id] = cluster_id
+        else:
+            cluster_id = self.seed_to_cluster[seed_id]
+            self.clusterer.bump(cluster_id, observation_ref=observation_ref)
+
+        representative_id = self.cluster_rep.get(cluster_id)
+        representative = (
+            self.manager.seeds.get(representative_id)
+            if representative_id is not None
+            else None
+        )
+        if representative is None or representative.status == SeedStatus.EXPIRED:
+            previous_id = representative_id
+            self.cluster_rep[cluster_id] = seed_id
+            if previous_id != seed_id:
+                self.manager._record_event(
+                    "cluster_representative_replaced",
+                    seed_id,
+                    cluster_id=cluster_id,
+                    previous_seed_id=previous_id,
+                    reason=(
+                        "missing_representative"
+                        if representative is None
+                        else "expired_representative"
+                    ),
+                )
+        elif representative is not seed:
+            refresh_cluster_representative(self.manager, representative, seed)
+
+        return cluster_id
+
+    def _sync_cluster_recurrence(self) -> None:
+        """Project observation-scoped cluster recurrence onto each live representative."""
+
+        if self.clusterer is None:
+            return
+        for cluster_id, representative_id in self.cluster_rep.items():
+            representative = self.manager.seeds.get(representative_id)
+            if representative is None or representative.status == SeedStatus.EXPIRED:
+                continue
+            representative.occurrence_count = self.clusterer.recurrence(cluster_id)
+            self.manager._sync_seed(representative_id)
+
     def _gate_review_required(self, seed_id: str, event: GateEvent) -> bool:
         """Compatibility helper for Gate-triggered product reports.
 
@@ -739,37 +802,11 @@ class ShadowChatSession:
 
         if self.clusterer is not None:
             for accepted in ingest.get("accepted", []):
-                seed_id = accepted["seed_id"]
-                seed = self.manager.seeds.get(seed_id)
-                if seed is None:
-                    continue
-                if seed_id not in self.seed_to_cluster:
-                    cluster_id = self.clusterer.add(seed.text, seed.embedding, observation_ref=f"turn:{turn}")
-                    had_representative = cluster_id in self.cluster_rep
-                    self.seed_to_cluster[seed_id] = cluster_id
-                    self.cluster_rep.setdefault(cluster_id, seed_id)
-                    representative_id = self.cluster_rep.get(cluster_id)
-                    if had_representative and representative_id is not None and representative_id != seed_id:
-                        representative = self.manager.seeds.get(representative_id)
-                        if representative is not None:
-                            refresh_cluster_representative(self.manager, representative, seed)
-                else:
-                    cluster_id = self.seed_to_cluster[seed_id]
-                    self.clusterer.bump(cluster_id, observation_ref=f"turn:{turn}")
-                    representative = self.manager.seeds.get(self.cluster_rep.get(cluster_id, ""))
-                    if representative is not None and representative is not seed:
-                        refresh_cluster_representative(self.manager, representative, seed)
-
-            for cluster_id, representative_id in self.cluster_rep.items():
-                if representative_id in self.manager.seeds:
-                    representative = self.manager.seeds[representative_id]
-                    # Cluster recurrence is observation-scoped and therefore
-                    # authoritative for the representative. Manager intake may
-                    # see several near-duplicate candidates from one detector
-                    # call; those must never become multiple recurrence credits.
-                    representative.occurrence_count = self.clusterer.recurrence(
-                        cluster_id
-                    )
+                self._register_cluster_observation(
+                    accepted["seed_id"],
+                    observation_ref=f"turn:{turn}",
+                )
+            self._sync_cluster_recurrence()
 
         changed_seed_ids = {
             seed_id
@@ -931,43 +968,11 @@ class ShadowChatSession:
         # 5. Credit semantic recurrence to one cluster representative.
         if self.clusterer is not None:
             for accepted in ingest.get("accepted", []):
-                seed_id = accepted["seed_id"]
-                seed = self.manager.seeds.get(seed_id)
-                if seed is None:
-                    continue
-                if seed_id not in self.seed_to_cluster:
-                    cluster_id = self.clusterer.add(seed.text, seed.embedding, observation_ref=f"turn:{turn}")
-                    had_representative = cluster_id in self.cluster_rep
-                    self.seed_to_cluster[seed_id] = cluster_id
-                    self.cluster_rep.setdefault(cluster_id, seed_id)
-                    representative_id = self.cluster_rep.get(cluster_id)
-                    if (
-                        had_representative
-                        and representative_id is not None
-                        and representative_id != seed_id
-                    ):
-                        representative = self.manager.seeds.get(representative_id)
-                        if representative is not None:
-                            refresh_cluster_representative(self.manager, representative, seed)
-                else:
-                    cluster_id = self.seed_to_cluster[seed_id]
-                    self.clusterer.bump(cluster_id, observation_ref=f"turn:{turn}")
-                    representative = self.manager.seeds.get(
-                        self.cluster_rep.get(cluster_id, "")
-                    )
-                    if representative is not None and representative is not seed:
-                        refresh_cluster_representative(self.manager, representative, seed)
-
-            for cluster_id, representative_id in self.cluster_rep.items():
-                if representative_id in self.manager.seeds:
-                    representative = self.manager.seeds[representative_id]
-                    # Cluster recurrence is observation-scoped and therefore
-                    # authoritative for the representative. Manager intake may
-                    # see several near-duplicate candidates from one detector
-                    # call; those must never become multiple recurrence credits.
-                    representative.occurrence_count = self.clusterer.recurrence(
-                        cluster_id
-                    )
+                self._register_cluster_observation(
+                    accepted["seed_id"],
+                    observation_ref=f"turn:{turn}",
+                )
+            self._sync_cluster_recurrence()
 
         # 6. Recurrence is a first-class SSL signal: under the exploratory policy
         # it may drive promotion on its own, and only the Validation Gate raises
@@ -1097,53 +1102,11 @@ class ShadowChatSession:
 
         if self.clusterer is not None:
             for accepted in ingest.get("accepted", []):
-                seed_id = accepted["seed_id"]
-                seed = self.manager.seeds.get(seed_id)
-                if seed is None:
-                    continue
-                if seed_id not in self.seed_to_cluster:
-                    cluster_id = self.clusterer.add(
-                        seed.text,
-                        seed.embedding,
-                        observation_ref=recurrence_observation_ref,
-                    )
-                    had_representative = cluster_id in self.cluster_rep
-                    self.seed_to_cluster[seed_id] = cluster_id
-                    self.cluster_rep.setdefault(cluster_id, seed_id)
-                    representative_id = self.cluster_rep.get(cluster_id)
-                    if (
-                        had_representative
-                        and representative_id is not None
-                        and representative_id != seed_id
-                    ):
-                        representative = self.manager.seeds.get(representative_id)
-                        if representative is not None:
-                            refresh_cluster_representative(
-                                self.manager, representative, seed
-                            )
-                else:
-                    cluster_id = self.seed_to_cluster[seed_id]
-                    self.clusterer.bump(
-                        cluster_id, observation_ref=recurrence_observation_ref
-                    )
-                    representative = self.manager.seeds.get(
-                        self.cluster_rep.get(cluster_id, "")
-                    )
-                    if representative is not None and representative is not seed:
-                        refresh_cluster_representative(
-                            self.manager, representative, seed
-                        )
-
-            for cluster_id, representative_id in self.cluster_rep.items():
-                if representative_id in self.manager.seeds:
-                    representative = self.manager.seeds[representative_id]
-                    # Cluster recurrence is observation-scoped and therefore
-                    # authoritative for the representative. Manager intake may
-                    # see several near-duplicate candidates from one detector
-                    # call; those must never become multiple recurrence credits.
-                    representative.occurrence_count = self.clusterer.recurrence(
-                        cluster_id
-                    )
+                self._register_cluster_observation(
+                    accepted["seed_id"],
+                    observation_ref=recurrence_observation_ref,
+                )
+            self._sync_cluster_recurrence()
 
         self._scope_pairwise_source_recurrence(
             occurrence_before,
