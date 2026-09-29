@@ -342,6 +342,7 @@ class WorkbenchController:
         question: str,
         *,
         compare_without_ssl: bool = False,
+        comparison_mode: str = "authorized",
         external_confirmed: bool = False,
     ) -> dict[str, Any]:
         stored = self.sessions.load(session_id)
@@ -358,6 +359,7 @@ class WorkbenchController:
             session_id,
             question,
             compare_without_ssl=compare_without_ssl,
+            comparison_mode=comparison_mode,
         )
         comparison = None
         if compare_without_ssl:
