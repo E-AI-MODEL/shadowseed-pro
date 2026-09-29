@@ -148,3 +148,29 @@ def test_scenario_format_remains_research_legacy_default_evaluation() -> None:
     )
     assert scenario.runtime_mode == "evaluation"
     assert scenario.embedding_backend == "lexical"
+
+
+def test_authority_profile_is_persisted_without_changing_default_runtime(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Authority profile",
+        profile_id="demo",
+        authority_profile_id="autonomous",
+        backend="fixture",
+    )
+    stored = controller.sessions.load(session_id)
+
+    assert stored["config"]["runtime_mode"] == "live"
+    assert stored["config"]["authority_profile_id"] == "autonomous"
+
+
+def test_default_authority_profile_is_strict(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Default authority profile",
+        profile_id="demo",
+        backend="fixture",
+    )
+    stored = controller.sessions.load(session_id)
+
+    assert stored["config"]["authority_profile_id"] == "strict"
