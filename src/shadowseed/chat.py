@@ -764,16 +764,14 @@ class ShadowChatSession:
         draft_answer = answer
         surfaced = list(prepared.surfaced_seeds)
         surfaced_seed_ids = list(prepared.surfaced_seed_ids)
+        first_pass_surfaced_seed_ids = list(prepared.surfaced_seed_ids)
         self_reinforcement_applied = False
         self_reinforcement_seed_ids: list[str] = []
         self_reinforcement_decisions: list[dict[str, Any]] = []
         self_reinforcement_prompt_boundary_markers: list[dict[str, object]] = []
         self_reinforcement_error: str | None = None
-        first_pass_context_ref = (
-            f"turn:{turn}:draft_answer"
-            if self.allow_self_reinforcement
-            else f"turn:{turn}:visible_answer"
-        )
+        provisional_context_ref = f"turn:{turn}:first_pass_answer"
+        first_pass_context_ref = provisional_context_ref
 
         raw_candidates = self.detector.detect_seeds(
             {"text": final_answer}, max_seeds=self.max_seeds_per_turn
@@ -781,35 +779,17 @@ class ShadowChatSession:
         candidates, suppressed_self = self._filter_ssl_attributed_candidates(
             raw_candidates, surfaced_seed_ids
         )
-        turn_observations = self.observation_ledger.record_batch(
-            raw_candidates,
-            context_ref=first_pass_context_ref,
-            detector_backend=str(getattr(self.detector, "name", "unknown")),
-            detector_prompt_provenance=(
-                None
-                if getattr(self.detector, "prompt_variant", None) is None
-                else str(getattr(self.detector, "prompt_variant"))
-            ),
-            candidate_type=CandidateType.POSSIBLE_COMPLETION.value,
-            ssl_exposed=bool(surfaced_seed_ids),
-            surfaced_seed_ids=surfaced_seed_ids,
-            created_at=self.manager._now_iso(),
-        )
         occurrence_before = {
             seed_id: seed.occurrence_count for seed_id, seed in self.manager.seeds.items()
         }
         origin = SeedOrigin(
             candidate_type=CandidateType.POSSIBLE_COMPLETION,
             detection_basis=(
-                "draft_answer_ssl_exposed_self_reinforcement_allowed"
-                if surfaced_seed_ids and self.allow_self_reinforcement
-                else (
-                    "draft_answer_self_reinforcement_enabled"
-                    if self.allow_self_reinforcement
-                    else "visible_answer_non_ssl_attributed"
-                )
+                "first_pass_ssl_exposed_self_reinforcement_allowed"
+                if first_pass_surfaced_seed_ids and self.allow_self_reinforcement
+                else "first_pass_answer"
             ),
-            context_ref=first_pass_context_ref,
+            context_ref=provisional_context_ref,
         )
         ingest = self.manager.ingest_detection_candidates(
             candidates,
@@ -976,6 +956,49 @@ class ShadowChatSession:
                             f"{type(exc).__name__}: {exc}"
                         )
                         final_answer = draft_answer
+
+        first_pass_context_ref = (
+            f"turn:{turn}:draft_answer"
+            if self_reinforcement_applied
+            else f"turn:{turn}:visible_answer"
+        )
+        first_pass_detection_basis = (
+            "draft_answer_ssl_exposed_self_reinforcement_allowed"
+            if self_reinforcement_applied and first_pass_surfaced_seed_ids
+            else (
+                "draft_answer_self_reinforcement_enabled"
+                if self_reinforcement_applied
+                else (
+                    "visible_answer_ssl_exposed_self_reinforcement_allowed"
+                    if first_pass_surfaced_seed_ids and self.allow_self_reinforcement
+                    else "visible_answer_non_ssl_attributed"
+                )
+            )
+        )
+        for seed_id in born:
+            seed = self.manager.seeds.get(seed_id)
+            if (
+                seed is not None
+                and seed.origin is not None
+                and seed.origin.context_ref == provisional_context_ref
+            ):
+                seed.origin.context_ref = first_pass_context_ref
+                seed.origin.detection_basis = first_pass_detection_basis
+
+        turn_observations = self.observation_ledger.record_batch(
+            raw_candidates,
+            context_ref=first_pass_context_ref,
+            detector_backend=str(getattr(self.detector, "name", "unknown")),
+            detector_prompt_provenance=(
+                None
+                if getattr(self.detector, "prompt_variant", None) is None
+                else str(getattr(self.detector, "prompt_variant"))
+            ),
+            candidate_type=CandidateType.POSSIBLE_COMPLETION.value,
+            ssl_exposed=bool(first_pass_surfaced_seed_ids),
+            surfaced_seed_ids=first_pass_surfaced_seed_ids,
+            created_at=self.manager._now_iso(),
+        )
 
         self.history.append((question, final_answer))
         self._turn += 1
