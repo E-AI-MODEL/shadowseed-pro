@@ -306,7 +306,19 @@ class ShadowChatSession:
             return False
         if self.manager.is_blocking_contradiction(seed_id):
             return False
+        if self.clusterer is not None:
+            cluster_id = self.seed_to_cluster.get(seed_id)
+            if cluster_id is not None and self.cluster_rep.get(cluster_id) != seed_id:
+                return False
         return seed.occurrence_count >= self.manager.config.min_occurrences_for_gate
+
+    @staticmethod
+    def _source_observation_ref(context_ref: str) -> str:
+        """Collapse chunk-level provenance to one recurrence observation per source instance."""
+
+        if context_ref.startswith("source:") and ":chunk:" in context_ref:
+            return context_ref.rsplit(":chunk:", 1)[0]
+        return context_ref
 
     def _gate_review_required(self, seed_id: str, event: GateEvent) -> bool:
         """Compatibility helper for Gate-triggered product reports.
@@ -1007,6 +1019,7 @@ class ShadowChatSession:
             raise ValueError("context_ref must be non-empty")
 
         source_text = text.strip()
+        recurrence_observation_ref = self._source_observation_ref(context_ref)
         raw_candidates = self.detector.detect_seeds(
             {"text": source_text}, max_seeds=self.max_seeds_per_turn
         )
@@ -1054,7 +1067,7 @@ class ShadowChatSession:
                     cluster_id = self.clusterer.add(
                         seed.text,
                         seed.embedding,
-                        observation_ref=context_ref,
+                        observation_ref=recurrence_observation_ref,
                     )
                     had_representative = cluster_id in self.cluster_rep
                     self.seed_to_cluster[seed_id] = cluster_id
