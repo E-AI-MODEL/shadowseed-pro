@@ -123,31 +123,17 @@ class InspectionService:
 
         review_seed_ids: list[str] = []
         if authority_profile_id == "assisted":
-            latest_gate_by_seed: dict[str, dict[str, Any]] = {}
-            for raw_event in manager.get("gate_events", []):
-                if not isinstance(raw_event, dict):
-                    continue
-                seed_id = str(raw_event.get("seed_id", ""))
-                if seed_id:
-                    latest_gate_by_seed[seed_id] = raw_event
+            manager_config = dict(manager.get("config", {}))
+            recurrence_threshold = int(manager_config.get("min_occurrences_for_gate", 3))
             for seed in decorated:
                 seed_id = str(seed.get("id", ""))
-                event = latest_gate_by_seed.get(seed_id)
                 status = str(seed.get("status", "")).upper()
+                occurrence_count = int(seed.get("occurrence_count", 0))
                 if (
-                    not event
-                    or seed_id in blocking_ids
-                    or status in {"PROMOTED", "EXPIRED"}
+                    seed_id not in blocking_ids
+                    and status not in {"PROMOTED", "EXPIRED"}
+                    and occurrence_count >= recurrence_threshold
                 ):
-                    continue
-                signals = event.get("signals", [])
-                mature_recurrence = any(
-                    isinstance(signal, dict)
-                    and str(signal.get("kind")) == "recurrence"
-                    and str(signal.get("direction")) == "support"
-                    for signal in signals
-                )
-                if str(event.get("decision")) == "blocked" and mature_recurrence:
                     review_seed_ids.append(seed_id)
 
         return {
