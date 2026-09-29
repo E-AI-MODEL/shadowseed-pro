@@ -251,3 +251,26 @@ def test_assisted_promoted_seed_does_not_return_to_review(tmp_path) -> None:
 
     assert seed_id not in refreshed["authority_review_seed_ids"]
     assert controller.seed_view(session_id, seed_id)["review_required"] is False
+
+
+
+def test_session_view_exposes_blocking_contradiction_state(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Blocking state",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+    )
+    result = controller.send_turn(
+        session_id,
+        "What important perspective could be missing?",
+    )
+    seed_id = result["session"]["seeds"][0]["id"]
+
+    controller.falsify_seed(session_id, seed_id)
+    view = controller.session_view(session_id)
+    seed = next(item for item in view["seeds"] if item["id"] == seed_id)
+
+    assert seed["blocking"] is True
+    assert "blocks point-of-use influence" in seed["plain_explanation"]
