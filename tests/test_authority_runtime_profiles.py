@@ -3,6 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 from shadowseed.chat import ShadowChatSession
+from shadowseed.core_config import SSLCoreConfig
 from shadowseed.manager import SeedStatus
 
 
@@ -360,3 +361,53 @@ def test_expired_cluster_representative_is_replaced_by_live_redetection() -> Non
 
     assert promoted is not None
     assert session.manager.seeds[replacement_id].status is SeedStatus.PROMOTED
+
+
+
+def test_self_reinforcement_toggle_controls_ssl_attributed_recurrence() -> None:
+    def make(enabled: bool) -> ShadowChatSession:
+        return ShadowChatSession(
+            backend="fixture",
+            runtime_mode="live",
+            authority_profile_id="autonomous",
+            embedding_backend="lexical",
+            detector_backend=_NearDuplicateDetector(),
+            embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+            core_config=SSLCoreConfig(
+                min_occurrences_for_gate=1,
+                promotion_threshold=0.2,
+            ),
+            surface_threshold=0.0,
+            early_turn_margin=0.0,
+            allow_self_reinforcement=enabled,
+        )
+
+    guarded = make(False)
+    open_loop = make(True)
+
+    for session in (guarded, open_loop):
+        first = session.observe_source_text(
+            "Initial independent observation.",
+            context_ref="source:self-loop:instance:first:chunk:00000",
+        )
+        assert first["promoted_this_observation"]
+        seed = next(iter(session.manager.seeds.values()))
+        assert seed.status is SeedStatus.PROMOTED
+
+        prepared = session.prepare_turn("Alpha explanatory boundary")
+        assert prepared.surfaced_seed_ids
+        report = session.observe_turn(
+            prepared,
+            "Alpha identifies a missing explanatory boundary.",
+        )
+        assert report["surfaced_seed_ids"]
+
+    guarded_seed = next(iter(guarded.manager.seeds.values()))
+    open_seed = next(iter(open_loop.manager.seeds.values()))
+
+    assert guarded_seed.occurrence_count == 1
+    assert open_seed.occurrence_count == 2
+    assert guarded.turn_reports[-1]["suppressed_self_attributed_candidates"]
+    assert guarded.turn_reports[-1]["self_reinforcement_enabled"] is False
+    assert open_loop.turn_reports[-1]["suppressed_self_attributed_candidates"] == []
+    assert open_loop.turn_reports[-1]["self_reinforcement_enabled"] is True
