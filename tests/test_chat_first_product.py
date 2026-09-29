@@ -274,3 +274,42 @@ def test_session_view_exposes_blocking_contradiction_state(tmp_path) -> None:
 
     assert seed["blocking"] is True
     assert "blocks point-of-use influence" in seed["plain_explanation"]
+
+
+
+def test_assisted_ingest_summary_preserves_existing_review_request(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Assisted outstanding review",
+        profile_id="demo",
+        authority_profile_id="assisted",
+        backend="fixture",
+    )
+    recurring = [
+        {
+            "source_name": "recurrence.txt",
+            "context_ref": f"source:recurrence.txt:instance:first:chunk:{index:05d}",
+            "text": "Alpha provides a recurring explanatory perspective.",
+        }
+        for index in range(6)
+    ]
+
+    first = controller.sessions.ingest_source_chunks(session_id, recurring)
+    outstanding = set(first["authority_review_seed_ids"])
+    assert outstanding
+
+    second = controller.sessions.ingest_source_chunks(
+        session_id,
+        [
+            {
+                "source_name": "unrelated.txt",
+                "context_ref": "source:unrelated.txt:instance:second:chunk:00000",
+                "text": "Omega describes a completely separate operational topic.",
+            }
+        ],
+    )
+
+    assert outstanding.issubset(set(second["authority_review_seed_ids"]))
+    assert outstanding.issubset(
+        set(controller.session_view(session_id)["authority_review_seed_ids"])
+    )
