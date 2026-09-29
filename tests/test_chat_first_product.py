@@ -5,6 +5,7 @@ import json
 import pytest
 
 from shadowseed.application.comparison import ComparisonService
+from shadowseed.application.inspection import InspectionService
 from shadowseed.application.models import SessionConfig
 from shadowseed.application.scenarios import parse_scenario
 from shadowseed.application.sessions import service_for_workspace
@@ -188,7 +189,7 @@ def test_assisted_session_view_exposes_review_requests(tmp_path) -> None:
     chunks = [
         {
             "source_name": "recurrence.txt",
-            "context_ref": f"source:recurrence.txt:chunk:{index:05d}",
+            "context_ref": f"source:recurrence.txt:instance:{index:05d}:chunk:00000",
             "text": "Alpha provides a recurring explanatory perspective.",
         }
         for index in range(6)
@@ -300,7 +301,7 @@ def test_assisted_ingest_summary_preserves_existing_review_request(tmp_path) -> 
     recurring = [
         {
             "source_name": "recurrence.txt",
-            "context_ref": f"source:recurrence.txt:instance:first:chunk:{index:05d}",
+            "context_ref": f"source:recurrence.txt:instance:{index:05d}:chunk:00000",
             "text": "Alpha provides a recurring explanatory perspective.",
         }
         for index in range(6)
@@ -362,3 +363,61 @@ def test_assisted_ingest_summary_keeps_review_after_partial_validation(tmp_path)
         pasted_text="Omega describes an unrelated operational topic.",
     )
     assert seed_id in summary["authority_review_seed_ids"]
+
+
+
+def test_persisted_assisted_review_excludes_cluster_nonrepresentatives() -> None:
+    stored = {
+        "session_id": "session-1",
+        "title": "Persisted cluster review",
+        "profile_id": "demo",
+        "backend": "fixture",
+        "model_id": None,
+        "created_at": "2026-01-01T00:00:00",
+        "updated_at": "2026-01-01T00:00:00",
+        "config": {
+            "runtime_mode": "live",
+            "authority_profile_id": "assisted",
+            "gate_policy_id": "evidence_backed",
+        },
+        "state": {
+            "session_config": {
+                "runtime_mode": "live",
+                "authority_profile_id": "assisted",
+                "gate_policy_id": "evidence_backed",
+            },
+            "manager": {
+                "config": {"min_occurrences_for_gate": 3},
+                "seeds": [
+                    {
+                        "id": "ss_001",
+                        "text": "Representative perspective.",
+                        "status": "ACTIVE",
+                        "occurrence_count": 3,
+                    },
+                    {
+                        "id": "ss_002",
+                        "text": "Cluster nonrepresentative perspective.",
+                        "status": "ACTIVE",
+                        "occurrence_count": 3,
+                    },
+                ],
+                "contradiction_records": [],
+            },
+            "seed_to_cluster": {"ss_001": 0, "ss_002": 0},
+            "cluster_rep": {"0": "ss_001"},
+            "turn_reports": [],
+            "turn": 0,
+        },
+    }
+
+    class _Sessions:
+        def load(self, _session_id):
+            return stored
+
+        def list_feedback(self, _session_id):
+            return []
+
+    view = InspectionService(_Sessions()).session_view("session-1")
+
+    assert view["authority_review_seed_ids"] == ["ss_001"]
