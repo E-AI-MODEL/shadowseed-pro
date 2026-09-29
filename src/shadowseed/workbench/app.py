@@ -175,9 +175,13 @@ def _status_markdown(view: dict[str, Any] | None) -> str:
     experience = "Live SSL" if mode == "live" else "Research evaluation"
     model = str(view.get("model_id") or view.get("backend") or "unknown")
     authority = str(view.get("authority_profile_id", "strict"))
+    gate = str(view.get("effective_gate_policy_id", "unknown"))
+    review_count = len(view.get("authority_review_seed_ids", []) or [])
+    review = f" · **{review_count} need review**" if review_count else ""
     return (
         f"**{experience}** · model `{model}` · authority `{authority}` · "
-        f"{int(view.get('turn', 0))} turns · {len(seeds)} shadow seeds · {promoted} promoted"
+        f"Gate `{gate}` · {int(view.get('turn', 0))} turns · "
+        f"{len(seeds)} shadow seeds · {promoted} promoted{review}"
     )
 
 
