@@ -9,6 +9,7 @@ from shadowseed.application.inspection import InspectionService
 from shadowseed.application.models import SessionConfig
 from shadowseed.application.scenarios import parse_scenario
 from shadowseed.application.sessions import service_for_workspace
+from shadowseed.authority_profiles import resolve_authority_runtime
 from shadowseed.workbench.controller import WorkbenchController
 
 
@@ -421,3 +422,64 @@ def test_persisted_assisted_review_excludes_cluster_nonrepresentatives() -> None
     view = InspectionService(_Sessions()).session_view("session-1")
 
     assert view["authority_review_seed_ids"] == ["ss_001"]
+
+
+
+def test_assisted_exploratory_runtime_does_not_request_proactive_review() -> None:
+    runtime = resolve_authority_runtime(
+        "assisted",
+        runtime_mode="evaluation",
+    )
+
+    assert runtime.gate_policy_id == "exploratory"
+    assert runtime.proactive_review is False
+
+
+def test_persisted_assisted_exploratory_gate_does_not_show_review_request() -> None:
+    stored = {
+        "session_id": "session-exploratory",
+        "title": "Assisted exploratory",
+        "profile_id": "demo",
+        "backend": "fixture",
+        "model_id": None,
+        "created_at": "2026-01-01T00:00:00",
+        "updated_at": "2026-01-01T00:00:00",
+        "config": {
+            "runtime_mode": "evaluation",
+            "authority_profile_id": "assisted",
+            "gate_policy_id": "exploratory",
+        },
+        "state": {
+            "session_config": {
+                "runtime_mode": "evaluation",
+                "authority_profile_id": "assisted",
+                "gate_policy_id": "exploratory",
+            },
+            "manager": {
+                "config": {"min_occurrences_for_gate": 3},
+                "seeds": [
+                    {
+                        "id": "ss_001",
+                        "text": "Recurring perspective.",
+                        "status": "ACTIVE",
+                        "occurrence_count": 4,
+                    }
+                ],
+                "contradiction_records": [],
+            },
+            "turn_reports": [],
+            "turn": 0,
+        },
+    }
+
+    class _Sessions:
+        def load(self, _session_id):
+            return stored
+
+        def list_feedback(self, _session_id):
+            return []
+
+    view = InspectionService(_Sessions()).session_view("session-exploratory")
+
+    assert view["effective_gate_policy_id"] == "exploratory"
+    assert view["authority_review_seed_ids"] == []
