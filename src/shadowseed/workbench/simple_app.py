@@ -672,9 +672,27 @@ def build_simple_app(
         hosted_confirmed: bool,
     ):
         if not session_id:
-            return gr.update(), "Maak eerst een nieuwe chat.", None, question, "", "", ""
+            return (
+                gr.update(),
+                "Maak eerst een nieuwe chat.",
+                None,
+                question,
+                "",
+                "",
+                "",
+                gr.update(),
+            )
         if not str(question or "").strip():
-            return gr.update(), "Typ eerst een bericht.", None, question, "", "", ""
+            return (
+                gr.update(),
+                "Typ eerst een bericht.",
+                None,
+                question,
+                "",
+                "",
+                "",
+                gr.update(),
+            )
         try:
             result = ctl.send_turn(
                 session_id,
@@ -692,9 +710,19 @@ def build_simple_app(
                 with_ssl,
                 without_ssl,
                 note,
+                view,
             )
         except Exception as exc:
-            return gr.update(), _fout(exc), None, question, "", "", _fout(exc)
+            return (
+                gr.update(),
+                _fout(exc),
+                None,
+                question,
+                "",
+                "",
+                _fout(exc),
+                gr.update(),
+            )
 
     def ingest_sources(
         session_id: str | None,
@@ -988,7 +1016,7 @@ def build_simple_app(
                         gr.Markdown("### Gesprekken")
                         session_select = gr.Dropdown(
                             choices=initial_sessions,
-                            value=initial_sessions[0][1] if initial_sessions else None,
+                            value=initial_session_id,
                             label="Open gesprek",
                         )
                         refresh_sessions = gr.Button("Vernieuwen", variant="secondary")
@@ -1073,8 +1101,16 @@ def build_simple_app(
                                 )
 
                 with gr.Column(scale=3, min_width=620):
-                    chat = gr.Chatbot(label="Gesprek", height=560, elem_id="ss-chat")
-                    chat_status = gr.Markdown(_chat_status(None), elem_id="ss-status")
+                    chat = gr.Chatbot(
+                        value=initial_chat_messages,
+                        label="Gesprek",
+                        height=560,
+                        elem_id="ss-chat",
+                    )
+                    chat_status = gr.Markdown(
+                        _chat_status(initial_view),
+                        elem_id="ss-status",
+                    )
                     with gr.Group(elem_id="ss-composer"):
                         question = gr.Textbox(
                             label="Bericht",
@@ -1097,7 +1133,10 @@ def build_simple_app(
                             ssl_off = gr.Markdown(label="Zonder Shadowseed")
                         with gr.Accordion("Technische gegevens", open=False):
                             last_turn_json = gr.JSON(label="Laatste beurt · technisch")
-                            session_json = gr.JSON(label="Gesprekstoestand · technisch")
+                            session_json = gr.JSON(
+                                value=initial_view,
+                                label="Gesprekstoestand · technisch",
+                            )
 
             ssl_intensity.change(
                 lambda value: _ssl_intensity_explainer(value),
@@ -1155,6 +1194,7 @@ def build_simple_app(
                     ssl_on,
                     ssl_off,
                     comparison_note,
+                    session_json,
                 ],
             )
             question.submit(
@@ -1168,6 +1208,7 @@ def build_simple_app(
                     ssl_on,
                     ssl_off,
                     comparison_note,
+                    session_json,
                 ],
             )
 
