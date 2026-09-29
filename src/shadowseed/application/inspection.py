@@ -161,6 +161,8 @@ class InspectionService:
             "runtime_mode": runtime_mode,
             "authority_profile_id": authority_profile_id,
             "effective_gate_policy_id": effective_gate_policy_id,
+            "ssl_intensity": int(persisted_config.get("ssl_intensity", 100)),
+            "gate_strictness": int(persisted_config.get("gate_strictness", 100)),
             "authority_review_seed_ids": review_seed_ids,
             "created_at": stored["created_at"],
             "updated_at": stored["updated_at"],
