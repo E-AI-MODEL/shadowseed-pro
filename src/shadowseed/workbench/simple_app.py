@@ -90,6 +90,41 @@ _NL_CSS = """
   border-radius: 14px;
   background: var(--background-fill-secondary);
 }
+.tab-nav {
+  gap: .35rem !important;
+  padding: .35rem !important;
+  border: 1px solid var(--border-color-primary) !important;
+  border-radius: 16px !important;
+  background: var(--background-fill-secondary) !important;
+  margin-bottom: .9rem !important;
+}
+.tab-nav button {
+  border-radius: 12px !important;
+  font-weight: 650 !important;
+  padding: .55rem .8rem !important;
+}
+#ss-dashboard {
+  border: 1px solid var(--border-color-primary);
+  border-radius: 22px;
+  padding: 1rem 1.1rem;
+  background: linear-gradient(145deg, var(--background-fill-secondary), rgba(255,255,255,.02));
+  box-shadow: 0 14px 36px rgba(0,0,0,.10);
+}
+.ss-metric {
+  border: 1px solid var(--border-color-primary);
+  border-radius: 16px;
+  padding: .75rem .9rem;
+  background: var(--background-fill-secondary);
+  min-height: 112px;
+}
+.ss-metric h2, .ss-metric h3 { margin: 0 0 .15rem 0; }
+.ss-detail {
+  border: 1px solid var(--border-color-primary);
+  border-radius: 18px;
+  padding: .9rem 1rem;
+  background: var(--background-fill-secondary);
+  min-height: 180px;
+}
 """
 
 
@@ -256,6 +291,76 @@ def _memory_overview(view: dict[str, Any] | None) -> str:
         f"**{blocked}** geblokkeerd\\n\\n"
         "Een geheugenpunt is een mogelijke ontbrekende invalshoek. Het is niet automatisch een feit."
     )
+
+
+
+def _dashboard_summary(view: dict[str, Any] | None) -> tuple[str, str, str, str, str]:
+    if not view:
+        empty = "### —\nNog geen gesprek gekozen"
+        return (
+            "## Welkom bij Shadowseed\nKies of maak een gesprek. Daarna zie je hier in één oogopslag wat er gebeurt.",
+            empty,
+            empty,
+            empty,
+            "### Geen aandachtspunten\nShadowseed wacht op een gesprek.",
+        )
+
+    seeds = list(view.get("seeds", []) or [])
+    turns = int(view.get("turn", 0) or 0)
+    promoted = sum(str(seed.get("status", "")).upper() == "PROMOTED" for seed in seeds)
+    blocked = sum(bool(seed.get("blocking", False)) for seed in seeds)
+    review = len(view.get("authority_review_seed_ids", []) or [])
+    used: set[str] = set()
+    for report in view.get("turn_reports", []) or []:
+        used.update(str(seed_id) for seed_id in report.get("surfaced_seed_ids", []) or [])
+
+    profile = _AUTHORITY_UI.get(
+        str(view.get("authority_profile_id", "strict")),
+        ("Aangepast", ""),
+    )[0]
+    model = str(view.get("model_id") or view.get("backend") or "model")
+
+    headline = (
+        f"## {view.get('title') or 'Gesprek'}\n"
+        f"Model **{model}** · werkwijze **{profile}** · **{turns}** bericht(en)"
+    )
+    conversation = (
+        f"### {turns}\n"
+        "**berichten**\n\n"
+        "Open **Chat** om verder te praten."
+    )
+    memory = (
+        f"### {len(seeds)}\n"
+        "**geheugenpunten**\n\n"
+        f"{promoted} mag meedenken · {len(used)} daadwerkelijk gebruikt"
+    )
+    authority = (
+        f"### {review + blocked}\n"
+        "**aandachtspunten**\n\n"
+        f"{review} vraagt controle · {blocked} geblokkeerd"
+    )
+    if blocked:
+        attention = (
+            "### Actie nodig\n"
+            f"Er {'is' if blocked == 1 else 'zijn'} **{blocked} geblokkeerde** geheugenpunt"
+            f"{'' if blocked == 1 else 'en'}. Open hieronder een punt voor uitleg."
+        )
+    elif review:
+        attention = (
+            "### Controle gevraagd\n"
+            f"**{review}** geheugenpunt(en) hebben voldoende ontwikkeling om menselijke controle te vragen."
+        )
+    elif promoted:
+        attention = (
+            "### Alles rustig\n"
+            f"**{promoted}** geheugenpunt(en) mogen meedenken wanneer ze later relevant zijn."
+        )
+    else:
+        attention = (
+            "### Alles rustig\n"
+            "Shadowseed bouwt het geheugen op. Er is op dit moment geen handmatige actie nodig."
+        )
+    return headline, conversation, memory, authority, attention
 
 
 def _seed_story(view: dict[str, Any] | None) -> str:
@@ -558,6 +663,19 @@ def build_simple_app(
         except Exception as exc:
             return _source_summary({"error": f"{type(exc).__name__}: {exc}"}), gr.update(), None, pasted_text
 
+    def dashboard_session_changed(session_id: str | None):
+        if not session_id:
+            summary = _dashboard_summary(None)
+            return (*summary, gr.update(choices=[], value=None), _seed_story(None), None, None)
+        try:
+            view = ctl.session_view(session_id)
+            summary = _dashboard_summary(view)
+            seed_update = dropdown_update(ctl.seed_choices(view))
+            return (*summary, seed_update, _seed_story(None), None, None)
+        except Exception as exc:
+            error = _fout(exc)
+            return (error, error, error, error, error, gr.update(), error, None, None)
+
     def memory_session_changed(session_id: str | None):
         if not session_id:
             return gr.update(choices=[], value=None), _memory_overview(None)
@@ -699,6 +817,84 @@ def build_simple_app(
             gr.Markdown(
                 "Chat centraal · geheugen zichtbaar · uitleg in gewone taal · techniek alleen wanneer jij die wilt",
                 elem_classes=["ss-muted"],
+            )
+
+        with gr.Tab("Overzicht"):
+            with gr.Row():
+                dashboard_session = gr.Dropdown(
+                    choices=initial_sessions,
+                    value=initial_sessions[0][1] if initial_sessions else None,
+                    label="Gesprek",
+                )
+                dashboard_refresh = gr.Button("Vernieuwen", variant="secondary")
+
+            dashboard_headline = gr.Markdown(
+                _dashboard_summary(None)[0],
+                elem_id="ss-dashboard",
+            )
+            with gr.Row():
+                dashboard_conversation = gr.Markdown(
+                    _dashboard_summary(None)[1],
+                    elem_classes=["ss-metric"],
+                )
+                dashboard_memory = gr.Markdown(
+                    _dashboard_summary(None)[2],
+                    elem_classes=["ss-metric"],
+                )
+                dashboard_authority = gr.Markdown(
+                    _dashboard_summary(None)[3],
+                    elem_classes=["ss-metric"],
+                )
+
+            dashboard_attention = gr.Markdown(
+                _dashboard_summary(None)[4],
+                elem_classes=["ss-detail"],
+            )
+
+            gr.Markdown("### Doorklikken naar detail")
+            with gr.Row():
+                dashboard_seed = gr.Dropdown(
+                    choices=[],
+                    label="Geheugenpunt",
+                    scale=2,
+                )
+                dashboard_open_seed = gr.Button("Open detail", variant="primary", scale=1)
+            dashboard_seed_story = gr.Markdown(
+                _seed_story(None),
+                elem_classes=["ss-detail"],
+            )
+            with gr.Accordion("Technische audit van dit punt", open=False):
+                dashboard_seed_json = gr.JSON(label="Ruwe toestand")
+                dashboard_seed_timeline = gr.JSON(label="Gebeurtenissen")
+
+            dashboard_refresh.click(
+                refresh_session_dropdown,
+                inputs=[dashboard_session],
+                outputs=[dashboard_session],
+            )
+            dashboard_session.change(
+                dashboard_session_changed,
+                inputs=[dashboard_session],
+                outputs=[
+                    dashboard_headline,
+                    dashboard_conversation,
+                    dashboard_memory,
+                    dashboard_authority,
+                    dashboard_attention,
+                    dashboard_seed,
+                    dashboard_seed_story,
+                    dashboard_seed_json,
+                    dashboard_seed_timeline,
+                ],
+            )
+            dashboard_open_seed.click(
+                inspect_seed,
+                inputs=[dashboard_session, dashboard_seed],
+                outputs=[
+                    dashboard_seed_story,
+                    dashboard_seed_json,
+                    dashboard_seed_timeline,
+                ],
             )
 
         with gr.Tab("Chat"):
