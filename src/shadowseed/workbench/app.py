@@ -43,6 +43,21 @@ _PRODUCT_CSS = """
 }
 .comparison-note { font-size: 0.9rem; opacity: 0.82; }
 .section-kicker { opacity: .72; font-size: .9rem; }
+#seed-story {
+  border: 1px solid var(--border-color-primary);
+  border-radius: 18px;
+  padding: 1rem 1.05rem;
+  min-height: 250px;
+  background: linear-gradient(160deg, var(--background-fill-secondary), rgba(255,255,255,.018));
+}
+#seed-story h2 { margin-top: .15rem; }
+#seed-story code { font-size: .84rem; }
+#verify-callout {
+  border: 1px solid var(--border-color-primary);
+  border-radius: 16px;
+  padding: .85rem 1rem;
+  background: var(--background-fill-secondary);
+}
 """
 
 
@@ -79,9 +94,78 @@ def _status_markdown(view: dict[str, Any] | None) -> str:
     mode = str(view.get("runtime_mode", "evaluation"))
     experience = "Live SSL" if mode == "live" else "Research evaluation"
     model = str(view.get("model_id") or view.get("backend") or "unknown")
+    authority = str(view.get("authority_profile_id", "strict"))
     return (
-        f"**{experience}** · model `{model}` · {int(view.get('turn', 0))} turns · "
-        f"{len(seeds)} shadow seeds · {promoted} promoted"
+        f"**{experience}** · model `{model}` · authority `{authority}` · "
+        f"{int(view.get('turn', 0))} turns · {len(seeds)} shadow seeds · {promoted} promoted"
+    )
+
+
+def _seed_story_markdown(view: dict[str, Any] | None) -> str:
+    """Turn a technical seed snapshot into a compact human-readable lifecycle card."""
+
+    if not view:
+        return (
+            "## Select a shadow seed\n"
+            "Open a seed to see what Shadowseed noticed, why it has its current status, "
+            "whether it has ever influenced an answer, and what you can do next."
+        )
+
+    status = str(view.get("status", "unknown")).upper()
+    text = str(view.get("text", "")).strip() or "(empty seed)"
+    evidence = int(view.get("evidence_count", 0) or 0)
+    occurrences = int(view.get("occurrence_count", 0) or 0)
+    weight = float(view.get("weight", 0.0) or 0.0)
+    trace = float(view.get("trace", 0.0) or 0.0)
+    blocking = bool(view.get("blocking", False))
+    timeline = list(view.get("timeline", []))
+    influences = sum(str(item.get("type", "")) == "influence" for item in timeline)
+    gate = dict(view.get("last_gate_event") or {})
+    gate_decision = str(gate.get("decision") or "not yet")
+    explanation = str(view.get("plain_explanation") or "")
+
+    steps = [
+        "Found ✓",
+        f"Seen {occurrences}×",
+        f"Evidence {evidence}",
+        f"Gate {gate_decision}",
+        f"Used {influences}×",
+    ]
+
+    if blocking:
+        next_action = (
+            "**Needs attention:** an open contradiction blocks this seed. Review the "
+            "contradiction before resolving it."
+        )
+    elif status == "PROMOTED" and influences == 0:
+        next_action = (
+            "**Nothing required right now.** This seed is promoted. Shadowseed may use it "
+            "later only when relevance and point-of-use checks allow it."
+        )
+    elif status == "PROMOTED":
+        next_action = (
+            "**Already used.** Open the audit trail to inspect the exact influence event(s) "
+            "and the decision that allowed them."
+        )
+    elif evidence == 0:
+        next_action = (
+            "**Still developing.** You can leave it alone and let the lifecycle continue, "
+            "or add independently verified support if your authority profile requires it."
+        )
+    else:
+        next_action = (
+            "**Still developing.** Evidence has been recorded, but the current Gate state "
+            "does not yet authorize this seed for influence."
+        )
+
+    return (
+        f"### {status}\n"
+        f"## {text}\n\n"
+        + "  ·  ".join(steps)
+        + f"\n\n**Weight** {weight:.2f}  ·  **Trace** {trace:.2f}\n\n"
+        + explanation
+        + "\n\n"
+        + next_action
     )
 
 
@@ -300,12 +384,13 @@ def build_app(
 
     def inspect_seed(session_id: str | None, seed_id: str | None):
         if not session_id or not seed_id:
-            return None, None
+            return _seed_story_markdown(None), None, None
         try:
             view = ctl.seed_view(session_id, seed_id)
-            return view, view.get("timeline", [])
+            return _seed_story_markdown(view), view, view.get("timeline", [])
         except Exception as exc:
-            return {"error": f"{type(exc).__name__}: {exc}"}, None
+            error = {"error": f"{type(exc).__name__}: {exc}"}
+            return f"**Could not inspect seed:** {error['error']}", error, None
 
     def falsify_seed(session_id: str | None, seed_id: str | None):
         if not session_id or not seed_id:
@@ -613,24 +698,33 @@ def build_app(
         with gr.Tab("Shadow"):
             gr.Markdown("## What is Shadowseed seeing?")
             gr.Markdown(
-                "Each seed is a candidate perspective, not a fact. Open one to see where it came "
-                "from, why it has its current status, whether it ever influenced an answer, and "
-                "the complete audit trail."
+                "Seeds are candidate perspectives, not facts. The normal view explains the "
+                "lifecycle in plain language; the exact JSON and audit events remain one click away."
             )
             with gr.Row():
-                shadow_session = gr.Dropdown(choices=initial_choices, label="Chat")
-                shadow_refresh = gr.Button("Refresh")
-            shadow_status = gr.Markdown("Select a chat.")
-            seed_select = gr.Dropdown(choices=[], label="Shadow seed")
-            with gr.Accordion("Technical inspection", open=False):
-                with gr.Row():
-                    seed_json = gr.JSON(label="Raw seed JSON")
-                    seed_timeline = gr.JSON(label="Raw audit timeline")
-            inspect_button = gr.Button("Inspect seed")
-            falsify_button = gr.Button("Mark seed contradicted", variant="stop")
-            falsify_result = gr.JSON(label="Falsification result")
+                shadow_session = gr.Dropdown(choices=initial_choices, label="Run")
+                shadow_refresh = gr.Button("Refresh", variant="secondary")
+            shadow_status = gr.Markdown("Select a run.")
 
-            with gr.Accordion("Submit independently verified support", open=False):
+            with gr.Row():
+                with gr.Column(scale=1, min_width=320):
+                    seed_select = gr.Dropdown(choices=[], label="Shadow seed")
+                    inspect_button = gr.Button("Open seed", variant="primary")
+                    with gr.Accordion("Intervene manually", open=False):
+                        gr.Markdown(
+                            "You do not need to operate every seed. Use these controls only when "
+                            "you intentionally want to add evidence or challenge a seed."
+                        )
+                        falsify_button = gr.Button("Mark seed contradicted", variant="stop")
+                        falsify_result = gr.JSON(label="Contradiction result")
+                with gr.Column(scale=2, min_width=560):
+                    seed_story = gr.Markdown(_seed_story_markdown(None), elem_id="seed-story")
+                    with gr.Accordion("Technical inspection · JSON and events", open=False):
+                        with gr.Row():
+                            seed_json = gr.JSON(label="Raw seed JSON")
+                            seed_timeline = gr.JSON(label="Raw audit timeline")
+
+            with gr.Accordion("Add independently verified support", open=False):
                 gr.Markdown(
                     "This is an authority-bearing action. Confirm support outside model output and "
                     "use a stable source reference. Reusing one source does not add authority twice."
@@ -657,12 +751,12 @@ def build_app(
             inspect_button.click(
                 inspect_seed,
                 inputs=[shadow_session, seed_select],
-                outputs=[seed_json, seed_timeline],
+                outputs=[seed_story, seed_json, seed_timeline],
             )
             seed_select.change(
                 inspect_seed,
                 inputs=[shadow_session, seed_select],
-                outputs=[seed_json, seed_timeline],
+                outputs=[seed_story, seed_json, seed_timeline],
             )
             falsify_button.click(
                 falsify_seed,
@@ -679,6 +773,41 @@ def build_app(
                     evidence_attest,
                 ],
                 outputs=[evidence_result, seed_json, evidence_source, evidence_attest],
+            )
+
+
+        with gr.Tab("Verify"):
+            gr.Markdown("## Verify what Shadowseed actually changed")
+            gr.Markdown(
+                "A textual difference between two model generations is not proof of Shadowseed "
+                "influence. This view exposes the paired control and the stored attribution record."
+            )
+            with gr.Group(elem_id="verify-callout"):
+                gr.Markdown(
+                    "**How to read this**  \n"
+                    "1. Choose a run and turn.  \n"
+                    "2. Load the stored SSL-on / SSL-off comparison.  \n"
+                    "3. Check whether an authorized seed actually surfaced.  \n"
+                    "4. Only then may a difference be attributed to Shadowseed."
+                )
+            verify_session = gr.Dropdown(choices=initial_choices, label="Run")
+            verify_refresh = gr.Button("Refresh runs", variant="secondary")
+            verify_turn = gr.Number(value=0, precision=0, label="Turn index")
+            with gr.Row():
+                verify_blind = gr.Checkbox(label="Blind A/B", value=False)
+                verify_reveal = gr.Checkbox(label="Reveal mapping", value=True)
+            verify_button = gr.Button("Verify turn", variant="primary")
+            verify_result = gr.JSON(label="Verification record")
+
+            verify_refresh.click(
+                refresh_session_dropdown,
+                inputs=[verify_session],
+                outputs=[verify_session],
+            )
+            verify_button.click(
+                advanced_compare,
+                inputs=[verify_session, verify_turn, verify_blind, verify_reveal],
+                outputs=[verify_result],
             )
 
         with gr.Tab("Feedback and export"):
