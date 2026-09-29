@@ -978,8 +978,9 @@ def build_app(
                             file_types=[".txt", ".md", ".markdown", ".json", ".csv"],
                         )
                         gr.Markdown(
-                            "Supported now: **TXT, Markdown, JSON and CSV** · up to 25 MB per file. "
-                            "PDF and DOCX will follow after their extraction path is made auditable.",
+                            "Supported now: **TXT, Markdown, JSON and CSV** · up to 25 MB total "
+                            "input per batch and at most 256 chunks. PDF and DOCX will follow after "
+                            "their extraction path is made auditable.",
                             elem_classes=["section-kicker"],
                         )
                         source_hosted_confirm = gr.Checkbox(
