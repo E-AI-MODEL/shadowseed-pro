@@ -269,6 +269,56 @@ class WorkbenchController:
             config_overrides=config_overrides or None,
         )
 
+    def update_session_controls(
+        self,
+        session_id: str,
+        *,
+        ssl_intensity: int | float,
+        gate_strictness: int | float,
+        allow_self_reinforcement: bool,
+    ) -> dict[str, Any]:
+        """Apply the Regie controls to the currently selected persisted chat."""
+
+        ssl_settings = self.ssl_intensity_settings(ssl_intensity)
+        gate_settings = self.gate_strictness_settings(gate_strictness)
+        authority_profile_id = str(gate_settings["authority_profile_id"])
+        gate_policy_id = str(gate_settings["gate_policy_id"])
+
+        core_keys = {
+            "min_occurrences_for_gate",
+            "min_evidence_for_gate",
+            "min_trace_for_gate",
+            "promotion_threshold",
+            "validation_increment",
+        }
+        core_updates = {
+            key: gate_settings[key]
+            for key in core_keys
+            if key in gate_settings
+        }
+        session_config_updates = {
+            "surface_threshold": ssl_settings["surface_threshold"],
+            "surface_top_k": ssl_settings["surface_top_k"],
+            "early_turn_margin": ssl_settings["early_turn_margin"],
+            "resurface_margin": ssl_settings["resurface_margin"],
+            "gate_policy_id": gate_policy_id,
+            "authority_profile_id": authority_profile_id,
+            "allow_self_reinforcement": bool(allow_self_reinforcement),
+        }
+        config_updates = {
+            **ssl_settings,
+            **gate_settings,
+            "authority_profile_id": authority_profile_id,
+            "allow_self_reinforcement": bool(allow_self_reinforcement),
+        }
+        self.sessions.update_controls(
+            session_id,
+            config_updates=config_updates,
+            session_config_updates=session_config_updates,
+            core_config_updates=core_updates,
+        )
+        return self.inspection.session_view(session_id)
+
     def send_turn(
         self,
         session_id: str,
