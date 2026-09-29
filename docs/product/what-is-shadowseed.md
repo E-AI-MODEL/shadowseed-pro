@@ -351,11 +351,11 @@ the least restrictive research permissions. The profile may permit future
 unreviewed system evidence only when an explicit auditable producer exists and a
 Gate policy explicitly accepts that signal.
 
-**Release-candidate note:** Controlled preserves the existing production
+**0.8.0 release note:** Controlled preserves the existing production
 behavior. Assisted review semantics and Autonomous/Open recurrence authority are
-now wired through the canonical runtime. Machine-generated evidence producers
-and automated contradiction resolution are not silently implied by these
-profiles and remain separate future work.
+wired through the canonical runtime. Machine-generated evidence producers and
+automated contradiction resolution are not silently implied by these profiles
+and remain separate future work.
 
 ---
 
