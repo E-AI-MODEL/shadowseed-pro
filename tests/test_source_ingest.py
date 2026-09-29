@@ -327,3 +327,15 @@ def test_source_batch_chunk_limit_blocks_before_session_inference(
         )
 
     assert called["ingest"] is False
+
+
+
+def test_csv_upload_accepts_large_field_within_upload_limit(tmp_path: Path) -> None:
+    source = tmp_path / "large-field.csv"
+    large_field = "A" * 200_000
+    source.write_text(f"id,body\n1,{large_field}\n", encoding="utf-8")
+
+    name, text = read_source_file(source)
+
+    assert name == "large-field.csv"
+    assert large_field in text
