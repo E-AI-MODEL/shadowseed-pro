@@ -642,6 +642,7 @@ def build_app(
         session_id: str | None,
         pasted_text: str,
         uploaded_files: list[str] | str | None,
+        external_confirmed: bool,
     ):
         if not session_id:
             error = {"error": "Select or create a run first."}
@@ -657,6 +658,7 @@ def build_app(
                 session_id,
                 pasted_text=pasted_text or "",
                 file_paths=paths,
+                external_confirmed=bool(external_confirmed),
             )
             view = result["session"]
             return (
@@ -980,6 +982,13 @@ def build_app(
                             "PDF and DOCX will follow after their extraction path is made auditable.",
                             elem_classes=["section-kicker"],
                         )
+                        source_hosted_confirm = gr.Checkbox(
+                            label=(
+                                "I understand source content may be sent to the hosted model or "
+                                "embedding provider configured for this run"
+                            ),
+                            value=False,
+                        )
                         ingest_button = gr.Button("Process into shadow memory", variant="primary")
 
                 with gr.Column(scale=1, min_width=360):
@@ -1016,7 +1025,7 @@ def build_app(
             )
             ingest_button.click(
                 ingest_sources_ui,
-                inputs=[source_session, source_paste, source_files],
+                inputs=[source_session, source_paste, source_files, source_hosted_confirm],
                 outputs=[
                     source_result,
                     source_session_json,
