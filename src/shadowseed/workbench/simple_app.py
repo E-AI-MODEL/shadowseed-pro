@@ -740,6 +740,15 @@ def build_simple_app(
             error = _fout(exc)
             return (error, error, error, error, error, gr.update(), error, None, None)
 
+    def refresh_dashboard(current: str | None):
+        choices = session_choices()
+        valid = {item[1] for item in choices}
+        selected = current if current in valid else (choices[0][1] if choices else None)
+        return (
+            dropdown_update(choices, selected),
+            *dashboard_session_changed(selected),
+        )
+
     def memory_session_changed(session_id: str | None):
         if not session_id:
             return gr.update(choices=[], value=None), _memory_overview(None)
@@ -887,38 +896,38 @@ def build_simple_app(
             with gr.Row():
                 dashboard_session = gr.Dropdown(
                     choices=initial_sessions,
-                    value=initial_sessions[0][1] if initial_sessions else None,
+                    value=initial_session_id,
                     label="Gesprek",
                 )
                 dashboard_refresh = gr.Button("Vernieuwen", variant="secondary")
 
             dashboard_headline = gr.Markdown(
-                _dashboard_summary(None)[0],
+                initial_dashboard[0],
                 elem_id="ss-dashboard",
             )
             with gr.Row():
                 dashboard_conversation = gr.Markdown(
-                    _dashboard_summary(None)[1],
+                    initial_dashboard[1],
                     elem_classes=["ss-metric"],
                 )
                 dashboard_memory = gr.Markdown(
-                    _dashboard_summary(None)[2],
+                    initial_dashboard[2],
                     elem_classes=["ss-metric"],
                 )
                 dashboard_authority = gr.Markdown(
-                    _dashboard_summary(None)[3],
+                    initial_dashboard[3],
                     elem_classes=["ss-metric"],
                 )
 
             dashboard_attention = gr.Markdown(
-                _dashboard_summary(None)[4],
+                initial_dashboard[4],
                 elem_classes=["ss-detail"],
             )
 
             gr.Markdown("### Doorklikken naar detail")
             with gr.Row():
                 dashboard_seed = gr.Dropdown(
-                    choices=[],
+                    choices=initial_seed_choices,
                     label="Geheugenpunt",
                     scale=2,
                 )
@@ -932,9 +941,20 @@ def build_simple_app(
                 dashboard_seed_timeline = gr.JSON(label="Gebeurtenissen")
 
             dashboard_refresh.click(
-                refresh_session_dropdown,
+                refresh_dashboard,
                 inputs=[dashboard_session],
-                outputs=[dashboard_session],
+                outputs=[
+                    dashboard_session,
+                    dashboard_headline,
+                    dashboard_conversation,
+                    dashboard_memory,
+                    dashboard_authority,
+                    dashboard_attention,
+                    dashboard_seed,
+                    dashboard_seed_story,
+                    dashboard_seed_json,
+                    dashboard_seed_timeline,
+                ],
             )
             dashboard_session.change(
                 dashboard_session_changed,
