@@ -233,6 +233,7 @@ def _seed_story_markdown(view: dict[str, Any] | None) -> str:
     weight = float(view.get("weight", 0.0) or 0.0)
     trace = float(view.get("trace", 0.0) or 0.0)
     blocking = bool(view.get("blocking", False))
+    review_required = bool(view.get("review_required", False))
     timeline = list(view.get("timeline", []))
     influences = sum(str(item.get("type", "")) == "influence" for item in timeline)
     gate = dict(view.get("last_gate_event") or {})
@@ -251,6 +252,12 @@ def _seed_story_markdown(view: dict[str, Any] | None) -> str:
         next_action = (
             "**Needs attention:** an open contradiction blocks this seed. Review the "
             "contradiction before resolving it."
+        )
+    elif review_required:
+        next_action = (
+            "**Review requested:** this seed has matured through recurrence, but the "
+            "evidence-backed Gate still requires independently verified support before "
+            "authority may increase."
         )
     elif status == "PROMOTED" and influences == 0:
         next_action = (
