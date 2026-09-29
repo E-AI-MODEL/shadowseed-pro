@@ -171,6 +171,9 @@ class InspectionService:
                 if persisted_config.get("gate_strictness") is not None
                 else None
             ),
+            "allow_self_reinforcement": bool(
+                persisted_config.get("allow_self_reinforcement", False)
+            ),
             "authority_review_seed_ids": review_seed_ids,
             "created_at": stored["created_at"],
             "updated_at": stored["updated_at"],
