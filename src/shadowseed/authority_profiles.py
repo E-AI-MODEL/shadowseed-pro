@@ -175,7 +175,7 @@ def get_authority_profile(profile_id: str | AuthorityProfileId | None) -> Author
     if profile_id is None:
         return STRICT_PROFILE
     try:
-        key = AuthorityProfileId(str(profile_id))
+        key = profile_id if isinstance(profile_id, AuthorityProfileId) else AuthorityProfileId(str(profile_id))
     except ValueError as exc:
         raise ValueError(f"unknown authority profile: {profile_id}") from exc
     return AUTHORITY_PROFILES[key]
