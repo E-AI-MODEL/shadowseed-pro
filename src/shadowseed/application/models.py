@@ -40,8 +40,8 @@ class SessionConfig:
     authority_profile_id: str = "strict"
     allow_toy_embedder: bool = False
     # Product controls persisted for UI explanation and reproducibility.
-    ssl_intensity: int = 100
-    gate_strictness: int = 100
+    ssl_intensity: int | None = None
+    gate_strictness: int | None = None
     min_occurrences_for_gate: int = 3
     min_evidence_for_gate: int = 2
     min_trace_for_gate: float = 0.5
