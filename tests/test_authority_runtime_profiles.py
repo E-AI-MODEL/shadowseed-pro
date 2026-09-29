@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import numpy as np
+
 from shadowseed.chat import ShadowChatSession
 from shadowseed.manager import SeedStatus
 
@@ -123,3 +125,52 @@ def test_open_runtime_exposes_unreviewed_system_evidence_capability_without_faki
     seed = _alpha_seed(session)
     assert seed.status is SeedStatus.PROMOTED
     assert seed.evidence_count == 0
+
+
+
+class _NearDuplicateDetector:
+    name = "near-duplicate-test"
+    prompt_variant = "test"
+
+    def detect_seeds(self, _payload, *, max_seeds=5):
+        return [
+            "Alpha identifies a missing explanatory boundary.",
+            "Alpha identifies an absent explanatory boundary.",
+            "Alpha identifies an omitted explanatory boundary.",
+        ][:max_seeds]
+
+
+def test_one_observation_cannot_self_promote_via_near_duplicate_candidates() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="autonomous",
+        embedding_backend="lexical",
+        detector_backend=_NearDuplicateDetector(),
+        embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+    )
+
+    first = session.observe_source_text(
+        "One source observation.",
+        context_ref="source:test:instance:first:chunk:00000",
+    )
+    seed = next(iter(session.manager.seeds.values()))
+
+    assert seed.occurrence_count == 1
+    assert seed.status is not SeedStatus.PROMOTED
+    assert first["promoted_this_observation"] == []
+
+    session.observe_source_text(
+        "Second independent observation.",
+        context_ref="source:test:instance:second:chunk:00000",
+    )
+    assert seed.occurrence_count == 2
+    assert seed.status is not SeedStatus.PROMOTED
+
+    third = session.observe_source_text(
+        "Third independent observation.",
+        context_ref="source:test:instance:third:chunk:00000",
+    )
+    assert seed.occurrence_count == 3
+    assert seed.status is SeedStatus.PROMOTED
+    assert seed.id in third["promoted_this_observation"]
