@@ -45,23 +45,29 @@ runtime.
 ### Assisted
 
 - detect: automatic
-- recurrence and low-risk system evidence may validate automatically
-- human confirmation remains for authority-bearing uncertainty
+- mature recurrence is tracked automatically
+- live authority remains evidence-backed
+- when recurrence is mature but verified support is still missing, the product
+  raises a review request rather than silently granting authority
 - promotion still goes through the Gate
 - relevant promoted seeds may surface automatically
 
 ### Autonomous
 
-- detect, validate, activate, promote and surface automatically where policy,
-  provenance, Gate and point-of-use checks allow
+- detect and recurrence handling: automatic
+- live sessions use the existing exploratory Gate by default, so recurrence can
+  raise authority without being relabeled as external evidence
+- promotion still happens only through the Gate
+- surfacing still requires relevance plus point-of-use safety checks
 - user remains able to inspect, override and contradict
 - all authority changes remain attributable and auditable
 
 ### Open research
 
 - maximum autonomy for exploratory runs
-- unreviewed system evidence may be accepted only where the selected policy
-  explicitly allows it
+- recurrence uses the same exploratory Gate path as Autonomous
+- the profile may permit future unreviewed system evidence only when an explicit,
+  auditable producer exists and the selected Gate policy accepts that signal
 - Gate, provenance, contradiction and audit events remain active
 
 ## Interface structure
@@ -122,8 +128,13 @@ differences.
 
 ### 5. Control
 
-Profile controls use plain language first. An advanced panel exposes per-stage
-behavior:
+The current release exposes a run-level Control workspace showing the selected
+profile, effective Gate and any seeds asking for review. Profile selection is a
+run-level decision; changing authority rules mid-run is deliberately not a
+silent UI mutation.
+
+Profile controls use plain language first. A future advanced panel may expose
+per-stage behavior:
 
 - Detect
 - Validate
