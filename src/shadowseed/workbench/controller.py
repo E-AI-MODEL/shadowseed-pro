@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from shadowseed.authority_profiles import AUTHORITY_PROFILES, get_authority_profile
+from shadowseed.application.ingest import prepare_sources
 from shadowseed.application.comparison import ComparisonService
 from shadowseed.application.exports import ExportService, verify_workbench_export
 from shadowseed.application.feedback import FeedbackService
@@ -193,6 +194,29 @@ class WorkbenchController:
             "comparison": comparison,
             "session": self.inspection.session_view(session_id),
         }
+
+    def ingest_sources(
+        self,
+        session_id: str,
+        *,
+        pasted_text: str = "",
+        file_paths: list[str] | None = None,
+    ) -> dict[str, Any]:
+        chunks = prepare_sources(
+            pasted_text=pasted_text or "",
+            file_paths=file_paths or [],
+        )
+        payload = [
+            {
+                "source_name": chunk.source_name,
+                "context_ref": chunk.context_ref,
+                "text": chunk.text,
+            }
+            for chunk in chunks
+        ]
+        result = self.sessions.ingest_source_chunks(session_id, payload)
+        result["session"] = self.inspection.session_view(session_id)
+        return result
 
     def session_view(self, session_id: str) -> dict[str, Any]:
         return self.inspection.session_view(session_id)
