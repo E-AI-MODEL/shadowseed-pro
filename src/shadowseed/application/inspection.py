@@ -96,6 +96,15 @@ class InspectionService:
             runtime_mode = "evaluation"
         manager = dict(state.get("manager", {}))
         seeds = [dict(seed) for seed in manager.get("seeds", [])]
+        authority_profile_id = str(
+            session_config.get("authority_profile_id")
+            or persisted_config.get("authority_profile_id", "strict")
+        )
+        effective_gate_policy_id = str(
+            session_config.get("gate_policy_id")
+            or persisted_config.get("gate_policy_id")
+            or ("evidence_backed" if runtime_mode == "live" else "exploratory")
+        )
         blocking_ids = {
             str(item.get("seed_id"))
             for item in manager.get("contradiction_records", [])
@@ -110,6 +119,31 @@ class InspectionService:
             }
             for seed in seeds
         ]
+
+        review_seed_ids: list[str] = []
+        if authority_profile_id == "assisted":
+            latest_gate_by_seed: dict[str, dict[str, Any]] = {}
+            for raw_event in manager.get("gate_events", []):
+                if not isinstance(raw_event, dict):
+                    continue
+                seed_id = str(raw_event.get("seed_id", ""))
+                if seed_id:
+                    latest_gate_by_seed[seed_id] = raw_event
+            for seed in decorated:
+                seed_id = str(seed.get("id", ""))
+                event = latest_gate_by_seed.get(seed_id)
+                if not event or seed_id in blocking_ids:
+                    continue
+                signals = event.get("signals", [])
+                mature_recurrence = any(
+                    isinstance(signal, dict)
+                    and str(signal.get("kind")) == "recurrence"
+                    and str(signal.get("direction")) == "support"
+                    for signal in signals
+                )
+                if str(event.get("decision")) == "blocked" and mature_recurrence:
+                    review_seed_ids.append(seed_id)
+
         return {
             "session_id": stored["session_id"],
             "title": stored["title"],
@@ -117,7 +151,9 @@ class InspectionService:
             "backend": stored["backend"],
             "model_id": stored["model_id"],
             "runtime_mode": runtime_mode,
-            "authority_profile_id": str(persisted_config.get("authority_profile_id", "strict")),
+            "authority_profile_id": authority_profile_id,
+            "effective_gate_policy_id": effective_gate_policy_id,
+            "authority_review_seed_ids": review_seed_ids,
             "created_at": stored["created_at"],
             "updated_at": stored["updated_at"],
             "turn": int(state.get("turn", len(state.get("turn_reports", [])))),
