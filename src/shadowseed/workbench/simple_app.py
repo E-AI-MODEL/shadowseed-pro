@@ -149,6 +149,15 @@ body {
   background: linear-gradient(135deg, color-mix(in srgb, var(--button-primary-background-fill) 7%, transparent), transparent);
 }
 .ss-regie-summary p { margin: .1rem 0 !important; }
+.ss-gate-alert {
+  border: 1px solid color-mix(in srgb, #f59e0b 48%, var(--ss-border));
+  border-radius: 18px;
+  padding: .82rem .95rem;
+  margin: .6rem 0;
+  background: color-mix(in srgb, #f59e0b 7%, var(--ss-surface));
+  box-shadow: var(--ss-shadow-soft);
+}
+.ss-gate-alert:empty { display: none; }
 
 #ss-chat {
   border: 1px solid var(--ss-border);
@@ -485,6 +494,67 @@ def _control_state_summary(
     )
 
 
+def _embedding_explainer(choice: str | None) -> str:
+    key = str(choice or "auto")
+    if key == "auto":
+        return (
+            "**Automatisch · aanbevolen**  \n"
+            "Shadowseed kiest zelf de passende manier om betekenis/relevantie te vergelijken. "
+            "Je hoeft hiervoor niets te weten over embeddings."
+        )
+    if key == "lexical":
+        return (
+            "**Snel lokaal · woordoverlap**  \n"
+            "Geen extra model. Snel en volledig lokaal, maar minder goed in synoniemen "
+            "en zinnen die hetzelfde bedoelen met andere woorden."
+        )
+    if key == "sentence-transformers":
+        return (
+            "**Slim lokaal · betekenis**  \n"
+            "Een klein lokaal model vergelijkt betekenis in plaats van alleen woorden. "
+            "Dit is meestal de beste handmatige keuze en stuurt geen tekst naar een online provider."
+        )
+    if key == "openai":
+        return (
+            "**Online · OpenAI betekenisvergelijking**  \n"
+            "Tekst wordt voor embeddings naar OpenAI gestuurd. Alleen kiezen als je dit bewust wilt; "
+            "voor de meeste Workbench-sessies is lokaal voldoende."
+        )
+    return "**Aangepaste technische keuze.**"
+
+
+def _gate_notice(view: dict[str, Any] | None) -> str:
+    if not view:
+        return ""
+    review_ids = [str(item) for item in view.get("authority_review_seed_ids", []) or []]
+    if not review_ids:
+        return ""
+    seeds = {
+        str(seed.get("id")): str(seed.get("text", "")).strip()
+        for seed in view.get("seeds", []) or []
+    }
+    previews = [
+        f"- **{seeds.get(seed_id, seed_id)[:180]}**"
+        for seed_id in review_ids[:3]
+    ]
+    more = (
+        f"\n- … en nog {len(review_ids) - 3}"
+        if len(review_ids) > 3
+        else ""
+    )
+    return (
+        "### ⚠ Validation Gate vraagt jouw beoordeling\n"
+        f"**{len(review_ids)} geheugenpunt(en)** zijn vaak genoeg teruggekomen, "
+        "maar missen nog menselijke/geverifieerde onderbouwing. Tot die beoordeling "
+        "krijgen ze in deze stand geen normale autoriteit.\n\n"
+        + "\n".join(previews)
+        + more
+        + "\n\n**Wat jij moet doen:** open **Geheugen**, kies het gemarkeerde punt en "
+        "voeg een onafhankelijke bron toe die je zelf hebt gecontroleerd, of blokkeer het punt "
+        "als het niet klopt. Je hoeft hiervoor niets opnieuw te draaien of handmatig te refreshen."
+    )
+
+
 def _model_note(backend: str, model_id: str | None = None) -> str:
     label, explanation = _BACKEND_UI.get(
         backend,
@@ -708,17 +778,37 @@ def _comparison_view(comparison: dict[str, Any] | None) -> tuple[str, str, str]:
         str(comparison.get("candidate_a_label", "")): str(comparison.get("candidate_a", "")),
         str(comparison.get("candidate_b_label", "")): str(comparison.get("candidate_b", "")),
     }
-    with_ssl = labels.get("ssl_on") or labels.get("shadowseed") or ""
+    mode = str(comparison.get("comparison_mode", "authorized"))
+    with_ssl = (
+        labels.get("shadow_pressure")
+        or labels.get("ssl_on")
+        or labels.get("shadowseed")
+        or ""
+    )
     without_ssl = labels.get("ssl_off") or labels.get("baseline") or ""
     influenced = bool(comparison.get("ssl_influence_observed"))
-    note = (
-        "**Shadowseed heeft bij dit antwoord aantoonbaar een geautoriseerd geheugenpunt gebruikt.** "
-        "Vergelijk de antwoorden inhoudelijk; het Shadowseed-antwoord is niet automatisch beter."
-        if influenced
-        else
-        "**Bij dit antwoord is geen geautoriseerd geheugenpunt gebruikt.** "
-        "Een tekstverschil mag daarom niet aan Shadowseed worden toegeschreven."
-    )
+    if mode == "shadow_pressure":
+        candidates = list(comparison.get("shadow_pressure_candidates", []) or [])
+        if candidates:
+            note = (
+                f"**Shadow pressure actief:** {len(candidates)} nog niet-gepromoveerde seed(s) "
+                "zijn read-only aan de experimentele arm aangeboden. Dit meet mogelijke "
+                "pre-promotie sturing, niet Gate-geautoriseerde invloed."
+            )
+        else:
+            note = (
+                "**Geen shadow pressure op deze vraag.** Er waren geen voldoende ontwikkelde "
+                "én relevante niet-gepromoveerde seeds; gelijke antwoorden zijn dan logisch."
+            )
+    else:
+        note = (
+            "**Geautoriseerde SSL-invloed aangetoond.** Minstens één promoted en relevante seed "
+            "bereikte de treatment prompt."
+            if influenced
+            else
+            "**Geen geautoriseerde SSL-invloed op deze beurt.** A en B krijgen dan inhoudelijk "
+            "dezelfde context; bij deterministische modellen hoort het verschil vaak nul te zijn."
+        )
     return with_ssl, without_ssl, note
 
 
