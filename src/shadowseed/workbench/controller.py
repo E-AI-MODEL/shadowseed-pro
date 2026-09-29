@@ -106,6 +106,26 @@ class WorkbenchController:
         return "sentence-transformers"
 
     @staticmethod
+    def ssl_intensity_settings(percent: int | float) -> dict[str, float | int]:
+        """Map 0-100% SSL influence to surfacing settings without weakening authority."""
+
+        value = max(0.0, min(100.0, float(percent)))
+        if value == 0.0:
+            return {
+                "surface_threshold": 1.0,
+                "surface_top_k": 0,
+                "early_turn_margin": 0.0,
+                "resurface_margin": 0.0,
+            }
+        ratio = value / 100.0
+        return {
+            "surface_threshold": round(0.65 - (0.45 * ratio), 3),
+            "surface_top_k": 1 if value <= 40.0 else (2 if value <= 80.0 else 3),
+            "early_turn_margin": round(0.20 - (0.15 * ratio), 3),
+            "resurface_margin": round(0.25 - (0.15 * ratio), 3),
+        }
+
+    @staticmethod
     def discover_models(backend: str) -> list[str]:
         """Discover locally available models without changing provider state."""
 
@@ -133,6 +153,7 @@ class WorkbenchController:
         embedding_model: str | None = None,
         allow_toy_embedder: bool = False,
         external_confirmed: bool = False,
+        ssl_intensity: int | float | None = None,
     ) -> str:
         resolved_embedding = embedding_backend or self.default_embedding_backend(backend)
         authority_profile = get_authority_profile(authority_profile_id)
@@ -143,6 +164,11 @@ class WorkbenchController:
             embedding_backend=resolved_embedding,
             allow_toy_embedder=allow_toy_embedder,
             external_confirmed=external_confirmed,
+        )
+        config_overrides = (
+            self.ssl_intensity_settings(ssl_intensity)
+            if ssl_intensity is not None
+            else None
         )
         return self.sessions.create_session(
             title=title,
@@ -156,6 +182,7 @@ class WorkbenchController:
             ),
             backend=backend,
             model_id=model_id or None,
+            config_overrides=config_overrides,
         )
 
     def send_turn(
