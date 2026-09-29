@@ -990,6 +990,11 @@ class ShadowChatSession:
         retained through the context reference.
         """
 
+        if self._pending_live_turn is not None:
+            raise RuntimeError(
+                "source observation is unavailable while a prepared turn is awaiting "
+                "observe_turn or abort_turn"
+            )
         if not isinstance(text, str) or not text.strip():
             raise ValueError("source text must be non-empty")
         if not isinstance(context_ref, str) or not context_ref.strip():
