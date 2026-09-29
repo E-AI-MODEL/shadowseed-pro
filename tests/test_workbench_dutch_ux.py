@@ -215,3 +215,18 @@ def test_control_presets_make_complex_regimes_one_click() -> None:
     assert "Observeren" in _control_state_summary(0, 100, False)
     assert "Vrij experiment" in _control_state_summary(100, 0, True)
     assert "Strikt" in _control_state_summary(100, 100, False)
+
+
+
+def test_markdown_uses_real_line_break_escapes_and_user_only_control_events() -> None:
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+
+    assert "\\\\n" not in source
+    assert "control_preset.input(" in source
+    assert "ssl_intensity.input(" in source
+    assert "gate_strictness.input(" in source
+    assert "allow_self_reinforcement.input(" in source
+    assert "control_preset.change(" not in source
+    assert "ssl_intensity.change(" not in source
+    assert "gate_strictness.change(" not in source
+    assert "allow_self_reinforcement.change(" not in source
