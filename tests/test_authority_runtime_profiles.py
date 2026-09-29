@@ -414,6 +414,15 @@ def test_self_reinforcement_toggle_controls_ssl_attributed_recurrence() -> None:
     assert open_loop.turn_reports[-1]["suppressed_self_attributed_candidates"] == []
     assert open_loop.turn_reports[-1]["self_reinforcement_enabled"] is True
 
+    guarded_observation = guarded.turn_reports[-1]["candidate_observations"][0]
+    open_observation = open_loop.turn_reports[-1]["candidate_observations"][0]
+    assert guarded_observation["ssl_exposed"] is True
+    assert guarded_observation["recurrence_eligible"] is False
+    assert guarded_observation["self_reinforcement_allowed"] is False
+    assert open_observation["ssl_exposed"] is True
+    assert open_observation["recurrence_eligible"] is True
+    assert open_observation["self_reinforcement_allowed"] is True
+
 
 
 def test_open_gate_self_reinforcement_can_refine_the_same_visible_turn() -> None:
