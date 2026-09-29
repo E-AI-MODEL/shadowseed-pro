@@ -1004,8 +1004,10 @@ def build_simple_app(
                                 ),
                             )
                             gr.Markdown(
-                                "**Feedbacklus:** met deze optie aan kan Shadowseed zijn eigen invloed "
-                                "op volgende beurten versterken. Herkomst blijft zichtbaar in de audittrail.",
+                                "**Feedbacklus:** met deze optie aan kan Shadowseed na een eerste antwoord "
+                                "één keer direct opnieuw genereren met een zojuist toegelaten seed. Daarna "
+                                "kan dezelfde lus ook op volgende beurten verder versterken. Herkomst blijft "
+                                "zichtbaar in de audittrail.",
                                 elem_classes=["ss-card"],
                             )
                             backend = gr.Dropdown(
@@ -1368,9 +1370,11 @@ def build_simple_app(
                     "Normaal telt een antwoord dat al door Shadowseed is beïnvloed niet opnieuw mee als "
                     "onafhankelijke recurrence. Met **Zelfversterking toestaan** zet je die bescherming "
                     "bewust uit. Een SSL-beïnvloed antwoord kan dan nieuwe of terugkerende geheugenpunten "
-                    "opnieuw voeden, waardoor een zelfversterkende lus kan ontstaan. De audittrail bewaart "
-                    "dat dit uit een SSL-beïnvloede beurt kwam. Het reeds getoonde antwoord wordt niet "
-                    "achteraf veranderd; het effect werkt door naar volgende beurten."
+                    "opnieuw voeden, waardoor een zelfversterkende lus kan ontstaan. Als zo'n punt in die "
+                    "beurt direct autoriteit krijgt, mag Shadowseed maximaal **één extra generatie** doen "
+                    "voor hetzelfde gebruikersbericht. Dat tweede antwoord wordt het zichtbare eindantwoord. "
+                    "De tweede generatie wordt niet opnieuw gedetecteerd, zodat de lus per beurt begrensd "
+                    "blijft. De audittrail bewaart het eerste conceptantwoord en de gebruikte seed."
                 )
             with gr.Accordion("8 · Is dit hetzelfde als RAG of fine-tuning?", open=False):
                 gr.Markdown(
