@@ -1044,16 +1044,14 @@ def build_simple_app(
         except Exception as exc:
             return {"error": f"{type(exc).__name__}: {exc}"}
 
-    with gr.Blocks(title="Shadowseed", css=_NL_CSS) as app:
+    with gr.Blocks(title="Shadowseed", css=_NL_CSS, theme=gr.themes.Soft()) as app:
         with gr.Group(elem_id="ss-hero"):
-            gr.Markdown("# Shadowseed")
+            gr.Markdown("# Shadowseed Workbench")
             gr.Markdown(
-                "**Praat gewoon met je model. Shadowseed kijkt op de achtergrond mee.**  \\n"
-                "Het onthoudt mogelijke ontbrekende invalshoeken, laat die gecontroleerd groeien "
-                "en brengt ze alleen terug wanneer ze later relevant én toegestaan zijn."
+                "**Chat met een model en zie hoe geheugen, Gate en invloed zich ontwikkelen.**"
             )
             gr.Markdown(
-                "Chat centraal · geheugen zichtbaar · uitleg in gewone taal · techniek alleen wanneer jij die wilt",
+                "Nederlands · chat-first · auditbaar · experimentele feedbacklus optioneel",
                 elem_classes=["ss-muted"],
             )
 
@@ -1159,54 +1157,50 @@ def build_simple_app(
                         refresh_sessions = gr.Button("Vernieuwen", variant="secondary")
                         new_chat = gr.Button("＋ Nieuwe chat", variant="primary")
 
-                        gr.Markdown("### Automatische start", elem_classes=["ss-kicker"])
-                        auto_note = gr.Markdown(auto_setup_note)
-                        model_note = gr.Markdown(_model_note(auto_backend, auto_model))
+                        gr.Markdown("Regie", elem_classes=["ss-kicker"])
+                        ssl_intensity = gr.Slider(
+                            minimum=0,
+                            maximum=100,
+                            step=10,
+                            value=100,
+                            label="SSL-invloed",
+                            info="0% alleen leren · 100% maximale toegestane invloed",
+                            elem_classes=["ss-control-card"],
+                        )
+                        ssl_intensity_help = gr.Markdown(
+                            _ssl_intensity_explainer(100),
+                            elem_classes=["ss-control-copy"],
+                        )
+                        gate_strictness = gr.Slider(
+                            minimum=0,
+                            maximum=100,
+                            step=10,
+                            value=100,
+                            label="Validation Gate",
+                            info="0% vrijwel direct door · 100% zware bewijsdrempel",
+                            elem_classes=["ss-control-card"],
+                        )
+                        gate_strictness_help = gr.Markdown(
+                            _gate_strictness_explainer(100),
+                            elem_classes=["ss-control-copy"],
+                        )
+                        allow_self_reinforcement = gr.Checkbox(
+                            label="Zelfversterking · experimenteel",
+                            value=False,
+                            info="Laat SSL-beïnvloede antwoorden de geheugenlus opnieuw voeden.",
+                            elem_classes=["ss-feedback-card"],
+                        )
 
-                        with gr.Accordion("Instellingen voor nieuwe chats", open=False):
+                        gr.Markdown("Model", elem_classes=["ss-kicker"])
+                        auto_note = gr.Markdown(auto_setup_note, elem_classes=["ss-muted"])
+                        model_note = gr.Markdown(
+                            _model_note(auto_backend, auto_model),
+                            elem_classes=["ss-muted"],
+                        )
+                        with gr.Accordion("Model en geavanceerd", open=False):
                             title = gr.Textbox(
-                                label="Naam van het gesprek",
+                                label="Naam nieuwe chat",
                                 value="Nieuwe chat",
-                            )
-                            gr.Markdown("### Twee simpele schuiven")
-                            ssl_intensity = gr.Slider(
-                                minimum=0,
-                                maximum=100,
-                                step=10,
-                                value=100,
-                                label="SSL-invloed",
-                                info="0% = alleen leren · 100% = maximale toegestane invloed",
-                            )
-                            ssl_intensity_help = gr.Markdown(
-                                _ssl_intensity_explainer(100),
-                                elem_classes=["ss-card"],
-                            )
-                            gate_strictness = gr.Slider(
-                                minimum=0,
-                                maximum=100,
-                                step=10,
-                                value=100,
-                                label="Validation Gate",
-                                info="0% = vrijwel direct door · 100% = harde herhaling + onafhankelijk bewijs",
-                            )
-                            gate_strictness_help = gr.Markdown(
-                                _gate_strictness_explainer(100),
-                                elem_classes=["ss-card"],
-                            )
-                            allow_self_reinforcement = gr.Checkbox(
-                                label="Zelfversterking toestaan · experimenteel",
-                                value=False,
-                                info=(
-                                    "Aan: SSL-beïnvloede antwoorden mogen recurrence en autoriteit "
-                                    "terugvoeden. Uit: zulke kandidaten worden alleen gelogd."
-                                ),
-                            )
-                            gr.Markdown(
-                                "**Feedbacklus:** met deze optie aan kan Shadowseed na een eerste antwoord "
-                                "één keer direct opnieuw genereren met een zojuist toegelaten seed. Daarna "
-                                "kan dezelfde lus ook op volgende beurten verder versterken. Herkomst blijft "
-                                "zichtbaar in de audittrail.",
-                                elem_classes=["ss-card"],
                             )
                             backend = gr.Dropdown(
                                 choices=provider_choices,
@@ -1227,7 +1221,7 @@ def build_simple_app(
                                 label="Ik begrijp dat chatinhoud bij een online model naar de provider wordt gestuurd",
                                 value=False,
                             )
-                            with gr.Accordion("Technische instellingen", open=False):
+                            with gr.Accordion("Technisch", open=False):
                                 embedding_backend = gr.Dropdown(
                                     choices=list(ctl.embedding_backends()),
                                     value=ctl.default_embedding_backend(auto_backend),
