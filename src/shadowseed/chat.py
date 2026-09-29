@@ -302,6 +302,9 @@ class ShadowChatSession:
             return False
         if event.decision is not GateDecision.BLOCKED:
             return False
+        seed = self.manager.seeds.get(seed_id)
+        if seed is None or seed.status in {SeedStatus.PROMOTED, SeedStatus.EXPIRED}:
+            return False
         if self.manager.is_blocking_contradiction(seed_id):
             return False
         return any(
