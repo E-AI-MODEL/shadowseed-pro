@@ -101,6 +101,34 @@ def _status_markdown(view: dict[str, Any] | None) -> str:
     )
 
 
+def _shadow_overview_markdown(view: dict[str, Any] | None) -> str:
+    if not view:
+        return "Select a run to see its shadow memory."
+
+    seeds = list(view.get("seeds", []))
+    counts: dict[str, int] = {}
+    for seed in seeds:
+        status = str(seed.get("status", "unknown")).upper()
+        counts[status] = counts.get(status, 0) + 1
+    promoted = counts.get("PROMOTED", 0)
+    blocked = sum(bool(seed.get("blocking", False)) for seed in seeds)
+    used_ids: set[str] = set()
+    for report in view.get("turn_reports", []):
+        for seed_id in report.get("surfaced_seed_ids", []) or []:
+            used_ids.add(str(seed_id))
+
+    profile = str(view.get("authority_profile_id", "strict"))
+    lifecycle = " · ".join(f"{name.title()} {count}" for name, count in sorted(counts.items()))
+    if not lifecycle:
+        lifecycle = "No seeds yet"
+
+    return (
+        f"**Authority:** `{profile}`  ·  **Seeds:** {len(seeds)}  ·  "
+        f"**Promoted:** {promoted}  ·  **Used:** {len(used_ids)}  ·  **Blocked:** {blocked}\n\n"
+        f"{lifecycle}"
+    )
+
+
 def _seed_story_markdown(view: dict[str, Any] | None) -> str:
     """Turn a technical seed snapshot into a compact human-readable lifecycle card."""
 
@@ -375,10 +403,10 @@ def build_app(
 
     def shadow_session_changed(session_id: str | None):
         if not session_id:
-            return gr.update(choices=[], value=None), "Select a chat."
+            return gr.update(choices=[], value=None), "Select a run to see its shadow memory."
         try:
             view = ctl.session_view(session_id)
-            return dropdown_update(ctl.seed_choices(view)), _status_markdown(view)
+            return dropdown_update(ctl.seed_choices(view)), _shadow_overview_markdown(view)
         except Exception as exc:
             return gr.update(), _error_text(exc)
 
@@ -394,12 +422,14 @@ def build_app(
 
     def falsify_seed(session_id: str | None, seed_id: str | None):
         if not session_id or not seed_id:
-            return {"error": "Select a chat and seed first."}, None
+            return {"error": "Select a run and seed first."}, _seed_story_markdown(None), None, None
         try:
             result = ctl.falsify_seed(session_id, seed_id)
-            return result, ctl.seed_view(session_id, seed_id)
+            view = ctl.seed_view(session_id, seed_id)
+            return result, _seed_story_markdown(view), view, view.get("timeline", [])
         except Exception as exc:
-            return {"error": f"{type(exc).__name__}: {exc}"}, None
+            error = {"error": f"{type(exc).__name__}: {exc}"}
+            return error, f"**Could not update seed:** {error['error']}", error, None
 
     def submit_verified_evidence(
         session_id: str | None,
@@ -409,7 +439,7 @@ def build_app(
         operator_verified: bool,
     ):
         if not session_id or not seed_id:
-            return {"error": "Select a live chat and seed first."}, None, "", False
+            return {"error": "Select a live run and seed first."}, _seed_story_markdown(None), None, None, "", False
         try:
             result = ctl.submit_verified_evidence(
                 session_id,
@@ -418,9 +448,11 @@ def build_app(
                 note=note,
                 operator_verified=bool(operator_verified),
             )
-            return result, ctl.seed_view(session_id, seed_id), "", False
+            view = ctl.seed_view(session_id, seed_id)
+            return result, _seed_story_markdown(view), view, view.get("timeline", []), "", False
         except Exception as exc:
-            return {"error": f"{type(exc).__name__}: {exc}"}, None, "", False
+            error = {"error": f"{type(exc).__name__}: {exc}"}
+            return error, f"**Could not add evidence:** {error['error']}", error, None, "", False
 
     def record_feedback(
         session_id: str | None,
@@ -557,7 +589,7 @@ def build_app(
                         profile = gr.Dropdown(
                             choices=profile_choices,
                             value="balanced",
-                            label="SSL surfacing profile",
+                            label="Relevance tuning",
                         )
                         embedding_backend = gr.Dropdown(
                             choices=list(ctl.embedding_backends()),
@@ -704,7 +736,7 @@ def build_app(
             with gr.Row():
                 shadow_session = gr.Dropdown(choices=initial_choices, label="Run")
                 shadow_refresh = gr.Button("Refresh", variant="secondary")
-            shadow_status = gr.Markdown("Select a run.")
+            shadow_status = gr.Markdown("Select a run to see its shadow memory.", elem_id="chat-status")
 
             with gr.Row():
                 with gr.Column(scale=1, min_width=320):
@@ -761,7 +793,7 @@ def build_app(
             falsify_button.click(
                 falsify_seed,
                 inputs=[shadow_session, seed_select],
-                outputs=[falsify_result, seed_json],
+                outputs=[falsify_result, seed_story, seed_json, seed_timeline],
             )
             evidence_button.click(
                 submit_verified_evidence,
@@ -772,7 +804,14 @@ def build_app(
                     evidence_note,
                     evidence_attest,
                 ],
-                outputs=[evidence_result, seed_json, evidence_source, evidence_attest],
+                outputs=[
+                    evidence_result,
+                    seed_story,
+                    seed_json,
+                    seed_timeline,
+                    evidence_source,
+                    evidence_attest,
+                ],
             )
 
 
