@@ -230,7 +230,7 @@ def test_assisted_promoted_seed_does_not_return_to_review(tmp_path) -> None:
     view = controller.session_view(session_id)
     seed_id = view["authority_review_seed_ids"][0]
 
-    for index in range(3):
+    for index in range(2):
         controller.submit_verified_evidence(
             session_id,
             seed_id,
@@ -238,6 +238,18 @@ def test_assisted_promoted_seed_does_not_return_to_review(tmp_path) -> None:
             note="Independently checked.",
             operator_verified=True,
         )
+        partial = controller.seed_view(session_id, seed_id)
+        assert partial["status"] != "PROMOTED"
+        assert partial["review_required"] is True
+        assert seed_id in controller.session_view(session_id)["authority_review_seed_ids"]
+
+    controller.submit_verified_evidence(
+        session_id,
+        seed_id,
+        source_ref="reviewer:independent:2",
+        note="Independently checked.",
+        operator_verified=True,
+    )
 
     promoted = controller.seed_view(session_id, seed_id)
     assert promoted["status"] == "PROMOTED"
@@ -313,3 +325,40 @@ def test_assisted_ingest_summary_preserves_existing_review_request(tmp_path) -> 
     assert outstanding.issubset(
         set(controller.session_view(session_id)["authority_review_seed_ids"])
     )
+
+
+
+def test_assisted_ingest_summary_keeps_review_after_partial_validation(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Assisted partial validation",
+        profile_id="demo",
+        authority_profile_id="assisted",
+        backend="fixture",
+    )
+
+    for _ in range(3):
+        controller.ingest_sources(
+            session_id,
+            pasted_text="Alpha provides a recurring explanatory perspective.",
+        )
+
+    view = controller.session_view(session_id)
+    seed_id = view["authority_review_seed_ids"][0]
+
+    controller.submit_verified_evidence(
+        session_id,
+        seed_id,
+        source_ref="reviewer:partial:one",
+        note="One independent check.",
+        operator_verified=True,
+    )
+    partial = controller.seed_view(session_id, seed_id)
+    assert partial["status"] != "PROMOTED"
+    assert partial["review_required"] is True
+
+    summary = controller.ingest_sources(
+        session_id,
+        pasted_text="Omega describes an unrelated operational topic.",
+    )
+    assert seed_id in summary["authority_review_seed_ids"]
