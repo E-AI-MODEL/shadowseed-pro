@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from shadowseed.workbench.app import launch_workbench
+from shadowseed.workbench.app import _seed_story_markdown, launch_workbench
 from shadowseed.workbench.controller import WorkbenchController
 
 
@@ -95,3 +95,42 @@ def test_gradio_evidence_submission_resets_operator_attestation(tmp_path) -> Non
     )
 
     assert outputs[-2:] == ("", False)
+
+
+def test_seed_story_explains_promoted_without_forcing_action() -> None:
+    story = _seed_story_markdown(
+        {
+            "id": "ss_001",
+            "text": "A missing long-term perspective.",
+            "status": "PROMOTED",
+            "evidence_count": 3,
+            "occurrence_count": 2,
+            "weight": 0.6,
+            "trace": 1.2,
+            "blocking": False,
+            "last_gate_event": {"decision": "promoted"},
+            "plain_explanation": "Promoted by the Validation Gate.",
+            "timeline": [],
+        }
+    )
+
+    assert "PROMOTED" in story
+    assert "A missing long-term perspective." in story
+    assert "Evidence 3" in story
+    assert "Nothing required right now." in story
+    assert "Raw" not in story
+
+
+def test_seed_story_surfaces_blocking_contradiction_as_next_action() -> None:
+    story = _seed_story_markdown(
+        {
+            "text": "Candidate perspective",
+            "status": "CONTRADICTED",
+            "blocking": True,
+            "plain_explanation": "Contradicted and blocked.",
+            "timeline": [],
+        }
+    )
+
+    assert "Needs attention" in story
+    assert "contradiction" in story.lower()
