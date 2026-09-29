@@ -213,3 +213,35 @@ def test_source_ingest_requires_external_provider_confirmation(
     )
     assert called["ingest"] is True
     assert result["session"] == {}
+
+
+
+def test_repeated_independent_source_submissions_can_recur(tmp_path: Path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Repeated source",
+        profile_id="demo",
+        authority_profile_id="autonomous",
+        backend="fixture",
+        runtime_mode="live",
+        embedding_backend="lexical",
+    )
+
+    context_refs: list[str] = []
+    for _ in range(6):
+        result = controller.ingest_sources(
+            session_id,
+            pasted_text="Alpha provides a recurring explanatory perspective.",
+        )
+        context_refs.extend(
+            report["context_ref"]
+            for report in result["reports"]
+            if report.get("context_ref")
+        )
+
+    view = controller.session_view(session_id)
+    alpha = next(seed for seed in view["seeds"] if "Alpha" in seed["text"])
+
+    assert len(context_refs) == len(set(context_refs))
+    assert alpha["occurrence_count"] >= 3
+    assert alpha["status"] == "PROMOTED"
