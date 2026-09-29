@@ -113,6 +113,7 @@ class InspectionService:
         decorated = [
             {
                 **seed,
+                "blocking": str(seed.get("id")) in blocking_ids,
                 "plain_explanation": explain_seed(
                     seed, blocking=str(seed.get("id")) in blocking_ids
                 ),
