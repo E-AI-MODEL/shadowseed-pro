@@ -8,6 +8,7 @@ import pytest
 
 import shadowseed.application.ingest as ingest_module
 from shadowseed.application.ingest import chunk_text, prepare_sources, read_source_file
+from shadowseed.application.session_lock import session_mutation_lock
 from shadowseed.application.sessions import service_for_workspace
 from shadowseed.chat import ShadowChatSession
 from shadowseed.workbench.controller import WorkbenchController
@@ -442,8 +443,9 @@ def test_same_session_turn_and_source_ingest_are_serialized(
         ingest = ingest_future.result(timeout=2.0)
 
     stored = original_load(session_id)
+    assert load_count == 2
     assert stored["state"]["turn"] == 1
-    assert ingest["new_seed_count"] > 0
+    assert ingest["chunks"] == 1
 
 
 def test_pairwise_source_recurrence_is_scoped_to_source_instance_and_persists() -> None:
@@ -543,3 +545,17 @@ def test_ingest_summary_reports_each_promotion_only_on_transition(tmp_path: Path
         ],
     )
     assert promoted_id not in later["promoted_seed_ids"]
+
+
+
+def test_session_mutation_lock_is_shared_across_services(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    first = service_for_workspace(workspace)
+    second = service_for_workspace(workspace)
+    session_id = first.create_session(title="Shared mutation lock", profile_id="demo")
+
+    first_lock = first._session_lock(session_id)
+    second_lock = second._session_lock(session_id)
+
+    assert first_lock is second_lock
+    assert first_lock is session_mutation_lock(first.repository, session_id)
