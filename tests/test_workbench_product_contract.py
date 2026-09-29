@@ -11,6 +11,7 @@ from shadowseed.workbench.app import (
     _ingest_summary_markdown,
     _seed_story_markdown,
     _shadow_overview_markdown,
+    _status_markdown,
     launch_workbench,
 )
 from shadowseed.workbench.controller import WorkbenchController
@@ -267,3 +268,31 @@ def test_control_overview_explains_effective_runtime_policy() -> None:
     assert "exploratory" in autonomous
     assert "automatic authority path" in autonomous
     assert "Profile changes are run-level decisions" in autonomous
+
+
+
+def test_status_markdown_shows_effective_gate_and_review_count() -> None:
+    assert "Create or open" in _status_markdown(None)
+
+    status = _status_markdown(
+        {
+            "runtime_mode": "live",
+            "backend": "fixture",
+            "authority_profile_id": "assisted",
+            "effective_gate_policy_id": "evidence_backed",
+            "authority_review_seed_ids": ["ss_1", "ss_2"],
+            "turn": 4,
+            "seeds": [
+                {"status": "PROMOTED"},
+                {"status": "ACTIVE"},
+            ],
+        }
+    )
+
+    assert "Live SSL" in status
+    assert "assisted" in status
+    assert "evidence_backed" in status
+    assert "4 turns" in status
+    assert "2 shadow seeds" in status
+    assert "1 promoted" in status
+    assert "2 need review" in status
