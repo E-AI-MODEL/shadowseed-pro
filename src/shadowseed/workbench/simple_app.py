@@ -306,8 +306,10 @@ def _chat_status(view: dict[str, Any] | None) -> str:
     review = len(view.get("authority_review_seed_ids", []) or [])
     turns = int(view.get("turn", 0) or 0)
     model = str(view.get("model_id") or view.get("backend") or "model")
-    ssl_level = int(view.get("ssl_intensity", 100) or 0)
-    gate_level = int(view.get("gate_strictness", 100) or 0)
+    ssl_raw = view.get("ssl_intensity")
+    gate_raw = view.get("gate_strictness")
+    ssl_level = f"{int(ssl_raw)}%" if ssl_raw is not None else "aangepast"
+    gate_level = f"{int(gate_raw)}%" if gate_raw is not None else "aangepast"
 
     extras: list[str] = []
     if promoted:
@@ -322,7 +324,7 @@ def _chat_status(view: dict[str, Any] | None) -> str:
     )
 
     return (
-        f"**{model}** · {turns} bericht(en) · SSL **{ssl_level}%** · Gate **{gate_level}%**  \\n"
+        f"**{model}** · {turns} bericht(en) · SSL **{ssl_level}** · Gate **{gate_level}**  \\n"
         f"Shadowseed: {seed_text}"
     )
 
@@ -374,7 +376,7 @@ def _dashboard_summary(view: dict[str, Any] | None) -> tuple[str, str, str, str,
 
     headline = (
         f"## {view.get('title') or 'Gesprek'}\n"
-        f"Model **{model}** · SSL **{ssl_level}%** · Gate **{gate_level}%** · **{turns}** bericht(en)"
+        f"Model **{model}** · SSL **{ssl_level}** · Gate **{gate_level}** · **{turns}** bericht(en)"
     )
     conversation = (
         f"### {turns}\n"
