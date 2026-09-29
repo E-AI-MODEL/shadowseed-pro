@@ -164,8 +164,13 @@ class InspectionService:
 
     def seed_view(self, session_id: str, seed_id: str) -> dict[str, Any]:
         seed = self.sessions.inspect_seed(session_id, seed_id)
+        session = self.session_view(session_id)
+        review_ids = {str(item) for item in session.get("authority_review_seed_ids", [])}
         return {
             **seed,
+            "authority_profile_id": session.get("authority_profile_id", "strict"),
+            "effective_gate_policy_id": session.get("effective_gate_policy_id"),
+            "review_required": str(seed_id) in review_ids,
             "plain_explanation": explain_seed(seed, blocking=bool(seed.get("blocking"))),
             "timeline": self.seed_timeline(session_id, seed_id),
         }
