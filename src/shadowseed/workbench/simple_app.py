@@ -442,6 +442,22 @@ def _control_preset_values(preset: str | None) -> tuple[int, int, bool]:
     return presets.get(str(preset or "strikt"), presets["strikt"])
 
 
+def _control_preset_id(
+    ssl_intensity: int | float,
+    gate_strictness: int | float,
+    self_reinforcement: bool,
+) -> str | None:
+    target = (
+        int(round(float(ssl_intensity))),
+        int(round(float(gate_strictness))),
+        bool(self_reinforcement),
+    )
+    for preset in ("observeren", "gebalanceerd", "vrij", "strikt"):
+        if _control_preset_values(preset) == target:
+            return preset
+    return None
+
+
 def _control_state_summary(
     ssl_intensity: int | float,
     gate_strictness: int | float,
@@ -752,6 +768,28 @@ def build_simple_app(
     initial_chat_messages = ctl.chat_messages(initial_view) if initial_view else []
     initial_dashboard = _dashboard_summary(initial_view)
     initial_seed_choices = ctl.seed_choices(initial_view) if initial_view else []
+    initial_ssl = (
+        int(initial_view["ssl_intensity"])
+        if initial_view and initial_view.get("ssl_intensity") is not None
+        else 100
+    )
+    initial_gate = (
+        int(initial_view["gate_strictness"])
+        if initial_view and initial_view.get("gate_strictness") is not None
+        else 100
+    )
+    initial_loop = bool(
+        initial_view.get("allow_self_reinforcement", False)
+        if initial_view
+        else False
+    )
+    initial_control_preset = (
+        _control_preset_id(initial_ssl, initial_gate, initial_loop)
+        if initial_view
+        and initial_view.get("ssl_intensity") is not None
+        and initial_view.get("gate_strictness") is not None
+        else None
+    )
 
     auto_backend, auto_model, auto_setup_note = _recommended_setup(ctl)
 
@@ -801,8 +839,65 @@ def build_simple_app(
         model_update, note, _embedding = provider_changed(backend, current_model)
         return model_update, note
 
-    def apply_control_preset(preset: str):
+    def _control_view_state(view: dict[str, Any] | None):
+        if not view:
+            return (
+                gr.update(value=None),
+                gr.update(value=100),
+                _ssl_intensity_explainer(100),
+                gr.update(value=100),
+                _gate_strictness_explainer(100),
+                gr.update(value=False),
+                _control_state_summary(100, 100, False),
+            )
+        ssl_raw = view.get("ssl_intensity")
+        gate_raw = view.get("gate_strictness")
+        loop = bool(view.get("allow_self_reinforcement", False))
+        ssl_value = int(ssl_raw) if ssl_raw is not None else 100
+        gate_value = int(gate_raw) if gate_raw is not None else 100
+        preset = (
+            _control_preset_id(ssl_value, gate_value, loop)
+            if ssl_raw is not None and gate_raw is not None
+            else None
+        )
+        summary = (
+            _control_state_summary(ssl_value, gate_value, loop)
+            if ssl_raw is not None and gate_raw is not None
+            else (
+                "**Aangepaste/legacy-regie**  \n"
+                "Deze sessie heeft geen exact 0–100%-label. Kies een snelle stand "
+                "of beweeg een schuif om de Regie expliciet over te nemen."
+            )
+        )
+        return (
+            gr.update(value=preset),
+            gr.update(value=ssl_value),
+            _ssl_intensity_explainer(ssl_value),
+            gr.update(value=gate_value),
+            _gate_strictness_explainer(gate_value),
+            gr.update(value=loop),
+            summary,
+        )
+
+    def _persist_controls(
+        session_id: str | None,
+        ssl_value: float,
+        gate_value: float,
+        loop: bool,
+    ) -> tuple[str | Any, Any]:
+        if not session_id:
+            return gr.update(), gr.update()
+        view = ctl.update_session_controls(
+            session_id,
+            ssl_intensity=ssl_value,
+            gate_strictness=gate_value,
+            allow_self_reinforcement=bool(loop),
+        )
+        return _chat_status(view), view
+
+    def apply_control_preset(session_id: str | None, preset: str):
         ssl_value, gate_value, loop = _control_preset_values(preset)
+        status, view = _persist_controls(session_id, ssl_value, gate_value, loop)
         return (
             gr.update(value=ssl_value),
             _ssl_intensity_explainer(ssl_value),
@@ -810,26 +905,52 @@ def build_simple_app(
             _gate_strictness_explainer(gate_value),
             gr.update(value=loop),
             _control_state_summary(ssl_value, gate_value, loop),
+            status,
+            view,
         )
 
-    def update_ssl_control(value: float, gate: float, loop: bool):
+    def update_ssl_control(
+        session_id: str | None,
+        value: float,
+        gate: float,
+        loop: bool,
+    ):
+        status, view = _persist_controls(session_id, value, gate, loop)
         return (
             _ssl_intensity_explainer(value),
             gr.update(value=None),
             _control_state_summary(value, gate, loop),
+            status,
+            view,
         )
 
-    def update_gate_control(value: float, ssl: float, loop: bool):
+    def update_gate_control(
+        session_id: str | None,
+        value: float,
+        ssl: float,
+        loop: bool,
+    ):
+        status, view = _persist_controls(session_id, ssl, value, loop)
         return (
             _gate_strictness_explainer(value),
             gr.update(value=None),
             _control_state_summary(ssl, value, loop),
+            status,
+            view,
         )
 
-    def update_loop_control(loop: bool, ssl: float, gate: float):
+    def update_loop_control(
+        session_id: str | None,
+        loop: bool,
+        ssl: float,
+        gate: float,
+    ):
+        status, view = _persist_controls(session_id, ssl, gate, loop)
         return (
             gr.update(value=None),
             _control_state_summary(ssl, gate, loop),
+            status,
+            view,
         )
 
     def create_chat(
@@ -873,12 +994,27 @@ def build_simple_app(
 
     def load_chat(session_id: str | None):
         if not session_id:
-            return [], _chat_status(None), None
+            return (
+                [],
+                _chat_status(None),
+                None,
+                *_control_view_state(None),
+            )
         try:
             view = ctl.session_view(session_id)
-            return ctl.chat_messages(view), _chat_status(view), view
+            return (
+                ctl.chat_messages(view),
+                _chat_status(view),
+                view,
+                *_control_view_state(view),
+            )
         except Exception as exc:
-            return [], _fout(exc), None
+            return (
+                [],
+                _fout(exc),
+                None,
+                *_control_view_state(None),
+            )
 
     def send_message(
         session_id: str | None,
@@ -1243,42 +1379,42 @@ def build_simple_app(
                                 ("Vrij experiment", "vrij"),
                                 ("Strikt", "strikt"),
                             ],
-                            value="strikt",
+                            value=initial_control_preset,
                             label="Snelle stand",
                         )
                         control_summary = gr.Markdown(
-                            _control_state_summary(100, 100, False),
+                            _control_state_summary(initial_ssl, initial_gate, initial_loop),
                             elem_classes=["ss-regie-summary"],
                         )
                         ssl_intensity = gr.Slider(
                             minimum=0,
                             maximum=100,
                             step=10,
-                            value=100,
+                            value=initial_ssl,
                             label="SSL-invloed",
                             info="0% alleen leren · 100% maximale toegestane invloed",
                             elem_classes=["ss-control-card"],
                         )
                         ssl_intensity_help = gr.Markdown(
-                            _ssl_intensity_explainer(100),
+                            _ssl_intensity_explainer(initial_ssl),
                             elem_classes=["ss-control-copy"],
                         )
                         gate_strictness = gr.Slider(
                             minimum=0,
                             maximum=100,
                             step=10,
-                            value=100,
+                            value=initial_gate,
                             label="Validation Gate",
                             info="0% vrijwel direct door · 100% zware bewijsdrempel",
                             elem_classes=["ss-control-card"],
                         )
                         gate_strictness_help = gr.Markdown(
-                            _gate_strictness_explainer(100),
+                            _gate_strictness_explainer(initial_gate),
                             elem_classes=["ss-control-copy"],
                         )
                         allow_self_reinforcement = gr.Checkbox(
                             label="Zelfversterking · experimenteel",
-                            value=False,
+                            value=initial_loop,
                             info="Laat SSL-beïnvloede antwoorden de geheugenlus opnieuw voeden.",
                             elem_classes=["ss-feedback-card"],
                         )
@@ -1363,7 +1499,7 @@ def build_simple_app(
 
             control_preset.input(
                 apply_control_preset,
-                inputs=[control_preset],
+                inputs=[session_select, control_preset],
                 outputs=[
                     ssl_intensity,
                     ssl_intensity_help,
@@ -1371,22 +1507,56 @@ def build_simple_app(
                     gate_strictness_help,
                     allow_self_reinforcement,
                     control_summary,
+                    chat_status,
+                    session_json,
                 ],
             )
             ssl_intensity.input(
                 update_ssl_control,
-                inputs=[ssl_intensity, gate_strictness, allow_self_reinforcement],
-                outputs=[ssl_intensity_help, control_preset, control_summary],
+                inputs=[
+                    session_select,
+                    ssl_intensity,
+                    gate_strictness,
+                    allow_self_reinforcement,
+                ],
+                outputs=[
+                    ssl_intensity_help,
+                    control_preset,
+                    control_summary,
+                    chat_status,
+                    session_json,
+                ],
             )
             gate_strictness.input(
                 update_gate_control,
-                inputs=[gate_strictness, ssl_intensity, allow_self_reinforcement],
-                outputs=[gate_strictness_help, control_preset, control_summary],
+                inputs=[
+                    session_select,
+                    gate_strictness,
+                    ssl_intensity,
+                    allow_self_reinforcement,
+                ],
+                outputs=[
+                    gate_strictness_help,
+                    control_preset,
+                    control_summary,
+                    chat_status,
+                    session_json,
+                ],
             )
             allow_self_reinforcement.input(
                 update_loop_control,
-                inputs=[allow_self_reinforcement, ssl_intensity, gate_strictness],
-                outputs=[control_preset, control_summary],
+                inputs=[
+                    session_select,
+                    allow_self_reinforcement,
+                    ssl_intensity,
+                    gate_strictness,
+                ],
+                outputs=[
+                    control_preset,
+                    control_summary,
+                    chat_status,
+                    session_json,
+                ],
             )
             backend.change(
                 provider_changed,
@@ -1421,7 +1591,18 @@ def build_simple_app(
             session_select.change(
                 load_chat,
                 inputs=[session_select],
-                outputs=[chat, chat_status, session_json],
+                outputs=[
+                    chat,
+                    chat_status,
+                    session_json,
+                    control_preset,
+                    ssl_intensity,
+                    ssl_intensity_help,
+                    gate_strictness,
+                    gate_strictness_help,
+                    allow_self_reinforcement,
+                    control_summary,
+                ],
             )
             send_button.click(
                 send_message,
