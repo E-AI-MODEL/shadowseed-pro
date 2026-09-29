@@ -5,7 +5,6 @@ from __future__ import annotations
 import hashlib
 from datetime import datetime
 from pathlib import Path
-from threading import Lock, RLock
 from typing import Any
 from uuid import uuid4
 
@@ -25,6 +24,7 @@ from shadowseed.application.limits import (
 )
 from shadowseed.application.models import SessionConfig, SessionSummary, TesterFeedback
 from shadowseed.application.profiles import get_profile
+from shadowseed.application.session_lock import session_mutation_lock
 from shadowseed.chat import ShadowChatSession
 from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal
 from shadowseed.storage.sqlite import SQLiteWorkspaceRepository, WorkspaceStorageError
@@ -41,18 +41,11 @@ class SessionService:
         self.repository = repository
         self.scope_id = scope_id
         self.repository.initialize()
-        self._session_locks_guard = Lock()
-        self._session_locks: dict[str, RLock] = {}
 
-    def _session_lock(self, session_id: str) -> RLock:
-        """Return the process-local mutation lock for one persisted session."""
+    def _session_lock(self, session_id: str):
+        """Return the repository-wide process-local lock for one session."""
 
-        with self._session_locks_guard:
-            lock = self._session_locks.get(session_id)
-            if lock is None:
-                lock = RLock()
-                self._session_locks[session_id] = lock
-            return lock
+        return session_mutation_lock(self.repository, session_id)
 
     def create_session(
         self,
@@ -244,15 +237,16 @@ class SessionService:
     def falsify(self, session_id: str, seed_id: str) -> dict[str, Any]:
         """Research compatibility path; not production authorization."""
 
-        stored = self.repository.load_session(session_id)
-        session = ShadowChatSession.from_state(stored["state"])
-        result = session.falsify(seed_id)
-        self.repository.save_session(
-            session_id,
-            session.to_state(),
-            updated_at=datetime.now().isoformat(),
-        )
-        return result
+        with self._session_lock(session_id):
+            stored = self.repository.load_session(session_id)
+            session = ShadowChatSession.from_state(stored["state"])
+            result = session.falsify(seed_id)
+            self.repository.save_session(
+                session_id,
+                session.to_state(),
+                updated_at=datetime.now().isoformat(),
+            )
+            return result
 
     def falsify_authorized(
         self,
@@ -264,29 +258,30 @@ class SessionService:
         """Production contradiction submission guarded before runtime mutation."""
 
         authz = self._authorize(actor, CONTRADICTION_SUBMIT)
-        replay = self.repository.authorized_request_result(
-            actor.request_id,
-            event_type=CONTRADICTION_SUBMIT,
-            session_id=session_id,
-            seed_id=seed_id,
-        )
-        if replay is not None:
-            return {**replay, "authorization": authz}
+        with self._session_lock(session_id):
+            replay = self.repository.authorized_request_result(
+                actor.request_id,
+                event_type=CONTRADICTION_SUBMIT,
+                session_id=session_id,
+                seed_id=seed_id,
+            )
+            if replay is not None:
+                return {**replay, "authorization": authz}
 
-        stored = self.repository.load_session(session_id)
-        session = ShadowChatSession.from_state(stored["state"])
-        result = session.falsify(seed_id)
-        persisted = self.repository.save_authorized_session(
-            session_id,
-            session.to_state(),
-            updated_at=datetime.now().isoformat(),
-            authorization=authz,
-            event_type=CONTRADICTION_SUBMIT,
-            seed_id=seed_id,
-            operation_result=result,
-            event_metadata={"action": "operator_falsification"},
-        )
-        return {**persisted, "authorization": authz}
+            stored = self.repository.load_session(session_id)
+            session = ShadowChatSession.from_state(stored["state"])
+            result = session.falsify(seed_id)
+            persisted = self.repository.save_authorized_session(
+                session_id,
+                session.to_state(),
+                updated_at=datetime.now().isoformat(),
+                authorization=authz,
+                event_type=CONTRADICTION_SUBMIT,
+                seed_id=seed_id,
+                operation_result=result,
+                event_metadata={"action": "operator_falsification"},
+            )
+            return {**persisted, "authorization": authz}
 
     def submit_verified_evidence(
         self,
@@ -382,67 +377,68 @@ class SessionService:
             normalized_source,
             normalized_note,
         )
-        replay = self.repository.authorized_request_result(
-            actor.request_id,
-            event_type=EVIDENCE_VERIFY,
-            session_id=session_id,
-            seed_id=seed_id,
-        )
-        if replay is not None:
-            replay = self._validated_replay(
-                replay, expected_fingerprint=request_fingerprint
+        with self._session_lock(session_id):
+            replay = self.repository.authorized_request_result(
+                actor.request_id,
+                event_type=EVIDENCE_VERIFY,
+                session_id=session_id,
+                seed_id=seed_id,
             )
-            return {**replay, "authorization": authz}
+            if replay is not None:
+                replay = self._validated_replay(
+                    replay, expected_fingerprint=request_fingerprint
+                )
+                return {**replay, "authorization": authz}
 
-        stored = self.repository.load_session(session_id)
-        session = ShadowChatSession.from_state(stored["state"])
-        if session.runtime_mode != "live":
-            raise ValueError("verified evidence entry is available only for live sessions")
-        result = session.submit_evidence(
-            seed_id,
-            ValidationSignal(
-                kind=SignalKind.HUMAN_FEEDBACK,
-                direction=SignalDirection.SUPPORT,
-                verified=True,
-                independent=True,
-                source_ref=normalized_source,
-                reason=normalized_note or "verified Workbench operator support",
-            ),
-        )
-        persisted = self.repository.save_authorized_session(
-            session_id,
-            session.to_state(),
-            updated_at=datetime.now().isoformat(),
-            authorization=authz,
-            event_type=EVIDENCE_VERIFY,
-            seed_id=seed_id,
-            operation_result=self._minimal_evidence_result(
-                result,
-                request_fingerprint=request_fingerprint,
-            ),
-            event_metadata={
-                "source_ref_sha256": hashlib.sha256(
-                    normalized_source.encode("utf-8")
-                ).hexdigest(),
-                "note_sha256": hashlib.sha256(normalized_note.encode("utf-8")).hexdigest(),
-                "verified": True,
-                "independent": True,
-            },
-        )
-        persisted = self._validated_replay(
-            persisted, expected_fingerprint=request_fingerprint
-        )
-        ledger_fields = {
-            key: persisted[key]
-            for key in (
-                "idempotent_replay",
-                "ledger_event_id",
-                "ledger_sequence_no",
-                "ledger_event_hash",
+            stored = self.repository.load_session(session_id)
+            session = ShadowChatSession.from_state(stored["state"])
+            if session.runtime_mode != "live":
+                raise ValueError("verified evidence entry is available only for live sessions")
+            result = session.submit_evidence(
+                seed_id,
+                ValidationSignal(
+                    kind=SignalKind.HUMAN_FEEDBACK,
+                    direction=SignalDirection.SUPPORT,
+                    verified=True,
+                    independent=True,
+                    source_ref=normalized_source,
+                    reason=normalized_note or "verified Workbench operator support",
+                ),
             )
-            if key in persisted
-        }
-        return {**result, **ledger_fields, "authorization": authz}
+            persisted = self.repository.save_authorized_session(
+                session_id,
+                session.to_state(),
+                updated_at=datetime.now().isoformat(),
+                authorization=authz,
+                event_type=EVIDENCE_VERIFY,
+                seed_id=seed_id,
+                operation_result=self._minimal_evidence_result(
+                    result,
+                    request_fingerprint=request_fingerprint,
+                ),
+                event_metadata={
+                    "source_ref_sha256": hashlib.sha256(
+                        normalized_source.encode("utf-8")
+                    ).hexdigest(),
+                    "note_sha256": hashlib.sha256(normalized_note.encode("utf-8")).hexdigest(),
+                    "verified": True,
+                    "independent": True,
+                },
+            )
+            persisted = self._validated_replay(
+                persisted, expected_fingerprint=request_fingerprint
+            )
+            ledger_fields = {
+                key: persisted[key]
+                for key in (
+                    "idempotent_replay",
+                    "ledger_event_id",
+                    "ledger_sequence_no",
+                    "ledger_event_hash",
+                )
+                if key in persisted
+            }
+            return {**result, **ledger_fields, "authorization": authz}
 
     @staticmethod
     def _normalize_source_ref(source_ref: str) -> str:
@@ -457,28 +453,29 @@ class SessionService:
         source_ref: str,
         note: str,
     ) -> dict[str, Any]:
-        normalized_source, normalized_note = validate_evidence(source_ref, note)
-        stored = self.repository.load_session(session_id)
-        session = ShadowChatSession.from_state(stored["state"])
-        if session.runtime_mode != "live":
-            raise ValueError("verified evidence entry is available only for live sessions")
-        result = session.submit_evidence(
-            seed_id,
-            ValidationSignal(
-                kind=SignalKind.HUMAN_FEEDBACK,
-                direction=SignalDirection.SUPPORT,
-                verified=True,
-                independent=True,
-                source_ref=normalized_source,
-                reason=normalized_note or "verified Workbench operator support",
-            ),
-        )
-        self.repository.save_session(
-            session_id,
-            session.to_state(),
-            updated_at=datetime.now().isoformat(),
-        )
-        return result
+        with self._session_lock(session_id):
+            normalized_source, normalized_note = validate_evidence(source_ref, note)
+            stored = self.repository.load_session(session_id)
+            session = ShadowChatSession.from_state(stored["state"])
+            if session.runtime_mode != "live":
+                raise ValueError("verified evidence entry is available only for live sessions")
+            result = session.submit_evidence(
+                seed_id,
+                ValidationSignal(
+                    kind=SignalKind.HUMAN_FEEDBACK,
+                    direction=SignalDirection.SUPPORT,
+                    verified=True,
+                    independent=True,
+                    source_ref=normalized_source,
+                    reason=normalized_note or "verified Workbench operator support",
+                ),
+            )
+            self.repository.save_session(
+                session_id,
+                session.to_state(),
+                updated_at=datetime.now().isoformat(),
+            )
+            return result
 
     def _authorize(self, actor: ActorContext, capability: str) -> dict[str, object]:
         if not self.scope_id:
@@ -536,7 +533,8 @@ class SessionService:
         return self.repository.list_feedback(session_id)
 
     def delete_session(self, session_id: str) -> None:
-        self.repository.delete_session(session_id)
+        with self._session_lock(session_id):
+            self.repository.delete_session(session_id)
 
 
 def service_for_workspace(workspace: str | Path | None = None) -> SessionService:
