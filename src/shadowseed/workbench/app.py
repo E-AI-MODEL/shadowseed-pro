@@ -81,6 +81,20 @@ _PRODUCT_CSS = """
   padding: .85rem 1rem;
   background: var(--background-fill-secondary);
 }
+#source-hero {
+  border: 1px solid var(--border-color-primary);
+  border-radius: 22px;
+  padding: 1rem 1.1rem;
+  background: linear-gradient(145deg, rgba(255,255,255,.055), rgba(255,255,255,.018));
+  box-shadow: 0 14px 42px rgba(0,0,0,.12);
+}
+#source-result {
+  border: 1px solid var(--border-color-primary);
+  border-radius: 18px;
+  padding: 1rem;
+  min-height: 180px;
+  background: var(--background-fill-secondary);
+}
 """
 
 
@@ -238,6 +252,31 @@ def _seed_story_markdown(view: dict[str, Any] | None) -> str:
         + explanation
         + "\n\n"
         + next_action
+    )
+
+
+def _ingest_summary_markdown(result: dict[str, Any] | None) -> str:
+    if not result:
+        return (
+            "## Feed the shadow memory\n"
+            "Paste text or upload files. Shadowseed will inspect the content in chunks, "
+            "record provenance and add candidate seeds without generating chat replies."
+        )
+    if result.get("error"):
+        return f"**Could not process sources:** {result['error']}"
+
+    source_names = ", ".join(result.get("source_names", [])) or "source"
+    return (
+        "## Sources processed\n"
+        f"**{int(result.get('sources', 0))}** source(s) · "
+        f"**{int(result.get('chunks', 0))}** chunks · "
+        f"**{int(result.get('characters', 0)):,}** characters  \n"
+        f"Shadow memory: **{int(result.get('seeds_before', 0))} → "
+        f"{int(result.get('seeds_after', 0))}** seeds · "
+        f"**{int(result.get('new_seed_count', 0))}** new  \n\n"
+        f"**Sources:** {source_names}\n\n"
+        "Uploaded text is observation input, not trusted evidence. Seeds still follow the "
+        "selected authority profile, Validation Gate and point-of-use checks."
     )
 
 
@@ -500,6 +539,37 @@ def build_app(
         except Exception as exc:
             error = {"error": f"{type(exc).__name__}: {exc}"}
             return error, f"**Could not add evidence:** {error['error']}", error, None, "", False
+
+    def ingest_sources_ui(
+        session_id: str | None,
+        pasted_text: str,
+        uploaded_files: list[str] | str | None,
+    ):
+        if not session_id:
+            error = {"error": "Select or create a run first."}
+            return _ingest_summary_markdown(error), None, gr.update(choices=[], value=None), ""
+        try:
+            if uploaded_files is None:
+                paths: list[str] = []
+            elif isinstance(uploaded_files, (str, Path)):
+                paths = [str(uploaded_files)]
+            else:
+                paths = [str(item) for item in uploaded_files if item]
+            result = ctl.ingest_sources(
+                session_id,
+                pasted_text=pasted_text or "",
+                file_paths=paths,
+            )
+            view = result["session"]
+            return (
+                _ingest_summary_markdown(result),
+                view,
+                gr.update(choices=ctl.seed_choices(view), value=None),
+                "",
+            )
+        except Exception as exc:
+            error = {"error": f"{type(exc).__name__}: {exc}"}
+            return _ingest_summary_markdown(error), None, gr.update(), pasted_text
 
     def record_feedback(
         session_id: str | None,
@@ -778,6 +848,84 @@ def build_app(
                 ],
             )
 
+
+
+        with gr.Tab("Sources"):
+            with gr.Row():
+                with gr.Column(scale=2, min_width=560):
+                    with gr.Group(elem_id="source-hero"):
+                        gr.Markdown("## Feed Shadowseed")
+                        gr.Markdown(
+                            "Build shadow memory from material, not only from chat. Paste text or "
+                            "upload multiple files; Shadowseed chunks and observes them without "
+                            "turning every chunk into a chat message."
+                        )
+                        source_session = gr.Dropdown(
+                            choices=initial_choices,
+                            label="Run",
+                            value=initial_choices[0][1] if initial_choices else None,
+                        )
+                        source_refresh = gr.Button("Refresh runs", variant="secondary")
+                        source_paste = gr.Textbox(
+                            label="Paste text",
+                            placeholder="Paste an article, transcript, notes or a large text corpus...",
+                            lines=10,
+                        )
+                        source_files = gr.File(
+                            label="Upload files",
+                            file_count="multiple",
+                            type="filepath",
+                            file_types=[".txt", ".md", ".markdown", ".json", ".csv"],
+                        )
+                        gr.Markdown(
+                            "Supported now: **TXT, Markdown, JSON and CSV** · up to 25 MB per file. "
+                            "PDF and DOCX will follow after their extraction path is made auditable.",
+                            elem_classes=["section-kicker"],
+                        )
+                        ingest_button = gr.Button("Process into shadow memory", variant="primary")
+
+                with gr.Column(scale=1, min_width=360):
+                    source_result = gr.Markdown(
+                        _ingest_summary_markdown(None),
+                        elem_id="source-result",
+                    )
+                    with gr.Accordion("What happens to my upload?", open=False):
+                        gr.Markdown(
+                            "**Extract → chunk → detect candidate perspectives → cluster recurrence → "
+                            "Gate → shadow memory.**\n\n"
+                            "The upload itself does not become evidence or authority. You can inspect "
+                            "every resulting seed in **Shadow**."
+                        )
+                    source_seed_preview = gr.Dropdown(
+                        choices=[],
+                        label="Seeds now in this run",
+                        interactive=False,
+                    )
+                    source_session_json = gr.JSON(
+                        label="Read-only run state",
+                        visible=False,
+                    )
+
+            source_refresh.click(
+                refresh_session_dropdown,
+                inputs=[source_session],
+                outputs=[source_session],
+            )
+            source_session.change(
+                shadow_session_changed,
+                inputs=[source_session],
+                outputs=[source_seed_preview, source_result],
+            )
+            ingest_button.click(
+                ingest_sources_ui,
+                inputs=[source_session, source_paste, source_files],
+                outputs=[
+                    source_result,
+                    source_session_json,
+                    source_seed_preview,
+                    source_paste,
+                ],
+            )
 
         with gr.Tab("About SSL"):
             gr.Markdown("## What is Shadow Seed Learning?")
