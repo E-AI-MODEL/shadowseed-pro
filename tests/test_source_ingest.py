@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+import shadowseed.application.ingest as ingest_module
 from shadowseed.application.ingest import chunk_text, prepare_sources, read_source_file
 from shadowseed.workbench.controller import WorkbenchController
 
@@ -272,3 +273,57 @@ def test_corpus_summary_counts_same_named_files_as_distinct_sources(tmp_path: Pa
     assert result["sources"] == 2
     assert result["source_instance_count"] == 2
     assert result["source_names"] == ["notes.md"]
+
+
+
+def test_source_batch_byte_limit_blocks_before_session_inference(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Bounded source batch",
+        profile_id="demo",
+        backend="fixture",
+    )
+    monkeypatch.setattr(ingest_module, "MAX_SOURCE_BATCH_BYTES", 16)
+    called = {"ingest": False}
+
+    def _unexpected_ingest(*_args, **_kwargs):
+        called["ingest"] = True
+        raise AssertionError("session inference must not start for an oversized batch")
+
+    monkeypatch.setattr(controller.sessions, "ingest_source_chunks", _unexpected_ingest)
+
+    with pytest.raises(ValueError, match="source batch exceeds"):
+        controller.ingest_sources(session_id, pasted_text="x" * 17)
+
+    assert called["ingest"] is False
+
+
+def test_source_batch_chunk_limit_blocks_before_session_inference(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Bounded chunk batch",
+        profile_id="demo",
+        backend="fixture",
+    )
+    monkeypatch.setattr(ingest_module, "MAX_SOURCE_BATCH_CHUNKS", 1)
+    called = {"ingest": False}
+
+    def _unexpected_ingest(*_args, **_kwargs):
+        called["ingest"] = True
+        raise AssertionError("session inference must not start for too many chunks")
+
+    monkeypatch.setattr(controller.sessions, "ingest_source_chunks", _unexpected_ingest)
+
+    with pytest.raises(ValueError, match="maximum is 1 per ingest"):
+        controller.ingest_sources(
+            session_id,
+            pasted_text=("Alpha explanatory perspective. " * 250),
+        )
+
+    assert called["ingest"] is False
