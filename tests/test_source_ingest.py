@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from shadowseed.application.ingest import chunk_text, prepare_sources, read_source_file
 from shadowseed.workbench.controller import WorkbenchController
 
@@ -12,7 +14,8 @@ def test_chunk_text_preserves_source_provenance() -> None:
 
     assert len(chunks) > 1
     assert chunks[0].source_name == "notes.md"
-    assert chunks[0].context_ref == "source:notes.md:chunk:00000"
+    assert chunks[0].context_ref.startswith("source:notes.md:instance:")
+    assert chunks[0].context_ref.endswith(":chunk:00000")
     assert all(chunk.text.strip() for chunk in chunks)
 
 
@@ -123,3 +126,90 @@ def test_prepare_sources_requires_real_input() -> None:
         assert "paste text or upload" in str(exc)
     else:
         raise AssertionError("empty source preparation must fail")
+
+
+
+def test_prepare_sources_gives_each_submission_unique_context_refs() -> None:
+    first = prepare_sources(pasted_text="Repeated source material.")
+    second = prepare_sources(pasted_text="Repeated source material.")
+
+    assert first[0].source_name == second[0].source_name == "pasted-text"
+    assert first[0].context_ref != second[0].context_ref
+    assert ":instance:" in first[0].context_ref
+    assert ":chunk:00000" in first[0].context_ref
+
+
+def test_same_named_files_get_distinct_source_instances(tmp_path: Path) -> None:
+    left = tmp_path / "left"
+    right = tmp_path / "right"
+    left.mkdir()
+    right.mkdir()
+    first_file = left / "notes.md"
+    second_file = right / "notes.md"
+    first_file.write_text("Alpha perspective.", encoding="utf-8")
+    second_file.write_text("Beta perspective.", encoding="utf-8")
+
+    chunks = prepare_sources(file_paths=[first_file, second_file])
+
+    assert [chunk.source_name for chunk in chunks] == ["notes.md", "notes.md"]
+    assert chunks[0].context_ref != chunks[1].context_ref
+
+
+def test_source_ingest_requires_external_provider_confirmation(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Local seed",
+        profile_id="demo",
+        backend="fixture",
+    )
+
+    stored = controller.sessions.load(session_id)
+    hosted = {
+        **stored,
+        "backend": "openai",
+        "model_id": "gpt-test",
+        "config": {
+            **dict(stored.get("config", {})),
+            "runtime_mode": "live",
+            "embedding_backend": "sentence-transformers",
+            "allow_toy_embedder": False,
+        },
+    }
+    monkeypatch.setattr(controller.sessions, "load", lambda _session_id: hosted)
+
+    called = {"ingest": False}
+
+    def fake_ingest(_session_id: str, _payload: list[dict]) -> dict:
+        called["ingest"] = True
+        return {
+            "sources": 1,
+            "source_names": ["pasted-text"],
+            "chunks": 1,
+            "characters": 5,
+            "seeds_before": 0,
+            "seeds_after": 0,
+            "new_seed_count": 0,
+            "promoted_seed_ids": [],
+            "authority_review_seed_ids": [],
+            "authority_runtime": None,
+            "reports": [],
+        }
+
+    monkeypatch.setattr(controller.sessions, "ingest_source_chunks", fake_ingest)
+    monkeypatch.setattr(controller.inspection, "session_view", lambda _session_id: {})
+
+    with pytest.raises(ValueError, match="external-provider confirmation"):
+        controller.ingest_sources(session_id, pasted_text="Alpha")
+
+    assert called["ingest"] is False
+
+    result = controller.ingest_sources(
+        session_id,
+        pasted_text="Alpha",
+        external_confirmed=True,
+    )
+    assert called["ingest"] is True
+    assert result["session"] == {}
