@@ -165,6 +165,7 @@ class SessionService:
 
         reports: list[dict[str, Any]] = []
         source_names: set[str] = set()
+        source_instances: set[str] = set()
         characters = 0
         seeds_before = len(session.manager.seeds)
         promoted_ids: set[str] = set()
@@ -174,11 +175,21 @@ class SessionService:
             text = str(item.get("text", "")).strip()
             context_ref = str(item.get("context_ref", "")).strip()
             source_name = str(item.get("source_name", "source")).strip() or "source"
+            source_instance_id = str(item.get("source_instance_id", "")).strip()
             if not text or not context_ref:
                 raise ValueError("source chunks require non-empty text and context_ref")
             report = session.observe_source_text(text, context_ref=context_ref)
             reports.append(report)
             source_names.add(source_name)
+            if source_instance_id:
+                source_instances.add(source_instance_id)
+            elif ":chunk:" in context_ref:
+                # Backward-compatible fallback for older callers that only
+                # provide a context reference. All chunks from the same source
+                # prefix count as one source instance.
+                source_instances.add(context_ref.rsplit(":chunk:", 1)[0])
+            else:
+                source_instances.add(context_ref)
             characters += len(text)
             promoted_ids.update(report.get("promoted_this_observation", []))
             review_ids.update(report.get("authority_review_seed_ids", []))
@@ -192,8 +203,9 @@ class SessionService:
         )
         return {
             "session_id": session_id,
-            "sources": len(source_names),
+            "sources": len(source_instances),
             "source_names": sorted(source_names),
+            "source_instance_count": len(source_instances),
             "chunks": len(reports),
             "characters": characters,
             "seeds_before": seeds_before,
