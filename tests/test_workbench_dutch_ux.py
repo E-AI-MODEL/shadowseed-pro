@@ -442,3 +442,43 @@ def test_seed_detail_labels_historical_promotion_separately() -> None:
 
     assert "Historisch promoted · nu niet toegelaten" in story
     assert "kan nu niet meedenken" in story
+
+
+
+def test_regie_updates_refresh_gate_alert_immediately() -> None:
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+
+    persist_start = source.index("def _persist_controls(")
+    preset_start = source.index("def apply_control_preset(", persist_start)
+    persist_body = source[persist_start:preset_start]
+
+    assert "notice = _gate_notice(view)" in persist_body
+    assert 'gr.Warning("Validation Gate vraagt jouw beoordeling.")' in persist_body
+    assert "return _chat_status(view), view, notice" in persist_body
+
+    for callback in (
+        "control_preset.input(",
+        "ssl_intensity.input(",
+        "gate_strictness.input(",
+        "allow_self_reinforcement.input(",
+    ):
+        start = source.index(callback)
+        end = source.index(")", start) + 1
+        block = source[start : min(len(source), start + 1200)]
+        assert "gate_alert," in block
+
+
+def test_memory_refresh_reloads_seed_choices_and_overview() -> None:
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+
+    helper_start = source.index("def refresh_memory(")
+    inspect_start = source.index("def inspect_seed(", helper_start)
+    helper = source[helper_start:inspect_start]
+
+    assert "memory_session_changed(selected)" in helper
+    assert "dropdown_update(choices, selected)" in helper
+
+    binding_start = source.index("memory_refresh.click(")
+    binding = source[binding_start : binding_start + 500]
+    assert "refresh_memory" in binding
+    assert "outputs=[memory_session, seed_select, memory_overview]" in binding
