@@ -124,3 +124,36 @@ def test_gate_reconfiguration_is_committed_and_tamper_detected(tmp_path: Path) -
         match="authority configuration diverges",
     ):
         controller.workspace.repository.verify_production_integrity()
+
+
+
+def test_occurrence_count_is_protected_authority_state(tmp_path: Path) -> None:
+    controller = WorkbenchController(tmp_path / "occurrence-workspace")
+    session_id = controller.create_session(
+        title="Protected recurrence",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+        ssl_intensity=100,
+        gate_strictness=60,
+    )
+    result = controller.send_turn(session_id, "What recurrence should be tracked?")
+    seed_id = result["session"]["seeds"][0]["id"]
+
+    with sqlite3.connect(controller.workspace.paths.database) as connection:
+        stored = connection.execute(
+            "SELECT state_json FROM sessions WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()
+        assert stored is not None
+        state = json.loads(stored[0])
+        seed = next(item for item in state["manager"]["seeds"] if item["id"] == seed_id)
+        seed["occurrence_count"] = int(seed["occurrence_count"]) + 10
+        connection.execute(
+            "UPDATE sessions SET state_json = ? WHERE session_id = ?",
+            (json.dumps(state, sort_keys=True), session_id),
+        )
+        connection.commit()
+
+    with pytest.raises(WorkspaceStorageError, match="snapshot diverges"):
+        controller.workspace.repository.verify_production_integrity()
