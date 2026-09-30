@@ -35,38 +35,40 @@ class _LocalModel:
 
 def test_default_workbench_is_dutch_chat_first_surface() -> None:
     app_source = Path("src/shadowseed/workbench/app.py").read_text(encoding="utf-8")
-    simple_source = Path("src/shadowseed/workbench/simple_app.py").read_text(
+    vnext_source = Path("src/shadowseed/workbench/simple_app_vnext.py").read_text(
         encoding="utf-8"
     )
 
-    assert "from shadowseed.workbench.simple_app import build_simple_app" in app_source
-    assert "return build_simple_app(workspace, controller=controller)" in app_source
+    assert "from shadowseed.workbench.simple_app_vnext import build_vnext_app" in app_source
+    assert "return build_vnext_app(workspace, controller=controller)" in app_source
 
     for label in (
-        'with gr.Tab("Overzicht", id="overzicht", elem_id="ss-tab-overzicht")',
-        'with gr.Tab("Chat", id="chat", elem_id="ss-tab-chat")',
-        'with gr.Tab("Bronnen", id="bronnen", elem_id="ss-tab-bronnen")',
-        'with gr.Tab("Geheugen", id="geheugen", elem_id="ss-tab-geheugen")',
-        'with gr.Tab("Controleren", id="controleren", elem_id="ss-tab-controleren")',
-        'with gr.Tab("Uitleg", id="uitleg", elem_id="ss-tab-uitleg")',
-        'with gr.Tab("Meer", id="meer", elem_id="ss-tab-meer")',
-        'gr.Button("＋ Nieuwe chat"',
-        'gr.Button("Versturen"',
-        'gr.Button("Open detail"',
-        'gr.Button("☰ Menu"',
-    ):
-        assert label in simple_source
-
-    for old_top_level_tab in (
-        'with gr.Tab("Sources")',
-        'with gr.Tab("Control")',
-        'with gr.Tab("About SSL")',
+        'with gr.Tab("Chat")',
         'with gr.Tab("Shadow")',
-        'with gr.Tab("Verify")',
-        'with gr.Tab("Feedback and export")',
-        'with gr.Tab("Advanced / research")',
+        'with gr.Tab("Bronnen")',
+        'with gr.Tab("Onderzoek")',
+        'label="Vergelijk dit antwoord zonder SSL"',
+        'gr.Button("Versturen"',
+        'gr.Button("Start nieuwe chat"',
     ):
-        assert old_top_level_tab not in simple_source
+        assert label in vnext_source
+
+    for normal_ui_control in (
+        'label="SSL-invloed"',
+        'label="Validation Gate"',
+        'label="Zelfversterking · experimenteel"',
+        'label="Wat wil je vergelijken?"',
+    ):
+        assert normal_ui_control not in vnext_source
+
+    for refresh_label in (
+        '"Vernieuwen"',
+        '"Gesprekken vernieuwen"',
+        '"Geheugen vernieuwen"',
+        '"Refresh chats"',
+        '"Refresh runs"',
+    ):
+        assert refresh_label not in vnext_source
 
 
 def test_simple_start_automatically_prefers_local_model_then_safe_demo() -> None:
