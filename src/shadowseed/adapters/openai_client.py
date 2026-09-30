@@ -99,9 +99,26 @@ class OpenAIClient:
     ) -> str:
         """Generate a chat completion for ``prompt`` and return the text."""
 
+        return self.generate_chat(
+            [{"role": "user", "content": prompt}],
+            max_new_tokens=max_new_tokens,
+            temperature=temperature,
+            seed=seed,
+        )
+
+    def generate_chat(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        max_new_tokens: int = 220,
+        temperature: float = 0.0,
+        seed: int = 0,
+    ) -> str:
+        """Generate from native user/assistant chat turns without prompt wrapping."""
+
         response = self.client.chat.completions.create(
             model=self.model,
-            messages=[{"role": "user", "content": prompt}],
+            messages=[dict(message) for message in messages],
             temperature=temperature,
             seed=seed,
             max_tokens=max_new_tokens,

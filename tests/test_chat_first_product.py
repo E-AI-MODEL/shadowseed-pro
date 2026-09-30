@@ -66,7 +66,7 @@ def test_live_chat_can_generate_no_ssl_control_without_authored_baseline(tmp_pat
 
     assert report["runtime_mode"] == "live"
     assert report["comparison_requested"] is True
-    assert report["comparison_kind"] == "paired_live_no_ssl_control"
+    assert report["comparison_kind"] == "independent_vanilla_vs_ssl_path"
     assert report["comparison_control_answer"]
     assert report["comparison_ssl_answer"] == report["answer"]
     assert persisted_report["comparison_control_answer"] == report["comparison_control_answer"]
@@ -95,12 +95,40 @@ def test_controller_returns_ready_to_render_ssl_on_off_comparison(tmp_path) -> N
     comparison = result["comparison"]
     assert comparison is not None
     assert comparison["runtime_mode"] == "live"
-    assert comparison["comparison_kind"] == "paired_live_no_ssl_control"
+    assert comparison["comparison_kind"] == "independent_vanilla_vs_ssl_path"
     assert {comparison["candidate_a_label"], comparison["candidate_b_label"]} == {
-        "ssl_off",
+        "vanilla",
         "ssl_on",
     }
+    assert comparison["control_history_isolated"] is True
+    assert comparison["control_transport"] == "role_structured_chat"
     assert comparison["question"] == "What should I consider next?"
+
+
+def test_live_ab_started_late_replays_only_user_questions_into_vanilla_history(tmp_path) -> None:
+    sessions = service_for_workspace(tmp_path / "workspace")
+    session_id = sessions.create_session(title="Late vanilla control", profile_id="demo")
+
+    sessions.run_turn(session_id, "First user question")
+    sessions.run_turn(session_id, "Second user question")
+    report = sessions.run_turn(
+        session_id,
+        "Third user question",
+        compare_without_ssl=True,
+    )
+    stored = sessions.load(session_id)
+    vanilla_history = stored["state"]["vanilla_history"]
+
+    assert report["comparison_control_history_isolated"] is True
+    assert report["comparison_control_transport"] == "role_structured_chat"
+    assert report["comparison_control_replayed_turns"] == 2
+    assert report["comparison_control_history_turns_before"] == 2
+    assert [item["question"] for item in vanilla_history] == [
+        "First user question",
+        "Second user question",
+        "Third user question",
+    ]
+    assert len(vanilla_history) == 3
 
 
 def test_live_turn_without_requested_control_does_not_pretend_to_be_comparable(tmp_path) -> None:
@@ -108,7 +136,7 @@ def test_live_turn_without_requested_control_does_not_pretend_to_be_comparable(t
     session_id = sessions.create_session(title="Normal chat", profile_id="demo")
     sessions.run_turn(session_id, "Normal user message")
 
-    with pytest.raises(ValueError, match="no paired no-SSL control"):
+    with pytest.raises(ValueError, match="no independent vanilla control"):
         ComparisonService(sessions).compare_turn(session_id, 0)
 
 

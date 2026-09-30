@@ -74,6 +74,24 @@ def test_client_generate_sends_expected_request():
     assert sdk.captured["max_tokens"] == 64
 
 
+def test_client_generate_chat_preserves_role_structured_history():
+    sdk = _FakeOpenAISDK(text="  vervolgantwoord  ")
+    client = OpenAIClient(model="gpt-4o-mini", client=sdk)
+    messages = [
+        {"role": "user", "content": "eerste vraag"},
+        {"role": "assistant", "content": "eerste antwoord"},
+        {"role": "user", "content": "tweede vraag"},
+    ]
+
+    out = client.generate_chat(messages, max_new_tokens=80)
+
+    assert out == "vervolgantwoord"
+    assert sdk.captured["messages"] == messages
+    assert sdk.captured["temperature"] == 0.0
+    assert sdk.captured["seed"] == 0
+    assert sdk.captured["max_tokens"] == 80
+
+
 def test_client_generate_handles_none_content():
     sdk = _FakeOpenAISDK(text=None)
     client = OpenAIClient(client=sdk)

@@ -88,7 +88,7 @@ from shadowseed_agent import (
     can_seed_trigger_retrieval,
 )
 
-SESSION_STATE_SCHEMA_VERSION = 2
+SESSION_STATE_SCHEMA_VERSION = 3
 
 
 @dataclass(frozen=True)
@@ -260,6 +260,11 @@ class ShadowChatSession:
         self.born_turn: dict[str, int] = {}
         self.last_surfaced: dict[str, int] = {}
         self.history: list[tuple[str, str]] = []
+        # Independent vanilla-control trajectory used only by live A/B comparison.
+        # It contains the same user questions as the SSL chat, but only answers
+        # produced by the model's vanilla chat path. SSL-visible answers are never
+        # copied into this history.
+        self.vanilla_history: list[tuple[str, str]] = []
         self.influence_records: list[AgentInfluenceRecord] = []
         self.turn_reports: list[dict[str, Any]] = []
         self.observation_ledger = CandidateObservationLedger()
@@ -579,6 +584,65 @@ class ShadowChatSession:
         if self.runtime_mode == "live":
             return self._turn_live(question)
         return self._turn_evaluation(question)
+
+    def generate_vanilla_control(self, question: str) -> dict[str, Any]:
+        """Generate one SSL-isolated control turn for a live comparison.
+
+        The control has its own conversation trajectory. If A/B comparison is
+        enabled only after earlier live turns already happened, the missing
+        vanilla answers are replayed from the earlier *user questions* using
+        only the vanilla history accumulated so far. SSL-visible answers are
+        never copied into the control trajectory.
+        """
+        if self.runtime_mode != "live":
+            raise ValueError("vanilla control is available only for live sessions")
+        if len(self.vanilla_history) > len(self.history):
+            raise RuntimeError("vanilla control history is ahead of live chat history")
+
+        generate_chat = getattr(self.model, "generate_chat", None)
+        native_chat = callable(generate_chat)
+
+        def _generate(history: list[tuple[str, str]], user_question: str) -> str:
+            if native_chat:
+                return str(generate_chat(history, user_question))
+            # Compatibility path for injected legacy test/research backends.
+            # Built-in product backends implement generate_chat and do not use
+            # the Shadowseed prompt wrapper for the vanilla arm.
+            return str(
+                self.model.generate(
+                    build_chat_prompt(
+                        history,
+                        user_question,
+                        [],
+                        response_language="the same language as the user's current question",
+                    ),
+                    {
+                        "question": user_question,
+                        "turn": len(history),
+                        "baseline_answer": f"Fixture echo answer to: {user_question}",
+                    },
+                    "baseline",
+                    [],
+                )
+            )
+
+        replayed = 0
+        while len(self.vanilla_history) < len(self.history):
+            index = len(self.vanilla_history)
+            prior_question = self.history[index][0]
+            prior_answer = _generate(self.vanilla_history, prior_question)
+            self.vanilla_history.append((prior_question, prior_answer))
+            replayed += 1
+
+        answer = _generate(self.vanilla_history, question)
+        history_turns_before = len(self.vanilla_history)
+        self.vanilla_history.append((question, answer))
+        return {
+            "answer": answer,
+            "replayed_turns": replayed,
+            "history_turns_before": history_turns_before,
+            "transport": "role_structured_chat" if native_chat else "compat_prompt_fallback",
+        }
 
     def _filter_ssl_attributed_candidates(
         self,
@@ -1517,6 +1581,13 @@ class ShadowChatSession:
                 }
                 for question, answer in self.history
             ],
+            "vanilla_history": [
+                {
+                    "question": question,
+                    "answer": answer,
+                }
+                for question, answer in self.vanilla_history
+            ],
             "influence_records": [asdict(record) for record in self.influence_records],
             "turn_reports": list(self.turn_reports),
             "candidate_observation_ledger": self.observation_ledger.to_dict(),
@@ -1550,7 +1621,7 @@ class ShadowChatSession:
         """
 
         schema_version = int(state.get("schema_version", 1))
-        if schema_version not in {1, SESSION_STATE_SCHEMA_VERSION}:
+        if schema_version not in {1, 2, SESSION_STATE_SCHEMA_VERSION}:
             raise ValueError("unsupported ShadowChatSession state schema")
         config = dict(state.get("session_config", {}))
         has_v1_runtime_metadata = "runtime_mode" in config
@@ -1620,6 +1691,25 @@ class ShadowChatSession:
             else (str(item[0]), str(item[1]))
             for item in history
         ]
+        vanilla_history = state.get("vanilla_history", [])
+        session.vanilla_history = [
+            (
+                str(item.get("question", "")),
+                str(item.get("answer", "")),
+            )
+            if isinstance(item, dict)
+            else (str(item[0]), str(item[1]))
+            for item in vanilla_history
+        ]
+        if len(session.vanilla_history) > len(session.history):
+            raise ValueError("invalid vanilla control history")
+        for index, (vanilla_question, _vanilla_answer) in enumerate(
+            session.vanilla_history
+        ):
+            if vanilla_question != session.history[index][0]:
+                raise ValueError(
+                    "vanilla control history questions do not match live history"
+                )
         session.influence_records = [
             AgentInfluenceRecord(**item) for item in state.get("influence_records", [])
         ]

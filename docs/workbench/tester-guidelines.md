@@ -14,7 +14,7 @@ Useful tester questions include:
 - Can local Ollama models be discovered and selected without copying model IDs by hand?
 - Can a chat be closed and resumed without losing visible turns or audit state?
 - Does the product behave like a normal chatbot before exposing seed internals?
-- Is **Compare this message with SSL off** understandable without implying one answer is automatically better?
+- Is **Compare with a vanilla chat** understandable without implying one answer is automatically better?
 - Is it clear when a comparison difference can actually be attributed to SSL?
 - Are seed status and plain-language explanations understandable in the Shadow view?
 - Is record-only feedback easy to enter and clearly non-authorizing?
@@ -78,7 +78,7 @@ Include:
 - provider/model and relevant Workbench settings;
 - the smallest reproducible sequence of actions;
 - expected versus observed behavior;
-- whether an SSL-off control was requested and whether a seed actually surfaced;
+- whether an independent vanilla control was requested and whether a seed actually surfaced;
 - a verified support bundle when structural context is enough;
 - a full report only when conversation or seed contents are necessary and safe to share.
 

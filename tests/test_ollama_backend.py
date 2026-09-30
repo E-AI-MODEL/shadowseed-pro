@@ -67,6 +67,35 @@ def test_client_generate_posts_expected_payload(monkeypatch):
     assert body["options"]["seed"] == 0
 
 
+def test_client_generate_chat_posts_native_messages(monkeypatch):
+    captured: dict = {}
+
+    def _urlopen(request, timeout=None):
+        captured["url"] = request.full_url
+        captured["timeout"] = timeout
+        captured["body"] = json.loads(request.data.decode("utf-8"))
+        payload = json.dumps(
+            {"message": {"role": "assistant", "content": "  vervolgantwoord  "}}
+        ).encode("utf-8")
+        return _FakeResponse(payload)
+
+    monkeypatch.setattr(ollama_client.urllib.request, "urlopen", _urlopen)
+    client = OllamaClient(model="tinyllama", host="http://localhost:11434")
+    messages = [
+        {"role": "user", "content": "eerste vraag"},
+        {"role": "assistant", "content": "eerste antwoord"},
+        {"role": "user", "content": "tweede vraag"},
+    ]
+
+    out = client.generate_chat(messages, max_new_tokens=80)
+
+    assert out == "vervolgantwoord"
+    assert captured["url"] == "http://localhost:11434/api/chat"
+    assert captured["body"]["messages"] == messages
+    assert captured["body"]["stream"] is False
+    assert captured["body"]["options"]["num_predict"] == 80
+
+
 def test_detector_ollama_backend_parses_seeds(monkeypatch):
     urlopen, _ = _fake_urlopen("Ontbrekende toelichting bij Federal Mogul.")
     monkeypatch.setattr(ollama_client.urllib.request, "urlopen", urlopen)
