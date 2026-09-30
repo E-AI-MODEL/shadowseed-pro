@@ -73,8 +73,11 @@ jobs:
             label: Windows
             artifact: standalone-windows
           - os: macos-latest
-            label: macOS
-            artifact: standalone-macos
+            label: macOS Apple Silicon
+            artifact: standalone-macos-arm64
+          - os: macos-15-intel
+            label: macOS Intel
+            artifact: standalone-macos-x86_64
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
@@ -113,6 +116,8 @@ jobs:
           assert manifest["model_weights_bundled"] is False
           assert manifest["self_test"]["frozen"] is True
           assert manifest["self_test"]["runtime_mode"] == "live"
+          assert manifest["server_startup_probe"]["started"] is True
+          assert manifest["server_startup_probe"]["host"] == "127.0.0.1"
           assert manifest["license_identifier"] == "PolyForm-Noncommercial-1.0.0"
           assert manifest["license_file"]
           expected_license = hashlib.sha256(Path("LICENSE").read_bytes()).hexdigest()
@@ -128,6 +133,8 @@ jobs:
               assert manifest["macos_archive_roundtrip_verified"] is True
               assert manifest["archive_roundtrip_self_test"]["frozen"] is True
               assert manifest["archive_roundtrip_self_test"]["runtime_mode"] == "live"
+              assert manifest["archive_roundtrip_server_probe"]["started"] is True
+              assert manifest["archive_roundtrip_server_probe"]["host"] == "127.0.0.1"
           else:
               assert manifest["macos_signature_mode"] is None
               assert manifest["macos_bundle_seal_verified"] is None
@@ -136,6 +143,7 @@ jobs:
               assert manifest["macos_first_launch_helper"] is None
               assert manifest["macos_archive_roundtrip_verified"] is None
               assert manifest["archive_roundtrip_self_test"] is None
+              assert manifest["archive_roundtrip_server_probe"] is None
           print(json.dumps(manifest, indent=2, sort_keys=True))
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
