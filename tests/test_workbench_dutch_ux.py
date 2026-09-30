@@ -365,3 +365,23 @@ def test_gate_review_notice_is_actionable_and_wired() -> None:
     assert "_gate_notice(initial_view)" in source
     assert "source_gate_alert = gr.Markdown(" in source
     assert 'gr.Warning("Validation Gate vraagt jouw beoordeling.")' in source
+
+
+
+def test_manual_review_actions_refresh_gate_alerts() -> None:
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+
+    falsify_start = source.index("def falsify_seed(")
+    evidence_start = source.index("def submit_verified_evidence(", falsify_start)
+    verify_start = source.index("def verify_turn(", evidence_start)
+
+    falsify_body = source[falsify_start:evidence_start]
+    evidence_body = source[evidence_start:verify_start]
+
+    assert "session_view = ctl.session_view(session_id)" in falsify_body
+    assert "notice = _gate_notice(session_view)" in falsify_body
+    assert "session_view = ctl.session_view(session_id)" in evidence_body
+    assert "notice = _gate_notice(session_view)" in evidence_body
+
+    assert "gate_alert," in source
+    assert "source_gate_alert," in source
