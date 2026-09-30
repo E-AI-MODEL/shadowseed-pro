@@ -1301,7 +1301,7 @@ def build_simple_app(
                 "",
                 "",
                 gr.update(),
-                "",
+                gr.update(),
             )
         try:
             result = ctl.send_turn(
@@ -1337,8 +1337,25 @@ def build_simple_app(
                 "",
                 _fout(exc),
                 gr.update(),
-                "",
+                gr.update(),
             )
+
+    def source_session_changed(session_id: str | None):
+        if not session_id:
+            return ""
+        try:
+            return _gate_notice(ctl.session_view(session_id))
+        except Exception:
+            return gr.update()
+
+    def refresh_source_session(current: str | None):
+        choices = session_choices()
+        valid = {item[1] for item in choices}
+        selected = current if current in valid else (choices[0][1] if choices else None)
+        return (
+            dropdown_update(choices, selected),
+            source_session_changed(selected),
+        )
 
     def ingest_sources(
         session_id: str | None,
@@ -2148,15 +2165,20 @@ def build_simple_app(
                         interactive=False,
                     )
                     source_gate_alert = gr.Markdown(
-                        "",
+                        _gate_notice(initial_view),
                         elem_classes=["ss-gate-alert"],
                     )
                     source_state = gr.JSON(label="Technische gesprekstoestand", visible=False)
 
             source_refresh.click(
-                refresh_session_dropdown,
+                refresh_source_session,
                 inputs=[source_session],
-                outputs=[source_session],
+                outputs=[source_session, source_gate_alert],
+            )
+            source_session.change(
+                source_session_changed,
+                inputs=[source_session],
+                outputs=[source_gate_alert],
             )
             source_button.click(
                 ingest_sources,
