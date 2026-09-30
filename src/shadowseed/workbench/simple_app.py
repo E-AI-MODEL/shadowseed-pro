@@ -1401,7 +1401,7 @@ def build_simple_app(
                 gr.update(),
                 None,
                 pasted_text,
-                "",
+                gr.update(),
             )
 
     def dashboard_session_changed(session_id: str | None):
