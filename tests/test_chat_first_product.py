@@ -120,7 +120,7 @@ def test_live_ab_started_late_replays_only_user_questions_into_vanilla_history(t
     vanilla_history = stored["state"]["vanilla_history"]
 
     assert report["comparison_control_history_isolated"] is True
-    assert report["comparison_control_transport"] == "provider_native_chat"
+    assert report["comparison_control_transport"] == "role_structured_chat"
     assert report["comparison_control_replayed_turns"] == 2
     assert report["comparison_control_history_turns_before"] == 2
     assert [item["question"] for item in vanilla_history] == [
