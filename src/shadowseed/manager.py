@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 from datetime import datetime
+import math
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Literal, Mapping
 
@@ -226,6 +227,52 @@ class SSLManager:
             changes["contradiction_score"] = contradiction_score
         if changes:
             seed._write_authority(changes)
+
+    def current_gate_authorizes(
+        self,
+        seed_id: str,
+        policy_id: str | None,
+    ) -> bool:
+        """Revalidate historical promotion against the Gate active *now*.
+
+        A PROMOTED status records a historical Gate crossing. Product controls
+        may later tighten the Gate. That history stays immutable, but point-of-use
+        authorization must satisfy the current thresholds before influence.
+        """
+
+        seed = self._seeds[seed_id]
+        if seed.status != SeedStatus.PROMOTED:
+            return False
+        if self.is_blocking_contradiction(seed_id):
+            return False
+        if seed.weight < self.config.promotion_threshold:
+            return False
+
+        selected_policy = str(policy_id or "exploratory")
+        occurrence_ok = (
+            seed.occurrence_count >= self.config.min_occurrences_for_gate
+        )
+        if selected_policy == "exploratory":
+            # Exploratory authority can historically have come from recurrence
+            # or verified external support.
+            return occurrence_ok or seed.evidence_count >= 1
+
+        if selected_policy == "evidence_backed":
+            increment = max(float(self.config.validation_increment), 1e-9)
+            evidence_needed = max(
+                1,
+                int(math.ceil(self.config.promotion_threshold / increment)),
+            )
+            return occurrence_ok and seed.evidence_count >= evidence_needed
+
+        if selected_policy == "legacy_evidence_required":
+            return (
+                occurrence_ok
+                and seed.evidence_count >= self.config.min_evidence_for_gate
+                and seed.trace > self.config.min_trace_for_gate
+            )
+
+        return False
 
     @property
     def contradiction_records(self) -> list[ContradictionRecord]:
