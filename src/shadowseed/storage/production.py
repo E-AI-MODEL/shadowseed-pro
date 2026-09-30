@@ -89,6 +89,9 @@ def authority_config_snapshot_from_payload(value: Any) -> dict[str, str]:
             raise WorkspaceStorageError("ledger authority configuration snapshot is malformed")
         session_id = str(item.get("session_id") or "")
         digest = str(item.get("authority_config_digest") or "")
+        projection = item.get("authority_config")
+        if projection is not None and not isinstance(projection, dict):
+            raise WorkspaceStorageError("ledger authority configuration snapshot is malformed")
         if not session_id or len(digest) != 64:
             raise WorkspaceStorageError("ledger authority configuration snapshot is malformed")
         snapshot[session_id] = digest
@@ -175,8 +178,11 @@ def expected_authority_config_snapshot_from_ledger(
             )
             continue
         if event_type in {"workspace.restore", "workspace.import"}:
-            expected = authority_config_snapshot_from_payload(
-                payload.get("authority_config_snapshot")
+            snapshot = payload.get("authority_config_snapshot")
+            expected = (
+                authority_config_snapshot_from_payload(snapshot)
+                if snapshot is not None
+                else {}
             )
             continue
 
