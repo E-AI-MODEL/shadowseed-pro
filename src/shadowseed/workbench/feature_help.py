@@ -264,6 +264,52 @@ def _current_combination(
                 "uit dat antwoord niet teruggevoerd om dezelfde recurrence/authority-lus te versterken."
             )
 
+        embedding = str(view.get("embedding_backend", "lexical"))
+        if embedding in {"sentence-transformers", "openai"}:
+            lines.append(
+                f"**Semantisch matchen staat aan via `{embedding}`.** Parafrases kunnen daardoor "
+                "makkelijker als relevant worden herkend. Dit **versterkt alleen de matching**, niet de authority."
+            )
+        else:
+            lines.append(
+                "**Lexicale matching is actief.** Woordoverlap telt zwaarder; semantisch vergelijkbare "
+                "parafrases kunnen daardoor minder makkelijk terugkomen. Dit **verslapt matching**, niet authority."
+            )
+
+        surface_top_k = int(view.get("surface_top_k", 2))
+        if surface_top_k <= 0:
+            lines.append(
+                "**Surfacing staat effectief uit.** Ook een geautoriseerde en relevante seed kan dan niet "
+                "aan het antwoord worden aangeboden."
+            )
+        else:
+            lines.append(
+                f"**Surfacing staat aan (maximaal {surface_top_k}).** Een geautoriseerde seed **kan** "
+                "worden aangeboden als hij relevant is; hij **moet niet** worden aangeboden."
+            )
+
+        if gate == "evidence_backed" and not self_loop:
+            lines.append(
+                "**Combinatie Gate evidence-backed + self-reinforcement uit:** herhaling **kan** een patroon "
+                "zichtbaarder maken, maar eigen SSL-output **mag niet** de recurrence/authority-lus versterken "
+                "en recurrence alleen **mag niet** verified evidence vervangen."
+            )
+        elif gate == "evidence_backed" and self_loop:
+            lines.append(
+                "**Combinatie Gate evidence-backed + self-reinforcement aan:** eigen SSL-output **kan** de "
+                "geheugenlus versterken, maar authority **moet nog steeds** voldoen aan de evidence-backed Gate."
+            )
+        elif gate == "exploratory" and self_loop:
+            lines.append(
+                "**Combinatie exploratory Gate + self-reinforcement aan:** recurrence **kan** authority sterker "
+                "maken en eigen SSL-output **kan** die lus verder voeden. Dit is de meest versterkende researchcombinatie."
+            )
+        elif gate == "exploratory":
+            lines.append(
+                "**Combinatie exploratory Gate + self-reinforcement uit:** recurrence **kan** authority verhogen, "
+                "maar SSL-blootgestelde output **mag niet** zijn eigen recurrence versterken."
+            )
+
     if compare_enabled:
         lines.append(
             "**Same-turn vergelijking staat aan.** Deze beurt kost één extra control-generatie, "
