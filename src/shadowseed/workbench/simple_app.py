@@ -400,7 +400,12 @@ def _authority_explainer(profile_id: str | None) -> str:
 def _recommended_setup(controller: WorkbenchController) -> tuple[str, str | None, str]:
     """Kies automatisch een veilige, bruikbare startconfiguratie."""
 
-    semantic_local = "sentence-transformers" in controller.embedding_backends()
+    embedding_capabilities = getattr(controller, "embedding_backends", None)
+    semantic_local = (
+        "sentence-transformers" in embedding_capabilities()
+        if callable(embedding_capabilities)
+        else True
+    )
     try:
         models = controller.discover_models("ollama")
     except Exception:
