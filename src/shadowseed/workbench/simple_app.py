@@ -1178,9 +1178,10 @@ def build_simple_app(
                 _chat_status(view),
                 view,
                 "",
+                _gate_notice(view),
             )
         except Exception as exc:
-            return gr.update(), [], _fout(exc), None, ""
+            return gr.update(), [], _fout(exc), None, "", ""
 
     def load_chat(session_id: str | None):
         if not session_id:
@@ -1689,14 +1690,21 @@ def build_simple_app(
                                 variant="secondary",
                             )
                             hosted_confirm = gr.Checkbox(
-                                label="Ik begrijp dat chatinhoud bij een online model naar de provider wordt gestuurd",
+                                label=(
+                                    "Ik begrijp dat bij een online taalmodel of online "
+                                    "betekenisvergelijking tekst naar de provider wordt gestuurd"
+                                ),
                                 value=False,
                             )
                             with gr.Accordion("Technisch", open=False):
                                 embedding_backend = gr.Dropdown(
-                                    choices=list(ctl.embedding_backends()),
-                                    value=ctl.default_embedding_backend(auto_backend),
-                                    label="Semantische vergelijking",
+                                    choices=embedding_choices,
+                                    value="auto",
+                                    label="Hoe vergelijkt Shadowseed betekenis?",
+                                )
+                                embedding_help = gr.Markdown(
+                                    _embedding_explainer("auto"),
+                                    elem_classes=["ss-control-copy"],
                                 )
                                 embedding_model = gr.Textbox(
                                     label="Eigen embeddingmodel (optioneel)",
@@ -1713,6 +1721,10 @@ def build_simple_app(
                         _chat_status(initial_view),
                         elem_id="ss-status",
                     )
+                    gate_alert = gr.Markdown(
+                        _gate_notice(initial_view),
+                        elem_classes=["ss-gate-alert"],
+                    )
                     with gr.Group(elem_id="ss-composer"):
                         question = gr.Textbox(
                             label="Bericht",
@@ -1725,6 +1737,14 @@ def build_simple_app(
                         compare_checkbox = gr.Checkbox(
                             label="Vergelijk dit antwoord zonder Shadowseed",
                             value=False,
+                        )
+                        comparison_mode = gr.Radio(
+                            choices=[
+                                ("Geautoriseerde SSL · alleen promoted seeds", "authorized"),
+                                ("Shadow pressure · pre-promotie experiment", "shadow_pressure"),
+                            ],
+                            value="authorized",
+                            label="Wat wil je vergelijken?",
                         )
                         comparison_note = gr.Markdown(
                             "Zet de vergelijking aan vóór het versturen wanneer je wilt controleren "
@@ -1811,6 +1831,11 @@ def build_simple_app(
                 inputs=[backend, model_id],
                 outputs=[model_id, model_note],
             )
+            embedding_backend.change(
+                _embedding_explainer,
+                inputs=[embedding_backend],
+                outputs=[embedding_help],
+            )
             refresh_sessions.click(
                 refresh_session_dropdown,
                 inputs=[session_select],
@@ -1829,7 +1854,14 @@ def build_simple_app(
                     embedding_model,
                     hosted_confirm,
                 ],
-                outputs=[session_select, chat, chat_status, session_json, question],
+                outputs=[
+                    session_select,
+                    chat,
+                    chat_status,
+                    session_json,
+                    question,
+                    gate_alert,
+                ],
             )
             session_select.change(
                 load_chat,
@@ -1845,11 +1877,18 @@ def build_simple_app(
                     gate_strictness_help,
                     allow_self_reinforcement,
                     control_summary,
+                    gate_alert,
                 ],
             )
             send_button.click(
                 send_message,
-                inputs=[session_select, question, compare_checkbox, hosted_confirm],
+                inputs=[
+                    session_select,
+                    question,
+                    compare_checkbox,
+                    comparison_mode,
+                    hosted_confirm,
+                ],
                 outputs=[
                     chat,
                     chat_status,
@@ -1859,11 +1898,18 @@ def build_simple_app(
                     ssl_off,
                     comparison_note,
                     session_json,
+                    gate_alert,
                 ],
             )
             question.submit(
                 send_message,
-                inputs=[session_select, question, compare_checkbox, hosted_confirm],
+                inputs=[
+                    session_select,
+                    question,
+                    compare_checkbox,
+                    comparison_mode,
+                    hosted_confirm,
+                ],
                 outputs=[
                     chat,
                     chat_status,
@@ -1873,6 +1919,7 @@ def build_simple_app(
                     ssl_off,
                     comparison_note,
                     session_json,
+                    gate_alert,
                 ],
             )
 
@@ -1918,6 +1965,10 @@ def build_simple_app(
                         label="Geheugenpunten na verwerking",
                         interactive=False,
                     )
+                    source_gate_alert = gr.Markdown(
+                        "",
+                        elem_classes=["ss-gate-alert"],
+                    )
                     source_state = gr.JSON(label="Technische gesprekstoestand", visible=False)
 
             source_refresh.click(
@@ -1928,7 +1979,13 @@ def build_simple_app(
             source_button.click(
                 ingest_sources,
                 inputs=[source_session, source_paste, source_files, source_confirm],
-                outputs=[source_result, source_seed_preview, source_state, source_paste],
+                outputs=[
+                    source_result,
+                    source_seed_preview,
+                    source_state,
+                    source_paste,
+                    source_gate_alert,
+                ],
             )
 
         with gr.Tab("Geheugen", id="geheugen", elem_id="ss-tab-geheugen"):
