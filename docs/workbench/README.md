@@ -15,13 +15,13 @@ Use the download/open route only when a verified GitHub release for the version 
 1. Download the archive for the operating system/architecture.
 2. Verify it against `SHA256SUMS` when practical.
 3. Extract **Shadowseed**.
-4. On Windows/Linux, open the normal launcher. On macOS, use `Open Shadowseed.command` once if browser quarantine blocks the first app launch; Control-click → **Open** the helper if Finder blocks it too.
+4. On Windows/Linux, open the normal launcher. On macOS, choose the `darwin-arm64` archive for Apple Silicon or `darwin-x86_64` for Intel, then start with `Open Shadowseed.command`; Control-click → **Open** if Finder blocks the helper.
 5. The app creates/opens the local `~/.shadowseed` workspace and binds the UI to loopback.
 6. Choose a model, create a chat and start talking.
 
 Model weights are intentionally separate. Fixture works offline for mechanics. Ollama uses local installed models. Hugging Face/Sentence Transformers may acquire model material on first use. Hosted OpenAI is explicit and credential-dependent.
 
-A valid 0.9.3 release contains three standalone archives and manifests, `PROVENANCE.json`, `SHA256SUMS`, a Python wheel, source distribution, and `LICENSE`. Frozen bundles must pass their packaged product self-test and carry the exact repository license hash before upload. The macOS archive must additionally preserve a valid final application seal after every bundle mutation, contain the first-launch helper and README, survive archive extraction, and pass the frozen self-test from the round-tripped app before release. Apple Developer ID signing and notarization are not required or claimed.
+A valid 0.9.3 release contains four standalone archives and manifests (Linux x86_64, Windows amd64, macOS arm64 and macOS x86_64), `PROVENANCE.json`, `SHA256SUMS`, a Python wheel, source distribution, and `LICENSE`. Frozen bundles must pass their packaged product self-test and carry the exact repository license hash before upload. Both macOS archives must additionally preserve a valid final application seal after every bundle mutation, contain the terminal-backed first-launch helper and README, survive archive extraction, pass the frozen self-test from the round-tripped app, and prove that the real loopback web server starts from the frozen archive before release. Apple Developer ID signing and notarization are not required or claimed.
 
 ## Research access
 
