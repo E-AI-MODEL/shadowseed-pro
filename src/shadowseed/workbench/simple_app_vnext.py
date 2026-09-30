@@ -463,19 +463,21 @@ def build_vnext_app(
                         label="Geheugenpunt",
                     )
                     seed_story = gr.Markdown(_seed_story(None))
-                    with gr.Accordion("Menselijke controle", open=False):
+                    with gr.Accordion("Beoordeling van dit geheugenpunt", open=False):
                         gr.Markdown(
-                            "Alleen hier is jouw inhoudelijke beslissing nodig: een punt tegenspreken "
-                            "of onafhankelijk geverifieerde steun toevoegen."
+                            "Deze handelingen grijpen rechtstreeks in op de SSL-logica. "
+                            "**Tegenspraak registreren** maakt een blokkende contradiction aan. "
+                            "**Geverifieerde ondersteuning toevoegen** levert onafhankelijk gecontroleerde "
+                            "support aan de Validation Gate."
                         )
-                        contradict_button = gr.Button("Markeer als tegengesproken", variant="stop")
+                        contradict_button = gr.Button("Tegenspraak registreren", variant="stop")
                         evidence_source = gr.Textbox(label="Bronreferentie")
-                        evidence_note = gr.Textbox(label="Notitie", lines=2)
+                        evidence_note = gr.Textbox(label="Toelichting bij de ondersteuning", lines=2)
                         evidence_attest = gr.Checkbox(
-                            label="Ik heb deze steun onafhankelijk van modeloutput gecontroleerd",
+                            label="Ik heb deze ondersteuning onafhankelijk van modeloutput gecontroleerd",
                             value=False,
                         )
-                        evidence_button = gr.Button("Voeg geverifieerde steun toe")
+                        evidence_button = gr.Button("Geverifieerde ondersteuning toevoegen")
                     with gr.Accordion("Technische audit", open=False):
                         session_json = gr.JSON(value=initial_view, label="Gesprekstoestand")
                         seed_json = gr.JSON(label="Geheugenpunt")
