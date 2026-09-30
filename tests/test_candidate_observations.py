@@ -148,3 +148,51 @@ def test_legacy_projection_preserves_suppressed_candidates_without_recurrence() 
     assert observation.ssl_exposed is True
     assert observation.recurrence_eligible is False
     assert observation.context_ref == "turn:7:legacy_suppressed_candidate"
+
+
+
+def test_v2_self_reinforcement_roundtrip_is_explicit() -> None:
+    ledger = CandidateObservationLedger()
+    created = ledger.record_batch(
+        ["A feedback-loop candidate."],
+        context_ref="turn:8:visible_answer",
+        detector_backend="fixture-detector",
+        detector_prompt_provenance="generative:v2",
+        candidate_type="possible_completion",
+        ssl_exposed=True,
+        surfaced_seed_ids=["seed_feedback"],
+        created_at="2026-09-30T00:00:00+00:00",
+        allow_ssl_recurrence=True,
+    )
+
+    assert len(created) == 1
+    observation = created[0]
+    assert observation.schema_version == 2
+    assert observation.ssl_exposed is True
+    assert observation.recurrence_eligible is True
+    assert observation.self_reinforcement_allowed is True
+
+    payload = ledger.to_dict()
+    assert payload["schema_version"] == 2
+    assert payload["observations"][0]["schema_version"] == 2
+    restored = CandidateObservationLedger.from_dict(payload)
+    assert restored.to_dict() == payload
+
+
+def test_packaged_observation_contract_keeps_v1_and_adds_v2() -> None:
+    from pathlib import Path
+    import json
+
+    data_dir = Path("src/shadowseed/data")
+    v1 = json.loads(
+        (data_dir / "candidate_observation_schema_v1.json").read_text(encoding="utf-8")
+    )
+    v2 = json.loads(
+        (data_dir / "candidate_observation_schema_v2.json").read_text(encoding="utf-8")
+    )
+
+    assert v1["schema_version"] == 1
+    assert "ssl_exposed observations are never recurrence-eligible" in v1["observation"]["invariants"]
+    assert v2["schema_version"] == 2
+    assert "self_reinforcement_allowed" in v2["observation"]["required"]
+    assert v2["record_schema_versions_supported"] == [1, 2]
