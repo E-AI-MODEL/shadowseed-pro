@@ -6,7 +6,8 @@ readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.10"
 dependencies = [
-  "numpy>=1.24",
+  "numpy>=1.24,<2; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+  "numpy>=1.24; sys_platform != 'darwin' or platform_machine != 'x86_64'",
 ]
 
 [project.scripts]
@@ -19,7 +20,7 @@ models = [
   # 4.51 is the floor for the curated dropdown: Qwen3 needs >=4.51 and
   # Phi-3.5-mini needs >=4.43. CI installs fresh, but a stale local env
   # satisfying an older floor would advertise models it cannot load.
-  "transformers>=4.51",
+  "transformers>=4.51,<5",
   "torch>=2.2,<2.3; sys_platform == 'darwin' and platform_machine == 'x86_64'",
   "torch>=2.2; sys_platform != 'darwin' or platform_machine != 'x86_64'",
 ]
@@ -42,7 +43,7 @@ workbench = [
   # therefore needs a semantic embedder in the normal install rather than a
   # hidden second setup step.
   "sentence-transformers>=2.7",
-  "transformers>=4.51",
+  "transformers>=4.51,<5",
   # PyTorch stopped publishing newer Intel-macOS wheels. Keep the Intel
   # standalone on the last compatible 2.2 line while Apple Silicon and the
   # other supported platforms follow the normal >=2.2 range.
