@@ -134,3 +134,32 @@ def test_schema_v2_allows_explicit_self_reinforcement_recurrence() -> None:
 
     assert observation.recurrence_eligible is True
     assert observation.self_reinforcement_allowed is True
+
+
+
+def test_v1_ledger_rejects_nested_v2_self_reinforcement_record() -> None:
+    payload = {
+        "schema_version": 1,
+        "observations": [
+            {
+                "observation_id": "obs_smuggled_v2",
+                "raw_text": "A contaminated candidate.",
+                "normalized_text": "a contaminated candidate.",
+                "context_ref": "turn:1:visible_answer",
+                "detector_backend": "fixture",
+                "detector_prompt_provenance": None,
+                "candidate_type": "possible_completion",
+                "ssl_exposed": True,
+                "surfaced_seed_ids": ["seed_1"],
+                "recurrence_eligible": True,
+                "created_at": "2026-09-30T00:00:00+00:00",
+                "self_reinforcement_allowed": True,
+                "legacy_projection": False,
+                "schema_version": 2,
+            }
+        ],
+        "links": [],
+    }
+
+    with pytest.raises(ValueError, match="newer than ledger schema"):
+        CandidateObservationLedger.from_dict(payload)
