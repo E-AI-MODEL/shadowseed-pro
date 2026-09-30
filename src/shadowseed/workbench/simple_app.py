@@ -500,6 +500,16 @@ def _control_preset_id(
     return None
 
 
+def _legacy_control_summary(self_reinforcement: bool) -> str:
+    loop_label = "aan" if self_reinforcement else "uit"
+    return (
+        "**Aangepaste/legacy-regie**  \n"
+        f"feedbacklus **{loop_label}**  \n"
+        "Deze sessie heeft geen exact 0–100%-label. Kies een snelle stand "
+        "of beweeg een schuif om SSL en Gate expliciet over te nemen."
+    )
+
+
 def _control_state_summary(
     ssl_intensity: int | float,
     gate_strictness: int | float,
@@ -852,17 +862,33 @@ def _verify_summary(comparison: dict[str, Any] | None) -> str:
             "Kies een gesprek en berichtnummer. Een controle is alleen beschikbaar als voor dat "
             "bericht vooraf een vergelijking zonder Shadowseed is opgeslagen."
         )
+    mode = str(comparison.get("comparison_mode", "authorized"))
     influenced = bool(comparison.get("ssl_influence_observed"))
     surfaced = list(comparison.get("surfaced_seed_ids", []) or [])
     question = str(comparison.get("question", "")).strip()
-    if influenced:
+
+    if mode == "shadow_pressure":
+        if influenced:
+            verdict = (
+                "### Experimentele pre-authority invloed zichtbaar\n"
+                f"Er zijn **{len(surfaced)}** nog niet-gepromoveerde geheugenpunt(en) "
+                "read-only aan de treatment-arm aangeboden. Dit zijn **geen "
+                "Gate-geautoriseerde** geheugenpunten."
+            )
+        else:
+            verdict = (
+                "### Geen shadow pressure op deze vergelijking\n"
+                "Er waren geen voldoende ontwikkelde en relevante pre-promotie-seeds "
+                "voor de experimentele treatment-arm."
+            )
+    elif influenced:
         verdict = (
-            "### Ja, Shadowseed heeft hier aantoonbaar meegedacht\n"
+            "### Ja, geautoriseerde Shadowseed-invloed is aangetoond\n"
             f"Er zijn **{len(surfaced)}** geautoriseerde geheugenpunt(en) gebruikt."
         )
     else:
         verdict = (
-            "### Nee, voor dit antwoord is geen Shadowseed-invloed aangetoond\n"
+            "### Nee, voor dit antwoord is geen geautoriseerde Shadowseed-invloed aangetoond\n"
             "Eventuele verschillen tussen twee generaties kunnen normale modelvariatie zijn."
         )
     return verdict + (f"\n\n**Vraag:** {question}" if question else "")
@@ -906,12 +932,20 @@ def build_simple_app(
         if initial_view
         else False
     )
-    initial_control_preset = (
-        _control_preset_id(initial_ssl, initial_gate, initial_loop)
-        if initial_view
+    initial_controls_explicit = bool(
+        initial_view
         and initial_view.get("ssl_intensity") is not None
         and initial_view.get("gate_strictness") is not None
+    )
+    initial_control_preset = (
+        _control_preset_id(initial_ssl, initial_gate, initial_loop)
+        if initial_controls_explicit
         else None
+    )
+    initial_control_summary = (
+        _control_state_summary(initial_ssl, initial_gate, initial_loop)
+        if initial_controls_explicit
+        else _legacy_control_summary(initial_loop)
     )
 
     auto_backend, auto_model, auto_setup_note = _recommended_setup(ctl)
@@ -986,11 +1020,7 @@ def build_simple_app(
         summary = (
             _control_state_summary(ssl_value, gate_value, loop)
             if ssl_raw is not None and gate_raw is not None
-            else (
-                "**Aangepaste/legacy-regie**  \n"
-                "Deze sessie heeft geen exact 0–100%-label. Kies een snelle stand "
-                "of beweeg een schuif om de Regie expliciet over te nemen."
-            )
+            else _legacy_control_summary(loop)
         )
         return (
             gr.update(value=preset),
@@ -1554,7 +1584,7 @@ def build_simple_app(
                             label="Snelle stand",
                         )
                         control_summary = gr.Markdown(
-                            _control_state_summary(initial_ssl, initial_gate, initial_loop),
+                            initial_control_summary,
                             elem_classes=["ss-regie-summary"],
                         )
                         ssl_intensity = gr.Slider(
