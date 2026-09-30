@@ -166,6 +166,19 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
             "Longitudinale A/B, self-reinforcement, alternatieve embeddings en Gate-experimenten blijven afzonderlijke functies.",
         ),
     },
+    "technical_audit": {
+        "title": "Technische audit",
+        "eli8": (
+            "Dit is de achterkant van het speelgoed waar je de tandwielen kunt zien. "
+            "Je kijkt alleen; je draait hier niet aan de SSL-logica."
+        ),
+        "does": "Toont read-only sessie-, seed- en auditgegevens voor controle en reproduceerbaarheid.",
+        "does_not": "Wijzigt geen seed, Gate, authority, recurrence of gesprekshistorie.",
+        "relations": (
+            "Onafhankelijk: openen of bekijken verandert geen runtimegedrag.",
+            "Helpt uitleg controleren: de technische velden moeten overeenkomen met de gewone UI-taal.",
+        ),
+    },
     "semantic_matching": {
         "title": "Semantisch matchen",
         "eli8": (
