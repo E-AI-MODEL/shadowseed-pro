@@ -610,7 +610,12 @@ class ShadowChatSession:
             # the Shadowseed prompt wrapper for the vanilla arm.
             return str(
                 self.model.generate(
-                    build_chat_prompt(history, user_question, []),
+                    build_chat_prompt(
+                        history,
+                        user_question,
+                        [],
+                        response_language="the same language as the user's current question",
+                    ),
                     {
                         "question": user_question,
                         "turn": len(history),
