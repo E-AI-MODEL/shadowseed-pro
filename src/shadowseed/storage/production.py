@@ -151,6 +151,14 @@ def expected_authority_config_snapshot_from_ledger(
         except json.JSONDecodeError as exc:
             raise WorkspaceStorageError("production ledger payload JSON is invalid") from exc
 
+        if event_type in {
+            "production.authority_checkpoint",
+            "workspace.restore",
+            "workspace.import",
+        }:
+            expected = {}
+            continue
+
         session_id = row["session_id"]
         if event_type == "session.delete" and session_id:
             expected.pop(str(session_id), None)
