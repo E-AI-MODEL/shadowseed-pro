@@ -46,6 +46,21 @@ class _Model:
         return "Antwoord met invalshoek." if seeds else "Gewoon antwoord."
 
 
+class _NativeChatModel:
+    name = "fake-native-chat"
+
+    def __init__(self):
+        self.chat_calls = []
+
+    def generate(self, prompt, scenario, mode, seeds):
+        return "SSL zichtbaar antwoord."
+
+    def generate_chat(self, history, question):
+        snapshot = [(str(user), str(answer)) for user, answer in history]
+        self.chat_calls.append((snapshot, str(question)))
+        return f"vanilla:{question}"
+
+
 class _Detector:
     name = "fake-det"
 
@@ -97,6 +112,53 @@ def session(monkeypatch) -> ShadowChatSession:
 
 def _drive(session: ShadowChatSession, turns: int) -> list[dict]:
     return [session.turn(f"Wat betekent dit voor de omgang met data? (beurt {t})") for t in range(turns)]
+
+
+def test_vanilla_control_history_never_reuses_ssl_visible_answers():
+    embed, _dim = _emb_factory("lexical")
+    model = _NativeChatModel()
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        model_backend=model,
+        detector_backend=_Detector(),
+        embedding_fn=embed,
+        recurrence_mode="cluster",
+    )
+    session.history = [
+        ("Eerste vraag", "SSL antwoord 1"),
+        ("Tweede vraag", "SSL antwoord 2"),
+    ]
+
+    result = session.generate_vanilla_control("Derde vraag")
+
+    assert result["transport"] == "provider_native_chat"
+    assert result["replayed_turns"] == 2
+    assert model.chat_calls == [
+        ([], "Eerste vraag"),
+        ([("Eerste vraag", "vanilla:Eerste vraag")], "Tweede vraag"),
+        (
+            [
+                ("Eerste vraag", "vanilla:Eerste vraag"),
+                ("Tweede vraag", "vanilla:Tweede vraag"),
+            ],
+            "Derde vraag",
+        ),
+    ]
+    assert all("SSL antwoord" not in repr(history) for history, _question in model.chat_calls)
+    assert session.vanilla_history == [
+        ("Eerste vraag", "vanilla:Eerste vraag"),
+        ("Tweede vraag", "vanilla:Tweede vraag"),
+        ("Derde vraag", "vanilla:Derde vraag"),
+    ]
+
+    restored = ShadowChatSession.from_state(
+        session.to_state(),
+        model_backend=_NativeChatModel(),
+        detector_backend=_Detector(),
+        embedding_fn=embed,
+    )
+    assert restored.vanilla_history == session.vanilla_history
 
 
 def test_seed_travels_shadow_then_steers_only_after_promotion(session):
