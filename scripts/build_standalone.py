@@ -58,6 +58,7 @@ def _sha256(path: Path) -> str:
 
 
 def _pyinstaller_command(root: Path, dist_dir: Path, work_dir: Path) -> list[str]:
+    intel_macos = sys.platform == "darwin" and platform.machine().lower() == "x86_64"
     command = [
         sys.executable,
         "-m",
@@ -86,37 +87,46 @@ def _pyinstaller_command(root: Path, dist_dir: Path, work_dir: Path) -> list[str
         "safehttpx",
         "--collect-data",
         "groovy",
-        "--collect-data",
-        "sentence_transformers",
-        "--collect-data",
-        "transformers",
-        "--collect-submodules",
-        "sentence_transformers",
-        "--collect-submodules",
-        "transformers.models",
-        "--collect-submodules",
-        "scipy._external.array_api_compat",
         "--collect-submodules",
         "openai",
         "--hidden-import",
         "socksio",
     ]
-    for package in (
+    metadata_packages = [
         "shadowseed",
         "gradio",
         "gradio_client",
         "fastapi",
         "pydantic",
-        "huggingface_hub",
-        "sentence-transformers",
-        "transformers",
-        "torch",
         "openai",
-    ):
+    ]
+    if not intel_macos:
+        command.extend(
+            [
+                "--collect-data",
+                "sentence_transformers",
+                "--collect-data",
+                "transformers",
+                "--collect-submodules",
+                "sentence_transformers",
+                "--collect-submodules",
+                "transformers.models",
+                "--collect-submodules",
+                "scipy._external.array_api_compat",
+            ]
+        )
+        metadata_packages.extend(
+            [
+                "huggingface_hub",
+                "sentence-transformers",
+                "transformers",
+                "torch",
+            ]
+        )
+    for package in metadata_packages:
         command.extend(["--copy-metadata", package])
     command.append(str(root / "src" / "shadowseed" / "workbench" / "standalone.py"))
     return command
-
 
 def _executable_path(dist_dir: Path) -> Path:
     if sys.platform == "darwin":
@@ -382,9 +392,23 @@ def _verify_frozen(executable: Path, root: Path, work_dir: Path) -> dict[str, ob
     if payload.get("runtime_mode") != "live":
         raise RuntimeError("packaged self-test did not use the live product runtime")
     imports = payload.get("runtime_imports", {})
-    for required in ("gradio", "sentence_transformers", "transformers", "torch", "openai"):
-        if required not in imports:
+    for required in ("gradio", "openai"):
+        if required not in imports or imports.get(required) == "not-bundled":
             raise RuntimeError(f"packaged self-test is missing runtime dependency: {required}")
+
+    intel_macos = sys.platform == "darwin" and platform.machine().lower() == "x86_64"
+    local_stack = ("sentence_transformers", "transformers", "torch")
+    if intel_macos:
+        if payload.get("local_hf_stack_bundled") is not False:
+            raise RuntimeError("Intel macOS bundle unexpectedly claims local HF stack")
+    else:
+        for required in local_stack:
+            if required not in imports or imports.get(required) == "not-bundled":
+                raise RuntimeError(
+                    f"packaged self-test is missing runtime dependency: {required}"
+                )
+        if payload.get("local_hf_stack_bundled") is not True:
+            raise RuntimeError("standalone bundle did not prove local HF stack availability")
     return payload
 
 
@@ -539,6 +563,9 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
         "license_sha256": license_sha256,
         "license_identifier": "PolyForm-Noncommercial-1.0.0",
         "model_weights_bundled": False,
+        "local_hf_stack_bundled": bool(
+            self_test and self_test.get("local_hf_stack_bundled")
+        ),
         "self_contained_python_runtime": True,
         "loopback_only_default": True,
         "gradio_source_files_bundled": True,
