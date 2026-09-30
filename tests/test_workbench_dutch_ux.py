@@ -585,3 +585,18 @@ def test_sources_gate_notice_tracks_its_selected_session() -> None:
     assert "source_session.change(" in refresh_block
     assert "source_session_changed" in refresh_block
     assert "outputs=[source_gate_alert]" in refresh_block
+
+
+
+def test_sources_ingest_errors_preserve_gate_notice() -> None:
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+
+    ingest_start = source.index("def ingest_sources(")
+    dashboard_start = source.index("def dashboard_session_changed(", ingest_start)
+    body = source[ingest_start:dashboard_start]
+    exception_start = body.index("except Exception as exc:")
+    exception_body = body[exception_start:]
+
+    assert "pasted_text," in exception_body
+    assert "gr.update()," in exception_body
+    assert not exception_body.rstrip().endswith('""\n            )')
