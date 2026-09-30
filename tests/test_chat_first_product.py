@@ -483,3 +483,359 @@ def test_persisted_assisted_exploratory_gate_does_not_show_review_request() -> N
 
     assert view["effective_gate_policy_id"] == "exploratory"
     assert view["authority_review_seed_ids"] == []
+
+
+
+def test_product_sliders_are_independent_and_persisted(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+
+    open_id = controller.create_session(
+        title="Open gate, no surfacing",
+        profile_id="balanced",
+        backend="fixture",
+        ssl_intensity=0,
+        gate_strictness=0,
+    )
+    strict_id = controller.create_session(
+        title="Full SSL, strict gate",
+        profile_id="balanced",
+        backend="fixture",
+        ssl_intensity=100,
+        gate_strictness=100,
+    )
+
+    open_stored = controller.sessions.load(open_id)
+    strict_stored = controller.sessions.load(strict_id)
+
+    assert open_stored["config"]["ssl_intensity"] == 0
+    assert open_stored["config"]["gate_strictness"] == 0
+    assert open_stored["config"]["surface_top_k"] == 0
+    assert open_stored["config"]["gate_policy_id"] == "exploratory"
+    assert open_stored["config"]["min_occurrences_for_gate"] == 1
+    assert open_stored["config"]["promotion_threshold"] == 0.2
+
+    assert strict_stored["config"]["ssl_intensity"] == 100
+    assert strict_stored["config"]["gate_strictness"] == 100
+    assert strict_stored["config"]["surface_top_k"] == 3
+    assert strict_stored["config"]["gate_policy_id"] == "legacy_evidence_required"
+    assert strict_stored["config"]["min_occurrences_for_gate"] == 4
+    assert strict_stored["config"]["min_evidence_for_gate"] == 3
+    assert strict_stored["config"]["promotion_threshold"] == 0.5
+
+    open_view = controller.session_view(open_id)
+    strict_view = controller.session_view(strict_id)
+    assert open_view["ssl_intensity"] == 0
+    assert open_view["gate_strictness"] == 0
+    assert strict_view["ssl_intensity"] == 100
+    assert strict_view["gate_strictness"] == 100
+
+
+def test_gate_zero_promotes_first_observation_but_ssl_zero_never_surfaces(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Open gate observation only",
+        profile_id="balanced",
+        backend="fixture",
+        ssl_intensity=0,
+        gate_strictness=0,
+    )
+
+    first = controller.send_turn(session_id, "What important perspective could be missing?")
+    assert first["report"]["surfaced_seed_ids"] == []
+    assert any(seed["status"] == "PROMOTED" for seed in first["session"]["seeds"])
+
+    second = controller.send_turn(session_id, "What important perspective could be missing again?")
+    assert second["report"]["surfaced_seed_ids"] == []
+
+
+def test_gate_hundred_requires_recurrence_and_three_verified_sources(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Strict Gate",
+        profile_id="balanced",
+        backend="fixture",
+        ssl_intensity=100,
+        gate_strictness=100,
+    )
+
+    for index in range(4):
+        controller.ingest_sources(
+            session_id,
+            pasted_text="Alpha provides a recurring explanatory perspective.",
+        )
+
+    view = controller.session_view(session_id)
+    seed = max(view["seeds"], key=lambda item: int(item.get("occurrence_count", 0)))
+    seed_id = seed["id"]
+    assert int(seed["occurrence_count"]) >= 4
+    assert seed["status"] != "PROMOTED"
+
+    for index in range(2):
+        result = controller.submit_verified_evidence(
+            session_id,
+            seed_id,
+            source_ref=f"reviewer:strict:{index}",
+            note="Independent verified source.",
+            operator_verified=True,
+        )
+        assert result["status_after"] != "PROMOTED"
+
+    final = controller.submit_verified_evidence(
+        session_id,
+        seed_id,
+        source_ref="reviewer:strict:2",
+        note="Third independent verified source.",
+        operator_verified=True,
+    )
+
+    assert final["status_after"] == "PROMOTED"
+    assert final["evidence_count"] == 3
+
+
+
+def test_regie_controls_reconfigure_existing_chat_without_losing_state(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Live Regie",
+        profile_id="balanced",
+        backend="fixture",
+        ssl_intensity=100,
+        gate_strictness=100,
+        allow_self_reinforcement=False,
+    )
+
+    controller.send_turn(session_id, "Remember this conversation state.")
+    before = controller.sessions.load(session_id)
+    history_before = list(before["state"]["history"])
+    seeds_before = list(before["state"]["manager"]["seeds"])
+
+    view = controller.update_session_controls(
+        session_id,
+        ssl_intensity=0,
+        gate_strictness=0,
+        allow_self_reinforcement=True,
+    )
+    stored = controller.sessions.load(session_id)
+
+    assert view["ssl_intensity"] == 0
+    assert view["gate_strictness"] == 0
+    assert view["allow_self_reinforcement"] is True
+
+    assert stored["config"]["ssl_intensity"] == 0
+    assert stored["config"]["gate_strictness"] == 0
+    assert stored["config"]["allow_self_reinforcement"] is True
+    assert stored["config"]["surface_top_k"] == 0
+    assert stored["config"]["gate_policy_id"] == "exploratory"
+    assert stored["config"]["min_occurrences_for_gate"] == 1
+
+    state_config = stored["state"]["session_config"]
+    assert state_config["surface_top_k"] == 0
+    assert state_config["gate_policy_id"] == "exploratory"
+    assert state_config["authority_profile_id"] == "autonomous"
+    assert state_config["allow_self_reinforcement"] is True
+    assert stored["state"]["manager"]["config"]["min_occurrences_for_gate"] == 1
+
+    assert stored["state"]["history"] == history_before
+    assert stored["state"]["manager"]["seeds"] == seeds_before
+
+
+
+def test_regie_reconfiguration_does_not_rehydrate_model_backend() -> None:
+    from pathlib import Path
+
+    source = Path("src/shadowseed/application/sessions.py").read_text(encoding="utf-8")
+    start = source.index("def update_controls(")
+    end = source.index("@staticmethod", start)
+    body = source[start:end]
+
+    assert "ShadowChatSession.from_state" not in body
+    assert "save_session_configuration" in body
+
+
+
+def test_loop_only_update_preserves_legacy_custom_regie(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Legacy-style custom Regie",
+        profile_id="balanced",
+        backend="fixture",
+    )
+
+    before = controller.sessions.load(session_id)
+    config_before = dict(before["config"])
+    state_config_before = dict(before["state"]["session_config"])
+    manager_config_before = dict(before["state"]["manager"]["config"])
+
+    assert config_before["ssl_intensity"] is None
+    assert config_before["gate_strictness"] is None
+
+    view = controller.update_session_self_reinforcement(
+        session_id,
+        allow_self_reinforcement=True,
+    )
+    after = controller.sessions.load(session_id)
+
+    assert view["allow_self_reinforcement"] is True
+    assert after["config"]["ssl_intensity"] is None
+    assert after["config"]["gate_strictness"] is None
+    assert after["config"]["surface_threshold"] == config_before["surface_threshold"]
+    assert after["config"]["surface_top_k"] == config_before["surface_top_k"]
+    assert after["config"]["gate_policy_id"] == config_before["gate_policy_id"]
+    assert after["state"]["session_config"]["surface_threshold"] == (
+        state_config_before["surface_threshold"]
+    )
+    assert after["state"]["session_config"]["surface_top_k"] == (
+        state_config_before["surface_top_k"]
+    )
+    assert after["state"]["manager"]["config"] == manager_config_before
+    assert after["config"]["allow_self_reinforcement"] is True
+    assert after["state"]["session_config"]["allow_self_reinforcement"] is True
+
+
+
+def test_shadow_pressure_is_rejected_for_evaluation_sessions(tmp_path) -> None:
+    import pytest
+
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Evaluation comparison",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="evaluation",
+    )
+
+    before = controller.sessions.load(session_id)
+    with pytest.raises(ValueError, match="available only for live sessions"):
+        controller.send_turn(
+            session_id,
+            "Compare this turn.",
+            compare_without_ssl=True,
+            comparison_mode="shadow_pressure",
+        )
+    after = controller.sessions.load(session_id)
+
+    assert after["state"]["history"] == before["state"]["history"]
+    assert after["state"]["turn"] == before["state"]["turn"]
+
+
+
+def test_tightening_gate_revalidates_existing_promotions_at_use_time(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Tighten current Gate",
+        profile_id="balanced",
+        backend="fixture",
+        ssl_intensity=100,
+        gate_strictness=0,
+    )
+
+    first = controller.send_turn(
+        session_id,
+        "What important perspective could be missing?",
+    )
+    promoted = [
+        seed for seed in first["session"]["seeds"]
+        if seed["status"] == "PROMOTED"
+    ]
+    assert promoted
+    assert any(seed["current_gate_authorized"] is True for seed in promoted)
+
+    tightened = controller.update_session_controls(
+        session_id,
+        ssl_intensity=100,
+        gate_strictness=100,
+        allow_self_reinforcement=False,
+    )
+    historical_promotions = [
+        seed for seed in tightened["seeds"]
+        if seed["status"] == "PROMOTED"
+    ]
+    assert historical_promotions
+    assert all(
+        seed["current_gate_authorized"] is False
+        for seed in historical_promotions
+    )
+
+    second = controller.send_turn(
+        session_id,
+        "What important perspective could be missing again?",
+    )
+    assert second["report"]["surfaced_seed_ids"] == []
+
+
+
+def test_tightened_assisted_gate_reviews_historical_promotion(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Historical promotion review",
+        profile_id="balanced",
+        backend="fixture",
+        ssl_intensity=0,
+        gate_strictness=0,
+    )
+
+    for _ in range(3):
+        controller.ingest_sources(
+            session_id,
+            pasted_text="Alpha provides a recurring explanatory perspective.",
+        )
+
+    permissive = controller.session_view(session_id)
+    promoted = [
+        seed for seed in permissive["seeds"]
+        if seed["status"] == "PROMOTED"
+    ]
+    assert promoted
+    seed_id = promoted[0]["id"]
+
+    tightened = controller.update_session_controls(
+        session_id,
+        ssl_intensity=100,
+        gate_strictness=60,
+        allow_self_reinforcement=False,
+    )
+    seed = next(item for item in tightened["seeds"] if item["id"] == seed_id)
+
+    assert tightened["authority_profile_id"] == "assisted"
+    assert tightened["effective_gate_policy_id"] == "evidence_backed"
+    assert seed["current_gate_authorized"] is False
+    assert int(seed["occurrence_count"]) >= 3
+    assert seed_id in tightened["authority_review_seed_ids"]
+
+
+
+def test_source_summary_keeps_review_for_blocked_historical_promotion(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Runtime review agreement",
+        profile_id="balanced",
+        backend="fixture",
+        ssl_intensity=0,
+        gate_strictness=0,
+    )
+
+    for _ in range(3):
+        controller.ingest_sources(
+            session_id,
+            pasted_text="Alpha provides a recurring explanatory perspective.",
+        )
+
+    permissive = controller.session_view(session_id)
+    seed = next(item for item in permissive["seeds"] if item["status"] == "PROMOTED")
+    seed_id = seed["id"]
+
+    tightened = controller.update_session_controls(
+        session_id,
+        ssl_intensity=100,
+        gate_strictness=60,
+        allow_self_reinforcement=False,
+    )
+    assert seed_id in tightened["authority_review_seed_ids"]
+
+    summary = controller.ingest_sources(
+        session_id,
+        pasted_text="Alpha provides a recurring explanatory perspective.",
+    )
+
+    assert seed_id in summary["authority_review_seed_ids"]
+    assert seed_id in controller.session_view(session_id)["authority_review_seed_ids"]

@@ -2,7 +2,9 @@
 
 Observations are audit data, never authority. Recording a detector candidate here
 must not change seed trace, occurrence count, evidence, Gate state, or weight.
-SSL-exposed candidates are retained for audit but are never recurrence-eligible.
+Schema v1 keeps SSL-exposed candidates strictly non-recurrence-eligible. Schema
+v2 can explicitly mark an SSL-exposed observation recurrence-eligible only when
+the experimental self-reinforcement permission is recorded on that observation.
 A later clean observation may be linked to an earlier contaminated observation
 by appending a separate link record; the original observation stays immutable.
 """
@@ -14,7 +16,8 @@ from hashlib import sha256
 from typing import Any, Iterable
 
 
-OBSERVATION_SCHEMA_VERSION = 1
+OBSERVATION_SCHEMA_VERSION = 2
+SUPPORTED_OBSERVATION_SCHEMA_VERSIONS = frozenset({1, 2})
 
 
 def normalize_observation_text(text: str) -> str:
@@ -36,14 +39,34 @@ class CandidateObservation:
     surfaced_seed_ids: tuple[str, ...]
     recurrence_eligible: bool
     created_at: str
+    self_reinforcement_allowed: bool = False
     legacy_projection: bool = False
     schema_version: int = OBSERVATION_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
-        if self.ssl_exposed and self.recurrence_eligible:
-            raise ValueError("SSL-exposed observations cannot be recurrence-eligible")
-        if self.schema_version != OBSERVATION_SCHEMA_VERSION:
+        if self.schema_version not in SUPPORTED_OBSERVATION_SCHEMA_VERSIONS:
             raise ValueError("unsupported candidate-observation schema")
+        if self.schema_version == 1:
+            if self.self_reinforcement_allowed:
+                raise ValueError(
+                    "candidate-observation schema v1 does not support "
+                    "self-reinforcement permission"
+                )
+            if self.ssl_exposed and self.recurrence_eligible:
+                raise ValueError(
+                    "SSL-exposed observations cannot be recurrence-eligible "
+                    "in candidate-observation schema v1"
+                )
+            return
+        if (
+            self.ssl_exposed
+            and self.recurrence_eligible
+            and not self.self_reinforcement_allowed
+        ):
+            raise ValueError(
+                "SSL-exposed observations require explicit self-reinforcement "
+                "permission to be recurrence-eligible"
+            )
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -73,10 +96,11 @@ class CandidateObservation:
             ),
             recurrence_eligible=bool(payload.get("recurrence_eligible", False)),
             created_at=str(payload.get("created_at", "")),
-            legacy_projection=bool(payload.get("legacy_projection", False)),
-            schema_version=int(
-                payload.get("schema_version", OBSERVATION_SCHEMA_VERSION)
+            self_reinforcement_allowed=bool(
+                payload.get("self_reinforcement_allowed", False)
             ),
+            legacy_projection=bool(payload.get("legacy_projection", False)),
+            schema_version=int(payload.get("schema_version", 1)),
         )
 
 
@@ -89,7 +113,7 @@ class ObservationLink:
     schema_version: int = OBSERVATION_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
-        if self.schema_version != OBSERVATION_SCHEMA_VERSION:
+        if self.schema_version not in SUPPORTED_OBSERVATION_SCHEMA_VERSIONS:
             raise ValueError("unsupported candidate-observation link schema")
         if self.contaminated_observation_id == self.clean_observation_id:
             raise ValueError("observation recovery links must connect distinct records")
@@ -104,9 +128,7 @@ class ObservationLink:
             contaminated_observation_id=str(payload["contaminated_observation_id"]),
             clean_observation_id=str(payload["clean_observation_id"]),
             link_type=str(payload.get("link_type", "later_clean_exact_match")),
-            schema_version=int(
-                payload.get("schema_version", OBSERVATION_SCHEMA_VERSION)
-            ),
+            schema_version=int(payload.get("schema_version", 1)),
         )
 
 
@@ -134,18 +156,20 @@ class CandidateObservationLedger:
     @staticmethod
     def _observation_id(context_ref: str, index: int, raw_text: str) -> str:
         digest = sha256(
-            f"candidate-observation-v1\0{context_ref}\0{index}\0{raw_text}".encode(
-                "utf-8"
-            )
+            (
+                f"candidate-observation-v{OBSERVATION_SCHEMA_VERSION}\0"
+                f"{context_ref}\0{index}\0{raw_text}"
+            ).encode("utf-8")
         ).hexdigest()
         return f"obs_{digest[:24]}"
 
     @staticmethod
     def _link_id(contaminated_id: str, clean_id: str) -> str:
         digest = sha256(
-            f"candidate-observation-link-v1\0{contaminated_id}\0{clean_id}".encode(
-                "utf-8"
-            )
+            (
+                f"candidate-observation-link-v{OBSERVATION_SCHEMA_VERSION}\0"
+                f"{contaminated_id}\0{clean_id}"
+            ).encode("utf-8")
         ).hexdigest()
         return f"obslink_{digest[:24]}"
 
@@ -160,13 +184,15 @@ class CandidateObservationLedger:
         ssl_exposed: bool,
         surfaced_seed_ids: Iterable[str] = (),
         created_at: str,
+        allow_ssl_recurrence: bool = False,
         legacy_projection: bool = False,
     ) -> list[CandidateObservation]:
         """Append detector observations and return the records for this batch.
 
-        `ssl_exposed=True` always forces `recurrence_eligible=False`. Clean
-        observations are recurrence-eligible, but this ledger itself never
-        increments recurrence or calls the Gate.
+        SSL-exposed observations are non-recurrence by default. The explicit
+        experimental `allow_ssl_recurrence` flag records when the caller has
+        deliberately opened the self-reinforcement boundary. This ledger itself
+        never increments recurrence or calls the Gate.
         """
 
         surfaced = tuple(str(item) for item in surfaced_seed_ids)
@@ -185,8 +211,11 @@ class CandidateObservationLedger:
                 candidate_type=candidate_type,
                 ssl_exposed=ssl_exposed,
                 surfaced_seed_ids=surfaced,
-                recurrence_eligible=not ssl_exposed,
+                recurrence_eligible=(not ssl_exposed or bool(allow_ssl_recurrence)),
                 created_at=created_at,
+                self_reinforcement_allowed=bool(
+                    ssl_exposed and allow_ssl_recurrence
+                ),
                 legacy_projection=legacy_projection,
             )
             if observation.observation_id in self._observation_ids:
@@ -233,20 +262,33 @@ class CandidateObservationLedger:
     def from_dict(cls, payload: dict[str, Any] | None) -> "CandidateObservationLedger":
         if not payload:
             return cls()
-        schema_version = int(
-            payload.get("schema_version", OBSERVATION_SCHEMA_VERSION)
-        )
-        if schema_version != OBSERVATION_SCHEMA_VERSION:
+        schema_version = int(payload.get("schema_version", 1))
+        if schema_version not in SUPPORTED_OBSERVATION_SCHEMA_VERSIONS:
             raise ValueError("unsupported candidate-observation ledger schema")
-        return cls(
-            observations=(
-                CandidateObservation.from_dict(item)
-                for item in payload.get("observations", [])
-            ),
-            links=(
-                ObservationLink.from_dict(item) for item in payload.get("links", [])
-            ),
-        )
+
+        observations: list[CandidateObservation] = []
+        for raw_item in payload.get("observations", []):
+            item = dict(raw_item)
+            record_version = int(item.get("schema_version", schema_version))
+            if record_version > schema_version:
+                raise ValueError(
+                    "candidate-observation record schema is newer than ledger schema"
+                )
+            item["schema_version"] = record_version
+            observations.append(CandidateObservation.from_dict(item))
+
+        links: list[ObservationLink] = []
+        for raw_item in payload.get("links", []):
+            item = dict(raw_item)
+            record_version = int(item.get("schema_version", schema_version))
+            if record_version > schema_version:
+                raise ValueError(
+                    "candidate-observation link schema is newer than ledger schema"
+                )
+            item["schema_version"] = record_version
+            links.append(ObservationLink.from_dict(item))
+
+        return cls(observations=observations, links=links)
 
     @classmethod
     def project_legacy_turn_reports(

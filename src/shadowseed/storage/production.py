@@ -12,6 +12,7 @@ from uuid import uuid4
 
 from shadowseed.storage.integrity import (
     EVENT_FORMAT_VERSION,
+    authority_config_digest,
     authority_digest,
     canonical_json,
     event_digest,
@@ -37,6 +38,26 @@ def authority_snapshot_from_connection(connection: sqlite3.Connection) -> dict[s
     return current
 
 
+def authority_config_snapshot_from_connection(
+    connection: sqlite3.Connection,
+) -> dict[str, str]:
+    """Return Gate-configuration commitments for persisted sessions."""
+
+    rows = connection.execute(
+        "SELECT session_id, state_json FROM sessions ORDER BY session_id"
+    ).fetchall()
+    current: dict[str, str] = {}
+    for row in rows:
+        try:
+            state = json.loads(row["state_json"])
+        except json.JSONDecodeError as exc:
+            raise WorkspaceStorageError(
+                f"session {row['session_id']!r} contains invalid JSON"
+            ) from exc
+        current[str(row["session_id"])] = authority_config_digest(state)
+    return current
+
+
 def authority_snapshot_payload(snapshot: Mapping[str, str]) -> list[dict[str, str]]:
     return [
         {"session_id": session_id, "authority_digest": digest}
@@ -55,6 +76,24 @@ def authority_snapshot_from_payload(value: Any) -> dict[str, str]:
         digest = str(item.get("authority_digest") or "")
         if not session_id or len(digest) != 64:
             raise WorkspaceStorageError("ledger authority snapshot is malformed")
+        snapshot[session_id] = digest
+    return snapshot
+
+
+def authority_config_snapshot_from_payload(value: Any) -> dict[str, str]:
+    if not isinstance(value, list):
+        raise WorkspaceStorageError("ledger authority configuration snapshot is malformed")
+    snapshot: dict[str, str] = {}
+    for item in value:
+        if not isinstance(item, dict):
+            raise WorkspaceStorageError("ledger authority configuration snapshot is malformed")
+        session_id = str(item.get("session_id") or "")
+        digest = str(item.get("authority_config_digest") or "")
+        projection = item.get("authority_config")
+        if projection is not None and not isinstance(projection, dict):
+            raise WorkspaceStorageError("ledger authority configuration snapshot is malformed")
+        if not session_id or len(digest) != 64:
+            raise WorkspaceStorageError("ledger authority configuration snapshot is malformed")
         snapshot[session_id] = digest
     return snapshot
 
@@ -112,6 +151,83 @@ def expected_authority_snapshot_from_ledger(
     return expected
 
 
+def expected_authority_config_snapshot_from_ledger(
+    rows: Sequence[Mapping[str, Any]],
+) -> dict[str, str]:
+    """Replay protected Gate-configuration commitments from the ledger.
+
+    Legacy ledgers may have no configuration commitments. Those remain readable;
+    once a session is created or reconfigured by a newer runtime, its Gate
+    configuration becomes protected from that event onward.
+    """
+
+    expected: dict[str, str] = {}
+    for row in rows:
+        event_type = str(row["event_type"])
+        try:
+            payload = json.loads(str(row["payload_json"]))
+        except json.JSONDecodeError as exc:
+            raise WorkspaceStorageError("production ledger payload JSON is invalid") from exc
+
+        if event_type == "production.authority_checkpoint":
+            snapshot = payload.get("authority_config_snapshot")
+            expected = (
+                authority_config_snapshot_from_payload(snapshot)
+                if snapshot is not None
+                else {}
+            )
+            continue
+        if event_type in {"workspace.restore", "workspace.import"}:
+            snapshot = payload.get("authority_config_snapshot")
+            expected = (
+                authority_config_snapshot_from_payload(snapshot)
+                if snapshot is not None
+                else {}
+            )
+            continue
+
+        session_id = row["session_id"]
+        if event_type == "session.delete" and session_id:
+            expected.pop(str(session_id), None)
+            continue
+        if not session_id:
+            continue
+
+        digest: str | None = None
+        if event_type in {"session.create", "runtime.session_reconfigure"}:
+            candidate = payload.get("authority_config_digest")
+            if isinstance(candidate, str):
+                digest = candidate
+            if digest is None:
+                runtime_commit = payload.get("runtime_commit")
+                if isinstance(runtime_commit, dict):
+                    candidate = runtime_commit.get("authority_config_digest")
+                    if isinstance(candidate, str):
+                        digest = candidate
+        elif event_type == "runtime.session_commit":
+            candidate = payload.get("authority_config_digest")
+            if isinstance(candidate, str):
+                digest = candidate
+        elif event_type in {
+            "evidence.verify",
+            "contradiction.submit",
+            "contradiction.resolve",
+        }:
+            runtime_commit = payload.get("runtime_commit")
+            if isinstance(runtime_commit, dict):
+                candidate = runtime_commit.get("authority_config_digest")
+                if isinstance(candidate, str):
+                    digest = candidate
+
+        if digest is not None:
+            if len(digest) != 64:
+                raise WorkspaceStorageError(
+                    "ledger authority configuration digest is malformed"
+                )
+            expected[str(session_id)] = digest
+    return expected
+
+
 def verify_authority_snapshot_connection(connection: sqlite3.Connection) -> None:
     """Fail closed when mutable authority no longer matches the append-only ledger."""
 
@@ -128,6 +244,18 @@ def verify_authority_snapshot_connection(connection: sqlite3.Connection) -> None
         raise WorkspaceStorageError(
             "mutable authority snapshot diverges from the production ledger"
         )
+
+    expected_config = expected_authority_config_snapshot_from_ledger(rows)
+    if expected_config:
+        current_config = authority_config_snapshot_from_connection(connection)
+        committed_current = {
+            session_id: current_config.get(session_id)
+            for session_id in expected_config
+        }
+        if committed_current != expected_config:
+            raise WorkspaceStorageError(
+                "mutable authority configuration diverges from the production ledger"
+            )
 
 
 class ProductionSQLiteWorkspaceRepository(SQLiteWorkspaceRepository):

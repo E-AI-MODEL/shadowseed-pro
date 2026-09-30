@@ -9,7 +9,8 @@ the ``tokenize`` module. It applies:
 - path-specific allowed literals for documented Dutch input-language tokens.
 
 Scope note: the automated strict scan covers the core runtime packages
-(``shadowseed`` excluding ``benchmark/`` and ``data/``, plus ``shadowseed_agent``).
+(``shadowseed`` excluding ``benchmark/``, ``data/``, and the intentionally
+Dutch ``workbench/`` product UI, plus ``shadowseed_agent``).
 Active session suites are English. Frozen historical artifacts and explicitly
 multilingual detector fixtures may retain source-language content — see
 ``docs/migration/language-policy.md``. This test substantiates the core-runtime
@@ -25,7 +26,7 @@ import tokenize
 
 SRC = pathlib.Path(__file__).resolve().parents[1] / "src"
 CORE_ROOTS = [SRC / "shadowseed", SRC / "shadowseed_agent"]
-EXCLUDE_DIR_PARTS = {"benchmark", "data", "__pycache__"}
+EXCLUDE_DIR_PARTS = {"benchmark", "data", "workbench", "__pycache__"}
 
 # Exact phrases that must never reappear (regressions fixed under #16). Each is a
 # compiled regex so word boundaries can be enforced where a bare substring would

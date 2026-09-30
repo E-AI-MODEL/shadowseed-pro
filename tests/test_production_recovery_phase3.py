@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sqlite3
 from pathlib import Path
 
@@ -188,3 +189,101 @@ def test_same_request_id_with_different_evidence_input_fails_without_mutation(
     finally:
         connection.close()
     assert count == 1
+
+
+
+def test_import_commits_restored_gate_configuration(tmp_path: Path) -> None:
+    source = WorkbenchController(tmp_path / "source-config")
+    session_id = source.create_session(
+        title="Imported Gate config",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+        ssl_intensity=100,
+        gate_strictness=60,
+    )
+    backup = source.workspace.backup(tmp_path / "config-portable.db")
+
+    target = WorkspaceService(tmp_path / "target-config")
+    target.restore(backup)
+
+    with sqlite3.connect(target.paths.database) as connection:
+        row = connection.execute(
+            "SELECT payload_json FROM production_ledger "
+            "WHERE event_type='workspace.import' ORDER BY sequence_no DESC LIMIT 1"
+        ).fetchone()
+        assert row is not None
+        payload = json.loads(row[0])
+        snapshot = {
+            item["session_id"]: item["authority_config_digest"]
+            for item in payload["authority_config_snapshot"]
+        }
+        assert session_id in snapshot
+        assert len(snapshot[session_id]) == 64
+
+        stored = connection.execute(
+            "SELECT state_json FROM sessions WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()
+        assert stored is not None
+        state = json.loads(stored[0])
+        state["session_config"]["gate_policy_id"] = "exploratory"
+        connection.execute(
+            "UPDATE sessions SET state_json = ? WHERE session_id = ?",
+            (json.dumps(state, sort_keys=True), session_id),
+        )
+        connection.commit()
+
+    with pytest.raises(WorkspaceStorageError, match="authority configuration diverges"):
+        target.repository.verify_production_integrity()
+
+
+def test_restore_commits_restored_gate_configuration(tmp_path: Path) -> None:
+    controller = WorkbenchController(tmp_path / "restore-config")
+    session_id = controller.create_session(
+        title="Restored Gate config",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+        ssl_intensity=100,
+        gate_strictness=60,
+    )
+    backup = controller.workspace.backup(tmp_path / "config-older.db")
+    controller.update_session_controls(
+        session_id,
+        ssl_intensity=100,
+        gate_strictness=100,
+        allow_self_reinforcement=False,
+    )
+
+    controller.workspace.restore(backup)
+
+    with sqlite3.connect(controller.workspace.paths.database) as connection:
+        row = connection.execute(
+            "SELECT payload_json FROM production_ledger "
+            "WHERE event_type='workspace.restore' ORDER BY sequence_no DESC LIMIT 1"
+        ).fetchone()
+        assert row is not None
+        payload = json.loads(row[0])
+        snapshot = {
+            item["session_id"]: item["authority_config_digest"]
+            for item in payload["authority_config_snapshot"]
+        }
+        assert session_id in snapshot
+        assert len(snapshot[session_id]) == 64
+
+        stored = connection.execute(
+            "SELECT state_json FROM sessions WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()
+        assert stored is not None
+        state = json.loads(stored[0])
+        state["manager"]["config"]["min_occurrences_for_gate"] = 1
+        connection.execute(
+            "UPDATE sessions SET state_json = ? WHERE session_id = ?",
+            (json.dumps(state, sort_keys=True), session_id),
+        )
+        connection.commit()
+
+    with pytest.raises(WorkspaceStorageError, match="authority configuration diverges"):
+        controller.workspace.repository.verify_production_integrity()

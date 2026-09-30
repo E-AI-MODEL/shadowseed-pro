@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "artifact": "shadowseed_candidate_observation_ledger",
+  "authority_effect": "none",
+  "record_schema_versions_supported": [1, 2],
+  "observation": {
+    "required": [
+      "observation_id",
+      "raw_text",
+      "normalized_text",
+      "context_ref",
+      "detector_backend",
+      "candidate_type",
+      "ssl_exposed",
+      "surfaced_seed_ids",
+      "recurrence_eligible",
+      "created_at",
+      "self_reinforcement_allowed",
+      "legacy_projection",
+      "schema_version"
+    ],
+    "invariants": [
+      "schema v1 observations keep ssl_exposed observations non-recurrence-eligible",
+      "schema v2 ssl_exposed observations are recurrence-eligible only when self_reinforcement_allowed is true",
+      "recording an observation never directly changes weight, evidence, Gate state, or authority version",
+      "historical observations are immutable",
+      "later clean recovery is represented by an appended link rather than mutation"
+    ]
+  },
+  "link": {
+    "required": [
+      "link_id",
+      "contaminated_observation_id",
+      "clean_observation_id",
+      "link_type",
+      "schema_version"
+    ],
+    "default_link_type": "later_clean_exact_match"
+  }
+}

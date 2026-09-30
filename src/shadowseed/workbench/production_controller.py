@@ -119,6 +119,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
         question: str,
         *,
         compare_without_ssl: bool = False,
+        comparison_mode: str = "authorized",
         external_confirmed: bool = False,
     ) -> dict[str, Any]:
         try:
@@ -126,6 +127,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
                 session_id,
                 question,
                 compare_without_ssl=compare_without_ssl,
+                comparison_mode=comparison_mode,
                 external_confirmed=external_confirmed,
             )
         except Exception as exc:

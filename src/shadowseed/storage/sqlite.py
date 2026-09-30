@@ -18,6 +18,8 @@ from shadowseed.storage.integrity import (
     EVENT_FORMAT_VERSION,
     GENESIS_HASH,
     AnchorState,
+    authority_config_digest,
+    authority_config_projection,
     authority_digest,
     canonical_json,
     create_integrity_key,
@@ -997,7 +999,11 @@ class SQLiteWorkspaceRepository:
                         audit_epoch=self._current_epoch(connection),
                         session_id=session_id,
                         event_type="session.create",
-                        payload={"authority_digest": authority_digest(state)},
+                        payload={
+                            "authority_digest": authority_digest(state),
+                            "authority_config": authority_config_projection(state),
+                            "authority_config_digest": authority_config_digest(state),
+                        },
                         created_at=created_at,
                     )
                 connection.commit()
@@ -1025,6 +1031,58 @@ class SQLiteWorkspaceRepository:
         if cursor.rowcount != 1:
             raise KeyError(f"unknown session id: {session_id}")
         self._sync_normalized(connection, session_id, state)
+
+    def save_session_configuration(
+        self,
+        session_id: str,
+        *,
+        config: dict[str, Any],
+        state: dict[str, Any],
+        updated_at: str,
+    ) -> None:
+        """Atomically persist tester-facing configuration and runtime state."""
+
+        self.initialize()
+        _reject_secrets(config)
+        with self._connect() as connection:
+            try:
+                connection.execute("BEGIN IMMEDIATE")
+                cursor = connection.execute(
+                    "UPDATE sessions SET config_json = ?, state_json = ?, updated_at = ? "
+                    "WHERE session_id = ?",
+                    (_json(config), _json(state), updated_at, session_id),
+                )
+                if cursor.rowcount != 1:
+                    raise KeyError(f"unknown session id: {session_id}")
+                self._sync_normalized(connection, session_id, state)
+                if self._workspace_id is not None:
+                    self._append_ledger_event(
+                        connection,
+                        workspace_id=self._workspace_id,
+                        audit_epoch=self._current_epoch(connection),
+                        session_id=session_id,
+                        event_type="runtime.session_reconfigure",
+                        payload={
+                            "authority_digest": authority_digest(state),
+                            "authority_config": authority_config_projection(state),
+                            "authority_config_digest": authority_config_digest(state),
+                            "runtime_commit": minimal_runtime_commit(state),
+                        },
+                        created_at=updated_at,
+                    )
+                connection.commit()
+            except sqlite3.DatabaseError as exc:
+                connection.rollback()
+                if isinstance(exc, sqlite3.IntegrityError):
+                    raise WorkspaceStorageError(
+                        f"cannot reconfigure session: {exc}"
+                    ) from exc
+                raise
+            except Exception:
+                connection.rollback()
+                raise
+        if self._workspace_id is not None:
+            self._advance_anchor()
 
     def save_session(self, session_id: str, state: dict[str, Any], *, updated_at: str) -> None:
         self.initialize()

@@ -67,6 +67,7 @@ from shadowseed.surfacing import (
     build_chat_prompt,
     collect_eligible_promoted_seeds,
     mark_surfaced,
+    seed_threshold,
     select_cross_turn_seeds,
 )
 from shadowseed.manager import SSLManager, SeedStatus
@@ -164,6 +165,8 @@ class ShadowChatSession:
         gate_policy_id: str | None = None,
         authority_profile_id: str = "strict",
         allow_toy_embedder: bool = False,
+        revalidate_current_gate: bool = False,
+        allow_self_reinforcement: bool = False,
         model_backend: ModelBackend | None = None,
         detector_backend: DetectorBackend | None = None,
         embedding_fn: EmbedFn | None = None,
@@ -188,6 +191,8 @@ class ShadowChatSession:
         self.authority_profile_id = self.authority_runtime.profile_id.value
         self.gate_policy_id = self.authority_runtime.gate_policy_id
         self.allow_toy_embedder = allow_toy_embedder
+        self.revalidate_current_gate = bool(revalidate_current_gate)
+        self.allow_self_reinforcement = bool(allow_self_reinforcement)
         if (
             runtime_mode == "live"
             and backend != "fixture"
@@ -276,6 +281,12 @@ class ShadowChatSession:
         allowed: list[SurfacingCandidate] = []
         for similarity, seed_id, text in candidates:
             seed = self.manager.seeds[seed_id]
+            if not self.manager.current_gate_authorizes(
+                seed_id,
+                self.gate_policy_id,
+                enforce_current_gate=self.revalidate_current_gate,
+            ):
+                continue
             # Atomic point-of-use: decide and record in one step, linked to the
             # authorizing Gate event (#14). A decision cannot be used without
             # being recorded, because the record is produced here.
@@ -303,9 +314,18 @@ class ShadowChatSession:
         if not self.authority_runtime.proactive_review:
             return False
         seed = self.manager.seeds.get(seed_id)
-        if seed is None or seed.status in {SeedStatus.PROMOTED, SeedStatus.EXPIRED}:
+        if seed is None or seed.status is SeedStatus.EXPIRED:
             return False
         if self.manager.is_blocking_contradiction(seed_id):
+            return False
+        if (
+            seed.status is SeedStatus.PROMOTED
+            and self.manager.current_gate_authorizes(
+                seed_id,
+                self.gate_policy_id,
+                enforce_current_gate=self.revalidate_current_gate,
+            )
+        ):
             return False
         if self.clusterer is not None:
             cluster_id = self.seed_to_cluster.get(seed_id)
@@ -497,6 +517,12 @@ class ShadowChatSession:
         for sid, seed in self.manager.seeds.items():
             if seed.status != SeedStatus.PROMOTED:
                 continue
+            if not self.manager.current_gate_authorizes(
+                sid,
+                self.gate_policy_id,
+                enforce_current_gate=self.revalidate_current_gate,
+            ):
+                continue
             if self.clusterer is not None:
                 cid = self.seed_to_cluster.get(sid)
                 if cid is not None and self.cluster_rep.get(cid) != sid:
@@ -559,16 +585,15 @@ class ShadowChatSession:
         candidates: list[str],
         surfaced_seed_ids: list[str],
     ) -> tuple[list[str], list[str]]:
-        """Fail closed on same-turn recurrence after SSL influenced generation.
+        """Apply the configurable self-reinforcement boundary.
 
-        Once a surfaced seed is present in the prompt, provenance applies to the
-        whole generated answer. Embedding similarity can identify close
-        paraphrases but cannot prove that a semantically different candidate was
-        not derived from that seed. Live mode therefore defers every detected
-        candidate on such a turn. The next answer generated without surfaced SSL
-        context can establish recurrence independently.
+        By default, a turn that already received SSL context cannot credit its
+        own generated candidates back into recurrence or authority. Experimental
+        self-reinforcement deliberately opens that boundary: those candidates
+        are accepted and may strengthen the same memory loop on later turns.
+        Provenance remains recorded so the feedback chain stays inspectable.
         """
-        if not surfaced_seed_ids:
+        if not surfaced_seed_ids or self.allow_self_reinforcement:
             return list(candidates), []
         return [], list(candidates)
 
@@ -667,6 +692,8 @@ class ShadowChatSession:
                     last_surfaced=self.last_surfaced,
                     policy=self.surfacing_policy,
                     include_seed=_is_cluster_representative,
+                    gate_policy_id=self.gate_policy_id,
+                    enforce_current_gate=self.revalidate_current_gate,
                 )
                 if self.authority_runtime.auto_surface_when_relevant
                 else []
@@ -739,9 +766,10 @@ class ShadowChatSession:
     ) -> dict[str, Any]:
         """Observe one host-generated answer and advance the SSL pipeline.
 
-        Candidate detection runs after generation.  A turn that received SSL
-        context is handled fail-closed: detected candidates are recorded for
-        inspection but do not create recurrence or new authority-bearing state.
+        Candidate detection runs after generation. A turn that received SSL
+        context is fail-closed by default. Experimental self-reinforcement can
+        deliberately open that boundary so SSL-attributed candidates feed
+        recurrence and authority on later turns.
         """
         if self.runtime_mode != "live":
             raise ValueError("observe_turn is available only for the live SSL runtime")
@@ -758,8 +786,17 @@ class ShadowChatSession:
         turn = prepared.turn
         question = prepared.question
         final_answer = answer
+        draft_answer = answer
         surfaced = list(prepared.surfaced_seeds)
         surfaced_seed_ids = list(prepared.surfaced_seed_ids)
+        first_pass_surfaced_seed_ids = list(prepared.surfaced_seed_ids)
+        self_reinforcement_applied = False
+        self_reinforcement_seed_ids: list[str] = []
+        self_reinforcement_decisions: list[dict[str, Any]] = []
+        self_reinforcement_prompt_boundary_markers: list[dict[str, object]] = []
+        self_reinforcement_error: str | None = None
+        provisional_context_ref = f"turn:{turn}:first_pass_answer"
+        first_pass_context_ref = provisional_context_ref
 
         raw_candidates = self.detector.detect_seeds(
             {"text": final_answer}, max_seeds=self.max_seeds_per_turn
@@ -767,27 +804,17 @@ class ShadowChatSession:
         candidates, suppressed_self = self._filter_ssl_attributed_candidates(
             raw_candidates, surfaced_seed_ids
         )
-        turn_observations = self.observation_ledger.record_batch(
-            raw_candidates,
-            context_ref=f"turn:{turn}:visible_answer",
-            detector_backend=str(getattr(self.detector, "name", "unknown")),
-            detector_prompt_provenance=(
-                None
-                if getattr(self.detector, "prompt_variant", None) is None
-                else str(getattr(self.detector, "prompt_variant"))
-            ),
-            candidate_type=CandidateType.POSSIBLE_COMPLETION.value,
-            ssl_exposed=bool(surfaced_seed_ids),
-            surfaced_seed_ids=surfaced_seed_ids,
-            created_at=self.manager._now_iso(),
-        )
         occurrence_before = {
             seed_id: seed.occurrence_count for seed_id, seed in self.manager.seeds.items()
         }
         origin = SeedOrigin(
             candidate_type=CandidateType.POSSIBLE_COMPLETION,
-            detection_basis="visible_answer_non_ssl_attributed",
-            context_ref=f"turn:{turn}:visible_answer",
+            detection_basis=(
+                "first_pass_ssl_exposed_self_reinforcement_allowed"
+                if first_pass_surfaced_seed_ids and self.allow_self_reinforcement
+                else "first_pass_answer"
+            ),
+            context_ref=provisional_context_ref,
         )
         ingest = self.manager.ingest_detection_candidates(
             candidates,
@@ -838,6 +865,185 @@ class ShadowChatSession:
             if self._gate_review_required(seed_id, event):
                 authority_review_seed_ids.append(seed_id)
 
+        # Experimental bounded same-turn feedback pass. A newly promoted seed
+        # may immediately participate in one revised answer to the *same* user
+        # question. This is intentionally capped at one pass: the revised answer
+        # is not detected again, preventing an unbounded recursive generation loop.
+        if (
+            self.allow_self_reinforcement
+            and promoted_now
+            and self.surfacing_policy.surface_top_k != 0
+        ):
+            question_embedding = self.manager.get_embedding(question)
+            refinement_candidates: list[SurfacingCandidate] = []
+            for seed_id in promoted_now:
+                seed = self.manager.seeds.get(seed_id)
+                if seed is None or seed.status != SeedStatus.PROMOTED:
+                    continue
+                if self.clusterer is not None:
+                    cluster_id = self.seed_to_cluster.get(seed_id)
+                    if cluster_id is not None and self.cluster_rep.get(cluster_id) != seed_id:
+                        continue
+                similarity = float(np.dot(question_embedding, seed.embedding))
+                if similarity >= seed_threshold(
+                    turn,
+                    seed_id,
+                    self.surfacing_policy,
+                    self.last_surfaced,
+                ):
+                    refinement_candidates.append((similarity, seed_id, seed.text))
+
+            already_surfaced_count = len(set(surfaced_seed_ids))
+            remaining_boundary_slots = max(
+                0,
+                DEFAULT_PROMPT_BOUNDARY.max_seeds - already_surfaced_count,
+            )
+            configured_refinement_limit = self.surfacing_policy.surface_top_k
+            remaining_policy_slots = (
+                remaining_boundary_slots
+                if configured_refinement_limit is None
+                else max(
+                    0,
+                    configured_refinement_limit - already_surfaced_count,
+                )
+            )
+            refinement_limit = min(
+                remaining_boundary_slots,
+                remaining_policy_slots,
+            )
+            selected_refinement = select_cross_turn_seeds(
+                refinement_candidates,
+                refinement_limit,
+            )
+            influence_before = len(self.influence_records)
+            refinement_last_surfaced_before = deepcopy(self.last_surfaced)
+            base_surfaced = list(surfaced)
+            base_surfaced_seed_ids = list(surfaced_seed_ids)
+            allowed_refinement = self._contract_filter(selected_refinement)
+            self_reinforcement_decisions = [
+                record.__dict__.copy()
+                for record in self.influence_records[influence_before:]
+            ]
+
+            if allowed_refinement:
+                combined: list[tuple[str, str]] = list(zip(surfaced_seed_ids, surfaced))
+                known_ids = {seed_id for seed_id, _text in combined}
+                for _similarity, seed_id, text in allowed_refinement:
+                    if seed_id not in known_ids:
+                        combined.append((seed_id, text))
+                        known_ids.add(seed_id)
+
+                bounded_texts, self_reinforcement_prompt_boundary_markers = (
+                    apply_prompt_boundary([text for _seed_id, text in combined])
+                )
+                bounded_pairs = combined[: len(bounded_texts)]
+                if bounded_pairs:
+                    surfaced_seed_ids = [seed_id for seed_id, _text in bounded_pairs]
+                    surfaced = list(bounded_texts)
+                    self_reinforcement_seed_ids = [
+                        seed_id
+                        for _similarity, seed_id, _text in allowed_refinement
+                        if seed_id in set(surfaced_seed_ids)
+                    ]
+                    mark_surfaced(
+                        self.last_surfaced,
+                        [
+                            item
+                            for item in allowed_refinement
+                            if item[1] in set(self_reinforcement_seed_ids)
+                        ],
+                        turn,
+                    )
+                    try:
+                        final_answer = self.model.generate(
+                            build_chat_prompt(
+                                self.history,
+                                question,
+                                surfaced,
+                                response_language=(
+                                    "the same language as the user's current question"
+                                ),
+                            ),
+                            {
+                                "question": question,
+                                "turn": turn,
+                                "baseline_answer": draft_answer,
+                                "self_reinforcement": True,
+                            },
+                            "ssl",
+                            surfaced,
+                        )
+                        self_reinforcement_applied = True
+                    except Exception as exc:
+                        del self.influence_records[influence_before:]
+                        self.last_surfaced = refinement_last_surfaced_before
+                        surfaced = base_surfaced
+                        surfaced_seed_ids = base_surfaced_seed_ids
+                        self_reinforcement_seed_ids = []
+                        self_reinforcement_decisions = []
+                        self_reinforcement_prompt_boundary_markers = []
+                        self_reinforcement_error = (
+                            f"{type(exc).__name__}: {exc}"
+                        )
+                        final_answer = draft_answer
+
+        first_pass_context_ref = (
+            f"turn:{turn}:draft_answer"
+            if self_reinforcement_applied
+            else f"turn:{turn}:visible_answer"
+        )
+        first_pass_detection_basis = (
+            "draft_answer_ssl_exposed_self_reinforcement_allowed"
+            if self_reinforcement_applied and first_pass_surfaced_seed_ids
+            else (
+                "draft_answer_self_reinforcement_enabled"
+                if self_reinforcement_applied
+                else (
+                    "visible_answer_ssl_exposed_self_reinforcement_allowed"
+                    if first_pass_surfaced_seed_ids and self.allow_self_reinforcement
+                    else "visible_answer_non_ssl_attributed"
+                )
+            )
+        )
+        for seed_id in born:
+            seed = self.manager.seeds.get(seed_id)
+            if (
+                seed is not None
+                and seed.origin is not None
+                and seed.origin.context_ref == provisional_context_ref
+            ):
+                seed.origin.context_ref = first_pass_context_ref
+                seed.origin.detection_basis = first_pass_detection_basis
+                for event in reversed(self.manager.event_log):
+                    if event.event_type != "created" or event.seed_id != seed_id:
+                        continue
+                    event_origin = event.detail.get("origin")
+                    if (
+                        isinstance(event_origin, dict)
+                        and event_origin.get("context_ref") == provisional_context_ref
+                    ):
+                        event_origin["context_ref"] = first_pass_context_ref
+                        event_origin["detection_basis"] = first_pass_detection_basis
+                    break
+
+        turn_observations = self.observation_ledger.record_batch(
+            raw_candidates,
+            context_ref=first_pass_context_ref,
+            detector_backend=str(getattr(self.detector, "name", "unknown")),
+            detector_prompt_provenance=(
+                None
+                if getattr(self.detector, "prompt_variant", None) is None
+                else str(getattr(self.detector, "prompt_variant"))
+            ),
+            candidate_type=CandidateType.POSSIBLE_COMPLETION.value,
+            ssl_exposed=bool(first_pass_surfaced_seed_ids),
+            surfaced_seed_ids=first_pass_surfaced_seed_ids,
+            created_at=self.manager._now_iso(),
+            allow_ssl_recurrence=bool(
+                first_pass_surfaced_seed_ids and self.allow_self_reinforcement
+            ),
+        )
+
         self.history.append((question, final_answer))
         self._turn += 1
         report = {
@@ -852,9 +1058,20 @@ class ShadowChatSession:
             "selected_seed_ids": list(prepared.selected_seed_ids),
             "influence_decisions": [
                 dict(item) for item in prepared.influence_decisions
-            ],
+            ] + self_reinforcement_decisions,
             "detected_candidates": raw_candidates,
             "suppressed_self_attributed_candidates": suppressed_self,
+            "self_reinforcement_enabled": self.allow_self_reinforcement,
+            "self_reinforcement_applied": self_reinforcement_applied,
+            "self_reinforcement_seed_ids": self_reinforcement_seed_ids,
+            "self_reinforcement_draft_answer": (
+                draft_answer if self_reinforcement_applied else None
+            ),
+            "self_reinforcement_error": self_reinforcement_error,
+            "first_pass_context_ref": first_pass_context_ref,
+            "self_reinforcement_prompt_boundary_markers": (
+                self_reinforcement_prompt_boundary_markers
+            ),
             "candidate_observations": [
                 observation.to_dict() for observation in turn_observations
             ],
@@ -911,6 +1128,8 @@ class ShadowChatSession:
             last_surfaced=self.last_surfaced,
             policy=self.surfacing_policy,
             include_seed=_is_cluster_representative,
+            gate_policy_id=self.gate_policy_id,
+            enforce_current_gate=self.revalidate_current_gate,
         )
         selected = select_cross_turn_seeds(eligible, self.surfacing_policy.surface_top_k)
 
@@ -1284,6 +1503,8 @@ class ShadowChatSession:
                 "gate_policy_id": self.gate_policy_id,
                 "authority_profile_id": self.authority_profile_id,
                 "allow_toy_embedder": self.allow_toy_embedder,
+                "revalidate_current_gate": self.revalidate_current_gate,
+                "allow_self_reinforcement": self.allow_self_reinforcement,
             },
             "contract": asdict(self.contract),
             "manager": self.manager.to_dict(),

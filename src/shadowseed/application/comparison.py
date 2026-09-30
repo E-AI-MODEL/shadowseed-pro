@@ -60,7 +60,15 @@ class ComparisonService:
                 )
             control = str(control_value)
             ssl_answer = str(report.get("comparison_ssl_answer", report.get("answer", "")))
-            source_labels = {"control": "ssl_off", "ssl": "ssl_on"}
+            comparison_mode = str(report.get("comparison_mode", "authorized"))
+            source_labels = {
+                "control": "ssl_off",
+                "ssl": (
+                    "shadow_pressure"
+                    if comparison_mode == "shadow_pressure"
+                    else "ssl_on"
+                ),
+            }
         else:
             baseline_value = report.get("baseline_answer")
             if baseline_value is None:
@@ -86,8 +94,16 @@ class ComparisonService:
             "candidate_a": candidate_a,
             "candidate_b": candidate_b,
             "same_output": control == ssl_answer,
-            "surfaced_seed_ids": list(report.get("surfaced_seed_ids", [])),
-            "ssl_influence_observed": bool(report.get("surfaced_seed_ids", [])),
+            "surfaced_seed_ids": list(
+                report.get("comparison_seed_ids", report.get("surfaced_seed_ids", []))
+            ),
+            "comparison_mode": str(report.get("comparison_mode", "authorized")),
+            "shadow_pressure_candidates": list(
+                report.get("comparison_shadow_pressure_candidates", [])
+            ),
+            "ssl_influence_observed": bool(
+                report.get("comparison_seed_ids", report.get("surfaced_seed_ids", []))
+            ),
             "runtime_mode": runtime_mode,
             "comparison_kind": (
                 report.get("comparison_kind")
@@ -95,10 +111,15 @@ class ComparisonService:
                 else "legacy_evaluation_control"
             ),
             "blinded": bool(blinded),
-            "interpretation": (
-                "A paired comparison attributes a difference to SSL only when an authorized "
-                "seed actually surfaced. If no seed surfaced, any textual difference may be "
-                "ordinary model nondeterminism."
+            "interpretation": str(
+                report.get(
+                    "comparison_interpretation",
+                    (
+                        "A paired comparison attributes a difference to authorized SSL only "
+                        "when an authorized seed actually surfaced. If no treatment seed was "
+                        "present, any textual difference may be ordinary model nondeterminism."
+                    ),
+                )
             ),
         }
         if not blinded:

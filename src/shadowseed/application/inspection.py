@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from shadowseed.application.sessions import SessionService
+from shadowseed.manager import snapshot_meets_current_gate
 
 
 _STATUS_EXPLANATIONS = {
@@ -110,23 +111,53 @@ class InspectionService:
             for item in manager.get("contradiction_records", [])
             if str(item.get("status", "open")).lower() == "open"
         }
-        decorated = [
-            {
-                **seed,
-                "blocking": str(seed.get("id")) in blocking_ids,
-                "plain_explanation": explain_seed(
-                    seed, blocking=str(seed.get("id")) in blocking_ids
-                ),
-            }
-            for seed in seeds
-        ]
+        manager_config = dict(manager.get("config", {}))
+        decorated = []
+        for seed in seeds:
+            seed_id = str(seed.get("id"))
+            blocking = seed_id in blocking_ids
+            revalidate_current_gate = bool(
+                session_config.get(
+                    "revalidate_current_gate",
+                    persisted_config.get("revalidate_current_gate", False),
+                )
+            )
+            current_gate_authorized = (
+                snapshot_meets_current_gate(
+                    seed,
+                    manager_config,
+                    effective_gate_policy_id,
+                    blocking=blocking,
+                )
+                if revalidate_current_gate
+                else (
+                    str(seed.get("status", "")).upper() == "PROMOTED"
+                    and not blocking
+                )
+            )
+            plain_explanation = explain_seed(seed, blocking=blocking)
+            if (
+                str(seed.get("status", "")).upper() == "PROMOTED"
+                and not current_gate_authorized
+            ):
+                plain_explanation += (
+                    " It was promoted under an earlier Gate state, but the current "
+                    "Gate no longer authorizes point-of-use influence."
+                )
+            decorated.append(
+                {
+                    **seed,
+                    "blocking": blocking,
+                    "current_gate_authorized": current_gate_authorized,
+                    "plain_explanation": plain_explanation,
+                }
+            )
 
         review_seed_ids: list[str] = []
         if (
             authority_profile_id == "assisted"
             and effective_gate_policy_id == "evidence_backed"
         ):
-            manager_config = dict(manager.get("config", {}))
             recurrence_threshold = int(manager_config.get("min_occurrences_for_gate", 3))
             seed_to_cluster = {
                 str(key): int(value)
@@ -146,7 +177,8 @@ class InspectionService:
                 )
                 if (
                     seed_id not in blocking_ids
-                    and status not in {"PROMOTED", "EXPIRED"}
+                    and status != "EXPIRED"
+                    and not bool(seed.get("current_gate_authorized", False))
                     and is_representative
                     and occurrence_count >= recurrence_threshold
                 ):
@@ -161,6 +193,19 @@ class InspectionService:
             "runtime_mode": runtime_mode,
             "authority_profile_id": authority_profile_id,
             "effective_gate_policy_id": effective_gate_policy_id,
+            "ssl_intensity": (
+                int(persisted_config["ssl_intensity"])
+                if persisted_config.get("ssl_intensity") is not None
+                else None
+            ),
+            "gate_strictness": (
+                int(persisted_config["gate_strictness"])
+                if persisted_config.get("gate_strictness") is not None
+                else None
+            ),
+            "allow_self_reinforcement": bool(
+                persisted_config.get("allow_self_reinforcement", False)
+            ),
             "authority_review_seed_ids": review_seed_ids,
             "created_at": stored["created_at"],
             "updated_at": stored["updated_at"],
@@ -174,12 +219,24 @@ class InspectionService:
         seed = self.sessions.inspect_seed(session_id, seed_id)
         session = self.session_view(session_id)
         review_ids = {str(item) for item in session.get("authority_review_seed_ids", [])}
+        decorated = next(
+            (
+                dict(item)
+                for item in session.get("seeds", [])
+                if str(item.get("id")) == str(seed_id)
+            ),
+            {},
+        )
+        merged = {**seed, **decorated}
         return {
-            **seed,
+            **merged,
             "authority_profile_id": session.get("authority_profile_id", "strict"),
             "effective_gate_policy_id": session.get("effective_gate_policy_id"),
             "review_required": str(seed_id) in review_ids,
-            "plain_explanation": explain_seed(seed, blocking=bool(seed.get("blocking"))),
+            "plain_explanation": str(
+                merged.get("plain_explanation")
+                or explain_seed(merged, blocking=bool(merged.get("blocking")))
+            ),
             "timeline": self.seed_timeline(session_id, seed_id),
         }
 

@@ -17,6 +17,7 @@ from shadowseed.application.limits import (
 )
 from shadowseed.application.workspace import WorkspaceEraseError, WorkspaceService
 from shadowseed.workbench.controller import WorkbenchController
+from shadowseed.workbench.production_controller import ProductionLocalWorkbenchController
 
 
 def _live_seed(controller: WorkbenchController) -> tuple[str, str]:
@@ -163,3 +164,23 @@ def test_full_workspace_erase_reports_incomplete_integrity_cleanup(
     assert caught.value.component_status["integrity_material"] == "remaining"
     assert not root.exists()
     assert integrity_dir.exists()
+
+
+
+def test_production_controller_forwards_comparison_mode(tmp_path: Path) -> None:
+    controller = ProductionLocalWorkbenchController(tmp_path / "production-workspace")
+    session_id = controller.create_session(
+        title="Comparison mode production",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+    )
+
+    result = controller.send_turn(
+        session_id,
+        "What should this production path verify?",
+        compare_without_ssl=False,
+        comparison_mode="authorized",
+    )
+
+    assert result["session"]["turn"] == 1

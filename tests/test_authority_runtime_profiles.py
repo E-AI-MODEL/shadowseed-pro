@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 
 from shadowseed.chat import ShadowChatSession
+from shadowseed.core_config import SSLCoreConfig
 from shadowseed.manager import SeedStatus
 
 
@@ -360,3 +363,291 @@ def test_expired_cluster_representative_is_replaced_by_live_redetection() -> Non
 
     assert promoted is not None
     assert session.manager.seeds[replacement_id].status is SeedStatus.PROMOTED
+
+
+
+def test_self_reinforcement_toggle_controls_ssl_attributed_recurrence() -> None:
+    def make(enabled: bool) -> ShadowChatSession:
+        return ShadowChatSession(
+            backend="fixture",
+            runtime_mode="live",
+            authority_profile_id="autonomous",
+            embedding_backend="lexical",
+            detector_backend=_NearDuplicateDetector(),
+            embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+            core_config=SSLCoreConfig(
+                min_occurrences_for_gate=1,
+                promotion_threshold=0.2,
+            ),
+            surface_threshold=0.0,
+            early_turn_margin=0.0,
+            allow_self_reinforcement=enabled,
+        )
+
+    guarded = make(False)
+    open_loop = make(True)
+
+    for session in (guarded, open_loop):
+        first = session.observe_source_text(
+            "Initial independent observation.",
+            context_ref="source:self-loop:instance:first:chunk:00000",
+        )
+        assert first["promoted_this_observation"]
+        seed = next(iter(session.manager.seeds.values()))
+        assert seed.status is SeedStatus.PROMOTED
+
+        prepared = session.prepare_turn("Alpha explanatory boundary")
+        assert prepared.surfaced_seed_ids
+        report = session.observe_turn(
+            prepared,
+            "Alpha identifies a missing explanatory boundary.",
+        )
+        assert report["surfaced_seed_ids"]
+
+    guarded_seed = next(iter(guarded.manager.seeds.values()))
+    open_seed = next(iter(open_loop.manager.seeds.values()))
+
+    assert guarded_seed.occurrence_count == 1
+    assert open_seed.occurrence_count == 2
+    assert guarded.turn_reports[-1]["suppressed_self_attributed_candidates"]
+    assert guarded.turn_reports[-1]["self_reinforcement_enabled"] is False
+    assert open_loop.turn_reports[-1]["suppressed_self_attributed_candidates"] == []
+    assert open_loop.turn_reports[-1]["self_reinforcement_enabled"] is True
+
+    guarded_observation = guarded.turn_reports[-1]["candidate_observations"][0]
+    open_observation = open_loop.turn_reports[-1]["candidate_observations"][0]
+    assert guarded_observation["ssl_exposed"] is True
+    assert guarded_observation["recurrence_eligible"] is False
+    assert guarded_observation["self_reinforcement_allowed"] is False
+    assert open_observation["ssl_exposed"] is True
+    assert open_observation["recurrence_eligible"] is True
+    assert open_observation["self_reinforcement_allowed"] is True
+
+
+
+def test_open_gate_self_reinforcement_can_refine_the_same_visible_turn() -> None:
+    def make(enabled: bool) -> ShadowChatSession:
+        return ShadowChatSession(
+            backend="fixture",
+            runtime_mode="live",
+            authority_profile_id="autonomous",
+            embedding_backend="lexical",
+            detector_backend=_NearDuplicateDetector(),
+            embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+            core_config=SSLCoreConfig(
+                min_occurrences_for_gate=1,
+                promotion_threshold=0.2,
+            ),
+            surface_threshold=0.0,
+            early_turn_margin=0.0,
+            resurface_margin=0.0,
+            allow_self_reinforcement=enabled,
+        )
+
+    guarded = make(False).turn("Which explanatory boundary matters?")
+    feedback = make(True).turn("Which explanatory boundary matters?")
+
+    assert guarded["promoted_this_turn"]
+    assert guarded["self_reinforcement_enabled"] is False
+    assert guarded["self_reinforcement_applied"] is False
+    assert guarded["self_reinforcement_draft_answer"] is None
+    assert guarded["surfaced_seed_ids"] == []
+
+    assert feedback["promoted_this_turn"]
+    assert feedback["self_reinforcement_enabled"] is True
+    assert feedback["self_reinforcement_applied"] is True
+    assert feedback["self_reinforcement_seed_ids"]
+    assert feedback["self_reinforcement_draft_answer"]
+    assert feedback["surfaced_seed_ids"]
+    assert "SSL-guided revision:" in feedback["answer"]
+
+
+
+class _RefinementFailingModel:
+    name = "refinement-failing-test"
+
+    def generate(self, _prompt, scenario, _mode, _ssl_seeds):
+        if scenario.get("self_reinforcement"):
+            raise RuntimeError("refinement unavailable")
+        return "Alpha identifies a missing explanatory boundary."
+
+
+def test_same_turn_refinement_uses_draft_specific_provenance() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="autonomous",
+        embedding_backend="lexical",
+        detector_backend=_NearDuplicateDetector(),
+        embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+        core_config=SSLCoreConfig(
+            min_occurrences_for_gate=1,
+            promotion_threshold=0.2,
+        ),
+        surface_threshold=0.0,
+        early_turn_margin=0.0,
+        resurface_margin=0.0,
+        allow_self_reinforcement=True,
+    )
+
+    report = session.turn("Which explanatory boundary matters?")
+
+    assert report["self_reinforcement_applied"] is True
+    assert report["first_pass_context_ref"].endswith(":draft_answer")
+    assert report["candidate_observations"]
+    assert all(
+        item["context_ref"].endswith(":draft_answer")
+        for item in report["candidate_observations"]
+    )
+    assert any(
+        seed.origin is not None
+        and seed.origin.context_ref is not None
+        and seed.origin.context_ref.endswith(":draft_answer")
+        for seed in session.manager.seeds.values()
+    )
+    created_events = [
+        event
+        for event in session.manager.event_log
+        if event.event_type == "created" and isinstance(event.detail.get("origin"), dict)
+    ]
+    assert created_events
+    assert all(
+        str(event.detail["origin"].get("context_ref", "")).endswith(":draft_answer")
+        for event in created_events
+    )
+
+
+def test_refinement_failure_finalizes_draft_and_keeps_session_usable() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="autonomous",
+        embedding_backend="lexical",
+        detector_backend=_NearDuplicateDetector(),
+        embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+        core_config=SSLCoreConfig(
+            min_occurrences_for_gate=1,
+            promotion_threshold=0.2,
+        ),
+        surface_threshold=0.0,
+        early_turn_margin=0.0,
+        resurface_margin=0.0,
+        allow_self_reinforcement=True,
+        model_backend=_RefinementFailingModel(),
+    )
+
+    report = session.turn("Which explanatory boundary matters?")
+
+    assert report["answer"] == "Alpha identifies a missing explanatory boundary."
+    assert report["self_reinforcement_applied"] is False
+    assert report["self_reinforcement_error"] == (
+        "RuntimeError: refinement unavailable"
+    )
+    assert report["surfaced_seed_ids"] == []
+    assert session.history == [
+        (
+            "Which explanatory boundary matters?",
+            "Alpha identifies a missing explanatory boundary.",
+        )
+    ]
+    assert session._pending_live_turn is None
+
+    prepared = session.prepare_turn("Can the session continue?")
+    session.abort_turn(prepared)
+
+
+
+def test_refinement_audit_is_capped_before_contract_filter() -> None:
+    source = Path("src/shadowseed/chat.py").read_text(encoding="utf-8")
+
+    boundary = source.index("remaining_boundary_slots = max(")
+    selection = source.index("selected_refinement = select_cross_turn_seeds(", boundary)
+    influence = source.index("influence_before = len(self.influence_records)", selection)
+
+    assert boundary < selection < influence
+    refinement_block = source[boundary - 160:influence]
+    assert "already_surfaced_count = len(set(surfaced_seed_ids))" in refinement_block
+    assert "DEFAULT_PROMPT_BOUNDARY.max_seeds - already_surfaced_count" in refinement_block
+    assert "configured_refinement_limit - already_surfaced_count" in refinement_block
+    assert "refinement_limit = min(" in refinement_block
+
+
+
+def test_skipped_refinement_keeps_visible_answer_provenance() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        embedding_backend="lexical",
+        detector_backend=_NearDuplicateDetector(),
+        embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+        authority_profile_id="strict",
+        allow_self_reinforcement=True,
+    )
+
+    report = session.turn("Which boundary matters?")
+
+    assert report["self_reinforcement_applied"] is False
+    assert report["first_pass_context_ref"].endswith(":visible_answer")
+    assert report["candidate_observations"]
+    assert all(
+        item["context_ref"].endswith(":visible_answer")
+        for item in report["candidate_observations"]
+    )
+
+
+def test_failed_refinement_keeps_visible_answer_provenance() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="autonomous",
+        embedding_backend="lexical",
+        detector_backend=_NearDuplicateDetector(),
+        embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+        core_config=SSLCoreConfig(
+            min_occurrences_for_gate=1,
+            promotion_threshold=0.2,
+        ),
+        surface_threshold=0.0,
+        early_turn_margin=0.0,
+        resurface_margin=0.0,
+        allow_self_reinforcement=True,
+        model_backend=_RefinementFailingModel(),
+    )
+
+    report = session.turn("Which explanatory boundary matters?")
+
+    assert report["self_reinforcement_applied"] is False
+    assert report["first_pass_context_ref"].endswith(":visible_answer")
+    assert report["candidate_observations"]
+    assert all(
+        item["context_ref"].endswith(":visible_answer")
+        for item in report["candidate_observations"]
+    )
+
+
+
+def test_visible_first_pass_creation_event_matches_observation_provenance() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        embedding_backend="lexical",
+        detector_backend=_NearDuplicateDetector(),
+        embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+        authority_profile_id="strict",
+        allow_self_reinforcement=True,
+    )
+
+    report = session.turn("Which boundary matters?")
+    assert report["self_reinforcement_applied"] is False
+    assert report["first_pass_context_ref"].endswith(":visible_answer")
+
+    created_events = [
+        event
+        for event in session.manager.event_log
+        if event.event_type == "created" and isinstance(event.detail.get("origin"), dict)
+    ]
+    assert created_events
+    assert all(
+        str(event.detail["origin"].get("context_ref", "")).endswith(":visible_answer")
+        for event in created_events
+    )

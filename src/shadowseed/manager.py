@@ -33,6 +33,7 @@ from shadowseed.gate.contradictions import (
     ContradictionRecord,
     ContradictionStatus,  # noqa: F401 - re-exported for compatibility
 )
+from shadowseed.gate.current_authority import snapshot_meets_current_gate
 from shadowseed.gate.events import (
     ContradictionState,
     GateDecision,
@@ -71,6 +72,7 @@ if TYPE_CHECKING:
 
 
 DEFAULT_CONFIG = SSLCoreConfig()
+
 
 
 class SSLManager:
@@ -226,6 +228,28 @@ class SSLManager:
             changes["contradiction_score"] = contradiction_score
         if changes:
             seed._write_authority(changes)
+
+    def current_gate_authorizes(
+        self,
+        seed_id: str,
+        policy_id: str | None,
+        *,
+        enforce_current_gate: bool = False,
+    ) -> bool:
+        """Return historical authorization, optionally rechecked against today's Gate."""
+
+        seed = self._seeds[seed_id]
+        if not enforce_current_gate:
+            return (
+                seed.status == SeedStatus.PROMOTED
+                and not self.is_blocking_contradiction(seed_id)
+            )
+        return snapshot_meets_current_gate(
+            seed.to_dict(),
+            self.config.to_dict(),
+            policy_id,
+            blocking=self.is_blocking_contradiction(seed_id),
+        )
 
     @property
     def contradiction_records(self) -> list[ContradictionRecord]:

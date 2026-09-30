@@ -249,6 +249,8 @@ def collect_eligible_promoted_seeds(
     last_surfaced: Mapping[str, int],
     policy: SurfacingPolicy,
     include_seed: Callable[[str], bool] | None = None,
+    gate_policy_id: str | None = None,
+    enforce_current_gate: bool = False,
 ) -> list[SurfacingCandidate]:
     """Collect promoted, earlier-born seeds that clear the current threshold."""
 
@@ -256,6 +258,15 @@ def collect_eligible_promoted_seeds(
     eligible: list[SurfacingCandidate] = []
     for seed_id, seed in manager.seeds.items():
         if seed.status != SeedStatus.PROMOTED:
+            continue
+        if (
+            gate_policy_id is not None
+            and not manager.current_gate_authorizes(
+                seed_id,
+                gate_policy_id,
+                enforce_current_gate=enforce_current_gate,
+            )
+        ):
             continue
         if born_turn.get(seed_id, turn) >= turn:
             continue

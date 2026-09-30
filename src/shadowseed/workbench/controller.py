@@ -106,6 +106,101 @@ class WorkbenchController:
         return "sentence-transformers"
 
     @staticmethod
+    def ssl_intensity_settings(percent: int | float) -> dict[str, float | int]:
+        """Map 0-100% SSL influence to surfacing settings without weakening authority."""
+
+        value = max(0.0, min(100.0, float(percent)))
+        if value == 0.0:
+            return {
+                "ssl_intensity": 0,
+                "surface_threshold": 1.0,
+                "surface_top_k": 0,
+                "early_turn_margin": 0.0,
+                "resurface_margin": 0.0,
+            }
+        ratio = value / 100.0
+        return {
+            "ssl_intensity": int(round(value)),
+            "surface_threshold": round(0.65 - (0.45 * ratio), 3),
+            "surface_top_k": 1 if value <= 40.0 else (2 if value <= 80.0 else 3),
+            "early_turn_margin": round(0.20 - (0.15 * ratio), 3),
+            "resurface_margin": round(0.25 - (0.15 * ratio), 3),
+        }
+
+    @staticmethod
+    def gate_strictness_settings(percent: int | float) -> dict[str, Any]:
+        """Map 0-100% Gate strictness onto the canonical Validation Gate."""
+
+        value = max(0.0, min(100.0, float(percent)))
+        common: dict[str, Any] = {"gate_strictness": int(round(value))}
+
+        if value <= 10.0:
+            return {
+                **common,
+                "authority_profile_id": "autonomous",
+                "gate_policy_id": "exploratory",
+                "min_occurrences_for_gate": 1,
+                "min_evidence_for_gate": 0,
+                "min_trace_for_gate": 0.0,
+                "promotion_threshold": 0.2,
+                "validation_increment": 0.2,
+            }
+        if value <= 30.0:
+            return {
+                **common,
+                "authority_profile_id": "autonomous",
+                "gate_policy_id": "exploratory",
+                "min_occurrences_for_gate": 2,
+                "min_evidence_for_gate": 0,
+                "min_trace_for_gate": 0.0,
+                "promotion_threshold": 0.2,
+                "validation_increment": 0.2,
+            }
+        if value <= 50.0:
+            return {
+                **common,
+                "authority_profile_id": "autonomous",
+                "gate_policy_id": "exploratory",
+                "min_occurrences_for_gate": 3,
+                "min_evidence_for_gate": 0,
+                "min_trace_for_gate": 0.0,
+                "promotion_threshold": 0.4,
+                "validation_increment": 0.2,
+            }
+        if value <= 70.0:
+            return {
+                **common,
+                "authority_profile_id": "assisted",
+                "gate_policy_id": "evidence_backed",
+                "min_occurrences_for_gate": 3,
+                "min_evidence_for_gate": 1,
+                "min_trace_for_gate": 0.0,
+                "promotion_threshold": 0.2,
+                "validation_increment": 0.2,
+            }
+        if value < 100.0:
+            return {
+                **common,
+                "authority_profile_id": "assisted",
+                "gate_policy_id": "evidence_backed",
+                "min_occurrences_for_gate": 3,
+                "min_evidence_for_gate": 2 if value <= 85.0 else 3,
+                "min_trace_for_gate": 0.0,
+                "promotion_threshold": 0.4 if value <= 85.0 else 0.6,
+                "validation_increment": 0.2,
+            }
+        return {
+            **common,
+            "authority_profile_id": "strict",
+            "gate_policy_id": "legacy_evidence_required",
+            "min_occurrences_for_gate": 4,
+            "min_evidence_for_gate": 3,
+            "min_trace_for_gate": 0.5,
+            "promotion_threshold": 0.5,
+            "validation_increment": 0.5,
+        }
+
+    @staticmethod
     def discover_models(backend: str) -> list[str]:
         """Discover locally available models without changing provider state."""
 
@@ -133,8 +228,18 @@ class WorkbenchController:
         embedding_model: str | None = None,
         allow_toy_embedder: bool = False,
         external_confirmed: bool = False,
+        ssl_intensity: int | float | None = None,
+        gate_strictness: int | float | None = None,
+        allow_self_reinforcement: bool = False,
     ) -> str:
         resolved_embedding = embedding_backend or self.default_embedding_backend(backend)
+        gate_settings = (
+            self.gate_strictness_settings(gate_strictness)
+            if gate_strictness is not None
+            else {}
+        )
+        if "authority_profile_id" in gate_settings:
+            authority_profile_id = str(gate_settings.pop("authority_profile_id"))
         authority_profile = get_authority_profile(authority_profile_id)
         self._validate_backend(
             backend,
@@ -144,6 +249,10 @@ class WorkbenchController:
             allow_toy_embedder=allow_toy_embedder,
             external_confirmed=external_confirmed,
         )
+        config_overrides: dict[str, Any] = {}
+        if ssl_intensity is not None:
+            config_overrides.update(self.ssl_intensity_settings(ssl_intensity))
+        config_overrides.update(gate_settings)
         return self.sessions.create_session(
             title=title,
             profile_id=profile_id,
@@ -153,10 +262,82 @@ class WorkbenchController:
                 embedding_backend=resolved_embedding,
                 embedding_model=embedding_model or None,
                 allow_toy_embedder=allow_toy_embedder,
+                revalidate_current_gate=gate_strictness is not None,
+                allow_self_reinforcement=bool(allow_self_reinforcement),
             ),
             backend=backend,
             model_id=model_id or None,
+            config_overrides=config_overrides or None,
         )
+
+    def update_session_controls(
+        self,
+        session_id: str,
+        *,
+        ssl_intensity: int | float,
+        gate_strictness: int | float,
+        allow_self_reinforcement: bool,
+    ) -> dict[str, Any]:
+        """Apply the Regie controls to the currently selected persisted chat."""
+
+        ssl_settings = self.ssl_intensity_settings(ssl_intensity)
+        gate_settings = self.gate_strictness_settings(gate_strictness)
+        authority_profile_id = str(gate_settings["authority_profile_id"])
+        gate_policy_id = str(gate_settings["gate_policy_id"])
+
+        core_keys = {
+            "min_occurrences_for_gate",
+            "min_evidence_for_gate",
+            "min_trace_for_gate",
+            "promotion_threshold",
+            "validation_increment",
+        }
+        core_updates = {
+            key: gate_settings[key]
+            for key in core_keys
+            if key in gate_settings
+        }
+        session_config_updates = {
+            "surface_threshold": ssl_settings["surface_threshold"],
+            "surface_top_k": ssl_settings["surface_top_k"],
+            "early_turn_margin": ssl_settings["early_turn_margin"],
+            "resurface_margin": ssl_settings["resurface_margin"],
+            "gate_policy_id": gate_policy_id,
+            "authority_profile_id": authority_profile_id,
+            "revalidate_current_gate": True,
+            "allow_self_reinforcement": bool(allow_self_reinforcement),
+        }
+        config_updates = {
+            **ssl_settings,
+            **gate_settings,
+            "authority_profile_id": authority_profile_id,
+            "revalidate_current_gate": True,
+            "allow_self_reinforcement": bool(allow_self_reinforcement),
+        }
+        self.sessions.update_controls(
+            session_id,
+            config_updates=config_updates,
+            session_config_updates=session_config_updates,
+            core_config_updates=core_updates,
+        )
+        return self.inspection.session_view(session_id)
+
+    def update_session_self_reinforcement(
+        self,
+        session_id: str,
+        *,
+        allow_self_reinforcement: bool,
+    ) -> dict[str, Any]:
+        """Toggle only the experimental feedback loop on an existing chat."""
+
+        loop = bool(allow_self_reinforcement)
+        self.sessions.update_controls(
+            session_id,
+            config_updates={"allow_self_reinforcement": loop},
+            session_config_updates={"allow_self_reinforcement": loop},
+            core_config_updates={},
+        )
+        return self.inspection.session_view(session_id)
 
     def send_turn(
         self,
@@ -164,6 +345,7 @@ class WorkbenchController:
         question: str,
         *,
         compare_without_ssl: bool = False,
+        comparison_mode: str = "authorized",
         external_confirmed: bool = False,
     ) -> dict[str, Any]:
         stored = self.sessions.load(session_id)
@@ -180,6 +362,7 @@ class WorkbenchController:
             session_id,
             question,
             compare_without_ssl=compare_without_ssl,
+            comparison_mode=comparison_mode,
         )
         comparison = None
         if compare_without_ssl:

@@ -113,6 +113,11 @@ branch = true
 omit = [
   "tests/*",
   "*/site-packages/*",
+  # The Workbench is a presentation/product layer with dedicated Workbench,
+  # portability, and standalone acceptance workflows. Keep the repository-wide
+  # 80% gate focused on the model/runtime/application core rather than counting
+  # Gradio render branches twice.
+  "src/shadowseed/workbench/*",
 ]
 
 [tool.coverage.report]

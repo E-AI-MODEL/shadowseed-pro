@@ -14,6 +14,8 @@ from uuid import uuid4
 
 from shadowseed.storage.integrity import (
     AnchorState,
+    authority_config_digest,
+    authority_config_projection,
     authority_digest,
     create_integrity_key,
     key_id,
@@ -155,6 +157,25 @@ def _authority_snapshot(rows: list[tuple[Any, ...]]) -> list[dict[str, str]]:
             {
                 "session_id": str(row[id_index]),
                 "authority_digest": authority_digest(state),
+            }
+        )
+    return snapshot
+
+
+def _authority_config_snapshot(
+    rows: list[tuple[Any, ...]],
+) -> list[dict[str, str]]:
+    snapshot: list[dict[str, str]] = []
+    session_columns = _MUTABLE_TABLE_COLUMNS["sessions"]
+    state_index = session_columns.index("state_json")
+    id_index = session_columns.index("session_id")
+    for row in sorted(rows, key=lambda item: str(item[id_index])):
+        state = json.loads(str(row[state_index]))
+        snapshot.append(
+            {
+                "session_id": str(row[id_index]),
+                "authority_config": authority_config_projection(state),
+                "authority_config_digest": authority_config_digest(state),
             }
         )
     return snapshot
@@ -305,6 +326,9 @@ def import_production_backup(
                             source_rows["sessions"]
                         ),
                         "authority_snapshot": _authority_snapshot(source_rows["sessions"]),
+                        "authority_config_snapshot": _authority_config_snapshot(
+                            source_rows["sessions"]
+                        ),
                     },
                     **auth,
                     created_at=datetime.now().isoformat(),
@@ -432,6 +456,9 @@ def restore_production_backup(
                             source_rows["sessions"]
                         ),
                         "authority_snapshot": _authority_snapshot(source_rows["sessions"]),
+                        "authority_config_snapshot": _authority_config_snapshot(
+                            source_rows["sessions"]
+                        ),
                     },
                     **auth,
                     created_at=datetime.now().isoformat(),
