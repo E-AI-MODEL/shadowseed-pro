@@ -165,6 +165,7 @@ class ShadowChatSession:
         gate_policy_id: str | None = None,
         authority_profile_id: str = "strict",
         allow_toy_embedder: bool = False,
+        revalidate_current_gate: bool = False,
         allow_self_reinforcement: bool = False,
         model_backend: ModelBackend | None = None,
         detector_backend: DetectorBackend | None = None,
@@ -190,6 +191,7 @@ class ShadowChatSession:
         self.authority_profile_id = self.authority_runtime.profile_id.value
         self.gate_policy_id = self.authority_runtime.gate_policy_id
         self.allow_toy_embedder = allow_toy_embedder
+        self.revalidate_current_gate = bool(revalidate_current_gate)
         self.allow_self_reinforcement = bool(allow_self_reinforcement)
         if (
             runtime_mode == "live"
@@ -282,6 +284,7 @@ class ShadowChatSession:
             if not self.manager.current_gate_authorizes(
                 seed_id,
                 self.gate_policy_id,
+                enforce_current_gate=self.revalidate_current_gate,
             ):
                 continue
             # Atomic point-of-use: decide and record in one step, linked to the
@@ -505,7 +508,11 @@ class ShadowChatSession:
         for sid, seed in self.manager.seeds.items():
             if seed.status != SeedStatus.PROMOTED:
                 continue
-            if not self.manager.current_gate_authorizes(sid, self.gate_policy_id):
+            if not self.manager.current_gate_authorizes(
+                sid,
+                self.gate_policy_id,
+                enforce_current_gate=self.revalidate_current_gate,
+            ):
                 continue
             if self.clusterer is not None:
                 cid = self.seed_to_cluster.get(sid)
@@ -677,6 +684,7 @@ class ShadowChatSession:
                     policy=self.surfacing_policy,
                     include_seed=_is_cluster_representative,
                     gate_policy_id=self.gate_policy_id,
+                    enforce_current_gate=self.revalidate_current_gate,
                 )
                 if self.authority_runtime.auto_surface_when_relevant
                 else []
@@ -1107,6 +1115,7 @@ class ShadowChatSession:
             policy=self.surfacing_policy,
             include_seed=_is_cluster_representative,
             gate_policy_id=self.gate_policy_id,
+            enforce_current_gate=self.revalidate_current_gate,
         )
         selected = select_cross_turn_seeds(eligible, self.surfacing_policy.surface_top_k)
 
@@ -1480,6 +1489,7 @@ class ShadowChatSession:
                 "gate_policy_id": self.gate_policy_id,
                 "authority_profile_id": self.authority_profile_id,
                 "allow_toy_embedder": self.allow_toy_embedder,
+                "revalidate_current_gate": self.revalidate_current_gate,
                 "allow_self_reinforcement": self.allow_self_reinforcement,
             },
             "contract": asdict(self.contract),
