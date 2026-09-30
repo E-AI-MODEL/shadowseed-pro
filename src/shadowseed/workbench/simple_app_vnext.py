@@ -316,7 +316,7 @@ def build_vnext_app(
 
     def falsify(session_id: str | None, seed_id: str | None):
         if not session_id or not seed_id:
-            return "Kies eerst een geheugenpunt.", gr.update(), gr.update(), gr.update()
+            return "Kies eerst een geheugenpunt.", gr.update(), gr.update(), gr.update(), gr.update(), gr.update()
         ctl.falsify_seed(session_id, seed_id)
         view = ctl.session_view(session_id)
         seed = ctl.seed_view(session_id, seed_id)
