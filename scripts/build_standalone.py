@@ -13,9 +13,13 @@ import json
 import os
 import platform
 import shutil
+import socket
 import subprocess
 import sys
 import tarfile
+import time
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 
@@ -189,21 +193,53 @@ def _seal_macos_bundle(bundle: Path, *, macos: bool | None = None) -> str | None
     return "adhoc"
 
 
-def _install_macos_first_launch_files(distribution_dir: Path) -> tuple[Path, Path]:
-    """Create the no-credentials first-launch helper and user instructions."""
+def _install_macos_first_launch_files(
+    distribution_dir: Path,
+    *,
+    machine: str | None = None,
+) -> tuple[Path, Path]:
+    """Create a terminal-backed macOS launcher with visible diagnostics."""
 
+    expected_machine = (machine or platform.machine()).lower() or "unknown"
     helper = distribution_dir / "Open Shadowseed.command"
     helper.write_text(
         "#!/bin/bash\n"
-        "set -euo pipefail\n"
+        "set -u\n"
         "HERE=\"$(cd \"$(dirname \"$0\")\" && pwd)\"\n"
         "APP=\"$HERE/Shadowseed.app\"\n"
-        "if [ ! -d \"$APP\" ]; then\n"
-        "  echo \"Shadowseed.app was not found next to this helper.\" >&2\n"
+        "BIN=\"$APP/Contents/MacOS/Shadowseed\"\n"
+        f"EXPECTED_ARCH=\"{expected_machine}\"\n"
+        "if [ ! -x \"$BIN\" ]; then\n"
+        "  echo \"Shadowseed executable was not found next to this helper.\" >&2\n"
+        "  read -r -p \"Press Enter to close...\" _ || true\n"
+        "  exit 1\n"
+        "fi\n"
+        "HOST_ARCH=\"$(uname -m)\"\n"
+        "if [ \"$HOST_ARCH\" = \"x86_64\" ] && [ \"$EXPECTED_ARCH\" = \"arm64\" ]; then\n"
+        "  echo \"This is the Apple Silicon build, but this Mac is Intel.\" >&2\n"
+        "  echo \"Download the darwin-x86_64 Shadowseed Workbench archive.\" >&2\n"
+        "  read -r -p \"Press Enter to close...\" _ || true\n"
         "  exit 1\n"
         "fi\n"
         "xattr -dr com.apple.quarantine \"$APP\" 2>/dev/null || true\n"
-        "open \"$APP\"\n",
+        "cd \"$HERE\"\n"
+        "echo \"Starting Shadowseed Workbench ($EXPECTED_ARCH)...\"\n"
+        "echo \"Keep this Terminal window open while using Shadowseed.\"\n"
+        "\"$BIN\"\n"
+        "STATUS=$?\n"
+        "if [ \"$STATUS\" -ne 0 ]; then\n"
+        "  echo \"\" >&2\n"
+        "  echo \"Shadowseed stopped during startup (exit $STATUS).\" >&2\n"
+        "  LOG_DIR=\"$HOME/.shadowseed/logs\"\n"
+        "  LATEST_LOG=\"$(ls -t \"$LOG_DIR\"/standalone-startup-error-*.log 2>/dev/null | head -n 1 || true)\"\n"
+        "  if [ -n \"$LATEST_LOG\" ]; then\n"
+        "    echo \"Diagnostic log: $LATEST_LOG\" >&2\n"
+        "    echo \"---\" >&2\n"
+        "    cat \"$LATEST_LOG\" >&2 || true\n"
+        "  fi\n"
+        "  read -r -p \"Press Enter to close...\" _ || true\n"
+        "fi\n"
+        "exit \"$STATUS\"\n",
         encoding="utf-8",
     )
     helper.chmod(0o755)
@@ -212,20 +248,25 @@ def _install_macos_first_launch_files(distribution_dir: Path) -> tuple[Path, Pat
     readme.write_text(
         "Shadowseed Workbench for macOS\n"
         "=============================\n\n"
+        f"This archive was built for: {expected_machine}.\n"
+        "Use the darwin-arm64 archive on Apple Silicon and the darwin-x86_64\n"
+        "archive on Intel Macs.\n\n"
         "This build is ad-hoc signed and does not require an Apple Developer ID.\n"
-        "Because browsers may add a macOS quarantine flag, the first launch can\n"
-        "be blocked by Gatekeeper even though the app bundle seal is valid.\n\n"
-        "First launch:\n"
+        "Because browsers may add a macOS quarantine flag, start Shadowseed via\n"
+        "Open Shadowseed.command. The helper removes quarantine only from the\n"
+        "bundled Shadowseed.app and runs its executable directly.\n\n"
+        "Start:\n"
         "1. Keep Shadowseed.app and Open Shadowseed.command in this folder.\n"
         "2. Double-click Open Shadowseed.command.\n"
         "3. If macOS asks whether Terminal may open it, allow it.\n"
-        "4. Later launches can use Shadowseed.app normally.\n\n"
-        "The helper removes com.apple.quarantine only from this Shadowseed.app\n"
-        "and then opens the app. It does not change global macOS security.\n",
+        "4. Keep the Terminal window open while using Shadowseed.\n"
+        "5. The Workbench opens in your browser on 127.0.0.1.\n\n"
+        "If startup fails, the Terminal window remains available and shows the\n"
+        "path to the sanitized diagnostic log in ~/.shadowseed/logs.\n"
+        "The helper does not change global macOS security.\n",
         encoding="utf-8",
     )
     return helper, readme
-
 
 def _archive_bundle(bundle: Path, output_dir: Path, stem: str) -> Path:
     if sys.platform == "darwin":
@@ -236,7 +277,10 @@ def _archive_bundle(bundle: Path, output_dir: Path, stem: str) -> Path:
         copied_bundle = distribution_dir / bundle.name
         _run(["ditto", str(bundle), str(copied_bundle)], cwd=bundle.parent)
         _verify_macos_bundle(copied_bundle, macos=True)
-        _install_macos_first_launch_files(distribution_dir)
+        _install_macos_first_launch_files(
+            distribution_dir,
+            machine=platform.machine().lower() or "unknown",
+        )
         _run(
             [
                 "ditto",
@@ -344,6 +388,82 @@ def _verify_frozen(executable: Path, root: Path, work_dir: Path) -> dict[str, ob
     return payload
 
 
+def _verify_frozen_server_startup(
+    executable: Path,
+    root: Path,
+    work_dir: Path,
+    *,
+    timeout_seconds: float = 90.0,
+) -> dict[str, object]:
+    """Prove that the frozen product starts its real loopback web server."""
+
+    work_dir.mkdir(parents=True, exist_ok=True)
+    launch_cwd = work_dir / "launch-cwd"
+    launch_cwd.mkdir(parents=True, exist_ok=True)
+    workspace = work_dir / "server-probe-workspace"
+    log_path = work_dir / "server-startup.log"
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.bind(("127.0.0.1", 0))
+        port = int(sock.getsockname()[1])
+
+    command = [
+        str(executable),
+        "--workspace",
+        str(workspace),
+        "--port",
+        str(port),
+        "--no-browser",
+    ]
+    print("+", " ".join(command), flush=True)
+    env = os.environ.copy()
+    env["GRADIO_ANALYTICS_ENABLED"] = "False"
+    with log_path.open("wb") as log_handle:
+        process = subprocess.Popen(
+            command,
+            cwd=launch_cwd,
+            env=env,
+            stdout=log_handle,
+            stderr=subprocess.STDOUT,
+        )
+        try:
+            deadline = time.monotonic() + timeout_seconds
+            url = f"http://127.0.0.1:{port}/"
+            last_error = "server did not answer"
+            while time.monotonic() < deadline:
+                returncode = process.poll()
+                if returncode is not None:
+                    last_error = f"frozen server exited early with code {returncode}"
+                    break
+                try:
+                    with urllib.request.urlopen(url, timeout=2.0) as response:
+                        status = int(response.status)
+                    if 200 <= status < 500:
+                        return {
+                            "started": True,
+                            "host": "127.0.0.1",
+                            "http_status": status,
+                        }
+                    last_error = f"unexpected HTTP status {status}"
+                except (OSError, urllib.error.URLError) as exc:
+                    last_error = f"{type(exc).__name__}: {exc}"
+                time.sleep(1.0)
+
+            log_handle.flush()
+            details = log_path.read_text(encoding="utf-8", errors="replace")
+            raise RuntimeError(
+                f"frozen server startup probe failed: {last_error}\n{details[-8000:]}"
+            )
+        finally:
+            if process.poll() is None:
+                process.terminate()
+                try:
+                    process.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait(timeout=10)
+
+
 def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object]:
     root = Path(__file__).resolve().parents[1]
     output_dir = output_dir.resolve()
@@ -365,6 +485,15 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
     license_relative = str(license_path.relative_to(bundle))
     license_sha256 = _sha256(license_path)
     self_test = None if skip_self_test else _verify_frozen(executable, root, work_dir)
+    server_startup_probe = (
+        None
+        if skip_self_test
+        else _verify_frozen_server_startup(
+            executable,
+            root,
+            work_dir / "server-startup-probe",
+        )
+    )
     macos_signature_mode = _seal_macos_bundle(bundle)
     macos_notarized = False if sys.platform == "darwin" else None
 
@@ -379,6 +508,7 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
         work_dir,
     )
     archive_roundtrip_self_test = None
+    archive_roundtrip_server_probe = None
     if roundtrip_bundle is not None and not skip_self_test:
         roundtrip_executable = roundtrip_bundle / "Contents" / "MacOS" / "Shadowseed"
         if not roundtrip_executable.is_file():
@@ -387,6 +517,11 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
             roundtrip_executable,
             root,
             work_dir / "archive-roundtrip-self-test",
+        )
+        archive_roundtrip_server_probe = _verify_frozen_server_startup(
+            roundtrip_executable,
+            root,
+            work_dir / "archive-roundtrip-server-probe",
         )
 
     manifest: dict[str, object] = {
@@ -415,6 +550,8 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
         "macos_archive_roundtrip_verified": roundtrip_bundle is not None if system == "darwin" else None,
         "archive_roundtrip_self_test": archive_roundtrip_self_test,
         "self_test": self_test,
+        "server_startup_probe": server_startup_probe,
+        "archive_roundtrip_server_probe": archive_roundtrip_server_probe,
     }
     manifest_path = output_dir / f"{stem}.manifest.json"
     manifest_path.write_text(
