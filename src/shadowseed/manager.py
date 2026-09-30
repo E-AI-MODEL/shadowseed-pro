@@ -74,6 +74,53 @@ if TYPE_CHECKING:
 DEFAULT_CONFIG = SSLCoreConfig()
 
 
+def snapshot_meets_current_gate(
+    seed: Mapping[str, Any],
+    config: Mapping[str, Any],
+    policy_id: str | None,
+    *,
+    blocking: bool = False,
+) -> bool:
+    """Return effective point-of-use authorization under the Gate active now."""
+
+    if str(seed.get("status", "")) != SeedStatus.PROMOTED.value:
+        return False
+    if blocking:
+        return False
+
+    weight = float(seed.get("weight", 0.0))
+    promotion_threshold = float(config.get("promotion_threshold", 0.5))
+    if weight < promotion_threshold:
+        return False
+
+    occurrence_count = int(seed.get("occurrence_count", 0))
+    evidence_count = int(seed.get("evidence_count", 0))
+    min_occurrences = int(config.get("min_occurrences_for_gate", 3))
+    occurrence_ok = occurrence_count >= min_occurrences
+    selected_policy = str(policy_id or "exploratory")
+
+    if selected_policy == "exploratory":
+        return occurrence_ok or evidence_count >= 1
+
+    if selected_policy == "evidence_backed":
+        increment = max(float(config.get("validation_increment", 0.2)), 1e-9)
+        evidence_needed = max(
+            1,
+            int(math.ceil(promotion_threshold / increment)),
+        )
+        return occurrence_ok and evidence_count >= evidence_needed
+
+    if selected_policy == "legacy_evidence_required":
+        return (
+            occurrence_ok
+            and evidence_count >= int(config.get("min_evidence_for_gate", 2))
+            and float(seed.get("trace", 0.0))
+            > float(config.get("min_trace_for_gate", 0.5))
+        )
+
+    return False
+
+
 class SSLManager:
     def __init__(
         self,
@@ -241,38 +288,12 @@ class SSLManager:
         """
 
         seed = self._seeds[seed_id]
-        if seed.status != SeedStatus.PROMOTED:
-            return False
-        if self.is_blocking_contradiction(seed_id):
-            return False
-        if seed.weight < self.config.promotion_threshold:
-            return False
-
-        selected_policy = str(policy_id or "exploratory")
-        occurrence_ok = (
-            seed.occurrence_count >= self.config.min_occurrences_for_gate
+        return snapshot_meets_current_gate(
+            seed.to_dict(),
+            self.config.to_dict(),
+            policy_id,
+            blocking=self.is_blocking_contradiction(seed_id),
         )
-        if selected_policy == "exploratory":
-            # Exploratory authority can historically have come from recurrence
-            # or verified external support.
-            return occurrence_ok or seed.evidence_count >= 1
-
-        if selected_policy == "evidence_backed":
-            increment = max(float(self.config.validation_increment), 1e-9)
-            evidence_needed = max(
-                1,
-                int(math.ceil(self.config.promotion_threshold / increment)),
-            )
-            return occurrence_ok and seed.evidence_count >= evidence_needed
-
-        if selected_policy == "legacy_evidence_required":
-            return (
-                occurrence_ok
-                and seed.evidence_count >= self.config.min_evidence_for_gate
-                and seed.trace > self.config.min_trace_for_gate
-            )
-
-        return False
 
     @property
     def contradiction_records(self) -> list[ContradictionRecord]:
