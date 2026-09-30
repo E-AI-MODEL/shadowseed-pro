@@ -314,9 +314,18 @@ class ShadowChatSession:
         if not self.authority_runtime.proactive_review:
             return False
         seed = self.manager.seeds.get(seed_id)
-        if seed is None or seed.status in {SeedStatus.PROMOTED, SeedStatus.EXPIRED}:
+        if seed is None or seed.status is SeedStatus.EXPIRED:
             return False
         if self.manager.is_blocking_contradiction(seed_id):
+            return False
+        if (
+            seed.status is SeedStatus.PROMOTED
+            and self.manager.current_gate_authorizes(
+                seed_id,
+                self.gate_policy_id,
+                enforce_current_gate=self.revalidate_current_gate,
+            )
+        ):
             return False
         if self.clusterer is not None:
             cluster_id = self.seed_to_cluster.get(seed_id)
