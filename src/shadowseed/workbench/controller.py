@@ -262,6 +262,7 @@ class WorkbenchController:
                 embedding_backend=resolved_embedding,
                 embedding_model=embedding_model or None,
                 allow_toy_embedder=allow_toy_embedder,
+                revalidate_current_gate=gate_strictness is not None,
                 allow_self_reinforcement=bool(allow_self_reinforcement),
             ),
             backend=backend,
@@ -303,12 +304,14 @@ class WorkbenchController:
             "resurface_margin": ssl_settings["resurface_margin"],
             "gate_policy_id": gate_policy_id,
             "authority_profile_id": authority_profile_id,
+            "revalidate_current_gate": True,
             "allow_self_reinforcement": bool(allow_self_reinforcement),
         }
         config_updates = {
             **ssl_settings,
             **gate_settings,
             "authority_profile_id": authority_profile_id,
+            "revalidate_current_gate": True,
             "allow_self_reinforcement": bool(allow_self_reinforcement),
         }
         self.sessions.update_controls(
