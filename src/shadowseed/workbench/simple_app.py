@@ -1091,20 +1091,25 @@ def build_simple_app(
         ssl_value: float,
         gate_value: float,
         loop: bool,
-    ) -> tuple[str | Any, Any]:
+    ) -> tuple[str | Any, Any, str]:
         if not session_id:
-            return gr.update(), gr.update()
+            return gr.update(), gr.update(), ""
         view = ctl.update_session_controls(
             session_id,
             ssl_intensity=ssl_value,
             gate_strictness=gate_value,
             allow_self_reinforcement=bool(loop),
         )
-        return _chat_status(view), view
+        notice = _gate_notice(view)
+        if notice:
+            gr.Warning("Validation Gate vraagt jouw beoordeling.")
+        return _chat_status(view), view, notice
 
     def apply_control_preset(session_id: str | None, preset: str):
         ssl_value, gate_value, loop = _control_preset_values(preset)
-        status, view = _persist_controls(session_id, ssl_value, gate_value, loop)
+        status, view, notice = _persist_controls(
+            session_id, ssl_value, gate_value, loop
+        )
         return (
             gr.update(value=ssl_value),
             _ssl_intensity_explainer(ssl_value),
@@ -1114,6 +1119,7 @@ def build_simple_app(
             _control_state_summary(ssl_value, gate_value, loop),
             status,
             view,
+            notice,
         )
 
     def update_ssl_control(
@@ -1122,13 +1128,14 @@ def build_simple_app(
         gate: float,
         loop: bool,
     ):
-        status, view = _persist_controls(session_id, value, gate, loop)
+        status, view, notice = _persist_controls(session_id, value, gate, loop)
         return (
             _ssl_intensity_explainer(value),
             gr.update(value=None),
             _control_state_summary(value, gate, loop),
             status,
             view,
+            notice,
         )
 
     def update_gate_control(
@@ -1137,13 +1144,14 @@ def build_simple_app(
         ssl: float,
         loop: bool,
     ):
-        status, view = _persist_controls(session_id, ssl, value, loop)
+        status, view, notice = _persist_controls(session_id, ssl, value, loop)
         return (
             _gate_strictness_explainer(value),
             gr.update(value=None),
             _control_state_summary(ssl, value, loop),
             status,
             view,
+            notice,
         )
 
     def update_loop_control(
@@ -1158,6 +1166,7 @@ def build_simple_app(
                 _control_state_summary(ssl, gate, loop),
                 gr.update(),
                 gr.update(),
+                "",
             )
         view = ctl.update_session_self_reinforcement(
             session_id,
@@ -1179,11 +1188,13 @@ def build_simple_app(
             gate_value = int(gate_raw)
             preset = _control_preset_id(ssl_value, gate_value, loop)
             summary = _control_state_summary(ssl_value, gate_value, loop)
+        notice = _gate_notice(view)
         return (
             gr.update(value=preset),
             summary,
             _chat_status(view),
             view,
+            notice,
         )
 
     def create_chat(
@@ -1406,6 +1417,17 @@ def build_simple_app(
             return dropdown_update(ctl.seed_choices(view)), _memory_overview(view)
         except Exception as exc:
             return gr.update(), _fout(exc)
+
+    def refresh_memory(current: str | None):
+        choices = session_choices()
+        valid = {item[1] for item in choices}
+        selected = current if current in valid else (choices[0][1] if choices else None)
+        seed_update, overview = memory_session_changed(selected)
+        return (
+            dropdown_update(choices, selected),
+            seed_update,
+            overview,
+        )
 
     def inspect_seed(session_id: str | None, seed_id: str | None):
         if not session_id or not seed_id:
@@ -1853,6 +1875,7 @@ def build_simple_app(
                     control_summary,
                     chat_status,
                     session_json,
+                    gate_alert,
                 ],
             )
             ssl_intensity.input(
@@ -1869,6 +1892,7 @@ def build_simple_app(
                     control_summary,
                     chat_status,
                     session_json,
+                    gate_alert,
                 ],
             )
             gate_strictness.input(
@@ -1885,6 +1909,7 @@ def build_simple_app(
                     control_summary,
                     chat_status,
                     session_json,
+                    gate_alert,
                 ],
             )
             allow_self_reinforcement.input(
@@ -1900,6 +1925,7 @@ def build_simple_app(
                     control_summary,
                     chat_status,
                     session_json,
+                    gate_alert,
                 ],
             )
             backend.change(
@@ -2113,9 +2139,9 @@ def build_simple_app(
                 evidence_result = gr.JSON(label="Resultaat")
 
             memory_refresh.click(
-                refresh_session_dropdown,
+                refresh_memory,
                 inputs=[memory_session],
-                outputs=[memory_session],
+                outputs=[memory_session, seed_select, memory_overview],
             )
             memory_session.change(
                 memory_session_changed,
