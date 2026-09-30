@@ -1,6 +1,6 @@
 [project]
 name = "shadowseed"
-version = "0.9.2"
+version = "0.9.3"
 description = "Model-independent Shadow Seed Learning engine and local Workbench"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -20,7 +20,8 @@ models = [
   # Phi-3.5-mini needs >=4.43. CI installs fresh, but a stale local env
   # satisfying an older floor would advertise models it cannot load.
   "transformers>=4.51",
-  "torch>=2.2",
+  "torch>=2.2,<2.3; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+  "torch>=2.2; sys_platform != 'darwin' or platform_machine != 'x86_64'",
 ]
 openai = [
   "openai>=1.40",
@@ -42,7 +43,11 @@ workbench = [
   # hidden second setup step.
   "sentence-transformers>=2.7",
   "transformers>=4.51",
-  "torch>=2.2",
+  # PyTorch stopped publishing newer Intel-macOS wheels. Keep the Intel
+  # standalone on the last compatible 2.2 line while Apple Silicon and the
+  # other supported platforms follow the normal >=2.2 range.
+  "torch>=2.2,<2.3; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+  "torch>=2.2; sys_platform != 'darwin' or platform_machine != 'x86_64'",
   # Hosted OpenAI is an explicit opt-in backend in the same product surface.
   # Credentials are still read from the environment and are never persisted.
   "openai>=1.40",
