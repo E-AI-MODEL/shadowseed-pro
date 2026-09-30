@@ -27,6 +27,16 @@ class _NoLocalModels:
         return []
 
 
+class _IntelReducedLocalModel:
+    @staticmethod
+    def discover_models(_backend):
+        return ["qwen3:4b"]
+
+    @staticmethod
+    def embedding_backends():
+        return ("lexical", "openai")
+
+
 class _LocalModel:
     @staticmethod
     def discover_models(_backend: str) -> list[str]:
@@ -67,6 +77,15 @@ def test_default_workbench_is_dutch_chat_first_surface() -> None:
         'with gr.Tab("Advanced / research")',
     ):
         assert old_top_level_tab not in simple_source
+
+
+def test_simple_start_uses_safe_demo_when_local_semantic_stack_is_absent() -> None:
+    backend, model, note = _recommended_setup(_IntelReducedLocalModel())
+
+    assert backend == "fixture"
+    assert model is None
+    assert "geen lokale sentence-transformers-stack" in note
+    assert "Ollama blijft beschikbaar" in note
 
 
 def test_simple_start_automatically_prefers_local_model_then_safe_demo() -> None:
