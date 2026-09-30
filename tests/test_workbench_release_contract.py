@@ -75,3 +75,35 @@ def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -
     assert "gh release create" in workflow
     assert 'RELEASE_TAG: "v0.4.0"' not in workflow
     assert "scoped to v0.4.0" not in workflow
+
+
+def test_macos_intel_release_stack_stays_compatible() -> None:
+    pyproject = Path("pyproject.toml").read_text(encoding="utf-8")
+
+    assert '"transformers>=4.51,<5"' in pyproject
+    assert '"torch>=2.2,<2.3; sys_platform == \'darwin\' and platform_machine == \'x86_64\'"' in pyproject
+    assert '"numpy>=1.24,<2; sys_platform == \'darwin\' and platform_machine == \'x86_64\'"' in pyproject
+
+
+def test_release_requires_both_macos_architectures_and_real_server_probe() -> None:
+    standalone = Path(".github/workflows/standalone-workbench.yml").read_text(
+        encoding="utf-8"
+    )
+    release = Path(".github/workflows/release-workbench.yml").read_text(
+        encoding="utf-8"
+    )
+    builder = Path("scripts/build_standalone.py").read_text(encoding="utf-8")
+
+    assert "macOS Apple Silicon" in standalone
+    assert "macOS Intel" in standalone
+    assert "macos-15-intel" in standalone
+    assert "server_startup_probe" in standalone
+    assert "archive_roundtrip_server_probe" in standalone
+    assert "expected 4 standalone manifests" in release
+    assert '("darwin", "arm64")' in release
+    assert '("darwin", "x86_64")' in release
+    assert "server_startup_probe" in release
+    assert "archive_roundtrip_server_probe" in release
+    assert "def _verify_frozen_server_startup" in builder
+    assert '"$BIN"' in builder
+    assert 'open "$APP"' not in builder
