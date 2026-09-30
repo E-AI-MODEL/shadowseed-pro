@@ -168,6 +168,13 @@ jobs:
                   raise SystemExit(f"wrong version in {path.name}")
               if payload["self_test"]["frozen"] is not True:
                   raise SystemExit(f"frozen self-test missing in {path.name}")
+              expected_local_hf = not (
+                  payload.get("system") == "darwin" and payload.get("machine") == "x86_64"
+              )
+              if payload.get("local_hf_stack_bundled") is not expected_local_hf:
+                  raise SystemExit(f"wrong local HF capability claim in {path.name}")
+              if payload.get("self_test", {}).get("local_hf_stack_bundled") is not expected_local_hf:
+                  raise SystemExit(f"self-test local HF capability mismatch in {path.name}")
               if payload.get("server_startup_probe", {}).get("started") is not True:
                   raise SystemExit(f"real server startup probe missing in {path.name}")
               if payload.get("license_identifier") != "PolyForm-Noncommercial-1.0.0":
