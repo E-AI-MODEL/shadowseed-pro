@@ -641,7 +641,7 @@ class ShadowChatSession:
             "answer": answer,
             "replayed_turns": replayed,
             "history_turns_before": history_turns_before,
-            "transport": "provider_native_chat" if native_chat else "compat_prompt_fallback",
+            "transport": "role_structured_chat" if native_chat else "compat_prompt_fallback",
         }
 
     def _filter_ssl_attributed_candidates(
@@ -1703,6 +1703,13 @@ class ShadowChatSession:
         ]
         if len(session.vanilla_history) > len(session.history):
             raise ValueError("invalid vanilla control history")
+        for index, (vanilla_question, _vanilla_answer) in enumerate(
+            session.vanilla_history
+        ):
+            if vanilla_question != session.history[index][0]:
+                raise ValueError(
+                    "vanilla control history questions do not match live history"
+                )
         session.influence_records = [
             AgentInfluenceRecord(**item) for item in state.get("influence_records", [])
         ]
