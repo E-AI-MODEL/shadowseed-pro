@@ -281,12 +281,16 @@ class SessionService:
             control_metadata: dict[str, Any] = {}
             shadow_pressure_answer: str | None = None
             shadow_pressure_candidates: list[dict[str, Any]] = []
-            prior_ssl_seed_ids = sorted(
-                {
-                    str(seed_id)
-                    for prior_report in session.turn_reports
-                    for seed_id in prior_report.get("surfaced_seed_ids", [])
-                }
+            prior_ssl_seed_ids = (
+                sorted(
+                    {
+                        str(seed_id)
+                        for prior_report in session.turn_reports
+                        for seed_id in prior_report.get("surfaced_seed_ids", [])
+                    }
+                )
+                if session.runtime_mode == "live"
+                else []
             )
             if compare_without_ssl and session.runtime_mode == "live":
                 control_metadata = session.generate_vanilla_control(
