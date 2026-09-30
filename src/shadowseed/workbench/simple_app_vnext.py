@@ -77,9 +77,9 @@ def _status(view: dict[str, Any] | None) -> str:
     last = reports[-1] if reports else {}
     surfaced = list(last.get("surfaced_seed_ids", []) or [])
     used = (
-        f"**{len(surfaced)} eerdere inzicht(en) gebruikt**"
+        f"**{len(surfaced)} eerdere inzicht(en) als context aangeboden**"
         if surfaced
-        else "**Geen geheugen gebruikt in het laatste antwoord**"
+        else "**Geen geheugen aan het laatste antwoord aangeboden**"
     )
     model = str(view.get("model_id") or view.get("backend") or "onbekend")
     return (
@@ -111,7 +111,7 @@ def _shadow_summary(view: dict[str, Any] | None) -> str:
     return (
         "### Shadow\n"
         f"**{len(seeds)}** onthouden · **{authorized}** mogen nu meedenken · "
-        f"**{len(used_ids)}** zijn ooit gebruikt · **{blocked}** geblokkeerd\n\n"
+        f"**{len(used_ids)}** zijn ooit aan een antwoord aangeboden · **{blocked}** geblokkeerd\n\n"
         "Onthouden, toegestaan en gebruikt zijn verschillende stappen."
     )
 
@@ -213,7 +213,21 @@ def build_vnext_app(
         )
 
     def select_session(session_id: str | None):
-        return session_id, *bundle(session_id)
+        chat_value, status_value, shadow_value, seed_update, view = bundle(session_id)
+        return (
+            session_id,
+            chat_value,
+            status_value,
+            shadow_value,
+            seed_update,
+            view,
+            _seed_story(None),
+            None,
+            "",
+            "",
+            "Zet **Vergelijk dit antwoord zonder SSL** aan voor een same-turn control.",
+            _source_summary(None),
+        )
 
     def provider_changed(provider: str):
         if provider == "ollama":
@@ -246,7 +260,21 @@ def build_vnext_app(
         )
         selector, _selected = choices(session_id)
         chat, status, shadow, seed_update, view = bundle(session_id)
-        return session_id, selector, chat, status, shadow, seed_update, view
+        return (
+            session_id,
+            selector,
+            chat,
+            status,
+            shadow,
+            seed_update,
+            view,
+            _seed_story(None),
+            None,
+            "",
+            "",
+            "Zet **Vergelijk dit antwoord zonder SSL** aan voor een same-turn control.",
+            _source_summary(None),
+        )
 
     def send(
         session_id: str | None,
@@ -297,6 +325,7 @@ def build_vnext_app(
             _shadow_summary(view),
             _status(view),
             view,
+            gr.update(choices=ctl.seed_choices(view), value=seed_id),
         )
 
     def verify_evidence(
@@ -322,6 +351,7 @@ def build_vnext_app(
             _shadow_summary(view),
             _status(view),
             view,
+            gr.update(choices=ctl.seed_choices(view), value=seed_id),
         )
 
     def ingest(
@@ -331,7 +361,7 @@ def build_vnext_app(
         hosted_confirmed: bool,
     ):
         if not session_id:
-            return _source_summary({"error": "Maak of kies eerst een gesprek."}), gr.update(), gr.update(), gr.update(), pasted
+            return _source_summary({"error": "Maak of kies eerst een gesprek."}), gr.update(), gr.update(), gr.update(), gr.update(), pasted
 
         if files is None:
             paths: list[str] = []
@@ -350,6 +380,7 @@ def build_vnext_app(
         return (
             _source_summary(result),
             _shadow_summary(view),
+            _status(view),
             gr.update(choices=ctl.seed_choices(view), value=None),
             view,
             "",
@@ -477,7 +508,20 @@ def build_vnext_app(
         session_select.change(
             select_session,
             inputs=[session_select],
-            outputs=[active_session, chat, status, shadow_summary, seed_select, session_json],
+            outputs=[
+                active_session,
+                chat,
+                status,
+                shadow_summary,
+                seed_select,
+                session_json,
+                seed_story,
+                seed_json,
+                ssl_answer,
+                no_ssl_answer,
+                comparison_note,
+                source_result,
+            ],
         )
 
         provider.change(
@@ -494,7 +538,21 @@ def build_vnext_app(
         create_button.click(
             create_chat,
             inputs=[new_title, provider, model_id, hosted_confirm],
-            outputs=[active_session, session_select, chat, status, shadow_summary, seed_select, session_json],
+            outputs=[
+                active_session,
+                session_select,
+                chat,
+                status,
+                shadow_summary,
+                seed_select,
+                session_json,
+                seed_story,
+                seed_json,
+                ssl_answer,
+                no_ssl_answer,
+                comparison_note,
+                source_result,
+            ],
         )
 
         send_button.click(
@@ -536,18 +594,18 @@ def build_vnext_app(
         contradict_button.click(
             falsify,
             inputs=[active_session, seed_select],
-            outputs=[seed_story, shadow_summary, status, session_json],
+            outputs=[seed_story, shadow_summary, status, session_json, seed_select],
         )
         evidence_button.click(
             verify_evidence,
             inputs=[active_session, seed_select, evidence_source, evidence_note, evidence_attest],
-            outputs=[seed_story, shadow_summary, status, session_json],
+            outputs=[seed_story, shadow_summary, status, session_json, seed_select],
         )
 
         ingest_button.click(
             ingest,
             inputs=[active_session, source_text, source_files, hosted_confirm],
-            outputs=[source_result, shadow_summary, seed_select, session_json, source_text],
+            outputs=[source_result, shadow_summary, status, seed_select, session_json, source_text],
         )
 
     return app
