@@ -1,6 +1,6 @@
-# Workbench 0.9.1 limitations
+# Workbench 0.9.2 limitations
 
-Shadowseed Workbench 0.9.1 remains a local research preview and production-local assurance candidate for single-user use. It is not yet a completed `production-ready/local` release, a hostile-network service, a multi-user authorization boundary, or a scientific evidence generator by itself. The noncommercial research access and efficacy instrumentation introduced in 0.6.0 remain available; neither feature upgrades the assurance claim automatically.
+Shadowseed Workbench 0.9.2 remains a local research preview and production-local assurance candidate for single-user use. It is not yet a completed `production-ready/local` release, a hostile-network service, a multi-user authorization boundary, or a scientific evidence generator by itself. The noncommercial research access and efficacy instrumentation introduced in 0.6.0 remain available; neither feature upgrades the assurance claim automatically.
 
 ## Security and deployment
 
