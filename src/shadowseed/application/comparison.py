@@ -55,7 +55,7 @@ class ComparisonService:
             control_value = report.get("comparison_control_answer")
             if control_value is None:
                 raise ValueError(
-                    "this live turn has no paired no-SSL control; request comparison when "
+                    "this live turn has no independent vanilla control; request comparison when "
                     "sending the turn"
                 )
             control = str(control_value)
