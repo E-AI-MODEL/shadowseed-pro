@@ -1371,14 +1371,32 @@ def build_simple_app(
 
     def falsify_seed(session_id: str | None, seed_id: str | None):
         if not session_id or not seed_id:
-            return {"error": "Kies eerst een gesprek en geheugenpunt."}, _seed_story(None), None, None
+            return (
+                {"error": "Kies eerst een gesprek en geheugenpunt."},
+                _seed_story(None),
+                None,
+                None,
+                "",
+                "",
+            )
         try:
             result = ctl.falsify_seed(session_id, seed_id)
             view = ctl.seed_view(session_id, seed_id)
-            return result, _seed_story(view), view, view.get("timeline", [])
+            session_view = ctl.session_view(session_id)
+            notice = _gate_notice(session_view)
+            if notice:
+                gr.Warning("Validation Gate vraagt nog om beoordeling.")
+            return (
+                result,
+                _seed_story(view),
+                view,
+                view.get("timeline", []),
+                notice,
+                notice,
+            )
         except Exception as exc:
             err = {"error": f"{type(exc).__name__}: {exc}"}
-            return err, _fout(exc), err, None
+            return err, _fout(exc), err, None, "", ""
 
     def submit_verified_evidence(
         session_id: str | None,
@@ -1395,6 +1413,8 @@ def build_simple_app(
                 None,
                 "",
                 False,
+                "",
+                "",
             )
         try:
             result = ctl.submit_verified_evidence(
@@ -1405,10 +1425,23 @@ def build_simple_app(
                 operator_verified=bool(operator_verified),
             )
             view = ctl.seed_view(session_id, seed_id)
-            return result, _seed_story(view), view, view.get("timeline", []), "", False
+            session_view = ctl.session_view(session_id)
+            notice = _gate_notice(session_view)
+            if notice:
+                gr.Warning("Validation Gate vraagt nog om beoordeling.")
+            return (
+                result,
+                _seed_story(view),
+                view,
+                view.get("timeline", []),
+                "",
+                False,
+                notice,
+                notice,
+            )
         except Exception as exc:
             err = {"error": f"{type(exc).__name__}: {exc}"}
-            return err, _fout(exc), err, None, "", False
+            return err, _fout(exc), err, None, "", False, "", ""
 
     def verify_turn(session_id: str | None, turn_index: float):
         if not session_id:
@@ -2054,7 +2087,14 @@ def build_simple_app(
             falsify_button.click(
                 falsify_seed,
                 inputs=[memory_session, seed_select],
-                outputs=[falsify_result, seed_story, seed_json, seed_timeline],
+                outputs=[
+                    falsify_result,
+                    seed_story,
+                    seed_json,
+                    seed_timeline,
+                    gate_alert,
+                    source_gate_alert,
+                ],
             )
             evidence_button.click(
                 submit_verified_evidence,
@@ -2072,6 +2112,8 @@ def build_simple_app(
                     seed_timeline,
                     evidence_source,
                     evidence_attest,
+                    gate_alert,
+                    source_gate_alert,
                 ],
             )
 
