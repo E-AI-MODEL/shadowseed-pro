@@ -27,7 +27,7 @@ The standalone workflow now builds two independently tested macOS archives:
 - `darwin-arm64` for Apple Silicon;
 - `darwin-x86_64` for Intel Macs.
 
-The Intel lane uses the last compatible PyTorch 2.2 line while the other supported platforms keep the normal `torch>=2.2` dependency range.
+The Intel lane uses the last compatible PyTorch 2.2 line, keeps NumPy below 2, and pins Transformers to the 4.x line so the model stack remains compatible. Other supported platforms keep the normal `torch>=2.2` range.
 
 ## Stronger release test
 
