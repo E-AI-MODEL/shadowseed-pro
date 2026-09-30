@@ -507,7 +507,9 @@ def build_vnext_app(
                     label="Model",
                 )
                 model_note = gr.Markdown(auto_note, elem_classes=["ssv-muted"])
-                rescan_models = gr.Button("Zoek lokale modellen opnieuw", variant="secondary")
+                with gr.Row():
+                    rescan_models = gr.Button("Zoek lokale modellen opnieuw", variant="secondary", scale=5)
+                    rescan_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
                 with gr.Row():
                     hosted_confirm = gr.Checkbox(
                         label="Ik begrijp dat deze provider inhoud extern kan verwerken",
@@ -553,11 +555,14 @@ def build_vnext_app(
                     with gr.Row():
                         shadow_info = gr.Button("ⓘ Uitleg Shadow", variant="secondary")
                     shadow_summary = gr.Markdown(_shadow_summary(initial_view), elem_id="ssv-shadow-summary")
-                    seed_select = gr.Dropdown(
-                        choices=initial_seeds,
-                        value=None,
-                        label="Geheugenpunt",
-                    )
+                    with gr.Row():
+                        seed_select = gr.Dropdown(
+                            choices=initial_seeds,
+                            value=None,
+                            label="Geheugenpunt",
+                            scale=5,
+                        )
+                        seed_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
                     seed_story = gr.Markdown(_seed_story(None))
                     with gr.Accordion("Beoordeling van dit geheugenpunt", open=False):
                         gr.Markdown(
@@ -571,14 +576,18 @@ def build_vnext_app(
                             contradiction_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
                         evidence_source = gr.Textbox(label="Bronreferentie")
                         evidence_note = gr.Textbox(label="Toelichting bij de ondersteuning", lines=2)
-                        evidence_attest = gr.Checkbox(
-                            label="Ik heb deze ondersteuning onafhankelijk van modeloutput gecontroleerd",
-                            value=False,
-                        )
+                        with gr.Row():
+                            evidence_attest = gr.Checkbox(
+                                label="Ik heb deze ondersteuning onafhankelijk van modeloutput gecontroleerd",
+                                value=False,
+                                scale=5,
+                            )
+                            attest_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
                         with gr.Row():
                             evidence_button = gr.Button("Geverifieerde ondersteuning toevoegen", scale=5)
                             evidence_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
                     with gr.Accordion("Technische audit", open=False):
+                        technical_info = gr.Button("ⓘ Uitleg technische audit", variant="secondary")
                         session_json = gr.JSON(value=initial_view, label="Gesprekstoestand")
                         seed_json = gr.JSON(label="Geheugenpunt")
 
@@ -596,7 +605,9 @@ def build_vnext_app(
                         type="filepath",
                         file_types=[".txt", ".md", ".markdown", ".json", ".csv"],
                     )
-                    ingest_button = gr.Button("Verwerk", variant="primary")
+                    with gr.Row():
+                        ingest_button = gr.Button("Verwerk", variant="primary", scale=5)
+                        ingest_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
                     source_result = gr.Markdown(_source_summary(None), elem_id="ssv-source-result")
 
             with gr.Tab("Onderzoek"):
@@ -628,14 +639,19 @@ def build_vnext_app(
             (session_info, "conversation"),
             (new_chat_info, "new_chat"),
             (model_info, "model"),
+            (rescan_info, "model"),
             (consent_info, "external_consent"),
             (create_info, "new_chat"),
             (send_info, "send"),
             (compare_info, "compare"),
             (shadow_info, "shadow"),
+            (seed_info, "shadow"),
             (contradiction_info, "contradiction"),
+            (attest_info, "verified_support"),
             (evidence_info, "verified_support"),
+            (technical_info, "technical_audit"),
             (source_info, "sources"),
+            (ingest_info, "sources"),
             (research_info, "research"),
         ):
             bind_help(button, feature_id)
