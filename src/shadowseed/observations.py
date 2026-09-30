@@ -269,13 +269,23 @@ class CandidateObservationLedger:
         observations: list[CandidateObservation] = []
         for raw_item in payload.get("observations", []):
             item = dict(raw_item)
-            item.setdefault("schema_version", schema_version)
+            record_version = int(item.get("schema_version", schema_version))
+            if record_version > schema_version:
+                raise ValueError(
+                    "candidate-observation record schema is newer than ledger schema"
+                )
+            item["schema_version"] = record_version
             observations.append(CandidateObservation.from_dict(item))
 
         links: list[ObservationLink] = []
         for raw_item in payload.get("links", []):
             item = dict(raw_item)
-            item.setdefault("schema_version", schema_version)
+            record_version = int(item.get("schema_version", schema_version))
+            if record_version > schema_version:
+                raise ValueError(
+                    "candidate-observation link schema is newer than ledger schema"
+                )
+            item["schema_version"] = record_version
             links.append(ObservationLink.from_dict(item))
 
         return cls(observations=observations, links=links)
