@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from shadowseed.workbench.feature_help import render_feature_help
 from shadowseed.workbench.simple_app import (
     _authority_explainer,
     _chat_status,
@@ -69,6 +70,88 @@ def test_default_workbench_is_dutch_chat_first_surface() -> None:
         '"Refresh runs"',
     ):
         assert refresh_label not in vnext_source
+
+
+def test_vnext_every_normal_function_has_contextual_info_binding() -> None:
+    source = Path("src/shadowseed/workbench/simple_app_vnext.py").read_text(
+        encoding="utf-8"
+    )
+
+    for feature_id in (
+        "conversation",
+        "new_chat",
+        "model",
+        "external_consent",
+        "send",
+        "compare",
+        "shadow",
+        "contradiction",
+        "verified_support",
+        "sources",
+        "research",
+    ):
+        assert f'"{feature_id}"' in source
+
+    assert "render_feature_help" in source
+    assert "help_feature = gr.State" in source
+    assert 'gr.Button("ⓘ"' in source or 'gr.Button("ⓘ ' in source
+
+
+def test_feature_help_preserves_ssl_semantics_and_explains_combinations() -> None:
+    view = {
+        "backend": "ollama",
+        "effective_gate_policy_id": "evidence_backed",
+        "authority_profile_id": "strict",
+        "allow_self_reinforcement": False,
+    }
+    seed = {
+        "blocking": True,
+        "current_gate_authorized": True,
+    }
+
+    text = render_feature_help(
+        "verified_support",
+        view=view,
+        compare_enabled=True,
+        provider="ollama",
+        hosted_confirmed=False,
+        seed=seed,
+    )
+
+    assert "Alsof je 8 bent" in text
+    assert "Wat doet dit echt?" in text
+    assert "Wat doet dit níet?" in text
+    assert "Samen met andere functies" in text
+    assert "Huidige combinatie" in text
+    assert "versterken" in text.lower()
+    assert "niet automatisch waar" in text.lower()
+    assert "open contradiction" in text
+    assert "geblokkeerd" in text.lower()
+    assert "één extra control-generatie" in text
+
+
+def test_feature_help_distinguishes_self_reinforcement_on_and_off() -> None:
+    off = render_feature_help(
+        "self_reinforcement",
+        view={
+            "effective_gate_policy_id": "evidence_backed",
+            "authority_profile_id": "strict",
+            "allow_self_reinforcement": False,
+        },
+    )
+    on = render_feature_help(
+        "self_reinforcement",
+        view={
+            "effective_gate_policy_id": "evidence_backed",
+            "authority_profile_id": "strict",
+            "allow_self_reinforcement": True,
+        },
+    )
+
+    assert "Self-reinforcement staat uit" in off
+    assert "niet teruggevoerd" in off
+    assert "Self-reinforcement staat aan" in on
+    assert "versterken" in on.lower()
 
 
 def test_simple_start_automatically_prefers_local_model_then_safe_demo() -> None:
