@@ -9,6 +9,8 @@ from shadowseed.workbench.simple_app import (
     _embedding_explainer,
     _gate_notice,
     _legacy_control_summary,
+    _memory_overview,
+    _seed_story,
     _verify_summary,
     _control_preset_values,
     _control_state_summary,
@@ -385,3 +387,58 @@ def test_manual_review_actions_refresh_gate_alerts() -> None:
 
     assert "gate_alert," in source
     assert "source_gate_alert," in source
+
+
+
+def test_historical_promotion_is_not_presented_as_current_influence() -> None:
+    view = {
+        "title": "Tightened Gate",
+        "backend": "fixture",
+        "ssl_intensity": 100,
+        "gate_strictness": 100,
+        "turn": 2,
+        "authority_review_seed_ids": [],
+        "turn_reports": [],
+        "seeds": [
+            {
+                "id": "ss_legacy",
+                "text": "Historically promoted perspective.",
+                "status": "PROMOTED",
+                "blocking": False,
+                "current_gate_authorized": False,
+                "occurrence_count": 1,
+                "evidence_count": 0,
+            }
+        ],
+    }
+
+    status = _chat_status(view)
+    memory = _memory_overview(view)
+    _headline, _conversation, dashboard_memory, _authority, attention = _dashboard_summary(view)
+
+    assert "1 mag later meedenken" not in status
+    assert "historisch promoted, nu niet toegelaten" in status
+    assert "**0** mag meedenken" in memory
+    assert "historisch promoted, nu niet toegelaten" in memory
+    assert "0 mag meedenken" in dashboard_memory
+    assert "historisch promoted" in dashboard_memory
+    assert "Gate is aangescherpt" in attention
+
+
+def test_seed_detail_labels_historical_promotion_separately() -> None:
+    story = _seed_story(
+        {
+            "id": "ss_legacy",
+            "text": "Historically promoted perspective.",
+            "status": "PROMOTED",
+            "blocking": False,
+            "current_gate_authorized": False,
+            "review_required": False,
+            "occurrence_count": 1,
+            "evidence_count": 0,
+            "timeline": [],
+        }
+    )
+
+    assert "Historisch promoted · nu niet toegelaten" in story
+    assert "kan nu niet meedenken" in story
