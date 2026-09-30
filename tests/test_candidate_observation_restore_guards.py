@@ -74,3 +74,63 @@ def test_unknown_observation_schema_fails_closed() -> None:
 
     with pytest.raises(ValueError, match="unsupported candidate-observation schema"):
         CandidateObservationLedger.from_dict(payload)
+
+
+
+def test_schema_v1_rejects_self_reinforcement_permission() -> None:
+    with pytest.raises(ValueError, match="schema v1 does not support"):
+        CandidateObservation(
+            observation_id="obs_v1_permission",
+            raw_text="A contaminated candidate.",
+            normalized_text="a contaminated candidate.",
+            context_ref="turn:1:visible_answer",
+            detector_backend="fixture",
+            detector_prompt_provenance=None,
+            candidate_type="possible_completion",
+            ssl_exposed=True,
+            surfaced_seed_ids=("seed_1",),
+            recurrence_eligible=True,
+            created_at="2026-09-30T00:00:00+00:00",
+            self_reinforcement_allowed=True,
+            schema_version=1,
+        )
+
+
+def test_schema_v2_requires_explicit_permission_for_ssl_recurrence() -> None:
+    with pytest.raises(ValueError, match="require explicit self-reinforcement"):
+        CandidateObservation(
+            observation_id="obs_v2_missing_permission",
+            raw_text="A contaminated candidate.",
+            normalized_text="a contaminated candidate.",
+            context_ref="turn:1:visible_answer",
+            detector_backend="fixture",
+            detector_prompt_provenance=None,
+            candidate_type="possible_completion",
+            ssl_exposed=True,
+            surfaced_seed_ids=("seed_1",),
+            recurrence_eligible=True,
+            created_at="2026-09-30T00:00:00+00:00",
+            self_reinforcement_allowed=False,
+            schema_version=2,
+        )
+
+
+def test_schema_v2_allows_explicit_self_reinforcement_recurrence() -> None:
+    observation = CandidateObservation(
+        observation_id="obs_v2_allowed",
+        raw_text="A contaminated candidate.",
+        normalized_text="a contaminated candidate.",
+        context_ref="turn:1:visible_answer",
+        detector_backend="fixture",
+        detector_prompt_provenance=None,
+        candidate_type="possible_completion",
+        ssl_exposed=True,
+        surfaced_seed_ids=("seed_1",),
+        recurrence_eligible=True,
+        created_at="2026-09-30T00:00:00+00:00",
+        self_reinforcement_allowed=True,
+        schema_version=2,
+    )
+
+    assert observation.recurrence_eligible is True
+    assert observation.self_reinforcement_allowed is True
