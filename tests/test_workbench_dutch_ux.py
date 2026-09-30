@@ -5,6 +5,9 @@ from pathlib import Path
 from shadowseed.workbench.simple_app import (
     _authority_explainer,
     _chat_status,
+    _dashboard_summary,
+    _legacy_control_summary,
+    _verify_summary,
     _control_preset_values,
     _control_state_summary,
     _recommended_setup,
@@ -279,9 +282,38 @@ def test_menu_navigation_is_packaged_with_default_workbench() -> None:
         "ss-tab-uitleg",
         "ss-tab-meer",
     ):
-        assert f"{elem_id}-button" in simple
+        assert f'"{elem_id}"' in simple
+    assert "{_tab_elem_id}-button" in simple
 
     # The packaged launcher -> production-local shell -> default build_app chain
     # must keep using the Dutch Workbench rather than a separate legacy UI.
     assert "workbench = build_app(controller=ctl)" in production
     assert "launch_production_local_workbench" in standalone
+
+
+
+def test_initial_custom_regie_summary_is_not_strict() -> None:
+    summary = _legacy_control_summary(False)
+
+    assert "Aangepaste/legacy-regie" in summary
+    assert "feedbacklus **uit**" in summary
+    assert "**Strikt**" not in summary
+
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+    assert "initial_control_summary" in source
+    assert "control_summary = gr.Markdown(" in source
+
+
+def test_shadow_pressure_verification_is_explicitly_pre_authority() -> None:
+    summary = _verify_summary(
+        {
+            "comparison_mode": "shadow_pressure",
+            "ssl_influence_observed": True,
+            "surfaced_seed_ids": ["ss_pre_1", "ss_pre_2"],
+            "question": "Wat verandert er?",
+        }
+    )
+
+    assert "pre-authority" in summary
+    assert "nog niet-gepromoveerde" in summary
+    assert "geen Gate-geautoriseerde" in summary
