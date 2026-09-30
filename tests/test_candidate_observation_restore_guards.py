@@ -72,7 +72,7 @@ def test_unknown_observation_schema_fails_closed() -> None:
         "links": [],
     }
 
-    with pytest.raises(ValueError, match="unsupported candidate-observation schema"):
+    with pytest.raises(ValueError, match="newer than ledger schema"):
         CandidateObservationLedger.from_dict(payload)
 
 
