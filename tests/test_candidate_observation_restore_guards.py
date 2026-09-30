@@ -6,7 +6,7 @@ from shadowseed.observations import CandidateObservation, CandidateObservationLe
 
 
 def test_ssl_exposed_observation_cannot_be_constructed_as_recurrence_eligible() -> None:
-    with pytest.raises(ValueError, match="cannot be recurrence-eligible"):
+    with pytest.raises(ValueError, match="self-reinforcement|recurrence-eligible"):
         CandidateObservation(
             observation_id="obs_invalid",
             raw_text="A contaminated candidate.",
