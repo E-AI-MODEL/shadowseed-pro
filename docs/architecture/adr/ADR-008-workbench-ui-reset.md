@@ -95,7 +95,7 @@ The primary human-readable states answer three questions:
 
 1. **What did Shadowseed notice?**
 2. **May it influence an answer?**
-3. **Did it influence this answer?**
+3. **Was it offered to this answer as authorized context?**
 
 A seed detail can expose the full lifecycle, for example:
 
@@ -193,7 +193,7 @@ The 0.9.2 independent `vanilla_history` field may remain readable for research/p
 2. There is one active chat state shared by the normal Chat and Shadow views.
 3. No ordinary state-refresh button is required after a successful action.
 4. The normal UI does not expose SSL/Gate percentage sliders or self-reinforcement.
-5. A normal answer says plainly whether prior memory was used.
+5. A normal answer says plainly whether prior memory was offered as authorized context.
 6. Seed details show remembered/authorized/relevant/used as separate concepts.
 7. **Compare this answer without SSL** uses the same pre-turn visible history and adds at most one extra model generation.
 8. The same-turn control never enters SSL lifecycle state or later conversation history.
