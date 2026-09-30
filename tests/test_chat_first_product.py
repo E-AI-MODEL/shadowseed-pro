@@ -101,7 +101,7 @@ def test_controller_returns_ready_to_render_ssl_on_off_comparison(tmp_path) -> N
         "ssl_on",
     }
     assert comparison["control_history_isolated"] is True
-    assert comparison["control_transport"] == "provider_native_chat"
+    assert comparison["control_transport"] == "role_structured_chat"
     assert comparison["question"] == "What should I consider next?"
 
 
@@ -136,7 +136,7 @@ def test_live_turn_without_requested_control_does_not_pretend_to_be_comparable(t
     session_id = sessions.create_session(title="Normal chat", profile_id="demo")
     sessions.run_turn(session_id, "Normal user message")
 
-    with pytest.raises(ValueError, match="no paired no-SSL control"):
+    with pytest.raises(ValueError, match="no independent vanilla control"):
         ComparisonService(sessions).compare_turn(session_id, 0)
 
 
