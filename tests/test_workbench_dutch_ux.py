@@ -506,3 +506,37 @@ def test_review_actions_refresh_memory_summary_and_dropdown() -> None:
     for binding in (falsify_binding, evidence_binding):
         assert "seed_select," in binding
         assert "memory_overview," in binding
+
+
+
+def test_review_alerts_are_scoped_and_preserved_on_errors() -> None:
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+
+    helper_start = source.index("def _notice_for_selected_session(")
+    inspect_start = source.index("def inspect_seed(", helper_start)
+    helper = source[helper_start:inspect_start]
+    assert "selected_session_id == mutated_session_id" in helper
+    assert "ctl.session_view(selected_session_id)" in helper
+    assert "return gr.update()" in helper
+
+    falsify_start = source.index("def falsify_seed(")
+    evidence_start = source.index("def submit_verified_evidence(", falsify_start)
+    verify_start = source.index("def verify_turn(", evidence_start)
+    falsify_body = source[falsify_start:evidence_start]
+    evidence_body = source[evidence_start:verify_start]
+
+    for body in (falsify_body, evidence_body):
+        assert "chat_session_id" in body
+        assert "source_session_id" in body
+        assert "_notice_for_selected_session(" in body
+        assert "gr.update()" in body
+
+    falsify_binding = source[
+        source.index("falsify_button.click(") : source.index("evidence_button.click(")
+    ]
+    evidence_binding = source[
+        source.index("evidence_button.click(") : source.index('with gr.Tab("Controleren"')
+    ]
+    for binding in (falsify_binding, evidence_binding):
+        assert "session_select," in binding
+        assert "source_session," in binding
