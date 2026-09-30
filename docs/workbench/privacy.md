@@ -1,6 +1,6 @@
 # Workbench privacy guidance
 
-Shadowseed Workbench 0.9.2 is local-first, but local-first does not make all entered or exported data non-sensitive. Version 0.9.2 is the current production-local assurance candidate, not yet a completed `production-ready/local` release. Testers and study owners remain responsible for the content they enter and for artifacts they choose to share.
+Shadowseed Workbench 0.9.3 is local-first, but local-first does not make all entered or exported data non-sensitive. Version 0.9.3 is the current production-local assurance candidate, not yet a completed `production-ready/local` release. Testers and study owners remain responsible for the content they enter and for artifacts they choose to share.
 
 ## Local workspace
 
@@ -59,7 +59,7 @@ The resulting dataset is therefore suitable for **structured collection**, not a
 
 ## Evidence-efficacy bundles
 
-Evidence-efficacy bundles, introduced with the 0.6.0 research harness and retained in 0.9.2, are **not privacy-minimized support bundles**. They are research artifacts and can contain:
+Evidence-efficacy bundles, introduced with the 0.6.0 research harness and retained in 0.9.3, are **not privacy-minimized support bundles**. They are research artifacts and can contain:
 
 - full study questions;
 - baseline and SSL answers;
@@ -100,4 +100,4 @@ Integrity verification proves the recorded files match the manifest. It does not
 7. Do not describe pseudonymous support data as anonymous unless a separate privacy assessment justifies that claim.
 8. Keep evidence source references free of credentials and unnecessary personal/confidential data.
 
-Version 0.9.2 has no automatic cloud workspace upload. Hosted model/embedding calls remain explicit provider interactions rather than workspace synchronization.
+Version 0.9.3 has no automatic cloud workspace upload. Hosted model/embedding calls remain explicit provider interactions rather than workspace synchronization.
