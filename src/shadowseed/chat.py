@@ -279,6 +279,11 @@ class ShadowChatSession:
         allowed: list[SurfacingCandidate] = []
         for similarity, seed_id, text in candidates:
             seed = self.manager.seeds[seed_id]
+            if not self.manager.current_gate_authorizes(
+                seed_id,
+                self.gate_policy_id,
+            ):
+                continue
             # Atomic point-of-use: decide and record in one step, linked to the
             # authorizing Gate event (#14). A decision cannot be used without
             # being recorded, because the record is produced here.
@@ -500,6 +505,8 @@ class ShadowChatSession:
         for sid, seed in self.manager.seeds.items():
             if seed.status != SeedStatus.PROMOTED:
                 continue
+            if not self.manager.current_gate_authorizes(sid, self.gate_policy_id):
+                continue
             if self.clusterer is not None:
                 cid = self.seed_to_cluster.get(sid)
                 if cid is not None and self.cluster_rep.get(cid) != sid:
@@ -669,6 +676,7 @@ class ShadowChatSession:
                     last_surfaced=self.last_surfaced,
                     policy=self.surfacing_policy,
                     include_seed=_is_cluster_representative,
+                    gate_policy_id=self.gate_policy_id,
                 )
                 if self.authority_runtime.auto_surface_when_relevant
                 else []
@@ -1098,6 +1106,7 @@ class ShadowChatSession:
             last_surfaced=self.last_surfaced,
             policy=self.surfacing_policy,
             include_seed=_is_cluster_representative,
+            gate_policy_id=self.gate_policy_id,
         )
         selected = select_cross_turn_seeds(eligible, self.surfacing_policy.surface_top_k)
 
