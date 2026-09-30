@@ -6,6 +6,8 @@ from shadowseed.workbench.simple_app import (
     _authority_explainer,
     _chat_status,
     _dashboard_summary,
+    _embedding_explainer,
+    _gate_notice,
     _legacy_control_summary,
     _verify_summary,
     _control_preset_values,
@@ -317,3 +319,49 @@ def test_shadow_pressure_verification_is_explicitly_pre_authority() -> None:
     assert "pre-authority" in summary
     assert "nog niet-gepromoveerde" in summary
     assert "geen Gate-geautoriseerde" in summary
+
+
+
+def test_shadow_pressure_mode_is_exposed_in_chat_ui() -> None:
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+
+    assert '"Shadow pressure · pre-promotie experiment", "shadow_pressure"' in source
+    assert 'label="Wat wil je vergelijken?"' in source
+    assert "comparison_mode=comparison_mode or \"authorized\"" in source
+    assert "comparison_mode," in source
+
+
+def test_embedding_choices_explain_meaning_and_privacy() -> None:
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+
+    assert '("Automatisch · aanbevolen", "auto")' in source
+    assert '("Slim lokaal · vergelijkt betekenis", "sentence-transformers")' in source
+    assert '("Snel lokaal · vergelijkt woorden", "lexical")' in source
+    assert '("Online · OpenAI vergelijkt betekenis", "openai")' in source
+    assert "embedding_backend.change(" in source
+    assert "outputs=[embedding_help]" in source
+    assert "online taalmodel of online " in source
+
+    assert "stuurt geen tekst naar een online provider" in _embedding_explainer(
+        "sentence-transformers"
+    )
+    assert "naar OpenAI gestuurd" in _embedding_explainer("openai")
+
+
+def test_gate_review_notice_is_actionable_and_wired() -> None:
+    view = {
+        "authority_review_seed_ids": ["ss_1"],
+        "seeds": [{"id": "ss_1", "text": "Een mogelijk ontbrekend perspectief."}],
+    }
+    notice = _gate_notice(view)
+
+    assert "Validation Gate vraagt jouw beoordeling" in notice
+    assert "Een mogelijk ontbrekend perspectief." in notice
+    assert "open **Geheugen**" in notice
+    assert "niets opnieuw te draaien" in notice
+
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+    assert "gate_alert = gr.Markdown(" in source
+    assert "_gate_notice(initial_view)" in source
+    assert "source_gate_alert = gr.Markdown(" in source
+    assert 'gr.Warning("Validation Gate vraagt jouw beoordeling.")' in source
