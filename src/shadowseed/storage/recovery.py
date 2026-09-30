@@ -15,6 +15,7 @@ from uuid import uuid4
 from shadowseed.storage.integrity import (
     AnchorState,
     authority_config_digest,
+    authority_config_projection,
     authority_digest,
     create_integrity_key,
     key_id,
@@ -173,6 +174,7 @@ def _authority_config_snapshot(
         snapshot.append(
             {
                 "session_id": str(row[id_index]),
+                "authority_config": authority_config_projection(state),
                 "authority_config_digest": authority_config_digest(state),
             }
         )
