@@ -1,0 +1,32 @@
+name: Cleanup malformed v0.9.0 release
+
+on:
+  push:
+    branches:
+      - release/0.9.1
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: E-AI-MODEL/shadowseed-pro
+    steps:
+      - name: Require correct replacement release
+        run: gh release view v0.9.1 >/dev/null
+      - name: Remove malformed release and tag
+        run: gh release delete v0.9.0 --cleanup-tag --yes
+      - name: Verify malformed release and tag are gone
+        run: |
+          if gh release view v0.9.0 >/dev/null 2>&1; then
+            echo "v0.9.0 release still exists" >&2
+            exit 1
+          fi
+          if gh api repos/E-AI-MODEL/shadowseed-pro/git/ref/tags/v0.9.0 >/dev/null 2>&1; then
+            echo "v0.9.0 tag still exists" >&2
+            exit 1
+          fi
