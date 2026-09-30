@@ -80,6 +80,21 @@ def authority_snapshot_from_payload(value: Any) -> dict[str, str]:
     return snapshot
 
 
+def authority_config_snapshot_from_payload(value: Any) -> dict[str, str]:
+    if not isinstance(value, list):
+        raise WorkspaceStorageError("ledger authority configuration snapshot is malformed")
+    snapshot: dict[str, str] = {}
+    for item in value:
+        if not isinstance(item, dict):
+            raise WorkspaceStorageError("ledger authority configuration snapshot is malformed")
+        session_id = str(item.get("session_id") or "")
+        digest = str(item.get("authority_config_digest") or "")
+        if not session_id or len(digest) != 64:
+            raise WorkspaceStorageError("ledger authority configuration snapshot is malformed")
+        snapshot[session_id] = digest
+    return snapshot
+
+
 def expected_authority_snapshot_from_ledger(
     rows: Sequence[Mapping[str, Any]],
 ) -> dict[str, str]:
@@ -151,12 +166,18 @@ def expected_authority_config_snapshot_from_ledger(
         except json.JSONDecodeError as exc:
             raise WorkspaceStorageError("production ledger payload JSON is invalid") from exc
 
-        if event_type in {
-            "production.authority_checkpoint",
-            "workspace.restore",
-            "workspace.import",
-        }:
-            expected = {}
+        if event_type == "production.authority_checkpoint":
+            snapshot = payload.get("authority_config_snapshot")
+            expected = (
+                authority_config_snapshot_from_payload(snapshot)
+                if snapshot is not None
+                else {}
+            )
+            continue
+        if event_type in {"workspace.restore", "workspace.import"}:
+            expected = authority_config_snapshot_from_payload(
+                payload.get("authority_config_snapshot")
+            )
             continue
 
         session_id = row["session_id"]
