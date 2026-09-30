@@ -1429,6 +1429,26 @@ def build_simple_app(
             overview,
         )
 
+    def _notice_for_selected_session(
+        selected_session_id: str | None,
+        *,
+        mutated_session_id: str,
+        mutated_view: dict[str, Any],
+    ):
+        if not selected_session_id:
+            return ""
+        try:
+            view = (
+                mutated_view
+                if selected_session_id == mutated_session_id
+                else ctl.session_view(selected_session_id)
+            )
+            return _gate_notice(view)
+        except Exception:
+            # A review mutation must not clear or fail an unrelated tab merely
+            # because that tab's selected session cannot be refreshed.
+            return gr.update()
+
     def inspect_seed(session_id: str | None, seed_id: str | None):
         if not session_id or not seed_id:
             return _seed_story(None), None, None
@@ -1439,45 +1459,11 @@ def build_simple_app(
             err = {"error": f"{type(exc).__name__}: {exc}"}
             return _fout(exc), err, None
 
-    def falsify_seed(session_id: str | None, seed_id: str | None):
-        if not session_id or not seed_id:
-            return (
-                {"error": "Kies eerst een gesprek en geheugenpunt."},
-                _seed_story(None),
-                None,
-                None,
-                gr.update(),
-                _memory_overview(None),
-                "",
-                "",
-            )
-        try:
-            result = ctl.falsify_seed(session_id, seed_id)
-            view = ctl.seed_view(session_id, seed_id)
-            session_view = ctl.session_view(session_id)
-            notice = _gate_notice(session_view)
-            if notice:
-                gr.Warning("Validation Gate vraagt nog om beoordeling.")
-            return (
-                result,
-                _seed_story(view),
-                view,
-                view.get("timeline", []),
-                dropdown_update(ctl.seed_choices(session_view), seed_id),
-                _memory_overview(session_view),
-                notice,
-                notice,
-            )
-        except Exception as exc:
-            err = {"error": f"{type(exc).__name__}: {exc}"}
-            return err, _fout(exc), err, None, gr.update(), _fout(exc), "", ""
-
-    def submit_verified_evidence(
+    def falsify_seed(
         session_id: str | None,
         seed_id: str | None,
-        source_ref: str,
-        note: str,
-        operator_verified: bool,
+        chat_session_id: str | None = None,
+        source_session_id: str | None = None,
     ):
         if not session_id or not seed_id:
             return (
@@ -1487,8 +1473,68 @@ def build_simple_app(
                 None,
                 gr.update(),
                 _memory_overview(None),
-                "",
-                "",
+                gr.update(),
+                gr.update(),
+            )
+        try:
+            result = ctl.falsify_seed(session_id, seed_id)
+            view = ctl.seed_view(session_id, seed_id)
+            session_view = ctl.session_view(session_id)
+            memory_notice = _gate_notice(session_view)
+            chat_notice = _notice_for_selected_session(
+                chat_session_id,
+                mutated_session_id=session_id,
+                mutated_view=session_view,
+            )
+            source_notice = _notice_for_selected_session(
+                source_session_id,
+                mutated_session_id=session_id,
+                mutated_view=session_view,
+            )
+            if memory_notice:
+                gr.Warning("Validation Gate vraagt nog om beoordeling.")
+            return (
+                result,
+                _seed_story(view),
+                view,
+                view.get("timeline", []),
+                dropdown_update(ctl.seed_choices(session_view), seed_id),
+                _memory_overview(session_view),
+                chat_notice,
+                source_notice,
+            )
+        except Exception as exc:
+            err = {"error": f"{type(exc).__name__}: {exc}"}
+            return (
+                err,
+                _fout(exc),
+                err,
+                None,
+                gr.update(),
+                _fout(exc),
+                gr.update(),
+                gr.update(),
+            )
+
+    def submit_verified_evidence(
+        session_id: str | None,
+        seed_id: str | None,
+        source_ref: str,
+        note: str,
+        operator_verified: bool,
+        chat_session_id: str | None = None,
+        source_session_id: str | None = None,
+    ):
+        if not session_id or not seed_id:
+            return (
+                {"error": "Kies eerst een gesprek en geheugenpunt."},
+                _seed_story(None),
+                None,
+                None,
+                gr.update(),
+                _memory_overview(None),
+                gr.update(),
+                gr.update(),
                 "",
                 False,
             )
@@ -1502,8 +1548,18 @@ def build_simple_app(
             )
             view = ctl.seed_view(session_id, seed_id)
             session_view = ctl.session_view(session_id)
-            notice = _gate_notice(session_view)
-            if notice:
+            memory_notice = _gate_notice(session_view)
+            chat_notice = _notice_for_selected_session(
+                chat_session_id,
+                mutated_session_id=session_id,
+                mutated_view=session_view,
+            )
+            source_notice = _notice_for_selected_session(
+                source_session_id,
+                mutated_session_id=session_id,
+                mutated_view=session_view,
+            )
+            if memory_notice:
                 gr.Warning("Validation Gate vraagt nog om beoordeling.")
             return (
                 result,
@@ -1512,8 +1568,8 @@ def build_simple_app(
                 view.get("timeline", []),
                 dropdown_update(ctl.seed_choices(session_view), seed_id),
                 _memory_overview(session_view),
-                notice,
-                notice,
+                chat_notice,
+                source_notice,
                 "",
                 False,
             )
@@ -1526,8 +1582,8 @@ def build_simple_app(
                 None,
                 gr.update(),
                 _fout(exc),
-                "",
-                "",
+                gr.update(),
+                gr.update(),
                 "",
                 False,
             )
@@ -2179,7 +2235,12 @@ def build_simple_app(
             )
             falsify_button.click(
                 falsify_seed,
-                inputs=[memory_session, seed_select],
+                inputs=[
+                    memory_session,
+                    seed_select,
+                    session_select,
+                    source_session,
+                ],
                 outputs=[
                     falsify_result,
                     seed_story,
@@ -2199,6 +2260,8 @@ def build_simple_app(
                     evidence_source,
                     evidence_note,
                     evidence_attest,
+                    session_select,
+                    source_session,
                 ],
                 outputs=[
                     evidence_result,
