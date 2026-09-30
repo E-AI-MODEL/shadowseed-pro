@@ -152,6 +152,10 @@ def test_vanilla_control_history_never_reuses_ssl_visible_answers():
         ("Derde vraag", "vanilla:Derde vraag"),
     ]
 
+    # Persist only a completed A/B turn: once the treatment answer exists, both
+    # trajectories have consumed the same three user questions.
+    session.history.append(("Derde vraag", "SSL antwoord 3"))
+
     restored = ShadowChatSession.from_state(
         session.to_state(),
         model_backend=_NativeChatModel(),
