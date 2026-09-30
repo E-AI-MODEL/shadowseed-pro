@@ -716,3 +716,48 @@ def test_shadow_pressure_is_rejected_for_evaluation_sessions(tmp_path) -> None:
 
     assert after["state"]["history"] == before["state"]["history"]
     assert after["state"]["turn"] == before["state"]["turn"]
+
+
+
+def test_tightening_gate_revalidates_existing_promotions_at_use_time(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Tighten current Gate",
+        profile_id="balanced",
+        backend="fixture",
+        ssl_intensity=100,
+        gate_strictness=0,
+    )
+
+    first = controller.send_turn(
+        session_id,
+        "What important perspective could be missing?",
+    )
+    promoted = [
+        seed for seed in first["session"]["seeds"]
+        if seed["status"] == "PROMOTED"
+    ]
+    assert promoted
+    assert any(seed["current_gate_authorized"] is True for seed in promoted)
+
+    tightened = controller.update_session_controls(
+        session_id,
+        ssl_intensity=100,
+        gate_strictness=100,
+        allow_self_reinforcement=False,
+    )
+    historical_promotions = [
+        seed for seed in tightened["seeds"]
+        if seed["status"] == "PROMOTED"
+    ]
+    assert historical_promotions
+    assert all(
+        seed["current_gate_authorized"] is False
+        for seed in historical_promotions
+    )
+
+    second = controller.send_turn(
+        session_id,
+        "What important perspective could be missing again?",
+    )
+    assert second["report"]["surfaced_seed_ids"] == []
