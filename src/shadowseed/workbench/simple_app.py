@@ -1412,9 +1412,9 @@ def build_simple_app(
                 None,
                 None,
                 "",
+                "",
+                "",
                 False,
-                "",
-                "",
             )
         try:
             result = ctl.submit_verified_evidence(
@@ -1434,14 +1434,14 @@ def build_simple_app(
                 _seed_story(view),
                 view,
                 view.get("timeline", []),
+                notice,
+                notice,
                 "",
                 False,
-                notice,
-                notice,
             )
         except Exception as exc:
             err = {"error": f"{type(exc).__name__}: {exc}"}
-            return err, _fout(exc), err, None, "", False, "", ""
+            return err, _fout(exc), err, None, "", "", "", False
 
     def verify_turn(session_id: str | None, turn_index: float):
         if not session_id:
@@ -2110,10 +2110,10 @@ def build_simple_app(
                     seed_story,
                     seed_json,
                     seed_timeline,
-                    evidence_source,
-                    evidence_attest,
                     gate_alert,
                     source_gate_alert,
+                    evidence_source,
+                    evidence_attest,
                 ],
             )
 
