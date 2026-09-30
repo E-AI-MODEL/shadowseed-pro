@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from shadowseed.workbench.controller import WorkbenchController
+from shadowseed.workbench.feature_help import render_feature_help
 
 
 _CSS = """
@@ -45,6 +46,21 @@ _CSS = """
   background: var(--background-fill-primary);
 }
 .ssv-muted { opacity: .72; font-size: .9rem; }
+.ssv-info-button button {
+  min-width: 42px !important;
+  width: 42px !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  border-radius: 999px !important;
+  font-weight: 800 !important;
+}
+#ssv-help {
+  border: 1px solid var(--border-color-primary);
+  border-radius: 18px;
+  padding: .8rem .95rem;
+  margin-bottom: .8rem;
+  background: var(--background-fill-secondary);
+}
 """
 
 
@@ -194,6 +210,58 @@ def build_vnext_app(
     initial_seeds = ctl.seed_choices(initial_view) if initial_view else []
     auto_backend, auto_model, auto_note = _recommended_setup(ctl)
 
+    def show_help(
+        feature_id: str,
+        session_id: str | None,
+        compare_enabled: bool,
+        provider: str | None,
+        hosted_confirmed: bool,
+        seed_id: str | None,
+    ):
+        view = None
+        seed = None
+        if session_id:
+            try:
+                view = ctl.session_view(session_id)
+                if seed_id:
+                    seed = ctl.seed_view(session_id, seed_id)
+            except Exception:
+                view = None
+                seed = None
+        effective_provider = (
+            str(view.get("backend"))
+            if view and view.get("backend")
+            else provider
+        )
+        return (
+            feature_id,
+            render_feature_help(
+                feature_id,
+                view=view,
+                compare_enabled=bool(compare_enabled),
+                provider=effective_provider,
+                hosted_confirmed=bool(hosted_confirmed),
+                seed=seed,
+            ),
+        )
+
+    def refresh_help(
+        feature_id: str,
+        session_id: str | None,
+        compare_enabled: bool,
+        provider: str | None,
+        hosted_confirmed: bool,
+        seed_id: str | None,
+    ):
+        return show_help(
+            feature_id,
+            session_id,
+            compare_enabled,
+            provider,
+            hosted_confirmed,
+            seed_id,
+        )[1]
+
     def choices(selected: str | None = None):
         values = ctl.session_choices(ctl.list_sessions())
         valid = {value for _label, value in values}
@@ -316,7 +384,7 @@ def build_vnext_app(
 
     def falsify(session_id: str | None, seed_id: str | None):
         if not session_id or not seed_id:
-            return "Kies eerst een geheugenpunt.", gr.update(), gr.update(), gr.update(), gr.update(), gr.update()
+            return "Kies eerst een geheugenpunt.", gr.update(), gr.update(), gr.update(), gr.update()
         ctl.falsify_seed(session_id, seed_id)
         view = ctl.session_view(session_id)
         seed = ctl.seed_view(session_id, seed_id)
@@ -336,7 +404,7 @@ def build_vnext_app(
         attested: bool,
     ):
         if not session_id or not seed_id:
-            return "Kies eerst een geheugenpunt.", gr.update(), gr.update(), gr.update()
+            return "Kies eerst een geheugenpunt.", gr.update(), gr.update(), gr.update(), gr.update()
         ctl.submit_verified_evidence(
             session_id,
             seed_id,
@@ -388,6 +456,7 @@ def build_vnext_app(
 
     with gr.Blocks(title="Shadowseed", css=_CSS) as app:
         active_session = gr.State(initial_id)
+        help_feature = gr.State("conversation")
 
         with gr.Group(elem_id="ssv-hero"):
             gr.Markdown("# Shadowseed")
@@ -396,6 +465,17 @@ def build_vnext_app(
                 "onthoudt ze zonder ze meteen te geloven en gebruikt ze alleen wanneer dat mag en relevant is."
             )
 
+        help_panel = gr.Markdown(
+            render_feature_help(
+                "conversation",
+                view=initial_view,
+                compare_enabled=False,
+                provider=(str(initial_view.get("backend")) if initial_view else auto_backend),
+                hosted_confirmed=False,
+            ),
+            elem_id="ssv-help",
+        )
+
         with gr.Row():
             session_select = gr.Dropdown(
                 choices=sessions,
@@ -403,18 +483,23 @@ def build_vnext_app(
                 label="Gesprek",
                 scale=4,
             )
+            session_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
             with gr.Accordion("Nieuwe chat", open=False):
+                new_chat_info = gr.Button("ⓘ Uitleg nieuwe chat", variant="secondary")
                 new_title = gr.Textbox(label="Naam", value="Nieuwe chat")
-                provider = gr.Dropdown(
-                    choices=[
+                with gr.Row():
+                    provider = gr.Dropdown(
+                        choices=[
                         ("Ollama · lokaal", "ollama"),
                         ("OpenAI · online", "openai"),
                         ("Hugging Face · lokaal", "hf-transformers"),
-                        ("Offline demo", "fixture"),
-                    ],
-                    value=auto_backend,
-                    label="Modelprovider",
-                )
+                            ("Offline demo", "fixture"),
+                        ],
+                        value=auto_backend,
+                        label="Modelprovider",
+                        scale=5,
+                    )
+                    model_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
                 model_id = gr.Dropdown(
                     choices=([auto_model] if auto_model else []),
                     value=auto_model,
@@ -423,11 +508,16 @@ def build_vnext_app(
                 )
                 model_note = gr.Markdown(auto_note, elem_classes=["ssv-muted"])
                 rescan_models = gr.Button("Zoek lokale modellen opnieuw", variant="secondary")
-                hosted_confirm = gr.Checkbox(
-                    label="Ik begrijp dat deze provider inhoud extern kan verwerken",
-                    value=False,
-                )
-                create_button = gr.Button("Start nieuwe chat", variant="primary")
+                with gr.Row():
+                    hosted_confirm = gr.Checkbox(
+                        label="Ik begrijp dat deze provider inhoud extern kan verwerken",
+                        value=False,
+                        scale=5,
+                    )
+                    consent_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
+                with gr.Row():
+                    create_button = gr.Button("Start nieuwe chat", variant="primary", scale=5)
+                    create_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
 
         with gr.Tabs():
             with gr.Tab("Chat"):
@@ -442,10 +532,14 @@ def build_vnext_app(
                             scale=5,
                         )
                         send_button = gr.Button("Versturen", variant="primary", scale=1)
-                    compare = gr.Checkbox(
-                        label="Vergelijk dit antwoord zonder SSL",
-                        value=False,
-                    )
+                        send_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
+                    with gr.Row():
+                        compare = gr.Checkbox(
+                            label="Vergelijk dit antwoord zonder SSL",
+                            value=False,
+                            scale=5,
+                        )
+                        compare_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
                     with gr.Accordion("Vergelijking", open=False):
                         comparison_note = gr.Markdown(
                             "Zet **Vergelijk dit antwoord zonder SSL** aan voor een same-turn control."
@@ -456,6 +550,8 @@ def build_vnext_app(
 
             with gr.Tab("Shadow"):
                 with gr.Column(elem_id="ssv-shadow"):
+                    with gr.Row():
+                        shadow_info = gr.Button("ⓘ Uitleg Shadow", variant="secondary")
                     shadow_summary = gr.Markdown(_shadow_summary(initial_view), elem_id="ssv-shadow-summary")
                     seed_select = gr.Dropdown(
                         choices=initial_seeds,
@@ -470,20 +566,25 @@ def build_vnext_app(
                             "**Geverifieerde ondersteuning toevoegen** levert onafhankelijk gecontroleerde "
                             "support aan de Validation Gate."
                         )
-                        contradict_button = gr.Button("Tegenspraak registreren", variant="stop")
+                        with gr.Row():
+                            contradict_button = gr.Button("Tegenspraak registreren", variant="stop", scale=5)
+                            contradiction_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
                         evidence_source = gr.Textbox(label="Bronreferentie")
                         evidence_note = gr.Textbox(label="Toelichting bij de ondersteuning", lines=2)
                         evidence_attest = gr.Checkbox(
                             label="Ik heb deze ondersteuning onafhankelijk van modeloutput gecontroleerd",
                             value=False,
                         )
-                        evidence_button = gr.Button("Geverifieerde ondersteuning toevoegen")
+                        with gr.Row():
+                            evidence_button = gr.Button("Geverifieerde ondersteuning toevoegen", scale=5)
+                            evidence_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
                     with gr.Accordion("Technische audit", open=False):
                         session_json = gr.JSON(value=initial_view, label="Gesprekstoestand")
                         seed_json = gr.JSON(label="Geheugenpunt")
 
             with gr.Tab("Bronnen"):
                 with gr.Column(elem_id="ssv-sources"):
+                    source_info = gr.Button("ⓘ Uitleg bronnen verwerken", variant="secondary")
                     gr.Markdown(
                         "Voeg materiaal toe aan hetzelfde actieve gesprek. Shadowseed observeert dit automatisch; "
                         "de bron wordt niet automatisch bewijs."
@@ -499,6 +600,7 @@ def build_vnext_app(
                     source_result = gr.Markdown(_source_summary(None), elem_id="ssv-source-result")
 
             with gr.Tab("Onderzoek"):
+                research_info = gr.Button("ⓘ Uitleg onderzoek", variant="secondary")
                 gr.Markdown(
                     "### Onderzoeksmethoden\n"
                     "Longitudinale vanilla-trajecten, shadow pressure, self-reinforcement, "
@@ -506,6 +608,44 @@ def build_vnext_app(
                     "Deze reset bouwt eerst de normale Workbench opnieuw op. De bestaande researchmechanismen "
                     "blijven in de backend behouden en worden daarna hier expliciet teruggebracht."
                 )
+
+        def bind_help(button, feature_id: str):
+            button.click(
+                lambda session_id, compare_enabled, provider_value, consent_value, seed_id, _feature=feature_id:
+                    show_help(
+                        _feature,
+                        session_id,
+                        compare_enabled,
+                        provider_value,
+                        consent_value,
+                        seed_id,
+                    ),
+                inputs=[active_session, compare, provider, hosted_confirm, seed_select],
+                outputs=[help_feature, help_panel],
+            )
+
+        for button, feature_id in (
+            (session_info, "conversation"),
+            (new_chat_info, "new_chat"),
+            (model_info, "model"),
+            (consent_info, "external_consent"),
+            (create_info, "new_chat"),
+            (send_info, "send"),
+            (compare_info, "compare"),
+            (shadow_info, "shadow"),
+            (contradiction_info, "contradiction"),
+            (evidence_info, "verified_support"),
+            (source_info, "sources"),
+            (research_info, "research"),
+        ):
+            bind_help(button, feature_id)
+
+        for component in (session_select, compare, provider, hosted_confirm, seed_select):
+            component.change(
+                refresh_help,
+                inputs=[help_feature, active_session, compare, provider, hosted_confirm, seed_select],
+                outputs=[help_panel],
+            )
 
         session_select.change(
             select_session,
