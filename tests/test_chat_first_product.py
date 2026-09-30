@@ -761,3 +761,43 @@ def test_tightening_gate_revalidates_existing_promotions_at_use_time(tmp_path) -
         "What important perspective could be missing again?",
     )
     assert second["report"]["surfaced_seed_ids"] == []
+
+
+
+def test_tightened_assisted_gate_reviews_historical_promotion(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Historical promotion review",
+        profile_id="balanced",
+        backend="fixture",
+        ssl_intensity=0,
+        gate_strictness=0,
+    )
+
+    for _ in range(3):
+        controller.ingest_sources(
+            session_id,
+            pasted_text="Alpha provides a recurring explanatory perspective.",
+        )
+
+    permissive = controller.session_view(session_id)
+    promoted = [
+        seed for seed in permissive["seeds"]
+        if seed["status"] == "PROMOTED"
+    ]
+    assert promoted
+    seed_id = promoted[0]["id"]
+
+    tightened = controller.update_session_controls(
+        session_id,
+        ssl_intensity=100,
+        gate_strictness=60,
+        allow_self_reinforcement=False,
+    )
+    seed = next(item for item in tightened["seeds"] if item["id"] == seed_id)
+
+    assert tightened["authority_profile_id"] == "assisted"
+    assert tightened["effective_gate_policy_id"] == "evidence_backed"
+    assert seed["current_gate_authorized"] is False
+    assert int(seed["occurrence_count"]) >= 3
+    assert seed_id in tightened["authority_review_seed_ids"]
