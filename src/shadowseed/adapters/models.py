@@ -4,10 +4,33 @@ from __future__ import annotations
 
 from typing import Protocol
 
+
+def chat_messages(
+    history: list[tuple[str, str]],
+    question: str,
+) -> list[dict[str, str]]:
+    """Build provider-native chat turns for a vanilla conversation."""
+
+    messages: list[dict[str, str]] = []
+    for user_text, assistant_text in history:
+        messages.append({"role": "user", "content": str(user_text)})
+        messages.append({"role": "assistant", "content": str(assistant_text)})
+    messages.append({"role": "user", "content": str(question)})
+    return messages
+
+
 class ModelBackend(Protocol):
     name: str
 
     def generate(self, prompt: str, scenario: dict, mode: str, ssl_seeds: list[str]) -> str:
+        ...
+
+    def generate_chat(
+        self,
+        history: list[tuple[str, str]],
+        question: str,
+    ) -> str:
+        """Generate one vanilla turn from role-structured conversation history."""
         ...
 
 
@@ -25,6 +48,13 @@ class FixtureBackend:
             return scenario.get("baseline_answer", "")
         additions = " ".join(ssl_seeds)
         return f"{scenario.get('baseline_answer', '')}\n\nSSL-guided revision: {additions}".strip()
+
+    def generate_chat(
+        self,
+        history: list[tuple[str, str]],
+        question: str,
+    ) -> str:
+        return f"Fixture echo answer to: {question}"
 
 
 class HFTransformersBackend:
@@ -80,6 +110,32 @@ class HFTransformersBackend:
         )
         return output[0]["generated_text"].strip()
 
+    def generate_chat(
+        self,
+        history: list[tuple[str, str]],
+        question: str,
+    ) -> str:
+        messages = chat_messages(history, question)
+        chat_template = getattr(self.tokenizer, "apply_chat_template", None)
+        if callable(chat_template):
+            prompt = chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True,
+            )
+        else:
+            prompt = "\n".join(
+                f"{message['role'].capitalize()}: {message['content']}"
+                for message in messages
+            ) + "\nAssistant:"
+        output = self.generator(
+            prompt,
+            max_new_tokens=self.max_new_tokens,
+            do_sample=False,
+            return_full_text=False,
+        )
+        return output[0]["generated_text"].strip()
+
 
 class OllamaBackend:
     """Local Ollama backend.
@@ -100,6 +156,16 @@ class OllamaBackend:
 
     def generate(self, prompt: str, scenario: dict, mode: str, ssl_seeds: list[str]) -> str:
         return self.client.generate(prompt, max_new_tokens=self.max_new_tokens)
+
+    def generate_chat(
+        self,
+        history: list[tuple[str, str]],
+        question: str,
+    ) -> str:
+        return self.client.generate_chat(
+            chat_messages(history, question),
+            max_new_tokens=self.max_new_tokens,
+        )
 
 
 class OpenAIBackend:
@@ -122,6 +188,16 @@ class OpenAIBackend:
 
     def generate(self, prompt: str, scenario: dict, mode: str, ssl_seeds: list[str]) -> str:
         return self.client.generate(prompt, max_new_tokens=self.max_new_tokens)
+
+    def generate_chat(
+        self,
+        history: list[tuple[str, str]],
+        question: str,
+    ) -> str:
+        return self.client.generate_chat(
+            chat_messages(history, question),
+            max_new_tokens=self.max_new_tokens,
+        )
 
 
 def make_backend(
