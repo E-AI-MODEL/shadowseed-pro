@@ -47,6 +47,7 @@ def authority_projection(state: Mapping[str, Any]) -> list[dict[str, Any]]:
                 "weight": seed.get("weight"),
                 "trace": seed.get("trace"),
                 "authority_version": seed.get("authority_version"),
+                "occurrence_count": seed.get("occurrence_count"),
                 "evidence_count": seed.get("evidence_count"),
             }
         )
