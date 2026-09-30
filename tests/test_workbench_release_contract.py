@@ -105,5 +105,6 @@ def test_release_requires_both_macos_architectures_and_real_server_probe() -> No
     assert "server_startup_probe" in release
     assert "archive_roundtrip_server_probe" in release
     assert "def _verify_frozen_server_startup" in builder
-    assert '"$BIN"' in builder
+    assert "Open Shadowseed.command" in builder
+    assert "Contents/MacOS/Shadowseed" in builder
     assert 'open "$APP"' not in builder
