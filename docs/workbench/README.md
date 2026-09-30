@@ -15,7 +15,7 @@ Use the download/open route only when a verified GitHub release for the version 
 1. Download the archive for the operating system/architecture.
 2. Verify it against `SHA256SUMS` when practical.
 3. Extract **Shadowseed**.
-4. On Windows/Linux, open the normal launcher. On macOS, choose the `darwin-arm64` archive for Apple Silicon or `darwin-x86_64` for Intel, then start with `Open Shadowseed.command`; Control-click → **Open** if Finder blocks the helper.
+4. On Windows/Linux, open the normal launcher. On macOS, choose the `darwin-arm64` archive for Apple Silicon or `darwin-x86_64` for Intel, then start with `Open Shadowseed.command`; Control-click → **Open** if Finder blocks the helper. The Intel build omits the in-process Hugging Face/PyTorch stack and offers Fixture, Ollama and OpenAI instead.
 5. The app creates/opens the local `~/.shadowseed` workspace and binds the UI to loopback.
 6. Choose a model, create a chat and start talking.
 
