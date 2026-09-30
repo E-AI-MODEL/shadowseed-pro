@@ -984,6 +984,17 @@ class ShadowChatSession:
             ):
                 seed.origin.context_ref = first_pass_context_ref
                 seed.origin.detection_basis = first_pass_detection_basis
+                for event in reversed(self.manager.event_log):
+                    if event.event_type != "created" or event.seed_id != seed_id:
+                        continue
+                    event_origin = event.detail.get("origin")
+                    if (
+                        isinstance(event_origin, dict)
+                        and event_origin.get("context_ref") == provisional_context_ref
+                    ):
+                        event_origin["context_ref"] = first_pass_context_ref
+                        event_origin["detection_basis"] = first_pass_detection_basis
+                    break
 
         turn_observations = self.observation_ledger.record_batch(
             raw_candidates,
