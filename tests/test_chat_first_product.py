@@ -690,3 +690,29 @@ def test_loop_only_update_preserves_legacy_custom_regie(tmp_path) -> None:
     assert after["state"]["manager"]["config"] == manager_config_before
     assert after["config"]["allow_self_reinforcement"] is True
     assert after["state"]["session_config"]["allow_self_reinforcement"] is True
+
+
+
+def test_shadow_pressure_is_rejected_for_evaluation_sessions(tmp_path) -> None:
+    import pytest
+
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Evaluation comparison",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="evaluation",
+    )
+
+    before = controller.sessions.load(session_id)
+    with pytest.raises(ValueError, match="available only for live sessions"):
+        controller.send_turn(
+            session_id,
+            "Compare this turn.",
+            compare_without_ssl=True,
+            comparison_mode="shadow_pressure",
+        )
+    after = controller.sessions.load(session_id)
+
+    assert after["state"]["history"] == before["state"]["history"]
+    assert after["state"]["turn"] == before["state"]["turn"]
