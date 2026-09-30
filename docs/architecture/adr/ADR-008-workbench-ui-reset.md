@@ -181,6 +181,40 @@ After an answer, the UI may state for example:
 
 The detailed audit explains which seeds were authorized, selected, surfaced and used.
 
+### 8. Every normal function has contextual ELI8 help and explicit interaction semantics
+
+Every visible normal-product function must have an adjacent **ⓘ** affordance.
+
+The help content has five fixed layers:
+
+1. **Alsof je 8 bent** — a concrete analogy that explains the function without changing its meaning;
+2. **Wat doet dit echt?** — the exact product/runtime action it maps to;
+3. **Wat doet dit niet?** — the most likely category error or false expectation;
+4. **Samen met andere functies** — dependencies and interactions expressed with explicit relation words;
+5. **Huidige combinatie** — what the currently active settings mean together for this session/seed.
+
+Interaction language is standardized:
+
+- **versterkt** — a signal or route can become stronger; this never means “more true”;
+- **verslapt** — a signal or route is weakened/suppressed;
+- **blokkeert** — a hard stop exists for that route;
+- **vereist** — the action cannot proceed without the named condition;
+- **mag** — policy permits the action, but it is not required;
+- **kan** — the condition makes an outcome possible, not guaranteed;
+- **moet niet / hoeft niet** — no dependency exists;
+- **onafhankelijk** — changing one does not change the other.
+
+Help must describe real runtime consequences, not generic educational copy. For example:
+
+- Gate authorization + relevance means a seed **kan** be surfaced; it **moet niet** be surfaced;
+- an open contradiction **blokkeert** point-of-use even when evidence exists;
+- verified support **kan** evidence-backed authority **versterken**, but does not make a seed true;
+- self-reinforcement off **blokkeert** SSL-exposed output from strengthening its own recurrence/authority loop;
+- same-turn comparison on **vereist** one extra current-turn generation but **verandert** SSL state niet;
+- semantic matching can improve retrieval of paraphrases but is **onafhankelijk** from authority.
+
+This help layer is descriptive only. It must never mutate configuration or combine independent mechanisms.
+
 ### 8. Workbench tests must cover behavior and latency shape, not only labels
 
 UI contract tests must go beyond checking that button strings and CSS selectors exist.
@@ -234,3 +268,4 @@ The 0.9.2 independent `vanilla_history` field may remain readable for research/p
 9. Longitudinal vanilla-path comparison is available only as an explicitly labeled research experiment.
 10. The existing Gate, audit and point-of-use authority invariants remain unchanged.
 11. No normal UI control silently changes more than one independent SSL policy dimension.
+12. Every visible normal-product function has contextual ⓘ help with ELI8, exact semantics, non-effects, dependencies and the current combination state.
