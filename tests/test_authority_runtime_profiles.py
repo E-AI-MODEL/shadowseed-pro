@@ -505,6 +505,16 @@ def test_same_turn_refinement_uses_draft_specific_provenance() -> None:
         and seed.origin.context_ref.endswith(":draft_answer")
         for seed in session.manager.seeds.values()
     )
+    created_events = [
+        event
+        for event in session.manager.event_log
+        if event.event_type == "created" and isinstance(event.detail.get("origin"), dict)
+    ]
+    assert created_events
+    assert all(
+        str(event.detail["origin"].get("context_ref", "")).endswith(":draft_answer")
+        for event in created_events
+    )
 
 
 def test_refinement_failure_finalizes_draft_and_keeps_session_usable() -> None:
@@ -609,4 +619,32 @@ def test_failed_refinement_keeps_visible_answer_provenance() -> None:
     assert all(
         item["context_ref"].endswith(":visible_answer")
         for item in report["candidate_observations"]
+    )
+
+
+
+def test_visible_first_pass_creation_event_matches_observation_provenance() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        embedding_backend="lexical",
+        detector_backend=_NearDuplicateDetector(),
+        embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+        authority_profile_id="strict",
+        allow_self_reinforcement=True,
+    )
+
+    report = session.turn("Which boundary matters?")
+    assert report["self_reinforcement_applied"] is False
+    assert report["first_pass_context_ref"].endswith(":visible_answer")
+
+    created_events = [
+        event
+        for event in session.manager.event_log
+        if event.event_type == "created" and isinstance(event.detail.get("origin"), dict)
+    ]
+    assert created_events
+    assert all(
+        str(event.detail["origin"].get("context_ref", "")).endswith(":visible_answer")
+        for event in created_events
     )
