@@ -540,3 +540,48 @@ def test_review_alerts_are_scoped_and_preserved_on_errors() -> None:
     for binding in (falsify_binding, evidence_binding):
         assert "session_select," in binding
         assert "source_session," in binding
+
+
+
+def test_send_rejections_preserve_existing_gate_notice() -> None:
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+
+    send_start = source.index("def send_message(")
+    ingest_start = source.index("def source_session_changed(", send_start)
+    body = source[send_start:ingest_start]
+
+    empty_branch = body[
+        body.index('if not str(question or "").strip():') :
+        body.index("try:", body.index('if not str(question or "").strip():'))
+    ]
+    assert "gr.update()," in empty_branch
+    assert empty_branch.rstrip().endswith(")")
+
+    exception_start = body.index("except Exception as exc:")
+    exception_body = body[exception_start:]
+    assert "gr.update()," in exception_body
+    assert 'return (' in exception_body
+
+    # The final callback output is gate_alert, so rejected sends must not clear it.
+    assert exception_body.count("gr.update()") >= 2
+
+
+def test_sources_gate_notice_tracks_its_selected_session() -> None:
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+
+    assert "def source_session_changed(" in source
+    assert "return _gate_notice(ctl.session_view(session_id))" in source
+    assert "def refresh_source_session(" in source
+    assert "source_session_changed(selected)" in source
+
+    component_start = source.index("source_gate_alert = gr.Markdown(")
+    component = source[component_start : component_start + 220]
+    assert "_gate_notice(initial_view)" in component
+
+    refresh_start = source.index("source_refresh.click(")
+    refresh_block = source[refresh_start : refresh_start + 700]
+    assert "refresh_source_session" in refresh_block
+    assert "outputs=[source_session, source_gate_alert]" in refresh_block
+    assert "source_session.change(" in refresh_block
+    assert "source_session_changed" in refresh_block
+    assert "outputs=[source_gate_alert]" in refresh_block
