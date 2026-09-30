@@ -2,7 +2,9 @@
 
 Observations are audit data, never authority. Recording a detector candidate here
 must not change seed trace, occurrence count, evidence, Gate state, or weight.
-SSL-exposed candidates are retained for audit but are never recurrence-eligible.
+Schema v1 keeps SSL-exposed candidates strictly non-recurrence-eligible. Schema
+v2 can explicitly mark an SSL-exposed observation recurrence-eligible only when
+the experimental self-reinforcement permission is recorded on that observation.
 A later clean observation may be linked to an earlier contaminated observation
 by appending a separate link record; the original observation stays immutable.
 """
@@ -14,7 +16,8 @@ from hashlib import sha256
 from typing import Any, Iterable
 
 
-OBSERVATION_SCHEMA_VERSION = 1
+OBSERVATION_SCHEMA_VERSION = 2
+SUPPORTED_OBSERVATION_SCHEMA_VERSIONS = frozenset({1, 2})
 
 
 def normalize_observation_text(text: str) -> str:
@@ -41,6 +44,20 @@ class CandidateObservation:
     schema_version: int = OBSERVATION_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
+        if self.schema_version not in SUPPORTED_OBSERVATION_SCHEMA_VERSIONS:
+            raise ValueError("unsupported candidate-observation schema")
+        if self.schema_version == 1:
+            if self.self_reinforcement_allowed:
+                raise ValueError(
+                    "candidate-observation schema v1 does not support "
+                    "self-reinforcement permission"
+                )
+            if self.ssl_exposed and self.recurrence_eligible:
+                raise ValueError(
+                    "SSL-exposed observations cannot be recurrence-eligible "
+                    "in candidate-observation schema v1"
+                )
+            return
         if (
             self.ssl_exposed
             and self.recurrence_eligible
@@ -50,8 +67,6 @@ class CandidateObservation:
                 "SSL-exposed observations require explicit self-reinforcement "
                 "permission to be recurrence-eligible"
             )
-        if self.schema_version != OBSERVATION_SCHEMA_VERSION:
-            raise ValueError("unsupported candidate-observation schema")
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -85,9 +100,7 @@ class CandidateObservation:
                 payload.get("self_reinforcement_allowed", False)
             ),
             legacy_projection=bool(payload.get("legacy_projection", False)),
-            schema_version=int(
-                payload.get("schema_version", OBSERVATION_SCHEMA_VERSION)
-            ),
+            schema_version=int(payload.get("schema_version", 1)),
         )
 
 
@@ -100,7 +113,7 @@ class ObservationLink:
     schema_version: int = OBSERVATION_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
-        if self.schema_version != OBSERVATION_SCHEMA_VERSION:
+        if self.schema_version not in SUPPORTED_OBSERVATION_SCHEMA_VERSIONS:
             raise ValueError("unsupported candidate-observation link schema")
         if self.contaminated_observation_id == self.clean_observation_id:
             raise ValueError("observation recovery links must connect distinct records")
@@ -115,9 +128,7 @@ class ObservationLink:
             contaminated_observation_id=str(payload["contaminated_observation_id"]),
             clean_observation_id=str(payload["clean_observation_id"]),
             link_type=str(payload.get("link_type", "later_clean_exact_match")),
-            schema_version=int(
-                payload.get("schema_version", OBSERVATION_SCHEMA_VERSION)
-            ),
+            schema_version=int(payload.get("schema_version", 1)),
         )
 
 
@@ -145,18 +156,20 @@ class CandidateObservationLedger:
     @staticmethod
     def _observation_id(context_ref: str, index: int, raw_text: str) -> str:
         digest = sha256(
-            f"candidate-observation-v1\0{context_ref}\0{index}\0{raw_text}".encode(
-                "utf-8"
-            )
+            (
+                f"candidate-observation-v{OBSERVATION_SCHEMA_VERSION}\0"
+                f"{context_ref}\0{index}\0{raw_text}"
+            ).encode("utf-8")
         ).hexdigest()
         return f"obs_{digest[:24]}"
 
     @staticmethod
     def _link_id(contaminated_id: str, clean_id: str) -> str:
         digest = sha256(
-            f"candidate-observation-link-v1\0{contaminated_id}\0{clean_id}".encode(
-                "utf-8"
-            )
+            (
+                f"candidate-observation-link-v{OBSERVATION_SCHEMA_VERSION}\0"
+                f"{contaminated_id}\0{clean_id}"
+            ).encode("utf-8")
         ).hexdigest()
         return f"obslink_{digest[:24]}"
 
@@ -249,20 +262,23 @@ class CandidateObservationLedger:
     def from_dict(cls, payload: dict[str, Any] | None) -> "CandidateObservationLedger":
         if not payload:
             return cls()
-        schema_version = int(
-            payload.get("schema_version", OBSERVATION_SCHEMA_VERSION)
-        )
-        if schema_version != OBSERVATION_SCHEMA_VERSION:
+        schema_version = int(payload.get("schema_version", 1))
+        if schema_version not in SUPPORTED_OBSERVATION_SCHEMA_VERSIONS:
             raise ValueError("unsupported candidate-observation ledger schema")
-        return cls(
-            observations=(
-                CandidateObservation.from_dict(item)
-                for item in payload.get("observations", [])
-            ),
-            links=(
-                ObservationLink.from_dict(item) for item in payload.get("links", [])
-            ),
-        )
+
+        observations: list[CandidateObservation] = []
+        for raw_item in payload.get("observations", []):
+            item = dict(raw_item)
+            item.setdefault("schema_version", schema_version)
+            observations.append(CandidateObservation.from_dict(item))
+
+        links: list[ObservationLink] = []
+        for raw_item in payload.get("links", []):
+            item = dict(raw_item)
+            item.setdefault("schema_version", schema_version)
+            links.append(ObservationLink.from_dict(item))
+
+        return cls(observations=observations, links=links)
 
     @classmethod
     def project_legacy_turn_reports(
