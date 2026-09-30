@@ -18,6 +18,8 @@ from shadowseed.storage.integrity import (
     EVENT_FORMAT_VERSION,
     GENESIS_HASH,
     AnchorState,
+    authority_config_digest,
+    authority_config_projection,
     authority_digest,
     canonical_json,
     create_integrity_key,
@@ -997,7 +999,11 @@ class SQLiteWorkspaceRepository:
                         audit_epoch=self._current_epoch(connection),
                         session_id=session_id,
                         event_type="session.create",
-                        payload={"authority_digest": authority_digest(state)},
+                        payload={
+                            "authority_digest": authority_digest(state),
+                            "authority_config": authority_config_projection(state),
+                            "authority_config_digest": authority_config_digest(state),
+                        },
                         created_at=created_at,
                     )
                 connection.commit()
@@ -1058,6 +1064,8 @@ class SQLiteWorkspaceRepository:
                         event_type="runtime.session_reconfigure",
                         payload={
                             "authority_digest": authority_digest(state),
+                            "authority_config": authority_config_projection(state),
+                            "authority_config_digest": authority_config_digest(state),
                             "runtime_commit": minimal_runtime_commit(state),
                         },
                         created_at=updated_at,
