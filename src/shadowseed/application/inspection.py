@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from shadowseed.application.sessions import SessionService
+from shadowseed.manager import snapshot_meets_current_gate
 
 
 _STATUS_EXPLANATIONS = {
@@ -110,23 +111,40 @@ class InspectionService:
             for item in manager.get("contradiction_records", [])
             if str(item.get("status", "open")).lower() == "open"
         }
-        decorated = [
-            {
-                **seed,
-                "blocking": str(seed.get("id")) in blocking_ids,
-                "plain_explanation": explain_seed(
-                    seed, blocking=str(seed.get("id")) in blocking_ids
-                ),
-            }
-            for seed in seeds
-        ]
+        manager_config = dict(manager.get("config", {}))
+        decorated = []
+        for seed in seeds:
+            seed_id = str(seed.get("id"))
+            blocking = seed_id in blocking_ids
+            current_gate_authorized = snapshot_meets_current_gate(
+                seed,
+                manager_config,
+                effective_gate_policy_id,
+                blocking=blocking,
+            )
+            plain_explanation = explain_seed(seed, blocking=blocking)
+            if (
+                str(seed.get("status", "")).upper() == "PROMOTED"
+                and not current_gate_authorized
+            ):
+                plain_explanation += (
+                    " It was promoted under an earlier Gate state, but the current "
+                    "Gate no longer authorizes point-of-use influence."
+                )
+            decorated.append(
+                {
+                    **seed,
+                    "blocking": blocking,
+                    "current_gate_authorized": current_gate_authorized,
+                    "plain_explanation": plain_explanation,
+                }
+            )
 
         review_seed_ids: list[str] = []
         if (
             authority_profile_id == "assisted"
             and effective_gate_policy_id == "evidence_backed"
         ):
-            manager_config = dict(manager.get("config", {}))
             recurrence_threshold = int(manager_config.get("min_occurrences_for_gate", 3))
             seed_to_cluster = {
                 str(key): int(value)
