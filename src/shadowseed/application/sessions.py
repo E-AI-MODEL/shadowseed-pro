@@ -140,15 +140,10 @@ class SessionService:
     def _generate_live_no_ssl_control(
         session: ShadowChatSession,
         question: str,
-    ) -> dict[str, Any]:
-        """Generate an independent vanilla-chat control trajectory.
+    ) -> str:
+        """Backward-compatible answer helper for an independent vanilla control."""
 
-        The control is not the SSL session with an empty seed list. It owns a
-        separate role-structured conversation history containing only the same
-        user questions and its own vanilla answers.
-        """
-
-        return session.generate_vanilla_control(question)
+        return str(session.generate_vanilla_control(question)["answer"])
 
     @staticmethod
     def _experimental_shadow_pressure(
@@ -294,8 +289,8 @@ class SessionService:
                 }
             )
             if compare_without_ssl and session.runtime_mode == "live":
-                control_metadata = self._generate_live_no_ssl_control(
-                    session, normalized_question
+                control_metadata = session.generate_vanilla_control(
+                    normalized_question
                 )
                 control_answer = str(control_metadata["answer"])
                 if comparison_mode == "shadow_pressure":
