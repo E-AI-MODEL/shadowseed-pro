@@ -57,6 +57,53 @@ def authority_digest(state: Mapping[str, Any]) -> str:
     return sha256_text(canonical_json(authority_projection(state)))
 
 
+_AUTHORITY_SESSION_CONFIG_KEYS = (
+    "surface_threshold",
+    "surface_top_k",
+    "early_turn_margin",
+    "early_turn_history",
+    "resurface_margin",
+    "gate_policy_id",
+    "authority_profile_id",
+    "revalidate_current_gate",
+    "allow_self_reinforcement",
+)
+_AUTHORITY_MANAGER_CONFIG_KEYS = (
+    "promotion_threshold",
+    "validation_increment",
+    "min_occurrences_for_gate",
+    "min_evidence_for_gate",
+    "min_trace_for_gate",
+)
+
+
+def authority_config_projection(state: Mapping[str, Any]) -> dict[str, Any]:
+    """Return the content-minimized configuration that can change influence authority."""
+
+    session_config = state.get("session_config", {})
+    if not isinstance(session_config, Mapping):
+        session_config = {}
+    manager = state.get("manager", {})
+    if not isinstance(manager, Mapping):
+        manager = {}
+    manager_config = manager.get("config", {})
+    if not isinstance(manager_config, Mapping):
+        manager_config = {}
+
+    return {
+        "session_config": {
+            key: session_config.get(key) for key in _AUTHORITY_SESSION_CONFIG_KEYS
+        },
+        "manager_config": {
+            key: manager_config.get(key) for key in _AUTHORITY_MANAGER_CONFIG_KEYS
+        },
+    }
+
+
+def authority_config_digest(state: Mapping[str, Any]) -> str:
+    return sha256_text(canonical_json(authority_config_projection(state)))
+
+
 def minimal_runtime_commit(state: Mapping[str, Any]) -> dict[str, Any]:
     """Commit to authority/Gate/use records without storing prompts, answers or seed text."""
 
@@ -77,6 +124,8 @@ def minimal_runtime_commit(state: Mapping[str, Any]) -> dict[str, Any]:
 
     return {
         "authority_digest": authority_digest(state),
+        "authority_config": authority_config_projection(state),
+        "authority_config_digest": authority_config_digest(state),
         "gate_events": event_commitments(manager.get("gate_events", []), "event_id"),
         "contradictions": event_commitments(
             manager.get("contradiction_records", []), "contradiction_id"
