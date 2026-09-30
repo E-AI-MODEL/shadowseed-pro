@@ -1446,6 +1446,8 @@ def build_simple_app(
                 _seed_story(None),
                 None,
                 None,
+                gr.update(),
+                _memory_overview(None),
                 "",
                 "",
             )
@@ -1461,12 +1463,14 @@ def build_simple_app(
                 _seed_story(view),
                 view,
                 view.get("timeline", []),
+                dropdown_update(ctl.seed_choices(session_view), seed_id),
+                _memory_overview(session_view),
                 notice,
                 notice,
             )
         except Exception as exc:
             err = {"error": f"{type(exc).__name__}: {exc}"}
-            return err, _fout(exc), err, None, "", ""
+            return err, _fout(exc), err, None, gr.update(), _fout(exc), "", ""
 
     def submit_verified_evidence(
         session_id: str | None,
@@ -1481,6 +1485,8 @@ def build_simple_app(
                 _seed_story(None),
                 None,
                 None,
+                gr.update(),
+                _memory_overview(None),
                 "",
                 "",
                 "",
@@ -1504,6 +1510,8 @@ def build_simple_app(
                 _seed_story(view),
                 view,
                 view.get("timeline", []),
+                dropdown_update(ctl.seed_choices(session_view), seed_id),
+                _memory_overview(session_view),
                 notice,
                 notice,
                 "",
@@ -1511,7 +1519,18 @@ def build_simple_app(
             )
         except Exception as exc:
             err = {"error": f"{type(exc).__name__}: {exc}"}
-            return err, _fout(exc), err, None, "", "", "", False
+            return (
+                err,
+                _fout(exc),
+                err,
+                None,
+                gr.update(),
+                _fout(exc),
+                "",
+                "",
+                "",
+                False,
+            )
 
     def verify_turn(session_id: str | None, turn_index: float):
         if not session_id:
@@ -2166,6 +2185,8 @@ def build_simple_app(
                     seed_story,
                     seed_json,
                     seed_timeline,
+                    seed_select,
+                    memory_overview,
                     gate_alert,
                     source_gate_alert,
                 ],
@@ -2184,6 +2205,8 @@ def build_simple_app(
                     seed_story,
                     seed_json,
                     seed_timeline,
+                    seed_select,
+                    memory_overview,
                     gate_alert,
                     source_gate_alert,
                     evidence_source,
