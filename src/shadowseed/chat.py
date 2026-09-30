@@ -884,18 +884,23 @@ class ShadowChatSession:
                 ):
                     refinement_candidates.append((similarity, seed_id, seed.text))
 
+            already_surfaced_count = len(set(surfaced_seed_ids))
             remaining_boundary_slots = max(
                 0,
-                DEFAULT_PROMPT_BOUNDARY.max_seeds - len(surfaced_seed_ids),
+                DEFAULT_PROMPT_BOUNDARY.max_seeds - already_surfaced_count,
             )
             configured_refinement_limit = self.surfacing_policy.surface_top_k
-            refinement_limit = (
+            remaining_policy_slots = (
                 remaining_boundary_slots
-                if (
-                    configured_refinement_limit is None
-                    or configured_refinement_limit > remaining_boundary_slots
+                if configured_refinement_limit is None
+                else max(
+                    0,
+                    configured_refinement_limit - already_surfaced_count,
                 )
-                else configured_refinement_limit
+            )
+            refinement_limit = min(
+                remaining_boundary_slots,
+                remaining_policy_slots,
             )
             selected_refinement = select_cross_turn_seeds(
                 refinement_candidates,
