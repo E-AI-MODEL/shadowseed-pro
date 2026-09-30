@@ -246,7 +246,7 @@ def test_live_session_requires_requested_paired_control_for_comparison(tmp_path)
     )
     sessions.run_turn(session_id, "Question")
 
-    with pytest.raises(ValueError, match="no paired no-SSL control"):
+    with pytest.raises(ValueError, match="no independent vanilla control"):
         ComparisonService(sessions).compare_turn(session_id, 0)
 
 
