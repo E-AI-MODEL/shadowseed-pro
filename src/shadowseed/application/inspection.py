@@ -177,7 +177,8 @@ class InspectionService:
                 )
                 if (
                     seed_id not in blocking_ids
-                    and status not in {"PROMOTED", "EXPIRED"}
+                    and status != "EXPIRED"
+                    and not bool(seed.get("current_gate_authorized", False))
                     and is_representative
                     and occurrence_count >= recurrence_threshold
                 ):
