@@ -132,7 +132,7 @@ def test_vanilla_control_history_never_reuses_ssl_visible_answers():
 
     result = session.generate_vanilla_control("Derde vraag")
 
-    assert result["transport"] == "provider_native_chat"
+    assert result["transport"] == "role_structured_chat"
     assert result["replayed_turns"] == 2
     assert model.chat_calls == [
         ([], "Eerste vraag"),
@@ -163,6 +163,33 @@ def test_vanilla_control_history_never_reuses_ssl_visible_answers():
         embedding_fn=embed,
     )
     assert restored.vanilla_history == session.vanilla_history
+
+
+def test_restored_vanilla_history_must_match_live_user_questions():
+    embed, _dim = _emb_factory("lexical")
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        model_backend=_NativeChatModel(),
+        detector_backend=_Detector(),
+        embedding_fn=embed,
+    )
+    session.history = [("Echte vraag", "SSL antwoord")]
+    state = session.to_state()
+    state["vanilla_history"] = [
+        {"question": "Andere vraag", "answer": "vanilla antwoord"}
+    ]
+
+    with pytest.raises(
+        ValueError,
+        match="vanilla control history questions do not match live history",
+    ):
+        ShadowChatSession.from_state(
+            state,
+            model_backend=_NativeChatModel(),
+            detector_backend=_Detector(),
+            embedding_fn=embed,
+        )
 
 
 def test_seed_travels_shadow_then_steers_only_after_promotion(session):
