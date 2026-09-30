@@ -91,6 +91,19 @@ The normal product chooses safe documented defaults. Semantic embeddings are the
 
 ### 4. The normal Shadow view mirrors the SSL lifecycle
 
+Plain language must not break the connection with the actual SSL semantics.
+
+Every visible state and action in the normal UI must have a direct, inspectable mapping to one canonical runtime concept or application command. The UI may explain technical language, but it must not replace it with a friendlier phrase that changes the meaning.
+
+Examples:
+
+- **Onthouden** maps to a persisted seed;
+- **Toegestaan** maps to current Gate authorization, not to truth;
+- **Aangeboden aan antwoord** maps to surfacing / point-of-use context, not to proven causal influence;
+- **Tegenspraak registreren** creates a canonical contradiction record and blocks point-of-use influence while open;
+- **Geverifieerde ondersteuning toevoegen** submits independently checked support through the existing evidence authorization path;
+- **Bron toevoegen** by itself is not equivalent to verified evidence and must not be presented as if it were.
+
 The primary human-readable states answer three questions:
 
 1. **What did Shadowseed notice?**
