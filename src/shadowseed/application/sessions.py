@@ -140,25 +140,15 @@ class SessionService:
     def _generate_live_no_ssl_control(
         session: ShadowChatSession,
         question: str,
-    ) -> str:
-        """Generate a paired control without mutating SSL state."""
+    ) -> dict[str, Any]:
+        """Generate an independent vanilla-chat control trajectory.
 
-        fixture_answer = f"Fixture echo answer to: {question}"
-        return session.model.generate(
-            build_chat_prompt(
-                session.history,
-                question,
-                [],
-                response_language="the same language as the user's current question",
-            ),
-            {
-                "question": question,
-                "turn": session._turn,
-                "baseline_answer": fixture_answer,
-            },
-            "baseline",
-            [],
-        )
+        The control is not the SSL session with an empty seed list. It owns a
+        separate role-structured conversation history containing only the same
+        user questions and its own vanilla answers.
+        """
+
+        return session.generate_vanilla_control(question)
 
     @staticmethod
     def _experimental_shadow_pressure(
@@ -293,10 +283,21 @@ class SessionService:
                 )
 
             control_answer: str | None = None
+            control_metadata: dict[str, Any] = {}
             shadow_pressure_answer: str | None = None
             shadow_pressure_candidates: list[dict[str, Any]] = []
+            prior_ssl_seed_ids = sorted(
+                {
+                    str(seed_id)
+                    for prior_report in session.turn_reports
+                    for seed_id in prior_report.get("surfaced_seed_ids", [])
+                }
+            )
             if compare_without_ssl and session.runtime_mode == "live":
-                control_answer = self._generate_live_no_ssl_control(session, normalized_question)
+                control_metadata = self._generate_live_no_ssl_control(
+                    session, normalized_question
+                )
+                control_answer = str(control_metadata["answer"])
                 if comparison_mode == "shadow_pressure":
                     shadow_pressure_answer, shadow_pressure_candidates = (
                         self._generate_live_shadow_pressure_control(
@@ -324,31 +325,43 @@ class SessionService:
                         if shadow_pressure_answer is not None
                         else control_answer
                     )
-                    comparison_kind = "paired_live_shadow_pressure"
+                    comparison_kind = "independent_vanilla_vs_shadow_pressure_path"
                     comparison_seed_ids = [
                         str(item["seed_id"]) for item in shadow_pressure_candidates
                     ]
                     comparison_interpretation = (
-                        "Both arms use the same pre-turn history and model configuration. "
-                        "The treatment arm receives read-only, non-promoted shadow-memory "
-                        "perspectives weighted by maturity and relevance. This is an "
-                        "experimental pre-authority effect test, not evidence that those "
-                        "seeds were Validation-Gate authorized."
+                        "The control is an independent vanilla conversation built only "
+                        "from the same user questions and its own vanilla answers. The "
+                        "treatment follows the Shadowseed chat trajectory and receives "
+                        "read-only, non-promoted shadow-memory perspectives on this turn. "
+                        "This measures full-path divergence from vanilla, not a same-history "
+                        "current-turn causal effect."
                     )
                 else:
                     treatment_answer = str(report.get("answer", ""))
                     comparison_kind = (
-                        "paired_live_no_ssl_control"
+                        "independent_vanilla_vs_ssl_path"
                         if session.runtime_mode == "live"
                         else "evaluation_control"
                     )
                     comparison_seed_ids = list(report.get("surfaced_seed_ids", []))
                     comparison_interpretation = (
-                        "Both arms use the same pre-turn visible history and model "
-                        "configuration. The control has no surfaced Shadow Seeds. "
-                        "Differences are attributable to authorized SSL only when a "
-                        "Gate-authorized seed actually surfaced."
+                        (
+                            "The control is an independent vanilla conversation built only "
+                            "from the same user questions and its own vanilla answers. The "
+                            "treatment follows the normal Shadowseed conversation, including "
+                            "any earlier SSL-influenced answers. A difference therefore "
+                            "measures cumulative Shadowseed-path divergence from vanilla; "
+                            "current-turn seed influence is reported separately."
+                        )
+                        if session.runtime_mode == "live"
+                        else (
+                            "The evaluation runtime keeps baseline history isolated and "
+                            "compares it with the SSL sidecar answer for the same turn."
+                        )
                     )
+                current_ssl_influence = bool(comparison_seed_ids)
+                prior_ssl_influence = bool(prior_ssl_seed_ids)
                 comparison_fields = {
                     "comparison_requested": True,
                     "comparison_mode": comparison_mode,
@@ -357,7 +370,20 @@ class SessionService:
                     "comparison_ssl_answer": treatment_answer,
                     "comparison_seed_ids": comparison_seed_ids,
                     "comparison_shadow_pressure_candidates": shadow_pressure_candidates,
-                    "comparison_ssl_influence_observed": bool(comparison_seed_ids),
+                    "comparison_control_history_isolated": session.runtime_mode == "live",
+                    "comparison_control_transport": control_metadata.get("transport"),
+                    "comparison_control_replayed_turns": int(
+                        control_metadata.get("replayed_turns", 0)
+                    ),
+                    "comparison_control_history_turns_before": int(
+                        control_metadata.get("history_turns_before", 0)
+                    ),
+                    "comparison_prior_ssl_seed_ids": prior_ssl_seed_ids,
+                    "comparison_current_ssl_influence_observed": current_ssl_influence,
+                    "comparison_prior_ssl_influence_observed": prior_ssl_influence,
+                    "comparison_ssl_influence_observed": (
+                        current_ssl_influence or prior_ssl_influence
+                    ),
                     "comparison_interpretation": comparison_interpretation,
                 }
                 report.update(comparison_fields)
