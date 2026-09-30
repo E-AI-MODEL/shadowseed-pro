@@ -481,3 +481,28 @@ def test_memory_refresh_reloads_seed_choices_and_overview() -> None:
     binding = source[binding_start : binding_start + 500]
     assert "refresh_memory" in binding
     assert "outputs=[memory_session, seed_select, memory_overview]" in binding
+
+
+
+def test_review_actions_refresh_memory_summary_and_dropdown() -> None:
+    source = Path("src/shadowseed/workbench/simple_app.py").read_text(encoding="utf-8")
+
+    falsify_start = source.index("def falsify_seed(")
+    evidence_start = source.index("def submit_verified_evidence(", falsify_start)
+    verify_start = source.index("def verify_turn(", evidence_start)
+    falsify_body = source[falsify_start:evidence_start]
+    evidence_body = source[evidence_start:verify_start]
+
+    for body in (falsify_body, evidence_body):
+        assert "dropdown_update(ctl.seed_choices(session_view), seed_id)" in body
+        assert "_memory_overview(session_view)" in body
+
+    falsify_binding = source[
+        source.index("falsify_button.click(") : source.index("evidence_button.click(")
+    ]
+    evidence_binding = source[
+        source.index("evidence_button.click(") : source.index('with gr.Tab("Controleren"')
+    ]
+    for binding in (falsify_binding, evidence_binding):
+        assert "seed_select," in binding
+        assert "memory_overview," in binding
