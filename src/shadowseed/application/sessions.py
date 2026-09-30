@@ -279,6 +279,19 @@ class SessionService:
             stored = self.repository.load_session(session_id)
             session = ShadowChatSession.from_state(stored["state"])
 
+            if comparison_mode not in {"authorized", "shadow_pressure"}:
+                raise ValueError(
+                    "comparison_mode must be 'authorized' or 'shadow_pressure'"
+                )
+            if (
+                compare_without_ssl
+                and comparison_mode == "shadow_pressure"
+                and session.runtime_mode != "live"
+            ):
+                raise ValueError(
+                    "shadow_pressure comparison is available only for live sessions"
+                )
+
             control_answer: str | None = None
             shadow_pressure_answer: str | None = None
             shadow_pressure_candidates: list[dict[str, Any]] = []
@@ -305,10 +318,6 @@ class SessionService:
                     control_answer = str(baseline)
                 if control_answer is None:
                     raise RuntimeError("comparison requested but no no-SSL control was generated")
-                if comparison_mode not in {"authorized", "shadow_pressure"}:
-                    raise ValueError(
-                        "comparison_mode must be 'authorized' or 'shadow_pressure'"
-                    )
                 if comparison_mode == "shadow_pressure" and session.runtime_mode == "live":
                     treatment_answer = (
                         shadow_pressure_answer
