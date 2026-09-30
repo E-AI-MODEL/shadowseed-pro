@@ -77,12 +77,15 @@ def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -
     assert "scoped to v0.4.0" not in workflow
 
 
-def test_macos_intel_release_stack_stays_compatible() -> None:
+def test_macos_intel_release_omits_unmaintainable_hf_stack() -> None:
     pyproject = Path("pyproject.toml").read_text(encoding="utf-8")
 
-    assert '"transformers>=4.51,<5"' in pyproject
-    assert '"torch>=2.2,<2.3; sys_platform == \'darwin\' and platform_machine == \'x86_64\'"' in pyproject
-    assert '"numpy>=1.24,<2; sys_platform == \'darwin\' and platform_machine == \'x86_64\'"' in pyproject
+    non_intel = "sys_platform != 'darwin' or platform_machine != 'x86_64'"
+    assert f'"sentence-transformers>=2.7; {non_intel}"' in pyproject
+    assert f'"transformers>=5.10,<6; {non_intel}"' in pyproject
+    assert f'"torch>=2.5; {non_intel}"' in pyproject
+    assert "torch>=2.2,<2.3" not in pyproject
+    assert "transformers>=4.51,<5" not in pyproject
 
 
 def test_release_requires_both_macos_architectures_and_real_server_probe() -> None:
@@ -104,6 +107,8 @@ def test_release_requires_both_macos_architectures_and_real_server_probe() -> No
     assert '("darwin", "x86_64")' in release
     assert "server_startup_probe" in release
     assert "archive_roundtrip_server_probe" in release
+    assert "local_hf_stack_bundled" in standalone
+    assert "local_hf_stack_bundled" in release
     assert "def _verify_frozen_server_startup" in builder
     assert "Open Shadowseed.command" in builder
     assert "Contents/MacOS/Shadowseed" in builder
