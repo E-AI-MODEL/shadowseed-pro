@@ -116,11 +116,24 @@ class InspectionService:
         for seed in seeds:
             seed_id = str(seed.get("id"))
             blocking = seed_id in blocking_ids
-            current_gate_authorized = snapshot_meets_current_gate(
-                seed,
-                manager_config,
-                effective_gate_policy_id,
-                blocking=blocking,
+            revalidate_current_gate = bool(
+                session_config.get(
+                    "revalidate_current_gate",
+                    persisted_config.get("revalidate_current_gate", False),
+                )
+            )
+            current_gate_authorized = (
+                snapshot_meets_current_gate(
+                    seed,
+                    manager_config,
+                    effective_gate_policy_id,
+                    blocking=blocking,
+                )
+                if revalidate_current_gate
+                else (
+                    str(seed.get("status", "")).upper() == "PROMOTED"
+                    and not blocking
+                )
             )
             plain_explanation = explain_seed(seed, blocking=blocking)
             if (
