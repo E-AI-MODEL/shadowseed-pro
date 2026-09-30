@@ -116,6 +116,11 @@ jobs:
           assert manifest["model_weights_bundled"] is False
           assert manifest["self_test"]["frozen"] is True
           assert manifest["self_test"]["runtime_mode"] == "live"
+          expected_local_hf = not (
+              manifest["system"] == "darwin" and manifest["machine"] == "x86_64"
+          )
+          assert manifest["local_hf_stack_bundled"] is expected_local_hf
+          assert manifest["self_test"]["local_hf_stack_bundled"] is expected_local_hf
           assert manifest["server_startup_probe"]["started"] is True
           assert manifest["server_startup_probe"]["host"] == "127.0.0.1"
           assert manifest["license_identifier"] == "PolyForm-Noncommercial-1.0.0"
