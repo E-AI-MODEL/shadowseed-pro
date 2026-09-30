@@ -565,8 +565,11 @@ def test_refinement_audit_is_capped_before_contract_filter() -> None:
     influence = source.index("influence_before = len(self.influence_records)", selection)
 
     assert boundary < selection < influence
-    assert "DEFAULT_PROMPT_BOUNDARY.max_seeds - len(surfaced_seed_ids)" in source
-    assert "refinement_limit" in source[boundary:influence]
+    refinement_block = source[boundary - 160:influence]
+    assert "already_surfaced_count = len(set(surfaced_seed_ids))" in refinement_block
+    assert "DEFAULT_PROMPT_BOUNDARY.max_seeds - already_surfaced_count" in refinement_block
+    assert "configured_refinement_limit - already_surfaced_count" in refinement_block
+    assert "refinement_limit = min(" in refinement_block
 
 
 
