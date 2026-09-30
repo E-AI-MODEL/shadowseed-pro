@@ -118,6 +118,27 @@ noticed -> seen again -> supported/contradicted -> authorized -> relevant -> use
 
 Technical fields such as trace, weight, Gate event IDs, embeddings and raw JSON remain inspectable but are progressively disclosed.
 
+### 5. One UI action maps to one product concept
+
+The Workbench must not compress unrelated backend mechanisms into one button, slider, question or preset.
+
+A normal UI control represents one coherent user intent and maps to one named application-level action. If that action needs several lower-level operations for atomicity, those operations are composed behind the application-service boundary and remain one semantic command. The UI must not directly coordinate unrelated backend functions and present them as one choice.
+
+Examples of what this rule forbids:
+
+- one "SSL influence" slider that simultaneously changes retrieval thresholds, top-k and other surfacing mechanics while sounding like answer authority;
+- one "Gate strictness" slider that silently switches authority profile, Gate policy, recurrence requirements, evidence requirements and promotion thresholds;
+- one question such as "How much may Shadowseed do?" if the answer changes validation policy, surfacing policy and feedback-loop behavior together;
+- one button that both registers contradiction and changes evidence/authority through a separate path.
+
+Examples of acceptable composition:
+
+- **Tegenspraak registreren** may create the canonical contradiction record and persist the resulting blocking state because those are one domain action;
+- **Geverifieerde ondersteuning toevoegen** may validate the operator attestation, record the evidence and route it through the Gate because those steps are one authority-bearing command;
+- **Vergelijk dit antwoord zonder SSL** may generate one non-mutating control and one real turn because together they implement one clearly named comparison action.
+
+When two backend mechanisms can be changed independently, the UI must either expose them as separate controls with their real meaning or keep them out of the normal product surface.
+
 ### 5. Normal same-turn A/B isolates SSL context
 
 The ordinary action **Compare this answer without SSL** follows the original ADR-005/v0.8 contract:
@@ -212,3 +233,4 @@ The 0.9.2 independent `vanilla_history` field may remain readable for research/p
 8. The same-turn control never enters SSL lifecycle state or later conversation history.
 9. Longitudinal vanilla-path comparison is available only as an explicitly labeled research experiment.
 10. The existing Gate, audit and point-of-use authority invariants remain unchanged.
+11. No normal UI control silently changes more than one independent SSL policy dimension.
