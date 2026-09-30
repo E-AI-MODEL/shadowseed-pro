@@ -862,8 +862,8 @@ def _comparison_view(comparison: dict[str, Any] | None) -> tuple[str, str, str]:
         return (
             "",
             "",
-            "Zet **Vergelijk dit antwoord zonder Shadowseed** aan vóór je een bericht verstuurt "
-            "als je een directe vergelijking wilt.",
+            "Zet **Vergelijk met een vanilla-chat** aan vóór je een bericht verstuurt "
+            "als je Shadowseed naast een onafhankelijke baseline wilt zetten.",
         )
     labels = {
         str(comparison.get("candidate_a_label", "")): str(comparison.get("candidate_a", "")),
@@ -876,8 +876,19 @@ def _comparison_view(comparison: dict[str, Any] | None) -> tuple[str, str, str]:
         or labels.get("shadowseed")
         or ""
     )
-    without_ssl = labels.get("ssl_off") or labels.get("baseline") or ""
+    without_ssl = (
+        labels.get("vanilla")
+        or labels.get("ssl_off")
+        or labels.get("baseline")
+        or ""
+    )
     influenced = bool(comparison.get("ssl_influence_observed"))
+    current_influence = bool(
+        comparison.get("current_ssl_influence_observed", influenced)
+    )
+    prior_influence = bool(comparison.get("prior_ssl_influence_observed", False))
+    isolated = bool(comparison.get("control_history_isolated", False))
+    replayed = int(comparison.get("control_replayed_turns", 0) or 0)
     if mode == "shadow_pressure":
         candidates = list(comparison.get("shadow_pressure_candidates", []) or [])
         if candidates:
@@ -892,14 +903,26 @@ def _comparison_view(comparison: dict[str, Any] | None) -> tuple[str, str, str]:
                 "én relevante niet-gepromoveerde seeds; gelijke antwoorden zijn dan logisch."
             )
     else:
-        note = (
-            "**Geautoriseerde SSL-invloed aangetoond.** Minstens één promoted en relevante seed "
-            "bereikte de treatment prompt."
-            if influenced
-            else
-            "**Geen geautoriseerde SSL-invloed op deze beurt.** A en B krijgen dan inhoudelijk "
-            "dezelfde context; bij deterministische modellen hoort het verschil vaak nul te zijn."
-        )
+        if current_influence:
+            note = (
+                "**Op deze beurt gebruikte Shadowseed geautoriseerde context.** "
+                "De vanilla-arm heeft een eigen geschiedenis en krijgt geen Shadowseed-context."
+            )
+        elif prior_influence:
+            note = (
+                "**Op deze beurt werd geen nieuwe seed gebruikt.** De Shadowseed-arm kan wel "
+                "afwijken door eerdere SSL-beïnvloede antwoorden; de vanilla-arm blijft daarvan "
+                "gescheiden."
+            )
+        else:
+            note = (
+                "**Nog geen SSL-context in de Shadowseed-arm.** Verschillen kunnen dan alleen "
+                "uit modelvariatie of uit het verschil tussen de vanilla- en productprompt volgen."
+            )
+        if isolated:
+            note += " De baseline gebruikt uitsluitend dezelfde gebruikersvragen en eigen vanilla-antwoorden."
+        if replayed:
+            note += f" Voor deze vergelijking zijn {replayed} eerdere vanilla-beurt(en) opgebouwd."
     return with_ssl, without_ssl, note
 
 
@@ -908,10 +931,14 @@ def _verify_summary(comparison: dict[str, Any] | None) -> str:
         return (
             "## Nog niets gecontroleerd\n"
             "Kies een gesprek en berichtnummer. Een controle is alleen beschikbaar als voor dat "
-            "bericht vooraf een vergelijking zonder Shadowseed is opgeslagen."
+            "bericht vooraf een vanilla-vergelijking is opgeslagen."
         )
     mode = str(comparison.get("comparison_mode", "authorized"))
     influenced = bool(comparison.get("ssl_influence_observed"))
+    current_influence = bool(
+        comparison.get("current_ssl_influence_observed", influenced)
+    )
+    prior_influence = bool(comparison.get("prior_ssl_influence_observed", False))
     surfaced = list(comparison.get("surfaced_seed_ids", []) or [])
     question = str(comparison.get("question", "")).strip()
 
@@ -929,15 +956,23 @@ def _verify_summary(comparison: dict[str, Any] | None) -> str:
                 "Er waren geen voldoende ontwikkelde en relevante pre-promotie-seeds "
                 "voor de experimentele treatment-arm."
             )
-    elif influenced:
+    elif current_influence:
         verdict = (
-            "### Ja, geautoriseerde Shadowseed-invloed is aangetoond\n"
-            f"Er zijn **{len(surfaced)}** geautoriseerde geheugenpunt(en) gebruikt."
+            "### Shadowseed gebruikte op deze beurt geautoriseerde context\n"
+            f"Er zijn **{len(surfaced)}** geautoriseerde geheugenpunt(en) aan de treatment-arm "
+            "aangeboden. De control is een onafhankelijke vanilla-chat."
+        )
+    elif prior_influence:
+        verdict = (
+            "### Geen nieuwe seed op deze beurt, wel eerdere Shadowseed-invloed\n"
+            "De treatment-arm draagt zijn eigen eerdere SSL-beïnvloede antwoorden mee. "
+            "De vanilla-arm is daarvan geïsoleerd."
         )
     else:
         verdict = (
-            "### Nee, voor dit antwoord is geen geautoriseerde Shadowseed-invloed aangetoond\n"
-            "Eventuele verschillen tussen twee generaties kunnen normale modelvariatie zijn."
+            "### Nog geen geautoriseerde SSL-context in deze vergelijking\n"
+            "De vanilla-arm en Shadowseed-arm kunnen nog verschillen door modelvariatie of "
+            "door de productprompt, maar niet door een aangeboden seed."
         )
     return verdict + (f"\n\n**Vraag:** {question}" if question else "")
 
@@ -1930,7 +1965,7 @@ def build_simple_app(
 
                     with gr.Accordion("Extra", open=False):
                         compare_checkbox = gr.Checkbox(
-                            label="Vergelijk dit antwoord zonder Shadowseed",
+                            label="Vergelijk met een vanilla-chat",
                             value=False,
                         )
                         comparison_mode = gr.Radio(
@@ -1942,12 +1977,12 @@ def build_simple_app(
                             label="Wat wil je vergelijken?",
                         )
                         comparison_note = gr.Markdown(
-                            "Zet de vergelijking aan vóór het versturen wanneer je wilt controleren "
-                            "of Shadowseed aantoonbaar invloed had."
+                            "De vanilla-arm krijgt dezelfde gebruikersvragen, maar bouwt een volledig "
+                            "eigen antwoordgeschiedenis zonder Shadowseed op."
                         )
                         with gr.Row():
                             ssl_on = gr.Markdown(label="Met Shadowseed")
-                            ssl_off = gr.Markdown(label="Zonder Shadowseed")
+                            ssl_off = gr.Markdown(label="Vanilla baseline")
                         with gr.Accordion("Technische gegevens", open=False):
                             last_turn_json = gr.JSON(label="Laatste beurt · technisch")
                             session_json = gr.JSON(
