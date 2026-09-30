@@ -954,6 +954,12 @@ def build_simple_app(
         (_BACKEND_UI[key][0], key)
         for key in ("ollama", "openai", "hf-transformers", "fixture")
     ]
+    embedding_choices = [
+        ("Automatisch · aanbevolen", "auto"),
+        ("Slim lokaal · vergelijkt betekenis", "sentence-transformers"),
+        ("Snel lokaal · vergelijkt woorden", "lexical"),
+        ("Online · OpenAI vergelijkt betekenis", "openai"),
+    ]
 
     def session_choices() -> list[tuple[str, str]]:
         return ctl.session_choices(ctl.list_sessions())
@@ -974,7 +980,7 @@ def build_simple_app(
                 return (
                     gr.update(choices=[], value=current_model or None),
                     _model_note("ollama") + f"\n\n**Lokaal model zoeken lukte niet:** {exc}",
-                    ctl.default_embedding_backend("ollama"),
+                    "auto",
                 )
             selected = current_model if current_model in models else (models[0] if models else None)
             note = _model_note("ollama", selected)
@@ -983,13 +989,13 @@ def build_simple_app(
             return (
                 gr.update(choices=models, value=selected),
                 note,
-                ctl.default_embedding_backend("ollama"),
+                "auto",
             )
         selected = None
         return (
             gr.update(choices=[], value=None),
             _model_note(backend, selected),
-            ctl.default_embedding_backend(backend),
+            "auto",
         )
 
     def refresh_models(backend: str, current_model: str | None):
@@ -1145,6 +1151,11 @@ def build_simple_app(
     ):
         try:
             clean_title = (title or "").strip() or "Nieuwe chat"
+            resolved_embedding = (
+                ctl.default_embedding_backend(backend)
+                if embedding_backend == "auto"
+                else embedding_backend
+            )
             session_id = ctl.create_session(
                 title=clean_title,
                 profile_id="balanced",
@@ -1152,7 +1163,7 @@ def build_simple_app(
                 backend=backend,
                 model_id=(None if backend == "fixture" else (model_id or None)),
                 runtime_mode="live",
-                embedding_backend=embedding_backend or ctl.default_embedding_backend(backend),
+                embedding_backend=resolved_embedding,
                 embedding_model=embedding_model or None,
                 allow_toy_embedder=False,
                 external_confirmed=bool(hosted_confirmed),
@@ -1199,6 +1210,7 @@ def build_simple_app(
         session_id: str | None,
         question: str,
         compare_without_ssl: bool,
+        comparison_mode: str,
         hosted_confirmed: bool,
     ):
         if not session_id:
@@ -1228,6 +1240,7 @@ def build_simple_app(
                 session_id,
                 question,
                 compare_without_ssl=bool(compare_without_ssl),
+                comparison_mode=comparison_mode or "authorized",
                 external_confirmed=bool(hosted_confirmed),
             )
             view = result["session"]
