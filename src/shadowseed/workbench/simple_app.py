@@ -607,12 +607,31 @@ def _model_note(backend: str, model_id: str | None = None) -> str:
     return f"**{label}**{model}  \n{explanation}"
 
 
+def _seed_can_influence(seed: dict[str, Any]) -> bool:
+    """Return the user-facing effective authorization for one seed snapshot."""
+
+    if "current_gate_authorized" in seed:
+        return bool(seed.get("current_gate_authorized"))
+    return (
+        str(seed.get("status", "")).upper() == "PROMOTED"
+        and not bool(seed.get("blocking", False))
+    )
+
+
+def _historical_promotion_only(seed: dict[str, Any]) -> bool:
+    return (
+        str(seed.get("status", "")).upper() == "PROMOTED"
+        and not _seed_can_influence(seed)
+    )
+
+
 def _chat_status(view: dict[str, Any] | None) -> str:
     if not view:
         return "Nog geen gesprek geopend. Klik op **Nieuwe chat** om te beginnen."
 
     seeds = list(view.get("seeds", []))
-    promoted = sum(str(seed.get("status", "")).upper() == "PROMOTED" for seed in seeds)
+    authorized = sum(_seed_can_influence(seed) for seed in seeds)
+    historical_only = sum(_historical_promotion_only(seed) for seed in seeds)
     blocked = sum(bool(seed.get("blocking", False)) for seed in seeds)
     review = len(view.get("authority_review_seed_ids", []) or [])
     turns = int(view.get("turn", 0) or 0)
@@ -623,8 +642,10 @@ def _chat_status(view: dict[str, Any] | None) -> str:
     gate_level = f"{int(gate_raw)}%" if gate_raw is not None else "aangepast"
 
     extras: list[str] = []
-    if promoted:
-        extras.append(f"{promoted} mag later meedenken")
+    if authorized:
+        extras.append(f"{authorized} mag later meedenken")
+    if historical_only:
+        extras.append(f"{historical_only} historisch promoted, nu niet toegelaten")
     if review:
         extras.append(f"{review} vraagt controle")
     if blocked:
@@ -646,7 +667,8 @@ def _memory_overview(view: dict[str, Any] | None) -> str:
         return "Kies een gesprek om het Shadowseed-geheugen te bekijken."
 
     seeds = list(view.get("seeds", []))
-    promoted = sum(str(item.get("status", "")).upper() == "PROMOTED" for item in seeds)
+    authorized = sum(_seed_can_influence(item) for item in seeds)
+    historical_only = sum(_historical_promotion_only(item) for item in seeds)
     blocked = sum(bool(item.get("blocking", False)) for item in seeds)
     used: set[str] = set()
     for report in view.get("turn_reports", []) or []:
@@ -654,10 +676,16 @@ def _memory_overview(view: dict[str, Any] | None) -> str:
 
     return (
         f"**{len(seeds)}** geheugenpunt(en) · "
-        f"**{promoted}** mag meedenken · "
+        f"**{authorized}** mag meedenken · "
         f"**{len(used)}** daadwerkelijk gebruikt · "
-        f"**{blocked}** geblokkeerd\n\n"
-        "Een geheugenpunt is een mogelijke ontbrekende invalshoek. Het is niet automatisch een feit."
+        f"**{blocked}** geblokkeerd"
+        + (
+            f" · **{historical_only}** historisch promoted, nu niet toegelaten"
+            if historical_only
+            else ""
+        )
+        + "\n\nEen geheugenpunt is een mogelijke ontbrekende invalshoek. "
+        "Het is niet automatisch een feit."
     )
 
 
@@ -675,7 +703,8 @@ def _dashboard_summary(view: dict[str, Any] | None) -> tuple[str, str, str, str,
 
     seeds = list(view.get("seeds", []) or [])
     turns = int(view.get("turn", 0) or 0)
-    promoted = sum(str(seed.get("status", "")).upper() == "PROMOTED" for seed in seeds)
+    authorized = sum(_seed_can_influence(seed) for seed in seeds)
+    historical_only = sum(_historical_promotion_only(seed) for seed in seeds)
     blocked = sum(bool(seed.get("blocking", False)) for seed in seeds)
     review = len(view.get("authority_review_seed_ids", []) or [])
     used: set[str] = set()
@@ -702,7 +731,12 @@ def _dashboard_summary(view: dict[str, Any] | None) -> tuple[str, str, str, str,
     memory = (
         f"### {len(seeds)}\n"
         "**geheugenpunten**\n\n"
-        f"{promoted} mag meedenken · {len(used)} daadwerkelijk gebruikt"
+        f"{authorized} mag meedenken · {len(used)} daadwerkelijk gebruikt"
+        + (
+            f" · {historical_only} historisch promoted"
+            if historical_only
+            else ""
+        )
     )
     authority = (
         f"### {review + blocked}\n"
@@ -720,10 +754,16 @@ def _dashboard_summary(view: dict[str, Any] | None) -> tuple[str, str, str, str,
             "### Controle gevraagd\n"
             f"**{review}** geheugenpunt(en) hebben voldoende ontwikkeling om menselijke controle te vragen."
         )
-    elif promoted:
+    elif authorized:
         attention = (
             "### Alles rustig\n"
-            f"**{promoted}** geheugenpunt(en) mogen meedenken wanneer ze later relevant zijn."
+            f"**{authorized}** geheugenpunt(en) mogen meedenken wanneer ze later relevant zijn."
+        )
+    elif historical_only:
+        attention = (
+            "### Gate is aangescherpt\n"
+            f"**{historical_only}** geheugenpunt(en) zijn historisch promoted, maar voldoen "
+            "niet meer aan de huidige Gate en kunnen nu niet meedenken."
         )
     else:
         attention = (
@@ -746,6 +786,8 @@ def _seed_story(view: dict[str, Any] | None) -> str:
     occurrences = int(view.get("occurrence_count", 0) or 0)
     evidence = int(view.get("evidence_count", 0) or 0)
     blocking = bool(view.get("blocking", False))
+    current_authorized = _seed_can_influence(view)
+    historical_only = _historical_promotion_only(view)
     review = bool(view.get("review_required", False))
     timeline = list(view.get("timeline", []) or [])
     used = sum(str(item.get("type", "")) == "influence" for item in timeline)
@@ -760,12 +802,18 @@ def _seed_story(view: dict[str, Any] | None) -> str:
             "**Wat nu?** Shadowseed ziet voldoende herhaling om aandacht te vragen, "
             "maar de gekozen veilige werkwijze vereist nog onafhankelijke onderbouwing."
         )
-    elif status_raw == "PROMOTED" and used:
+    elif historical_only:
+        status = "Historisch promoted · nu niet toegelaten"
+        action = (
+            "**Wat nu?** Dit punt passeerde eerder de Gate, maar voldoet niet meer aan de "
+            "huidige Gate-instellingen. Het kan nu niet meedenken."
+        )
+    elif status_raw == "PROMOTED" and current_authorized and used:
         action = (
             f"**Wat nu?** Dit punt mocht meedenken en is al **{used}×** daadwerkelijk gebruikt. "
             "De technische audit laat precies zien wanneer."
         )
-    elif status_raw == "PROMOTED":
+    elif status_raw == "PROMOTED" and current_authorized:
         action = (
             "**Wat nu?** Niets. Dit punt mág later meedenken, maar alleen als het bij een nieuwe "
             "vraag ook echt relevant is."
