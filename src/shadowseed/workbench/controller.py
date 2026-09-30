@@ -8,6 +8,7 @@ product concerns such as external-provider consent and presentation shaping.
 from __future__ import annotations
 
 from dataclasses import asdict
+import importlib.util
 from pathlib import Path
 from typing import Any
 
@@ -28,6 +29,28 @@ BACKENDS = ("fixture", "hf-transformers", "ollama", "openai")
 EMBEDDING_BACKENDS = ("lexical", "sentence-transformers", "openai")
 RUNTIME_MODES = ("evaluation", "live")
 _EXTERNAL_PROMPT_BACKENDS = {"openai"}
+
+
+def _local_transformer_stack_available() -> bool:
+    """Return whether the in-process HF generation/embedding stack is installed."""
+
+    return all(
+        importlib.util.find_spec(module_name) is not None
+        for module_name in ("torch", "transformers", "sentence_transformers")
+    )
+
+
+def available_backends() -> tuple[str, ...]:
+    if _local_transformer_stack_available():
+        return BACKENDS
+    return tuple(item for item in BACKENDS if item != "hf-transformers")
+
+
+def available_embedding_backends() -> tuple[str, ...]:
+    if _local_transformer_stack_available():
+        return EMBEDDING_BACKENDS
+    return tuple(item for item in EMBEDDING_BACKENDS if item != "sentence-transformers")
+
 
 _BACKEND_NOTES = {
     "fixture": (
@@ -86,12 +109,12 @@ class WorkbenchController:
     def backends(self) -> list[dict[str, str]]:
         return [
             {"backend": backend, "note": _BACKEND_NOTES[backend]}
-            for backend in BACKENDS
+            for backend in available_backends()
         ]
 
     @staticmethod
     def embedding_backends() -> tuple[str, ...]:
-        return EMBEDDING_BACKENDS
+        return available_embedding_backends()
 
     @staticmethod
     def runtime_modes() -> tuple[str, ...]:
@@ -103,7 +126,11 @@ class WorkbenchController:
 
         if backend == "fixture":
             return "lexical"
-        return "sentence-transformers"
+        if "sentence-transformers" in available_embedding_backends():
+            return "sentence-transformers"
+        if backend == "openai":
+            return "openai"
+        return "lexical"
 
     @staticmethod
     def ssl_intensity_settings(percent: int | float) -> dict[str, float | int]:
@@ -611,6 +638,18 @@ class WorkbenchController:
     ) -> None:
         if backend not in BACKENDS:
             raise ValueError(f"unsupported Workbench backend: {backend}")
+        if backend == "hf-transformers" and backend not in available_backends():
+            raise ValueError(
+                "the local Hugging Face backend is not available in this build; "
+                "use Ollama, OpenAI, or Fixture"
+            )
+        if embedding_backend == "sentence-transformers" and (
+            embedding_backend not in available_embedding_backends()
+        ):
+            raise ValueError(
+                "sentence-transformers embeddings are not available in this build; "
+                "use lexical or OpenAI embeddings"
+            )
         if runtime_mode not in RUNTIME_MODES:
             raise ValueError(f"unsupported Workbench runtime mode: {runtime_mode}")
         if embedding_backend not in EMBEDDING_BACKENDS:
