@@ -801,3 +801,41 @@ def test_tightened_assisted_gate_reviews_historical_promotion(tmp_path) -> None:
     assert seed["current_gate_authorized"] is False
     assert int(seed["occurrence_count"]) >= 3
     assert seed_id in tightened["authority_review_seed_ids"]
+
+
+
+def test_source_summary_keeps_review_for_blocked_historical_promotion(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Runtime review agreement",
+        profile_id="balanced",
+        backend="fixture",
+        ssl_intensity=0,
+        gate_strictness=0,
+    )
+
+    for _ in range(3):
+        controller.ingest_sources(
+            session_id,
+            pasted_text="Alpha provides a recurring explanatory perspective.",
+        )
+
+    permissive = controller.session_view(session_id)
+    seed = next(item for item in permissive["seeds"] if item["status"] == "PROMOTED")
+    seed_id = seed["id"]
+
+    tightened = controller.update_session_controls(
+        session_id,
+        ssl_intensity=100,
+        gate_strictness=60,
+        allow_self_reinforcement=False,
+    )
+    assert seed_id in tightened["authority_review_seed_ids"]
+
+    summary = controller.ingest_sources(
+        session_id,
+        pasted_text="Alpha provides a recurring explanatory perspective.",
+    )
+
+    assert seed_id in summary["authority_review_seed_ids"]
+    assert seed_id in controller.session_view(session_id)["authority_review_seed_ids"]
