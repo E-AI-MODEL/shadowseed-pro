@@ -1189,14 +1189,19 @@ def build_simple_app(
                 _chat_status(None),
                 None,
                 *_control_view_state(None),
+                "",
             )
         try:
             view = ctl.session_view(session_id)
+            notice = _gate_notice(view)
+            if notice:
+                gr.Warning("Validation Gate vraagt jouw beoordeling.")
             return (
                 ctl.chat_messages(view),
                 _chat_status(view),
                 view,
                 *_control_view_state(view),
+                notice,
             )
         except Exception as exc:
             return (
@@ -1204,6 +1209,7 @@ def build_simple_app(
                 _fout(exc),
                 None,
                 *_control_view_state(None),
+                "",
             )
 
     def send_message(
@@ -1223,6 +1229,7 @@ def build_simple_app(
                 "",
                 "",
                 gr.update(),
+                "",
             )
         if not str(question or "").strip():
             return (
@@ -1234,6 +1241,7 @@ def build_simple_app(
                 "",
                 "",
                 gr.update(),
+                "",
             )
         try:
             result = ctl.send_turn(
@@ -1245,6 +1253,9 @@ def build_simple_app(
             )
             view = result["session"]
             with_ssl, without_ssl, note = _comparison_view(result.get("comparison"))
+            notice = _gate_notice(view)
+            if notice:
+                gr.Warning("Validation Gate vraagt jouw beoordeling.")
             return (
                 ctl.chat_messages(view),
                 _chat_status(view),
@@ -1254,6 +1265,7 @@ def build_simple_app(
                 without_ssl,
                 note,
                 view,
+                notice,
             )
         except Exception as exc:
             return (
@@ -1265,6 +1277,7 @@ def build_simple_app(
                 "",
                 _fout(exc),
                 gr.update(),
+                "",
             )
 
     def ingest_sources(
@@ -1274,7 +1287,13 @@ def build_simple_app(
         hosted_confirmed: bool,
     ):
         if not session_id:
-            return _source_summary({"error": "Kies eerst een gesprek."}), gr.update(), None, pasted_text
+            return (
+                _source_summary({"error": "Kies eerst een gesprek."}),
+                gr.update(),
+                None,
+                pasted_text,
+                "",
+            )
         try:
             if uploaded_files is None:
                 paths: list[str] = []
@@ -1289,14 +1308,24 @@ def build_simple_app(
                 external_confirmed=bool(hosted_confirmed),
             )
             view = result["session"]
+            notice = _gate_notice(view)
+            if notice:
+                gr.Warning("Validation Gate vraagt jouw beoordeling.")
             return (
                 _source_summary(result),
                 gr.update(choices=ctl.seed_choices(view), value=None),
                 view,
                 "",
+                notice,
             )
         except Exception as exc:
-            return _source_summary({"error": f"{type(exc).__name__}: {exc}"}), gr.update(), None, pasted_text
+            return (
+                _source_summary({"error": f"{type(exc).__name__}: {exc}"}),
+                gr.update(),
+                None,
+                pasted_text,
+                "",
+            )
 
     def dashboard_session_changed(session_id: str | None):
         if not session_id:
