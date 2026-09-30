@@ -400,15 +400,24 @@ def _authority_explainer(profile_id: str | None) -> str:
 def _recommended_setup(controller: WorkbenchController) -> tuple[str, str | None, str]:
     """Kies automatisch een veilige, bruikbare startconfiguratie."""
 
+    semantic_local = "sentence-transformers" in controller.embedding_backends()
     try:
         models = controller.discover_models("ollama")
     except Exception:
         models = []
-    if models:
+    if models and semantic_local:
         return (
             "ollama",
             models[0],
             f"**Automatisch gekozen:** lokaal Ollama-model `{models[0]}`.",
+        )
+    if models and not semantic_local:
+        return (
+            "fixture",
+            None,
+            "**Automatisch gekozen:** offline demomodel. "
+            "Deze build bevat geen lokale sentence-transformers-stack. "
+            "Ollama blijft beschikbaar met expliciet gekozen woordoverlap of OpenAI-embeddings.",
         )
     return (
         "fixture",
@@ -1033,16 +1042,26 @@ def build_simple_app(
 
     auto_backend, auto_model, auto_setup_note = _recommended_setup(ctl)
 
+    available_provider_ids = {item["backend"] for item in ctl.backends()}
     provider_choices = [
         (_BACKEND_UI[key][0], key)
         for key in ("ollama", "openai", "hf-transformers", "fixture")
+        if key in available_provider_ids
     ]
-    embedding_choices = [
-        ("Automatisch · aanbevolen", "auto"),
-        ("Slim lokaal · vergelijkt betekenis", "sentence-transformers"),
-        ("Snel lokaal · vergelijkt woorden", "lexical"),
-        ("Online · OpenAI vergelijkt betekenis", "openai"),
-    ]
+    available_embedding_ids = set(ctl.embedding_backends())
+    embedding_choices = [("Automatisch · aanbevolen", "auto")]
+    if "sentence-transformers" in available_embedding_ids:
+        embedding_choices.append(
+            ("Slim lokaal · vergelijkt betekenis", "sentence-transformers")
+        )
+    if "lexical" in available_embedding_ids:
+        embedding_choices.append(
+            ("Snel lokaal · vergelijkt woorden", "lexical")
+        )
+    if "openai" in available_embedding_ids:
+        embedding_choices.append(
+            ("Online · OpenAI vergelijkt betekenis", "openai")
+        )
 
     def session_choices() -> list[tuple[str, str]]:
         return ctl.session_choices(ctl.list_sessions())
@@ -1067,12 +1086,20 @@ def build_simple_app(
                 )
             selected = current_model if current_model in models else (models[0] if models else None)
             note = _model_note("ollama", selected)
+            embedding_choice = "auto"
+            if "sentence-transformers" not in ctl.embedding_backends():
+                embedding_choice = "lexical"
+                note += (
+                    "\n\n**Intel/macOS-compatibiliteitsmodus:** lokale semantische "
+                    "embeddings zijn niet gebundeld. Woordoverlap is geselecteerd; "
+                    "je kunt onder Technisch ook OpenAI-embeddings kiezen."
+                )
             if not models:
                 note += "\n\nGeen lokaal Ollama-model gevonden."
             return (
                 gr.update(choices=models, value=selected),
                 note,
-                "auto",
+                embedding_choice,
             )
         selected = None
         return (
@@ -1259,7 +1286,9 @@ def build_simple_app(
                 runtime_mode="live",
                 embedding_backend=resolved_embedding,
                 embedding_model=embedding_model or None,
-                allow_toy_embedder=False,
+                allow_toy_embedder=(
+                    backend != "fixture" and embedding_backend == "lexical"
+                ),
                 external_confirmed=bool(hosted_confirmed),
                 ssl_intensity=ssl_intensity,
                 gate_strictness=gate_strictness,
