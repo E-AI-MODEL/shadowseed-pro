@@ -463,7 +463,6 @@ def test_regie_updates_refresh_gate_alert_immediately() -> None:
         "allow_self_reinforcement.input(",
     ):
         start = source.index(callback)
-        end = source.index(")", start) + 1
         block = source[start : min(len(source), start + 1200)]
         assert "gate_alert," in block
 
