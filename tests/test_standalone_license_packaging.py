@@ -83,7 +83,10 @@ def test_macos_first_launch_helper_is_local_and_explicit(tmp_path: Path) -> None
     distribution = tmp_path / "Shadowseed Workbench"
     distribution.mkdir()
 
-    helper, readme = build_standalone._install_macos_first_launch_files(distribution)
+    helper, readme = build_standalone._install_macos_first_launch_files(
+        distribution,
+        machine="arm64",
+    )
 
     helper_text = helper.read_text(encoding="utf-8")
     readme_text = readme.read_text(encoding="utf-8")
@@ -91,11 +94,19 @@ def test_macos_first_launch_helper_is_local_and_explicit(tmp_path: Path) -> None
     assert helper.name == "Open Shadowseed.command"
     assert helper.stat().st_mode & 0o111
     assert 'APP="$HERE/Shadowseed.app"' in helper_text
+    assert 'BIN="$APP/Contents/MacOS/Shadowseed"' in helper_text
+    assert 'EXPECTED_ARCH="arm64"' in helper_text
     assert 'xattr -dr com.apple.quarantine "$APP"' in helper_text
-    assert 'open "$APP"' in helper_text
+    assert '"$BIN"' in helper_text
+    assert 'open "$APP"' not in helper_text
+    assert "darwin-x86_64" in helper_text
+    assert "standalone-startup-error-" in helper_text
     assert "spctl --master-disable" not in helper_text
     assert "sudo" not in helper_text
     assert "does not require an Apple Developer ID" in readme_text
+    assert "darwin-arm64" in readme_text
+    assert "darwin-x86_64" in readme_text
+    assert "Keep the Terminal window open" in readme_text
     assert "does not change global macOS security" in readme_text
 
 
