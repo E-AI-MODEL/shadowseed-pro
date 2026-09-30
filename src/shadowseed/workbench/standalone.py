@@ -60,18 +60,20 @@ def _write_startup_error(workspace: Path, exc: BaseException) -> Path:
 
 
 def _runtime_imports() -> dict[str, str]:
-    """Import product dependencies so packaged self-tests catch missing modules."""
+    """Import bundled dependencies and record intentionally absent optional stacks."""
 
     versions: dict[str, str] = {}
-    for module_name in (
-        "gradio",
-        "sentence_transformers",
-        "transformers",
-        "torch",
-        "openai",
-    ):
+    for module_name in ("gradio", "openai"):
         module = importlib.import_module(module_name)
         versions[module_name] = str(getattr(module, "__version__", "present"))
+
+    for module_name in ("sentence_transformers", "transformers", "torch"):
+        try:
+            module = importlib.import_module(module_name)
+        except (ImportError, ModuleNotFoundError):
+            versions[module_name] = "not-bundled"
+        else:
+            versions[module_name] = str(getattr(module, "__version__", "present"))
     return versions
 
 
@@ -113,13 +115,19 @@ def run_standalone_self_test(
     if build_production_local_app(controller=controller) is None:
         raise RuntimeError("standalone self-test could not build the production-local UI")
 
+    runtime_imports = _runtime_imports()
+    local_hf_stack_bundled = all(
+        runtime_imports.get(name) != "not-bundled"
+        for name in ("sentence_transformers", "transformers", "torch")
+    )
     payload: dict[str, Any] = {
         "artifact": "shadowseed_standalone_self_test",
         "frozen": bool(getattr(sys, "frozen", False)),
         "python": platform.python_version(),
         "platform": platform.platform(),
         "machine": platform.machine(),
-        "runtime_imports": _runtime_imports(),
+        "runtime_imports": runtime_imports,
+        "local_hf_stack_bundled": local_hf_stack_bundled,
         "runtime_mode": result["session"]["runtime_mode"],
         "comparison_generated": True,
         "report_verified": True,
