@@ -1511,11 +1511,11 @@ def build_app(
     *,
     controller: WorkbenchController | None = None,
 ):
-    """Build the default Dutch, chat-first Workbench interface."""
+    """Build the reset Dutch, chat-first Workbench interface."""
 
-    from shadowseed.workbench.simple_app import build_simple_app
+    from shadowseed.workbench.simple_app_vnext import build_vnext_app
 
-    return build_simple_app(workspace, controller=controller)
+    return build_vnext_app(workspace, controller=controller)
 
 
 def launch_workbench(
