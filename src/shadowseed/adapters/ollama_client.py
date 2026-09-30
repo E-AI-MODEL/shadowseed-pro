@@ -124,3 +124,43 @@ class OllamaClient:
                 f"`ollama pull {self.model}`? {exc}"
             ) from exc
         return str(body.get("response", "")).strip()
+
+    def generate_chat(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        max_new_tokens: int = 220,
+        temperature: float = 0.0,
+        seed: int = 0,
+    ) -> str:
+        """Generate from Ollama's native chat endpoint using role-structured turns."""
+
+        payload = {
+            "model": self.model,
+            "messages": [dict(message) for message in messages],
+            "stream": False,
+            "options": {
+                "temperature": temperature,
+                "num_predict": max_new_tokens,
+                "seed": seed,
+            },
+        }
+        data = json.dumps(payload).encode("utf-8")
+        request = urllib.request.Request(
+            f"{self.host}/api/chat",
+            data=data,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            body = _read_json(request, timeout=self.timeout)
+        except RuntimeError as exc:  # pragma: no cover - network dependent
+            raise RuntimeError(
+                f"Could not chat with Ollama model {self.model!r} at {self.host}. "
+                "Is `ollama serve` running and has the model been pulled with "
+                f"`ollama pull {self.model}`? {exc}"
+            ) from exc
+        message = body.get("message", {})
+        if not isinstance(message, dict):
+            raise RuntimeError("Ollama /api/chat response does not contain a message")
+        return str(message.get("content", "")).strip()
