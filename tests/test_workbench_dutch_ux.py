@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from shadowseed.workbench.feature_help import render_feature_help
-from shadowseed.workbench.simple_app_vnext import _ui_error
+from shadowseed.workbench.simple_app_vnext import _ollama_note, _ui_error
 from shadowseed.workbench.simple_app import (
     _authority_explainer,
     _chat_status,
@@ -71,6 +71,15 @@ def test_default_workbench_is_dutch_chat_first_surface() -> None:
         '"Refresh runs"',
     ):
         assert refresh_label not in vnext_source
+
+
+def test_vnext_ollama_note_makes_embedding_dependency_explicit() -> None:
+    missing = _ollama_note(["qwen3:8b"], "qwen3:8b")
+    ready = _ollama_note(["qwen3:8b", "embeddinggemma:latest"], "qwen3:8b")
+
+    assert "ollama pull embeddinggemma" in missing
+    assert "Semantisch matchen gebruikt lokaal" in ready
+    assert "ollama pull embeddinggemma" not in ready
 
 
 def test_vnext_error_text_redacts_known_secrets(monkeypatch) -> None:
