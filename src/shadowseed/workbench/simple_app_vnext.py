@@ -518,7 +518,7 @@ def build_vnext_app(
 
     gr = _gradio()
     ctl = controller or WorkbenchController(workspace)
-    update_service = WorkbenchUpdateService(Path(workspace or "~/.shadowseed").expanduser())
+    update_service = WorkbenchUpdateService(ctl.workspace_root)
 
     sessions = ctl.session_choices(ctl.list_sessions())
     initial_id = sessions[0][1] if sessions else None
