@@ -1048,9 +1048,16 @@ class SQLiteWorkspaceRepository:
             try:
                 connection.execute("BEGIN IMMEDIATE")
                 cursor = connection.execute(
-                    "UPDATE sessions SET config_json = ?, state_json = ?, updated_at = ? "
-                    "WHERE session_id = ?",
-                    (_json(config), _json(state), updated_at, session_id),
+                    "UPDATE sessions SET backend = ?, model_id = ?, config_json = ?, "
+                    "state_json = ?, updated_at = ? WHERE session_id = ?",
+                    (
+                        str(config.get("backend", "fixture")),
+                        config.get("model_id"),
+                        _json(config),
+                        _json(state),
+                        updated_at,
+                        session_id,
+                    ),
                 )
                 if cursor.rowcount != 1:
                     raise KeyError(f"unknown session id: {session_id}")
