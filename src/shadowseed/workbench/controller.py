@@ -108,6 +108,16 @@ class WorkbenchController:
         return "sentence-transformers"
 
     @staticmethod
+    def default_embedding_model(embedding_backend: str) -> str | None:
+        """Resolve product defaults explicitly so persisted provenance matches runtime."""
+
+        if embedding_backend == "ollama":
+            from shadowseed.adapters.ollama_client import DEFAULT_OLLAMA_EMBEDDING_MODEL
+
+            return DEFAULT_OLLAMA_EMBEDDING_MODEL
+        return None
+
+    @staticmethod
     def ssl_intensity_settings(percent: int | float) -> dict[str, float | int]:
         """Map 0-100% SSL influence to surfacing settings without weakening authority."""
 
@@ -235,6 +245,11 @@ class WorkbenchController:
         allow_self_reinforcement: bool = False,
     ) -> str:
         resolved_embedding = embedding_backend or self.default_embedding_backend(backend)
+        resolved_embedding_model = (
+            embedding_model
+            if embedding_model is not None
+            else self.default_embedding_model(resolved_embedding)
+        )
         gate_settings = (
             self.gate_strictness_settings(gate_strictness)
             if gate_strictness is not None
@@ -262,7 +277,7 @@ class WorkbenchController:
                 runtime_mode=runtime_mode,
                 authority_profile_id=authority_profile.id.value,
                 embedding_backend=resolved_embedding,
-                embedding_model=embedding_model or None,
+                embedding_model=resolved_embedding_model,
                 allow_toy_embedder=allow_toy_embedder,
                 revalidate_current_gate=gate_strictness is not None,
                 allow_self_reinforcement=bool(allow_self_reinforcement),
