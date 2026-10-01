@@ -832,7 +832,7 @@ def build_vnext_app(
         recent = _recent_seed_choices(view)
         return (
             ctl.chat_messages(view),
-            _session_title(current_summaries, session_id),
+            f"## {_session_title(current_summaries, session_id)}",
             _model_badge(view),
             _context_banner(view),
             _shadow_rail(view),
@@ -862,11 +862,25 @@ def build_vnext_app(
     ):
         result = create_chat(title, provider_value, model_value, hosted_confirmed)
         if not isinstance(result[0], str):
+            error = result[3] if len(result) > 3 else "Chat starten is niet gelukt."
             return (
-                *result,
                 gr.update(),
                 gr.update(),
                 gr.update(),
+                gr.update(),
+                gr.update(),
+                error,
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                _seed_lifecycle(None),
+                gr.update(),
+                "",
+                "",
+                error,
+                gr.update(visible=True),
             )
         session_id = result[0]
         current_summaries = ctl.list_sessions()
@@ -902,9 +916,9 @@ def build_vnext_app(
                 current_summaries = ctl.list_sessions()
                 return (
                     result[0],
-                    _session_title(current_summaries, session_id),
+                    f"## {_session_title(current_summaries, session_id)}",
                     _model_badge(view),
-                    _context_banner(view),
+                    (result[1] if isinstance(result[1], str) and result[1].startswith("**Fout:**") else _context_banner(view)),
                     _shadow_rail(view),
                     gr.update(choices=ctl.seed_choices(view), value=None),
                     gr.update(
@@ -945,6 +959,7 @@ def build_vnext_app(
             return (*result, gr.update(), gr.update())
         try:
             view = ctl.session_view(session_id)
+            failed = isinstance(result[0], str) and result[0].startswith("**Fout:**")
             return (
                 result[0],
                 _shadow_rail(view),
@@ -956,7 +971,7 @@ def build_vnext_app(
                     choices=_recent_seed_choices(view),
                     value=(_recent_seed_choices(view)[0][1] if _recent_seed_choices(view) else None),
                 ),
-                gr.update(visible=False),
+                gr.update(visible=failed),
             )
         except Exception:
             return (*result, gr.update(), gr.update())
@@ -1005,6 +1020,53 @@ def build_vnext_app(
             )
         except Exception:
             return (*result, _seed_lifecycle(None), gr.update(), extra_note, extra_attest)
+
+    def contradict_shell(session_id: str | None, seed_id: str | None):
+        return mutation_shell(session_id, seed_id, action="contradict")
+
+    def submit_verified_evidence_shell(
+        session_id: str | None,
+        seed_id: str | None,
+        source_ref: str,
+        note: str,
+        attested: bool,
+    ):
+        return mutation_shell(
+            session_id,
+            seed_id,
+            action="evidence",
+            source_ref=source_ref,
+            note=note,
+            attested=attested,
+        )
+
+    def research_comparison_shell(
+        session_id: str | None,
+        question_value: str,
+        hosted_confirmed: bool,
+    ):
+        result = run_longitudinal_comparison(
+            session_id,
+            question_value,
+            hosted_confirmed,
+        )
+        if not session_id:
+            return result
+        try:
+            view = ctl.session_view(session_id)
+            return (
+                result[0],
+                result[1],
+                result[2],
+                ctl.chat_messages(view),
+                _context_banner(view),
+                _shadow_rail(view),
+                gr.update(choices=ctl.seed_choices(view), value=None),
+                view,
+                result[8],
+            )
+        except Exception:
+            return result
 
     with gr.Blocks(title="Shadowseed") as app:
         active_session = gr.State(initial_id)
@@ -1115,7 +1177,9 @@ def build_vnext_app(
                     scale=5,
                 )
                 consent_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
-            create_button = gr.Button("Chat starten", variant="primary", elem_classes=["ss-primary"])
+            with gr.Row():
+                create_button = gr.Button("Chat starten", variant="primary", scale=5, elem_classes=["ss-primary"])
+                create_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
 
         with gr.Group(visible=False, elem_id="ss-panel-source", elem_classes=["ss-drawer"]) as source_panel:
             with gr.Row():
@@ -1200,7 +1264,9 @@ def build_vnext_app(
                     placeholder="Typ de volgende vraag voor het longitudinale experiment...",
                     lines=2,
                 )
-                research_run = gr.Button("Voer longitudinale vergelijking uit", variant="secondary")
+                with gr.Row():
+                    research_run = gr.Button("Voer longitudinale vergelijking uit", variant="secondary", scale=5)
+                    research_run_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
                 research_result = gr.Markdown("Nog geen longitudinale vergelijking uitgevoerd.")
                 with gr.Row():
                     research_ssl_answer = gr.Markdown(label="Shadowseed-pad")
@@ -1275,6 +1341,7 @@ def build_vnext_app(
             (model_info, "model"),
             (rescan_info, "model"),
             (consent_info, "external_consent"),
+            (create_info, "new_chat"),
             (send_info, "send"),
             (compare_info, "compare"),
             (source_info_inline, "sources"),
@@ -1285,6 +1352,7 @@ def build_vnext_app(
             (evidence_info, "verified_support"),
             (about_button, "shadow"),
             (longitudinal_info, "longitudinal"),
+            (research_run_info, "longitudinal"),
             (semantic_info, "semantic_matching"),
             (self_reinforcement_info, "self_reinforcement"),
             (gate_info, "research"),
@@ -1424,11 +1492,7 @@ def build_vnext_app(
         )
 
         contradiction_button.click(
-            lambda session_id, seed_id: mutation_shell(
-                session_id,
-                seed_id,
-                action="contradict",
-            ),
+            contradict_shell,
             inputs=[active_session, seed_select],
             outputs=[
                 seed_story,
@@ -1444,15 +1508,7 @@ def build_vnext_app(
         )
 
         evidence_button.click(
-            lambda session_id, seed_id, source_ref, note, attested:
-                mutation_shell(
-                    session_id,
-                    seed_id,
-                    action="evidence",
-                    source_ref=source_ref,
-                    note=note,
-                    attested=attested,
-                ),
+            submit_verified_evidence_shell,
             inputs=[active_session, seed_select, evidence_source, evidence_note, evidence_attest],
             outputs=[
                 seed_story,
@@ -1483,7 +1539,7 @@ def build_vnext_app(
         )
 
         research_run.click(
-            run_longitudinal_comparison,
+            research_comparison_shell,
             inputs=[active_session, research_question, hosted_confirm],
             outputs=[
                 research_result,
