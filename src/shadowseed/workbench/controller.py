@@ -384,10 +384,15 @@ class WorkbenchController:
         )
 
         config_updates = dict(settings)
+        product_only_fields = {"ssl_intensity", "gate_strictness"}
         state_updates = {
             key: value
             for key, value in settings.items()
-            if key in session_fields and key not in core_fields
+            if (
+                key in session_fields
+                and key not in core_fields
+                and key not in product_only_fields
+            )
         }
         core_updates = {
             key: value for key, value in settings.items() if key in core_fields
