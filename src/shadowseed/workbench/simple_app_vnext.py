@@ -15,155 +15,21 @@ from shadowseed.workbench.controller import WorkbenchController
 from shadowseed.workbench.feature_help import render_feature_help
 
 
-_CSS = """
-:root {
-  --ss-blue: #1488e8;
-  --ss-blue-soft: #eaf5ff;
-  --ss-ink: #111827;
-  --ss-muted: #667085;
-  --ss-border: #dce5ee;
-  --ss-panel: #ffffff;
-  --ss-canvas: #f5f8fb;
-  --ss-green: #179c7d;
-  --ss-red: #ef5b47;
-}
-body { background: var(--ss-canvas) !important; }
-.gradio-container {
-  max-width: 1540px !important;
-  margin: 0 auto !important;
-  padding: 1.1rem !important;
-  background: transparent !important;
-}
-#ss-shell {
-  border: 1px solid var(--ss-border);
-  border-radius: 18px;
-  overflow: hidden;
-  background: var(--ss-panel);
-  box-shadow: 0 20px 60px rgba(38, 74, 103, .13);
-}
-#ss-topbar {
-  padding: .6rem 1rem;
-  border-bottom: 1px solid var(--ss-border);
-  align-items: center;
-  background: rgba(255,255,255,.98);
-}
-#ss-brand h2 { margin: 0 !important; letter-spacing: .02em; }
-#ss-model-badge { text-align: right; color: var(--ss-muted); }
-#ss-left {
-  min-width: 230px;
-  max-width: 270px;
-  padding: 1rem .8rem;
-  border-right: 1px solid var(--ss-border);
-  background: #fbfdff;
-}
-#ss-center {
-  padding: 1rem 1rem .8rem;
-  min-width: 0;
-}
-#ss-right {
-  min-width: 240px;
-  max-width: 280px;
-  padding: 1rem .8rem;
-  border-left: 1px solid var(--ss-border);
-  background: #fbfdff;
-}
-#ss-conversation-title h2 { margin: 0 0 .4rem !important; }
-#ss-context-banner {
-  border: 1px solid #d8eaf9;
-  background: #f4faff;
-  border-radius: 12px;
-  padding: .55rem .75rem;
-  margin: .35rem 0 .7rem;
-}
-#ss-composer {
-  border-top: 1px solid var(--ss-border);
-  padding-top: .7rem;
-  margin-top: .35rem;
-}
-#ss-shadow-metrics {
-  border-bottom: 1px solid var(--ss-border);
-  padding-bottom: .75rem;
-  margin-bottom: .75rem;
-}
-#ss-shadow-metrics p { margin: .18rem 0 !important; }
-#ss-recent {
-  border-top: 1px solid var(--ss-border);
-  padding-top: .7rem;
-  margin-top: .7rem;
-}
-.ss-primary button {
-  background: var(--ss-blue) !important;
-  border-color: var(--ss-blue) !important;
-  color: white !important;
-}
-.ss-info-button button {
-  min-width: 38px !important;
-  width: 38px !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  border-radius: 999px !important;
-  font-weight: 800 !important;
-}
-.ss-quiet button {
-  background: transparent !important;
-  border-color: var(--ss-border) !important;
-}
-.ss-drawer {
-  position: fixed !important;
-  z-index: 1000 !important;
-  top: 72px !important;
-  right: 28px !important;
-  width: min(460px, calc(100vw - 40px)) !important;
-  max-height: calc(100vh - 100px) !important;
-  overflow-y: auto !important;
-  padding: 1rem !important;
-  border: 1px solid var(--ss-border) !important;
-  border-radius: 18px !important;
-  background: rgba(255,255,255,.995) !important;
-  box-shadow: 0 24px 70px rgba(31, 65, 92, .24) !important;
-}
-#ss-menu-panel {
-  width: 250px !important;
-  top: 66px !important;
-  right: 42px !important;
-}
-#ss-help-panel { width: min(520px, calc(100vw - 40px)) !important; }
-.ss-drawer-title h2, .ss-drawer-title h3 { margin: 0 !important; }
-.ss-section-label {
-  font-size: .78rem;
-  font-weight: 800;
-  letter-spacing: .06em;
-  color: #344054;
-  text-transform: uppercase;
-}
-.ss-muted { color: var(--ss-muted); font-size: .9rem; }
-.ss-status-pill {
-  display: inline-block;
-  border-radius: 999px;
-  padding: .16rem .5rem;
-  font-size: .72rem;
-  font-weight: 800;
-  background: #dff7ef;
-  color: #16785f;
-}
-#ss-seed-story {
-  border: 1px solid var(--ss-border);
-  border-radius: 14px;
-  padding: .8rem;
-  background: #fcfdff;
-}
-#ss-technical-json { max-height: 420px; overflow-y: auto; }
-@media (max-width: 1100px) {
-  #ss-right { display: none !important; }
-  #ss-left { min-width: 205px; }
-}
-@media (max-width: 780px) {
-  .gradio-container { padding: .4rem !important; }
-  #ss-left { display: none !important; }
-  #ss-center { padding: .7rem; }
-  .ss-drawer { top: 12px !important; right: 12px !important; width: calc(100vw - 24px) !important; max-height: calc(100vh - 24px) !important; }
-}
-"""
+def _load_css() -> str:
+    """Load the presentation stylesheet without mixing it into UI behavior code."""
+
+    path = Path(__file__).with_name("static") / "workbench.css"
+    return path.read_text(encoding="utf-8")
+
+
+_CSS = _load_css()
+
+
+def _theme(gr):
+    """Use Gradio's neutral Soft theme as the base for the Shadowseed shell."""
+
+    return gr.themes.Soft(primary_hue="blue", neutral_hue="slate")
+
 
 
 def _gradio():
