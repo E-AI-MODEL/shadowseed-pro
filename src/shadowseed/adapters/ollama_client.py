@@ -192,6 +192,13 @@ class OllamaClient:
         embeddings = body.get("embeddings")
         if not isinstance(embeddings, list) or not embeddings:
             raise RuntimeError("Ollama /api/embed response does not contain embeddings")
+        expected = len(text) if isinstance(text, list) else 1
+        if expected <= 0:
+            raise ValueError("Ollama embedding input must not be empty")
+        if len(embeddings) != expected:
+            raise RuntimeError(
+                "Ollama /api/embed returned a different number of vectors than inputs"
+            )
 
         normalized: list[list[float]] = []
         for vector in embeddings:
