@@ -80,31 +80,16 @@ def _ui_error(exc: BaseException) -> str:
     return f"**Fout:** {sanitized_exception_line(exc)}"
 
 
-def _ollama_has_model(models: list[str], model: str) -> bool:
-    target = model.casefold()
-    return any(
-        item.casefold() == target or item.split(":", 1)[0].casefold() == target
-        for item in models
-    )
-
-
 def _ollama_note(models: list[str], selected: str | None) -> str:
     from shadowseed.adapters.ollama_client import DEFAULT_OLLAMA_EMBEDDING_MODEL
 
     if not models:
-        return "Geen lokaal Ollama-model gevonden."
-    note = f"Lokaal chatmodel geselecteerd: `{selected or models[0]}`."
-    if _ollama_has_model(models, DEFAULT_OLLAMA_EMBEDDING_MODEL):
-        return (
-            note
-            + f" Semantisch matchen gebruikt lokaal `{DEFAULT_OLLAMA_EMBEDDING_MODEL}`."
-        )
+        return "Geen lokaal Ollama-chatmodel gevonden."
     return (
-        note
-        + f" Voor lokaal semantisch matchen is ook `{DEFAULT_OLLAMA_EMBEDDING_MODEL}` nodig. "
-        + f"Voer eenmalig `ollama pull {DEFAULT_OLLAMA_EMBEDDING_MODEL}` uit."
+        f"Lokaal chatmodel geselecteerd: `{selected or models[0]}`. "
+        f"Semantisch matchen gebruikt lokaal `{DEFAULT_OLLAMA_EMBEDDING_MODEL}`. "
+        f"Ontbreekt dat model, voer eenmalig `ollama pull {DEFAULT_OLLAMA_EMBEDDING_MODEL}` uit."
     )
-
 
 def _recommended_setup(ctl: WorkbenchController) -> tuple[str, str | None, str]:
     try:
