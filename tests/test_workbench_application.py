@@ -381,3 +381,89 @@ def test_scenario_resume_rejects_runtime_configuration_change(tmp_path) -> None:
             result["session_id"],
             start_at=1,
         )
+
+
+def test_inspection_exposes_full_runtime_configuration_snapshots(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Config inspect",
+        profile_id="balanced",
+        backend="fixture",
+        runtime_mode="live",
+    )
+
+    view = controller.session_view(session_id)
+
+    assert view["persisted_config"]["surface_top_k"] == 2
+    assert view["session_config"]["runtime_mode"] == "live"
+    assert view["core_config"]["min_occurrences_for_gate"] == 3
+
+
+def test_advanced_controls_update_canonical_session_and_core_config(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Advanced controls",
+        profile_id="balanced",
+        backend="fixture",
+        runtime_mode="live",
+    )
+
+    view = controller.update_session_advanced(
+        session_id,
+        settings={
+            "surface_threshold": 0.18,
+            "surface_top_k": 4,
+            "authority_profile_id": "autonomous",
+            "gate_policy_id": "exploratory",
+            "min_occurrences_for_gate": 2,
+            "promotion_threshold": 0.4,
+            "allow_self_reinforcement": True,
+        },
+    )
+    stored = controller.sessions.load(session_id)
+
+    assert view["session_config"]["surface_threshold"] == 0.18
+    assert view["session_config"]["surface_top_k"] == 4
+    assert view["session_config"]["authority_profile_id"] == "autonomous"
+    assert view["session_config"]["gate_policy_id"] == "exploratory"
+    assert view["session_config"]["allow_self_reinforcement"] is True
+    assert view["core_config"]["min_occurrences_for_gate"] == 2
+    assert view["core_config"]["promotion_threshold"] == 0.4
+    assert stored["config"]["ssl_intensity"] is None
+    assert stored["config"]["gate_strictness"] is None
+
+
+def test_advanced_controls_keep_backend_metadata_in_sync(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Backend control",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+    )
+
+    controller.update_session_advanced(
+        session_id,
+        settings={"model_id": None, "max_new_tokens": 512},
+    )
+    stored = controller.sessions.load(session_id)
+
+    assert stored["backend"] == "fixture"
+    assert stored["model_id"] is None
+    assert stored["config"]["max_new_tokens"] == 512
+    assert stored["state"]["session_config"]["max_new_tokens"] == 512
+
+
+def test_advanced_controls_reject_unknown_keys(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Unknown control",
+        profile_id="demo",
+        backend="fixture",
+    )
+
+    with pytest.raises(ValueError, match="unknown Shadowseed setting"):
+        controller.update_session_advanced(
+            session_id,
+            settings={"magic_hidden_switch": True},
+        )
