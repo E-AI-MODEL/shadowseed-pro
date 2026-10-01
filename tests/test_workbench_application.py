@@ -67,7 +67,7 @@ def test_controller_creates_and_lists_explicit_live_session(tmp_path) -> None:
 def test_live_non_fixture_requires_semantic_embeddings_or_explicit_override(tmp_path) -> None:
     controller = WorkbenchController(tmp_path / "workspace")
 
-    with pytest.raises(ValueError, match="require sentence-transformers or openai"):
+    with pytest.raises(ValueError, match="require a semantic embedding backend"):
         controller.create_session(
             title="Unsafe live",
             profile_id="balanced",
