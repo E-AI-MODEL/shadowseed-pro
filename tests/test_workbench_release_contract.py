@@ -65,6 +65,10 @@ def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -
         "standalone-workbench.yml",
     ):
         assert required in workflow
+    assert "actions/runs?head_sha=${release_sha}&per_page=100" in workflow
+    assert '.path == $workflow' in workflow
+    assert '.event == "push"' in workflow
+    assert '.conclusion == "success"' in workflow
     assert "standalone_run_id" in workflow
     assert "steps.preflight.outputs.standalone_run_id" in workflow
     assert 'release_tag="v${release_version}"' in workflow
