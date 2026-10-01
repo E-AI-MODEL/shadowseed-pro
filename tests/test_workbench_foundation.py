@@ -141,6 +141,26 @@ def test_doctor_and_workspace_cli_are_available(tmp_path: Path) -> None:
     assert "checks" in doctor_payload
 
 
+def test_chat_cli_accepts_ollama_embedding_backend() -> None:
+    parser = build_parser()
+    args = parser.parse_args(
+        [
+            "chat",
+            "--backend",
+            "ollama",
+            "--model-id",
+            "qwen3:8b",
+            "--embedding-backend",
+            "ollama",
+            "--embedding-model",
+            "embeddinggemma",
+        ]
+    )
+
+    assert args.embedding_backend == "ollama"
+    assert args.embedding_model == "embeddinggemma"
+
+
 def test_workspace_delete_rejects_unsafe_or_unowned_directories(tmp_path: Path) -> None:
     unsafe = WorkspaceService(Path.home())
     with pytest.raises(ValueError, match="unsafe workspace path"):
