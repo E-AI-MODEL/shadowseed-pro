@@ -42,7 +42,7 @@ def production_local_ollama_host() -> str:
 def validate_production_local_backend(backend: str, embedding_backend: str) -> None:
     """Validate provider endpoint policy without changing Gate or model semantics."""
 
-    if backend == "ollama":
+    if backend == "ollama" or embedding_backend == "ollama":
         production_local_ollama_host()
     if backend == "openai" or embedding_backend == "openai":
         # The product OpenAI adapters construct the official SDK client without a
