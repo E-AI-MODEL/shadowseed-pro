@@ -96,6 +96,50 @@ def test_client_generate_chat_posts_native_messages(monkeypatch):
     assert captured["body"]["options"]["num_predict"] == 80
 
 
+def test_client_embed_posts_expected_payload(monkeypatch):
+    captured: dict = {}
+
+    def _urlopen(request, timeout=None):
+        captured["url"] = request.full_url
+        captured["timeout"] = timeout
+        captured["body"] = json.loads(request.data.decode("utf-8"))
+        payload = json.dumps(
+            {"model": "embeddinggemma", "embeddings": [[0.1, 0.2, 0.3]]}
+        ).encode("utf-8")
+        return _FakeResponse(payload)
+
+    monkeypatch.setattr(ollama_client.urllib.request, "urlopen", _urlopen)
+    client = OllamaClient(model="embeddinggemma", host="http://localhost:11434")
+
+    out = client.embed("zelfde betekenis")
+
+    assert out == [[0.1, 0.2, 0.3]]
+    assert captured["url"] == "http://localhost:11434/api/embed"
+    assert captured["body"] == {
+        "model": "embeddinggemma",
+        "input": "zelfde betekenis",
+    }
+
+
+def test_client_embed_accepts_batch_input(monkeypatch):
+    captured: dict = {}
+
+    def _urlopen(request, timeout=None):
+        captured["body"] = json.loads(request.data.decode("utf-8"))
+        payload = json.dumps(
+            {"embeddings": [[1.0, 0.0], [0.0, 1.0]]}
+        ).encode("utf-8")
+        return _FakeResponse(payload)
+
+    monkeypatch.setattr(ollama_client.urllib.request, "urlopen", _urlopen)
+    client = OllamaClient(model="embeddinggemma")
+
+    out = client.embed(["eerste", "tweede"])
+
+    assert out == [[1.0, 0.0], [0.0, 1.0]]
+    assert captured["body"]["input"] == ["eerste", "tweede"]
+
+
 def test_detector_ollama_backend_parses_seeds(monkeypatch):
     urlopen, _ = _fake_urlopen("Ontbrekende toelichting bij Federal Mogul.")
     monkeypatch.setattr(ollama_client.urllib.request, "urlopen", urlopen)
