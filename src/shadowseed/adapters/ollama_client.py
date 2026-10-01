@@ -16,6 +16,7 @@ from typing import Any
 
 DEFAULT_OLLAMA_HOST = "http://localhost:11434"
 DEFAULT_PROVIDER_TIMEOUT_SECONDS = 120.0
+DEFAULT_OLLAMA_EMBEDDING_MODEL = "embeddinggemma"
 
 
 def ollama_host() -> str:
@@ -164,3 +165,42 @@ class OllamaClient:
         if not isinstance(message, dict):
             raise RuntimeError("Ollama /api/chat response does not contain a message")
         return str(message.get("content", "")).strip()
+
+    def embed(self, text: str | list[str]) -> list[list[float]]:
+        """Generate one or more embeddings through Ollama\'s local /api/embed endpoint."""
+
+        payload = {
+            "model": self.model,
+            "input": text,
+        }
+        data = json.dumps(payload).encode("utf-8")
+        request = urllib.request.Request(
+            f"{self.host}/api/embed",
+            data=data,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            body = _read_json(request, timeout=self.timeout)
+        except RuntimeError as exc:  # pragma: no cover - network dependent
+            raise RuntimeError(
+                f"Could not embed with Ollama model {self.model!r} at {self.host}. "
+                "Is `ollama serve` running and has the embedding model been pulled with "
+                f"`ollama pull {self.model}`? {exc}"
+            ) from exc
+
+        embeddings = body.get("embeddings")
+        if not isinstance(embeddings, list) or not embeddings:
+            raise RuntimeError("Ollama /api/embed response does not contain embeddings")
+
+        normalized: list[list[float]] = []
+        for vector in embeddings:
+            if not isinstance(vector, list) or not vector:
+                raise RuntimeError("Ollama /api/embed returned an invalid embedding vector")
+            try:
+                normalized.append([float(value) for value in vector])
+            except (TypeError, ValueError) as exc:
+                raise RuntimeError(
+                    "Ollama /api/embed returned a non-numeric embedding vector"
+                ) from exc
+        return normalized
