@@ -31,7 +31,8 @@ def test_new_application_sessions_default_to_live_ssl(tmp_path) -> None:
 
 def test_real_model_product_default_uses_semantic_embedding() -> None:
     assert WorkbenchController.default_embedding_backend("fixture") == "lexical"
-    for backend in ("ollama", "hf-transformers", "openai"):
+    assert WorkbenchController.default_embedding_backend("ollama") == "ollama"
+    for backend in ("hf-transformers", "openai"):
         assert WorkbenchController.default_embedding_backend(backend) == "sentence-transformers"
 
 
