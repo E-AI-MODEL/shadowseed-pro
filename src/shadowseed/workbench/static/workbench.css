@@ -141,6 +141,20 @@ body {
   border-color: var(--ss-accent-hover) !important;
 }
 
+.ss-quiet,
+.ss-quiet button {
+  color: var(--ss-muted) !important;
+  background: transparent !important;
+  border-color: var(--ss-border) !important;
+  box-shadow: none !important;
+}
+
+.ss-quiet:hover,
+.ss-quiet button:hover {
+  color: var(--ss-text) !important;
+  background: var(--ss-surface-soft) !important;
+}
+
 .ss-info-button,
 .ss-info-button button {
   min-width: 26px !important;
@@ -217,6 +231,11 @@ body {
   box-shadow: 0 24px 70px rgba(15, 23, 42, .20) !important;
 }
 
+.ss-drawer * {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .ss-drawer textarea,
 .ss-drawer input,
 .ss-drawer select {
@@ -286,4 +305,25 @@ body {
     width: calc(100vw - 16px) !important;
     max-height: calc(100vh - 16px) !important;
   }
+}
+
+/* Keep advanced actions visually secondary and prevent dense drawers. */
+.ss-drawer .accordion {
+  border-color: var(--ss-border) !important;
+  background: transparent !important;
+}
+
+.ss-drawer h4 {
+  margin-top: .75rem !important;
+  margin-bottom: .35rem !important;
+}
+
+#ss-session-list,
+#ss-recent-list {
+  max-height: 42vh;
+  overflow-y: auto;
+}
+
+#ss-chat .message {
+  max-width: 100% !important;
 }
