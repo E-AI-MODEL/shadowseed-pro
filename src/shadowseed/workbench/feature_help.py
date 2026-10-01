@@ -265,7 +265,7 @@ def _current_combination(
             )
 
         embedding = str(view.get("embedding_backend", "lexical"))
-        if embedding in {"sentence-transformers", "openai"}:
+        if embedding in {"sentence-transformers", "ollama", "openai"}:
             lines.append(
                 f"**Semantisch matchen staat aan via `{embedding}`.** Parafrases kunnen daardoor "
                 "makkelijker als relevant worden herkend. Dit **versterkt alleen de matching**, niet de authority."
