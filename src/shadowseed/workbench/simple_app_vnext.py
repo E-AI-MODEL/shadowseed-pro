@@ -464,6 +464,66 @@ def build_vnext_app(
             "",
         )
 
+    def run_longitudinal_comparison(
+        session_id: str | None,
+        question: str,
+        hosted_confirmed: bool,
+    ):
+        if not session_id:
+            return (
+                "**Niet uitgevoerd:** maak of kies eerst een gesprek.",
+                "",
+                "",
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                question,
+            )
+        if not str(question or "").strip():
+            return (
+                "**Niet uitgevoerd:** typ eerst een onderzoeksvraag.",
+                "",
+                "",
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                question,
+            )
+
+        result = ctl.send_turn(
+            session_id,
+            question,
+            compare_without_ssl=True,
+            comparison_mode="longitudinal",
+            external_confirmed=bool(hosted_confirmed),
+        )
+        view = result["session"]
+        comparison = result.get("comparison") or {}
+        ssl_on, vanilla, _note = _comparison(comparison)
+        replayed = int(comparison.get("control_replayed_turns", 0))
+        history_before = int(comparison.get("control_history_turns_before", 0))
+        research_note = (
+            "### Longitudinale vergelijking uitgevoerd\n"
+            "Dit is **geen same-turn A/B**. Het vanilla-pad heeft een eigen antwoordgeschiedenis. "
+            f"Voor deze run zijn **{replayed}** eerdere userbeurt(en) opnieuw opgebouwd "
+            f"uit **{history_before}** eerdere beurt(en)."
+        )
+        return (
+            research_note,
+            ssl_on,
+            vanilla,
+            ctl.chat_messages(view),
+            _status(view),
+            _shadow_summary(view),
+            gr.update(choices=ctl.seed_choices(view), value=None),
+            view,
+            "",
+        )
+
     with gr.Blocks(title="Shadowseed") as app:
         active_session = gr.State(initial_id)
         help_feature = gr.State("conversation")
@@ -624,11 +684,26 @@ def build_vnext_app(
                 research_info = gr.Button("ⓘ Uitleg onderzoek", variant="secondary")
                 gr.Markdown(
                     "### Onderzoeksmethoden\n"
-                    "Longitudinale vanilla-trajecten, shadow pressure, self-reinforcement, "
-                    "Gate-experimenten en alternatieve embeddings horen hier thuis, niet in de gewone chat.\n\n"
-                    "Deze reset bouwt eerst de normale Workbench opnieuw op. De bestaande researchmechanismen "
-                    "blijven in de backend behouden en worden daarna hier expliciet teruggebracht."
+                    "Hier staan experimenten die bewust buiten de gewone chat blijven. "
+                    "Ze kunnen trager zijn en beantwoorden een andere vraag dan de normale same-turn vergelijking.\n\n"
+                    "**Longitudinale vanilla-vergelijking:** laat een onafhankelijk vanilla-pad meegroeien. "
+                    "Start je dit pas later in een gesprek, dan kunnen eerdere userbeurten opnieuw worden gegenereerd."
                 )
+                research_question = gr.Textbox(
+                    label="Onderzoeksvraag",
+                    placeholder="Typ de volgende vraag voor het longitudinale experiment…",
+                    lines=2,
+                )
+                research_run = gr.Button(
+                    "Voer longitudinale vanilla-vergelijking uit",
+                    variant="secondary",
+                )
+                research_result = gr.Markdown(
+                    "Nog geen longitudinale vergelijking uitgevoerd."
+                )
+                with gr.Row():
+                    research_ssl_answer = gr.Markdown(label="Shadowseed-pad")
+                    research_vanilla_answer = gr.Markdown(label="Onafhankelijk vanilla-pad")
 
         def bind_help(button, feature_id: str):
             button.click(
@@ -782,6 +857,22 @@ def build_vnext_app(
             ingest,
             inputs=[active_session, source_text, source_files, hosted_confirm],
             outputs=[source_result, shadow_summary, status, seed_select, session_json, source_text],
+        )
+
+        research_run.click(
+            run_longitudinal_comparison,
+            inputs=[active_session, research_question, hosted_confirm],
+            outputs=[
+                research_result,
+                research_ssl_answer,
+                research_vanilla_answer,
+                chat,
+                status,
+                shadow_summary,
+                seed_select,
+                session_json,
+                research_question,
+            ],
         )
 
     return app
