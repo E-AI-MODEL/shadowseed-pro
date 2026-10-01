@@ -10,6 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from shadowseed.application.error_safety import sanitized_exception_line
 from shadowseed.workbench.controller import WorkbenchController
 from shadowseed.workbench.feature_help import render_feature_help
 
@@ -73,6 +74,10 @@ def _gradio():
             "python -m pip install 'shadowseed[workbench]'"
         ) from exc
     return gr
+
+
+def _ui_error(exc: BaseException) -> str:
+    return f"**Fout:** {sanitized_exception_line(exc)}"
 
 
 def _recommended_setup(ctl: WorkbenchController) -> tuple[str, str | None, str]:
@@ -302,7 +307,10 @@ def build_vnext_app(
             try:
                 models = ctl.discover_models("ollama")
             except Exception as exc:
-                return gr.update(choices=[], value=None), f"Ollama-modellen ophalen lukte niet: {exc}"
+                return (
+                    gr.update(choices=[], value=None),
+                    f"Ollama-modellen ophalen lukte niet. {_ui_error(exc)}",
+                )
             return (
                 gr.update(choices=models, value=(models[0] if models else None)),
                 ("Lokaal Ollama-model geselecteerd." if models else "Geen lokaal Ollama-model gevonden."),
@@ -317,32 +325,50 @@ def build_vnext_app(
         model_id: str | None,
         hosted_confirmed: bool,
     ):
-        session_id = ctl.create_session(
-            title=(title or "").strip() or "Nieuwe chat",
-            profile_id="balanced",
-            backend=provider,
-            model_id=(None if provider == "fixture" else (model_id or None)),
-            runtime_mode="live",
-            embedding_backend=ctl.default_embedding_backend(provider),
-            external_confirmed=bool(hosted_confirmed),
-        )
-        selector, _selected = choices(session_id)
-        chat, status, shadow, seed_update, view = bundle(session_id)
-        return (
-            session_id,
-            selector,
-            chat,
-            status,
-            shadow,
-            seed_update,
-            view,
-            _seed_story(None),
-            None,
-            "",
-            "",
-            "Zet **Vergelijk dit antwoord zonder SSL** aan voor een same-turn control.",
-            _source_summary(None),
-        )
+        try:
+            session_id = ctl.create_session(
+                title=(title or "").strip() or "Nieuwe chat",
+                profile_id="balanced",
+                backend=provider,
+                model_id=(None if provider == "fixture" else (model_id or None)),
+                runtime_mode="live",
+                embedding_backend=ctl.default_embedding_backend(provider),
+                external_confirmed=bool(hosted_confirmed),
+            )
+            selector, _selected = choices(session_id)
+            chat, status, shadow, seed_update, view = bundle(session_id)
+            return (
+                session_id,
+                selector,
+                chat,
+                status,
+                shadow,
+                seed_update,
+                view,
+                _seed_story(None),
+                None,
+                "",
+                "",
+                "Zet **Vergelijk dit antwoord zonder SSL** aan voor een same-turn control.",
+                _source_summary(None),
+            )
+        except Exception as exc:
+            error = _ui_error(exc)
+            return (
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                error,
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                "",
+                "",
+                error,
+                gr.update(),
+            )
 
     def send(
         session_id: str | None,
@@ -355,46 +381,67 @@ def build_vnext_app(
         if not str(question or "").strip():
             return gr.update(), "Typ eerst een bericht.", gr.update(), gr.update(), gr.update(), question, "", "", ""
 
-        result = ctl.send_turn(
-            session_id,
-            question,
-            compare_without_ssl=bool(compare_without_ssl),
-            comparison_mode="authorized",
-            external_confirmed=bool(hosted_confirmed),
-        )
-        view = result["session"]
-        ssl_on, no_ssl, comparison_note = _comparison(result.get("comparison"))
-        return (
-            ctl.chat_messages(view),
-            _status(view),
-            _shadow_summary(view),
-            gr.update(choices=ctl.seed_choices(view), value=None),
-            view,
-            "",
-            ssl_on,
-            no_ssl,
-            comparison_note,
-        )
+        try:
+            result = ctl.send_turn(
+                session_id,
+                question,
+                compare_without_ssl=bool(compare_without_ssl),
+                comparison_mode="authorized",
+                external_confirmed=bool(hosted_confirmed),
+            )
+            view = result["session"]
+            ssl_on, no_ssl, comparison_note = _comparison(result.get("comparison"))
+            return (
+                ctl.chat_messages(view),
+                _status(view),
+                _shadow_summary(view),
+                gr.update(choices=ctl.seed_choices(view), value=None),
+                view,
+                "",
+                ssl_on,
+                no_ssl,
+                comparison_note,
+            )
+        except Exception as exc:
+            error = _ui_error(exc)
+            return (
+                gr.update(),
+                error,
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                question,
+                "",
+                "",
+                error,
+            )
 
     def inspect_seed(session_id: str | None, seed_id: str | None):
         if not session_id or not seed_id:
             return _seed_story(None), None
-        seed = ctl.seed_view(session_id, seed_id)
-        return _seed_story(seed), seed
+        try:
+            seed = ctl.seed_view(session_id, seed_id)
+            return _seed_story(seed), seed
+        except Exception as exc:
+            error = _ui_error(exc)
+            return error, {"error": sanitized_exception_line(exc)}
 
     def falsify(session_id: str | None, seed_id: str | None):
         if not session_id or not seed_id:
             return "Kies eerst een geheugenpunt.", gr.update(), gr.update(), gr.update(), gr.update()
-        ctl.falsify_seed(session_id, seed_id)
-        view = ctl.session_view(session_id)
-        seed = ctl.seed_view(session_id, seed_id)
-        return (
-            _seed_story(seed),
-            _shadow_summary(view),
-            _status(view),
-            view,
-            gr.update(choices=ctl.seed_choices(view), value=seed_id),
-        )
+        try:
+            ctl.falsify_seed(session_id, seed_id)
+            view = ctl.session_view(session_id)
+            seed = ctl.seed_view(session_id, seed_id)
+            return (
+                _seed_story(seed),
+                _shadow_summary(view),
+                _status(view),
+                view,
+                gr.update(choices=ctl.seed_choices(view), value=seed_id),
+            )
+        except Exception as exc:
+            return _ui_error(exc), gr.update(), gr.update(), gr.update(), gr.update()
 
     def submit_verified_evidence(
         session_id: str | None,
@@ -413,24 +460,35 @@ def build_vnext_app(
                 note,
                 attested,
             )
-        ctl.submit_verified_evidence(
-            session_id,
-            seed_id,
-            source_ref=source_ref,
-            note=note,
-            operator_verified=bool(attested),
-        )
-        view = ctl.session_view(session_id)
-        seed = ctl.seed_view(session_id, seed_id)
-        return (
-            _seed_story(seed),
-            _shadow_summary(view),
-            _status(view),
-            view,
-            gr.update(choices=ctl.seed_choices(view), value=seed_id),
-            "",
-            False,
-        )
+        try:
+            ctl.submit_verified_evidence(
+                session_id,
+                seed_id,
+                source_ref=source_ref,
+                note=note,
+                operator_verified=bool(attested),
+            )
+            view = ctl.session_view(session_id)
+            seed = ctl.seed_view(session_id, seed_id)
+            return (
+                _seed_story(seed),
+                _shadow_summary(view),
+                _status(view),
+                view,
+                gr.update(choices=ctl.seed_choices(view), value=seed_id),
+                "",
+                False,
+            )
+        except Exception as exc:
+            return (
+                _ui_error(exc),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                note,
+                attested,
+            )
 
     def ingest(
         session_id: str | None,
@@ -448,21 +506,31 @@ def build_vnext_app(
         else:
             paths = [str(item) for item in files if item]
 
-        result = ctl.ingest_sources(
-            session_id,
-            pasted_text=pasted or "",
-            file_paths=paths,
-            external_confirmed=bool(hosted_confirmed),
-        )
-        view = result["session"]
-        return (
-            _source_summary(result),
-            _shadow_summary(view),
-            _status(view),
-            gr.update(choices=ctl.seed_choices(view), value=None),
-            view,
-            "",
-        )
+        try:
+            result = ctl.ingest_sources(
+                session_id,
+                pasted_text=pasted or "",
+                file_paths=paths,
+                external_confirmed=bool(hosted_confirmed),
+            )
+            view = result["session"]
+            return (
+                _source_summary(result),
+                _shadow_summary(view),
+                _status(view),
+                gr.update(choices=ctl.seed_choices(view), value=None),
+                view,
+                "",
+            )
+        except Exception as exc:
+            return (
+                _source_summary({"error": sanitized_exception_line(exc)}),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                pasted,
+            )
 
     def run_longitudinal_comparison(
         session_id: str | None,
@@ -494,35 +562,48 @@ def build_vnext_app(
                 question,
             )
 
-        result = ctl.send_turn(
-            session_id,
-            question,
-            compare_without_ssl=True,
-            comparison_mode="longitudinal",
-            external_confirmed=bool(hosted_confirmed),
-        )
-        view = result["session"]
-        comparison = result.get("comparison") or {}
-        ssl_on, vanilla, _note = _comparison(comparison)
-        replayed = int(comparison.get("control_replayed_turns", 0))
-        history_before = int(comparison.get("control_history_turns_before", 0))
-        research_note = (
-            "### Longitudinale vergelijking uitgevoerd\n"
-            "Dit is **geen same-turn A/B**. Het vanilla-pad heeft een eigen antwoordgeschiedenis. "
-            f"Voor deze run zijn **{replayed}** eerdere userbeurt(en) opnieuw opgebouwd "
-            f"uit **{history_before}** eerdere beurt(en)."
-        )
-        return (
-            research_note,
-            ssl_on,
-            vanilla,
-            ctl.chat_messages(view),
-            _status(view),
-            _shadow_summary(view),
-            gr.update(choices=ctl.seed_choices(view), value=None),
-            view,
-            "",
-        )
+        try:
+            result = ctl.send_turn(
+                session_id,
+                question,
+                compare_without_ssl=True,
+                comparison_mode="longitudinal",
+                external_confirmed=bool(hosted_confirmed),
+            )
+            view = result["session"]
+            comparison = result.get("comparison") or {}
+            ssl_on, vanilla, _note = _comparison(comparison)
+            replayed = int(comparison.get("control_replayed_turns", 0))
+            history_before = int(comparison.get("control_history_turns_before", 0))
+            research_note = (
+                "### Longitudinale vergelijking uitgevoerd\n"
+                "Dit is **geen same-turn A/B**. Het vanilla-pad heeft een eigen antwoordgeschiedenis. "
+                f"Voor deze run zijn **{replayed}** eerdere userbeurt(en) opnieuw opgebouwd "
+                f"uit **{history_before}** eerdere beurt(en)."
+            )
+            return (
+                research_note,
+                ssl_on,
+                vanilla,
+                ctl.chat_messages(view),
+                _status(view),
+                _shadow_summary(view),
+                gr.update(choices=ctl.seed_choices(view), value=None),
+                view,
+                "",
+            )
+        except Exception as exc:
+            return (
+                _ui_error(exc),
+                "",
+                "",
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                question,
+            )
 
     with gr.Blocks(title="Shadowseed") as app:
         active_session = gr.State(initial_id)
