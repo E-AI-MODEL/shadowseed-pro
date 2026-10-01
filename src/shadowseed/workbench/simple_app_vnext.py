@@ -926,7 +926,6 @@ def build_vnext_app(
     compact_sessions = _compact_session_choices(summaries)
     initial_title = _session_title(summaries, initial_id)
     recent_choices = _recent_seed_choices(initial_view)
-    initial_controls = _control_values(initial_view)
 
     def refresh_shell(session_id: str | None):
         current_summaries = ctl.list_sessions()
@@ -1334,6 +1333,8 @@ def build_vnext_app(
             external_confirmed=bool(hosted_confirmed),
         )
         return session_id
+
+    initial_controls = _control_values(initial_view)
 
     def toggle_sidebar(is_open: bool):
         next_state = not bool(is_open)
