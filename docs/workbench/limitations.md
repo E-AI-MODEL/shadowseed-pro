@@ -35,8 +35,10 @@ Shadowseed Workbench 0.9.2 remains a local research preview and production-local
 
 ## Comparison and scientific limits
 
-- The same-message SSL-off control does not enter detection, recurrence, the Gate, seed state or later history.
-- The actual live turn is the only state-changing turn.
+- The normal same-turn SSL-off control does not enter detection, recurrence, the Gate, seed state or later history.
+- The normal same-turn control adds at most one extra current-turn generation and does not replay historical turns.
+- The Research-tab longitudinal vanilla experiment maintains an independent vanilla history. Starting it late can replay earlier user questions and can therefore be materially slower.
+- The actual live Shadowseed turn is the only state-changing SSL turn.
 - Textual difference is not automatically an SSL effect; when no authorized seed surfaced, ordinary generation variance remains possible.
 - Historical evaluation sessions, authored baselines, scenario JSON and blind benchmark flows remain research tools.
 - The evidence-efficacy loop is also research-only: it uses baseline-isolated evaluation mechanics to create paired comparisons while the authority policy remains evidence-backed.
