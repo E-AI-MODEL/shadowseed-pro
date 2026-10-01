@@ -95,7 +95,7 @@ include-package-data = true
 where = ["src"]
 
 [tool.setuptools.package-data]
-shadowseed = ["data/*.json"]
+shadowseed = ["data/*.json", "workbench/static/*.css"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
