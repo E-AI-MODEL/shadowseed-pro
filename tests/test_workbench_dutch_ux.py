@@ -74,12 +74,11 @@ def test_default_workbench_is_dutch_chat_first_surface() -> None:
 
 
 def test_vnext_ollama_note_makes_embedding_dependency_explicit() -> None:
-    missing = _ollama_note(["qwen3:8b"], "qwen3:8b")
-    ready = _ollama_note(["qwen3:8b", "embeddinggemma:latest"], "qwen3:8b")
+    note = _ollama_note(["qwen3:8b"], "qwen3:8b")
 
-    assert "ollama pull embeddinggemma" in missing
-    assert "Semantisch matchen gebruikt lokaal" in ready
-    assert "ollama pull embeddinggemma" not in ready
+    assert "Lokaal chatmodel geselecteerd" in note
+    assert "Semantisch matchen gebruikt lokaal `embeddinggemma`" in note
+    assert "ollama pull embeddinggemma" in note
 
 
 def test_vnext_error_text_redacts_known_secrets(monkeypatch) -> None:
