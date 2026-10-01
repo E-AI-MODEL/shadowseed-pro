@@ -16,51 +16,152 @@ from shadowseed.workbench.feature_help import render_feature_help
 
 
 _CSS = """
-.gradio-container { max-width: 1380px !important; margin: 0 auto; padding: 1rem 1.2rem 3rem !important; }
-#ssv-hero {
-  border: 1px solid var(--border-color-primary);
-  border-radius: 24px;
-  padding: 1rem 1.15rem;
-  margin-bottom: .8rem;
-  background: var(--background-fill-secondary);
+:root {
+  --ss-blue: #1488e8;
+  --ss-blue-soft: #eaf5ff;
+  --ss-ink: #111827;
+  --ss-muted: #667085;
+  --ss-border: #dce5ee;
+  --ss-panel: #ffffff;
+  --ss-canvas: #f5f8fb;
+  --ss-green: #179c7d;
+  --ss-red: #ef5b47;
 }
-#ssv-chat, #ssv-shadow, #ssv-sources {
-  border: 1px solid var(--border-color-primary);
-  border-radius: 22px;
-  padding: .85rem;
-  background: var(--background-fill-secondary);
+body { background: var(--ss-canvas) !important; }
+.gradio-container {
+  max-width: 1540px !important;
+  margin: 0 auto !important;
+  padding: 1.1rem !important;
+  background: transparent !important;
 }
-#ssv-status, #ssv-shadow-summary, #ssv-source-result {
-  border: 1px solid var(--border-color-primary);
-  border-radius: 14px;
-  padding: .7rem .8rem;
-  background: var(--background-fill-primary);
-}
-#ssv-composer {
-  position: sticky;
-  bottom: .7rem;
-  z-index: 20;
-  border: 1px solid var(--border-color-primary);
+#ss-shell {
+  border: 1px solid var(--ss-border);
   border-radius: 18px;
-  padding: .65rem;
-  margin-top: .65rem;
-  background: var(--background-fill-primary);
+  overflow: hidden;
+  background: var(--ss-panel);
+  box-shadow: 0 20px 60px rgba(38, 74, 103, .13);
 }
-.ssv-muted { opacity: .72; font-size: .9rem; }
-.ssv-info-button button {
-  min-width: 42px !important;
-  width: 42px !important;
+#ss-topbar {
+  padding: .6rem 1rem;
+  border-bottom: 1px solid var(--ss-border);
+  align-items: center;
+  background: rgba(255,255,255,.98);
+}
+#ss-brand h2 { margin: 0 !important; letter-spacing: .02em; }
+#ss-model-badge { text-align: right; color: var(--ss-muted); }
+#ss-left {
+  min-width: 230px;
+  max-width: 270px;
+  padding: 1rem .8rem;
+  border-right: 1px solid var(--ss-border);
+  background: #fbfdff;
+}
+#ss-center {
+  padding: 1rem 1rem .8rem;
+  min-width: 0;
+}
+#ss-right {
+  min-width: 240px;
+  max-width: 280px;
+  padding: 1rem .8rem;
+  border-left: 1px solid var(--ss-border);
+  background: #fbfdff;
+}
+#ss-conversation-title h2 { margin: 0 0 .4rem !important; }
+#ss-context-banner {
+  border: 1px solid #d8eaf9;
+  background: #f4faff;
+  border-radius: 12px;
+  padding: .55rem .75rem;
+  margin: .35rem 0 .7rem;
+}
+#ss-composer {
+  border-top: 1px solid var(--ss-border);
+  padding-top: .7rem;
+  margin-top: .35rem;
+}
+#ss-shadow-metrics {
+  border-bottom: 1px solid var(--ss-border);
+  padding-bottom: .75rem;
+  margin-bottom: .75rem;
+}
+#ss-shadow-metrics p { margin: .18rem 0 !important; }
+#ss-recent {
+  border-top: 1px solid var(--ss-border);
+  padding-top: .7rem;
+  margin-top: .7rem;
+}
+.ss-primary button {
+  background: var(--ss-blue) !important;
+  border-color: var(--ss-blue) !important;
+  color: white !important;
+}
+.ss-info-button button {
+  min-width: 38px !important;
+  width: 38px !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
   border-radius: 999px !important;
   font-weight: 800 !important;
 }
-#ssv-help {
-  border: 1px solid var(--border-color-primary);
-  border-radius: 18px;
-  padding: .8rem .95rem;
-  margin-bottom: .8rem;
-  background: var(--background-fill-secondary);
+.ss-quiet button {
+  background: transparent !important;
+  border-color: var(--ss-border) !important;
+}
+.ss-drawer {
+  position: fixed !important;
+  z-index: 1000 !important;
+  top: 72px !important;
+  right: 28px !important;
+  width: min(460px, calc(100vw - 40px)) !important;
+  max-height: calc(100vh - 100px) !important;
+  overflow-y: auto !important;
+  padding: 1rem !important;
+  border: 1px solid var(--ss-border) !important;
+  border-radius: 18px !important;
+  background: rgba(255,255,255,.995) !important;
+  box-shadow: 0 24px 70px rgba(31, 65, 92, .24) !important;
+}
+#ss-menu-panel {
+  width: 250px !important;
+  top: 66px !important;
+  right: 42px !important;
+}
+#ss-help-panel { width: min(520px, calc(100vw - 40px)) !important; }
+.ss-drawer-title h2, .ss-drawer-title h3 { margin: 0 !important; }
+.ss-section-label {
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  color: #344054;
+  text-transform: uppercase;
+}
+.ss-muted { color: var(--ss-muted); font-size: .9rem; }
+.ss-status-pill {
+  display: inline-block;
+  border-radius: 999px;
+  padding: .16rem .5rem;
+  font-size: .72rem;
+  font-weight: 800;
+  background: #dff7ef;
+  color: #16785f;
+}
+#ss-seed-story {
+  border: 1px solid var(--ss-border);
+  border-radius: 14px;
+  padding: .8rem;
+  background: #fcfdff;
+}
+#ss-technical-json { max-height: 420px; overflow-y: auto; }
+@media (max-width: 1100px) {
+  #ss-right { display: none !important; }
+  #ss-left { min-width: 205px; }
+}
+@media (max-width: 780px) {
+  .gradio-container { padding: .4rem !important; }
+  #ss-left { display: none !important; }
+  #ss-center { padding: .7rem; }
+  .ss-drawer { top: 12px !important; right: 12px !important; width: calc(100vw - 24px) !important; max-height: calc(100vh - 24px) !important; }
 }
 """
 
@@ -194,6 +295,106 @@ def _source_summary(result: dict[str, Any] | None) -> str:
     )
 
 
+
+def _compact_session_choices(summaries: list[dict[str, Any]]) -> list[tuple[str, str]]:
+    return [
+        (str(item.get("title") or "Zonder titel"), str(item["session_id"]))
+        for item in summaries
+    ]
+
+
+def _session_title(summaries: list[dict[str, Any]], session_id: str | None) -> str:
+    for item in summaries:
+        if str(item.get("session_id")) == str(session_id):
+            return str(item.get("title") or "Gesprek")
+    return "Nieuw gesprek"
+
+
+def _model_badge(view: dict[str, Any] | None) -> str:
+    if not view:
+        return "Geen actief model"
+    backend = str(view.get("backend") or "onbekend")
+    model = str(view.get("model_id") or backend)
+    location = "Online" if backend == "openai" else ("Demo" if backend == "fixture" else "Lokaal")
+    return f"**{location} · {model}**"
+
+
+def _context_banner(view: dict[str, Any] | None) -> str:
+    if not view:
+        return "Nog geen actief gesprek."
+    reports = list(view.get("turn_reports", []) or [])
+    if not reports:
+        return "Shadowseed heeft nog geen geheugenpunt aan een antwoord aangeboden."
+    surfaced = list(reports[-1].get("surfaced_seed_ids", []) or [])
+    if surfaced:
+        return f"📄 **{len(surfaced)} geheugenpunt(en) als context aangeboden**"
+    return "📄 **Geen geheugenpunt als context aangeboden in de laatste beurt**"
+
+
+def _shadow_rail(view: dict[str, Any] | None) -> str:
+    if not view:
+        return "### SHADOW\nGeen actief gesprek."
+    seeds = list(view.get("seeds", []) or [])
+    authorized = sum(bool(seed.get("current_gate_authorized", False)) for seed in seeds)
+    blocked = sum(bool(seed.get("blocking", False)) for seed in seeds)
+    reports = list(view.get("turn_reports", []) or [])
+    offered = {
+        str(seed_id)
+        for report in reports
+        for seed_id in (report.get("surfaced_seed_ids", []) or [])
+    }
+    return (
+        "### SHADOW\n"
+        f"🔵 **{len(seeds)}**  onthouden  \n"
+        f"🟢 **{authorized}**  toegestaan  \n"
+        f"⚪ **{len(offered)}**  aangeboden  \n"
+        f"🔴 **{blocked}**  geblokkeerd"
+    )
+
+
+def _recent_seed_choices(view: dict[str, Any] | None) -> list[tuple[str, str]]:
+    if not view:
+        return []
+    choices: list[tuple[str, str]] = []
+    for seed in reversed(list(view.get("seeds", []) or [])):
+        seed_id = str(seed.get("id", ""))
+        text = str(seed.get("text", "")).replace("\n", " ").strip()
+        if not seed_id:
+            continue
+        if bool(seed.get("blocking", False)):
+            state = "Geblokkeerd"
+        elif bool(seed.get("current_gate_authorized", False)):
+            state = "Toegestaan"
+        else:
+            state = "Onthouden"
+        choices.append((f"{state} · {text[:52]}", seed_id))
+        if len(choices) == 3:
+            break
+    return choices
+
+
+def _seed_lifecycle(seed: dict[str, Any] | None) -> str:
+    if not seed:
+        return "Selecteer een geheugenpunt."
+    occurrence = int(seed.get("occurrence_count", 0))
+    evidence = int(seed.get("evidence_count", 0))
+    authorized = bool(seed.get("current_gate_authorized", False))
+    blocked = bool(seed.get("blocking", False))
+    surfaced = seed.get("last_surfaced_turn") is not None
+    stages = [
+        ("✓", "Opgemerkt", True),
+        ("✓" if occurrence > 1 else "○", "Opnieuw gezien", occurrence > 1),
+        ("✓" if evidence > 0 else "○", "Ondersteund", evidence > 0),
+        ("!" if blocked else ("✓" if authorized else "○"), "Toegestaan", authorized and not blocked),
+        ("✓" if surfaced else "○", "Aangeboden", surfaced),
+    ]
+    line = "  →  ".join(
+        f"**{icon} {label}**" if active else f"{icon} {label}"
+        for icon, label, active in stages
+    )
+    return line
+
+
 def build_vnext_app(
     workspace: str | Path | None = None,
     *,
@@ -233,11 +434,14 @@ def build_vnext_app(
             except Exception:
                 view = None
                 seed = None
-        effective_provider = (
-            str(view.get("backend"))
-            if view and view.get("backend")
-            else provider
-        )
+        if feature_id in {"new_chat", "model", "external_consent"}:
+            effective_provider = provider
+        else:
+            effective_provider = (
+                str(view.get("backend"))
+                if view and view.get("backend")
+                else provider
+            )
         return (
             feature_id,
             render_feature_help(
@@ -605,247 +809,518 @@ def build_vnext_app(
                 question,
             )
 
+    summaries = ctl.list_sessions()
+    compact_sessions = _compact_session_choices(summaries)
+    initial_title = _session_title(summaries, initial_id)
+    recent_choices = _recent_seed_choices(initial_view)
+
+    def refresh_shell(session_id: str | None):
+        current_summaries = ctl.list_sessions()
+        if not session_id:
+            return (
+                [],
+                "Nieuw gesprek",
+                "Geen actief model",
+                _context_banner(None),
+                _shadow_rail(None),
+                gr.update(choices=[], value=None),
+                gr.update(choices=[], value=None),
+                None,
+            )
+        view = ctl.session_view(session_id)
+        seeds = ctl.seed_choices(view)
+        recent = _recent_seed_choices(view)
+        return (
+            ctl.chat_messages(view),
+            _session_title(current_summaries, session_id),
+            _model_badge(view),
+            _context_banner(view),
+            _shadow_rail(view),
+            gr.update(choices=seeds, value=None),
+            gr.update(choices=recent, value=(recent[0][1] if recent else None)),
+            view,
+        )
+
+    def select_shell_session(session_id: str | None):
+        shell = refresh_shell(session_id)
+        return (
+            session_id,
+            *shell,
+            _seed_story(None),
+            _seed_lifecycle(None),
+            None,
+            "",
+            "",
+            "Zet **Vergelijk deze beurt zonder SSL** aan voor een same-turn control.",
+        )
+
+    def create_chat_shell(
+        title: str,
+        provider_value: str,
+        model_value: str | None,
+        hosted_confirmed: bool,
+    ):
+        result = create_chat(title, provider_value, model_value, hosted_confirmed)
+        if not isinstance(result[0], str):
+            return (
+                *result,
+                gr.update(),
+                gr.update(),
+                gr.update(),
+            )
+        session_id = result[0]
+        current_summaries = ctl.list_sessions()
+        compact = _compact_session_choices(current_summaries)
+        shell = refresh_shell(session_id)
+        return (
+            session_id,
+            gr.update(choices=compact, value=session_id),
+            *shell,
+            _seed_story(None),
+            _seed_lifecycle(None),
+            None,
+            "",
+            "",
+            "Zet **Vergelijk deze beurt zonder SSL** aan voor een same-turn control.",
+            gr.update(visible=False),
+        )
+
+    def inspect_seed_shell(session_id: str | None, seed_id: str | None):
+        story, seed = inspect_seed(session_id, seed_id)
+        return story, _seed_lifecycle(seed if isinstance(seed, dict) else None), seed
+
+    def send_shell(
+        session_id: str | None,
+        question_value: str,
+        compare_enabled: bool,
+        hosted_confirmed: bool,
+    ):
+        result = send(session_id, question_value, compare_enabled, hosted_confirmed)
+        if session_id:
+            try:
+                view = ctl.session_view(session_id)
+                current_summaries = ctl.list_sessions()
+                return (
+                    result[0],
+                    _session_title(current_summaries, session_id),
+                    _model_badge(view),
+                    _context_banner(view),
+                    _shadow_rail(view),
+                    gr.update(choices=ctl.seed_choices(view), value=None),
+                    gr.update(
+                        choices=_recent_seed_choices(view),
+                        value=(_recent_seed_choices(view)[0][1] if _recent_seed_choices(view) else None),
+                    ),
+                    view,
+                    result[5],
+                    result[6],
+                    result[7],
+                    result[8],
+                )
+            except Exception:
+                pass
+        return (
+            result[0],
+            gr.update(),
+            gr.update(),
+            result[1],
+            gr.update(),
+            result[3],
+            gr.update(),
+            result[4],
+            result[5],
+            result[6],
+            result[7],
+            result[8],
+        )
+
+    def ingest_shell(
+        session_id: str | None,
+        pasted: str,
+        files: list[str] | str | None,
+        hosted_confirmed: bool,
+    ):
+        result = ingest(session_id, pasted, files, hosted_confirmed)
+        if not session_id:
+            return (*result, gr.update(), gr.update())
+        try:
+            view = ctl.session_view(session_id)
+            return (
+                result[0],
+                _shadow_rail(view),
+                _context_banner(view),
+                gr.update(choices=ctl.seed_choices(view), value=None),
+                view,
+                result[5],
+                gr.update(
+                    choices=_recent_seed_choices(view),
+                    value=(_recent_seed_choices(view)[0][1] if _recent_seed_choices(view) else None),
+                ),
+                gr.update(visible=False),
+            )
+        except Exception:
+            return (*result, gr.update(), gr.update())
+
+    def mutation_shell(
+        session_id: str | None,
+        seed_id: str | None,
+        *,
+        action: str,
+        source_ref: str = "",
+        note: str = "",
+        attested: bool = False,
+    ):
+        if action == "contradict":
+            result = falsify(session_id, seed_id)
+            extra_note, extra_attest = note, attested
+        else:
+            evidence_result = submit_verified_evidence(
+                session_id,
+                seed_id,
+                source_ref,
+                note,
+                attested,
+            )
+            result = evidence_result[:5]
+            extra_note = evidence_result[5]
+            extra_attest = evidence_result[6]
+        if not session_id:
+            return (*result, _seed_lifecycle(None), gr.update(), extra_note, extra_attest)
+        try:
+            view = ctl.session_view(session_id)
+            seed = ctl.seed_view(session_id, seed_id) if seed_id else None
+            return (
+                result[0],
+                _shadow_rail(view),
+                _context_banner(view),
+                view,
+                gr.update(choices=ctl.seed_choices(view), value=seed_id),
+                _seed_lifecycle(seed),
+                gr.update(
+                    choices=_recent_seed_choices(view),
+                    value=seed_id,
+                ),
+                extra_note,
+                extra_attest,
+            )
+        except Exception:
+            return (*result, _seed_lifecycle(None), gr.update(), extra_note, extra_attest)
+
     with gr.Blocks(title="Shadowseed") as app:
         active_session = gr.State(initial_id)
         help_feature = gr.State("conversation")
 
-        with gr.Group(elem_id="ssv-hero"):
-            gr.Markdown("# Shadowseed")
-            gr.Markdown(
-                "Chat normaal. Shadowseed merkt mogelijke ontbrekende inzichten op, "
-                "onthoudt ze zonder ze meteen te geloven en gebruikt ze alleen wanneer dat mag en relevant is."
-            )
+        with gr.Group(elem_id="ss-shell"):
+            with gr.Row(elem_id="ss-topbar"):
+                brand = gr.Markdown("## SHADOWSEED", elem_id="ss-brand", scale=4)
+                model_badge = gr.Markdown(_model_badge(initial_view), elem_id="ss-model-badge", scale=2)
+                model_top_info = gr.Button("ⓘ", scale=0, min_width=40, elem_classes=["ss-info-button"])
+                menu_button = gr.Button("☰  Menu", scale=0, min_width=100)
 
-        help_panel = gr.Markdown(
-            render_feature_help(
-                "conversation",
-                view=initial_view,
-                compare_enabled=False,
-                provider=(str(initial_view.get("backend")) if initial_view else auto_backend),
-                hosted_confirmed=False,
-            ),
-            elem_id="ssv-help",
-        )
-
-        with gr.Row():
-            session_select = gr.Dropdown(
-                choices=sessions,
-                value=initial_id,
-                label="Gesprek",
-                scale=4,
-            )
-            session_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
-            with gr.Accordion("Nieuwe chat", open=False):
-                new_chat_info = gr.Button("ⓘ Uitleg nieuwe chat", variant="secondary")
-                new_title = gr.Textbox(label="Naam", value="Nieuwe chat")
-                with gr.Row():
-                    provider = gr.Dropdown(
-                        choices=[
-                        ("Ollama · lokaal", "ollama"),
-                        ("OpenAI · online", "openai"),
-                        ("Hugging Face · lokaal", "hf-transformers"),
-                            ("Offline demo", "fixture"),
-                        ],
-                        value=auto_backend,
-                        label="Modelprovider",
-                        scale=5,
-                    )
-                    model_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
-                model_id = gr.Dropdown(
-                    choices=([auto_model] if auto_model else []),
-                    value=auto_model,
-                    allow_custom_value=True,
-                    label="Model",
-                )
-                model_note = gr.Markdown(auto_note, elem_classes=["ssv-muted"])
-                with gr.Row():
-                    rescan_models = gr.Button("Zoek lokale modellen opnieuw", variant="secondary", scale=5)
-                    rescan_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
-                with gr.Row():
-                    hosted_confirm = gr.Checkbox(
-                        label="Ik begrijp dat deze provider inhoud extern kan verwerken",
-                        value=False,
-                        scale=5,
-                    )
-                    consent_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
-                with gr.Row():
-                    create_button = gr.Button("Start nieuwe chat", variant="primary", scale=5)
-                    create_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
-
-        with gr.Tabs():
-            with gr.Tab("Chat"):
-                with gr.Column(elem_id="ssv-chat"):
-                    chat = gr.Chatbot(value=initial_chat, label="Gesprek", height=520)
-                    status = gr.Markdown(_status(initial_view), elem_id="ssv-status")
-                    with gr.Row(elem_id="ssv-composer"):
-                        question = gr.Textbox(
-                            label="Bericht",
-                            placeholder="Typ je bericht…",
-                            lines=2,
-                            scale=5,
-                        )
-                        send_button = gr.Button("Versturen", variant="primary", scale=1)
-                        send_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
+            with gr.Row(equal_height=True):
+                with gr.Column(scale=2, min_width=220, elem_id="ss-left"):
                     with gr.Row():
-                        compare = gr.Checkbox(
-                            label="Vergelijk dit antwoord zonder SSL",
-                            value=False,
-                            scale=5,
-                        )
-                        compare_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
+                        gr.Markdown("### GESPREKKEN", scale=4)
+                        conversation_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
+                    new_chat_open = gr.Button("＋  Nieuwe chat", variant="primary", elem_classes=["ss-primary"])
+                    gr.Markdown('<span class="ss-section-label">Vandaag</span>')
+                    session_select = gr.Radio(
+                        choices=compact_sessions,
+                        value=initial_id,
+                        label=None,
+                        container=False,
+                    )
+
+                with gr.Column(scale=6, min_width=520, elem_id="ss-center"):
+                    conversation_title = gr.Markdown(
+                        f"## {initial_title}",
+                        elem_id="ss-conversation-title",
+                    )
+                    chat = gr.Chatbot(value=initial_chat, label=None, height=500)
+                    context_banner = gr.Markdown(_context_banner(initial_view), elem_id="ss-context-banner")
+                    with gr.Column(elem_id="ss-composer"):
+                        with gr.Row():
+                            source_open = gr.Button("＋  Bron toevoegen", scale=1)
+                            source_info_inline = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
+                            question = gr.Textbox(
+                                label=None,
+                                placeholder="Stel je vraag...",
+                                lines=2,
+                                scale=5,
+                                container=False,
+                            )
+                            send_button = gr.Button("Versturen", variant="primary", scale=1, elem_classes=["ss-primary"])
+                            send_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
+                        with gr.Row():
+                            compare = gr.Checkbox(
+                                label="Vergelijk deze beurt zonder SSL",
+                                value=False,
+                                scale=5,
+                            )
+                            compare_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
                     with gr.Accordion("Vergelijking", open=False):
                         comparison_note = gr.Markdown(
-                            "Zet **Vergelijk dit antwoord zonder SSL** aan voor een same-turn control."
+                            "Zet **Vergelijk deze beurt zonder SSL** aan voor een same-turn control."
                         )
                         with gr.Row():
                             ssl_answer = gr.Markdown(label="Met SSL")
                             no_ssl_answer = gr.Markdown(label="Zonder SSL")
 
-            with gr.Tab("Shadow"):
-                with gr.Column(elem_id="ssv-shadow"):
+                with gr.Column(scale=2, min_width=235, elem_id="ss-right"):
+                    shadow_metrics = gr.Markdown(_shadow_rail(initial_view), elem_id="ss-shadow-metrics")
                     with gr.Row():
-                        shadow_info = gr.Button("ⓘ Uitleg Shadow", variant="secondary")
-                    shadow_summary = gr.Markdown(_shadow_summary(initial_view), elem_id="ssv-shadow-summary")
-                    with gr.Row():
-                        seed_select = gr.Dropdown(
-                            choices=initial_seeds,
-                            value=None,
-                            label="Geheugenpunt",
-                            scale=5,
-                        )
-                        seed_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
-                    seed_story = gr.Markdown(_seed_story(None))
-                    with gr.Accordion("Beoordeling van dit geheugenpunt", open=False):
-                        gr.Markdown(
-                            "Deze handelingen grijpen rechtstreeks in op de SSL-logica. "
-                            "**Tegenspraak registreren** maakt een blokkende contradiction aan. "
-                            "**Geverifieerde ondersteuning toevoegen** levert onafhankelijk gecontroleerde "
-                            "support aan de Validation Gate."
-                        )
-                        with gr.Row():
-                            contradict_button = gr.Button("Tegenspraak registreren", variant="stop", scale=5)
-                            contradiction_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
-                        evidence_source = gr.Textbox(label="Bronreferentie")
-                        evidence_note = gr.Textbox(label="Toelichting bij de ondersteuning", lines=2)
-                        with gr.Row():
-                            evidence_attest = gr.Checkbox(
-                                label="Ik heb deze ondersteuning onafhankelijk van modeloutput gecontroleerd",
-                                value=False,
-                                scale=5,
-                            )
-                            attest_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
-                        with gr.Row():
-                            evidence_button = gr.Button("Geverifieerde ondersteuning toevoegen", scale=5)
-                            evidence_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
-                    with gr.Accordion("Technische audit", open=False):
-                        technical_info = gr.Button("ⓘ Uitleg technische audit", variant="secondary")
-                        session_json = gr.JSON(value=initial_view, label="Gesprekstoestand")
-                        seed_json = gr.JSON(label="Geheugenpunt")
-
-            with gr.Tab("Bronnen"):
-                with gr.Column(elem_id="ssv-sources"):
-                    source_info = gr.Button("ⓘ Uitleg bronnen verwerken", variant="secondary")
-                    gr.Markdown(
-                        "Voeg materiaal toe aan hetzelfde actieve gesprek. Shadowseed observeert dit automatisch; "
-                        "de bron wordt niet automatisch bewijs."
+                        shadow_open = gr.Button("Bekijk Shadow", scale=4)
+                        shadow_info_inline = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
+                    gr.Markdown('<span class="ss-section-label">Recent opgemerkt</span>', elem_id="ss-recent")
+                    recent_seed = gr.Radio(
+                        choices=recent_choices,
+                        value=(recent_choices[0][1] if recent_choices else None),
+                        label=None,
+                        container=False,
                     )
-                    source_text = gr.Textbox(label="Tekst", lines=9)
-                    source_files = gr.File(
-                        label="Bestanden",
-                        file_count="multiple",
-                        type="filepath",
-                        file_types=[".txt", ".md", ".markdown", ".json", ".csv"],
-                    )
-                    with gr.Row():
-                        ingest_button = gr.Button("Verwerk", variant="primary", scale=5)
-                        ingest_info = gr.Button("ⓘ", scale=0, min_width=44, elem_classes=["ssv-info-button"])
-                    source_result = gr.Markdown(_source_summary(None), elem_id="ssv-source-result")
+                    recent_open = gr.Button("Bekijk geheugenpunt", variant="secondary")
 
-            with gr.Tab("Onderzoek"):
-                research_info = gr.Button("ⓘ Uitleg onderzoek", variant="secondary")
-                gr.Markdown(
-                    "### Onderzoeksmethoden\n"
-                    "Hier staan experimenten die bewust buiten de gewone chat blijven. "
-                    "Ze kunnen trager zijn en beantwoorden een andere vraag dan de normale same-turn vergelijking.\n\n"
-                    "**Longitudinale vanilla-vergelijking:** laat een onafhankelijk vanilla-pad meegroeien. "
-                    "Start je dit pas later in een gesprek, dan kunnen eerdere userbeurten opnieuw worden gegenereerd."
+        with gr.Group(visible=False, elem_id="ss-panel-new-chat", elem_classes=["ss-drawer"]) as new_chat_panel:
+            with gr.Row():
+                gr.Markdown("## Nieuwe chat", elem_classes=["ss-drawer-title"], scale=5)
+                new_chat_close = gr.Button("×", scale=0, min_width=40, elem_classes=["ss-info-button"])
+            new_title = gr.Textbox(label="Naam", value="Nieuw gesprek")
+            with gr.Row():
+                provider = gr.Dropdown(
+                    choices=[
+                        ("Ollama · lokaal", "ollama"),
+                        ("OpenAI · online", "openai"),
+                        ("Hugging Face · lokaal", "hf-transformers"),
+                        ("Offline demo", "fixture"),
+                    ],
+                    value=auto_backend,
+                    label="Provider",
+                    scale=5,
                 )
+                model_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
+            model_id = gr.Dropdown(
+                choices=([auto_model] if auto_model else []),
+                value=auto_model,
+                allow_custom_value=True,
+                label="Model",
+            )
+            model_note = gr.Markdown(auto_note, elem_classes=["ss-muted"])
+            with gr.Row():
+                rescan_models = gr.Button("↻  Lokale modellen opnieuw zoeken", scale=5)
+                rescan_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
+            with gr.Row():
+                hosted_confirm = gr.Checkbox(
+                    label="Ik begrijp dat deze provider inhoud extern kan verwerken",
+                    value=False,
+                    scale=5,
+                )
+                consent_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
+            create_button = gr.Button("Chat starten", variant="primary", elem_classes=["ss-primary"])
+
+        with gr.Group(visible=False, elem_id="ss-panel-source", elem_classes=["ss-drawer"]) as source_panel:
+            with gr.Row():
+                gr.Markdown("## Bron toevoegen", elem_classes=["ss-drawer-title"], scale=5)
+                source_close = gr.Button("×", scale=0, min_width=40, elem_classes=["ss-info-button"])
+            gr.Markdown(
+                "Voeg een tekstbron toe aan **dit gesprek**. De inhoud is observatie-input voor "
+                "Shadowseed en wordt niet automatisch waarheid of geverifieerd bewijs."
+            )
+            source_text = gr.Textbox(
+                label=None,
+                placeholder="Plak hier je tekst, aantekeningen of onderzoeksfragment...",
+                lines=8,
+            )
+            source_files = gr.File(
+                label="Bestand kiezen",
+                file_count="multiple",
+                type="filepath",
+                file_types=[".txt", ".md", ".markdown", ".json", ".csv"],
+            )
+            with gr.Row():
+                ingest_button = gr.Button("Toevoegen aan gesprek", variant="primary", scale=5, elem_classes=["ss-primary"])
+                source_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
+            source_result = gr.Markdown(_source_summary(None))
+
+        with gr.Group(visible=False, elem_id="ss-panel-shadow", elem_classes=["ss-drawer"]) as shadow_panel:
+            with gr.Row():
+                gr.Markdown("## SHADOW", elem_classes=["ss-drawer-title"], scale=5)
+                shadow_close = gr.Button("×", scale=0, min_width=40, elem_classes=["ss-info-button"])
+            gr.Markdown(
+                "Onthouden, toegestaan, aangeboden en geblokkeerd zijn verschillende SSL-stappen."
+            )
+            seed_select = gr.Dropdown(
+                choices=initial_seeds,
+                value=None,
+                label="Geheugenpunt",
+            )
+            seed_story = gr.Markdown(_seed_story(None), elem_id="ss-seed-story")
+            lifecycle = gr.Markdown(_seed_lifecycle(None))
+            with gr.Row():
+                contradiction_button = gr.Button("Tegenspraak registreren", scale=4)
+                contradiction_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
+            gr.Markdown("### Geverifieerde ondersteuning")
+            evidence_source = gr.Textbox(label="Bronreferentie")
+            evidence_note = gr.Textbox(label="Toelichting", lines=2)
+            with gr.Row():
+                evidence_attest = gr.Checkbox(
+                    label="Ik heb deze ondersteuning onafhankelijk van modeloutput gecontroleerd",
+                    value=False,
+                    scale=5,
+                )
+                evidence_attest_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
+            with gr.Row():
+                evidence_button = gr.Button(
+                    "Geverifieerde ondersteuning toevoegen",
+                    variant="primary",
+                    scale=5,
+                    elem_classes=["ss-primary"],
+                )
+                evidence_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
+            technical_open_from_seed = gr.Button("Technische audit", variant="secondary")
+
+        with gr.Group(visible=False, elem_id="ss-menu-panel", elem_classes=["ss-drawer"]) as menu_panel:
+            menu_close = gr.Button("× Sluiten", variant="secondary")
+            about_button = gr.Button("ⓘ  Over Shadowseed")
+            research_open = gr.Button("⚗  Onderzoek")
+            audit_open = gr.Button("▣  Technische audit")
+            model_menu_info = gr.Button("⚙  Model & provider")
+            gr.Markdown("Versie **0.10**", elem_classes=["ss-muted"])
+
+        with gr.Group(visible=False, elem_id="ss-panel-research", elem_classes=["ss-drawer"]) as research_panel:
+            with gr.Row():
+                gr.Markdown("## ONDERZOEK", elem_classes=["ss-drawer-title"], scale=5)
+                research_close = gr.Button("×", scale=0, min_width=40, elem_classes=["ss-info-button"])
+            gr.Markdown(
+                "ℹ️ **Experimenten en analyses staan los van je normale chatgesprekken.**"
+            )
+            with gr.Accordion("Longitudinale vergelijking", open=True):
+                longitudinal_info = gr.Button("ⓘ Uitleg")
                 research_question = gr.Textbox(
                     label="Onderzoeksvraag",
-                    placeholder="Typ de volgende vraag voor het longitudinale experiment…",
+                    placeholder="Typ de volgende vraag voor het longitudinale experiment...",
                     lines=2,
                 )
-                research_run = gr.Button(
-                    "Voer longitudinale vanilla-vergelijking uit",
-                    variant="secondary",
-                )
-                research_result = gr.Markdown(
-                    "Nog geen longitudinale vergelijking uitgevoerd."
-                )
+                research_run = gr.Button("Voer longitudinale vergelijking uit", variant="secondary")
+                research_result = gr.Markdown("Nog geen longitudinale vergelijking uitgevoerd.")
                 with gr.Row():
                     research_ssl_answer = gr.Markdown(label="Shadowseed-pad")
                     research_vanilla_answer = gr.Markdown(label="Onafhankelijk vanilla-pad")
+            with gr.Accordion("Matching", open=False):
+                semantic_info = gr.Button("ⓘ Leg semantisch matchen uit")
+            with gr.Accordion("Self-reinforcement", open=False):
+                self_reinforcement_info = gr.Button("ⓘ Leg self-reinforcement uit")
+            with gr.Accordion("Validation Gate", open=False):
+                gr.Markdown(
+                    "De Gate bepaalt authority. In de gewone chat is dit geen losse schuifregelaar."
+                )
+                gate_info = gr.Button("ⓘ Leg de Validation Gate uit")
+
+        with gr.Group(visible=False, elem_id="ss-panel-audit", elem_classes=["ss-drawer"]) as audit_panel:
+            with gr.Row():
+                gr.Markdown("## Technische audit", elem_classes=["ss-drawer-title"], scale=5)
+                audit_close = gr.Button("×", scale=0, min_width=40, elem_classes=["ss-info-button"])
+            audit_info = gr.Button("ⓘ Wat zie ik hier?")
+            session_json = gr.JSON(value=initial_view, label="Gesprekstoestand", elem_id="ss-technical-json")
+            seed_json = gr.JSON(label="Geheugenpunt")
+
+        with gr.Group(visible=False, elem_id="ss-help-panel", elem_classes=["ss-drawer"]) as help_panel_group:
+            with gr.Row():
+                gr.Markdown("## Uitleg", elem_classes=["ss-drawer-title"], scale=5)
+                help_close = gr.Button("×", scale=0, min_width=40, elem_classes=["ss-info-button"])
+            help_panel = gr.Markdown(
+                render_feature_help(
+                    "conversation",
+                    view=initial_view,
+                    compare_enabled=False,
+                    provider=(str(initial_view.get("backend")) if initial_view else auto_backend),
+                    hosted_confirmed=False,
+                )
+            )
+
+        def open_panel(panel):
+            return gr.update(visible=True)
+
+        def close_panel():
+            return gr.update(visible=False)
 
         def bind_help(button, feature_id: str):
             button.click(
                 lambda session_id, compare_enabled, provider_value, consent_value, seed_id, _feature=feature_id:
-                    show_help(
+                    (
                         _feature,
-                        session_id,
-                        compare_enabled,
-                        provider_value,
-                        consent_value,
-                        seed_id,
+                        render_feature_help(
+                            _feature,
+                            view=(ctl.session_view(session_id) if session_id else None),
+                            compare_enabled=bool(compare_enabled),
+                            provider=(
+                                provider_value
+                                if _feature in {"new_chat", "model", "external_consent"}
+                                else (
+                                    str(ctl.session_view(session_id).get("backend"))
+                                    if session_id else provider_value
+                                )
+                            ),
+                            hosted_confirmed=bool(consent_value),
+                            seed=(ctl.seed_view(session_id, seed_id) if session_id and seed_id else None),
+                        ),
+                        gr.update(visible=True),
                     ),
                 inputs=[active_session, compare, provider, hosted_confirm, seed_select],
-                outputs=[help_feature, help_panel],
+                outputs=[help_feature, help_panel, help_panel_group],
             )
 
         for button, feature_id in (
-            (session_info, "conversation"),
-            (new_chat_info, "new_chat"),
+            (conversation_info, "conversation"),
+            (model_top_info, "model"),
             (model_info, "model"),
             (rescan_info, "model"),
             (consent_info, "external_consent"),
-            (create_info, "new_chat"),
             (send_info, "send"),
             (compare_info, "compare"),
-            (shadow_info, "shadow"),
-            (seed_info, "shadow"),
-            (contradiction_info, "contradiction"),
-            (attest_info, "verified_support"),
-            (evidence_info, "verified_support"),
-            (technical_info, "technical_audit"),
+            (source_info_inline, "sources"),
             (source_info, "sources"),
-            (ingest_info, "sources"),
-            (research_info, "research"),
+            (shadow_info_inline, "shadow"),
+            (contradiction_info, "contradiction"),
+            (evidence_attest_info, "verified_support"),
+            (evidence_info, "verified_support"),
+            (about_button, "shadow"),
+            (longitudinal_info, "longitudinal"),
+            (semantic_info, "semantic_matching"),
+            (self_reinforcement_info, "self_reinforcement"),
+            (gate_info, "research"),
+            (audit_info, "technical_audit"),
+            (model_menu_info, "model"),
         ):
             bind_help(button, feature_id)
 
-        for component in (session_select, compare, provider, hosted_confirm, seed_select):
-            component.change(
-                refresh_help,
-                inputs=[help_feature, active_session, compare, provider, hosted_confirm, seed_select],
-                outputs=[help_panel],
-            )
+        new_chat_open.click(lambda: gr.update(visible=True), outputs=[new_chat_panel])
+        new_chat_close.click(close_panel, outputs=[new_chat_panel])
+        source_open.click(lambda: gr.update(visible=True), outputs=[source_panel])
+        source_close.click(close_panel, outputs=[source_panel])
+        shadow_open.click(lambda: gr.update(visible=True), outputs=[shadow_panel])
+        shadow_close.click(close_panel, outputs=[shadow_panel])
+        menu_button.click(lambda: gr.update(visible=True), outputs=[menu_panel])
+        menu_close.click(close_panel, outputs=[menu_panel])
+        research_open.click(
+            lambda: (gr.update(visible=True), gr.update(visible=False)),
+            outputs=[research_panel, menu_panel],
+        )
+        research_close.click(close_panel, outputs=[research_panel])
+        audit_open.click(
+            lambda: (gr.update(visible=True), gr.update(visible=False)),
+            outputs=[audit_panel, menu_panel],
+        )
+        technical_open_from_seed.click(
+            lambda: (gr.update(visible=True), gr.update(visible=False)),
+            outputs=[audit_panel, shadow_panel],
+        )
+        audit_close.click(close_panel, outputs=[audit_panel])
+        help_close.click(close_panel, outputs=[help_panel_group])
 
-        session_select.change(
-            select_session,
-            inputs=[session_select],
-            outputs=[
-                active_session,
-                chat,
-                status,
-                shadow_summary,
-                seed_select,
-                session_json,
-                seed_story,
-                seed_json,
-                ssl_answer,
-                no_ssl_answer,
-                comparison_note,
-                source_result,
-            ],
+        recent_open.click(
+            lambda seed_id: (seed_id, gr.update(visible=True)),
+            inputs=[recent_seed],
+            outputs=[seed_select, shadow_panel],
         )
 
         provider.change(
@@ -859,34 +1334,63 @@ def build_vnext_app(
             outputs=[model_id, model_note],
         )
 
+        session_select.change(
+            select_shell_session,
+            inputs=[session_select],
+            outputs=[
+                active_session,
+                chat,
+                conversation_title,
+                model_badge,
+                context_banner,
+                shadow_metrics,
+                seed_select,
+                recent_seed,
+                session_json,
+                seed_story,
+                lifecycle,
+                seed_json,
+                ssl_answer,
+                no_ssl_answer,
+                comparison_note,
+            ],
+        )
+
         create_button.click(
-            create_chat,
+            create_chat_shell,
             inputs=[new_title, provider, model_id, hosted_confirm],
             outputs=[
                 active_session,
                 session_select,
                 chat,
-                status,
-                shadow_summary,
+                conversation_title,
+                model_badge,
+                context_banner,
+                shadow_metrics,
                 seed_select,
+                recent_seed,
                 session_json,
                 seed_story,
+                lifecycle,
                 seed_json,
                 ssl_answer,
                 no_ssl_answer,
                 comparison_note,
-                source_result,
+                new_chat_panel,
             ],
         )
 
         send_button.click(
-            send,
+            send_shell,
             inputs=[active_session, question, compare, hosted_confirm],
             outputs=[
                 chat,
-                status,
-                shadow_summary,
+                conversation_title,
+                model_badge,
+                context_banner,
+                shadow_metrics,
                 seed_select,
+                recent_seed,
                 session_json,
                 question,
                 ssl_answer,
@@ -895,13 +1399,16 @@ def build_vnext_app(
             ],
         )
         question.submit(
-            send,
+            send_shell,
             inputs=[active_session, question, compare, hosted_confirm],
             outputs=[
                 chat,
-                status,
-                shadow_summary,
+                conversation_title,
+                model_badge,
+                context_banner,
+                shadow_metrics,
                 seed_select,
+                recent_seed,
                 session_json,
                 question,
                 ssl_answer,
@@ -911,33 +1418,68 @@ def build_vnext_app(
         )
 
         seed_select.change(
-            inspect_seed,
+            inspect_seed_shell,
             inputs=[active_session, seed_select],
-            outputs=[seed_story, seed_json],
+            outputs=[seed_story, lifecycle, seed_json],
         )
-        contradict_button.click(
-            falsify,
+
+        contradiction_button.click(
+            lambda session_id, seed_id: mutation_shell(
+                session_id,
+                seed_id,
+                action="contradict",
+            ),
             inputs=[active_session, seed_select],
-            outputs=[seed_story, shadow_summary, status, session_json, seed_select],
+            outputs=[
+                seed_story,
+                shadow_metrics,
+                context_banner,
+                session_json,
+                seed_select,
+                lifecycle,
+                recent_seed,
+                evidence_note,
+                evidence_attest,
+            ],
         )
+
         evidence_button.click(
-            submit_verified_evidence,
+            lambda session_id, seed_id, source_ref, note, attested:
+                mutation_shell(
+                    session_id,
+                    seed_id,
+                    action="evidence",
+                    source_ref=source_ref,
+                    note=note,
+                    attested=attested,
+                ),
             inputs=[active_session, seed_select, evidence_source, evidence_note, evidence_attest],
             outputs=[
                 seed_story,
-                shadow_summary,
-                status,
+                shadow_metrics,
+                context_banner,
                 session_json,
                 seed_select,
+                lifecycle,
+                recent_seed,
                 evidence_note,
                 evidence_attest,
             ],
         )
 
         ingest_button.click(
-            ingest,
+            ingest_shell,
             inputs=[active_session, source_text, source_files, hosted_confirm],
-            outputs=[source_result, shadow_summary, status, seed_select, session_json, source_text],
+            outputs=[
+                source_result,
+                shadow_metrics,
+                context_banner,
+                seed_select,
+                session_json,
+                source_text,
+                recent_seed,
+                source_panel,
+            ],
         )
 
         research_run.click(
@@ -948,8 +1490,8 @@ def build_vnext_app(
                 research_ssl_answer,
                 research_vanilla_answer,
                 chat,
-                status,
-                shadow_summary,
+                context_banner,
+                shadow_metrics,
                 seed_select,
                 session_json,
                 research_question,
