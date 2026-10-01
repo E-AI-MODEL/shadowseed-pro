@@ -14,7 +14,7 @@ Useful tester questions include:
 - Can local Ollama models be discovered and selected without copying model IDs by hand?
 - Can a chat be closed and resumed without losing visible turns or audit state?
 - Does the product behave like a normal chatbot before exposing seed internals?
-- Is **Compare with a vanilla chat** understandable without implying one answer is automatically better?
+- Is **Vergelijk dit antwoord zonder SSL** understandable as a same-turn control without implying one answer is automatically better?
 - Is it clear when a comparison difference can actually be attributed to SSL?
 - Are seed status and plain-language explanations understandable in the Shadow view?
 - Is record-only feedback easy to enter and clearly non-authorizing?
@@ -36,6 +36,8 @@ When **Compare this message with SSL off** is enabled, the Workbench generates a
 A textual difference is not automatically an SSL effect. Attribute a difference to SSL only when an authorized seed actually surfaced on the real live turn. When no seed surfaced, normal generation variance remains a possible explanation.
 
 Historical `evaluation` sessions, authored baseline fixtures, scenario JSON and blind benchmark workflows remain research/regression tools rather than prerequisites for ordinary product testing.
+
+The **Research** tab also exposes a separate longitudinal vanilla experiment. It maintains an independent vanilla answer history and may replay earlier user questions when started late. That is intentionally slower and should be interpreted as cumulative conversation-path divergence, not as the current-turn SSL-off control.
 
 ## Feedback and authority discipline
 
