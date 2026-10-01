@@ -1631,7 +1631,7 @@ def build_vnext_app(
             research_open = gr.Button("⚗  Onderzoek")
             audit_open = gr.Button("▣  Technische audit")
             model_menu_info = gr.Button("⚙  Model & provider")
-            gr.Markdown("Versie **0.10.0**", elem_classes=["ss-muted"])
+            gr.Markdown("Versie **0.10.1**", elem_classes=["ss-muted"])
 
         with gr.Group(visible=False, elem_id="ss-panel-research", elem_classes=["ss-drawer"]) as research_panel:
             with gr.Row():
