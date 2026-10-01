@@ -14,6 +14,7 @@ from typing import Any
 from shadowseed.application.error_safety import sanitized_exception_line
 from shadowseed.workbench.controller import WorkbenchController
 from shadowseed.workbench.feature_help import render_feature_help
+from shadowseed.workbench.updates import WorkbenchUpdateService
 
 
 _CSS = """
@@ -517,6 +518,7 @@ def build_vnext_app(
 
     gr = _gradio()
     ctl = controller or WorkbenchController(workspace)
+    update_service = WorkbenchUpdateService(Path(workspace or "~/.shadowseed").expanduser())
 
     sessions = ctl.session_choices(ctl.list_sessions())
     initial_id = sessions[0][1] if sessions else None
@@ -1336,6 +1338,68 @@ def build_vnext_app(
 
     initial_controls = _control_values(initial_view)
 
+    def _update_result_view(result: dict[str, Any]) -> tuple[str, dict[str, Any], Any]:
+        status = str(result.get("status", ""))
+        if status == "available":
+            candidate = dict(result.get("candidate") or {})
+            version = candidate.get("version", "?")
+            channel = "Research Preview" if candidate.get("prerelease") else "Release"
+            message = (
+                f"### Update beschikbaar: {version}\n"
+                f"{channel}. De update wordt **niet automatisch geïnstalleerd**. "
+                "Klik op downloaden om de officiële build op te halen en te verifiëren."
+            )
+            return message, candidate, gr.update(visible=True)
+        if status == "up_to_date":
+            return (
+                f"### Je bent bij\nGeïnstalleerde versie: **{result.get('current_version', '?')}**.",
+                {},
+                gr.update(visible=False),
+            )
+        return "### Updatecontrole\nNog niet gecontroleerd.", {}, gr.update(visible=False)
+
+    def check_updates():
+        try:
+            return _update_result_view(update_service.check())
+        except Exception as exc:
+            return (
+                f"### Updatecontrole mislukt\n{_ui_error(exc)}",
+                {},
+                gr.update(visible=False),
+            )
+
+    def maybe_check_updates(enabled: bool):
+        if not bool(enabled):
+            return (
+                f"### Updates\nGeïnstalleerde versie: **{update_service.current_version}**. "
+                "Automatisch controleren staat uit.",
+                {},
+                gr.update(visible=False),
+            )
+        return check_updates()
+
+    def save_auto_update(enabled: bool):
+        try:
+            value = update_service.set_auto_check(bool(enabled))
+            suffix = "aan" if value else "uit"
+            return f"Automatisch controleren bij starten staat **{suffix}**."
+        except Exception as exc:
+            return _ui_error(exc)
+
+    def download_update(candidate_payload: dict[str, Any] | None):
+        if not candidate_payload:
+            return "Controleer eerst of er een update beschikbaar is."
+        try:
+            result = update_service.download(dict(candidate_payload))
+            return (
+                f"### Update {result['version']} gecontroleerd gedownload\n"
+                f"Bestand: `{result['archive']}`  \n"
+                "Manifest en SHA-256 zijn gecontroleerd. Sluit Shadowseed voordat je "
+                "de huidige app vervangt door deze nieuwe build."
+            )
+        except Exception as exc:
+            return f"### Download mislukt\n{_ui_error(exc)}"
+
     def toggle_sidebar(is_open: bool):
         next_state = not bool(is_open)
         return next_state, gr.update(visible=next_state)
@@ -1630,8 +1694,38 @@ def build_vnext_app(
             about_button = gr.Button("ⓘ  Over Shadowseed")
             research_open = gr.Button("⚗  Onderzoek")
             audit_open = gr.Button("▣  Technische audit")
+            updates_open = gr.Button("↻  Updates")
             model_menu_info = gr.Button("⚙  Model & provider")
             gr.Markdown("Versie **0.10.1**", elem_classes=["ss-muted"])
+
+        with gr.Group(visible=False, elem_id="ss-panel-updates", elem_classes=["ss-drawer"]) as updates_panel:
+            with gr.Row():
+                gr.Markdown("## Updates", elem_classes=["ss-drawer-title"], scale=5)
+                updates_close = gr.Button("×", scale=0, min_width=40, elem_classes=["ss-info-button"])
+            gr.Markdown(
+                "Updates komen alleen uit de officiële Shadowseed GitHub Releases. "
+                "Downloaden en installeren gebeurt nooit zonder jouw keuze."
+            )
+            auto_updates = gr.Checkbox(
+                label="Automatisch controleren bij starten",
+                value=update_service.auto_check_enabled(),
+            )
+            auto_update_note = gr.Markdown(
+                "Automatisch controleren staat standaard uit.",
+                elem_classes=["ss-muted"],
+            )
+            check_update_button = gr.Button("Controleer nu", variant="secondary")
+            update_status = gr.Markdown(
+                f"### Updates\nGeïnstalleerde versie: **{update_service.current_version}**."
+            )
+            update_candidate = gr.State({})
+            download_update_button = gr.Button(
+                "Download en verifieer update",
+                variant="primary",
+                visible=False,
+                elem_classes=["ss-primary"],
+            )
+            update_download_result = gr.Markdown("")
 
         with gr.Group(visible=False, elem_id="ss-panel-research", elem_classes=["ss-drawer"]) as research_panel:
             with gr.Row():
@@ -1756,6 +1850,11 @@ def build_vnext_app(
             lambda: (gr.update(visible=True), gr.update(visible=False)),
             outputs=[research_panel, menu_panel],
         )
+        updates_open.click(
+            lambda: (gr.update(visible=True), gr.update(visible=False)),
+            outputs=[updates_panel, menu_panel],
+        )
+        updates_close.click(close_panel, outputs=[updates_panel])
         research_close.click(close_panel, outputs=[research_panel])
         audit_open.click(
             lambda: (gr.update(visible=True), gr.update(visible=False)),
@@ -1853,6 +1952,26 @@ def build_vnext_app(
             refresh_live_audit,
             inputs=[active_session],
             outputs=[live_audit, live_config, live_turn],
+        )
+
+        auto_updates.change(
+            save_auto_update,
+            inputs=[auto_updates],
+            outputs=[auto_update_note],
+        )
+        check_update_button.click(
+            check_updates,
+            outputs=[update_status, update_candidate, download_update_button],
+        )
+        download_update_button.click(
+            download_update,
+            inputs=[update_candidate],
+            outputs=[update_download_result],
+        )
+        app.load(
+            maybe_check_updates,
+            inputs=[auto_updates],
+            outputs=[update_status, update_candidate, download_update_button],
         )
 
         provider.change(
