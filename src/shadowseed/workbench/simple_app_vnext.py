@@ -278,6 +278,7 @@ def build_vnext_app(
     initial_chat = ctl.chat_messages(initial_view) if initial_view else []
     initial_seeds = ctl.seed_choices(initial_view) if initial_view else []
     auto_backend, auto_model, auto_note = _recommended_setup(ctl)
+    can_resolve_contradiction = callable(getattr(ctl, "resolve_contradiction", None))
 
     def show_help(
         feature_id: str,
@@ -918,6 +919,94 @@ def build_vnext_app(
             attested=attested,
         )
 
+    def resolve_contradiction_shell(
+        session_id: str | None,
+        seed_id: str | None,
+        basis: str,
+        contradiction_id: str,
+    ):
+        if not can_resolve_contradiction:
+            return (
+                "**Niet beschikbaar:** formele oplossing is alleen beschikbaar in de ondersteunde lokale productmodus.",
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                basis,
+            )
+        if not session_id or not seed_id:
+            return (
+                "**Kies eerst een geblokkeerd geheugenpunt.**",
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                basis,
+            )
+        if not str(basis or "").strip():
+            return (
+                "**Vul eerst de onafhankelijk gecontroleerde onderbouwing in.**",
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                basis,
+            )
+        try:
+            seed_before = ctl.seed_view(session_id, seed_id)
+            if not bool(seed_before.get("blocking", False)):
+                return (
+                    "**Dit geheugenpunt heeft geen open blokkade.**",
+                    _seed_story(seed_before),
+                    _seed_lifecycle(seed_before),
+                    seed_before,
+                    gr.update(),
+                    gr.update(),
+                    gr.update(),
+                    gr.update(),
+                    basis,
+                )
+            ctl.resolve_contradiction(
+                session_id,
+                seed_id,
+                basis=str(basis).strip(),
+                contradiction_id=str(contradiction_id or "").strip() or None,
+            )
+            view = ctl.session_view(session_id)
+            seed = ctl.seed_view(session_id, seed_id)
+            return (
+                "**Tegenspraak formeel opgelost.** De actuele Gate-status bepaalt daarna opnieuw of dit punt invloed mag hebben.",
+                _seed_story(seed),
+                _seed_lifecycle(seed),
+                seed,
+                _shadow_rail(view),
+                _context_banner(view),
+                view,
+                gr.update(choices=ctl.seed_choices(view), value=seed_id),
+                "",
+            )
+        except Exception as exc:
+            return (
+                _ui_error(exc),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                basis,
+            )
+
     def research_comparison_shell(
         session_id: str | None,
         question_value: str,
@@ -1126,6 +1215,30 @@ def build_vnext_app(
                     elem_classes=["ss-primary"],
                 )
                 evidence_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
+            with gr.Accordion(
+                "Geblokkeerde tegenspraak oplossen",
+                open=False,
+                visible=can_resolve_contradiction,
+            ):
+                gr.Markdown(
+                    "Alleen gebruiken nadat de blokkade onafhankelijk is gecontroleerd. "
+                    "Oplossen verwijdert de tegenspraak via de bestaande autorisatieroute; "
+                    "het maakt het geheugenpunt niet automatisch waar of opnieuw toegestaan."
+                )
+                resolution_basis = gr.Textbox(
+                    label="Onafhankelijke onderbouwing",
+                    lines=3,
+                    placeholder="Wat is gecontroleerd en waarom kan de blokkade worden opgeheven?",
+                )
+                resolution_contradiction_id = gr.Textbox(
+                    label="Tegenspraak-ID (optioneel)",
+                    placeholder="Leeg laten om de actuele blokkade op dit punt op te lossen",
+                )
+                resolve_contradiction_button = gr.Button(
+                    "Blokkade formeel oplossen",
+                    variant="secondary",
+                )
+                resolution_result = gr.Markdown()
             technical_open_from_seed = gr.Button("Technische audit", variant="secondary")
 
         with gr.Group(visible=False, elem_id="ss-menu-panel", elem_classes=["ss-drawer"]) as menu_panel:
@@ -1413,6 +1526,28 @@ def build_vnext_app(
                 evidence_note,
                 evidence_attest,
             ],
+        )
+
+        resolve_contradiction_button.click(
+            resolve_contradiction_shell,
+            inputs=[
+                active_session,
+                seed_select,
+                resolution_basis,
+                resolution_contradiction_id,
+            ],
+            outputs=[
+                resolution_result,
+                seed_story,
+                lifecycle,
+                seed_json,
+                shadow_metrics,
+                context_banner,
+                session_json,
+                seed_select,
+                resolution_basis,
+            ],
+            api_name="resolve_contradiction",
         )
 
         evidence_button.click(
