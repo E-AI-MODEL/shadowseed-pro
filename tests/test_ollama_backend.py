@@ -140,6 +140,18 @@ def test_client_embed_accepts_batch_input(monkeypatch):
     assert captured["body"]["input"] == ["eerste", "tweede"]
 
 
+def test_client_embed_rejects_vector_count_mismatch(monkeypatch):
+    def _urlopen(request, timeout=None):
+        payload = json.dumps({"embeddings": [[1.0, 0.0]]}).encode("utf-8")
+        return _FakeResponse(payload)
+
+    monkeypatch.setattr(ollama_client.urllib.request, "urlopen", _urlopen)
+    client = OllamaClient(model="embeddinggemma")
+
+    with pytest.raises(RuntimeError, match="different number of vectors"):
+        client.embed(["eerste", "tweede"])
+
+
 def test_detector_ollama_backend_parses_seeds(monkeypatch):
     urlopen, _ = _fake_urlopen("Ontbrekende toelichting bij Federal Mogul.")
     monkeypatch.setattr(ollama_client.urllib.request, "urlopen", urlopen)
