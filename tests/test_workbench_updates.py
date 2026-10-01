@@ -142,9 +142,18 @@ def test_download_verifies_manifest_and_archive_checksums(tmp_path, monkeypatch)
         def __exit__(self, exc_type, exc, tb):
             return False
 
+    class FakeHttpx:
+        @staticmethod
+        def Timeout(*args, **kwargs):
+            return object()
+
+        @staticmethod
+        def stream(*args, **kwargs):
+            return FakeStream()
+
     monkeypatch.setattr(
-        "shadowseed.workbench.updates.httpx.stream",
-        lambda *args, **kwargs: FakeStream(),
+        "shadowseed.workbench.updates._httpx_module",
+        lambda: FakeHttpx,
     )
 
     result = service.download(
