@@ -37,8 +37,12 @@ def test_supplementary_portability_runs_phase4_and_phase5_acceptance() -> None:
 def test_release_workflow_is_bound_to_exact_main_sha_and_post_download_verification() -> None:
     workflow = _text(".github/workflows/release-workbench.yml")
 
-    assert 'ref: ${{ github.event.workflow_run.head_sha }}' in workflow
-    assert 'test "$(git rev-parse HEAD)" = "$RELEASE_SHA"' in workflow
+    assert "workflow_dispatch:" in workflow
+    assert "inputs.confirm == 'RELEASE'" in workflow
+    assert "ref: main" in workflow
+    assert 'release_sha="$(git rev-parse origin/main)"' in workflow
+    assert 'test "$(git rev-parse HEAD)" = "$release_sha"' in workflow
+    assert "steps.preflight.outputs.release_sha" in workflow
     assert 'test "$(git rev-parse origin/main)" = "$RELEASE_SHA"' in workflow
     assert '--target "$RELEASE_SHA"' in workflow
     assert "main advanced during publication" in workflow
