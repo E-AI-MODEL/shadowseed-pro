@@ -1,6 +1,6 @@
 # Active Workflows
 
-The repository has eight active workflows:
+The repository has nine active workflows:
 
 - `ci.yml`: unconditional lint/tests/branch coverage plus the repository-required build status. The `build` job depends on an always-running `production-local` Linux/macOS/Windows matrix that executes the Workbench plus Phase 4 and Phase 5 production-local acceptance tests. `build` runs with `always()` and explicitly fails unless the matrix result is `success`, so a production-local matrix failure or cancellation cannot be hidden behind a skipped required status. This is the safe always-reporting enforcement path for production acceptance; it does not rely on a path-filtered workflow being configured as an unconditional required check.
 - `workbench-ci.yml`: focused Workbench tests, clean wheel-extra installation, CLI checks, and headless UI smoke tests. Pull requests remain path-filtered, while every push to `main` runs it so an explicit release always has exact-SHA Workbench evidence. It is still not the repository-layer production gate by itself.
