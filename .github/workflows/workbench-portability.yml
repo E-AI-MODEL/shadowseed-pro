@@ -18,20 +18,6 @@ on:
       - ".github/workflows/workbench-portability.yml"
   push:
     branches: [main]
-    paths:
-      - "src/shadowseed/adapters/**"
-      - "src/shadowseed/application/**"
-      - "src/shadowseed/storage/**"
-      - "src/shadowseed/workbench/**"
-      - "src/shadowseed/cli.py"
-      - "src/shadowseed/cli_dispatch.py"
-      - "tests/test_workbench_*.py"
-      - "tests/test_production_*_phase4.py"
-      - "tests/test_production_*_phase5.py"
-      - "pyproject.toml"
-      - "uv.lock"
-      - "Dockerfile.workbench"
-      - ".github/workflows/workbench-portability.yml"
 
 permissions:
   contents: read
