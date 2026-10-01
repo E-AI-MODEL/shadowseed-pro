@@ -7,6 +7,7 @@ Shadow and Sources. Research mechanisms remain outside the normal path.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -164,6 +165,118 @@ body { background: var(--ss-canvas) !important; }
   .ss-drawer { top: 12px !important; right: 12px !important; width: calc(100vw - 24px) !important; max-height: calc(100vh - 24px) !important; }
 }
 """
+
+
+_PRESET_SETTINGS: dict[str, dict[str, Any]] = {
+    "observeren": {
+        "surface_threshold": 1.0,
+        "surface_top_k": 0,
+        "early_turn_margin": 0.20,
+        "resurface_margin": 0.25,
+        "authority_profile_id": "strict",
+        "gate_policy_id": "evidence_backed",
+        "min_occurrences_for_gate": 4,
+        "min_evidence_for_gate": 3,
+        "min_trace_for_gate": 0.5,
+        "promotion_threshold": 0.6,
+        "validation_increment": 0.2,
+        "allow_self_reinforcement": False,
+    },
+    "gebalanceerd": {
+        "surface_threshold": 0.30,
+        "surface_top_k": 2,
+        "early_turn_margin": 0.10,
+        "resurface_margin": 0.15,
+        "authority_profile_id": "strict",
+        "gate_policy_id": "evidence_backed",
+        "min_occurrences_for_gate": 3,
+        "min_evidence_for_gate": 2,
+        "min_trace_for_gate": 0.5,
+        "promotion_threshold": 0.5,
+        "validation_increment": 0.2,
+        "allow_self_reinforcement": False,
+    },
+    "onderzoekend": {
+        "surface_threshold": 0.20,
+        "surface_top_k": 3,
+        "early_turn_margin": 0.05,
+        "resurface_margin": 0.10,
+        "authority_profile_id": "autonomous",
+        "gate_policy_id": "exploratory",
+        "min_occurrences_for_gate": 2,
+        "min_evidence_for_gate": 0,
+        "min_trace_for_gate": 0.0,
+        "promotion_threshold": 0.4,
+        "validation_increment": 0.2,
+        "allow_self_reinforcement": False,
+    },
+}
+
+_PRESET_HELP = {
+    "observeren": (
+        "**Observeren** · Shadowseed mag detecteren en onthouden, maar levert niets aan het "
+        "antwoord. Geschikt om eerst te zien wat het systeem opslaat zonder invloed op de chat."
+    ),
+    "gebalanceerd": (
+        "**Gebalanceerd** · Normale onderzoeksstand. Alleen Gate-geautoriseerde en relevante "
+        "seeds kunnen beperkt worden aangeboden. Zelfversterking staat uit."
+    ),
+    "onderzoekend": (
+        "**Onderzoekend** · Lagere drempels en meer surfacing. Recurrence mag via de "
+        "exploratory Gate authority opbouwen. Bedoeld voor experimenten, niet als bewijsstand."
+    ),
+    "custom": (
+        "**Aangepast** · Een of meer waarden wijken af van een preset. De werkelijk opgeslagen "
+        "waarden hieronder zijn leidend."
+    ),
+}
+
+
+def _preset_help(preset: str | None) -> str:
+    return _PRESET_HELP.get(str(preset or "custom"), _PRESET_HELP["custom"])
+
+
+def _full_settings(view: dict[str, Any] | None) -> dict[str, Any]:
+    if not view:
+        return {}
+    persisted = dict(view.get("persisted_config", {}))
+    core = dict(view.get("core_config", {}))
+    return {**persisted, **core}
+
+
+def _settings_json(view: dict[str, Any] | None) -> str:
+    return json.dumps(_full_settings(view), indent=2, sort_keys=True, ensure_ascii=False)
+
+
+def _audit_summary(view: dict[str, Any] | None) -> str:
+    if not view:
+        return "### Live audit\nGeen actief gesprek."
+    reports = list(view.get("turn_reports", []))
+    last = reports[-1] if reports else {}
+    seeds = list(view.get("seeds", []))
+    authorized = sum(bool(item.get("current_gate_authorized")) for item in seeds)
+    surfaced = list(last.get("surfaced_seed_ids", []))
+    decisions = list(last.get("influence_decisions", []))
+    return (
+        "### Live audit\n"
+        f"**Turn:** {int(view.get('turn', 0))}  \n"
+        f"**Seeds:** {len(seeds)} · **nu geautoriseerd:** {authorized}  \n"
+        f"**Gesurfaced laatste turn:** {len(surfaced)} · **invloedbesluiten:** {len(decisions)}  \n"
+        f"**Authority:** `{view.get('authority_profile_id', 'onbekend')}` · "
+        f"Gate `{view.get('effective_gate_policy_id', 'onbekend')}`  \n"
+        f"**Recurrence:** `{view.get('recurrence_mode', 'onbekend')}` · "
+        f"top-k **{int(view.get('surface_top_k', 0))}**"
+    )
+
+
+def _preset_from_view(view: dict[str, Any] | None) -> str:
+    if not view:
+        return "gebalanceerd"
+    current = _full_settings(view)
+    for preset, settings in _PRESET_SETTINGS.items():
+        if all(current.get(key) == value for key, value in settings.items()):
+            return preset
+    return "custom"
 
 
 def _gradio():
