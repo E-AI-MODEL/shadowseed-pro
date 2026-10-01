@@ -44,16 +44,23 @@ def test_default_workbench_is_dutch_chat_first_surface() -> None:
     assert "from shadowseed.workbench.simple_app_vnext import build_vnext_app" in app_source
     assert "return build_vnext_app(workspace, controller=controller)" in app_source
 
-    for label in (
-        'with gr.Tab("Chat")',
-        'with gr.Tab("Shadow")',
-        'with gr.Tab("Bronnen")',
-        'with gr.Tab("Onderzoek")',
-        'label="Vergelijk dit antwoord zonder SSL"',
+    for contract in (
+        'elem_id="ss-left"',
+        'elem_id="ss-center"',
+        'elem_id="ss-right"',
+        'elem_id="ss-panel-new-chat"',
+        'elem_id="ss-panel-source"',
+        'elem_id="ss-panel-shadow"',
+        'elem_id="ss-panel-research"',
+        'elem_id="ss-panel-audit"',
+        'label="Vergelijk deze beurt zonder SSL"',
         'gr.Button("Versturen"',
-        'gr.Button("Start nieuwe chat"',
+        'gr.Button("Chat starten"',
+        'gr.Button("＋  Nieuwe chat"',
+        'gr.Button("＋  Bron toevoegen"',
+        'gr.Button("Bekijk Shadow"',
     ):
-        assert label in vnext_source
+        assert contract in vnext_source
 
     for normal_ui_control in (
         'label="SSL-invloed"',
@@ -128,11 +135,11 @@ def test_vnext_keeps_longitudinal_ab_in_research_only() -> None:
     assert 'comparison_mode="longitudinal"' in research_body
     assert "eerdere userbeurt(en) opnieuw opgebouwd" in research_body
 
-    research_tab = source.index('with gr.Tab("Onderzoek")')
-    research_binding = source.index("research_run.click(", research_tab)
-    assert research_tab < research_binding
-    assert 'label="Onderzoeksvraag"' in source[research_tab:research_binding]
-    assert "Voer longitudinale vanilla-vergelijking uit" in source[research_tab:research_binding]
+    research_panel = source.index('elem_id="ss-panel-research"')
+    research_binding = source.index("research_run.click(", research_panel)
+    assert research_panel < research_binding
+    assert 'label="Onderzoeksvraag"' in source[research_panel:research_binding]
+    assert "Voer longitudinale vergelijking uit" in source[research_panel:research_binding]
 
 
 def test_vnext_every_normal_function_has_contextual_info_binding() -> None:
