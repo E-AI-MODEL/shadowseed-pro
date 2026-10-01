@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from shadowseed.workbench.feature_help import render_feature_help
+from shadowseed.workbench.simple_app_vnext import _ui_error
 from shadowseed.workbench.simple_app import (
     _authority_explainer,
     _chat_status,
@@ -70,6 +71,44 @@ def test_default_workbench_is_dutch_chat_first_surface() -> None:
         '"Refresh runs"',
     ):
         assert refresh_label not in vnext_source
+
+
+def test_vnext_error_text_redacts_known_secrets(monkeypatch) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test-secret-value-123456")
+    rendered = _ui_error(
+        RuntimeError("Authorization: Bearer sk-test-secret-value-123456")
+    )
+
+    assert "sk-test-secret-value-123456" not in rendered
+    assert "<redacted-secret>" in rendered
+
+
+def test_vnext_callback_failures_preserve_user_input() -> None:
+    source = Path("src/shadowseed/workbench/simple_app_vnext.py").read_text(
+        encoding="utf-8"
+    )
+
+    evidence_start = source.index("    def submit_verified_evidence(")
+    ingest_start = source.index("    def ingest(", evidence_start)
+    evidence_body = source[evidence_start:ingest_start]
+    assert "except Exception as exc:" in evidence_body
+    assert "note," in evidence_body
+    assert "attested," in evidence_body
+    assert '""' in evidence_body
+    assert "False" in evidence_body
+
+    ingest_start = source.index("    def ingest(")
+    research_start = source.index("    def run_longitudinal_comparison(", ingest_start)
+    ingest_body = source[ingest_start:research_start]
+    assert "except Exception as exc:" in ingest_body
+    assert "pasted," in ingest_body
+    assert "sanitized_exception_line(exc)" in ingest_body
+
+    send_start = source.index("    def send(")
+    inspect_start = source.index("    def inspect_seed(", send_start)
+    send_body = source[send_start:inspect_start]
+    assert "except Exception as exc:" in send_body
+    assert "question," in send_body
 
 
 def test_vnext_keeps_longitudinal_ab_in_research_only() -> None:
