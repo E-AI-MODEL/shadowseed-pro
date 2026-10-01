@@ -49,6 +49,21 @@ def test_workbench_release_metadata_stays_aligned() -> None:
     assert f"Shadowseed Workbench {version}" in privacy
 
 
+
+def test_release_evidence_workflows_run_on_every_main_push() -> None:
+    for path in (
+        ".github/workflows/workbench-ci.yml",
+        ".github/workflows/workbench-portability.yml",
+        ".github/workflows/research-package-ci.yml",
+    ):
+        workflow = Path(path).read_text(encoding="utf-8")
+        push_start = workflow.index("  push:")
+        permissions_start = workflow.index("\n\npermissions:", push_start)
+        push_block = workflow[push_start:permissions_start]
+
+        assert "main" in push_block
+        assert "paths:" not in push_block
+
 def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -> None:
     workflow = Path(".github/workflows/release-workbench.yml").read_text(encoding="utf-8")
 

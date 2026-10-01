@@ -13,15 +13,6 @@ on:
       - ".github/workflows/workbench-ci.yml"
   push:
     branches: [main]
-    paths:
-      - "src/shadowseed/application/**"
-      - "src/shadowseed/workbench/**"
-      - "src/shadowseed/cli.py"
-      - "src/shadowseed/cli_dispatch.py"
-      - "tests/test_workbench_*.py"
-      - "pyproject.toml"
-      - "uv.lock"
-      - ".github/workflows/workbench-ci.yml"
 
 permissions:
   contents: read

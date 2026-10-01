@@ -20,7 +20,7 @@ Before publication, record:
 
 ## Required repository gate
 
-`build` remains one of the repository-required CI checks. It has a hard `needs` dependency on the always-running `production-local` matrix in `ci.yml`, runs with `always()`, and explicitly fails unless the matrix result is `success`. Therefore a failed or cancelled Linux, macOS or Windows production-local job cannot be hidden behind a skipped required `build` status. The older path-filtered Workbench CI and Workbench Portability workflows remain useful additional evidence, but production acceptance no longer depends on a path-filtered workflow being configured as an unconditional required status.
+`build` remains one of the repository-required CI checks. It has a hard `needs` dependency on the always-running `production-local` matrix in `ci.yml`, runs with `always()`, and explicitly fails unless the matrix result is `success`. Therefore a failed or cancelled Linux, macOS or Windows production-local job cannot be hidden behind a skipped required `build` status. Workbench CI, Workbench Portability and Research Package CI remain path-filtered for pull requests, but now run on every push to `main` so explicit release publication can require exact-SHA evidence from all three. The unconditional `ci.yml` production-local matrix remains the repository-layer production gate rather than those supplementary workflows.
 
 A change that removes this dependency, removes the explicit result propagation, or makes the production-local matrix conditional is a production-governance change and requires the same protected review path.
 
