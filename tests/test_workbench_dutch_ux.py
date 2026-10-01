@@ -72,6 +72,30 @@ def test_default_workbench_is_dutch_chat_first_surface() -> None:
         assert refresh_label not in vnext_source
 
 
+def test_vnext_keeps_longitudinal_ab_in_research_only() -> None:
+    source = Path("src/shadowseed/workbench/simple_app_vnext.py").read_text(
+        encoding="utf-8"
+    )
+
+    send_start = source.index("    def send(")
+    inspect_start = source.index("    def inspect_seed(", send_start)
+    send_body = source[send_start:inspect_start]
+    assert 'comparison_mode="authorized"' in send_body
+    assert 'comparison_mode="longitudinal"' not in send_body
+
+    research_start = source.index("    def run_longitudinal_comparison(")
+    blocks_start = source.index("    with gr.Blocks(", research_start)
+    research_body = source[research_start:blocks_start]
+    assert 'comparison_mode="longitudinal"' in research_body
+    assert "eerdere userbeurt(en) opnieuw opgebouwd" in research_body
+
+    research_tab = source.index('with gr.Tab("Onderzoek")')
+    research_binding = source.index("research_run.click(", research_tab)
+    assert research_tab < research_binding
+    assert 'label="Onderzoeksvraag"' in source[research_tab:research_binding]
+    assert "Voer longitudinale vanilla-vergelijking uit" in source[research_tab:research_binding]
+
+
 def test_vnext_every_normal_function_has_contextual_info_binding() -> None:
     source = Path("src/shadowseed/workbench/simple_app_vnext.py").read_text(
         encoding="utf-8"
