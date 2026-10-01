@@ -193,6 +193,20 @@ class InspectionService:
             "runtime_mode": runtime_mode,
             "authority_profile_id": authority_profile_id,
             "effective_gate_policy_id": effective_gate_policy_id,
+            "embedding_backend": str(
+                session_config.get("embedding_backend")
+                or persisted_config.get("embedding_backend", "lexical")
+            ),
+            "recurrence_mode": str(
+                session_config.get("recurrence_mode")
+                or persisted_config.get("recurrence_mode", "cluster")
+            ),
+            "surface_top_k": int(
+                session_config.get(
+                    "surface_top_k",
+                    persisted_config.get("surface_top_k", 2),
+                )
+            ),
             "ssl_intensity": (
                 int(persisted_config["ssl_intensity"])
                 if persisted_config.get("ssl_intensity") is not None

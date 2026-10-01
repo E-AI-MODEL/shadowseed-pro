@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from shadowseed.workbench.feature_help import render_feature_help
+from shadowseed.workbench.simple_app_vnext import _ui_error
 from shadowseed.workbench.simple_app import (
     _authority_explainer,
     _chat_status,
@@ -35,38 +37,184 @@ class _LocalModel:
 
 def test_default_workbench_is_dutch_chat_first_surface() -> None:
     app_source = Path("src/shadowseed/workbench/app.py").read_text(encoding="utf-8")
-    simple_source = Path("src/shadowseed/workbench/simple_app.py").read_text(
+    vnext_source = Path("src/shadowseed/workbench/simple_app_vnext.py").read_text(
         encoding="utf-8"
     )
 
-    assert "from shadowseed.workbench.simple_app import build_simple_app" in app_source
-    assert "return build_simple_app(workspace, controller=controller)" in app_source
+    assert "from shadowseed.workbench.simple_app_vnext import build_vnext_app" in app_source
+    assert "return build_vnext_app(workspace, controller=controller)" in app_source
 
     for label in (
-        'with gr.Tab("Overzicht", id="overzicht", elem_id="ss-tab-overzicht")',
-        'with gr.Tab("Chat", id="chat", elem_id="ss-tab-chat")',
-        'with gr.Tab("Bronnen", id="bronnen", elem_id="ss-tab-bronnen")',
-        'with gr.Tab("Geheugen", id="geheugen", elem_id="ss-tab-geheugen")',
-        'with gr.Tab("Controleren", id="controleren", elem_id="ss-tab-controleren")',
-        'with gr.Tab("Uitleg", id="uitleg", elem_id="ss-tab-uitleg")',
-        'with gr.Tab("Meer", id="meer", elem_id="ss-tab-meer")',
-        'gr.Button("＋ Nieuwe chat"',
-        'gr.Button("Versturen"',
-        'gr.Button("Open detail"',
-        'gr.Button("☰ Menu"',
-    ):
-        assert label in simple_source
-
-    for old_top_level_tab in (
-        'with gr.Tab("Sources")',
-        'with gr.Tab("Control")',
-        'with gr.Tab("About SSL")',
+        'with gr.Tab("Chat")',
         'with gr.Tab("Shadow")',
-        'with gr.Tab("Verify")',
-        'with gr.Tab("Feedback and export")',
-        'with gr.Tab("Advanced / research")',
+        'with gr.Tab("Bronnen")',
+        'with gr.Tab("Onderzoek")',
+        'label="Vergelijk dit antwoord zonder SSL"',
+        'gr.Button("Versturen"',
+        'gr.Button("Start nieuwe chat"',
     ):
-        assert old_top_level_tab not in simple_source
+        assert label in vnext_source
+
+    for normal_ui_control in (
+        'label="SSL-invloed"',
+        'label="Validation Gate"',
+        'label="Zelfversterking · experimenteel"',
+        'label="Wat wil je vergelijken?"',
+    ):
+        assert normal_ui_control not in vnext_source
+
+    for refresh_label in (
+        '"Vernieuwen"',
+        '"Gesprekken vernieuwen"',
+        '"Geheugen vernieuwen"',
+        '"Refresh chats"',
+        '"Refresh runs"',
+    ):
+        assert refresh_label not in vnext_source
+
+
+def test_vnext_error_text_redacts_known_secrets(monkeypatch) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test-secret-value-123456")
+    rendered = _ui_error(
+        RuntimeError("Authorization: Bearer sk-test-secret-value-123456")
+    )
+
+    assert "sk-test-secret-value-123456" not in rendered
+    assert "<redacted-secret>" in rendered
+
+
+def test_vnext_callback_failures_preserve_user_input() -> None:
+    source = Path("src/shadowseed/workbench/simple_app_vnext.py").read_text(
+        encoding="utf-8"
+    )
+
+    evidence_start = source.index("    def submit_verified_evidence(")
+    ingest_start = source.index("    def ingest(", evidence_start)
+    evidence_body = source[evidence_start:ingest_start]
+    assert "except Exception as exc:" in evidence_body
+    assert "note," in evidence_body
+    assert "attested," in evidence_body
+    assert '""' in evidence_body
+    assert "False" in evidence_body
+
+    ingest_start = source.index("    def ingest(")
+    research_start = source.index("    def run_longitudinal_comparison(", ingest_start)
+    ingest_body = source[ingest_start:research_start]
+    assert "except Exception as exc:" in ingest_body
+    assert "pasted," in ingest_body
+    assert "sanitized_exception_line(exc)" in ingest_body
+
+    send_start = source.index("    def send(")
+    inspect_start = source.index("    def inspect_seed(", send_start)
+    send_body = source[send_start:inspect_start]
+    assert "except Exception as exc:" in send_body
+    assert "question," in send_body
+
+
+def test_vnext_keeps_longitudinal_ab_in_research_only() -> None:
+    source = Path("src/shadowseed/workbench/simple_app_vnext.py").read_text(
+        encoding="utf-8"
+    )
+
+    send_start = source.index("    def send(")
+    inspect_start = source.index("    def inspect_seed(", send_start)
+    send_body = source[send_start:inspect_start]
+    assert 'comparison_mode="authorized"' in send_body
+    assert 'comparison_mode="longitudinal"' not in send_body
+
+    research_start = source.index("    def run_longitudinal_comparison(")
+    blocks_start = source.index("    with gr.Blocks(", research_start)
+    research_body = source[research_start:blocks_start]
+    assert 'comparison_mode="longitudinal"' in research_body
+    assert "eerdere userbeurt(en) opnieuw opgebouwd" in research_body
+
+    research_tab = source.index('with gr.Tab("Onderzoek")')
+    research_binding = source.index("research_run.click(", research_tab)
+    assert research_tab < research_binding
+    assert 'label="Onderzoeksvraag"' in source[research_tab:research_binding]
+    assert "Voer longitudinale vanilla-vergelijking uit" in source[research_tab:research_binding]
+
+
+def test_vnext_every_normal_function_has_contextual_info_binding() -> None:
+    source = Path("src/shadowseed/workbench/simple_app_vnext.py").read_text(
+        encoding="utf-8"
+    )
+
+    for feature_id in (
+        "conversation",
+        "new_chat",
+        "model",
+        "external_consent",
+        "send",
+        "compare",
+        "shadow",
+        "contradiction",
+        "verified_support",
+        "sources",
+        "research",
+    ):
+        assert f'"{feature_id}"' in source
+
+    assert "render_feature_help" in source
+    assert "help_feature = gr.State" in source
+    assert 'gr.Button("ⓘ"' in source or 'gr.Button("ⓘ ' in source
+
+
+def test_feature_help_preserves_ssl_semantics_and_explains_combinations() -> None:
+    view = {
+        "backend": "ollama",
+        "effective_gate_policy_id": "evidence_backed",
+        "authority_profile_id": "strict",
+        "allow_self_reinforcement": False,
+    }
+    seed = {
+        "blocking": True,
+        "current_gate_authorized": True,
+    }
+
+    text = render_feature_help(
+        "verified_support",
+        view=view,
+        compare_enabled=True,
+        provider="ollama",
+        hosted_confirmed=False,
+        seed=seed,
+    )
+
+    assert "Alsof je 8 bent" in text
+    assert "Wat doet dit echt?" in text
+    assert "Wat doet dit níet?" in text
+    assert "Samen met andere functies" in text
+    assert "Huidige combinatie" in text
+    assert "versterken" in text.lower()
+    assert "niet automatisch waar" in text.lower()
+    assert "open contradiction" in text
+    assert "geblokkeerd" in text.lower()
+    assert "één extra control-generatie" in text
+
+
+def test_feature_help_distinguishes_self_reinforcement_on_and_off() -> None:
+    off = render_feature_help(
+        "self_reinforcement",
+        view={
+            "effective_gate_policy_id": "evidence_backed",
+            "authority_profile_id": "strict",
+            "allow_self_reinforcement": False,
+        },
+    )
+    on = render_feature_help(
+        "self_reinforcement",
+        view={
+            "effective_gate_policy_id": "evidence_backed",
+            "authority_profile_id": "strict",
+            "allow_self_reinforcement": True,
+        },
+    )
+
+    assert "Self-reinforcement staat uit" in off
+    assert "niet teruggevoerd" in off
+    assert "Self-reinforcement staat aan" in on
+    assert "versterken" in on.lower()
 
 
 def test_simple_start_automatically_prefers_local_model_then_safe_demo() -> None:
