@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.10.0 - Workbench lifecycle and interface reset
+
+Version 0.10.0 rebuilds the normal Workbench around one active conversation and
+the actual Shadow Seed Learning lifecycle while preserving the canonical SSL
+runtime and authority boundaries.
+
+- Replaced the 0.9.x normal surface with the approved three-column Workbench:
+  conversations, chat, and a compact Shadow rail, plus dedicated drawers for
+  sources, seed detail, research, audit and contextual help.
+- Restored same-turn no-SSL comparison as the normal A/B path. The independent
+  vanilla trajectory remains available as an explicitly longitudinal research
+  experiment.
+- Removed misleading normal-product SSL/Gate percentage controls and kept
+  independent research mechanisms separate.
+- Added semantics-preserving contextual help for normal functions and active
+  combinations, including explicit distinctions between remembered,
+  authorized, relevant and offered context.
+- Kept source ingestion as observation input, verified evidence as a separate
+  authority-bearing action, and contradictions as blocking point-of-use state.
+- Changed release publication from an automatic side effect of a successful
+  main push to an explicit exact-SHA Release Workbench action after required
+  CI and standalone evidence is green.
+
 ## 0.6.0 - Research access and evidence-backed efficacy instrumentation
 
 Version 0.6.0 moves the repository from mechanism-only readiness toward controlled answer-level efficacy measurement without weakening the shipped SSL authority model.

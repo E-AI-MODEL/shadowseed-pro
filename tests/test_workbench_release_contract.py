@@ -52,10 +52,21 @@ def test_workbench_release_metadata_stays_aligned() -> None:
 def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -> None:
     workflow = Path(".github/workflows/release-workbench.yml").read_text(encoding="utf-8")
 
-    assert 'workflows: ["Standalone Workbench"]' in workflow
-    assert "github.event.workflow_run.conclusion == 'success'" in workflow
-    assert "github.event.workflow_run.head_branch == 'main'" in workflow
+    assert "workflow_dispatch:" in workflow
+    assert "inputs.confirm == 'RELEASE'" in workflow
+    assert "ref: main" in workflow
+    assert 'test "$(git rev-parse HEAD)" = "$release_sha"' in workflow
     assert 'test "$(git rev-parse origin/main)" = "$RELEASE_SHA"' in workflow
+    for required in (
+        "ci.yml",
+        "workbench-ci.yml",
+        "workbench-portability.yml",
+        "research-package-ci.yml",
+        "standalone-workbench.yml",
+    ):
+        assert required in workflow
+    assert "standalone_run_id" in workflow
+    assert "steps.preflight.outputs.standalone_run_id" in workflow
     assert 'release_tag="v${release_version}"' in workflow
     assert 'notes_file="docs/workbench/release-${release_version}.md"' in workflow
     assert DOWNLOAD_ARTIFACT_PIN.search(workflow) is not None

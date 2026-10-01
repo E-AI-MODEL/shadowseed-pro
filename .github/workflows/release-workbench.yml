@@ -1,15 +1,26 @@
 name: Release Workbench
 
 on:
-  workflow_run:
-    workflows: ["Standalone Workbench"]
-    types: [completed]
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Select RELEASE to publish the current protected main SHA"
+        required: true
+        default: CANCEL
+        type: choice
+        options:
+          - CANCEL
+          - RELEASE
 
 permissions:
   contents: write
   actions: read
   id-token: write
   attestations: write
+
+concurrency:
+  group: release-workbench
+  cancel-in-progress: false
 
 env:
   GRADIO_ANALYTICS_ENABLED: "False"
@@ -18,14 +29,12 @@ jobs:
   release:
     if: >-
       github.repository == 'E-AI-MODEL/shadowseed-pro' &&
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'push' &&
-      github.event.workflow_run.head_branch == 'main'
+      inputs.confirm == 'RELEASE'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: main
           fetch-depth: 0
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
@@ -33,18 +42,23 @@ jobs:
       - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
           version: "0.8.14"
-      - name: Validate exact release candidate
+
+      - name: Validate exact release candidate and required evidence
         id: preflight
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
+          CONFIRM: ${{ inputs.confirm }}
         shell: bash
         run: |
           set -euo pipefail
+          test "$CONFIRM" = "RELEASE"
+
           git fetch origin main --tags --force
-          test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
-          test "$(git rev-parse origin/main)" = "$RELEASE_SHA"
+          release_sha="$(git rev-parse origin/main)"
+          test "$(git rev-parse HEAD)" = "$release_sha"
+
           uv lock --check
+
           release_version="$(python - <<'PY'
           import tomllib
           from pathlib import Path
@@ -53,30 +67,63 @@ jobs:
           )"
           release_tag="v${release_version}"
           notes_file="docs/workbench/release-${release_version}.md"
+
           test -f "$notes_file"
           test -f LICENSE
           test -f uv.lock
-          echo "release_version=$release_version" >> "$GITHUB_OUTPUT"
-          echo "release_tag=$release_tag" >> "$GITHUB_OUTPUT"
-          echo "notes_file=$notes_file" >> "$GITHUB_OUTPUT"
+
           if gh release view "$release_tag" >/dev/null 2>&1; then
             echo "Release $release_tag already exists; no publication needed."
             echo "should_release=false" >> "$GITHUB_OUTPUT"
+            echo "release_sha=$release_sha" >> "$GITHUB_OUTPUT"
+            echo "release_version=$release_version" >> "$GITHUB_OUTPUT"
+            echo "release_tag=$release_tag" >> "$GITHUB_OUTPUT"
+            echo "notes_file=$notes_file" >> "$GITHUB_OUTPUT"
             exit 0
           fi
+
           if git show-ref --verify --quiet "refs/tags/$release_tag"; then
             echo "Tag $release_tag exists without a published release; refusing ambiguous publication." >&2
             exit 1
           fi
+
+          required_workflows=(
+            "ci.yml"
+            "workbench-ci.yml"
+            "workbench-portability.yml"
+            "research-package-ci.yml"
+            "standalone-workbench.yml"
+          )
+
+          standalone_run_id=""
+          for workflow in "${required_workflows[@]}"; do
+            run_id="$(
+              gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/runs?branch=main&event=push&status=success&per_page=100"                 --jq ".workflow_runs[] | select(.head_sha == \"${release_sha}\") | .id"                 | head -n 1
+            )"
+            if [ -z "$run_id" ]; then
+              echo "No successful main push run for $workflow at $release_sha" >&2
+              exit 1
+            fi
+            echo "Verified $workflow run $run_id for $release_sha"
+            if [ "$workflow" = "standalone-workbench.yml" ]; then
+              standalone_run_id="$run_id"
+            fi
+          done
+
+          test -n "$standalone_run_id"
+
           echo "should_release=true" >> "$GITHUB_OUTPUT"
+          echo "release_sha=$release_sha" >> "$GITHUB_OUTPUT"
+          echo "release_version=$release_version" >> "$GITHUB_OUTPUT"
+          echo "release_tag=$release_tag" >> "$GITHUB_OUTPUT"
+          echo "notes_file=$notes_file" >> "$GITHUB_OUTPUT"
+          echo "standalone_run_id=$standalone_run_id" >> "$GITHUB_OUTPUT"
 
       - name: Generate locked release SBOM
         if: steps.preflight.outputs.should_release == 'true'
         run: |
           mkdir -p release-assets
-          uv export --locked --extra workbench --extra build --extra standalone-build \
-            --no-emit-project --no-hashes --format requirements.txt \
-            --output-file "${RUNNER_TEMP}/release-sbom.txt"
+          uv export --locked --extra workbench --extra build --extra standalone-build             --no-emit-project --no-hashes --format requirements.txt             --output-file "${RUNNER_TEMP}/release-sbom.txt"
           python - <<'PY'
           import json
           import os
@@ -127,11 +174,11 @@ jobs:
           )
           PY
 
-      - name: Download verified standalone assets from triggering run
+      - name: Download verified standalone assets from exact-SHA run
         if: steps.preflight.outputs.should_release == 'true'
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ steps.preflight.outputs.standalone_run_id }}
           github-token: ${{ github.token }}
           pattern: standalone-*
           merge-multiple: true
@@ -140,8 +187,8 @@ jobs:
       - name: Validate standalone provenance and collect assets
         if: steps.preflight.outputs.should_release == 'true'
         env:
-          RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
-          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          RELEASE_SHA: ${{ steps.preflight.outputs.release_sha }}
+          SOURCE_RUN_ID: ${{ steps.preflight.outputs.standalone_run_id }}
           RELEASE_VERSION: ${{ steps.preflight.outputs.release_version }}
         shell: python
         run: |
@@ -223,8 +270,7 @@ jobs:
         run: |
           set -euo pipefail
           wheel="$(ls dist/*.whl)"
-          uv export --locked --extra workbench --no-emit-project --no-hashes \
-            --format requirements.txt --output-file "${RUNNER_TEMP}/release-workbench-locked.txt"
+          uv export --locked --extra workbench --no-emit-project --no-hashes             --format requirements.txt --output-file "${RUNNER_TEMP}/release-workbench-locked.txt"
           python - <<'PY'
           import os
           from pathlib import Path
@@ -245,20 +291,13 @@ jobs:
           torch.write_text(cpu_lines[0] + "\n", encoding="utf-8")
           PY
           uv venv "${RUNNER_TEMP}/release-venv" --python 3.12
-          uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python" \
-            --no-deps --index-url https://pypi.org/simple \
-            -r "${RUNNER_TEMP}/release-workbench-pypi.txt"
+          uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python"             --no-deps --index-url https://pypi.org/simple             -r "${RUNNER_TEMP}/release-workbench-pypi.txt"
           torch_requirement="$(cat "${RUNNER_TEMP}/release-workbench-torch.txt")"
-          uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python" \
-            --no-deps --index-url https://download.pytorch.org/whl/cpu \
-            "$torch_requirement"
-          uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python" \
-            --no-deps "${wheel}[workbench]"
+          uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python"             --no-deps --index-url https://download.pytorch.org/whl/cpu             "$torch_requirement"
+          uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python"             --no-deps "${wheel}[workbench]"
           cd "${RUNNER_TEMP}"
           "${RUNNER_TEMP}/release-venv/bin/shadowseed" workbench --help
-          "${RUNNER_TEMP}/release-venv/bin/shadowseed-workbench" --self-test \
-            --workspace "${RUNNER_TEMP}/wheel-workspace" \
-            --self-test-output "${RUNNER_TEMP}/wheel-self-test.json"
+          "${RUNNER_TEMP}/release-venv/bin/shadowseed-workbench" --self-test             --workspace "${RUNNER_TEMP}/wheel-workspace"             --self-test-output "${RUNNER_TEMP}/wheel-self-test.json"
           "${RUNNER_TEMP}/release-venv/bin/python" - <<'PY'
           import json
           from pathlib import Path
@@ -318,7 +357,7 @@ jobs:
         if: steps.preflight.outputs.should_release == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
+          RELEASE_SHA: ${{ steps.preflight.outputs.release_sha }}
           RELEASE_TAG: ${{ steps.preflight.outputs.release_tag }}
           RELEASE_VERSION: ${{ steps.preflight.outputs.release_version }}
           NOTES_FILE: ${{ steps.preflight.outputs.notes_file }}
@@ -327,13 +366,7 @@ jobs:
           set -euo pipefail
           git fetch origin main --force
           test "$(git rev-parse origin/main)" = "$RELEASE_SHA"
-          gh release create "$RELEASE_TAG" \
-            release-assets/* \
-            --target "$RELEASE_SHA" \
-            --prerelease \
-            --latest=false \
-            --title "Shadowseed Workbench ${RELEASE_VERSION} Research Preview" \
-            --notes-file "$NOTES_FILE"
+          gh release create "$RELEASE_TAG"             release-assets/*             --target "$RELEASE_SHA"             --prerelease             --latest=false             --title "Shadowseed Workbench ${RELEASE_VERSION} Research Preview"             --notes-file "$NOTES_FILE"
 
           git fetch origin main --force
           if [ "$(git rev-parse origin/main)" != "$RELEASE_SHA" ]; then
@@ -346,7 +379,7 @@ jobs:
         if: steps.preflight.outputs.should_release == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
+          RELEASE_SHA: ${{ steps.preflight.outputs.release_sha }}
           RELEASE_TAG: ${{ steps.preflight.outputs.release_tag }}
         shell: bash
         run: |
