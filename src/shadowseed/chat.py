@@ -201,7 +201,7 @@ class ShadowChatSession:
         ):
             raise ValueError(
                 "live runtime requires a semantic embedding backend; "
-                "use sentence-transformers/openai or pass allow_toy_embedder=True "
+                "use sentence-transformers/ollama/openai or pass allow_toy_embedder=True "
                 "only for an explicit non-production experiment"
             )
 
