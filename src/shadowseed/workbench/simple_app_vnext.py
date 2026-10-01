@@ -1181,6 +1181,152 @@ def build_vnext_app(
         except Exception:
             return result
 
+    def _control_values(view: dict[str, Any] | None):
+        settings = _full_settings(view)
+        preset = _preset_from_view(view)
+        return (
+            preset,
+            _preset_help(preset),
+            str(settings.get("backend", "fixture")),
+            settings.get("model_id"),
+            float(settings.get("surface_threshold", 0.30)),
+            int(settings.get("surface_top_k", 2)),
+            str(settings.get("authority_profile_id", "strict")),
+            str(settings.get("gate_policy_id") or "evidence_backed"),
+            str(settings.get("recurrence_mode", "cluster")),
+            bool(settings.get("allow_self_reinforcement", False)),
+            _settings_json(view),
+        )
+
+    def refresh_controls(session_id: str | None):
+        if not session_id:
+            return _control_values(None)
+        try:
+            return _control_values(ctl.session_view(session_id))
+        except Exception:
+            return _control_values(None)
+
+    def refresh_live_audit(session_id: str | None):
+        if not session_id:
+            return _audit_summary(None), {}, {}
+        try:
+            view = ctl.session_view(session_id)
+            reports = list(view.get("turn_reports", []))
+            return (
+                _audit_summary(view),
+                _full_settings(view),
+                reports[-1] if reports else {},
+            )
+        except Exception as exc:
+            return f"### Live audit\n**Fout:** {_ui_error(exc)}", {}, {}
+
+    def apply_preset(
+        session_id: str | None,
+        preset: str,
+        external_confirmed: bool,
+    ):
+        if not session_id:
+            return (*_control_values(None), "Maak of kies eerst een gesprek.")
+        if preset not in _PRESET_SETTINGS:
+            view = ctl.session_view(session_id)
+            return (*_control_values(view), "Kies een preset om toe te passen.")
+        try:
+            view = ctl.update_session_advanced(
+                session_id,
+                settings=dict(_PRESET_SETTINGS[preset]),
+                external_confirmed=bool(external_confirmed),
+            )
+            return (*_control_values(view), "Preset toegepast op de actieve sessie.")
+        except Exception as exc:
+            view = ctl.session_view(session_id)
+            return (*_control_values(view), _ui_error(exc))
+
+    def apply_micro_settings(
+        session_id: str | None,
+        backend_value: str,
+        model_value: str | None,
+        surface_threshold_value: float,
+        surface_top_k_value: float,
+        authority_value: str,
+        gate_policy_value: str,
+        recurrence_value: str,
+        self_reinforcement_value: bool,
+        external_confirmed: bool,
+        force: bool,
+    ):
+        if not session_id:
+            return (*_control_values(None), "Maak of kies eerst een gesprek.")
+        settings = {
+            "backend": backend_value,
+            "model_id": (model_value or None),
+            "surface_threshold": float(surface_threshold_value),
+            "surface_top_k": int(surface_top_k_value),
+            "authority_profile_id": authority_value,
+            "gate_policy_id": gate_policy_value,
+            "recurrence_mode": recurrence_value,
+            "allow_self_reinforcement": bool(self_reinforcement_value),
+        }
+        try:
+            view = ctl.update_session_advanced(
+                session_id,
+                settings=settings,
+                external_confirmed=bool(external_confirmed),
+                force=bool(force),
+            )
+            return (*_control_values(view), "Instellingen opgeslagen.")
+        except Exception as exc:
+            view = ctl.session_view(session_id)
+            return (*_control_values(view), _ui_error(exc))
+
+    def apply_god_json(
+        session_id: str | None,
+        raw_json: str,
+        external_confirmed: bool,
+        force: bool,
+    ):
+        if not session_id:
+            return (*_control_values(None), "Maak of kies eerst een gesprek.")
+        try:
+            payload = json.loads(raw_json or "{}")
+            if not isinstance(payload, dict):
+                raise ValueError("God mode verwacht één JSON-object met instellingen.")
+            view = ctl.update_session_advanced(
+                session_id,
+                settings=payload,
+                external_confirmed=bool(external_confirmed),
+                force=bool(force),
+            )
+            return (*_control_values(view), "God-modeconfiguratie opgeslagen.")
+        except Exception as exc:
+            view = ctl.session_view(session_id)
+            return (*_control_values(view), _ui_error(exc))
+
+    def create_chat_with_preset(
+        title: str,
+        provider_value: str,
+        model_value: str | None,
+        hosted_confirmed: bool,
+        preset: str,
+    ):
+        settings = dict(_PRESET_SETTINGS.get(preset, _PRESET_SETTINGS["gebalanceerd"]))
+        session_id = ctl.create_session(
+            title=(title or "").strip() or "Nieuwe chat",
+            profile_id="balanced",
+            backend=provider_value,
+            model_id=(None if provider_value == "fixture" else (model_value or None)),
+            runtime_mode="live",
+            authority_profile_id=str(settings.get("authority_profile_id", "strict")),
+            embedding_backend=ctl.default_embedding_backend(provider_value),
+            external_confirmed=bool(hosted_confirmed),
+            allow_self_reinforcement=bool(settings.get("allow_self_reinforcement", False)),
+        )
+        ctl.update_session_advanced(
+            session_id,
+            settings=settings,
+            external_confirmed=bool(hosted_confirmed),
+        )
+        return session_id
+
     with gr.Blocks(title="Shadowseed") as app:
         active_session = gr.State(initial_id)
         help_feature = gr.State("conversation")
