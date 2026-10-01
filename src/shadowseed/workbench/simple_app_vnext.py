@@ -973,10 +973,33 @@ def build_vnext_app(
         provider_value: str,
         model_value: str | None,
         hosted_confirmed: bool,
+        preset: str,
     ):
-        result = create_chat(title, provider_value, model_value, hosted_confirmed)
-        if not isinstance(result[0], str):
-            error = result[3] if len(result) > 3 else "Chat starten is niet gelukt."
+        try:
+            session_id = create_chat_with_preset(
+                title,
+                provider_value,
+                model_value,
+                hosted_confirmed,
+                preset,
+            )
+            current_summaries = ctl.list_sessions()
+            compact = _compact_session_choices(current_summaries)
+            shell = refresh_shell(session_id)
+            return (
+                session_id,
+                gr.update(choices=compact, value=session_id),
+                *shell,
+                _seed_story(None),
+                _seed_lifecycle(None),
+                None,
+                "",
+                "",
+                "Zet **Vergelijk deze beurt zonder SSL** aan voor een same-turn control.",
+                gr.update(visible=False),
+            )
+        except Exception as exc:
+            error = _ui_error(exc)
             return (
                 gr.update(),
                 gr.update(),
@@ -996,22 +1019,6 @@ def build_vnext_app(
                 error,
                 gr.update(visible=True),
             )
-        session_id = result[0]
-        current_summaries = ctl.list_sessions()
-        compact = _compact_session_choices(current_summaries)
-        shell = refresh_shell(session_id)
-        return (
-            session_id,
-            gr.update(choices=compact, value=session_id),
-            *shell,
-            _seed_story(None),
-            _seed_lifecycle(None),
-            None,
-            "",
-            "",
-            "Zet **Vergelijk deze beurt zonder SSL** aan voor een same-turn control.",
-            gr.update(visible=False),
-        )
 
     def inspect_seed_shell(session_id: str | None, seed_id: str | None):
         story, seed = inspect_seed(session_id, seed_id)
@@ -1509,6 +1516,19 @@ def build_vnext_app(
                 gr.Markdown("## Nieuwe chat", elem_classes=["ss-drawer-title"], scale=5)
                 new_chat_close = gr.Button("×", scale=0, min_width=40, elem_classes=["ss-info-button"])
             new_title = gr.Textbox(label="Naam", value="Nieuw gesprek")
+            new_preset = gr.Dropdown(
+                choices=[
+                    ("Observeren", "observeren"),
+                    ("Gebalanceerd", "gebalanceerd"),
+                    ("Onderzoekend", "onderzoekend"),
+                ],
+                value="gebalanceerd",
+                label="Preset",
+            )
+            gr.Markdown(
+                "Preset bepaalt de startwaarden. Daarna kun je links iedere instelling afzonderlijk aanpassen.",
+                elem_classes=["ss-muted"],
+            )
             with gr.Row():
                 provider = gr.Dropdown(
                     choices=[
@@ -1869,7 +1889,7 @@ def build_vnext_app(
 
         create_button.click(
             create_chat_shell,
-            inputs=[new_title, provider, model_id, hosted_confirm],
+            inputs=[new_title, provider, model_id, hosted_confirm, new_preset],
             outputs=[
                 active_session,
                 session_select,
