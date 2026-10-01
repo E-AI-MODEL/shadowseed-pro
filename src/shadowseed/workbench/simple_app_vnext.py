@@ -396,7 +396,7 @@ def build_vnext_app(
             gr.update(choices=ctl.seed_choices(view), value=seed_id),
         )
 
-    def verify_evidence(
+    def submit_verified_evidence(
         session_id: str | None,
         seed_id: str | None,
         source_ref: str,
@@ -404,7 +404,15 @@ def build_vnext_app(
         attested: bool,
     ):
         if not session_id or not seed_id:
-            return "Kies eerst een geheugenpunt.", gr.update(), gr.update(), gr.update(), gr.update()
+            return (
+                "Kies eerst een geheugenpunt.",
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                note,
+                attested,
+            )
         ctl.submit_verified_evidence(
             session_id,
             seed_id,
@@ -420,6 +428,8 @@ def build_vnext_app(
             _status(view),
             view,
             gr.update(choices=ctl.seed_choices(view), value=seed_id),
+            "",
+            False,
         )
 
     def ingest(
@@ -755,9 +765,17 @@ def build_vnext_app(
             outputs=[seed_story, shadow_summary, status, session_json, seed_select],
         )
         evidence_button.click(
-            verify_evidence,
+            submit_verified_evidence,
             inputs=[active_session, seed_select, evidence_source, evidence_note, evidence_attest],
-            outputs=[seed_story, shadow_summary, status, session_json, seed_select],
+            outputs=[
+                seed_story,
+                shadow_summary,
+                status,
+                session_json,
+                seed_select,
+                evidence_note,
+                evidence_attest,
+            ],
         )
 
         ingest_button.click(
