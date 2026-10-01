@@ -12,9 +12,10 @@ from typing import Any
 _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
     "conversation": {
         "title": "Gesprek kiezen",
-        "eli8": (
-            "Zie dit als een schrift. Elk gesprek heeft zijn eigen pagina's én zijn eigen "
-            "Shadowseed-geheugen. Als je een ander gesprek kiest, kijk je in een ander schrift."
+        "plain": (
+            "Elk gesprek heeft zijn eigen geschiedenis en zijn eigen Shadowseed-geheugen. "
+            "Als je een ander gesprek opent, wissel je dus ook van die context. Er wordt niets "
+            "uit een ander gesprek samengevoegd."
         ),
         "does": "Kiest welke persistente sessie Chat, Shadow en Bronnen samen tonen.",
         "does_not": "Verandert geen Gate, seeds, authority of modelinstellingen.",
@@ -24,9 +25,10 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
     },
     "new_chat": {
         "title": "Nieuwe chat",
-        "eli8": (
-            "Je begint met een leeg schrift. Shadowseed heeft daar nog geen eerdere punten uit "
-            "andere gesprekken in staan."
+        "plain": (
+            "Een nieuw gesprek begint zonder eerdere berichten of geheugenpunten uit andere "
+            "gesprekken. Bestaande gesprekken blijven opgeslagen, maar doen pas weer mee wanneer "
+            "je ze zelf opent."
         ),
         "does": "Maakt een nieuwe live SSL-sessie met de gekozen modelprovider en veilige standaardinstellingen.",
         "does_not": "Kopieert geen seeds of authority uit het vorige gesprek.",
@@ -37,9 +39,9 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
     },
     "model": {
         "title": "Model en provider",
-        "eli8": (
-            "Het model is de schrijver van het antwoord. Shadowseed is het notitieboek ernaast. "
-            "Een slimmere schrijver maakt Shadowseed niet automatisch machtiger."
+        "plain": (
+            "Het taalmodel schrijft het antwoord. Shadowseed bepaalt alleen welke eerder onthouden "
+            "punten als context mogen worden aangeboden. Dat zijn twee verschillende rollen."
         ),
         "does": "Kiest welk model de antwoorden genereert.",
         "does_not": "Geeft een seed geen authority en omzeilt de Validation Gate niet.",
@@ -50,9 +52,9 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
     },
     "external_consent": {
         "title": "Toestemming voor externe verwerking",
-        "eli8": (
-            "Dit vinkje is een deurbel: je zegt alleen dat de app naar buiten mág sturen als de "
-            "gekozen provider dat nodig heeft. Het vinkje stuurt zelf niets."
+        "plain": (
+            "Sommige providers verwerken tekst buiten je computer. Met dit vinkje geef je daar "
+            "expliciet toestemming voor. Het vinkje zelf verstuurt niets en verandert niets aan SSL."
         ),
         "does": "Geeft expliciete toestemming voor een configuratie die chatinhoud extern kan verwerken.",
         "does_not": "Schakelt geen provider in en verandert geen SSL-logica.",
@@ -63,10 +65,10 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
     },
     "send": {
         "title": "Bericht versturen",
-        "eli8": (
-            "Je stelt een vraag. Eerst kijkt Shadowseed of een oud geheugenpunt nu relevant én "
-            "toegestaan is. Daarna schrijft het model het antwoord. Vervolgens kijkt Shadowseed "
-            "of er nieuwe mogelijke geheugenpunten zijn."
+        "plain": (
+            "Bij ieder bericht bepaalt Shadowseed eerst of eerder onthouden informatie relevant "
+            "én toegestaan is. Daarna maakt het model het antwoord. Vervolgens kan Shadowseed "
+            "nieuwe mogelijke geheugenpunten opmerken."
         ),
         "does": (
             "Voert één normale live beurt uit via prepare-turn, point-of-use, generatie en "
@@ -80,9 +82,9 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
     },
     "compare": {
         "title": "Vergelijk dit antwoord zonder SSL",
-        "eli8": (
-            "We laten dezelfde schrijver dezelfde vraag twee keer beantwoorden. Eén keer met de "
-            "toegestane Shadowseed-notities en één keer zonder die notities."
+        "plain": (
+            "Deze optie laat dezelfde vraag ook zonder Shadowseed-context beantwoorden. Zo kun je "
+            "de twee antwoorden naast elkaar bekijken zonder een tweede gesprek op te bouwen."
         ),
         "does": (
             "Maakt een same-turn control met dezelfde pre-turn geschiedenis en hetzelfde generatiepad, "
@@ -100,9 +102,9 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
     },
     "shadow": {
         "title": "Shadow",
-        "eli8": (
-            "Shadow is de lade met briefjes die misschien later nuttig zijn. Een briefje in de lade "
-            "is nog niet hetzelfde als: dit is waar."
+        "plain": (
+            "Shadow toont wat Shadowseed heeft onthouden en in welke status ieder geheugenpunt "
+            "staat. Onthouden betekent nog niet dat het punt waar is of een antwoord mag beïnvloeden."
         ),
         "does": "Toont persistente seeds en hun actuele lifecycle-, Gate- en gebruiksstatus.",
         "does_not": "Wijzigt niets zolang je alleen kijkt.",
@@ -115,9 +117,9 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
     },
     "contradiction": {
         "title": "Tegenspraak registreren",
-        "eli8": (
-            "Je plakt een rood briefje op één geheugenpunt: er is een serieuze tegenspraak die eerst "
-            "moet worden opgelost voordat dit punt weer een antwoord mag sturen."
+        "plain": (
+            "Met tegenspraak leg je vast dat er serieuze informatie is die tegen een geheugenpunt "
+            "ingaat. Zolang die blokkade open staat, mag dat punt niet aan een antwoord worden aangeboden."
         ),
         "does": "Maakt via de canonical contradiction-route een open contradiction record voor de seed.",
         "does_not": "Verwijdert de seed niet en wist eerder bewijs niet.",
@@ -128,9 +130,10 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
     },
     "verified_support": {
         "title": "Geverifieerde ondersteuning toevoegen",
-        "eli8": (
-            "Je zegt niet alleen 'ik heb dit ergens gelezen'. Je zegt: 'ik heb deze bron buiten het "
-            "model gecontroleerd en dit ondersteunt precies dit geheugenpunt.'"
+        "plain": (
+            "Hier voeg je ondersteuning toe die je buiten het model hebt gecontroleerd en die "
+            "specifiek bij dit geheugenpunt hoort. Dat is sterker dan alleen herhaling, maar maakt "
+            "het punt niet automatisch waar."
         ),
         "does": "Voegt onafhankelijk gecontroleerde support toe via de bestaande evidence- en Validation-Gate-route.",
         "does_not": "Maakt de seed niet automatisch waar en omzeilt een open contradiction niet.",
@@ -142,9 +145,10 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
     },
     "sources": {
         "title": "Bronnen verwerken",
-        "eli8": (
-            "Je geeft Shadowseed extra leesvoer. Hij mag er dingen in opmerken en onthouden, maar hij "
-            "mag niet zeggen: 'het stond in een document, dus het is waar.'"
+        "plain": (
+            "Bronnen geven Shadowseed extra materiaal om in te observeren. Daaruit kunnen "
+            "geheugenpunten ontstaan of terugkomen. De inhoud van een bron wordt niet automatisch "
+            "als bewijs behandeld."
         ),
         "does": "Verwerkt tekst als observatie-input en kan nieuwe seeds of recurrence opleveren.",
         "does_not": "Zet broninhoud niet automatisch om in verified evidence of authority.",
@@ -156,9 +160,10 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
     },
     "research": {
         "title": "Onderzoek",
-        "eli8": (
-            "Dit is het proeflokaal. Hier mag je aan losse onderdelen draaien om te zien wat er gebeurt. "
-            "Die knoppen horen niet in het gewone gesprek omdat ze verschillende onderzoeksvragen testen."
+        "plain": (
+            "Onderzoek bevat functies waarmee je afzonderlijke SSL-mechanismen kunt testen of "
+            "vergelijken. Ze staan apart van de gewone chat, zodat experimentele instellingen niet "
+            "ongemerkt onderdeel van normaal gebruik worden."
         ),
         "does": "Houdt experimentele configuraties en meetopzetten buiten de normale productflow.",
         "does_not": "Verandert niets zolang geen expliciet research-experiment is gestart.",
@@ -168,9 +173,10 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
     },
     "technical_audit": {
         "title": "Technische audit",
-        "eli8": (
-            "Dit is de achterkant van het speelgoed waar je de tandwielen kunt zien. "
-            "Je kijkt alleen; je draait hier niet aan de SSL-logica."
+        "plain": (
+            "Hier zie je de technische gegevens achter wat de gewone interface samenvat. Deze "
+            "weergave is bedoeld om te controleren en te reproduceren wat er is gebeurd; alleen "
+            "kijken verandert niets aan de runtime."
         ),
         "does": "Toont read-only sessie-, seed- en auditgegevens voor controle en reproduceerbaarheid.",
         "does_not": "Wijzigt geen seed, Gate, authority, recurrence of gesprekshistorie.",
@@ -181,9 +187,9 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
     },
     "semantic_matching": {
         "title": "Semantisch matchen",
-        "eli8": (
-            "Dit helpt herkennen dat 'de kat zit op de bank' en 'het dier ligt op de sofa' ongeveer "
-            "hetzelfde kunnen bedoelen, ook als de woorden verschillen."
+        "plain": (
+            "Semantisch matchen kijkt naar betekenis in plaats van alleen naar dezelfde woorden. "
+            "Daardoor kan een anders geformuleerde vraag toch bij hetzelfde geheugenpunt passen."
         ),
         "does": "Bepaalt hoe betekenis/relevantie tussen vragen en seeds wordt gematcht.",
         "does_not": "Bepaalt niet of een seed waar is en geeft geen authority.",
@@ -194,9 +200,10 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
     },
     "longitudinal": {
         "title": "Longitudinale vanilla-vergelijking",
-        "eli8": (
-            "Je laat twee aparte schriftjes naast elkaar groeien: één zonder SSL en één met SSL. "
-            "Na een tijdje kijk je hoe ver de verhalen uit elkaar zijn gaan lopen."
+        "plain": (
+            "Bij een longitudinale vergelijking lopen twee antwoordgeschiedenissen naast elkaar: "
+            "één met Shadowseed en één zonder. Zo onderzoek je hoe de trajecten over meerdere "
+            "beurten uit elkaar kunnen groeien."
         ),
         "does": "Onderhoudt een onafhankelijke vanilla-history om cumulatieve paddivergentie te onderzoeken.",
         "does_not": "Isoleert niet alleen het huidige SSL-effect op één beurt.",
@@ -207,9 +214,10 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
     },
     "self_reinforcement": {
         "title": "Self-reinforcement",
-        "eli8": (
-            "Normaal mag Shadowseed niet zijn eigen tip terughoren en dan zeggen: 'zie je wel, die tip "
-            "kwam nog een keer terug'. Met self-reinforcement aan laat je dat experimenteel wel toe."
+        "plain": (
+            "Bij self-reinforcement mag output die al met Shadowseed-context is gemaakt opnieuw "
+            "bijdragen aan de geheugenlus. Dat kan patronen sneller versterken, maar maakt causale "
+            "interpretatie moeilijker en blijft daarom experimenteel."
         ),
         "does": (
             "Laat kandidaten uit SSL-blootgestelde antwoorden terug de recurrence/authority-lus in en "
