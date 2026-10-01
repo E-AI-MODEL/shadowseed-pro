@@ -206,10 +206,10 @@ def test_feature_help_preserves_ssl_semantics_and_explains_combinations() -> Non
         seed=seed,
     )
 
-    assert "Alsof je 8 bent" in text
-    assert "Wat doet dit echt?" in text
-    assert "Wat doet dit níet?" in text
-    assert "Samen met andere functies" in text
+    assert "Kort uitgelegd" in text
+    assert "Wat gebeurt er precies?" in text
+    assert "Wat gebeurt er niet?" in text
+    assert "Samenhang met andere functies" in text
     assert "Huidige combinatie" in text
     assert "versterken" in text.lower()
     assert "niet automatisch waar" in text.lower()
