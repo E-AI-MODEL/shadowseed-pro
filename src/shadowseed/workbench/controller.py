@@ -25,7 +25,7 @@ from shadowseed.application.workspace import WorkspaceService
 
 
 BACKENDS = ("fixture", "hf-transformers", "ollama", "openai")
-EMBEDDING_BACKENDS = ("lexical", "sentence-transformers", "openai")
+EMBEDDING_BACKENDS = ("lexical", "sentence-transformers", "ollama", "openai")
 RUNTIME_MODES = ("evaluation", "live")
 _EXTERNAL_PROMPT_BACKENDS = {"openai"}
 
@@ -103,6 +103,8 @@ class WorkbenchController:
 
         if backend == "fixture":
             return "lexical"
+        if backend == "ollama":
+            return "ollama"
         return "sentence-transformers"
 
     @staticmethod
@@ -624,8 +626,9 @@ class WorkbenchController:
             and not allow_toy_embedder
         ):
             raise ValueError(
-                "live non-fixture sessions require sentence-transformers or openai "
-                "embeddings; enable the toy override only for an explicit test"
+                "live non-fixture sessions require a semantic embedding backend "
+                "(sentence-transformers, ollama or openai); enable the toy override "
+                "only for an explicit test"
             )
         uses_external_provider = (
             backend in _EXTERNAL_PROMPT_BACKENDS or embedding_backend == "openai"
