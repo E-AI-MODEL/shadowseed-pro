@@ -16,11 +16,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import httpx
 
 
 _RELEASES_API = "https://api.github.com/repos/E-AI-MODEL/shadowseed-pro/releases?per_page=20"
 _USER_AGENT = "shadowseed-workbench-updater"
+
+
+def _httpx_module():
+    import httpx
+
+    return httpx
 
 
 def _installed_version() -> str:
@@ -137,6 +142,7 @@ class WorkbenchUpdateService:
 
     @staticmethod
     def _get_json(url: str) -> Any:
+        httpx = _httpx_module()
         response = httpx.get(
             url,
             headers={"Accept": "application/vnd.github+json", "User-Agent": _USER_AGENT},
@@ -148,6 +154,7 @@ class WorkbenchUpdateService:
 
     @staticmethod
     def _get_bytes(url: str) -> bytes:
+        httpx = _httpx_module()
         response = httpx.get(
             url,
             headers={"User-Agent": _USER_AGENT},
@@ -258,6 +265,7 @@ class WorkbenchUpdateService:
         digest = hashlib.sha256()
         size = 0
         try:
+            httpx = _httpx_module()
             with httpx.stream(
                 "GET",
                 candidate.archive_url,
