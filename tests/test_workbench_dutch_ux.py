@@ -95,7 +95,7 @@ def test_vnext_callback_failures_preserve_user_input() -> None:
         encoding="utf-8"
     )
 
-    evidence_start = source.index("    def submit_verified_evidence(")
+    evidence_start = source.index("    def _submit_verified_evidence_action(")
     ingest_start = source.index("    def ingest(", evidence_start)
     evidence_body = source[evidence_start:ingest_start]
     assert "except Exception as exc:" in evidence_body
