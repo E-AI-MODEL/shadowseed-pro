@@ -26,11 +26,11 @@ A change that removes this dependency, removes the explicit result propagation, 
 
 ## Release artifact verification
 
-The release workflow is bound to the exact SHA from the successful `Standalone Workbench` run on `main`. It must continue to fail closed if `main` advances before publication.
+The release workflow is started explicitly by a maintainer after the candidate is green. It binds to the exact current protected `main` SHA, requires successful exact-SHA CI, Workbench, portability, research-package and `Standalone Workbench` runs, and reuses the standalone artifacts from that exact SHA. It must continue to fail closed if `main` advances before publication.
 
 Before publishing, it verifies:
 
-1. the checked-out commit equals the triggering SHA and current `origin/main`;
+1. the checked-out commit equals the explicitly selected current `origin/main` release SHA;
 2. the dependency lock is current;
 3. each standalone manifest names the candidate SHA and expected version;
 4. each frozen standalone passed its packaged self-test;
