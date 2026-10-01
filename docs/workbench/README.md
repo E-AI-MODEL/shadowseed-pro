@@ -3,7 +3,7 @@
 The Workbench is the local-first chat surface for testing Shadow Seed Learning in an ordinary LLM conversation. Version 0.9.2 carries forward the low-friction mass-tester path, noncommercial research access, and evidence-measurement tooling while serving as the current production-local assurance candidate. It is not `production-ready/local` until the exact-SHA release-assurance and unchanged-candidate soak requirements are complete.
 
 ```text
-download -> extract/open -> choose model -> create chat -> chat with SSL -> optionally compare with an independent vanilla chat
+download -> extract/open -> choose model -> create chat -> chat with SSL -> optionally compare the current answer with SSL off
 ```
 
 Research scenarios, baseline-isolated evaluation mode, evidence-efficacy studies, raw diagnostics and benchmark tools remain separate. They are not prerequisites for ordinary testing.
@@ -42,17 +42,21 @@ New candidates start weightless. Recurrence is observable but does not become ex
 
 The Workbench presents the canonical runtime; it does not implement a second Gate or expose direct weight/promotion editing.
 
-## Compare with an independent vanilla chat
+## Compare the current answer with SSL off
 
-When **Compare with a vanilla chat** is enabled, the Workbench maintains a separate same-model control trajectory. The vanilla arm receives the same user questions, but only its own earlier vanilla answers. It never copies SSL-visible answers into its history and never receives surfaced Shadow Seeds.
+The normal Workbench comparison is a **same-turn control**. Both arms use the same model configuration, the same visible pre-turn conversation history and the same current user message. The control receives no surfaced Shadow Seed context. Only the real SSL turn changes session state.
 
-If comparison is enabled only after several live turns, the missing vanilla trajectory is reconstructed from the earlier user questions before the current control answer is generated. Built-in OpenAI and Ollama adapters use native role-structured chat turns for this control path; compatible local chat templates are used for Hugging Face models when available.
+This comparison adds at most one extra current-turn model generation. It never reconstructs older turns synchronously and it does not create a second ordinary chat history.
 
-The vanilla trajectory is persisted only as comparison state. It does not enter candidate detection, recurrence, the Validation Gate, or the Shadowseed conversation history. The Shadowseed arm remains the normal state-changing live chat.
+A textual difference is not automatically an SSL effect. When no authorized seed surfaced on the real turn, ordinary generation variance remains a possible explanation.
 
-This is a cumulative full-path comparison: vanilla conversation versus Shadowseed conversation. A difference is not automatically a current-turn seed effect. The comparison record therefore reports current-turn SSL influence separately from SSL influence already present in earlier Shadowseed answers.
+### Longitudinal vanilla is research-only
 
-A textual difference is not automatically an SSL effect. When no authorized seed surfaced, ordinary generation variance remains a possible explanation.
+The **Research** tab contains a different experiment: an independent vanilla conversation trajectory that receives the same user questions but only its own earlier vanilla answers.
+
+That experiment asks a different question: how a full vanilla conversation path diverges over time from the Shadowseed path. Starting it late can require historical user turns to be replayed into the vanilla trajectory, so it can be substantially slower. The UI reports how many earlier turns were rebuilt.
+
+The longitudinal control remains isolated from candidate detection, recurrence, the Validation Gate and the Shadowseed conversation history. Do not describe it as a same-turn causal comparison.
 
 ## Feedback and independently verified support
 
