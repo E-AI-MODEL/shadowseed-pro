@@ -9,9 +9,13 @@ permissions:
   actions: write
   contents: read
 
+concurrency:
+  group: stale-release-cleanup-${{ github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   cancel-stale:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Cancel older runs for this release branch
         env:
