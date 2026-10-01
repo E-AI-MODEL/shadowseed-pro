@@ -11,6 +11,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
+from shadowseed.adapters.embedding import SUPPORTED_EMBEDDING_BACKENDS
 from shadowseed.authority_profiles import AUTHORITY_PROFILES, get_authority_profile
 from shadowseed.application.ingest import prepare_sources
 from shadowseed.application.comparison import ComparisonService
@@ -25,7 +26,7 @@ from shadowseed.application.workspace import WorkspaceService
 
 
 BACKENDS = ("fixture", "hf-transformers", "ollama", "openai")
-EMBEDDING_BACKENDS = ("lexical", "sentence-transformers", "ollama", "openai")
+EMBEDDING_BACKENDS = SUPPORTED_EMBEDDING_BACKENDS
 RUNTIME_MODES = ("evaluation", "live")
 _EXTERNAL_PROMPT_BACKENDS = {"openai"}
 
