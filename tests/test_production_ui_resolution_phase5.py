@@ -63,17 +63,18 @@ class _FakeResolutionController:
 
 def test_supported_production_ui_exposes_distinct_contradiction_resolution_action() -> None:
     production_ui = _text("src/shadowseed/workbench/production_local.py")
+    vnext_ui = _text("src/shadowseed/workbench/simple_app_vnext.py")
     standalone = _text("src/shadowseed/workbench/standalone.py")
 
     assert "def build_production_local_app(" in production_ui
-    assert "ctl.resolve_contradiction(" in production_ui
-    assert 'gr.Button("Resolve contradiction"' in production_ui
-    assert '"This is an authority-bearing production action.' in production_ui
-    assert "gr.TabbedInterface(" in production_ui
-    assert '["Workbench", "Resolve contradiction"]' in production_ui
+    assert "return build_app(controller=ctl)" in production_ui
+    assert "gr.TabbedInterface(" not in production_ui
+    assert "can_resolve_contradiction" in vnext_ui
+    assert "ctl.resolve_contradiction(" in vnext_ui
+    assert "Blokkade formeel oplossen" in vnext_ui
+    assert "Alleen gebruiken nadat de blokkade onafhankelijk is gecontroleerd." in vnext_ui
     assert "build_production_local_app(controller=controller)" in standalone
     assert '"production_resolution_ui": True' in standalone
-
 
 def test_production_resolution_initializes_and_refreshes_seed_choices() -> None:
     production_ui = _text("src/shadowseed/workbench/production_local.py")
