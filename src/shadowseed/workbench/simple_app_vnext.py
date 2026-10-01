@@ -647,7 +647,7 @@ def build_vnext_app(
         except Exception as exc:
             return _ui_error(exc), gr.update(), gr.update(), gr.update(), gr.update()
 
-    def submit_verified_evidence(
+    def _submit_verified_evidence_action(
         session_id: str | None,
         seed_id: str | None,
         source_ref: str,
@@ -989,7 +989,7 @@ def build_vnext_app(
             result = falsify(session_id, seed_id)
             extra_note, extra_attest = note, attested
         else:
-            evidence_result = submit_verified_evidence(
+            evidence_result = _submit_verified_evidence_action(
                 session_id,
                 seed_id,
                 source_ref,
@@ -1024,7 +1024,7 @@ def build_vnext_app(
     def contradict_shell(session_id: str | None, seed_id: str | None):
         return mutation_shell(session_id, seed_id, action="contradict")
 
-    def submit_verified_evidence_shell(
+    def submit_verified_evidence(
         session_id: str | None,
         seed_id: str | None,
         source_ref: str,
@@ -1508,7 +1508,7 @@ def build_vnext_app(
         )
 
         evidence_button.click(
-            submit_verified_evidence_shell,
+            submit_verified_evidence,
             inputs=[active_session, seed_select, evidence_source, evidence_note, evidence_attest],
             outputs=[
                 seed_story,
