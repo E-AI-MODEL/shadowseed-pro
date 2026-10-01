@@ -1533,8 +1533,9 @@ def launch_workbench(
             "remote Workbench binding is disabled by default; use --allow-remote only "
             "inside a trusted environment because the preview has no multi-user auth layer"
         )
-    from shadowseed.workbench.simple_app_vnext import _CSS
+    from shadowseed.workbench.simple_app_vnext import _CSS, _theme
 
+    gr = _gradio()
     app = build_app(workspace)
     return app.launch(
         server_name=host,
@@ -1542,4 +1543,5 @@ def launch_workbench(
         inbrowser=bool(inbrowser),
         share=False,
         css=_CSS,
+        theme=_theme(gr),
     )
