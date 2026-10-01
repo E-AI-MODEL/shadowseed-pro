@@ -55,7 +55,7 @@ def test_default_workbench_is_dutch_chat_first_surface() -> None:
         'elem_id="ss-panel-audit"',
         'label="Vergelijk deze beurt zonder SSL"',
         'gr.Button("Versturen"',
-        'gr.Button("Chat starten"',
+        'gr.Button("Start gesprek"',
         'gr.Button("＋  Nieuwe chat"',
         'gr.Button("＋  Bron toevoegen"',
         'gr.Button("Bekijk Shadow"',
@@ -78,6 +78,24 @@ def test_default_workbench_is_dutch_chat_first_surface() -> None:
         '"Refresh runs"',
     ):
         assert refresh_label not in vnext_source
+
+
+def test_vnext_starts_blank_and_keeps_styling_separate() -> None:
+    source = Path("src/shadowseed/workbench/simple_app_vnext.py").read_text(
+        encoding="utf-8"
+    )
+    css = Path("src/shadowseed/workbench/static/workbench.css").read_text(
+        encoding="utf-8"
+    )
+
+    assert "initial_id = None" in source
+    assert "def begin_new_chat()" in source
+    assert 'elem_id="ss-session-list"' in source
+    assert 'layout="panel"' in source
+    assert "gr.themes.Soft" in source
+    assert "_CSS = _load_css()" in source
+    assert '#ss-session-list input[type="radio"]' in css
+    assert "--ss-accent: var(--primary-500)" in css
 
 
 def test_vnext_error_text_redacts_known_secrets(monkeypatch) -> None:
