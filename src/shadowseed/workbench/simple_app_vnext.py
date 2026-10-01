@@ -79,7 +79,7 @@ def _status(view: dict[str, Any] | None) -> str:
 
 def _shadow_summary(view: dict[str, Any] | None) -> str:
     if not view:
-        return "Start of kies een gesprek. Shadowseed werkt daarna automatisch mee."
+        return "Start een nieuw gesprek of open een bestaand gesprek."
 
     seeds = list(view.get("seeds", []) or [])
     if not seeds:
@@ -100,7 +100,7 @@ def _shadow_summary(view: dict[str, Any] | None) -> str:
         "### Shadow\n"
         f"**{len(seeds)}** onthouden · **{authorized}** mogen nu meedenken · "
         f"**{len(used_ids)}** zijn ooit aan een antwoord aangeboden · **{blocked}** geblokkeerd\n\n"
-        "Onthouden, toegestaan en gebruikt zijn verschillende stappen."
+        "Onthouden, toegestaan en aangeboden zijn verschillende stappen."
     )
 
 
@@ -187,19 +187,19 @@ def _model_badge(view: dict[str, Any] | None) -> str:
 
 def _context_banner(view: dict[str, Any] | None) -> str:
     if not view:
-        return "Nog geen actief gesprek."
+        return "Start een nieuw gesprek of open een bestaand gesprek."
     reports = list(view.get("turn_reports", []) or [])
     if not reports:
-        return "Shadowseed heeft nog geen geheugenpunt aan een antwoord aangeboden."
+        return "Nog geen geheugenpunt aangeboden in dit gesprek."
     surfaced = list(reports[-1].get("surfaced_seed_ids", []) or [])
     if surfaced:
         return f"📄 **{len(surfaced)} geheugenpunt(en) als context aangeboden**"
-    return "📄 **Geen geheugenpunt als context aangeboden in de laatste beurt**"
+    return "**Geen geheugenpunt aangeboden bij het laatste antwoord**"
 
 
 def _shadow_rail(view: dict[str, Any] | None) -> str:
     if not view:
-        return "### SHADOW\nGeen actief gesprek."
+        return "### SHADOW\nNog geen actief gesprek."
     seeds = list(view.get("seeds", []) or [])
     authorized = sum(bool(seed.get("current_gate_authorized", False)) for seed in seeds)
     blocked = sum(bool(seed.get("blocking", False)) for seed in seeds)
@@ -272,11 +272,8 @@ def build_vnext_app(
     ctl = controller or WorkbenchController(workspace)
 
     sessions = ctl.session_choices(ctl.list_sessions())
-    initial_id = sessions[0][1] if sessions else None
-    try:
-        initial_view = ctl.session_view(initial_id) if initial_id else None
-    except Exception:
-        initial_view = None
+    initial_id = None
+    initial_view = None
 
     initial_chat = ctl.chat_messages(initial_view) if initial_view else []
     initial_seeds = ctl.seed_choices(initial_view) if initial_view else []
@@ -951,12 +948,12 @@ def build_vnext_app(
                         gr.Markdown("### GESPREKKEN", scale=4)
                         conversation_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
                     new_chat_open = gr.Button("＋  Nieuwe chat", variant="primary", elem_classes=["ss-primary"])
-                    gr.Markdown('<span class="ss-section-label">Vandaag</span>')
                     session_select = gr.Radio(
                         choices=compact_sessions,
                         value=initial_id,
                         label=None,
                         container=False,
+                        elem_id="ss-session-list",
                     )
 
                 with gr.Column(scale=6, min_width=520, elem_id="ss-center"):
@@ -964,7 +961,14 @@ def build_vnext_app(
                         f"## {initial_title}",
                         elem_id="ss-conversation-title",
                     )
-                    chat = gr.Chatbot(value=initial_chat, label=None, height=500)
+                    chat = gr.Chatbot(
+                        value=initial_chat,
+                        label=None,
+                        height=560,
+                        layout="panel",
+                        placeholder="Start een nieuw gesprek of open links een bestaand gesprek.",
+                        elem_id="ss-chat",
+                    )
                     context_banner = gr.Markdown(_context_banner(initial_view), elem_id="ss-context-banner")
                     with gr.Column(elem_id="ss-composer"):
                         with gr.Row():
@@ -1002,17 +1006,18 @@ def build_vnext_app(
                     gr.Markdown('<span class="ss-section-label">Recent opgemerkt</span>', elem_id="ss-recent")
                     recent_seed = gr.Radio(
                         choices=recent_choices,
-                        value=(recent_choices[0][1] if recent_choices else None),
+                        value=None,
                         label=None,
                         container=False,
+                        elem_id="ss-recent-list",
                     )
                     recent_open = gr.Button("Bekijk geheugenpunt", variant="secondary")
 
         with gr.Group(visible=False, elem_id="ss-panel-new-chat", elem_classes=["ss-drawer"]) as new_chat_panel:
             with gr.Row():
-                gr.Markdown("## Nieuwe chat", elem_classes=["ss-drawer-title"], scale=5)
+                gr.Markdown("## Nieuw gesprek instellen", elem_classes=["ss-drawer-title"], scale=5)
                 new_chat_close = gr.Button("×", scale=0, min_width=40, elem_classes=["ss-info-button"])
-            new_title = gr.Textbox(label="Naam", value="Nieuw gesprek")
+            new_title = gr.Textbox(label="Titel (optioneel)", value="", placeholder="Bijv. Projectidee")
             with gr.Row():
                 provider = gr.Dropdown(
                     choices=[
@@ -1044,7 +1049,7 @@ def build_vnext_app(
                 )
                 consent_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
             with gr.Row():
-                create_button = gr.Button("Chat starten", variant="primary", scale=5, elem_classes=["ss-primary"])
+                create_button = gr.Button("Start gesprek", variant="primary", scale=5, elem_classes=["ss-primary"])
                 create_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
 
         with gr.Group(visible=False, elem_id="ss-panel-source", elem_classes=["ss-drawer"]) as source_panel:
