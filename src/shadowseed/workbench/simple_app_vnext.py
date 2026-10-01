@@ -682,7 +682,7 @@ def build_vnext_app(
         if not session_id:
             return (
                 [],
-                "Nieuw gesprek",
+                "## Nieuw gesprek",
                 "Geen actief model",
                 _context_banner(None),
                 _shadow_rail(None),
@@ -715,6 +715,21 @@ def build_vnext_app(
             "",
             "",
             "Zet **Vergelijk deze beurt zonder SSL** aan voor een same-turn control.",
+        )
+
+    def begin_new_chat():
+        shell = refresh_shell(None)
+        return (
+            None,
+            gr.update(value=None),
+            *shell,
+            _seed_story(None),
+            _seed_lifecycle(None),
+            None,
+            "",
+            "",
+            "Vergelijking is uitgeschakeld voor deze nieuwe chat.",
+            gr.update(visible=True),
         )
 
     def create_chat_shell(
@@ -1232,7 +1247,29 @@ def build_vnext_app(
         ):
             bind_help(button, feature_id)
 
-        new_chat_open.click(lambda: gr.update(visible=True), outputs=[new_chat_panel])
+        new_chat_open.click(
+            begin_new_chat,
+            outputs=[
+                active_session,
+                session_select,
+                chat,
+                conversation_title,
+                model_badge,
+                context_banner,
+                shadow_metrics,
+                seed_select,
+                recent_seed,
+                session_json,
+                seed_story,
+                lifecycle,
+                seed_json,
+                ssl_answer,
+                no_ssl_answer,
+                comparison_note,
+                new_chat_panel,
+            ],
+            api_name=False,
+        )
         new_chat_close.click(close_panel, outputs=[new_chat_panel])
         source_open.click(lambda: gr.update(visible=True), outputs=[source_panel])
         source_close.click(close_panel, outputs=[source_panel])
