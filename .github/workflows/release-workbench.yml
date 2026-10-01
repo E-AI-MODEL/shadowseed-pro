@@ -88,24 +88,44 @@ jobs:
           fi
 
           required_workflows=(
-            "ci.yml"
-            "workbench-ci.yml"
-            "workbench-portability.yml"
-            "research-package-ci.yml"
-            "standalone-workbench.yml"
+            ".github/workflows/ci.yml"
+            ".github/workflows/workbench-ci.yml"
+            ".github/workflows/workbench-portability.yml"
+            ".github/workflows/research-package-ci.yml"
+            ".github/workflows/standalone-workbench.yml"
           )
+
+          runs_json="$(
+            gh api "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${release_sha}&per_page=100"
+          )"
 
           standalone_run_id=""
           for workflow in "${required_workflows[@]}"; do
             run_id="$(
-              gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/runs?branch=main&event=push&status=success&per_page=100"                 --jq ".workflow_runs[] | select(.head_sha == \"${release_sha}\") | .id"                 | head -n 1
+              jq -r \
+                --arg workflow "$workflow" \
+                --arg sha "$release_sha" \
+                '.workflow_runs[]
+                 | select(
+                     .path == $workflow
+                     and .head_sha == $sha
+                     and .head_branch == "main"
+                     and .event == "push"
+                     and .status == "completed"
+                     and .conclusion == "success"
+                   )
+                 | .id' \
+                <<<"$runs_json" \
+                | head -n 1
             )"
             if [ -z "$run_id" ]; then
-              echo "No successful main push run for $workflow at $release_sha" >&2
+              echo "No successful exact-SHA main push run for $workflow at $release_sha" >&2
+              echo "Observed runs for this SHA:" >&2
+              jq -r '.workflow_runs[] | [.path, .event, .status, (.conclusion // ""), .id] | @tsv' <<<"$runs_json" >&2
               exit 1
             fi
             echo "Verified $workflow run $run_id for $release_sha"
-            if [ "$workflow" = "standalone-workbench.yml" ]; then
+            if [ "$workflow" = ".github/workflows/standalone-workbench.yml" ]; then
               standalone_run_id="$run_id"
             fi
           done
