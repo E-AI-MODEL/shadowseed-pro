@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from shadowseed.authority_profiles import AUTHORITY_PROFILES, get_authority_profile
+from shadowseed.core_config import SSLCoreConfig
 from shadowseed.application.ingest import prepare_sources
 from shadowseed.application.comparison import ComparisonService
 from shadowseed.application.exports import ExportService, verify_workbench_export
@@ -322,6 +323,128 @@ class WorkbenchController:
         )
         return self.inspection.session_view(session_id)
 
+    def update_session_advanced(
+        self,
+        session_id: str,
+        *,
+        settings: dict[str, Any],
+        external_confirmed: bool = False,
+        force: bool = False,
+    ) -> dict[str, Any]:
+        """Persist direct Workbench controls onto the canonical runtime config.
+
+        This is the expert/God-mode boundary used by the local Workbench. It does
+        not create a parallel settings model: values are written to the persisted
+        SessionConfig, ShadowChatSession session_config, and SSLCoreConfig snapshot
+        consumed by the next runtime turn.
+
+        Changes to the embedding backend/model are blocked once seeds exist unless
+        force is explicit, because persisted seed vectors may no longer match the
+        new embedding space.
+        """
+
+        if not isinstance(settings, dict):
+            raise TypeError("settings must be a dictionary")
+
+        view = self.inspection.session_view(session_id)
+        persisted = dict(view.get("persisted_config", {}))
+
+        session_fields = set(SessionConfig.__dataclass_fields__)
+        core_fields = set(SSLCoreConfig.__dataclass_fields__)
+        known = session_fields | core_fields
+        unknown = sorted(set(settings) - known)
+        if unknown:
+            raise ValueError(f"unknown Shadowseed setting(s): {', '.join(unknown)}")
+
+        desired = {**persisted, **settings}
+        desired_backend = str(desired.get("backend", view.get("backend") or "fixture"))
+        desired_model = desired.get("model_id")
+        desired_runtime = str(desired.get("runtime_mode", view.get("runtime_mode") or "live"))
+        desired_embedding = str(
+            desired.get("embedding_backend", view.get("embedding_backend") or "lexical")
+        )
+        desired_toy = bool(desired.get("allow_toy_embedder", False))
+
+        embedding_changed = any(
+            key in settings and settings.get(key) != persisted.get(key)
+            for key in ("embedding_backend", "embedding_model")
+        )
+        if embedding_changed and view.get("seeds") and not force:
+            raise ValueError(
+                "embedding backend/model cannot be changed after seeds exist unless God mode force is enabled"
+            )
+
+        self._validate_backend(
+            desired_backend,
+            model_id=desired_model,
+            runtime_mode=desired_runtime,
+            embedding_backend=desired_embedding,
+            allow_toy_embedder=desired_toy,
+            external_confirmed=external_confirmed,
+        )
+
+        config_updates = dict(settings)
+        product_only_fields = {"ssl_intensity", "gate_strictness"}
+        state_updates = {
+            key: value
+            for key, value in settings.items()
+            if (
+                key in session_fields
+                and key not in core_fields
+                and key not in product_only_fields
+            )
+        }
+        core_updates = {
+            key: value for key, value in settings.items() if key in core_fields
+        }
+
+        if any(
+            key in settings
+            for key in (
+                "gate_policy_id",
+                "authority_profile_id",
+                "min_occurrences_for_gate",
+                "min_evidence_for_gate",
+                "min_trace_for_gate",
+                "promotion_threshold",
+                "validation_increment",
+            )
+        ):
+            config_updates["revalidate_current_gate"] = True
+            state_updates["revalidate_current_gate"] = True
+
+        if "ssl_intensity" not in settings and any(
+            key in settings
+            for key in (
+                "surface_threshold",
+                "surface_top_k",
+                "early_turn_margin",
+                "early_turn_history",
+                "resurface_margin",
+            )
+        ):
+            config_updates["ssl_intensity"] = None
+        if "gate_strictness" not in settings and any(
+            key in settings
+            for key in (
+                "gate_policy_id",
+                "authority_profile_id",
+                "min_occurrences_for_gate",
+                "min_evidence_for_gate",
+                "min_trace_for_gate",
+                "promotion_threshold",
+                "validation_increment",
+            )
+        ):
+            config_updates["gate_strictness"] = None
+
+        self.sessions.update_controls(
+            session_id,
+            config_updates=config_updates,
+            session_config_updates=state_updates,
+            core_config_updates=core_updates,
+        )
+        return self.inspection.session_view(session_id)
     def update_session_self_reinforcement(
         self,
         session_id: str,

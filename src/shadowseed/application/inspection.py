@@ -227,6 +227,12 @@ class InspectionService:
             "turn_reports": list(state.get("turn_reports", [])),
             "seeds": decorated,
             "feedback": [item.to_dict() for item in self.sessions.list_feedback(session_id)],
+            # Full configuration snapshots are exposed for the local Workbench
+            # control and audit surfaces. They are configuration only; no
+            # credentials or secrets are stored in these records.
+            "persisted_config": persisted_config,
+            "session_config": session_config,
+            "core_config": manager_config,
         }
 
     def seed_view(self, session_id: str, seed_id: str) -> dict[str, Any]:

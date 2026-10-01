@@ -7,6 +7,7 @@ Shadow and Sources. Research mechanisms remain outside the normal path.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -164,6 +165,118 @@ body { background: var(--ss-canvas) !important; }
   .ss-drawer { top: 12px !important; right: 12px !important; width: calc(100vw - 24px) !important; max-height: calc(100vh - 24px) !important; }
 }
 """
+
+
+_PRESET_SETTINGS: dict[str, dict[str, Any]] = {
+    "observeren": {
+        "surface_threshold": 1.0,
+        "surface_top_k": 0,
+        "early_turn_margin": 0.20,
+        "resurface_margin": 0.25,
+        "authority_profile_id": "strict",
+        "gate_policy_id": "evidence_backed",
+        "min_occurrences_for_gate": 4,
+        "min_evidence_for_gate": 3,
+        "min_trace_for_gate": 0.5,
+        "promotion_threshold": 0.6,
+        "validation_increment": 0.2,
+        "allow_self_reinforcement": False,
+    },
+    "gebalanceerd": {
+        "surface_threshold": 0.30,
+        "surface_top_k": 2,
+        "early_turn_margin": 0.10,
+        "resurface_margin": 0.15,
+        "authority_profile_id": "strict",
+        "gate_policy_id": "evidence_backed",
+        "min_occurrences_for_gate": 3,
+        "min_evidence_for_gate": 2,
+        "min_trace_for_gate": 0.5,
+        "promotion_threshold": 0.5,
+        "validation_increment": 0.2,
+        "allow_self_reinforcement": False,
+    },
+    "onderzoekend": {
+        "surface_threshold": 0.20,
+        "surface_top_k": 3,
+        "early_turn_margin": 0.05,
+        "resurface_margin": 0.10,
+        "authority_profile_id": "autonomous",
+        "gate_policy_id": "exploratory",
+        "min_occurrences_for_gate": 2,
+        "min_evidence_for_gate": 0,
+        "min_trace_for_gate": 0.0,
+        "promotion_threshold": 0.4,
+        "validation_increment": 0.2,
+        "allow_self_reinforcement": False,
+    },
+}
+
+_PRESET_HELP = {
+    "observeren": (
+        "**Observeren** · Shadowseed mag detecteren en onthouden, maar levert niets aan het "
+        "antwoord. Geschikt om eerst te zien wat het systeem opslaat zonder invloed op de chat."
+    ),
+    "gebalanceerd": (
+        "**Gebalanceerd** · Normale onderzoeksstand. Alleen Gate-geautoriseerde en relevante "
+        "seeds kunnen beperkt worden aangeboden. Zelfversterking staat uit."
+    ),
+    "onderzoekend": (
+        "**Onderzoekend** · Lagere drempels en meer surfacing. Recurrence mag via de "
+        "exploratory Gate authority opbouwen. Bedoeld voor experimenten, niet als bewijsstand."
+    ),
+    "custom": (
+        "**Aangepast** · Een of meer waarden wijken af van een preset. De werkelijk opgeslagen "
+        "waarden hieronder zijn leidend."
+    ),
+}
+
+
+def _preset_help(preset: str | None) -> str:
+    return _PRESET_HELP.get(str(preset or "custom"), _PRESET_HELP["custom"])
+
+
+def _full_settings(view: dict[str, Any] | None) -> dict[str, Any]:
+    if not view:
+        return {}
+    persisted = dict(view.get("persisted_config", {}))
+    core = dict(view.get("core_config", {}))
+    return {**persisted, **core}
+
+
+def _settings_json(view: dict[str, Any] | None) -> str:
+    return json.dumps(_full_settings(view), indent=2, sort_keys=True, ensure_ascii=False)
+
+
+def _audit_summary(view: dict[str, Any] | None) -> str:
+    if not view:
+        return "### Live audit\nGeen actief gesprek."
+    reports = list(view.get("turn_reports", []))
+    last = reports[-1] if reports else {}
+    seeds = list(view.get("seeds", []))
+    authorized = sum(bool(item.get("current_gate_authorized")) for item in seeds)
+    surfaced = list(last.get("surfaced_seed_ids", []))
+    decisions = list(last.get("influence_decisions", []))
+    return (
+        "### Live audit\n"
+        f"**Turn:** {int(view.get('turn', 0))}  \n"
+        f"**Seeds:** {len(seeds)} · **nu geautoriseerd:** {authorized}  \n"
+        f"**Gesurfaced laatste turn:** {len(surfaced)} · **invloedbesluiten:** {len(decisions)}  \n"
+        f"**Authority:** `{view.get('authority_profile_id', 'onbekend')}` · "
+        f"Gate `{view.get('effective_gate_policy_id', 'onbekend')}`  \n"
+        f"**Recurrence:** `{view.get('recurrence_mode', 'onbekend')}` · "
+        f"top-k **{int(view.get('surface_top_k', 0))}**"
+    )
+
+
+def _preset_from_view(view: dict[str, Any] | None) -> str:
+    if not view:
+        return "gebalanceerd"
+    current = _full_settings(view)
+    for preset, settings in _PRESET_SETTINGS.items():
+        if all(current.get(key) == value for key, value in settings.items()):
+            return preset
+    return "custom"
 
 
 def _gradio():
@@ -859,10 +972,33 @@ def build_vnext_app(
         provider_value: str,
         model_value: str | None,
         hosted_confirmed: bool,
+        preset: str,
     ):
-        result = create_chat(title, provider_value, model_value, hosted_confirmed)
-        if not isinstance(result[0], str):
-            error = result[3] if len(result) > 3 else "Chat starten is niet gelukt."
+        try:
+            session_id = create_chat_with_preset(
+                title,
+                provider_value,
+                model_value,
+                hosted_confirmed,
+                preset,
+            )
+            current_summaries = ctl.list_sessions()
+            compact = _compact_session_choices(current_summaries)
+            shell = refresh_shell(session_id)
+            return (
+                session_id,
+                gr.update(choices=compact, value=session_id),
+                *shell,
+                _seed_story(None),
+                _seed_lifecycle(None),
+                None,
+                "",
+                "",
+                "Zet **Vergelijk deze beurt zonder SSL** aan voor een same-turn control.",
+                gr.update(visible=False),
+            )
+        except Exception as exc:
+            error = _ui_error(exc)
             return (
                 gr.update(),
                 gr.update(),
@@ -882,22 +1018,6 @@ def build_vnext_app(
                 error,
                 gr.update(visible=True),
             )
-        session_id = result[0]
-        current_summaries = ctl.list_sessions()
-        compact = _compact_session_choices(current_summaries)
-        shell = refresh_shell(session_id)
-        return (
-            session_id,
-            gr.update(choices=compact, value=session_id),
-            *shell,
-            _seed_story(None),
-            _seed_lifecycle(None),
-            None,
-            "",
-            "",
-            "Zet **Vergelijk deze beurt zonder SSL** aan voor een same-turn control.",
-            gr.update(visible=False),
-        )
 
     def inspect_seed_shell(session_id: str | None, seed_id: str | None):
         story, seed = inspect_seed(session_id, seed_id)
@@ -1068,30 +1188,272 @@ def build_vnext_app(
         except Exception:
             return result
 
+    def _control_values(view: dict[str, Any] | None):
+        settings = _full_settings(view)
+        preset = _preset_from_view(view)
+        return (
+            preset,
+            _preset_help(preset),
+            str(settings.get("backend", "fixture")),
+            settings.get("model_id"),
+            float(settings.get("surface_threshold", 0.30)),
+            int(settings.get("surface_top_k", 2)),
+            str(settings.get("authority_profile_id", "strict")),
+            str(settings.get("gate_policy_id") or "evidence_backed"),
+            str(settings.get("recurrence_mode", "cluster")),
+            bool(settings.get("allow_self_reinforcement", False)),
+            _settings_json(view),
+        )
+
+    def refresh_controls(session_id: str | None):
+        if not session_id:
+            return _control_values(None)
+        try:
+            return _control_values(ctl.session_view(session_id))
+        except Exception:
+            return _control_values(None)
+
+    def refresh_live_audit(session_id: str | None):
+        if not session_id:
+            return _audit_summary(None), {}, {}
+        try:
+            view = ctl.session_view(session_id)
+            reports = list(view.get("turn_reports", []))
+            return (
+                _audit_summary(view),
+                _full_settings(view),
+                reports[-1] if reports else {},
+            )
+        except Exception as exc:
+            return f"### Live audit\n**Fout:** {_ui_error(exc)}", {}, {}
+
+    def apply_preset(
+        session_id: str | None,
+        preset: str,
+        external_confirmed: bool,
+    ):
+        if not session_id:
+            return (*_control_values(None), "Maak of kies eerst een gesprek.")
+        if preset not in _PRESET_SETTINGS:
+            view = ctl.session_view(session_id)
+            return (*_control_values(view), "Kies een preset om toe te passen.")
+        try:
+            view = ctl.update_session_advanced(
+                session_id,
+                settings=dict(_PRESET_SETTINGS[preset]),
+                external_confirmed=bool(external_confirmed),
+            )
+            return (*_control_values(view), "Preset toegepast op de actieve sessie.")
+        except Exception as exc:
+            view = ctl.session_view(session_id)
+            return (*_control_values(view), _ui_error(exc))
+
+    def apply_micro_settings(
+        session_id: str | None,
+        backend_value: str,
+        model_value: str | None,
+        surface_threshold_value: float,
+        surface_top_k_value: float,
+        authority_value: str,
+        gate_policy_value: str,
+        recurrence_value: str,
+        self_reinforcement_value: bool,
+        external_confirmed: bool,
+        force: bool,
+    ):
+        if not session_id:
+            return (*_control_values(None), "Maak of kies eerst een gesprek.")
+        settings = {
+            "backend": backend_value,
+            "model_id": (model_value or None),
+            "surface_threshold": float(surface_threshold_value),
+            "surface_top_k": int(surface_top_k_value),
+            "authority_profile_id": authority_value,
+            "gate_policy_id": gate_policy_value,
+            "recurrence_mode": recurrence_value,
+            "allow_self_reinforcement": bool(self_reinforcement_value),
+        }
+        try:
+            view = ctl.update_session_advanced(
+                session_id,
+                settings=settings,
+                external_confirmed=bool(external_confirmed),
+                force=bool(force),
+            )
+            return (*_control_values(view), "Instellingen opgeslagen.")
+        except Exception as exc:
+            view = ctl.session_view(session_id)
+            return (*_control_values(view), _ui_error(exc))
+
+    def apply_god_json(
+        session_id: str | None,
+        raw_json: str,
+        external_confirmed: bool,
+        force: bool,
+    ):
+        if not session_id:
+            return (*_control_values(None), "Maak of kies eerst een gesprek.")
+        try:
+            payload = json.loads(raw_json or "{}")
+            if not isinstance(payload, dict):
+                raise ValueError("God mode verwacht één JSON-object met instellingen.")
+            view = ctl.update_session_advanced(
+                session_id,
+                settings=payload,
+                external_confirmed=bool(external_confirmed),
+                force=bool(force),
+            )
+            return (*_control_values(view), "God-modeconfiguratie opgeslagen.")
+        except Exception as exc:
+            view = ctl.session_view(session_id)
+            return (*_control_values(view), _ui_error(exc))
+
+    def create_chat_with_preset(
+        title: str,
+        provider_value: str,
+        model_value: str | None,
+        hosted_confirmed: bool,
+        preset: str,
+    ):
+        settings = dict(_PRESET_SETTINGS.get(preset, _PRESET_SETTINGS["gebalanceerd"]))
+        session_id = ctl.create_session(
+            title=(title or "").strip() or "Nieuwe chat",
+            profile_id="balanced",
+            backend=provider_value,
+            model_id=(None if provider_value == "fixture" else (model_value or None)),
+            runtime_mode="live",
+            authority_profile_id=str(settings.get("authority_profile_id", "strict")),
+            embedding_backend=ctl.default_embedding_backend(provider_value),
+            external_confirmed=bool(hosted_confirmed),
+            allow_self_reinforcement=bool(settings.get("allow_self_reinforcement", False)),
+        )
+        ctl.update_session_advanced(
+            session_id,
+            settings=settings,
+            external_confirmed=bool(hosted_confirmed),
+        )
+        return session_id
+
+    initial_controls = _control_values(initial_view)
+
+    def toggle_sidebar(is_open: bool):
+        next_state = not bool(is_open)
+        return next_state, gr.update(visible=next_state)
+
     with gr.Blocks(title="Shadowseed") as app:
         active_session = gr.State(initial_id)
         help_feature = gr.State("conversation")
+        left_open = gr.State(True)
+        right_open = gr.State(True)
 
         with gr.Group(elem_id="ss-shell"):
             with gr.Row(elem_id="ss-topbar"):
                 brand = gr.Markdown("## SHADOWSEED", elem_id="ss-brand", scale=4)
                 model_badge = gr.Markdown(_model_badge(initial_view), elem_id="ss-model-badge", scale=2)
                 model_top_info = gr.Button("ⓘ", scale=0, min_width=40, elem_classes=["ss-info-button"])
+                controls_toggle = gr.Button("⚙  Regie", scale=0, min_width=92)
+                audit_toggle = gr.Button("▣  Audit", scale=0, min_width=86)
                 menu_button = gr.Button("☰  Menu", scale=0, min_width=100)
 
             with gr.Row(equal_height=True):
-                with gr.Column(scale=2, min_width=220, elem_id="ss-left"):
+                with gr.Column(scale=2, min_width=250, elem_id="ss-left") as left_sidebar:
                     with gr.Row():
-                        gr.Markdown("### GESPREKKEN", scale=4)
+                        gr.Markdown("### REGIE", scale=4)
                         conversation_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
                     new_chat_open = gr.Button("＋  Nieuwe chat", variant="primary", elem_classes=["ss-primary"])
-                    gr.Markdown('<span class="ss-section-label">Vandaag</span>')
-                    session_select = gr.Radio(
+                    session_select = gr.Dropdown(
                         choices=compact_sessions,
                         value=initial_id,
-                        label=None,
-                        container=False,
+                        label="Gesprek",
+                        container=True,
                     )
+                    control_preset = gr.Dropdown(
+                        choices=[
+                            ("Observeren", "observeren"),
+                            ("Gebalanceerd", "gebalanceerd"),
+                            ("Onderzoekend", "onderzoekend"),
+                            ("Aangepast", "custom"),
+                        ],
+                        value=initial_controls[0],
+                        label="Preset",
+                    )
+                    preset_help = gr.Markdown(initial_controls[1], elem_classes=["ss-muted"])
+                    apply_preset_button = gr.Button("Preset toepassen", variant="secondary")
+
+                    with gr.Accordion("Model & runtime", open=True):
+                        settings_provider = gr.Dropdown(
+                            choices=[
+                                ("Ollama · lokaal", "ollama"),
+                                ("OpenAI · online", "openai"),
+                                ("Hugging Face · lokaal", "hf-transformers"),
+                                ("Offline demo", "fixture"),
+                            ],
+                            value=initial_controls[2],
+                            label="Provider",
+                        )
+                        settings_model = gr.Dropdown(
+                            choices=([initial_controls[3]] if initial_controls[3] else []),
+                            value=initial_controls[3],
+                            allow_custom_value=True,
+                            label="Model",
+                        )
+                        settings_external_confirm = gr.Checkbox(
+                            label="Externe verwerking toegestaan",
+                            value=False,
+                        )
+
+                    with gr.Accordion("Microcontrole", open=False):
+                        surface_threshold_control = gr.Slider(
+                            minimum=0.0,
+                            maximum=1.0,
+                            step=0.01,
+                            value=initial_controls[4],
+                            label="Surfacing-drempel",
+                        )
+                        surface_top_k_control = gr.Slider(
+                            minimum=0,
+                            maximum=10,
+                            step=1,
+                            value=initial_controls[5],
+                            label="Max. seeds per antwoord",
+                        )
+                        authority_control = gr.Dropdown(
+                            choices=["strict", "assisted", "autonomous", "open"],
+                            value=initial_controls[6],
+                            label="Authority-profiel",
+                        )
+                        gate_policy_control = gr.Dropdown(
+                            choices=["evidence_backed", "exploratory", "legacy_evidence_required"],
+                            value=initial_controls[7],
+                            label="Gate-policy",
+                        )
+                        recurrence_control = gr.Dropdown(
+                            choices=["cluster", "pairwise"],
+                            value=initial_controls[8],
+                            label="Recurrence",
+                        )
+                        self_reinforcement_control = gr.Checkbox(
+                            label="Self-reinforcement",
+                            value=initial_controls[9],
+                        )
+                        god_force = gr.Checkbox(
+                            label="God mode: riskante wijzigingen forceren",
+                            value=False,
+                        )
+                        apply_micro_button = gr.Button("Micro-instellingen opslaan", variant="primary")
+
+                    with gr.Accordion("God mode · alle instellingen", open=False):
+                        gr.Markdown(
+                            "Hier staat de werkelijk opgeslagen configuratie. Wijzig alleen waarden die je bewust wilt overschrijven."
+                        )
+                        god_json = gr.Textbox(
+                            value=initial_controls[10],
+                            label=None,
+                            lines=18,
+                            max_lines=30,
+                        )
+                        apply_god_button = gr.Button("Volledige configuratie schrijven", variant="stop")
+                    control_result = gr.Markdown("", elem_classes=["ss-muted"])
 
                 with gr.Column(scale=6, min_width=520, elem_id="ss-center"):
                     conversation_title = gr.Markdown(
@@ -1128,8 +1490,16 @@ def build_vnext_app(
                             ssl_answer = gr.Markdown(label="Met SSL")
                             no_ssl_answer = gr.Markdown(label="Zonder SSL")
 
-                with gr.Column(scale=2, min_width=235, elem_id="ss-right"):
-                    shadow_metrics = gr.Markdown(_shadow_rail(initial_view), elem_id="ss-shadow-metrics")
+                with gr.Column(scale=2, min_width=255, elem_id="ss-right") as right_sidebar:
+                    live_audit = gr.Markdown(_audit_summary(initial_view), elem_id="ss-shadow-metrics")
+                    with gr.Accordion("Actieve configuratie", open=False):
+                        live_config = gr.JSON(value=_full_settings(initial_view), label=None)
+                    with gr.Accordion("Laatste turn", open=False):
+                        live_turn = gr.JSON(
+                            value=(list(initial_view.get("turn_reports", []))[-1] if initial_view and initial_view.get("turn_reports") else {}),
+                            label=None,
+                        )
+                    shadow_metrics = gr.Markdown(_shadow_rail(initial_view))
                     with gr.Row():
                         shadow_open = gr.Button("Bekijk Shadow", scale=4)
                         shadow_info_inline = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
@@ -1147,6 +1517,19 @@ def build_vnext_app(
                 gr.Markdown("## Nieuwe chat", elem_classes=["ss-drawer-title"], scale=5)
                 new_chat_close = gr.Button("×", scale=0, min_width=40, elem_classes=["ss-info-button"])
             new_title = gr.Textbox(label="Naam", value="Nieuw gesprek")
+            new_preset = gr.Dropdown(
+                choices=[
+                    ("Observeren", "observeren"),
+                    ("Gebalanceerd", "gebalanceerd"),
+                    ("Onderzoekend", "onderzoekend"),
+                ],
+                value="gebalanceerd",
+                label="Preset",
+            )
+            gr.Markdown(
+                "Preset bepaalt de startwaarden. Daarna kun je links iedere instelling afzonderlijk aanpassen.",
+                elem_classes=["ss-muted"],
+            )
             with gr.Row():
                 provider = gr.Dropdown(
                     choices=[
@@ -1391,6 +1774,87 @@ def build_vnext_app(
             outputs=[seed_select, shadow_panel],
         )
 
+        controls_toggle.click(
+            toggle_sidebar,
+            inputs=[left_open],
+            outputs=[left_open, left_sidebar],
+        )
+        audit_toggle.click(
+            toggle_sidebar,
+            inputs=[right_open],
+            outputs=[right_open, right_sidebar],
+        )
+
+        settings_provider.change(
+            provider_changed,
+            inputs=[settings_provider],
+            outputs=[settings_model, control_result],
+        )
+
+        control_preset.change(
+            lambda preset: _preset_help(preset),
+            inputs=[control_preset],
+            outputs=[preset_help],
+        )
+
+        control_outputs = [
+            control_preset,
+            preset_help,
+            settings_provider,
+            settings_model,
+            surface_threshold_control,
+            surface_top_k_control,
+            authority_control,
+            gate_policy_control,
+            recurrence_control,
+            self_reinforcement_control,
+            god_json,
+            control_result,
+        ]
+
+        apply_preset_button.click(
+            apply_preset,
+            inputs=[active_session, control_preset, settings_external_confirm],
+            outputs=control_outputs,
+        )
+
+        apply_micro_button.click(
+            apply_micro_settings,
+            inputs=[
+                active_session,
+                settings_provider,
+                settings_model,
+                surface_threshold_control,
+                surface_top_k_control,
+                authority_control,
+                gate_policy_control,
+                recurrence_control,
+                self_reinforcement_control,
+                settings_external_confirm,
+                god_force,
+            ],
+            outputs=control_outputs,
+        )
+
+        apply_god_button.click(
+            apply_god_json,
+            inputs=[active_session, god_json, settings_external_confirm, god_force],
+            outputs=control_outputs,
+        )
+
+        session_select.change(
+            refresh_controls,
+            inputs=[session_select],
+            outputs=control_outputs[:-1],
+        )
+
+        audit_timer = gr.Timer(1.0)
+        audit_timer.tick(
+            refresh_live_audit,
+            inputs=[active_session],
+            outputs=[live_audit, live_config, live_turn],
+        )
+
         provider.change(
             provider_changed,
             inputs=[provider],
@@ -1426,7 +1890,7 @@ def build_vnext_app(
 
         create_button.click(
             create_chat_shell,
-            inputs=[new_title, provider, model_id, hosted_confirm],
+            inputs=[new_title, provider, model_id, hosted_confirm, new_preset],
             outputs=[
                 active_session,
                 session_select,
