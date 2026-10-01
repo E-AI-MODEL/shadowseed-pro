@@ -1115,7 +1115,6 @@ def build_vnext_app(
                         container=False,
                         elem_id="ss-recent-list",
                     )
-                    recent_open = gr.Button("Bekijk geheugenpunt", variant="secondary")
 
         with gr.Group(visible=False, elem_id="ss-panel-new-chat", elem_classes=["ss-drawer"]) as new_chat_panel:
             with gr.Row():
@@ -1194,52 +1193,72 @@ def build_vnext_app(
             )
             seed_story = gr.Markdown(_seed_story(None), elem_id="ss-seed-story")
             lifecycle = gr.Markdown(_seed_lifecycle(None))
-            with gr.Row():
-                contradiction_button = gr.Button("Tegenspraak registreren", scale=4)
-                contradiction_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
-            gr.Markdown("### Geverifieerde ondersteuning")
-            evidence_source = gr.Textbox(label="Bronreferentie")
-            evidence_note = gr.Textbox(label="Toelichting", lines=2)
-            with gr.Row():
+            with gr.Accordion("Acties voor dit geheugenpunt", open=False):
+                with gr.Row():
+                    contradiction_button = gr.Button(
+                        "Tegenspraak registreren",
+                        variant="secondary",
+                        scale=5,
+                    )
+                    contradiction_info = gr.Button(
+                        "ⓘ",
+                        scale=0,
+                        min_width=30,
+                        elem_classes=["ss-info-button"],
+                    )
+
+                gr.Markdown("#### Geverifieerde ondersteuning")
+                verified_support_info = gr.Button(
+                    "ⓘ Uitleg over geverifieerde ondersteuning",
+                    variant="secondary",
+                    elem_classes=["ss-quiet"],
+                )
+                evidence_source = gr.Textbox(
+                    label="Bronreferentie",
+                    placeholder="Bijv. DOI, URL, rapport of eigen controlebron",
+                )
+                evidence_note = gr.Textbox(
+                    label="Wat ondersteunt deze bron precies?",
+                    lines=3,
+                    placeholder="Beschrijf kort welk deel van dit geheugenpunt onafhankelijk is gecontroleerd.",
+                )
                 evidence_attest = gr.Checkbox(
                     label="Ik heb deze ondersteuning onafhankelijk van modeloutput gecontroleerd",
                     value=False,
-                    scale=5,
                 )
-                evidence_attest_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
-            with gr.Row():
                 evidence_button = gr.Button(
-                    "Geverifieerde ondersteuning toevoegen",
+                    "Ondersteuning toevoegen",
                     variant="primary",
-                    scale=5,
                     elem_classes=["ss-primary"],
                 )
-                evidence_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
-            with gr.Accordion(
-                "Geblokkeerde tegenspraak oplossen",
-                open=False,
-                visible=can_resolve_contradiction,
-            ):
-                gr.Markdown(
-                    "Alleen gebruiken nadat de blokkade onafhankelijk is gecontroleerd. "
-                    "Oplossen verwijdert de tegenspraak via de bestaande autorisatieroute; "
-                    "het maakt het geheugenpunt niet automatisch waar of opnieuw toegestaan."
-                )
-                resolution_basis = gr.Textbox(
-                    label="Onafhankelijke onderbouwing",
-                    lines=3,
-                    placeholder="Wat is gecontroleerd en waarom kan de blokkade worden opgeheven?",
-                )
-                resolution_contradiction_id = gr.Textbox(
-                    label="Tegenspraak-ID (optioneel)",
-                    placeholder="Leeg laten om de actuele blokkade op dit punt op te lossen",
-                )
-                resolve_contradiction_button = gr.Button(
-                    "Blokkade formeel oplossen",
-                    variant="secondary",
-                )
-                resolution_result = gr.Markdown()
-            technical_open_from_seed = gr.Button("Technische audit", variant="secondary")
+
+                with gr.Group(visible=can_resolve_contradiction):
+                    gr.Markdown("#### Geblokkeerde tegenspraak oplossen")
+                    gr.Markdown(
+                        "Gebruik dit alleen nadat de blokkade onafhankelijk is gecontroleerd. "
+                        "Oplossen verwijdert de tegenspraak via de bestaande autorisatieroute; "
+                        "het maakt het geheugenpunt niet automatisch waar of opnieuw toegestaan."
+                    )
+                    resolution_basis = gr.Textbox(
+                        label="Onafhankelijke onderbouwing",
+                        lines=3,
+                        placeholder="Wat is gecontroleerd en waarom kan de blokkade worden opgeheven?",
+                    )
+                    resolution_contradiction_id = gr.Textbox(
+                        label="Tegenspraak-ID (optioneel)",
+                        placeholder="Leeg laten om de actuele blokkade op dit punt op te lossen",
+                    )
+                    resolve_contradiction_button = gr.Button(
+                        "Blokkade formeel oplossen",
+                        variant="secondary",
+                    )
+                    resolution_result = gr.Markdown()
+
+            technical_open_from_seed = gr.Button(
+                "Technische details",
+                variant="secondary",
+                elem_classes=["ss-quiet"],
+            )
 
         with gr.Group(visible=False, elem_id="ss-menu-panel", elem_classes=["ss-drawer"]) as menu_panel:
             menu_close = gr.Button("× Sluiten", variant="secondary")
@@ -1348,8 +1367,7 @@ def build_vnext_app(
             (source_info, "sources"),
             (shadow_info_inline, "shadow"),
             (contradiction_info, "contradiction"),
-            (evidence_attest_info, "verified_support"),
-            (evidence_info, "verified_support"),
+            (verified_support_info, "verified_support"),
             (about_button, "shadow"),
             (longitudinal_info, "longitudinal"),
             (research_run_info, "longitudinal"),
@@ -1410,8 +1428,8 @@ def build_vnext_app(
         audit_close.click(close_panel, outputs=[audit_panel], api_name=False)
         help_close.click(close_panel, outputs=[help_panel_group], api_name=False)
 
-        recent_open.click(
-            lambda seed_id: (seed_id, gr.update(visible=True)),
+        recent_seed.change(
+            lambda seed_id: (seed_id, gr.update(visible=bool(seed_id))),
             inputs=[recent_seed],
             outputs=[seed_select, shadow_panel],
             api_name=False,
