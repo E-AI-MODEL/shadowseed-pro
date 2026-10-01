@@ -182,10 +182,13 @@ def launch_production_local_workbench(
     never upgraded into the production-local deployment contract.
     """
 
+    from shadowseed.workbench.simple_app_vnext import _CSS
+
     app = build_production_local_app(workspace)
     return app.launch(
         server_name=PRODUCTION_LOCAL_HOST,
         server_port=int(port),
         inbrowser=bool(inbrowser),
         share=False,
+        css=_CSS,
     )
