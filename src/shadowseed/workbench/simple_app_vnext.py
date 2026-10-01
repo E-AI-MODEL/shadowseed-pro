@@ -1328,9 +1328,15 @@ def build_vnext_app(
         )
         return session_id
 
+    def toggle_sidebar(is_open: bool):
+        next_state = not bool(is_open)
+        return next_state, gr.update(visible=next_state)
+
     with gr.Blocks(title="Shadowseed") as app:
         active_session = gr.State(initial_id)
         help_feature = gr.State("conversation")
+        left_open = gr.State(True)
+        right_open = gr.State(True)
 
         with gr.Group(elem_id="ss-shell"):
             with gr.Row(elem_id="ss-topbar"):
@@ -1414,7 +1420,7 @@ def build_vnext_app(
                             label="Gate-policy",
                         )
                         recurrence_control = gr.Dropdown(
-                            choices=["cluster", "pairwise", "none"],
+                            choices=["cluster", "pairwise"],
                             value=initial_controls[8],
                             label="Recurrence",
                         )
@@ -1745,6 +1751,87 @@ def build_vnext_app(
             lambda seed_id: (seed_id, gr.update(visible=True)),
             inputs=[recent_seed],
             outputs=[seed_select, shadow_panel],
+        )
+
+        controls_toggle.click(
+            toggle_sidebar,
+            inputs=[left_open],
+            outputs=[left_open, left_sidebar],
+        )
+        audit_toggle.click(
+            toggle_sidebar,
+            inputs=[right_open],
+            outputs=[right_open, right_sidebar],
+        )
+
+        settings_provider.change(
+            provider_changed,
+            inputs=[settings_provider],
+            outputs=[settings_model, control_result],
+        )
+
+        control_preset.change(
+            lambda preset: _preset_help(preset),
+            inputs=[control_preset],
+            outputs=[preset_help],
+        )
+
+        control_outputs = [
+            control_preset,
+            preset_help,
+            settings_provider,
+            settings_model,
+            surface_threshold_control,
+            surface_top_k_control,
+            authority_control,
+            gate_policy_control,
+            recurrence_control,
+            self_reinforcement_control,
+            god_json,
+            control_result,
+        ]
+
+        apply_preset_button.click(
+            apply_preset,
+            inputs=[active_session, control_preset, settings_external_confirm],
+            outputs=control_outputs,
+        )
+
+        apply_micro_button.click(
+            apply_micro_settings,
+            inputs=[
+                active_session,
+                settings_provider,
+                settings_model,
+                surface_threshold_control,
+                surface_top_k_control,
+                authority_control,
+                gate_policy_control,
+                recurrence_control,
+                self_reinforcement_control,
+                settings_external_confirm,
+                god_force,
+            ],
+            outputs=control_outputs,
+        )
+
+        apply_god_button.click(
+            apply_god_json,
+            inputs=[active_session, god_json, settings_external_confirm, god_force],
+            outputs=control_outputs,
+        )
+
+        session_select.change(
+            refresh_controls,
+            inputs=[session_select],
+            outputs=control_outputs[:-1],
+        )
+
+        audit_timer = gr.Timer(1.0)
+        audit_timer.tick(
+            refresh_live_audit,
+            inputs=[active_session],
+            outputs=[live_audit, live_config, live_turn],
         )
 
         provider.change(
