@@ -40,9 +40,33 @@ def test_sentence_transformer_revision_is_applied_at_load(monkeypatch: pytest.Mo
     assert np.array_equal(embed("hello"), np.array([1.0, 2.0, 3.0]))
 
 
+def test_ollama_embedding_backend_uses_injected_local_client() -> None:
+    calls: list[object] = []
+
+    class FakeOllama:
+        def embed(self, text):
+            calls.append(text)
+            if text == "dimension probe":
+                return [[1.0, 0.0, 0.0, 0.0]]
+            return [[0.0, 1.0, 0.0, 0.0]]
+
+    embed, dimension = make_embedding_fn(
+        "ollama",
+        "embeddinggemma",
+        client=FakeOllama(),
+    )
+
+    assert dimension == 4
+    assert np.array_equal(embed("hello"), np.array([0.0, 1.0, 0.0, 0.0]))
+    assert calls == ["dimension probe", "hello"]
+
+
 def test_unappliable_embedding_revisions_fail_closed() -> None:
     with pytest.raises(ValueError, match="lexical embeddings"):
         make_embedding_fn("lexical", revision="not-applicable")
+
+    with pytest.raises(ValueError, match="Ollama embedding identity"):
+        make_embedding_fn("ollama", "embeddinggemma", revision="separate-revision")
 
     with pytest.raises(ValueError, match="OpenAI embedding snapshot identity"):
         make_embedding_fn("openai", "text-embedding-3-small", revision="separate-revision")
