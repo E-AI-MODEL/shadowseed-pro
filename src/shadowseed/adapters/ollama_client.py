@@ -70,6 +70,63 @@ def list_ollama_models(
     return sorted(names_by_key.values(), key=str.casefold)
 
 
+def ollama_model_capabilities(
+    model: str,
+    *,
+    host: str | None = None,
+    timeout: float = 5.0,
+) -> tuple[str, ...]:
+    """Return model capabilities reported by Ollama /api/show."""
+
+    base = (host or ollama_host()).rstrip("/")
+    data = json.dumps({"model": model}).encode("utf-8")
+    request = urllib.request.Request(
+        f"{base}/api/show",
+        data=data,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    payload = _read_json(request, timeout=timeout)
+    raw = payload.get("capabilities", [])
+    if raw is None:
+        return ()
+    if not isinstance(raw, list):
+        raise RuntimeError("Ollama /api/show response contains invalid capabilities")
+    return tuple(
+        str(item).strip().casefold()
+        for item in raw
+        if str(item).strip()
+    )
+
+
+def list_ollama_chat_models(
+    *,
+    host: str | None = None,
+    timeout: float = 5.0,
+) -> list[str]:
+    """Return installed models that Ollama reports as completion-capable.
+
+    Older Ollama servers may omit capabilities. Those models remain visible as a
+    compatibility fallback instead of being hidden from the user.
+    """
+
+    models = list_ollama_models(host=host, timeout=timeout)
+    selected: list[str] = []
+    for model in models:
+        try:
+            capabilities = ollama_model_capabilities(
+                model,
+                host=host,
+                timeout=timeout,
+            )
+        except RuntimeError:
+            selected.append(model)
+            continue
+        if not capabilities or "completion" in capabilities:
+            selected.append(model)
+    return selected
+
+
 class OllamaClient:
     """Thin wrapper around the Ollama ``/api/generate`` endpoint.
 
