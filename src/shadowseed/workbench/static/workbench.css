@@ -1,0 +1,289 @@
+:root {
+  --ss-accent: var(--primary-500);
+  --ss-accent-hover: var(--primary-600);
+  --ss-bg: var(--body-background-fill);
+  --ss-surface: var(--background-fill-primary);
+  --ss-surface-soft: var(--background-fill-secondary);
+  --ss-text: var(--body-text-color);
+  --ss-muted: var(--body-text-color-subdued);
+  --ss-border: var(--border-color-primary);
+  --ss-shadow: 0 18px 48px rgba(15, 23, 42, .10);
+}
+
+body {
+  background: var(--ss-bg) !important;
+}
+
+.gradio-container {
+  max-width: 1480px !important;
+  margin: 0 auto !important;
+  padding: 16px !important;
+  color: var(--ss-text) !important;
+  background: transparent !important;
+}
+
+#ss-shell {
+  min-height: calc(100vh - 32px);
+  border: 1px solid var(--ss-border);
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--ss-surface);
+  box-shadow: var(--ss-shadow);
+}
+
+#ss-topbar {
+  min-height: 58px;
+  padding: 8px 14px;
+  align-items: center;
+  border-bottom: 1px solid var(--ss-border);
+  background: var(--ss-surface);
+}
+
+#ss-brand h2 {
+  margin: 0 !important;
+  font-size: 1.05rem !important;
+  letter-spacing: .055em;
+}
+
+#ss-model-badge {
+  text-align: right;
+  color: var(--ss-muted);
+  font-size: .86rem;
+}
+
+#ss-left {
+  min-width: 220px;
+  max-width: 250px;
+  padding: 14px 10px;
+  border-right: 1px solid var(--ss-border);
+  background: var(--ss-surface-soft);
+}
+
+#ss-center {
+  min-width: 0;
+  padding: 16px 18px 12px;
+  background: var(--ss-surface);
+}
+
+#ss-right {
+  min-width: 220px;
+  max-width: 255px;
+  padding: 14px 12px;
+  border-left: 1px solid var(--ss-border);
+  background: var(--ss-surface-soft);
+}
+
+#ss-conversation-title h2 {
+  margin: 0 0 8px !important;
+  font-size: 1.15rem !important;
+}
+
+#ss-context-banner {
+  margin: 8px 0 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--ss-border);
+  border-radius: 10px;
+  color: var(--ss-muted);
+  background: var(--ss-surface-soft);
+  font-size: .86rem;
+}
+
+#ss-chat {
+  border: 0 !important;
+  background: var(--ss-surface) !important;
+}
+
+#ss-composer {
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ss-border);
+}
+
+#ss-composer textarea,
+#ss-composer input {
+  color: var(--ss-text) !important;
+  background: var(--ss-surface) !important;
+}
+
+#ss-shadow-metrics {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--ss-border);
+}
+
+#ss-shadow-metrics h3 {
+  margin: 0 0 8px !important;
+  font-size: .92rem !important;
+  letter-spacing: .04em;
+}
+
+#ss-shadow-metrics p {
+  margin: .2rem 0 !important;
+  color: var(--ss-text);
+}
+
+#ss-recent {
+  padding-top: 10px;
+  margin-top: 8px;
+  border-top: 1px solid var(--ss-border);
+}
+
+.ss-primary,
+.ss-primary button {
+  color: white !important;
+  background: var(--ss-accent) !important;
+  border-color: var(--ss-accent) !important;
+}
+
+.ss-primary:hover,
+.ss-primary button:hover {
+  background: var(--ss-accent-hover) !important;
+  border-color: var(--ss-accent-hover) !important;
+}
+
+.ss-info-button,
+.ss-info-button button {
+  min-width: 26px !important;
+  width: 26px !important;
+  min-height: 26px !important;
+  height: 26px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  color: var(--ss-muted) !important;
+  background: transparent !important;
+  font-size: .82rem !important;
+  font-weight: 700 !important;
+}
+
+.ss-info-button:hover,
+.ss-info-button button:hover {
+  color: var(--ss-text) !important;
+  background: var(--ss-surface-soft) !important;
+}
+
+#ss-session-list,
+#ss-recent-list {
+  gap: 4px !important;
+}
+
+#ss-session-list input[type="radio"],
+#ss-recent-list input[type="radio"] {
+  position: absolute !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+#ss-session-list label,
+#ss-recent-list label {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 8px 9px !important;
+  border: 0 !important;
+  border-radius: 9px !important;
+  color: var(--ss-text) !important;
+  background: transparent !important;
+  line-height: 1.25 !important;
+  cursor: pointer !important;
+}
+
+#ss-session-list label:hover,
+#ss-recent-list label:hover {
+  background: var(--ss-surface) !important;
+}
+
+#ss-session-list label:has(input:checked),
+#ss-recent-list label:has(input:checked) {
+  color: var(--ss-text) !important;
+  background: var(--ss-surface) !important;
+  box-shadow: inset 3px 0 0 var(--ss-accent);
+}
+
+.ss-drawer {
+  position: fixed !important;
+  z-index: 1000 !important;
+  top: 70px !important;
+  right: 24px !important;
+  width: min(430px, calc(100vw - 32px)) !important;
+  max-height: calc(100vh - 92px) !important;
+  overflow-y: auto !important;
+  padding: 16px !important;
+  border: 1px solid var(--ss-border) !important;
+  border-radius: 16px !important;
+  color: var(--ss-text) !important;
+  background: var(--ss-surface) !important;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, .20) !important;
+}
+
+.ss-drawer textarea,
+.ss-drawer input,
+.ss-drawer select {
+  color: var(--ss-text) !important;
+  background: var(--ss-surface) !important;
+}
+
+.ss-drawer label,
+.ss-drawer p,
+.ss-drawer span {
+  color: inherit;
+}
+
+#ss-menu-panel {
+  width: 260px !important;
+  top: 64px !important;
+  right: 24px !important;
+}
+
+#ss-help-panel {
+  width: min(500px, calc(100vw - 32px)) !important;
+}
+
+.ss-drawer-title h2,
+.ss-drawer-title h3 {
+  margin: 0 !important;
+}
+
+.ss-section-label {
+  font-size: .72rem;
+  font-weight: 750;
+  letter-spacing: .055em;
+  color: var(--ss-muted);
+  text-transform: uppercase;
+}
+
+.ss-muted {
+  color: var(--ss-muted) !important;
+  font-size: .86rem;
+}
+
+#ss-seed-story {
+  padding: 12px;
+  border: 1px solid var(--ss-border);
+  border-radius: 12px;
+  background: var(--ss-surface-soft);
+}
+
+#ss-technical-json {
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+@media (max-width: 1100px) {
+  #ss-right { display: none !important; }
+  #ss-left { min-width: 205px; max-width: 225px; }
+}
+
+@media (max-width: 780px) {
+  .gradio-container { padding: 0 !important; }
+  #ss-shell { min-height: 100vh; border-radius: 0; border-left: 0; border-right: 0; }
+  #ss-left { display: none !important; }
+  #ss-center { padding: 12px; }
+  .ss-drawer {
+    top: 8px !important;
+    right: 8px !important;
+    width: calc(100vw - 16px) !important;
+    max-height: calc(100vh - 16px) !important;
+  }
+}
