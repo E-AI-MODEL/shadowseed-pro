@@ -1332,6 +1332,7 @@ def build_vnext_app(
                     ),
                 inputs=[active_session, compare, provider, hosted_confirm, seed_select],
                 outputs=[help_feature, help_panel, help_panel_group],
+                api_name=False,
             )
 
         for button, feature_id in (
@@ -1383,44 +1384,50 @@ def build_vnext_app(
             ],
             api_name=False,
         )
-        new_chat_close.click(close_panel, outputs=[new_chat_panel])
-        source_open.click(lambda: gr.update(visible=True), outputs=[source_panel])
-        source_close.click(close_panel, outputs=[source_panel])
-        shadow_open.click(lambda: gr.update(visible=True), outputs=[shadow_panel])
-        shadow_close.click(close_panel, outputs=[shadow_panel])
-        menu_button.click(lambda: gr.update(visible=True), outputs=[menu_panel])
-        menu_close.click(close_panel, outputs=[menu_panel])
+        new_chat_close.click(close_panel, outputs=[new_chat_panel], api_name=False)
+        source_open.click(lambda: gr.update(visible=True), outputs=[source_panel], api_name=False)
+        source_close.click(close_panel, outputs=[source_panel], api_name=False)
+        shadow_open.click(lambda: gr.update(visible=True), outputs=[shadow_panel], api_name=False)
+        shadow_close.click(close_panel, outputs=[shadow_panel], api_name=False)
+        menu_button.click(lambda: gr.update(visible=True), outputs=[menu_panel], api_name=False)
+        menu_close.click(close_panel, outputs=[menu_panel], api_name=False)
         research_open.click(
             lambda: (gr.update(visible=True), gr.update(visible=False)),
             outputs=[research_panel, menu_panel],
+            api_name=False,
         )
-        research_close.click(close_panel, outputs=[research_panel])
+        research_close.click(close_panel, outputs=[research_panel], api_name=False)
         audit_open.click(
             lambda: (gr.update(visible=True), gr.update(visible=False)),
             outputs=[audit_panel, menu_panel],
+            api_name=False,
         )
         technical_open_from_seed.click(
             lambda: (gr.update(visible=True), gr.update(visible=False)),
             outputs=[audit_panel, shadow_panel],
+            api_name=False,
         )
-        audit_close.click(close_panel, outputs=[audit_panel])
-        help_close.click(close_panel, outputs=[help_panel_group])
+        audit_close.click(close_panel, outputs=[audit_panel], api_name=False)
+        help_close.click(close_panel, outputs=[help_panel_group], api_name=False)
 
         recent_open.click(
             lambda seed_id: (seed_id, gr.update(visible=True)),
             inputs=[recent_seed],
             outputs=[seed_select, shadow_panel],
+            api_name=False,
         )
 
         provider.change(
             provider_changed,
             inputs=[provider],
             outputs=[model_id, model_note],
+            api_name="provider_changed",
         )
         rescan_models.click(
             provider_changed,
             inputs=[provider],
             outputs=[model_id, model_note],
+            api_name=False,
         )
 
         session_select.change(
@@ -1443,6 +1450,7 @@ def build_vnext_app(
                 no_ssl_answer,
                 comparison_note,
             ],
+            api_name="select_session",
         )
 
         create_button.click(
@@ -1467,6 +1475,7 @@ def build_vnext_app(
                 comparison_note,
                 new_chat_panel,
             ],
+            api_name="create_chat",
         )
 
         send_button.click(
@@ -1486,6 +1495,7 @@ def build_vnext_app(
                 no_ssl_answer,
                 comparison_note,
             ],
+            api_name="send",
         )
         question.submit(
             send_shell,
@@ -1504,12 +1514,14 @@ def build_vnext_app(
                 no_ssl_answer,
                 comparison_note,
             ],
+            api_name=False,
         )
 
         seed_select.change(
             inspect_seed_shell,
             inputs=[active_session, seed_select],
             outputs=[seed_story, lifecycle, seed_json],
+            api_name="inspect_seed",
         )
 
         contradiction_button.click(
@@ -1526,6 +1538,7 @@ def build_vnext_app(
                 evidence_note,
                 evidence_attest,
             ],
+            api_name="register_contradiction",
         )
 
         resolve_contradiction_button.click(
@@ -1564,6 +1577,7 @@ def build_vnext_app(
                 evidence_note,
                 evidence_attest,
             ],
+            api_name="submit_verified_evidence",
         )
 
         ingest_button.click(
@@ -1579,6 +1593,7 @@ def build_vnext_app(
                 recent_seed,
                 source_panel,
             ],
+            api_name="ingest_sources",
         )
 
         research_run.click(
@@ -1595,6 +1610,7 @@ def build_vnext_app(
                 session_json,
                 research_question,
             ],
+            api_name="longitudinal_comparison",
         )
 
     return app
