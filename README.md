@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/E-AI-MODEL/shadowseed-pro/actions/workflows/ci.yml"><img alt="Continuous integration" src="https://github.com/E-AI-MODEL/shadowseed-pro/actions/workflows/ci.yml/badge.svg"></a>
-  <img alt="Repository version 0.10.0" src="https://img.shields.io/badge/repository-0.10.0-2f6f5e">
+  <img alt="Repository version 0.10.1" src="https://img.shields.io/badge/repository-0.10.1-2f6f5e">
   <img alt="Python 3.10 or higher" src="https://img.shields.io/badge/Python-3.10%2B-3776AB">
   <img alt="Research status research ready" src="https://img.shields.io/badge/status-research--ready-c88719">
   <img alt="PolyForm Noncommercial 1.0.0" src="https://img.shields.io/badge/license-PolyForm_Noncommercial_1.0.0-5b4b8a">
