@@ -464,7 +464,7 @@ def build_vnext_app(
             "",
         )
 
-    with gr.Blocks(title="Shadowseed", css=_CSS) as app:
+    with gr.Blocks(title="Shadowseed") as app:
         active_session = gr.State(initial_id)
         help_feature = gr.State("conversation")
 
