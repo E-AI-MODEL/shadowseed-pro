@@ -218,9 +218,9 @@ class WorkbenchController:
         """Discover locally available models without changing provider state."""
 
         if backend == "ollama":
-            from shadowseed.adapters.ollama_client import list_ollama_models
+            from shadowseed.adapters.ollama_client import list_ollama_chat_models
 
-            return list_ollama_models()
+            return list_ollama_chat_models()
         # Hosted providers and arbitrary HF repositories keep a custom-value
         # field. Fixture needs no model id.
         return []
