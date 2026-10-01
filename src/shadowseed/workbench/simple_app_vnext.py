@@ -926,6 +926,7 @@ def build_vnext_app(
     compact_sessions = _compact_session_choices(summaries)
     initial_title = _session_title(summaries, initial_id)
     recent_choices = _recent_seed_choices(initial_view)
+    initial_controls = _control_values(initial_view)
 
     def refresh_shell(session_id: str | None):
         current_summaries = ctl.list_sessions()
@@ -1336,21 +1337,109 @@ def build_vnext_app(
                 brand = gr.Markdown("## SHADOWSEED", elem_id="ss-brand", scale=4)
                 model_badge = gr.Markdown(_model_badge(initial_view), elem_id="ss-model-badge", scale=2)
                 model_top_info = gr.Button("ⓘ", scale=0, min_width=40, elem_classes=["ss-info-button"])
+                controls_toggle = gr.Button("⚙  Regie", scale=0, min_width=92)
+                audit_toggle = gr.Button("▣  Audit", scale=0, min_width=86)
                 menu_button = gr.Button("☰  Menu", scale=0, min_width=100)
 
             with gr.Row(equal_height=True):
-                with gr.Column(scale=2, min_width=220, elem_id="ss-left"):
+                with gr.Column(scale=2, min_width=250, elem_id="ss-left") as left_sidebar:
                     with gr.Row():
-                        gr.Markdown("### GESPREKKEN", scale=4)
+                        gr.Markdown("### REGIE", scale=4)
                         conversation_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
                     new_chat_open = gr.Button("＋  Nieuwe chat", variant="primary", elem_classes=["ss-primary"])
-                    gr.Markdown('<span class="ss-section-label">Vandaag</span>')
-                    session_select = gr.Radio(
+                    session_select = gr.Dropdown(
                         choices=compact_sessions,
                         value=initial_id,
-                        label=None,
-                        container=False,
+                        label="Gesprek",
+                        container=True,
                     )
+                    control_preset = gr.Dropdown(
+                        choices=[
+                            ("Observeren", "observeren"),
+                            ("Gebalanceerd", "gebalanceerd"),
+                            ("Onderzoekend", "onderzoekend"),
+                            ("Aangepast", "custom"),
+                        ],
+                        value=initial_controls[0],
+                        label="Preset",
+                    )
+                    preset_help = gr.Markdown(initial_controls[1], elem_classes=["ss-muted"])
+                    apply_preset_button = gr.Button("Preset toepassen", variant="secondary")
+
+                    with gr.Accordion("Model & runtime", open=True):
+                        settings_provider = gr.Dropdown(
+                            choices=[
+                                ("Ollama · lokaal", "ollama"),
+                                ("OpenAI · online", "openai"),
+                                ("Hugging Face · lokaal", "hf-transformers"),
+                                ("Offline demo", "fixture"),
+                            ],
+                            value=initial_controls[2],
+                            label="Provider",
+                        )
+                        settings_model = gr.Dropdown(
+                            choices=([initial_controls[3]] if initial_controls[3] else []),
+                            value=initial_controls[3],
+                            allow_custom_value=True,
+                            label="Model",
+                        )
+                        settings_external_confirm = gr.Checkbox(
+                            label="Externe verwerking toegestaan",
+                            value=False,
+                        )
+
+                    with gr.Accordion("Microcontrole", open=False):
+                        surface_threshold_control = gr.Slider(
+                            minimum=0.0,
+                            maximum=1.0,
+                            step=0.01,
+                            value=initial_controls[4],
+                            label="Surfacing-drempel",
+                        )
+                        surface_top_k_control = gr.Slider(
+                            minimum=0,
+                            maximum=10,
+                            step=1,
+                            value=initial_controls[5],
+                            label="Max. seeds per antwoord",
+                        )
+                        authority_control = gr.Dropdown(
+                            choices=["strict", "assisted", "autonomous", "open"],
+                            value=initial_controls[6],
+                            label="Authority-profiel",
+                        )
+                        gate_policy_control = gr.Dropdown(
+                            choices=["evidence_backed", "exploratory", "legacy_evidence_required"],
+                            value=initial_controls[7],
+                            label="Gate-policy",
+                        )
+                        recurrence_control = gr.Dropdown(
+                            choices=["cluster", "pairwise", "none"],
+                            value=initial_controls[8],
+                            label="Recurrence",
+                        )
+                        self_reinforcement_control = gr.Checkbox(
+                            label="Self-reinforcement",
+                            value=initial_controls[9],
+                        )
+                        god_force = gr.Checkbox(
+                            label="God mode: riskante wijzigingen forceren",
+                            value=False,
+                        )
+                        apply_micro_button = gr.Button("Micro-instellingen opslaan", variant="primary")
+
+                    with gr.Accordion("God mode · alle instellingen", open=False):
+                        gr.Markdown(
+                            "Hier staat de werkelijk opgeslagen configuratie. Wijzig alleen waarden die je bewust wilt overschrijven."
+                        )
+                        god_json = gr.Textbox(
+                            value=initial_controls[10],
+                            label=None,
+                            lines=18,
+                            max_lines=30,
+                        )
+                        apply_god_button = gr.Button("Volledige configuratie schrijven", variant="stop")
+                    control_result = gr.Markdown("", elem_classes=["ss-muted"])
 
                 with gr.Column(scale=6, min_width=520, elem_id="ss-center"):
                     conversation_title = gr.Markdown(
@@ -1387,8 +1476,16 @@ def build_vnext_app(
                             ssl_answer = gr.Markdown(label="Met SSL")
                             no_ssl_answer = gr.Markdown(label="Zonder SSL")
 
-                with gr.Column(scale=2, min_width=235, elem_id="ss-right"):
-                    shadow_metrics = gr.Markdown(_shadow_rail(initial_view), elem_id="ss-shadow-metrics")
+                with gr.Column(scale=2, min_width=255, elem_id="ss-right") as right_sidebar:
+                    live_audit = gr.Markdown(_audit_summary(initial_view), elem_id="ss-shadow-metrics")
+                    with gr.Accordion("Actieve configuratie", open=False):
+                        live_config = gr.JSON(value=_full_settings(initial_view), label=None)
+                    with gr.Accordion("Laatste turn", open=False):
+                        live_turn = gr.JSON(
+                            value=(list(initial_view.get("turn_reports", []))[-1] if initial_view and initial_view.get("turn_reports") else {}),
+                            label=None,
+                        )
+                    shadow_metrics = gr.Markdown(_shadow_rail(initial_view))
                     with gr.Row():
                         shadow_open = gr.Button("Bekijk Shadow", scale=4)
                         shadow_info_inline = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
