@@ -308,7 +308,8 @@ def _audit_summary(view: dict[str, Any] | None) -> str:
         f"**Authority:** `{view.get('authority_profile_id', 'onbekend')}` · "
         f"Gate `{view.get('effective_gate_policy_id', 'onbekend')}`  \n"
         f"**Recurrence:** `{view.get('recurrence_mode', 'onbekend')}` · "
-        f"top-k **{int(view.get('surface_top_k', 0))}**"
+        f"top-k **{int(view.get('surface_top_k', 0))}**  \n"
+        f"**Behavior epoch:** `{view.get('behavior_config_epoch', 'onbekend')}`"
     )
 
 

@@ -18,6 +18,11 @@ from shadowseed.application.orchestration import (
 from shadowseed.application.sessions import SessionService
 from shadowseed.authority_profiles import resolve_authority_runtime
 from shadowseed.gate.current_authority import snapshot_meets_current_gate
+from shadowseed.storage.integrity import (
+    behavior_config_digest,
+    behavior_config_epoch,
+    behavior_config_projection,
+)
 
 
 _STATUS_EXPLANATIONS = {
@@ -283,6 +288,9 @@ class InspectionService:
             "session_config": session_config,
             "core_config": manager_config,
             "setting_metadata": setting_metadata(),
+            "behavior_config": behavior_config_projection(state),
+            "behavior_config_digest": behavior_config_digest(state),
+            "behavior_config_epoch": behavior_config_epoch(state),
         }
 
     def seed_view(self, session_id: str, seed_id: str) -> dict[str, Any]:

@@ -4,6 +4,7 @@ from pathlib import Path
 
 from shadowseed.workbench.feature_help import render_feature_help
 from shadowseed.workbench.simple_app_vnext import (
+    _audit_summary,
     _authority_gate_summary,
     _orchestration_panel,
     _seed_action_flags,
@@ -863,3 +864,22 @@ def test_vnext_seed_story_explains_who_is_next_and_why() -> None:
     assert "Eerst een blokkade oplossen" in rendered
     assert "tegenspraak" in rendered.lower()
     assert "Leg vast waarom de tegenspraak is opgelost" in rendered
+
+
+
+def test_live_audit_shows_behavior_epoch() -> None:
+    rendered = _audit_summary(
+        {
+            "turn": 2,
+            "seeds": [],
+            "turn_reports": [],
+            "authority_profile_id": "strict",
+            "effective_gate_policy_id": "evidence_backed",
+            "recurrence_mode": "cluster",
+            "surface_top_k": 2,
+            "behavior_config_epoch": "behavior-sha256::0123456789abcdef01234567",
+        }
+    )
+
+    assert "Behavior epoch" in rendered
+    assert "behavior-sha256::0123456789abcdef01234567" in rendered
