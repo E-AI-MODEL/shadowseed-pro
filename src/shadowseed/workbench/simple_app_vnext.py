@@ -1423,6 +1423,8 @@ def build_vnext_app(
                 )
             ),
             _settings_json(view),
+            _authority_gate_summary(view),
+            _statefulness_summary(view),
         )
 
     def refresh_controls(session_id: str | None):
@@ -1453,20 +1455,20 @@ def build_vnext_app(
         external_confirmed: bool,
     ):
         if not session_id:
-            return (*_control_values(None), "Maak of kies eerst een gesprek.")
+            return (*_control_values(None), "Maak of kies eerst een gesprek.", _context_banner(None))
         if preset not in _PRESET_SETTINGS:
             view = ctl.session_view(session_id)
-            return (*_control_values(view), "Kies een preset om toe te passen.")
+            return (*_control_values(view), "Kies een preset om toe te passen.", _context_banner(view))
         try:
             view = ctl.update_session_advanced(
                 session_id,
                 settings=dict(_PRESET_SETTINGS[preset]),
                 external_confirmed=bool(external_confirmed),
             )
-            return (*_control_values(view), "Preset toegepast op de actieve sessie.")
+            return (*_control_values(view), "Preset toegepast op de actieve sessie.", _context_banner(view))
         except Exception as exc:
             view = ctl.session_view(session_id)
-            return (*_control_values(view), _ui_error(exc))
+            return (*_control_values(view), _ui_error(exc), _context_banner(view))
 
     def apply_micro_settings(
         session_id: str | None,
@@ -1482,7 +1484,7 @@ def build_vnext_app(
         force: bool,
     ):
         if not session_id:
-            return (*_control_values(None), "Maak of kies eerst een gesprek.")
+            return (*_control_values(None), "Maak of kies eerst een gesprek.", _context_banner(None))
         settings = {
             "backend": backend_value,
             "model_id": (model_value or None),
@@ -1500,10 +1502,10 @@ def build_vnext_app(
                 external_confirmed=bool(external_confirmed),
                 force=bool(force),
             )
-            return (*_control_values(view), "Instellingen opgeslagen.")
+            return (*_control_values(view), "Instellingen opgeslagen.", _context_banner(view))
         except Exception as exc:
             view = ctl.session_view(session_id)
-            return (*_control_values(view), _ui_error(exc))
+            return (*_control_values(view), _ui_error(exc), _context_banner(view))
 
     def apply_god_json(
         session_id: str | None,
@@ -1512,7 +1514,7 @@ def build_vnext_app(
         force: bool,
     ):
         if not session_id:
-            return (*_control_values(None), "Maak of kies eerst een gesprek.")
+            return (*_control_values(None), "Maak of kies eerst een gesprek.", _context_banner(None))
         try:
             payload = json.loads(raw_json or "{}")
             if not isinstance(payload, dict):
@@ -1523,10 +1525,10 @@ def build_vnext_app(
                 external_confirmed=bool(external_confirmed),
                 force=bool(force),
             )
-            return (*_control_values(view), "God-modeconfiguratie opgeslagen.")
+            return (*_control_values(view), "God-modeconfiguratie opgeslagen.", _context_banner(view))
         except Exception as exc:
             view = ctl.session_view(session_id)
-            return (*_control_values(view), _ui_error(exc))
+            return (*_control_values(view), _ui_error(exc), _context_banner(view))
 
     def create_chat_with_preset(
         title: str,
@@ -1702,7 +1704,7 @@ def build_vnext_app(
                         )
 
                         authority_gate_note = gr.Markdown(
-                            _authority_gate_summary(initial_view),
+                            initial_controls[11],
                             elem_classes=["ss-muted"],
                         )
                         authority_control = gr.Dropdown(
@@ -1739,7 +1741,7 @@ def build_vnext_app(
 
                     with gr.Accordion("God mode · alle instellingen", open=False):
                         statefulness_note = gr.Markdown(
-                            _statefulness_summary(initial_view),
+                            initial_controls[12],
                             elem_classes=["ss-muted"],
                         )
                         gr.Markdown(
@@ -2158,13 +2160,15 @@ def build_vnext_app(
             recurrence_control,
             same_turn_revision_control,
             god_json,
+            authority_gate_note,
+            statefulness_note,
             control_result,
         ]
 
         apply_preset_button.click(
             apply_preset,
             inputs=[active_session, control_preset, settings_external_confirm],
-            outputs=control_outputs,
+            outputs=control_outputs + [context_banner],
         )
 
         apply_micro_button.click(
@@ -2182,13 +2186,13 @@ def build_vnext_app(
                 settings_external_confirm,
                 god_force,
             ],
-            outputs=control_outputs,
+            outputs=control_outputs + [context_banner],
         )
 
         apply_god_button.click(
             apply_god_json,
             inputs=[active_session, god_json, settings_external_confirm, god_force],
-            outputs=control_outputs,
+            outputs=control_outputs + [context_banner],
         )
 
         session_select.change(
