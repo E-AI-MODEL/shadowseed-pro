@@ -34,8 +34,9 @@ def test_workbench_release_metadata_stays_aligned() -> None:
     citation = Path("CITATION.cff").read_text(encoding="utf-8")
     research_status = Path("docs/research/status.md").read_text(encoding="utf-8")
     assert f'version: "{version}"' in citation
-    assert f"Source version {version} is the current production-local assurance candidate." in research_status
-    assert f"create a fresh immutable `v{version}` tag" in research_status
+    assert f"`v{version}` is a published Research Preview with verified release assets." in research_status
+    assert f"create a fresh immutable `v{version}` tag" not in research_status
+    assert "current `main` contains unreleased 0.11 development" in research_status
 
     workbench_readme = Path("docs/workbench/README.md").read_text(encoding="utf-8")
     limitations = Path("docs/workbench/limitations.md").read_text(encoding="utf-8")
@@ -105,3 +106,11 @@ def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -
     assert "gh release create" in workflow
     assert 'RELEASE_TAG: "v0.4.0"' not in workflow
     assert "scoped to v0.4.0" not in workflow
+
+
+def test_ci_push_runs_only_on_main_to_avoid_duplicate_feature_branch_runs() -> None:
+    workflow = Path(".github/workflows/ci.yml").read_text(encoding="utf-8")
+    trigger_block = workflow[workflow.index("on:"):workflow.index("\n\npermissions:")]
+
+    assert "push:\n    branches: [main]" in trigger_block
+    assert "pull_request:" in trigger_block

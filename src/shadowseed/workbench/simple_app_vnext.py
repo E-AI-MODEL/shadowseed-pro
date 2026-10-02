@@ -1573,7 +1573,9 @@ def build_vnext_app(
             return message, candidate, gr.update(visible=True)
         if status == "up_to_date":
             return (
-                f"### Je bent bij\nGeïnstalleerde versie: **{result.get('current_version', '?')}**.",
+                "### Geen nieuwere release beschikbaar\n"
+                f"Geïnstalleerde pakketversie: **{result.get('current_version', '?')}**. "
+                "Een development-build kan daarnaast nog niet-uitgebrachte wijzigingen bevatten.",
                 {},
                 gr.update(visible=False),
             )
@@ -1949,7 +1951,10 @@ def build_vnext_app(
             audit_open = gr.Button("▣  Technische audit")
             updates_open = gr.Button("↻  Updates")
             model_menu_info = gr.Button("⚙  Model & provider")
-            gr.Markdown("Versie **0.10.1**", elem_classes=["ss-muted"])
+            gr.Markdown(
+                f"Versie **{update_service.current_version}**",
+                elem_classes=["ss-muted"],
+            )
 
         with gr.Group(visible=False, elem_id="ss-panel-updates", elem_classes=["ss-drawer"]) as updates_panel:
             with gr.Row():
