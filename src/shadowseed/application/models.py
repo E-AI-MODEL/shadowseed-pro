@@ -22,6 +22,8 @@ class SessionConfig:
 
     backend: str = "fixture"
     model_id: str | None = None
+    revision_backend: str | None = None
+    revision_model_id: str | None = None
     max_new_tokens: int = 700
     embedding_backend: str = "lexical"
     embedding_model: str | None = None
