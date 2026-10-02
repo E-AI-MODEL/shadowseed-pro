@@ -180,13 +180,18 @@ def test_readme_paper_section_names_the_current_software_version() -> None:
     assert "paper/references-verification.md" in section
 
 
-def test_release_candidate_is_refreshed_for_every_main_push() -> None:
-    push_section = STANDALONE_WORKFLOW.split("  push:\n", 1)[1].split(
-        "  workflow_dispatch:", 1
+def test_release_candidate_uses_main_ci_and_explicit_heavy_assurance() -> None:
+    ci_trigger = CI.split("on:\n", 1)[1].split("\n\npermissions:", 1)[0]
+    standalone_trigger = STANDALONE_WORKFLOW.split("on:\n", 1)[1].split(
+        "\n\npermissions:", 1
     )[0]
 
-    assert "branches: [main]" in push_section
-    assert "paths:" not in push_section
+    assert "push:\n    branches: [main]" in ci_trigger
+    assert "workflow_dispatch:" in standalone_trigger
+    assert "push:" not in standalone_trigger
+    assert 'gh workflow run "$workflow" --ref main' in RELEASE_WORKFLOW
+    assert "standalone-workbench.yml" in RELEASE_WORKFLOW
+    assert "workflow_dispatch&branch=main" in RELEASE_WORKFLOW
 
 
 def test_release_revalidates_main_at_the_publication_boundary() -> None:

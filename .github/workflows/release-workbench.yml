@@ -14,7 +14,7 @@ on:
 
 permissions:
   contents: write
-  actions: read
+  actions: write
   id-token: write
   attestations: write
 
@@ -87,50 +87,103 @@ jobs:
             exit 1
           fi
 
-          required_workflows=(
-            ".github/workflows/ci.yml"
-            ".github/workflows/workbench-ci.yml"
-            ".github/workflows/workbench-portability.yml"
-            ".github/workflows/research-package-ci.yml"
-            ".github/workflows/standalone-workbench.yml"
-          )
-
-          runs_json="$(
-            gh api "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${release_sha}&per_page=100"
+          ci_runs_json="$(
+            gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?event=push&branch=main&per_page=20"
           )"
+          ci_run_id="$(
+            jq -r \
+              --arg sha "$release_sha" \
+              '.workflow_runs[]
+               | select(
+                   .head_sha == $sha
+                   and .head_branch == "main"
+                   and .event == "push"
+                   and .status == "completed"
+                   and .conclusion == "success"
+                 )
+               | .id' \
+              <<<"$ci_runs_json" \
+              | head -n 1
+          )"
+          if [ -z "$ci_run_id" ]; then
+            echo "No successful exact-SHA CI main push run at $release_sha" >&2
+            exit 1
+          fi
+          echo "Verified CI run $ci_run_id for $release_sha"
 
-          standalone_run_id=""
-          for workflow in "${required_workflows[@]}"; do
-            run_id="$(
-              jq -r \
-                --arg workflow "$workflow" \
-                --arg sha "$release_sha" \
-                '.workflow_runs[]
-                 | select(
-                     .path == $workflow
-                     and .head_sha == $sha
-                     and .head_branch == "main"
-                     and .event == "push"
-                     and .status == "completed"
-                     and .conclusion == "success"
-                   )
-                 | .id' \
-                <<<"$runs_json" \
-                | head -n 1
-            )"
-            if [ -z "$run_id" ]; then
-              echo "No successful exact-SHA main push run for $workflow at $release_sha" >&2
-              echo "Observed runs for this SHA:" >&2
-              jq -r '.workflow_runs[] | [.path, .event, .status, (.conclusion // ""), .id] | @tsv' <<<"$runs_json" >&2
+          release_workflows=(
+            "workbench-ci.yml"
+            "workbench-portability.yml"
+            "research-package-ci.yml"
+            "standalone-workbench.yml"
+          )
+          dispatch_started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+          for workflow in "${release_workflows[@]}"; do
+            git fetch origin main --force
+            if [ "$(git rev-parse origin/main)" != "$release_sha" ]; then
+              echo "main advanced before release assurance dispatch" >&2
               exit 1
             fi
-            echo "Verified $workflow run $run_id for $release_sha"
-            if [ "$workflow" = ".github/workflows/standalone-workbench.yml" ]; then
+            echo "Dispatching $workflow for exact candidate $release_sha"
+            gh workflow run "$workflow" --ref main
+          done
+
+          standalone_run_id=""
+          for workflow in "${release_workflows[@]}"; do
+            run_id=""
+            for _attempt in $(seq 1 120); do
+              workflow_runs_json="$(
+                gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/runs?event=workflow_dispatch&branch=main&per_page=20"
+              )"
+              run_id="$(
+                jq -r \
+                  --arg sha "$release_sha" \
+                  --arg started "$dispatch_started_at" \
+                  '.workflow_runs[]
+                   | select(
+                       .head_sha == $sha
+                       and .head_branch == "main"
+                       and .event == "workflow_dispatch"
+                       and .created_at >= $started
+                     )
+                   | .id' \
+                  <<<"$workflow_runs_json" \
+                  | head -n 1
+              )"
+              if [ -n "$run_id" ]; then
+                break
+              fi
+              sleep 5
+            done
+
+            if [ -z "$run_id" ]; then
+              echo "No fresh workflow_dispatch run found for $workflow at $release_sha" >&2
+              exit 1
+            fi
+
+            echo "Waiting for $workflow run $run_id"
+            gh run watch "$run_id" --exit-status --interval 10
+            conclusion="$(
+              gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.conclusion'
+            )"
+            if [ "$conclusion" != "success" ]; then
+              echo "$workflow run $run_id concluded $conclusion" >&2
+              exit 1
+            fi
+
+            if [ "$workflow" = "standalone-workbench.yml" ]; then
               standalone_run_id="$run_id"
             fi
           done
 
           test -n "$standalone_run_id"
+
+          git fetch origin main --force
+          if [ "$(git rev-parse origin/main)" != "$release_sha" ]; then
+            echo "main advanced while release assurance was running" >&2
+            exit 1
+          fi
 
           echo "should_release=true" >> "$GITHUB_OUTPUT"
           echo "release_sha=$release_sha" >> "$GITHUB_OUTPUT"

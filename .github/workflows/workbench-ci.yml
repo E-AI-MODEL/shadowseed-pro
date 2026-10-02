@@ -11,8 +11,7 @@ on:
       - "pyproject.toml"
       - "uv.lock"
       - ".github/workflows/workbench-ci.yml"
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read

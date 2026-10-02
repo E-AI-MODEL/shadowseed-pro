@@ -11,10 +11,7 @@ on:
       - "pyproject.toml"
       - "uv.lock"
       - ".github/workflows/research-package-ci.yml"
-  push:
-    branches:
-      - main
-      - "refactor/**"
+  workflow_dispatch:
 
 permissions:
   contents: read
