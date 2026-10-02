@@ -1,8 +1,12 @@
-"""Effective authorization under the Gate configuration active now.
+"""Effective authorization under the authority policy active now.
 
 Historical promotion stays immutable audit history. Product sessions that opt in
-to live Gate revalidation can additionally require a promoted seed to satisfy
-the current slider-derived thresholds before point-of-use influence.
+to current-policy revalidation require an already promoted seed to retain a
+qualifying basis under the named policy before point-of-use influence.
+
+This is not a second promotion engine. The historical weight is not recomputed;
+the check only asks whether the current promoted authority has a basis that the
+named policy accepts now.
 """
 
 from __future__ import annotations
@@ -20,7 +24,7 @@ def snapshot_meets_current_gate(
     *,
     blocking: bool = False,
 ) -> bool:
-    """Return whether a historically promoted snapshot satisfies today's Gate."""
+    """Return whether a promoted snapshot has an acceptable current-policy basis."""
 
     if str(seed.get("status", "")) != SeedStatus.PROMOTED.value:
         return False
@@ -42,10 +46,10 @@ def snapshot_meets_current_gate(
         return occurrence_ok or evidence_count >= 1
 
     if selected_policy == "evidence_backed":
-        return (
-            occurrence_ok
-            and evidence_count >= int(config.get("min_evidence_for_gate", 1))
-        )
+        # Canonical EvidenceBackedPolicy requires verified external support.
+        # Recurrence is observable but is not a prerequisite for this policy.
+        # evidence_count contains accepted verified external evidence units.
+        return evidence_count >= 1
 
     if selected_policy == "legacy_evidence_required":
         return (
