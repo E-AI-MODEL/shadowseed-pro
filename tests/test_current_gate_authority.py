@@ -55,20 +55,15 @@ def test_exploratory_accepts_recurrence_or_external_support() -> None:
     ) is False
 
 
-def test_evidence_backed_uses_current_recurrence_and_evidence_thresholds() -> None:
-    config = _config(min_occurrences_for_gate=3, min_evidence_for_gate=2)
+def test_evidence_backed_requires_verified_external_support_not_recurrence() -> None:
+    config = _config(min_occurrences_for_gate=99, min_evidence_for_gate=99)
     assert snapshot_meets_current_gate(
-        _seed(occurrence_count=3, evidence_count=2),
+        _seed(occurrence_count=0, evidence_count=1),
         config,
         "evidence_backed",
     ) is True
     assert snapshot_meets_current_gate(
-        _seed(occurrence_count=2, evidence_count=2),
-        config,
-        "evidence_backed",
-    ) is False
-    assert snapshot_meets_current_gate(
-        _seed(occurrence_count=3, evidence_count=1),
+        _seed(occurrence_count=99, evidence_count=0),
         config,
         "evidence_backed",
     ) is False
