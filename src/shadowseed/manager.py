@@ -249,6 +249,7 @@ class SSLManager:
             self.config.to_dict(),
             policy_id,
             blocking=self.is_blocking_contradiction(seed_id),
+            gate_events=self.gate_events,
         )
 
     @property
@@ -571,6 +572,22 @@ class SSLManager:
         """Compatibility facade for TTL decay, dormancy, and expiry."""
 
         lifecycle_engine.decay_traces(self, turns_passed=turns_passed)
+
+    def expire_seed(
+        self,
+        seed_id: str,
+        *,
+        reason: str,
+        source_ref: str | None = None,
+    ) -> GateEvent:
+        """Route terminal lifecycle expiry through the canonical Gate engine."""
+
+        return gate_engine.expire_seed(
+            self,
+            seed_id,
+            reason=reason,
+            source_ref=source_ref,
+        )
 
     def run_validation_gate_detailed(
         self,
