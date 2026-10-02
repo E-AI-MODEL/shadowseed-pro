@@ -3,9 +3,11 @@
 Observations are audit data, never authority. Recording a detector candidate here
 must not change seed trace, occurrence count, evidence, Gate state, or weight.
 Schema v1 keeps SSL-exposed candidates strictly non-recurrence-eligible. Schema
-v2 can explicitly mark an SSL-exposed observation recurrence-eligible only when
-the experimental self-reinforcement permission is recorded on that observation.
-A later clean observation may be linked to an earlier contaminated observation
+v2 records the historical self-reinforcement permission. Schema v3 separates
+self-derived provenance from same-turn answer revision: an SSL-exposed
+observation carries an explicit self-derived policy id, while recurrence
+eligibility remains a separate recorded property. A later clean observation
+may be linked to an earlier contaminated observation
 by appending a separate link record; the original observation stays immutable.
 """
 
@@ -16,8 +18,8 @@ from hashlib import sha256
 from typing import Any, Iterable
 
 
-OBSERVATION_SCHEMA_VERSION = 2
-SUPPORTED_OBSERVATION_SCHEMA_VERSIONS = frozenset({1, 2})
+OBSERVATION_SCHEMA_VERSION = 3
+SUPPORTED_OBSERVATION_SCHEMA_VERSIONS = frozenset({1, 2, 3})
 
 
 def normalize_observation_text(text: str) -> str:
@@ -40,6 +42,7 @@ class CandidateObservation:
     recurrence_eligible: bool
     created_at: str
     self_reinforcement_allowed: bool = False
+    self_derived_policy_id: str | None = None
     legacy_projection: bool = False
     schema_version: int = OBSERVATION_SCHEMA_VERSION
 
@@ -58,14 +61,42 @@ class CandidateObservation:
                     "in candidate-observation schema v1"
                 )
             return
-        if (
-            self.ssl_exposed
-            and self.recurrence_eligible
-            and not self.self_reinforcement_allowed
-        ):
+        if self.schema_version == 2:
+            if (
+                self.ssl_exposed
+                and self.recurrence_eligible
+                and not self.self_reinforcement_allowed
+            ):
+                raise ValueError(
+                    "schema v2 SSL-exposed observations require explicit "
+                    "self-reinforcement permission to be recurrence-eligible"
+                )
+            return
+        if self.self_reinforcement_allowed:
             raise ValueError(
-                "SSL-exposed observations require explicit self-reinforcement "
-                "permission to be recurrence-eligible"
+                "schema v3 no longer uses self_reinforcement_allowed; "
+                "record self-derived policy separately"
+            )
+        if self.ssl_exposed:
+            if self.self_derived_policy_id not in {
+                "fail_closed",
+                "bounded_experimental",
+            }:
+                raise ValueError(
+                    "schema v3 SSL-exposed observations require an explicit "
+                    "self-derived policy"
+                )
+            if (
+                self.recurrence_eligible
+                != (self.self_derived_policy_id == "bounded_experimental")
+            ):
+                raise ValueError(
+                    "schema v3 recurrence eligibility must match the recorded "
+                    "self-derived observation policy"
+                )
+        elif self.self_derived_policy_id is not None:
+            raise ValueError(
+                "clean observations cannot carry a self-derived policy id"
             )
 
     def to_dict(self) -> dict[str, Any]:
@@ -98,6 +129,11 @@ class CandidateObservation:
             created_at=str(payload.get("created_at", "")),
             self_reinforcement_allowed=bool(
                 payload.get("self_reinforcement_allowed", False)
+            ),
+            self_derived_policy_id=(
+                None
+                if payload.get("self_derived_policy_id") is None
+                else str(payload.get("self_derived_policy_id"))
             ),
             legacy_projection=bool(payload.get("legacy_projection", False)),
             schema_version=int(payload.get("schema_version", 1)),
@@ -184,16 +220,42 @@ class CandidateObservationLedger:
         ssl_exposed: bool,
         surfaced_seed_ids: Iterable[str] = (),
         created_at: str,
-        allow_ssl_recurrence: bool = False,
+        self_derived_policy_id: str | None = None,
+        allow_ssl_recurrence: bool | None = None,
         legacy_projection: bool = False,
     ) -> list[CandidateObservation]:
         """Append detector observations and return the records for this batch.
 
-        SSL-exposed observations are non-recurrence by default. The explicit
-        experimental `allow_ssl_recurrence` flag records when the caller has
-        deliberately opened the self-reinforcement boundary. This ledger itself
+        SSL-exposed observations are non-recurrence by default. Schema v3
+        records a self-derived policy separately from same-turn revision. The
+        historical `allow_ssl_recurrence` argument remains as a compatibility
+        adapter only and maps to the corresponding v3 policy. This ledger itself
         never increments recurrence or calls the Gate.
         """
+
+        if allow_ssl_recurrence is not None:
+            compatibility_policy = (
+                "bounded_experimental" if allow_ssl_recurrence else "fail_closed"
+            )
+            if (
+                self_derived_policy_id is not None
+                and self_derived_policy_id != compatibility_policy
+            ):
+                raise ValueError(
+                    "conflicting self-derived policy and legacy recurrence flag"
+                )
+            self_derived_policy_id = compatibility_policy
+        if ssl_exposed:
+            effective_self_derived_policy = (
+                self_derived_policy_id or "fail_closed"
+            )
+            if effective_self_derived_policy not in {
+                "fail_closed",
+                "bounded_experimental",
+            }:
+                raise ValueError("unknown self-derived observation policy")
+        else:
+            effective_self_derived_policy = None
 
         surfaced = tuple(str(item) for item in surfaced_seed_ids)
         created: list[CandidateObservation] = []
@@ -211,11 +273,13 @@ class CandidateObservationLedger:
                 candidate_type=candidate_type,
                 ssl_exposed=ssl_exposed,
                 surfaced_seed_ids=surfaced,
-                recurrence_eligible=(not ssl_exposed or bool(allow_ssl_recurrence)),
-                created_at=created_at,
-                self_reinforcement_allowed=bool(
-                    ssl_exposed and allow_ssl_recurrence
+                recurrence_eligible=(
+                    not ssl_exposed
+                    or effective_self_derived_policy == "bounded_experimental"
                 ),
+                created_at=created_at,
+                self_reinforcement_allowed=False,
+                self_derived_policy_id=effective_self_derived_policy,
                 legacy_projection=legacy_projection,
             )
             if observation.observation_id in self._observation_ids:
