@@ -11,19 +11,21 @@ These contracts are wired into the runtime.
 authority-decision engine. `SSLManager.submit_signals` is its signal-native policy
 entry point; compatibility methods and the bounded probe/resolution authority
 workflows delegate into the same engine rather than implementing Gate decisions
-in `manager.py`. Mechanical intake/lifecycle transitions (dedup activation, decay,
-dormancy/expiry, and TrTL reactivation) remain explicit non-Gate state transitions
-through `_set_authority`; invariant tests keep those call sites on an exact
-allowlist so a new manager-side authority path cannot appear silently.
+in `manager.py`. Mechanical intake/lifecycle transitions (dedup activation, trace decay, dormancy,
+and TrTL reactivation) remain explicit non-Gate state transitions through
+`_set_authority`. Terminal expiry is different because it clears authority
+(weight and influence eligibility), so expiry is routed through the Gate engine
+as a typed `lifecycle_expiry` transition. Invariant tests keep these boundaries
+explicit so a new authority path cannot appear silently.
 
 ## Signals (`shadowseed.gate.signals`)
 
 A `ValidationSignal` is an observation offered to the Gate, never an authority
 change. Collecting or recording a signal grants no influence on its own.
 
-- `kind` (`SignalKind`): the support channel — `recurrence`, `ssot`,
+- `kind` (`SignalKind`): the observation/transition channel — `recurrence`, `ssot`,
   `human_feedback`, `retrieval`, `dialectic`, `probe`, `task_outcome`,
-  `contradiction`, `contradiction_resolution`.
+  `contradiction`, `contradiction_resolution`, `lifecycle_expiry`.
 - `direction` (`SignalDirection`): `support`, `oppose`, or `neutral`.
 - `strength`: a bounded magnitude in `[0.0, 1.0]`. It is not tied to a fixed
   threshold at this layer; policies decide how to use it.
@@ -77,6 +79,15 @@ implemented example profiles (`research`, `creative`, `high_impact` in
 > Amendment (accepted second opinion): ADR-001 listed five illustrative
 > profiles. Only the two with concrete semantics are implemented now; the rest
 > are named examples until their required signal combinations are justified.
+
+### Lifecycle expiry
+
+Trace decay, dormancy and TrTL reactivation remain lifecycle mechanics. Terminal
+expiry is authority-bearing because it clears weight and makes influence
+ineligible. `SSLManager.expire_seed` therefore delegates to the canonical Gate
+engine, which records a `lifecycle_expiry` signal and an `EXPIRED` Gate event.
+Lifecycle code may trigger expiry, but it does not directly perform the
+authority reset.
 
 ## Gate events (`shadowseed.gate.events`)
 

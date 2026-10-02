@@ -4,6 +4,7 @@ import math
 from dataclasses import replace
 
 import numpy as np
+import pytest
 
 from shadowseed.chat import ShadowChatSession
 from shadowseed.core_config import SSLCoreConfig
@@ -156,3 +157,33 @@ def test_cluster_observation_refs_survive_session_save_restore() -> None:
     assert restored.clusterer is not None
     assert restored.clusterer.seen_observation_refs == [{"turn:0", "turn:1"}]
     assert restored.clusterer.recurrence(0) == 2
+
+
+def test_pairwise_restore_does_not_reactivate_stale_cluster_state() -> None:
+    session = _session(runtime_mode="live")
+    session.turn("First observation")
+
+    state = session.to_state()
+    assert state["cluster_state"] is not None
+    state["session_config"] = dict(state["session_config"])
+    state["session_config"]["recurrence_mode"] = "pairwise"
+
+    restored = ShadowChatSession.from_state(state)
+
+    assert restored.recurrence_mode == "pairwise"
+    assert restored.clusterer is None
+    assert restored.seed_to_cluster == {}
+    assert restored.cluster_rep == {}
+
+
+def test_cluster_restore_rejects_threshold_mismatch_without_rebuild() -> None:
+    session = _session(runtime_mode="live")
+    session.turn("First observation")
+
+    state = session.to_state()
+    assert state["cluster_state"] is not None
+    state["session_config"] = dict(state["session_config"])
+    state["session_config"]["cluster_threshold"] = 0.75
+
+    with pytest.raises(ValueError, match="rebuild recurrence state"):
+        ShadowChatSession.from_state(state)
