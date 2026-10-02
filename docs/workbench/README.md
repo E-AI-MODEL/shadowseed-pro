@@ -1,6 +1,6 @@
 # Shadowseed Tester Workbench
 
-The Workbench is the local-first chat surface for testing Shadow Seed Learning in an ordinary LLM conversation. Version 0.11.0 is the current Research Preview release candidate. It carries forward the low-friction tester path, noncommercial research access and evidence-measurement tooling while adding the 0.11 runtime/audit alignment and an Ollama-first thin local distribution. It is not `production-ready/local` until the exact-SHA release-assurance and unchanged-candidate soak requirements are complete.
+The Workbench is the local-first chat surface for testing Shadow Seed Learning in an ordinary LLM conversation. Version 0.11.0 is the current published Research Preview and production-local assurance candidate. It carries forward the low-friction tester path, noncommercial research access and evidence-measurement tooling while adding the 0.11 runtime/audit alignment and an Ollama-first thin local distribution. It is not `production-ready/local` until the exact-SHA release-assurance and unchanged-candidate soak requirements are complete.
 
 ```text
 download -> extract/open -> choose model -> create chat -> chat with SSL -> optionally compare the current answer with SSL off
@@ -152,6 +152,6 @@ Do not expose this preview directly to an untrusted network.
 
 ## Claim boundary
 
-Version 0.11.0 is the current Research Preview release candidate. Packaging, licensing, tester observations, support-dataset aggregation, release hardening and the existence of an efficacy runner do not establish general answer-quality benefit, semantic truth, hostile-network production security or high-impact deployment readiness. The `production-ready/local` claim remains gated on exact protected-main release evidence and the unchanged-candidate soak defined by the production acceptance contract.
+Version 0.11.0 is the current published Research Preview and production-local assurance candidate. Packaging, licensing, tester observations, support-dataset aggregation, release hardening and the existence of an efficacy runner do not establish general answer-quality benefit, semantic truth, hostile-network production security or high-impact deployment readiness. The `production-ready/local` claim remains gated on exact protected-main release evidence and the unchanged-candidate soak defined by the production acceptance contract.
 
 The scientific/authority constraints remain in the canonical runtime. Historical evaluation sessions, benchmark artifacts and compatibility surfaces remain research/provenance material rather than product prerequisites.
