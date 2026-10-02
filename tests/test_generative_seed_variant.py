@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 from shadowseed.detection.model_detector import (
+    CURRENT_PAIR_PROMPT_META,
     PROMPT_VARIANTS,
+    SOURCE_OBSERVATION_PROMPT_META,
     build_detection_prompt,
     make_detector_backend,
     parse_numbered_seeds_with_diagnostics,
@@ -81,3 +83,57 @@ def test_fixture_backend_reflects_variant():
     assert absence and generative
     assert any("Missing explanation" in s for s in absence)
     assert any("explanatory frame" in s for s in generative)
+
+
+
+def test_prompt_metadata_declares_detector_input_and_output_contracts() -> None:
+    assert CURRENT_PAIR_PROMPT_META["input_contract"] == [
+        "current_question",
+        "draft_answer",
+        "max_seeds",
+        "max_seed_words",
+    ]
+    assert SOURCE_OBSERVATION_PROMPT_META["input_contract"] == [
+        "source_observation",
+        "source_context",
+        "max_seeds",
+        "max_seed_words",
+    ]
+    assert CURRENT_PAIR_PROMPT_META["output_contract"] == (
+        "zero_or_more_numbered_candidate_directions_or_NONE"
+    )
+    assert SOURCE_OBSERVATION_PROMPT_META["output_contract"] == (
+        "zero_or_more_numbered_candidate_directions_or_NONE"
+    )
+
+
+def test_fixture_detector_exposes_raw_and_parser_audit() -> None:
+    detector = make_detector_backend("fixture", prompt_variant="current_pair")
+    seeds = detector.detect_seeds(
+        {
+            "question": "What matters?",
+            "text": "Alpha introduces a perspective.",
+            "max_seed_words": 18,
+        }
+    )
+
+    assert seeds
+    assert detector.last_raw_output is not None
+    assert "1." in detector.last_raw_output
+    assert detector.last_parse_diagnostics["accepted_candidates"] == len(seeds)
+    assert detector.last_prompt_metadata["prompt_id"] == "detector_current_pair"
+
+
+def test_fixture_detector_records_explicit_none_for_empty_input() -> None:
+    detector = make_detector_backend("fixture", prompt_variant="current_pair")
+    seeds = detector.detect_seeds(
+        {
+            "question": "What matters?",
+            "text": "",
+            "max_seed_words": 18,
+        }
+    )
+
+    assert seeds == []
+    assert detector.last_raw_output == "NONE"
+    assert detector.last_parse_diagnostics["explicit_none"] is True

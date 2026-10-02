@@ -81,6 +81,33 @@ def test_live_turn_uses_one_generation_and_stores_visible_answer(monkeypatch):
     assert session.history == [("Question?", "What the user read.")]
 
 
+def test_live_fixture_report_exposes_detector_and_intake_audit() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        embedding_backend="lexical",
+        runtime_mode="live",
+        recurrence_mode="pairwise",
+    )
+
+    report = session.turn("What Privacy Gap Remains?")
+
+    audit = report["detector_audit"]
+    assert audit["prompt_contract"]["prompt_id"] == "detector_current_pair"
+    assert audit["prompt_contract"]["input_contract"] == [
+        "current_question",
+        "draft_answer",
+        "max_seeds",
+        "max_seed_words",
+    ]
+    assert audit["raw_output"]
+    assert audit["parse_diagnostics"]["accepted_candidates"] == len(
+        report["detected_candidates"]
+    )
+    assert "normalized_candidates" in report["intake_diagnostics"]
+    assert "accepted" in report["intake_diagnostics"]
+    assert "rejected" in report["intake_diagnostics"]
+
+
 def test_live_detector_receives_current_question_and_draft(monkeypatch):
     session, _model = _session(
         monkeypatch,
