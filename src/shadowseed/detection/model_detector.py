@@ -22,6 +22,8 @@ from __future__ import annotations
 import re
 from typing import Any, Protocol
 
+from shadowseed.prompt_contracts import prompt_contract_metadata
+
 
 OPEN_SET_MODEL_DETECTOR_ID = "ssl46_open_set_model_detector_v0.3"
 OPEN_SET_MODEL_DETECTOR_SOURCE = "open_set_model_detector"
@@ -226,6 +228,7 @@ def parse_numbered_seeds_with_diagnostics(
     seeds: list[str] = []
     seen: set[str] = set()
     diagnostics: dict[str, int | bool] = {
+        "explicit_none": False,
         "nonblank_lines": 0,
         "numbered_lines": 0,
         "unnumbered_nonblank_lines": 0,
@@ -237,6 +240,12 @@ def parse_numbered_seeds_with_diagnostics(
         "accepted_candidates": 0,
         "truncated_after_max_seeds": False,
     }
+    nonblank = [line.strip() for line in raw_output.splitlines() if line.strip()]
+    if len(nonblank) == 1 and nonblank[0].upper() == "NONE":
+        diagnostics["explicit_none"] = True
+        diagnostics["nonblank_lines"] = 1
+        return [], diagnostics
+
     for line in raw_output.splitlines():
         if line.strip():
             diagnostics["nonblank_lines"] = int(diagnostics["nonblank_lines"]) + 1
@@ -356,13 +365,118 @@ Output:
 
 
 OPEN_SET_GENERATIVE_DETECTOR_ID = "ssl46_open_set_model_detector_v0.4-gen"
-PROMPT_VARIANTS: tuple[str, ...] = ("absence", "generative")
+
+CURRENT_PAIR_GENERATIVE_PROMPT = """
+You analyse one user question and the draft answer given to it.
+
+Identify 0 to {max_seeds} distinct candidate directions that could have deepened
+the answer to this specific question and that are not already substantially
+present in the draft.
+
+A candidate direction is a possible missing relation, constraint, explanatory
+frame, or counterpoint. It is a direction to investigate, not a fact,
+conclusion, instruction, or judgment.
+
+Rules:
+- Write every candidate in the same language as CURRENT QUESTION.
+- Each candidate contains exactly one idea.
+- Use no more than {max_seed_words} words per candidate.
+- Preserve necessary technical terms from the question or draft.
+- Do not invent facts, names, numbers, quotations, or sources.
+- Do not simply restate or paraphrase something already present in the draft.
+- Do not rank, score, validate, or explain candidates.
+- If no distinct candidate direction is present, return exactly: NONE.
+- Otherwise return one numbered candidate per line.
+
+CURRENT QUESTION:
+{question}
+
+DRAFT ANSWER:
+{answer}
+
+OUTPUT:
+""".strip()
+
+SOURCE_OBSERVATION_GENERATIVE_PROMPT = """
+You analyse one source observation.
+
+Identify 0 to {max_seeds} distinct candidate directions that could deepen
+understanding of this source without treating the source or the candidate as
+established truth.
+
+A candidate direction is a possible missing relation, constraint, explanatory
+frame, or counterpoint. It is a direction to investigate, not a fact,
+conclusion, instruction, evidence item, or judgment.
+
+Rules:
+- Write every candidate in the same language as SOURCE OBSERVATION.
+- Each candidate contains exactly one idea.
+- Use no more than {max_seed_words} words per candidate.
+- Preserve necessary technical terms from the source.
+- Do not invent facts, names, numbers, quotations, or sources.
+- Do not simply restate or paraphrase something already present in the source.
+- Do not rank, score, validate, or explain candidates.
+- If no distinct candidate direction is present, return exactly: NONE.
+- Otherwise return one numbered candidate per line.
+
+SOURCE CONTEXT:
+{source_context}
+
+SOURCE OBSERVATION:
+{answer}
+
+OUTPUT:
+""".strip()
+
+CURRENT_PAIR_DETECTOR_ID = "detector_current_pair"
+CURRENT_PAIR_DETECTOR_VERSION = "0.5"
+SOURCE_OBSERVATION_DETECTOR_ID = "detector_source_observation"
+SOURCE_OBSERVATION_DETECTOR_VERSION = "0.5"
+
+CURRENT_PAIR_PROMPT_META = prompt_contract_metadata(
+    prompt_id=CURRENT_PAIR_DETECTOR_ID,
+    prompt_version=CURRENT_PAIR_DETECTOR_VERSION,
+    component="chat_detection",
+    template=CURRENT_PAIR_GENERATIVE_PROMPT,
+)
+SOURCE_OBSERVATION_PROMPT_META = prompt_contract_metadata(
+    prompt_id=SOURCE_OBSERVATION_DETECTOR_ID,
+    prompt_version=SOURCE_OBSERVATION_DETECTOR_VERSION,
+    component="source_detection",
+    template=SOURCE_OBSERVATION_GENERATIVE_PROMPT,
+)
+
+PROMPT_VARIANTS: tuple[str, ...] = ("absence", "generative", "current_pair")
 
 
-def build_detection_prompt(text: str, max_seeds: int = 5, variant: str = "absence") -> str:
-    """Build a constrained detector prompt for an absence or generative seed."""
+def build_detection_prompt(
+    text: str,
+    max_seeds: int = 5,
+    variant: str = "absence",
+    *,
+    question: str | None = None,
+    max_seed_words: int = 18,
+    source_context: str | None = None,
+) -> str:
+    """Build a constrained detector prompt for one explicit context contract."""
+
     if variant not in PROMPT_VARIANTS:
         raise ValueError(f"Unknown prompt variant {variant!r}. Allowed: {PROMPT_VARIANTS}.")
+    if variant == "current_pair":
+        if question is not None and question.strip():
+            return CURRENT_PAIR_GENERATIVE_PROMPT.format(
+                question=question.strip(),
+                answer=text.strip(),
+                max_seeds=max_seeds,
+                max_seed_words=max_seed_words,
+            )
+        return SOURCE_OBSERVATION_GENERATIVE_PROMPT.format(
+            answer=text.strip(),
+            source_context=(source_context or "unspecified").strip(),
+            max_seeds=max_seeds,
+            max_seed_words=max_seed_words,
+        )
+
     template = OPEN_SET_GENERATIVE_PROMPT if variant == "generative" else OPEN_SET_DETECTION_PROMPT
     good = _FEWSHOT_GOOD_GENERATIVE if variant == "generative" else _FEWSHOT_GOOD
     return template.format(
@@ -380,11 +494,18 @@ class FixtureDetectorBackend:
 
     def __init__(self, prompt_variant: str = "absence") -> None:
         self.prompt_variant = prompt_variant
+        self.last_prompt_metadata: dict[str, Any] | None = None
 
     def detect_seeds(self, item: dict[str, Any], max_seeds: int = 5) -> list[str]:
         text = str(item.get("text") or item.get("input") or "").strip()
         if not text:
             return []
+        if self.prompt_variant == "current_pair":
+            self.last_prompt_metadata = dict(
+                CURRENT_PAIR_PROMPT_META
+                if str(item.get("question") or "").strip()
+                else SOURCE_OBSERVATION_PROMPT_META
+            )
         # take up to max_seeds distinct capitalized tokens from the text
         tokens: list[str] = []
         seen: set[str] = set()
@@ -396,7 +517,7 @@ class FixtureDetectorBackend:
             tokens.append(token)
             if len(tokens) >= max_seeds:
                 break
-        if self.prompt_variant == "generative":
+        if self.prompt_variant in {"generative", "current_pair"}:
             return [
                 f"[FIXTURE] {token} as an explanatory frame for this text."
                 for token in tokens
@@ -438,6 +559,7 @@ class HFTransformersDetectorBackend:
         self.revision = revision
         self.last_raw_output: str | None = None
         self.last_parse_diagnostics: dict[str, int | bool] | None = None
+        self.last_prompt_metadata: dict[str, Any] | None = None
         tokenizer_kwargs = {"revision": revision} if revision is not None else {}
         self.tokenizer = AutoTokenizer.from_pretrained(model_id, **tokenizer_kwargs)
         if torch.cuda.is_available():
@@ -462,7 +584,21 @@ class HFTransformersDetectorBackend:
         text = str(item.get("text") or item.get("input") or "").strip()
         if not text:
             return []
-        prompt = build_detection_prompt(text, max_seeds=max_seeds, variant=self.prompt_variant)
+        question = str(item.get("question") or "").strip() or None
+        max_seed_words = int(item.get("max_seed_words") or 18)
+        source_context = str(item.get("source_context") or "").strip() or None
+        prompt = build_detection_prompt(
+            text,
+            max_seeds=max_seeds,
+            variant=self.prompt_variant,
+            question=question,
+            max_seed_words=max_seed_words,
+            source_context=source_context,
+        )
+        if self.prompt_variant == "current_pair":
+            self.last_prompt_metadata = dict(
+                CURRENT_PAIR_PROMPT_META if question else SOURCE_OBSERVATION_PROMPT_META
+            )
         output = self.generator(
             prompt,
             max_new_tokens=self.max_new_tokens,
@@ -470,11 +606,9 @@ class HFTransformersDetectorBackend:
             return_full_text=False,
         )
         raw = output[0]["generated_text"]
-        # The prompt ends with a prefilled ``1.``. Reconstruct it for parsing,
-        # but retain raw output and diagnostics so research runs can measure
-        # formatting artifacts and rejected leakage rather than hiding them.
+        parse_input = raw if self.prompt_variant == "current_pair" else "1. " + raw
         seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
-            "1. " + raw, max_seeds=max_seeds, source_text=text
+            parse_input, max_seeds=max_seeds, source_text=text
         )
         self.last_raw_output = raw
         self.last_parse_diagnostics = diagnostics
@@ -504,19 +638,32 @@ class OllamaDetectorBackend:
         self.max_new_tokens = max_new_tokens
         self.last_raw_output: str | None = None
         self.last_parse_diagnostics: dict[str, int | bool] | None = None
+        self.last_prompt_metadata: dict[str, Any] | None = None
         self.client = OllamaClient(model=model_id, host=host)
 
     def detect_seeds(self, item: dict[str, Any], max_seeds: int = 5) -> list[str]:
         text = str(item.get("text") or item.get("input") or "").strip()
         if not text:
             return []
-        prompt = build_detection_prompt(text, max_seeds=max_seeds, variant=self.prompt_variant)
+        question = str(item.get("question") or "").strip() or None
+        max_seed_words = int(item.get("max_seed_words") or 18)
+        source_context = str(item.get("source_context") or "").strip() or None
+        prompt = build_detection_prompt(
+            text,
+            max_seeds=max_seeds,
+            variant=self.prompt_variant,
+            question=question,
+            max_seed_words=max_seed_words,
+            source_context=source_context,
+        )
+        if self.prompt_variant == "current_pair":
+            self.last_prompt_metadata = dict(
+                CURRENT_PAIR_PROMPT_META if question else SOURCE_OBSERVATION_PROMPT_META
+            )
         raw = self.client.generate(prompt, max_new_tokens=self.max_new_tokens)
-        # The prompt ends with a prefilled ``1.``. Reconstruct it for parsing,
-        # but retain raw output and diagnostics so research runs can measure
-        # formatting artifacts and rejected leakage rather than hiding them.
+        parse_input = raw if self.prompt_variant == "current_pair" else "1. " + raw
         seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
-            "1. " + raw, max_seeds=max_seeds, source_text=text
+            parse_input, max_seeds=max_seeds, source_text=text
         )
         self.last_raw_output = raw
         self.last_parse_diagnostics = diagnostics
@@ -545,19 +692,32 @@ class OpenAIDetectorBackend:
         self.max_new_tokens = max_new_tokens
         self.last_raw_output: str | None = None
         self.last_parse_diagnostics: dict[str, int | bool] | None = None
+        self.last_prompt_metadata: dict[str, Any] | None = None
         self.client = OpenAIClient(model=model_id)
 
     def detect_seeds(self, item: dict[str, Any], max_seeds: int = 5) -> list[str]:
         text = str(item.get("text") or item.get("input") or "").strip()
         if not text:
             return []
-        prompt = build_detection_prompt(text, max_seeds=max_seeds, variant=self.prompt_variant)
+        question = str(item.get("question") or "").strip() or None
+        max_seed_words = int(item.get("max_seed_words") or 18)
+        source_context = str(item.get("source_context") or "").strip() or None
+        prompt = build_detection_prompt(
+            text,
+            max_seeds=max_seeds,
+            variant=self.prompt_variant,
+            question=question,
+            max_seed_words=max_seed_words,
+            source_context=source_context,
+        )
+        if self.prompt_variant == "current_pair":
+            self.last_prompt_metadata = dict(
+                CURRENT_PAIR_PROMPT_META if question else SOURCE_OBSERVATION_PROMPT_META
+            )
         raw = self.client.generate(prompt, max_new_tokens=self.max_new_tokens)
-        # The prompt ends with a prefilled ``1.``. Reconstruct it for parsing,
-        # but retain raw output and diagnostics so research runs can measure
-        # formatting artifacts and rejected leakage rather than hiding them.
+        parse_input = raw if self.prompt_variant == "current_pair" else "1. " + raw
         seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
-            "1. " + raw, max_seeds=max_seeds, source_text=text
+            parse_input, max_seeds=max_seeds, source_text=text
         )
         self.last_raw_output = raw
         self.last_parse_diagnostics = diagnostics
