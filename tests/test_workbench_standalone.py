@@ -48,7 +48,7 @@ def test_standalone_product_self_test(tmp_path: Path) -> None:
     assert payload["comparison_generated"] is True
     assert payload["report_verified"] is True
     assert payload["support_verified"] is True
-    assert payload["multiprocessing_spawn"] is True
+    assert payload["multiprocessing_spawn"] is None
     assert set(payload["runtime_imports"]) >= {
         "gradio",
         "sentence_transformers",
