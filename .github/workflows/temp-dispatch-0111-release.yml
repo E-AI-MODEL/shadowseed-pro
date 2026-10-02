@@ -1,0 +1,26 @@
+name: Temporary dispatch 0.11.1 release
+
+on:
+  push:
+    branches:
+      - hotfix/0.11.1-ollama-embedding-compat
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  dispatch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Dispatch exact main release workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run release-workbench.yml \
+            --repo "${GITHUB_REPOSITORY}" \
+            --ref main \
+            -f confirm=RELEASE
