@@ -1140,6 +1140,47 @@ class ShadowChatSession:
             ),
         )
 
+        self_derived_contribution_audit: list[dict[str, Any]] = []
+        if (
+            self.self_derived_signal_policy == "bounded_experimental"
+            and first_pass_surfaced_seed_ids
+            and raw_candidates
+        ):
+            strength = min(
+                1.0,
+                len(raw_candidates) / max(1, self.max_seeds_per_turn),
+            )
+            for causal_seed_id in sorted(set(first_pass_surfaced_seed_ids)):
+                event = self.manager.submit_signals(
+                    causal_seed_id,
+                    [
+                        ValidationSignal(
+                            kind=SignalKind.SELF_DERIVED,
+                            direction=SignalDirection.SUPPORT,
+                            strength=strength,
+                            source_ref=first_pass_context_ref,
+                            verified=False,
+                            independent=False,
+                            reason=(
+                                f"{len(raw_candidates)} SSL-exposed detector "
+                                "candidate(s) retained for bounded S1 audit"
+                            ),
+                        )
+                    ],
+                    policy_id="bounded_self_derived",
+                )
+                self_derived_contribution_audit.append(
+                    {
+                        "seed_id": causal_seed_id,
+                        "loop_depth": 1,
+                        "candidate_count": len(raw_candidates),
+                        "policy_id": event.policy_id,
+                        "decision": event.decision.value,
+                        "authority_contribution": event.weight_delta,
+                        "event_id": event.event_id,
+                    }
+                )
+
         self.history.append((question, final_answer))
         self._turn += 1
         report = {
@@ -1172,6 +1213,7 @@ class ShadowChatSession:
             "same_turn_revision_enabled": self.allow_same_turn_revision,
             "same_turn_revision_applied": self_reinforcement_applied,
             "self_derived_signal_policy": self.self_derived_signal_policy,
+            "self_derived_contribution_audit": self_derived_contribution_audit,
             # Legacy report keys remain during the 0.11 migration so old
             # analysis tooling can read the report without granting semantics.
             "self_reinforcement_enabled": self.allow_self_reinforcement,
