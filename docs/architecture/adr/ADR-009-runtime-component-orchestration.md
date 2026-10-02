@@ -4,7 +4,7 @@ Status: Proposed
 Date: 2026-10-02  
 Owners: Shadowseed maintainers  
 Target release: 0.11.0 Research Preview  
-Refines: ADR-001, ADR-002, ADR-003, ADR-005 and ADR-008
+Refines: ADR-001 through ADR-008
 
 ## Context
 
@@ -17,7 +17,7 @@ Live testing also showed that the runtime, configuration and Workbench do not al
 - the application can identify Assisted seeds that need human review, while vNext does not make that handoff first-class;
 - current Gate revalidation can apply semantics that differ from the named canonical Gate policy;
 - legacy_evidence_required can appear as a normal strictness endpoint although it is a compatibility policy;
-- one allow_self_reinforcement flag controls both same-turn answer revision and SSL-generated recurrence;
+- one allow_self_reinforcement flag controls both same-turn answer revision and handling of SSL-exposed detector output, even though ADR-003 forbids treating that output as independent recurrence;
 - recurrence mode, cluster threshold and embedding-space changes are stateful but can look like ordinary hot settings;
 - generation, detection and revision are separate roles but normally share one physical model;
 - live prompts are distributed across modules and are not represented as one versioned runtime contract;
@@ -34,6 +34,18 @@ The existing SSL doctrine remains valid:
 - the Workbench is a presentation layer and must not reimplement authority semantics.
 
 This ADR aligns implementation, configuration and UX around those boundaries before prompt wording and 0.11.0 implementation are changed.
+
+## Alignment with accepted ADRs
+
+This ADR does not supersede ADR-001 through ADR-008. Where this ADR adds orchestration or configuration semantics, the earlier accepted invariants remain binding:
+
+- **ADR-001:** only the Validation Gate changes authority. Lifecycle expiry may be detected outside the Gate, but any authority reset caused by expiry is routed through the Gate. Point-of-use still requires current authority and a current authorizing Gate event.
+- **ADR-002:** semantic atomicity is doctrine; word limits, similarity thresholds and fixed increments are calibration. A configured max_seed_words value may guide a detector or intake heuristic but is never the definition of a valid Shadow Seed.
+- **ADR-003:** SSL-exposed output is a contaminated observation. It may be preserved and analysed, but it never earns independent recurrence credit on the same turn and cannot become external evidence by relabeling.
+- **ADR-004:** verified external support is deduplicated by underlying evidence identity. Human verification or a different signal channel does not turn the same source_ref into a second independent evidence unit.
+- **ADR-005 and ADR-006:** ordinary new product sessions remain live and evidence-backed unless an explicit research mode selects otherwise. The autonomous/open exploratory path in this ADR is a research regime, not a replacement product default.
+- **ADR-006 and ADR-007:** actor authorization and deployment security remain separate from Gate authority. A UI may offer an authority-bearing action only when the current deployment authorizes that actor/capability. God mode does not bypass local or hosted authorization boundaries.
+- **ADR-008:** normal product UX remains chat-first. Raw Gate, embedding, recurrence and prompt controls belong in Research/Advanced surfaces; normal UX exposes user decisions, lifecycle meaning and human/SSL handoffs rather than mechanism clutter.
 
 ## Decision
 
@@ -98,7 +110,7 @@ The components have non-overlapping ownership:
 | Observation ledger + intake | candidate + provenance | atomicity, provenance, dedup | observation records, seed creation/dedup | truth, authority |
 | Semantic representation | atomic seed text | vector representation | embedding | authority |
 | Recurrence | seed embedding + existing memory | independent recurrence identity | occurrence / cluster state | external evidence |
-| Lifecycle | seed state + turn/time | trace, dormancy, reactivation, expiry | lifecycle state | positive authority |
+| Lifecycle | seed state + turn/time | trace, dormancy, reactivation, expiry observation | trace/lifecycle state; expiry request | direct authority reset or positive authority |
 | Validation Gate | typed validation signals | authority transition | weight, evidence count, promotion, contradiction authority state | answer wording |
 | Human authority actions | review/evidence/contradiction basis | trusted signal submission | canonical Gate requests | direct weight/status assignment |
 | Relevance / surfacing | current question + eligible seeds | relevance selection | selection / resurfacing metadata | authority |
@@ -150,9 +162,9 @@ revision context = current question + existing draft + allowed seed context
 
 The Workbench therefore uses component-qualified labels such as Detectiecontext, Recurrence, Relevantiematch and Invloed op antwoord. A generic Context: current/pair control is not sufficient.
 
-### 3. Golden path: autonomous exploratory
+### 3. Golden path: autonomous exploratory research
 
-The normal happy flow for an autonomous exploratory session is:
+The research-mode happy flow for an autonomous exploratory session is:
 
 ~~~text
 1. User asks a question.
@@ -175,6 +187,8 @@ The normal happy flow for an autonomous exploratory session is:
 ~~~
 
 Promotion does not force step 13 or step 15.
+
+This is not the ordinary product default. Under ADR-005 and ADR-006, a fresh ordinary live product session remains evidence-backed unless an explicit research mode selects exploratory behavior.
 
 ### 4. Golden path: Assisted evidence-backed
 
@@ -303,6 +317,8 @@ Zonder actie blijft dit punt in Shadow en kan het nog niet worden gebruikt.
 
 Verified support and contradiction controls are contextual actions. They are not presented as equally necessary for every seed.
 
+Any authority-bearing human action still passes the deployment authorization boundary before it reaches the Gate. In production-local it carries the trusted local ActorContext; in hosted production it requires the relevant authenticated tenant capability. Verified support must carry a stable non-empty source_ref, and repeated verification of the same underlying source remains one evidence unit under ADR-004.
+
 ### 12. Contradiction submission and contradiction resolution are separate
 
 A contradiction signal opens canonical contradiction state and blocks point-of-use.
@@ -316,30 +332,25 @@ A blocking seed shows Geblokkeerd and identifies the required human resolution p
 
 Verified support does not silently close an open contradiction.
 
-### 13. Split self-reinforcement into two mechanisms
+### 13. Split same-turn revision from contaminated-observation handling
 
-The current allow_self_reinforcement flag conflates:
+The current allow_self_reinforcement flag conflates two different mechanisms:
 
-1. whether SSL-exposed/generated output may later contribute recurrence/authority;
-2. whether a seed promoted during the current turn may trigger one bounded answer revision.
+1. whether a seed promoted during the current turn may trigger one bounded answer revision;
+2. whether detector output from an SSL-exposed answer is processed for research/audit.
 
-These become conceptually separate settings:
+The canonical 0.11.0 concepts become:
 
 ~~~text
-allow_ssl_generated_recurrence
 allow_same_turn_revision
+allow_contaminated_observation_analysis
 ~~~
 
-Research-safe default:
+allow_contaminated_observation_analysis controls whether SSL-exposed detector output is preserved and analysed as contaminated observation data. It does **not** make that output independent recurrence and does not grant it an authority-bearing recurrence path.
 
-~~~text
-allow_ssl_generated_recurrence = false
-allow_same_turn_revision = configurable
-~~~
+ADR-003 remains binding: an SSL-exposed observation never earns independent recurrence credit on the same turn. A later clean observation may independently match the same candidate and enter normal recurrence.
 
-ADR-003 remains the fail-closed default for contaminated observations.
-
-Same-turn revision does not automatically make revised output recurrence-eligible.
+The historical 0.10.x allow_self_reinforcement value remains readable as compatibility metadata, but 0.11.0 must not translate it into a canonical setting that bypasses ADR-003.
 
 ### 14. Same-turn influence is revision, not free regeneration
 
@@ -529,7 +540,7 @@ The production ledger already records runtime reconfiguration and authority-rela
 - recurrence mode;
 - cluster threshold;
 - Validation Gate profile/policy and authority thresholds;
-- SSL-generated recurrence policy;
+- contaminated-observation analysis policy;
 - same-turn revision policy;
 - surfacing policy.
 
@@ -542,12 +553,12 @@ Historical turn meaning is never silently rewritten after a God-mode change.
 1. Detector proposes. It never validates.
 2. Intake structures. It never grants truth or authority.
 3. Recurrence records independent repetition. It never becomes external evidence by relabeling.
-4. Lifecycle can weaken or expire memory. It does not create positive authority.
+4. Lifecycle may change trace, dormancy and reactivation state. If expiry requires an authority reset, that reset is routed through the Validation Gate as required by ADR-001; lifecycle code does not directly clear authority.
 5. Validation Gate is the only authority transition boundary.
-6. Human actions submit typed evidence/contradiction/resolution to canonical services. Humans do not edit weight or promotion directly.
+6. Human actions first pass deployment authorization and then submit typed evidence/contradiction/resolution to canonical services. Verified support carries stable evidence identity under ADR-004. Humans do not edit weight or promotion directly.
 7. Relevance selects among eligible seeds. It does not validate them.
 8. Point-of-use must record allow/deny before influence.
-9. Revision may alter answer wording but cannot strengthen the seed that caused it unless a separately configured later clean observation qualifies under ADR-003.
+9. Revision may alter answer wording but cannot strengthen the seed that caused it. Any detector output from an SSL-exposed answer is contaminated under ADR-003 and earns no independent recurrence credit on that turn; only a later clean observation may qualify independently.
 10. A/B control output never enters live SSL state.
 11. UI state never substitutes for runtime state.
 12. God-mode changes are auditable and cannot silently reinterpret incompatible persisted state.
@@ -564,7 +575,7 @@ Record the reason where useful. Do not create authority.
 Shadowseed is aan zet. No human action is required.
 
 **Evidence-backed authority lacks trusted support**  
-Assisted mode surfaces a human handoff. Controlled mode remains human-dependent when the user chooses to progress that seed.
+Assisted mode surfaces a human handoff. Controlled mode remains human-dependent when the user chooses to progress that seed. Reusing the same source_ref through another channel does not create another independent evidence unit.
 
 **Blocking contradiction**  
 Influence is blocked. Authorized human resolution is required unless a future automated resolution policy is separately specified.
@@ -621,7 +632,7 @@ A 0.10.x patch remains appropriate only for isolated operational fixes that do n
 6. vNext exposes session- and seed-level human/SSL orchestration state.
 7. Assisted review-required seeds are visible in normal vNext UX.
 8. Blocking contradictions expose authorized resolution where supported.
-9. Same-turn revision and SSL-generated recurrence are independently configurable.
+9. Same-turn revision and contaminated-observation analysis are independently configurable, while contaminated observations remain recurrence-ineligible under ADR-003.
 10. Same-turn revision receives the existing draft and may return it unchanged.
 11. Recurrence-mode/cluster-threshold changes cannot restore contradictory stale state.
 12. Embedding-space changes require new-session, rebuild or re-embedding semantics.
@@ -630,4 +641,6 @@ A 0.10.x patch remains appropriate only for isolated operational fixes that do n
 15. Same-turn A/B distinguishes exposure, textual change and human quality judgment.
 16. Source ingestion refreshes the same human/SSL handoff model.
 17. Turn reports carry a behavior/configuration epoch or digest.
-18. Existing Gate, contaminated-observation, point-of-use and production-audit invariants remain covered by regression tests.
+18. Existing Gate, contaminated-observation, evidence-identity, point-of-use, actor-authorization and production-audit invariants remain covered by regression tests.
+19. Ordinary new product sessions remain live/evidence-backed unless an explicit research mode selects another Gate regime.
+20. Expiry-related authority reset remains routed through the Validation Gate rather than direct lifecycle mutation.
