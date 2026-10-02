@@ -438,12 +438,16 @@ CURRENT_PAIR_PROMPT_META = prompt_contract_metadata(
     prompt_version=CURRENT_PAIR_DETECTOR_VERSION,
     component="chat_detection",
     template=CURRENT_PAIR_GENERATIVE_PROMPT,
+    input_contract=("current_question", "draft_answer", "max_seeds", "max_seed_words"),
+    output_contract="zero_or_more_numbered_candidate_directions_or_NONE",
 )
 SOURCE_OBSERVATION_PROMPT_META = prompt_contract_metadata(
     prompt_id=SOURCE_OBSERVATION_DETECTOR_ID,
     prompt_version=SOURCE_OBSERVATION_DETECTOR_VERSION,
     component="source_detection",
     template=SOURCE_OBSERVATION_GENERATIVE_PROMPT,
+    input_contract=("source_observation", "source_context", "max_seeds", "max_seed_words"),
+    output_contract="zero_or_more_numbered_candidate_directions_or_NONE",
 )
 
 PROMPT_VARIANTS: tuple[str, ...] = ("absence", "generative", "current_pair")
@@ -495,37 +499,54 @@ class FixtureDetectorBackend:
     def __init__(self, prompt_variant: str = "absence") -> None:
         self.prompt_variant = prompt_variant
         self.last_prompt_metadata: dict[str, Any] | None = None
+        self.last_raw_output: str | None = None
+        self.last_parse_diagnostics: dict[str, int | bool] | None = None
 
     def detect_seeds(self, item: dict[str, Any], max_seeds: int = 5) -> list[str]:
         text = str(item.get("text") or item.get("input") or "").strip()
-        if not text:
-            return []
         if self.prompt_variant == "current_pair":
             self.last_prompt_metadata = dict(
                 CURRENT_PAIR_PROMPT_META
                 if str(item.get("question") or "").strip()
                 else SOURCE_OBSERVATION_PROMPT_META
             )
-        # take up to max_seeds distinct capitalized tokens from the text
-        tokens: list[str] = []
-        seen: set[str] = set()
-        for token in re.findall(r"\b[A-ZÀ-Þ][a-zA-ZÀ-ÿ]{2,}\b", text):
-            key = token.lower()
-            if key in seen:
-                continue
-            seen.add(key)
-            tokens.append(token)
-            if len(tokens) >= max_seeds:
-                break
-        if self.prompt_variant in {"generative", "current_pair"}:
-            return [
-                f"[FIXTURE] {token} as an explanatory frame for this text."
-                for token in tokens
-            ]
-        return [
-            f"[FIXTURE] Missing explanation of {token} in this text."
-            for token in tokens
-        ]
+        if not text:
+            raw = "NONE"
+        else:
+            # take up to max_seeds distinct capitalized tokens from the text
+            tokens: list[str] = []
+            seen: set[str] = set()
+            for token in re.findall(r"\b[A-ZÀ-Þ][a-zA-ZÀ-ÿ]{2,}\b", text):
+                key = token.lower()
+                if key in seen:
+                    continue
+                seen.add(key)
+                tokens.append(token)
+                if len(tokens) >= max_seeds:
+                    break
+            if self.prompt_variant in {"generative", "current_pair"}:
+                generated = [
+                    f"[FIXTURE] {token} as an explanatory frame for this text."
+                    for token in tokens
+                ]
+            else:
+                generated = [
+                    f"[FIXTURE] Missing explanation of {token} in this text."
+                    for token in tokens
+                ]
+            raw = (
+                "\n".join(f"{index}. {seed}" for index, seed in enumerate(generated, 1))
+                if generated
+                else "NONE"
+            )
+        seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
+            raw,
+            max_seeds=max_seeds,
+            source_text=text,
+        )
+        self.last_raw_output = raw
+        self.last_parse_diagnostics = diagnostics
+        return seeds
 
 
 class HFTransformersDetectorBackend:

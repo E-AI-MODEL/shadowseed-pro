@@ -181,7 +181,7 @@ _PRESET_SETTINGS: dict[str, dict[str, Any]] = {
         "min_trace_for_gate": 0.5,
         "promotion_threshold": 0.6,
         "validation_increment": 0.2,
-        "allow_self_reinforcement": False,
+        "allow_same_turn_revision": False,
     },
     "gebalanceerd": {
         "surface_threshold": 0.30,
@@ -195,7 +195,7 @@ _PRESET_SETTINGS: dict[str, dict[str, Any]] = {
         "min_trace_for_gate": 0.5,
         "promotion_threshold": 0.5,
         "validation_increment": 0.2,
-        "allow_self_reinforcement": False,
+        "allow_same_turn_revision": False,
     },
     "onderzoekend": {
         "surface_threshold": 0.20,
@@ -209,7 +209,7 @@ _PRESET_SETTINGS: dict[str, dict[str, Any]] = {
         "min_trace_for_gate": 0.0,
         "promotion_threshold": 0.4,
         "validation_increment": 0.2,
-        "allow_self_reinforcement": False,
+        "allow_same_turn_revision": False,
     },
 }
 
@@ -247,6 +247,48 @@ def _full_settings(view: dict[str, Any] | None) -> dict[str, Any]:
 
 def _settings_json(view: dict[str, Any] | None) -> str:
     return json.dumps(_full_settings(view), indent=2, sort_keys=True, ensure_ascii=False)
+
+
+def _authority_gate_summary(view: dict[str, Any] | None) -> str:
+    if not view:
+        return (
+            "**Authority & Gate** · het profiel bepaalt de standaardroute; "
+            "een expliciete Gate-policy kan die standaard overschrijven."
+        )
+    profile = str(view.get("authority_profile_id") or "onbekend")
+    default_gate = str(view.get("profile_default_gate_policy_id") or "onbekend")
+    effective_gate = str(view.get("effective_gate_policy_id") or "onbekend")
+    configured = view.get("configured_gate_policy_id")
+    if bool(view.get("gate_policy_override_active", False)):
+        relation = (
+            f"Profiel `{profile}` heeft standaard Gate `{default_gate}`. "
+            f"Expliciete override `{configured}` is actief, dus effectief `{effective_gate}`."
+        )
+    else:
+        relation = (
+            f"Profiel `{profile}` → standaard Gate `{default_gate}` → "
+            f"effectief `{effective_gate}`."
+        )
+    return f"**Authority & Validation Gate · stateful**  \n{relation}"
+
+
+def _statefulness_summary(view: dict[str, Any] | None) -> str:
+    metadata = dict((view or {}).get("setting_metadata") or {})
+    rebuild = sorted(
+        key
+        for key, item in metadata.items()
+        if isinstance(item, dict) and item.get("apply_mode") == "rebuild_required"
+    )
+    if not rebuild:
+        return (
+            "**Instellingencontract** · structurele wijzigingen mogen bestaande "
+            "semantic-memory-state niet stilzwijgend herinterpreteren."
+        )
+    return (
+        "**Rebuild required na bestaande state:** "
+        + ", ".join(f"`{key}`" for key in rebuild)
+        + ". Deze grens kan niet met God mode worden omzeild."
+    )
 
 
 def _audit_summary(view: dict[str, Any] | None) -> str:
@@ -352,6 +394,70 @@ def _shadow_summary(view: dict[str, Any] | None) -> str:
     )
 
 
+def _orchestration_copy(payload: dict[str, Any] | None) -> tuple[str, str, str]:
+    """Translate derived orchestration state into Dutch presentation copy only."""
+
+    data = dict(payload or {})
+    state = str(data.get("state") or "ssl_turn")
+    reason_code = str(data.get("reason_code") or "")
+    state_labels = {
+        "ssl_turn": "Shadowseed is aan zet",
+        "optional_review": "Shadowseed kan door; jij kunt meekijken",
+        "human_turn": "Jij bent aan zet",
+        "blocked": "Eerst een blokkade oplossen",
+    }
+    reason_labels = {
+        "no_seed_action": "Er is nu geen geheugenpunt dat menselijke actie vraagt.",
+        "blocking_contradiction": "Een open tegenspraak blokkeert verdere invloed van dit geheugenpunt.",
+        "expired_terminal": "Dit geheugenpunt is verlopen en doet niet meer mee.",
+        "authorized_for_consideration": "Dit geheugenpunt is geautoriseerd; relevantie bepaalt of het bij een vraag wordt gebruikt.",
+        "current_gate_requires_verified_support": "De huidige Gate vraagt geverifieerde ondersteuning voordat dit geheugenpunt weer invloed kan krijgen.",
+        "current_gate_not_yet_satisfied": "De huidige Gate is nog niet voldaan; Shadowseed blijft observeren.",
+        "verified_support_required": "Dit geheugenpunt is voldoende teruggekomen, maar deze route vraagt nu geverifieerde ondersteuning.",
+        "autonomous_observation": "Shadowseed kan dit geheugenpunt zelfstandig verder observeren.",
+        "awaiting_more_observation": "Er is eerst meer geldige observatie nodig; menselijke actie is nu niet nodig.",
+    }
+    action_labels = {
+        "submit_verified_support": "Voeg geverifieerde ondersteuning toe.",
+        "resolve_contradiction": "Leg vast waarom de tegenspraak is opgelost.",
+    }
+    required_action = str(data.get("required_action") or "")
+    return (
+        state_labels.get(state, state_labels["ssl_turn"]),
+        reason_labels.get(reason_code, reason_code or "Geen aanvullende toelichting."),
+        action_labels.get(required_action, ""),
+    )
+
+
+def _orchestration_panel(view: dict[str, Any] | None) -> str:
+    if not view:
+        return "### Wie is aan zet?\nNog geen actief gesprek."
+
+    title, reason, action = _orchestration_copy(
+        dict(view.get("orchestration") or {})
+    )
+    action_line = f"  \n**Jouw volgende stap:** {action}" if action else ""
+    return f"### Wie is aan zet?\n**{title}**  \n{reason}{action_line}"
+
+
+def _seed_action_flags(seed: dict[str, Any] | None) -> dict[str, bool]:
+    """Render action availability from the application orchestration result."""
+
+    if not seed:
+        return {
+            "contradict": False,
+            "verified_support": False,
+            "resolve_contradiction": False,
+        }
+    orchestration = dict(seed.get("orchestration") or {})
+    required_action = str(orchestration.get("required_action") or "")
+    return {
+        "contradict": not bool(seed.get("blocking", False)),
+        "verified_support": required_action == "submit_verified_support",
+        "resolve_contradiction": required_action == "resolve_contradiction",
+    }
+
+
 def _seed_story(seed: dict[str, Any] | None) -> str:
     if not seed:
         return "Kies een geheugenpunt om de ontwikkeling te bekijken."
@@ -369,13 +475,18 @@ def _seed_story(seed: dict[str, Any] | None) -> str:
     else:
         state = "Onthouden, maar nog niet toegestaan om een antwoord te sturen."
 
+    turn_title, reason, action = _orchestration_copy(
+        dict(seed.get("orchestration") or {})
+    )
+    action_line = f"  \n**Volgende stap:** {action}" if action else ""
+
     return (
         f"### {text}\n\n"
         f"**Status:** {state}\n\n"
+        f"**Wie is aan zet:** {turn_title}  \n"
+        f"{reason}{action_line}\n\n"
         f"Teruggezien: **{occurrence}** · geverifieerde steun: **{evidence}**"
     )
-
-
 def _comparison(comparison: dict[str, Any] | None) -> tuple[str, str, str]:
     if not comparison:
         return "", "", "Zet **Vergelijk dit antwoord zonder SSL** aan voor een same-turn control."
@@ -434,15 +545,20 @@ def _model_badge(view: dict[str, Any] | None) -> str:
 
 
 def _context_banner(view: dict[str, Any] | None) -> str:
+    orchestration = _orchestration_panel(view)
     if not view:
-        return "Nog geen actief gesprek."
+        return orchestration
     reports = list(view.get("turn_reports", []) or [])
     if not reports:
-        return "Shadowseed heeft nog geen geheugenpunt aan een antwoord aangeboden."
-    surfaced = list(reports[-1].get("surfaced_seed_ids", []) or [])
-    if surfaced:
-        return f"📄 **{len(surfaced)} geheugenpunt(en) als context aangeboden**"
-    return "📄 **Geen geheugenpunt als context aangeboden in de laatste beurt**"
+        context = "📄 Nog geen geheugenpunt aan een antwoord aangeboden."
+    else:
+        surfaced = list(reports[-1].get("surfaced_seed_ids", []) or [])
+        context = (
+            f"📄 **{len(surfaced)} geheugenpunt(en) als context aangeboden**"
+            if surfaced
+            else "📄 **Geen geheugenpunt als context aangeboden in de laatste beurt**"
+        )
+    return f"{orchestration}\n\n{context}"
 
 
 def _shadow_rail(view: dict[str, Any] | None) -> str:
@@ -1021,9 +1137,27 @@ def build_vnext_app(
                 gr.update(visible=True),
             )
 
+    def _seed_action_updates(seed: dict[str, Any] | None):
+        flags = _seed_action_flags(seed)
+        return (
+            gr.update(visible=flags["contradict"]),
+            gr.update(visible=flags["verified_support"]),
+            gr.update(
+                visible=flags["resolve_contradiction"],
+                value="",
+            ),
+            gr.update(visible=flags["resolve_contradiction"]),
+        )
+
     def inspect_seed_shell(session_id: str | None, seed_id: str | None):
         story, seed = inspect_seed(session_id, seed_id)
-        return story, _seed_lifecycle(seed if isinstance(seed, dict) else None), seed
+        normalized = seed if isinstance(seed, dict) else None
+        return (
+            story,
+            _seed_lifecycle(normalized),
+            seed,
+            *_seed_action_updates(normalized),
+        )
 
     def send_shell(
         session_id: str | None,
@@ -1122,7 +1256,14 @@ def build_vnext_app(
             extra_note = evidence_result[5]
             extra_attest = evidence_result[6]
         if not session_id:
-            return (*result, _seed_lifecycle(None), gr.update(), extra_note, extra_attest)
+            return (
+                *result,
+                _seed_lifecycle(None),
+                gr.update(),
+                *_seed_action_updates(None),
+                extra_note,
+                extra_attest,
+            )
         try:
             view = ctl.session_view(session_id)
             seed = ctl.seed_view(session_id, seed_id) if seed_id else None
@@ -1137,11 +1278,22 @@ def build_vnext_app(
                     choices=_recent_seed_choices(view),
                     value=seed_id,
                 ),
+                *_seed_action_updates(seed),
                 extra_note,
                 extra_attest,
             )
         except Exception:
-            return (*result, _seed_lifecycle(None), gr.update(), extra_note, extra_attest)
+            return (
+                *result,
+                _seed_lifecycle(None),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                extra_note,
+                extra_attest,
+            )
 
     def contradict_shell(session_id: str | None, seed_id: str | None):
         return mutation_shell(session_id, seed_id, action="contradict")
@@ -1161,6 +1313,67 @@ def build_vnext_app(
             note=note,
             attested=attested,
         )
+
+    def resolve_contradiction_shell(
+        session_id: str | None,
+        seed_id: str | None,
+        basis: str,
+    ):
+        if not session_id or not seed_id:
+            return (
+                "Kies eerst een geblokkeerd geheugenpunt.",
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                _seed_lifecycle(None),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(value=basis),
+                gr.update(),
+            )
+        try:
+            ctl.resolve_contradiction(
+                session_id,
+                seed_id,
+                basis=basis,
+            )
+            view = ctl.session_view(session_id)
+            seed = ctl.seed_view(session_id, seed_id)
+            return (
+                _seed_story(seed),
+                _shadow_rail(view),
+                _context_banner(view),
+                view,
+                gr.update(choices=ctl.seed_choices(view), value=seed_id),
+                _seed_lifecycle(seed),
+                gr.update(
+                    choices=_recent_seed_choices(view),
+                    value=seed_id,
+                ),
+                gr.update(),
+                gr.update(),
+                *_seed_action_updates(seed),
+            )
+        except Exception as exc:
+            return (
+                _ui_error(exc),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(value=basis),
+                gr.update(),
+            )
 
     def research_comparison_shell(
         session_id: str | None,
@@ -1203,8 +1416,15 @@ def build_vnext_app(
             str(settings.get("authority_profile_id", "strict")),
             str(settings.get("gate_policy_id") or "evidence_backed"),
             str(settings.get("recurrence_mode", "cluster")),
-            bool(settings.get("allow_self_reinforcement", False)),
+            bool(
+                settings.get(
+                    "allow_same_turn_revision",
+                    settings.get("allow_self_reinforcement", False),
+                )
+            ),
             _settings_json(view),
+            _authority_gate_summary(view),
+            _statefulness_summary(view),
         )
 
     def refresh_controls(session_id: str | None):
@@ -1235,20 +1455,20 @@ def build_vnext_app(
         external_confirmed: bool,
     ):
         if not session_id:
-            return (*_control_values(None), "Maak of kies eerst een gesprek.")
+            return (*_control_values(None), "Maak of kies eerst een gesprek.", _context_banner(None))
         if preset not in _PRESET_SETTINGS:
             view = ctl.session_view(session_id)
-            return (*_control_values(view), "Kies een preset om toe te passen.")
+            return (*_control_values(view), "Kies een preset om toe te passen.", _context_banner(view))
         try:
             view = ctl.update_session_advanced(
                 session_id,
                 settings=dict(_PRESET_SETTINGS[preset]),
                 external_confirmed=bool(external_confirmed),
             )
-            return (*_control_values(view), "Preset toegepast op de actieve sessie.")
+            return (*_control_values(view), "Preset toegepast op de actieve sessie.", _context_banner(view))
         except Exception as exc:
             view = ctl.session_view(session_id)
-            return (*_control_values(view), _ui_error(exc))
+            return (*_control_values(view), _ui_error(exc), _context_banner(view))
 
     def apply_micro_settings(
         session_id: str | None,
@@ -1259,12 +1479,12 @@ def build_vnext_app(
         authority_value: str,
         gate_policy_value: str,
         recurrence_value: str,
-        self_reinforcement_value: bool,
+        same_turn_revision_value: bool,
         external_confirmed: bool,
         force: bool,
     ):
         if not session_id:
-            return (*_control_values(None), "Maak of kies eerst een gesprek.")
+            return (*_control_values(None), "Maak of kies eerst een gesprek.", _context_banner(None))
         settings = {
             "backend": backend_value,
             "model_id": (model_value or None),
@@ -1273,7 +1493,7 @@ def build_vnext_app(
             "authority_profile_id": authority_value,
             "gate_policy_id": gate_policy_value,
             "recurrence_mode": recurrence_value,
-            "allow_self_reinforcement": bool(self_reinforcement_value),
+            "allow_same_turn_revision": bool(same_turn_revision_value),
         }
         try:
             view = ctl.update_session_advanced(
@@ -1282,10 +1502,10 @@ def build_vnext_app(
                 external_confirmed=bool(external_confirmed),
                 force=bool(force),
             )
-            return (*_control_values(view), "Instellingen opgeslagen.")
+            return (*_control_values(view), "Instellingen opgeslagen.", _context_banner(view))
         except Exception as exc:
             view = ctl.session_view(session_id)
-            return (*_control_values(view), _ui_error(exc))
+            return (*_control_values(view), _ui_error(exc), _context_banner(view))
 
     def apply_god_json(
         session_id: str | None,
@@ -1294,7 +1514,7 @@ def build_vnext_app(
         force: bool,
     ):
         if not session_id:
-            return (*_control_values(None), "Maak of kies eerst een gesprek.")
+            return (*_control_values(None), "Maak of kies eerst een gesprek.", _context_banner(None))
         try:
             payload = json.loads(raw_json or "{}")
             if not isinstance(payload, dict):
@@ -1305,10 +1525,10 @@ def build_vnext_app(
                 external_confirmed=bool(external_confirmed),
                 force=bool(force),
             )
-            return (*_control_values(view), "God-modeconfiguratie opgeslagen.")
+            return (*_control_values(view), "God-modeconfiguratie opgeslagen.", _context_banner(view))
         except Exception as exc:
             view = ctl.session_view(session_id)
-            return (*_control_values(view), _ui_error(exc))
+            return (*_control_values(view), _ui_error(exc), _context_banner(view))
 
     def create_chat_with_preset(
         title: str,
@@ -1327,7 +1547,7 @@ def build_vnext_app(
             authority_profile_id=str(settings.get("authority_profile_id", "strict")),
             embedding_backend=ctl.default_embedding_backend(provider_value),
             external_confirmed=bool(hosted_confirmed),
-            allow_self_reinforcement=bool(settings.get("allow_self_reinforcement", False)),
+            allow_same_turn_revision=bool(settings.get("allow_same_turn_revision", False)),
         )
         ctl.update_session_advanced(
             session_id,
@@ -1466,7 +1686,8 @@ def build_vnext_app(
                             value=False,
                         )
 
-                    with gr.Accordion("Microcontrole", open=False):
+                    with gr.Accordion("Microcontrole per component", open=False):
+                        gr.Markdown("**Relevantie & surfacing · direct toepasbaar**")
                         surface_threshold_control = gr.Slider(
                             minimum=0.0,
                             maximum=1.0,
@@ -1481,32 +1702,48 @@ def build_vnext_app(
                             value=initial_controls[5],
                             label="Max. seeds per antwoord",
                         )
+
+                        authority_gate_note = gr.Markdown(
+                            initial_controls[11],
+                            elem_classes=["ss-muted"],
+                        )
                         authority_control = gr.Dropdown(
                             choices=["strict", "assisted", "autonomous", "open"],
                             value=initial_controls[6],
-                            label="Authority-profiel",
+                            label="Authority-profiel · stateful",
                         )
                         gate_policy_control = gr.Dropdown(
                             choices=["evidence_backed", "exploratory"],
                             value=initial_controls[7],
-                            label="Gate-policy",
+                            label="Gate-policy · expliciete override",
+                        )
+
+                        gr.Markdown(
+                            "**Recurrence · structurele semantic-memory-state**  \n"
+                            "Wijzigen nadat seeds bestaan vereist een nieuwe sessie of expliciete rebuild."
                         )
                         recurrence_control = gr.Dropdown(
                             choices=["cluster", "pairwise"],
                             value=initial_controls[8],
-                            label="Recurrence",
+                            label="Recurrence · rebuild required",
                         )
-                        self_reinforcement_control = gr.Checkbox(
-                            label="Self-reinforcement",
+
+                        gr.Markdown("**Same-turn revision · stateful**")
+                        same_turn_revision_control = gr.Checkbox(
+                            label="Herziening in dezelfde beurt",
                             value=initial_controls[9],
                         )
                         god_force = gr.Checkbox(
-                            label="God mode: riskante wijzigingen forceren",
+                            label="God mode force (structurele grenzen blijven gelden)",
                             value=False,
                         )
                         apply_micro_button = gr.Button("Micro-instellingen opslaan", variant="primary")
 
                     with gr.Accordion("God mode · alle instellingen", open=False):
+                        statefulness_note = gr.Markdown(
+                            initial_controls[12],
+                            elem_classes=["ss-muted"],
+                        )
                         gr.Markdown(
                             "Hier staat de werkelijk opgeslagen configuratie. Wijzig alleen waarden die je bewust wilt overschrijven."
                         )
@@ -1667,8 +1904,22 @@ def build_vnext_app(
             seed_story = gr.Markdown(_seed_story(None), elem_id="ss-seed-story")
             lifecycle = gr.Markdown(_seed_lifecycle(None))
             with gr.Row():
-                contradiction_button = gr.Button("Tegenspraak registreren", scale=4)
+                contradiction_button = gr.Button(
+                    "Tegenspraak registreren",
+                    scale=4,
+                    visible=False,
+                )
                 contradiction_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
+            resolution_basis = gr.Textbox(
+                label="Waarom is de tegenspraak opgelost?",
+                lines=2,
+                visible=False,
+            )
+            resolve_contradiction_button = gr.Button(
+                "Tegenspraak afhandelen",
+                variant="primary",
+                visible=False,
+            )
             gr.Markdown("### Geverifieerde ondersteuning")
             evidence_source = gr.Textbox(label="Bronreferentie")
             evidence_note = gr.Textbox(label="Toelichting", lines=2)
@@ -1685,6 +1936,7 @@ def build_vnext_app(
                     variant="primary",
                     scale=5,
                     elem_classes=["ss-primary"],
+                    visible=False,
                 )
                 evidence_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
             technical_open_from_seed = gr.Button("Technische audit", variant="secondary")
@@ -1750,8 +2002,8 @@ def build_vnext_app(
                     research_vanilla_answer = gr.Markdown(label="Onafhankelijk vanilla-pad")
             with gr.Accordion("Matching", open=False):
                 semantic_info = gr.Button("ⓘ Leg semantisch matchen uit")
-            with gr.Accordion("Self-reinforcement", open=False):
-                self_reinforcement_info = gr.Button("ⓘ Leg self-reinforcement uit")
+            with gr.Accordion("Herziening in dezelfde beurt", open=False):
+                same_turn_revision_info = gr.Button("ⓘ Leg same-turn revision uit")
             with gr.Accordion("Validation Gate", open=False):
                 gr.Markdown(
                     "De Gate bepaalt authority. In de gewone chat is dit geen losse schuifregelaar."
@@ -1831,7 +2083,7 @@ def build_vnext_app(
             (longitudinal_info, "longitudinal"),
             (research_run_info, "longitudinal"),
             (semantic_info, "semantic_matching"),
-            (self_reinforcement_info, "self_reinforcement"),
+            (same_turn_revision_info, "same_turn_revision"),
             (gate_info, "research"),
             (audit_info, "technical_audit"),
             (model_menu_info, "model"),
@@ -1906,15 +2158,17 @@ def build_vnext_app(
             authority_control,
             gate_policy_control,
             recurrence_control,
-            self_reinforcement_control,
+            same_turn_revision_control,
             god_json,
+            authority_gate_note,
+            statefulness_note,
             control_result,
         ]
 
         apply_preset_button.click(
             apply_preset,
             inputs=[active_session, control_preset, settings_external_confirm],
-            outputs=control_outputs,
+            outputs=control_outputs + [context_banner],
         )
 
         apply_micro_button.click(
@@ -1928,17 +2182,17 @@ def build_vnext_app(
                 authority_control,
                 gate_policy_control,
                 recurrence_control,
-                self_reinforcement_control,
+                same_turn_revision_control,
                 settings_external_confirm,
                 god_force,
             ],
-            outputs=control_outputs,
+            outputs=control_outputs + [context_banner],
         )
 
         apply_god_button.click(
             apply_god_json,
             inputs=[active_session, god_json, settings_external_confirm, god_force],
-            outputs=control_outputs,
+            outputs=control_outputs + [context_banner],
         )
 
         session_select.change(
@@ -2071,7 +2325,15 @@ def build_vnext_app(
         seed_select.change(
             inspect_seed_shell,
             inputs=[active_session, seed_select],
-            outputs=[seed_story, lifecycle, seed_json],
+            outputs=[
+                seed_story,
+                lifecycle,
+                seed_json,
+                contradiction_button,
+                evidence_button,
+                resolution_basis,
+                resolve_contradiction_button,
+            ],
         )
 
         contradiction_button.click(
@@ -2085,6 +2347,10 @@ def build_vnext_app(
                 seed_select,
                 lifecycle,
                 recent_seed,
+                contradiction_button,
+                evidence_button,
+                resolution_basis,
+                resolve_contradiction_button,
                 evidence_note,
                 evidence_attest,
             ],
@@ -2101,8 +2367,32 @@ def build_vnext_app(
                 seed_select,
                 lifecycle,
                 recent_seed,
+                contradiction_button,
+                evidence_button,
+                resolution_basis,
+                resolve_contradiction_button,
                 evidence_note,
                 evidence_attest,
+            ],
+        )
+
+        resolve_contradiction_button.click(
+            resolve_contradiction_shell,
+            inputs=[active_session, seed_select, resolution_basis],
+            outputs=[
+                seed_story,
+                shadow_metrics,
+                context_banner,
+                session_json,
+                seed_select,
+                lifecycle,
+                recent_seed,
+                evidence_note,
+                evidence_attest,
+                contradiction_button,
+                evidence_button,
+                resolution_basis,
+                resolve_contradiction_button,
             ],
         )
 

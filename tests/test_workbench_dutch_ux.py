@@ -3,7 +3,14 @@ from __future__ import annotations
 from pathlib import Path
 
 from shadowseed.workbench.feature_help import render_feature_help
-from shadowseed.workbench.simple_app_vnext import _ui_error
+from shadowseed.workbench.simple_app_vnext import (
+    _authority_gate_summary,
+    _orchestration_panel,
+    _seed_action_flags,
+    _seed_story as _vnext_seed_story,
+    _statefulness_summary,
+    _ui_error,
+)
 from shadowseed.workbench.simple_app import (
     _authority_explainer,
     _chat_status,
@@ -200,28 +207,58 @@ def test_feature_help_preserves_ssl_semantics_and_explains_combinations() -> Non
     assert "één extra control-generatie" in text
 
 
-def test_feature_help_distinguishes_self_reinforcement_on_and_off() -> None:
+def test_feature_help_separates_same_turn_revision_from_self_derived_authority() -> None:
     off = render_feature_help(
-        "self_reinforcement",
+        "same_turn_revision",
         view={
             "effective_gate_policy_id": "evidence_backed",
             "authority_profile_id": "strict",
-            "allow_self_reinforcement": False,
+            "allow_same_turn_revision": False,
+            "self_derived_signal_policy": "fail_closed",
         },
     )
     on = render_feature_help(
-        "self_reinforcement",
+        "same_turn_revision",
         view={
             "effective_gate_policy_id": "evidence_backed",
             "authority_profile_id": "strict",
-            "allow_self_reinforcement": True,
+            "allow_same_turn_revision": True,
+            "self_derived_signal_policy": "bounded_experimental",
         },
     )
 
-    assert "Self-reinforcement staat uit" in off
-    assert "niet teruggevoerd" in off
-    assert "Self-reinforcement staat aan" in on
-    assert "versterken" in on.lower()
+    assert "Herziening in dezelfde beurt staat uit" in off
+    assert "Self-derived authority staat fail-closed" in off
+    assert "Herziening in dezelfde beurt staat aan" in on
+    assert "maximaal één keer" in on
+    assert "verhogen geen canonical recurrence" in on
+    assert "geen authority" in on
+
+
+def test_vnext_exposes_profile_gate_relation_and_rebuild_metadata() -> None:
+    view = {
+        "authority_profile_id": "autonomous",
+        "profile_default_gate_policy_id": "exploratory",
+        "configured_gate_policy_id": "evidence_backed",
+        "effective_gate_policy_id": "evidence_backed",
+        "gate_policy_override_active": True,
+        "setting_metadata": {
+            "recurrence_mode": {"apply_mode": "rebuild_required"},
+            "cluster_threshold": {"apply_mode": "rebuild_required"},
+            "surface_top_k": {"apply_mode": "immediate"},
+        },
+    }
+
+    relation = _authority_gate_summary(view)
+    statefulness = _statefulness_summary(view)
+
+    assert "autonomous" in relation
+    assert "exploratory" in relation
+    assert "override" in relation.lower()
+    assert "evidence_backed" in relation
+    assert "recurrence_mode" in statefulness
+    assert "cluster_threshold" in statefulness
+    assert "surface_top_k" not in statefulness
 
 
 def test_simple_start_automatically_prefers_local_model_then_safe_demo() -> None:
@@ -755,3 +792,74 @@ def test_sources_ingest_errors_preserve_gate_notice() -> None:
     assert "pasted_text," in exception_body
     assert "gr.update()," in exception_body
     assert not exception_body.rstrip().endswith('""\n            )')
+
+
+
+def test_vnext_renders_session_orchestration_without_inventing_ui_rules() -> None:
+    view = {
+        "orchestration": {
+            "state": "human_turn",
+            "reason_code": "verified_support_required",
+            "required_action": "submit_verified_support",
+        },
+        "turn_reports": [],
+    }
+
+    rendered = _orchestration_panel(view)
+
+    assert "Wie is aan zet?" in rendered
+    assert "Jij bent aan zet" in rendered
+    assert "geverifieerde ondersteuning" in rendered
+    assert "Voeg geverifieerde ondersteuning toe" in rendered
+
+
+def test_vnext_seed_actions_follow_required_action_only() -> None:
+    evidence = _seed_action_flags(
+        {
+            "blocking": False,
+            "orchestration": {
+                "required_action": "submit_verified_support",
+            },
+        }
+    )
+    blocked = _seed_action_flags(
+        {
+            "blocking": True,
+            "orchestration": {
+                "required_action": "resolve_contradiction",
+            },
+        }
+    )
+
+    assert evidence == {
+        "contradict": True,
+        "verified_support": True,
+        "resolve_contradiction": False,
+    }
+    assert blocked == {
+        "contradict": False,
+        "verified_support": False,
+        "resolve_contradiction": True,
+    }
+
+
+def test_vnext_seed_story_explains_who_is_next_and_why() -> None:
+    rendered = _vnext_seed_story(
+        {
+            "text": "Privacy boundary",
+            "blocking": True,
+            "current_gate_authorized": False,
+            "occurrence_count": 4,
+            "evidence_count": 1,
+            "orchestration": {
+                "state": "blocked",
+                "reason_code": "blocking_contradiction",
+                "required_action": "resolve_contradiction",
+            },
+        }
+    )
+
+    assert "Wie is aan zet" in rendered
+    assert "Eerst een blokkade oplossen" in rendered
+    assert "tegenspraak" in rendered.lower()
+    assert "Leg vast waarom de tegenspraak is opgelost" in rendered

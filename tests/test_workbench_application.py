@@ -53,6 +53,46 @@ def test_hosted_backend_requires_fresh_explicit_confirmation(tmp_path) -> None:
         )
 
 
+def test_hosted_revision_backend_requires_explicit_confirmation(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+
+    with pytest.raises(ValueError, match="external provider"):
+        controller.create_session(
+            title="Hosted revision",
+            profile_id="demo",
+            backend="fixture",
+            revision_backend="openai",
+            revision_model_id="example-revision-model",
+            runtime_mode="live",
+            embedding_backend="lexical",
+            external_confirmed=False,
+        )
+
+
+def test_advanced_revision_backend_change_requires_explicit_confirmation(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Revision provider boundary",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+    )
+
+    with pytest.raises(ValueError, match="external provider"):
+        controller.update_session_advanced(
+            session_id,
+            settings={
+                "revision_backend": "openai",
+                "revision_model_id": "example-revision-model",
+            },
+            external_confirmed=False,
+        )
+
+    stored = controller.sessions.load(session_id)
+    assert stored["config"]["revision_backend"] is None
+    assert stored["config"]["revision_model_id"] is None
+
+
 def test_controller_creates_and_lists_explicit_live_session(tmp_path) -> None:
     controller = WorkbenchController(tmp_path / "workspace")
     session_id = controller.create_session(
@@ -70,6 +110,8 @@ def test_controller_creates_and_lists_explicit_live_session(tmp_path) -> None:
     assert stored["config"]["runtime_mode"] == "live"
     assert stored["config"]["embedding_backend"] == "lexical"
     assert view["runtime_mode"] == "live"
+    assert view["revision_backend"] == "fixture"
+    assert view["revision_model_id"] is None
     assert choices[0][0] == "Live fixture · SSL chat · fixture · 0 turns"
 
 
@@ -670,3 +712,11 @@ def test_legacy_self_reinforcement_control_maps_to_revision_only(tmp_path) -> No
     assert stored["config"]["self_derived_signal_policy"] == "fail_closed"
     assert stored["state"]["session_config"]["allow_same_turn_revision"] is True
     assert stored["state"]["session_config"]["self_derived_signal_policy"] == "fail_closed"
+
+
+
+def test_revision_model_settings_have_separate_component_metadata() -> None:
+    metadata = setting_metadata()
+
+    assert metadata["revision_backend"]["component"] == "same_turn_revision"
+    assert metadata["revision_model_id"]["component"] == "same_turn_revision"
