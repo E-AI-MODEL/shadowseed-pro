@@ -352,6 +352,70 @@ def _shadow_summary(view: dict[str, Any] | None) -> str:
     )
 
 
+def _orchestration_copy(payload: dict[str, Any] | None) -> tuple[str, str, str]:
+    """Translate derived orchestration state into Dutch presentation copy only."""
+
+    data = dict(payload or {})
+    state = str(data.get("state") or "ssl_turn")
+    reason_code = str(data.get("reason_code") or "")
+    state_labels = {
+        "ssl_turn": "Shadowseed is aan zet",
+        "optional_review": "Shadowseed kan door; jij kunt meekijken",
+        "human_turn": "Jij bent aan zet",
+        "blocked": "Eerst een blokkade oplossen",
+    }
+    reason_labels = {
+        "no_seed_action": "Er is nu geen geheugenpunt dat menselijke actie vraagt.",
+        "blocking_contradiction": "Een open tegenspraak blokkeert verdere invloed van dit geheugenpunt.",
+        "expired_terminal": "Dit geheugenpunt is verlopen en doet niet meer mee.",
+        "authorized_for_consideration": "Dit geheugenpunt is geautoriseerd; relevantie bepaalt of het bij een vraag wordt gebruikt.",
+        "current_gate_requires_verified_support": "De huidige Gate vraagt geverifieerde ondersteuning voordat dit geheugenpunt weer invloed kan krijgen.",
+        "current_gate_not_yet_satisfied": "De huidige Gate is nog niet voldaan; Shadowseed blijft observeren.",
+        "verified_support_required": "Dit geheugenpunt is voldoende teruggekomen, maar deze route vraagt nu geverifieerde ondersteuning.",
+        "autonomous_observation": "Shadowseed kan dit geheugenpunt zelfstandig verder observeren.",
+        "awaiting_more_observation": "Er is eerst meer geldige observatie nodig; menselijke actie is nu niet nodig.",
+    }
+    action_labels = {
+        "submit_verified_support": "Voeg geverifieerde ondersteuning toe.",
+        "resolve_contradiction": "Leg vast waarom de tegenspraak is opgelost.",
+    }
+    required_action = str(data.get("required_action") or "")
+    return (
+        state_labels.get(state, state_labels["ssl_turn"]),
+        reason_labels.get(reason_code, reason_code or "Geen aanvullende toelichting."),
+        action_labels.get(required_action, ""),
+    )
+
+
+def _orchestration_panel(view: dict[str, Any] | None) -> str:
+    if not view:
+        return "### Wie is aan zet?\nNog geen actief gesprek."
+
+    title, reason, action = _orchestration_copy(
+        dict(view.get("orchestration") or {})
+    )
+    action_line = f"  \n**Jouw volgende stap:** {action}" if action else ""
+    return f"### Wie is aan zet?\n**{title}**  \n{reason}{action_line}"
+
+
+def _seed_action_flags(seed: dict[str, Any] | None) -> dict[str, bool]:
+    """Render action availability from the application orchestration result."""
+
+    if not seed:
+        return {
+            "contradict": False,
+            "verified_support": False,
+            "resolve_contradiction": False,
+        }
+    orchestration = dict(seed.get("orchestration") or {})
+    required_action = str(orchestration.get("required_action") or "")
+    return {
+        "contradict": not bool(seed.get("blocking", False)),
+        "verified_support": required_action == "submit_verified_support",
+        "resolve_contradiction": required_action == "resolve_contradiction",
+    }
+
+
 def _seed_story(seed: dict[str, Any] | None) -> str:
     if not seed:
         return "Kies een geheugenpunt om de ontwikkeling te bekijken."
@@ -369,13 +433,18 @@ def _seed_story(seed: dict[str, Any] | None) -> str:
     else:
         state = "Onthouden, maar nog niet toegestaan om een antwoord te sturen."
 
+    turn_title, reason, action = _orchestration_copy(
+        dict(seed.get("orchestration") or {})
+    )
+    action_line = f"  \n**Volgende stap:** {action}" if action else ""
+
     return (
         f"### {text}\n\n"
         f"**Status:** {state}\n\n"
+        f"**Wie is aan zet:** {turn_title}  \n"
+        f"{reason}{action_line}\n\n"
         f"Teruggezien: **{occurrence}** · geverifieerde steun: **{evidence}**"
     )
-
-
 def _comparison(comparison: dict[str, Any] | None) -> tuple[str, str, str]:
     if not comparison:
         return "", "", "Zet **Vergelijk dit antwoord zonder SSL** aan voor een same-turn control."
@@ -434,15 +503,20 @@ def _model_badge(view: dict[str, Any] | None) -> str:
 
 
 def _context_banner(view: dict[str, Any] | None) -> str:
+    orchestration = _orchestration_panel(view)
     if not view:
-        return "Nog geen actief gesprek."
+        return orchestration
     reports = list(view.get("turn_reports", []) or [])
     if not reports:
-        return "Shadowseed heeft nog geen geheugenpunt aan een antwoord aangeboden."
-    surfaced = list(reports[-1].get("surfaced_seed_ids", []) or [])
-    if surfaced:
-        return f"📄 **{len(surfaced)} geheugenpunt(en) als context aangeboden**"
-    return "📄 **Geen geheugenpunt als context aangeboden in de laatste beurt**"
+        context = "📄 Nog geen geheugenpunt aan een antwoord aangeboden."
+    else:
+        surfaced = list(reports[-1].get("surfaced_seed_ids", []) or [])
+        context = (
+            f"📄 **{len(surfaced)} geheugenpunt(en) als context aangeboden**"
+            if surfaced
+            else "📄 **Geen geheugenpunt als context aangeboden in de laatste beurt**"
+        )
+    return f"{orchestration}\n\n{context}"
 
 
 def _shadow_rail(view: dict[str, Any] | None) -> str:
