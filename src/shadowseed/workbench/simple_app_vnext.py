@@ -1838,8 +1838,22 @@ def build_vnext_app(
             seed_story = gr.Markdown(_seed_story(None), elem_id="ss-seed-story")
             lifecycle = gr.Markdown(_seed_lifecycle(None))
             with gr.Row():
-                contradiction_button = gr.Button("Tegenspraak registreren", scale=4)
+                contradiction_button = gr.Button(
+                    "Tegenspraak registreren",
+                    scale=4,
+                    visible=False,
+                )
                 contradiction_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
+            resolution_basis = gr.Textbox(
+                label="Waarom is de tegenspraak opgelost?",
+                lines=2,
+                visible=False,
+            )
+            resolve_contradiction_button = gr.Button(
+                "Tegenspraak afhandelen",
+                variant="primary",
+                visible=False,
+            )
             gr.Markdown("### Geverifieerde ondersteuning")
             evidence_source = gr.Textbox(label="Bronreferentie")
             evidence_note = gr.Textbox(label="Toelichting", lines=2)
@@ -1856,6 +1870,7 @@ def build_vnext_app(
                     variant="primary",
                     scale=5,
                     elem_classes=["ss-primary"],
+                    visible=False,
                 )
                 evidence_info = gr.Button("ⓘ", scale=0, min_width=38, elem_classes=["ss-info-button"])
             technical_open_from_seed = gr.Button("Technische audit", variant="secondary")
