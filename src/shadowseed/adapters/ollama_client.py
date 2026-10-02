@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import urllib.error
 import urllib.request
 from typing import Any
@@ -17,6 +18,7 @@ from typing import Any
 DEFAULT_OLLAMA_HOST = "http://localhost:11434"
 DEFAULT_PROVIDER_TIMEOUT_SECONDS = 120.0
 DEFAULT_OLLAMA_EMBEDDING_MODEL = "embeddinggemma"
+MIN_OLLAMA_EMBEDDINGGEMMA_VERSION = (0, 11, 10)
 
 
 def ollama_host() -> str:
@@ -28,10 +30,31 @@ def ollama_host() -> str:
     return host.rstrip("/")
 
 
+class OllamaHTTPError(RuntimeError):
+    """HTTP failure with status/body preserved for compatibility decisions."""
+
+    def __init__(self, status_code: int, url: str, reason: str, response_body: str = "") -> None:
+        self.status_code = int(status_code)
+        self.url = url
+        self.response_body = response_body
+        super().__init__(f"Could not reach Ollama at {url}: HTTP Error {status_code}: {reason}")
+
+
 def _read_json(request: urllib.request.Request, *, timeout: float) -> dict[str, Any]:
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
             payload = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:  # pragma: no cover - network dependent
+        try:
+            response_body = exc.read().decode("utf-8", errors="replace")
+        except Exception:
+            response_body = ""
+        raise OllamaHTTPError(
+            exc.code,
+            request.full_url,
+            str(exc.reason),
+            response_body=response_body,
+        ) from exc
     except (urllib.error.URLError, TimeoutError) as exc:  # pragma: no cover - network dependent
         raise RuntimeError(f"Could not reach Ollama at {request.full_url}: {exc}") from exc
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -39,6 +62,33 @@ def _read_json(request: urllib.request.Request, *, timeout: float) -> dict[str, 
     if not isinstance(payload, dict):
         raise RuntimeError("Ollama returned an unexpected response shape")
     return payload
+
+
+def ollama_version(
+    *,
+    host: str | None = None,
+    timeout: float = 5.0,
+) -> str:
+    """Return the local Ollama server version."""
+
+    base = (host or ollama_host()).rstrip("/")
+    request = urllib.request.Request(f"{base}/api/version", method="GET")
+    payload = _read_json(request, timeout=timeout)
+    version = str(payload.get("version") or "").strip()
+    if not version:
+        raise RuntimeError("Ollama /api/version response does not contain a version")
+    return version
+
+
+def _version_tuple(version: str) -> tuple[int, int, int] | None:
+    match = re.match(r"^v?(\d+)\.(\d+)\.(\d+)", version.strip())
+    if not match:
+        return None
+    return tuple(int(part) for part in match.groups())
+
+
+def _is_embeddinggemma(model: str) -> bool:
+    return model.split(":", 1)[0].strip().casefold() == "embeddinggemma"
 
 
 def list_ollama_models(
@@ -243,6 +293,28 @@ class OllamaClient:
         )
         try:
             body = _read_json(request, timeout=self.timeout)
+        except OllamaHTTPError as exc:  # pragma: no cover - network dependent
+            body_text = exc.response_body.casefold()
+            model_missing = "model" in body_text and "not found" in body_text
+            if exc.status_code == 404 and _is_embeddinggemma(self.model) and not model_missing:
+                try:
+                    server_version = ollama_version(host=self.host, timeout=min(self.timeout, 5.0))
+                except RuntimeError:
+                    server_version = "unknown"
+                parsed = _version_tuple(server_version) if server_version != "unknown" else None
+                if parsed is None or parsed < MIN_OLLAMA_EMBEDDINGGEMMA_VERSION:
+                    minimum = ".".join(str(part) for part in MIN_OLLAMA_EMBEDDINGGEMMA_VERSION)
+                    raise RuntimeError(
+                        f"EmbeddingGemma requires Ollama v{minimum} or later, but the "
+                        f"server at {self.host} reports {server_version!r} and does not "
+                        "provide the required /api/embed endpoint. Update Ollama, restart "
+                        "the Ollama server/app, then retry."
+                    ) from exc
+            raise RuntimeError(
+                f"Could not embed with Ollama model {self.model!r} at {self.host}. "
+                "Is Ollama running and has the embedding model been pulled with "
+                f"ollama pull {self.model}? {exc}"
+            ) from exc
         except RuntimeError as exc:  # pragma: no cover - network dependent
             raise RuntimeError(
                 f"Could not embed with Ollama model {self.model!r} at {self.host}. "
