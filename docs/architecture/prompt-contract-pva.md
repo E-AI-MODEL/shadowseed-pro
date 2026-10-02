@@ -10,15 +10,15 @@ This plan treats prompt wording as runtime behavior. It does not change Gate aut
 
 The target is not to make prompts more elaborate. The target is to make each prompt narrower, auditable and aligned with one component.
 
-## Cross-ADR constraints
+## Architectural constraints and reopened decisions
 
-This PvA is subordinate to the accepted architecture contracts:
+This PvA follows ADR-009 precedence. Earlier ADRs are retained only where ADR-009 keeps them; reopened or superseded decisions are tested again rather than inherited automatically:
 
 - prompt output never changes authority directly; only the Validation Gate can do that;
 - semantic atomicity is the invariant, while max_seed_words is a configurable calibration heuristic;
-- detector output from an SSL-exposed answer is a contaminated observation under ADR-003 and never earns independent recurrence credit on that turn;
+- detector output from an SSL-exposed answer always keeps causal provenance and is never mislabeled as independent recurrence; ADR-009 reopens whether a separately typed SELF_DERIVED signal may contribute bounded authority under an explicit Gate policy;
 - human quality review is measurement only unless a separately authorized evidence action with stable evidence identity is performed;
-- ordinary new product sessions remain live/evidence-backed unless an explicit research mode selects another regime;
+- the 0.11 Research Preview does not inherit evidence-backed as its default automatically; default authority/orchestration regime is selected from the new product experiments;
 - prompt experiments do not bypass local/hosted actor authorization, evidence identity, point-of-use or deployment boundaries.
 
 ## 1. Live prompt inventory
@@ -353,7 +353,7 @@ Prompt tests are not valid until these plumbing changes exist:
 2. max_seed_words is available to the detector prompt;
 3. parser accepts explicit NONE without treating it as malformed output;
 4. same-turn revision prompt receives the existing draft in actual model input;
-5. allow_same_turn_revision is separate from contaminated-observation analysis, and contaminated observations remain recurrence-ineligible under ADR-003;
+5. allow_same_turn_revision is separate from self_derived_signal_policy; SSL-exposed observations keep causal provenance and may only contribute through a distinct SELF_DERIVED signal path when the active policy explicitly permits it;
 6. prompt id/version/hash are written into turn audit;
 7. candidate-context and revision prompt are distinguishable in audit;
 8. answer truncation is observable rather than merely called invalid in prompt text.
@@ -373,6 +373,8 @@ Primary comparison matrix:
 | G1 | current host prompt | neutral host prompt | Does baseline answer quality/repetition improve? |
 | I1 | current candidate framing | candidate_context_v1.1 | Does seed dominance fall? |
 | R1 | free regeneration | minimal_revision_v1 | Does SSL improve rather than overwrite the draft? |
+| S1 | fail-closed self-derived policy | typed bounded SELF_DERIVED policy | Can self-derived learning help without feedback-loop drift or false promotion? |
+| A1 | evidence-backed default | autonomous/assisted candidate default | Which orchestration regime produces the better product behavior and human workload for 0.11? |
 
 Metrics:
 
@@ -389,7 +391,11 @@ Metrics:
 - blinded human A/B preference;
 - no-change rate for revision;
 - factual overstatement introduced by treatment;
-- audit reproducibility.
+- audit reproducibility;
+- self-derived contribution rate;
+- self-amplification depth;
+- false-promotion / runaway-loop rate;
+- human intervention rate by authority regime.
 
 Gate thresholds, recurrence policy and embeddings remain fixed during prompt experiments unless the experiment explicitly studies them.
 
@@ -423,7 +429,7 @@ A prompt change may become default only if:
 6. revision can make no change;
 7. candidate context cannot directly change authority;
 8. blinded comparison does not show systematic quality loss versus the current baseline;
-9. all Gate, contaminated-observation, evidence-identity, actor-authorization and point-of-use invariants remain green;
+9. all Gate, evidence-identity, actor-authorization and point-of-use invariants retained by ADR-009 remain green; any permissive SELF_DERIVED policy passes explicit drift and false-promotion tests;
 10. prompt id/version/hash allow a turn to be reproduced and interpreted later.
 
 ## 7. Sequence of work
@@ -432,9 +438,11 @@ A prompt change may become default only if:
 2. Implement prompt registry and audit identifiers without changing wording.
 3. Add current-pair detector plumbing and NONE/max-word support.
 4. Add separate same-turn revision plumbing.
-5. Split same-turn revision from contaminated-observation analysis without creating an ADR-003 bypass.
-6. Run D1-D4 with current Gate/embedding configuration fixed.
-7. Run G1.
-8. Run I1 and R1.
-9. Review blinded outputs.
-10. Promote only the best-supported prompt contracts to the 0.11.0 default.
+5. Split same-turn revision from self-derived signal policy, preserving causal provenance.
+6. Implement a fail-closed SELF_DERIVED baseline plus one bounded experimental policy behind Research/Advanced config.
+7. Run D1-D4 with Gate/embedding configuration fixed.
+8. Run G1.
+9. Run I1 and R1.
+10. Run S1 for self-derived learning and A1 for the 0.11 authority/orchestration default.
+11. Review blinded outputs and operational human-workload metrics.
+12. Freeze only the best-supported prompt and authority/orchestration contracts as the 0.11 defaults.
