@@ -2,7 +2,11 @@
   "schema_version": 3,
   "artifact": "shadowseed_candidate_observation_ledger",
   "authority_effect": "none",
-  "record_schema_versions_supported": [1, 2, 3],
+  "record_schema_versions_supported": [
+    1,
+    2,
+    3
+  ],
   "observation": {
     "required": [
       "observation_id",
@@ -18,13 +22,18 @@
       "self_reinforcement_allowed",
       "self_derived_policy_id",
       "legacy_projection",
-      "schema_version"
+      "schema_version",
+      "self_derived_loop_depth",
+      "authority_contribution",
+      "contribution_policy_id"
     ],
     "invariants": [
       "same-turn revision and self-derived observation policy are separate mechanisms",
       "schema v3 ssl_exposed observations carry an explicit self_derived_policy_id",
-      "fail_closed self-derived observations are never recurrence-eligible",
-      "bounded_experimental self-derived observations may be retained for research but never increment canonical recurrence state",
+      "self-derived observations carry loop depth and contribution-policy audit fields",
+      "fail_closed self-derived observations never reach an authority contribution policy",
+      "bounded_experimental self-derived observations are routed through bounded_self_derived and currently contribute zero authority",
+      "all ssl_exposed observations remain non-recurrence-eligible",
       "recording an observation never directly changes weight, evidence, Gate state, or authority version",
       "historical observations are immutable",
       "later clean recovery is represented by an appended link rather than mutation"
