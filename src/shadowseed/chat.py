@@ -41,7 +41,12 @@ import numpy as np
 
 from shadowseed.adapters.embedding import EmbedFn, make_embedding_fn
 from shadowseed.authority_profiles import resolve_authority_runtime
-from shadowseed.detection.model_detector import DetectorBackend, make_detector_backend
+from shadowseed.detection.model_detector import (
+    CURRENT_PAIR_PROMPT_META,
+    SOURCE_OBSERVATION_PROMPT_META,
+    DetectorBackend,
+    make_detector_backend,
+)
 from shadowseed.recurrence_clustering import (
     DEFAULT_CLUSTER_THRESHOLD,
     RecurrenceClusterer,
@@ -83,6 +88,11 @@ from shadowseed.models import (
     ValidationGateResult,
 )
 from shadowseed.vectorstore.memory import InMemoryVectorStore
+from shadowseed.storage.integrity import (
+    behavior_config_digest,
+    behavior_config_epoch,
+    behavior_config_projection,
+)
 from shadowseed.observations import CandidateObservationLedger
 from shadowseed_agent import (
     AgentInfluenceRecord,
@@ -705,6 +715,88 @@ class ShadowChatSession:
             },
         }
 
+    def _detector_role_audit(self) -> dict[str, Any]:
+        """Describe the active detector role without provider credentials."""
+
+        runtime_name = str(getattr(self.detector, "name", "unknown"))
+        model_id = getattr(self.detector, "model_id", None)
+        backend = getattr(self.detector, "backend", None)
+        if backend is None:
+            if ":" in runtime_name:
+                backend = runtime_name.split(":", 1)[0]
+            elif runtime_name.startswith("fixture"):
+                backend = "fixture"
+            elif self.detector.__class__.__module__.startswith("shadowseed.detection"):
+                backend = self.backend
+            else:
+                backend = "injected"
+        if model_id is None and backend == self.backend:
+            model_id = self.model_id
+        return {
+            "backend": str(backend),
+            "model_id": model_id,
+            "runtime_name": runtime_name,
+        }
+
+    def _prompt_registry_audit(self) -> dict[str, dict[str, Any]]:
+        """Return the versioned prompt assets that can affect this runtime."""
+
+        return {
+            "answer_generation": dict(ANSWER_GENERATION_PROMPT_META),
+            "candidate_context": dict(CANDIDATE_CONTEXT_PROMPT_META),
+            "detector_current_pair": dict(CURRENT_PAIR_PROMPT_META),
+            "detector_source_observation": dict(SOURCE_OBSERVATION_PROMPT_META),
+            "same_turn_revision": dict(REVISION_PROMPT_META),
+        }
+
+    def _session_config_snapshot(self) -> dict[str, Any]:
+        return {
+            "backend": self.backend,
+            "model_id": self.model_id,
+            "revision_backend": self.revision_backend,
+            "revision_model_id": self.revision_model_id,
+            "max_new_tokens": self.max_new_tokens,
+            "embedding_backend": self.embedding_backend,
+            "embedding_model": self.embedding_model,
+            "surface_threshold": self.surface_threshold,
+            "surface_top_k": self.surface_top_k,
+            "early_turn_margin": self.early_turn_margin,
+            "early_turn_history": self.early_turn_history,
+            "resurface_margin": self.resurface_margin,
+            "max_seeds_per_turn": self.max_seeds_per_turn,
+            "recurrence_mode": self.recurrence_mode,
+            "cluster_threshold": self.cluster_threshold,
+            "probe_corpus": self.probe_corpus_path,
+            "probe_top_k": self.probe_top_k,
+            "runtime_mode": self.runtime_mode,
+            "gate_policy_id": self.gate_policy_id,
+            "authority_profile_id": self.authority_profile_id,
+            "allow_toy_embedder": self.allow_toy_embedder,
+            "revalidate_current_gate": self.revalidate_current_gate,
+            "allow_same_turn_revision": self.allow_same_turn_revision,
+            "self_derived_signal_policy": self.self_derived_signal_policy,
+            "allow_self_reinforcement": self.allow_self_reinforcement,
+        }
+
+    def _behavior_runtime_audit(self) -> dict[str, Any]:
+        return {
+            "model_roles": self._model_role_audit(),
+            "detector_role": self._detector_role_audit(),
+            "prompt_contracts": self._prompt_registry_audit(),
+        }
+
+    def _behavior_fingerprint(self) -> dict[str, Any]:
+        state = {
+            "session_config": self._session_config_snapshot(),
+            "manager": {"config": self.manager.config.to_dict()},
+            "behavior_runtime": self._behavior_runtime_audit(),
+        }
+        return {
+            "behavior_config": behavior_config_projection(state),
+            "behavior_config_digest": behavior_config_digest(state),
+            "behavior_config_epoch": behavior_config_epoch(state),
+        }
+
     def _detector_audit(self) -> dict[str, Any]:
         """Return the detector contract and parser trace without mutating state."""
 
@@ -1266,6 +1358,7 @@ class ShadowChatSession:
             "retrieval_probe": self._run_retrieval_probe(question),
             "prepared_turn_id": prepared.turn_id,
         }
+        report.update(self._behavior_fingerprint())
         self.turn_reports.append(report)
         self._pending_live_turn = None
         self._pending_live_turn_rollback = None
@@ -1459,6 +1552,7 @@ class ShadowChatSession:
             "shadow_size": len(self.manager.seeds),
             "retrieval_probe": self._run_retrieval_probe(question),
         }
+        report.update(self._behavior_fingerprint())
         self.turn_reports.append(report)
         return report
 
@@ -1578,6 +1672,7 @@ class ShadowChatSession:
                 authority_review_seed_ids.append(seed_id)
 
         return {
+            **self._behavior_fingerprint(),
             "context_ref": context_ref,
             "characters": len(source_text),
             "detected_candidates": raw_candidates,
@@ -1709,33 +1804,8 @@ class ShadowChatSession:
             }
         return {
             "schema_version": SESSION_STATE_SCHEMA_VERSION,
-            "session_config": {
-                "backend": self.backend,
-                "model_id": self.model_id,
-                "revision_backend": self.revision_backend,
-                "revision_model_id": self.revision_model_id,
-                "max_new_tokens": self.max_new_tokens,
-                "embedding_backend": self.embedding_backend,
-                "embedding_model": self.embedding_model,
-                "surface_threshold": self.surface_threshold,
-                "surface_top_k": self.surface_top_k,
-                "early_turn_margin": self.early_turn_margin,
-                "early_turn_history": self.early_turn_history,
-                "resurface_margin": self.resurface_margin,
-                "max_seeds_per_turn": self.max_seeds_per_turn,
-                "recurrence_mode": self.recurrence_mode,
-                "cluster_threshold": self.cluster_threshold,
-                "probe_corpus": self.probe_corpus_path,
-                "probe_top_k": self.probe_top_k,
-                "runtime_mode": self.runtime_mode,
-                "gate_policy_id": self.gate_policy_id,
-                "authority_profile_id": self.authority_profile_id,
-                "allow_toy_embedder": self.allow_toy_embedder,
-                "revalidate_current_gate": self.revalidate_current_gate,
-                "allow_same_turn_revision": self.allow_same_turn_revision,
-                "self_derived_signal_policy": self.self_derived_signal_policy,
-                "allow_self_reinforcement": self.allow_self_reinforcement,
-            },
+            "session_config": self._session_config_snapshot(),
+            "behavior_runtime": self._behavior_runtime_audit(),
             "contract": asdict(self.contract),
             "manager": self.manager.to_dict(),
             "manager_gate_sequence": self.manager._gate_sequence,
