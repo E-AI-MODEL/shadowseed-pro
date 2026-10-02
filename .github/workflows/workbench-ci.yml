@@ -73,7 +73,7 @@ jobs:
           version: "0.8.14"
       - run: uv sync --locked --extra build
       - run: uv run --no-sync python -m build --no-isolation
-      - name: Install built wheel with locked Workbench dependencies
+      - name: Install built wheel with locked thin Workbench dependencies
         shell: bash
         run: |
           set -euo pipefail
@@ -85,39 +85,38 @@ jobs:
           from pathlib import Path
 
           source = Path(os.environ["RUNNER_TEMP"]) / "workbench-locked.txt"
-          pypi = Path(os.environ["RUNNER_TEMP"]) / "workbench-pypi.txt"
-          torch = Path(os.environ["RUNNER_TEMP"]) / "workbench-torch.txt"
           lines = source.read_text(encoding="utf-8").splitlines()
-          torch_lines = [line for line in lines if line.startswith("torch==")]
-          cpu_lines = [line for line in torch_lines if "+cpu" in line]
-          if len(cpu_lines) != 1:
-              raise SystemExit(f"expected exactly one locked CPU torch record, found {len(cpu_lines)}")
-          pypi.write_text(
-              "\n".join(line for line in lines if not line.startswith("torch==")) + "\n",
-              encoding="utf-8",
-          )
-          torch.write_text(cpu_lines[0] + "\n", encoding="utf-8")
+          names = {
+              line.split("==", 1)[0].strip().lower().replace("_", "-")
+              for line in lines
+              if "==" in line and not line.lstrip().startswith("#")
+          }
+          forbidden = {"torch", "transformers", "sentence-transformers", "openai"}
+          unexpected = sorted(names & forbidden)
+          if unexpected:
+              raise SystemExit(f"thin Workbench lock contains optional providers: {unexpected}")
           PY
           uv venv "${RUNNER_TEMP}/workbench-wheel" --python 3.12
           uv pip install --python "${RUNNER_TEMP}/workbench-wheel/bin/python" "httpx[socks]==0.27.2"
           uv pip install --python "${RUNNER_TEMP}/workbench-wheel/bin/python" \
             --no-deps --index-url https://pypi.org/simple \
-            -r "${RUNNER_TEMP}/workbench-pypi.txt"
-          torch_requirement="$(cat "${RUNNER_TEMP}/workbench-torch.txt")"
-          uv pip install --python "${RUNNER_TEMP}/workbench-wheel/bin/python" \
-            --no-deps --index-url https://download.pytorch.org/whl/cpu \
-            "$torch_requirement"
+            -r "${RUNNER_TEMP}/workbench-locked.txt"
           uv pip install --python "${RUNNER_TEMP}/workbench-wheel/bin/python" \
             --no-deps "${wheel}[workbench]"
           cd "${RUNNER_TEMP}"
           "${RUNNER_TEMP}/workbench-wheel/bin/shadowseed" workbench --help
           ALL_PROXY="socks5h://127.0.0.1:9" \
             "${RUNNER_TEMP}/workbench-wheel/bin/python" - <<'PY'
+          from importlib.util import find_spec
+
           import gradio
           import httpx
           from packaging.version import Version
           from shadowseed.workbench.app import build_app
+
           assert Version(httpx.__version__) >= Version("0.28.0")
           assert build_app is not None
-          print("installed Workbench SOCKS-proxy import OK", gradio.__version__)
+          for module in ("torch", "transformers", "sentence_transformers", "openai"):
+              assert find_spec(module) is None, module
+          print("installed thin Workbench SOCKS-proxy import OK", gradio.__version__)
           PY
