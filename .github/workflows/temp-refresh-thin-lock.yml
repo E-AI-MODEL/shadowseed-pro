@@ -1,0 +1,40 @@
+name: Temporary thin Workbench lock refresh
+
+on:
+  push:
+    branches:
+      - feature/thin-workbench-dependencies
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temp-thin-lock-refresh
+  cancel-in-progress: true
+
+jobs:
+  refresh-lock:
+    if: github.event.head_commit.message != 'chore: refresh uv lock for thin Workbench'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: feature/thin-workbench-dependencies
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
+      - name: Refresh lock from current pyproject
+        run: uv lock
+      - name: Commit lock only when changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- uv.lock; then
+            echo "uv.lock already current"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add uv.lock
+          git commit -m "chore: refresh uv lock for thin Workbench"
+          git push origin HEAD:feature/thin-workbench-dependencies
