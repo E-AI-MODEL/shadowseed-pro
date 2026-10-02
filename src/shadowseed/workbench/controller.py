@@ -8,6 +8,7 @@ product concerns such as external-provider consent and presentation shaping.
 from __future__ import annotations
 
 from dataclasses import asdict
+from importlib.util import find_spec
 from pathlib import Path
 from typing import Any
 
@@ -86,10 +87,26 @@ class WorkbenchController:
     def authority_profiles() -> list[dict[str, Any]]:
         return [profile.to_dict() for profile in AUTHORITY_PROFILES.values()]
 
+    @staticmethod
+    def backend_available(backend: str) -> bool:
+        """Return whether the optional runtime for a product backend is installed."""
+
+        if backend in {"fixture", "ollama"}:
+            return True
+        if backend == "openai":
+            return find_spec("openai") is not None
+        if backend == "hf-transformers":
+            return all(
+                find_spec(module) is not None
+                for module in ("sentence_transformers", "transformers", "torch")
+            )
+        return False
+
     def backends(self) -> list[dict[str, str]]:
         return [
             {"backend": backend, "note": _BACKEND_NOTES[backend]}
             for backend in BACKENDS
+            if self.backend_available(backend)
         ]
 
     @staticmethod
@@ -108,6 +125,8 @@ class WorkbenchController:
             return "lexical"
         if backend == "ollama":
             return "ollama"
+        if backend == "openai":
+            return "openai"
         return "sentence-transformers"
 
     @staticmethod
@@ -864,6 +883,12 @@ class WorkbenchController:
     ) -> None:
         if backend not in BACKENDS:
             raise ValueError(f"unsupported Workbench backend: {backend}")
+        if not WorkbenchController.backend_available(backend):
+            extra = "openai" if backend == "openai" else "models"
+            raise ValueError(
+                f"backend {backend!r} is not installed; install shadowseed[{extra}] "
+                "alongside shadowseed[workbench]"
+            )
         if runtime_mode not in RUNTIME_MODES:
             raise ValueError(f"unsupported Workbench runtime mode: {runtime_mode}")
         if embedding_backend not in EMBEDDING_BACKENDS:
@@ -879,6 +904,12 @@ class WorkbenchController:
         if effective_revision_backend not in BACKENDS:
             raise ValueError(
                 f"unsupported Workbench revision backend: {effective_revision_backend}"
+            )
+        if not WorkbenchController.backend_available(effective_revision_backend):
+            extra = "openai" if effective_revision_backend == "openai" else "models"
+            raise ValueError(
+                f"revision backend {effective_revision_backend!r} is not installed; "
+                f"install shadowseed[{extra}] alongside shadowseed[workbench]"
             )
         if (
             effective_revision_backend != "fixture"
