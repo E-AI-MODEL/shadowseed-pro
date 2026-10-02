@@ -148,10 +148,20 @@ SETTING_METADATA: dict[str, dict[str, str]] = {
         STATEFUL,
         "The flag changes whether historical promotion is rechecked against current Gate semantics.",
     ),
+    "allow_same_turn_revision": _meta(
+        "same_turn_revision",
+        STATEFUL,
+        "The switch controls whether a newly authorized seed may revise the current draft once.",
+    ),
+    "self_derived_signal_policy": _meta(
+        "observation_provenance",
+        STATEFUL,
+        "The policy controls how future model-derived observations are retained without changing historical provenance.",
+    ),
     "allow_self_reinforcement": _meta(
         "observation_provenance",
         STATEFUL,
-        "The flag changes whether future SSL-exposed observations may feed the existing memory loop.",
+        "Legacy compatibility field; 0.11 maps it to same-turn revision without reopening self-derived authority.",
     ),
     # Product aliases. They are persisted explanation/control values.
     "ssl_intensity": _meta(
