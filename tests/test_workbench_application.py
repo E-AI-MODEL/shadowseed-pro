@@ -9,6 +9,13 @@ from shadowseed.application.configuration import REBUILD_REQUIRED, setting_metad
 from shadowseed.application.feedback import FeedbackService
 from shadowseed.application.inspection import InspectionService
 from shadowseed.application.models import SessionConfig
+from shadowseed.application.orchestration import (
+    BLOCKED,
+    HUMAN_TURN,
+    OPTIONAL_REVIEW,
+    SSL_TURN,
+    derive_seed_orchestration,
+)
 from shadowseed.application.scenarios import parse_scenario
 from shadowseed.application.sessions import service_for_workspace
 from shadowseed.core_config import SSLCoreConfig
@@ -558,3 +565,85 @@ def test_inspection_exposes_setting_owner_and_apply_mode(tmp_path) -> None:
     recurrence = view["setting_metadata"]["recurrence_mode"]
     assert recurrence["component"] == "recurrence"
     assert recurrence["apply_mode"] == REBUILD_REQUIRED
+
+
+def test_orchestration_is_read_only_and_defaults_to_ssl_turn(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Orchestration empty",
+        profile_id="balanced",
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="autonomous",
+    )
+    before = controller.sessions.load(session_id)["state"]
+
+    view = controller.session_view(session_id)
+    after = controller.sessions.load(session_id)["state"]
+
+    assert view["orchestration"]["state"] == SSL_TURN
+    assert before == after
+
+
+def test_assisted_mature_seed_maps_to_human_turn(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Assisted handoff",
+        profile_id="balanced",
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="assisted",
+    )
+    controller.send_turn(session_id, "What Privacy Gap Remains?")
+    controller.send_turn(session_id, "What Privacy Gap Remains?")
+    controller.send_turn(session_id, "What Privacy Gap Remains?")
+
+    view = controller.session_view(session_id)
+    mature = [
+        seed for seed in view["seeds"]
+        if int(seed.get("occurrence_count", 0))
+        >= int(view["core_config"].get("min_occurrences_for_gate", 3))
+    ]
+    assert mature
+    assert any(seed["orchestration"]["state"] == HUMAN_TURN for seed in mature)
+    assert view["orchestration"]["state"] == HUMAN_TURN
+
+
+def test_promoted_authorized_seed_maps_to_optional_review() -> None:
+    orchestration = derive_seed_orchestration(
+        {
+            "id": "ss_authorized",
+            "status": "PROMOTED",
+            "blocking": False,
+            "current_gate_authorized": True,
+            "occurrence_count": 3,
+            "evidence_count": 0,
+        },
+        authority_profile_id="autonomous",
+        gate_policy_id="exploratory",
+        recurrence_threshold=3,
+    )
+
+    assert orchestration["state"] == OPTIONAL_REVIEW
+    assert orchestration["required_action"] is None
+    assert orchestration["component"] == "point_of_use_authorization"
+
+
+def test_blocking_contradiction_maps_to_blocked(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Blocked orchestration",
+        profile_id="balanced",
+        backend="fixture",
+        runtime_mode="live",
+    )
+    controller.send_turn(session_id, "What Privacy Gap Remains?")
+    view = controller.session_view(session_id)
+    seed_id = str(view["seeds"][0]["id"])
+    controller.falsify_seed(session_id, seed_id)
+
+    blocked_view = controller.session_view(session_id)
+    blocked = next(seed for seed in blocked_view["seeds"] if str(seed["id"]) == seed_id)
+    assert blocked["orchestration"]["state"] == BLOCKED
+    assert blocked["orchestration"]["required_action"] == "resolve_contradiction"
+    assert blocked_view["orchestration"]["state"] == BLOCKED

@@ -11,6 +11,10 @@ from datetime import datetime, timezone
 from typing import Any
 
 from shadowseed.application.configuration import setting_metadata
+from shadowseed.application.orchestration import (
+    aggregate_session_orchestration,
+    derive_seed_orchestration,
+)
 from shadowseed.application.sessions import SessionService
 from shadowseed.gate.current_authority import snapshot_meets_current_gate
 
@@ -146,14 +150,21 @@ class InspectionService:
                     " It was promoted under an earlier Gate state, but the current "
                     "Gate no longer authorizes point-of-use influence."
                 )
-            decorated.append(
-                {
-                    **seed,
-                    "blocking": blocking,
-                    "current_gate_authorized": current_gate_authorized,
-                    "plain_explanation": plain_explanation,
-                }
+            decorated_seed = {
+                **seed,
+                "blocking": blocking,
+                "current_gate_authorized": current_gate_authorized,
+                "plain_explanation": plain_explanation,
+            }
+            decorated_seed["orchestration"] = derive_seed_orchestration(
+                decorated_seed,
+                authority_profile_id=authority_profile_id,
+                gate_policy_id=effective_gate_policy_id,
+                recurrence_threshold=int(
+                    manager_config.get("min_occurrences_for_gate", 3)
+                ),
             )
+            decorated.append(decorated_seed)
 
         review_seed_ids: list[str] = []
         if (
@@ -223,6 +234,9 @@ class InspectionService:
                 persisted_config.get("allow_self_reinforcement", False)
             ),
             "authority_review_seed_ids": review_seed_ids,
+            "orchestration": aggregate_session_orchestration(
+                [dict(seed["orchestration"]) for seed in decorated]
+            ),
             "created_at": stored["created_at"],
             "updated_at": stored["updated_at"],
             "turn": int(state.get("turn", len(state.get("turn_reports", [])))),
