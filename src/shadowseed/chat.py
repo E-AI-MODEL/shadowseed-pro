@@ -664,6 +664,24 @@ class ShadowChatSession:
             "transport": "role_structured_chat" if native_chat else "compat_prompt_fallback",
         }
 
+    def _detector_audit(self) -> dict[str, Any]:
+        """Return the detector contract and parser trace without mutating state."""
+
+        prompt_metadata = getattr(self.detector, "last_prompt_metadata", None)
+        parse_diagnostics = getattr(self.detector, "last_parse_diagnostics", None)
+        raw_output = getattr(self.detector, "last_raw_output", None)
+        return {
+            "prompt_contract": (
+                dict(prompt_metadata) if isinstance(prompt_metadata, dict) else None
+            ),
+            "raw_output": None if raw_output is None else str(raw_output),
+            "parse_diagnostics": (
+                dict(parse_diagnostics)
+                if isinstance(parse_diagnostics, dict)
+                else None
+            ),
+        }
+
     def _filter_ssl_attributed_candidates(
         self,
         candidates: list[str],
@@ -1156,6 +1174,12 @@ class ShadowChatSession:
                 dict(item) for item in prepared.influence_decisions
             ] + self_reinforcement_decisions,
             "detected_candidates": raw_candidates,
+            "detector_audit": self._detector_audit(),
+            "intake_diagnostics": {
+                "normalized_candidates": list(ingest.get("normalized_candidates", [])),
+                "accepted": [dict(item) for item in ingest.get("accepted", [])],
+                "rejected": [dict(item) for item in ingest.get("rejected", [])],
+            },
             "prompt_contracts": {
                 "answer_generation": dict(ANSWER_GENERATION_PROMPT_META),
                 "candidate_context": dict(CANDIDATE_CONTEXT_PROMPT_META),
@@ -1502,6 +1526,12 @@ class ShadowChatSession:
                 if getattr(self.detector, "last_prompt_metadata", None)
                 else None
             ),
+            "detector_audit": self._detector_audit(),
+            "intake_diagnostics": {
+                "normalized_candidates": list(ingest.get("normalized_candidates", [])),
+                "accepted": [dict(item) for item in ingest.get("accepted", [])],
+                "rejected": [dict(item) for item in ingest.get("rejected", [])],
+            },
             "candidate_observations": [item.to_dict() for item in observations],
             "seeds_born_weightless": born,
             "promoted_this_observation": promoted_now,
