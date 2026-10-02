@@ -43,6 +43,26 @@ def test_production_controller_rejects_remote_ollama_before_session_creation(
     assert controller.workspace.repository.counts()["sessions"] == before
 
 
+def test_production_controller_rejects_remote_ollama_embedding_endpoint(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.setenv("OLLAMA_HOST", "http://192.0.2.25:11434")
+    controller = ProductionLocalWorkbenchController(tmp_path / "workspace")
+    before = controller.workspace.repository.counts()["sessions"]
+
+    with pytest.raises(ProviderPolicyError, match="loopback endpoint"):
+        controller.create_session(
+            title="remote embedding target",
+            profile_id="demo",
+            backend="fixture",
+            runtime_mode="live",
+            embedding_backend="ollama",
+        )
+
+    assert controller.workspace.repository.counts()["sessions"] == before
+
+
 def test_production_operational_log_never_contains_prompt_or_evidence_text(tmp_path: Path) -> None:
     controller = ProductionLocalWorkbenchController(tmp_path / "workspace")
     sentinel_prompt = "PRIVATE-PROMPT-SENTINEL"
