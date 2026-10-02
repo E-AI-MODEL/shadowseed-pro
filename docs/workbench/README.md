@@ -19,7 +19,7 @@ Use the download/open route only when a verified GitHub release for the version 
 5. The app creates/opens the local `~/.shadowseed` workspace and binds the UI to loopback.
 6. Choose a model, create a chat and start talking.
 
-Model weights are intentionally separate. Fixture works offline for mechanics. Ollama uses local installed models. Hugging Face/Sentence Transformers may acquire model material on first use. Hosted OpenAI is explicit and credential-dependent.
+Model weights are intentionally separate. Fixture works offline for mechanics. The normal Workbench and standalone are Ollama-first: Ollama uses locally installed chat models plus `embeddinggemma` for semantic matching. Hugging Face/Sentence Transformers require the separate `models` extra, and hosted OpenAI requires the separate `openai` extra. Those optional provider stacks are not bundled into the normal standalone.
 
 A valid 0.10.1 release contains three standalone archives and manifests, `PROVENANCE.json`, `SHA256SUMS`, a Python wheel, source distribution, and `LICENSE`. Frozen bundles must pass their packaged product self-test and carry the exact repository license hash before upload. The macOS archive must additionally preserve a valid final application seal after every bundle mutation, contain the first-launch helper and README, survive archive extraction, and pass the frozen self-test from the round-tripped app before release. Apple Developer ID signing and notarization are not required or claimed.
 
@@ -122,6 +122,10 @@ See [evidence efficacy](../research/evidence-efficacy.md), [privacy guidance](pr
 
 ```bash
 python -m pip install "shadowseed[workbench]"
+
+# Optional provider runtimes:
+python -m pip install "shadowseed[workbench,models]"
+python -m pip install "shadowseed[workbench,openai]"
 shadowseed doctor
 shadowseed workbench
 ```

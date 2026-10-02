@@ -25,7 +25,7 @@ Useful tester questions include:
 
 Use the deterministic fixture first for installation, UI, export and workflow testing. A fixture run proves product mechanics only. It is not evidence that Shadowseed improves a real model.
 
-Move to Ollama, Hugging Face Transformers or OpenAI only when a test requires a real backend. The export records model/backend configuration automatically; still describe the intended test protocol when contributing data.
+Move to Ollama when a test requires the normal local real-model path. Hugging Face Transformers and OpenAI are optional provider runtimes for Python installations and require `[models]` or `[openai]`; they are intentionally absent from the normal standalone. The export records model/backend configuration automatically; still describe the intended test protocol when contributing data.
 
 ## Normal chat and paired comparison
 

@@ -40,8 +40,22 @@ def test_real_model_product_default_uses_semantic_embedding() -> None:
     assert WorkbenchController.default_embedding_backend("ollama") == "ollama"
     assert WorkbenchController.default_embedding_model("ollama") == "embeddinggemma"
     assert WorkbenchController.default_embedding_model("sentence-transformers") is None
-    for backend in ("hf-transformers", "openai"):
-        assert WorkbenchController.default_embedding_backend(backend) == "sentence-transformers"
+    assert WorkbenchController.default_embedding_backend("hf-transformers") == "sentence-transformers"
+    assert WorkbenchController.default_embedding_backend("openai") == "openai"
+
+
+def test_optional_provider_availability_is_runtime_scoped(monkeypatch) -> None:
+    available = {"openai"}
+
+    monkeypatch.setattr(
+        "shadowseed.workbench.controller.find_spec",
+        lambda module: object() if module in available else None,
+    )
+
+    assert WorkbenchController.backend_available("fixture") is True
+    assert WorkbenchController.backend_available("ollama") is True
+    assert WorkbenchController.backend_available("openai") is True
+    assert WorkbenchController.backend_available("hf-transformers") is False
 
 
 def test_ollama_workbench_session_persists_resolved_embedding_identity(

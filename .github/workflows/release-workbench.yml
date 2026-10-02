@@ -241,10 +241,16 @@ jobs:
           assert checked["bomFormat"] == "CycloneDX"
           assert checked["specVersion"] == "1.5"
           assert checked.get("components")
-          assert any(
-              item["name"] == "torch" and item["version"].endswith("+cpu")
+          component_names = {
+              str(item["name"]).lower().replace("_", "-")
               for item in checked["components"]
-          )
+          }
+          forbidden = {"torch", "transformers", "sentence-transformers", "openai"}
+          unexpected = sorted(component_names & forbidden)
+          if unexpected:
+              raise SystemExit(
+                  f"thin release SBOM contains optional provider stacks: {unexpected}"
+              )
           PY
 
       - name: Download verified standalone assets from exact-SHA run
@@ -337,50 +343,55 @@ jobs:
           uv run --no-sync python scripts/verify_distribution_license.py --dist-dir dist --license LICENSE
           cp dist/* release-assets/
 
-      - name: Installed wheel smoke against locked Workbench dependencies
+      - name: Installed wheel smoke against locked thin Workbench dependencies
         if: steps.preflight.outputs.should_release == 'true'
         shell: bash
         run: |
           set -euo pipefail
           wheel="$(ls dist/*.whl)"
-          uv export --locked --extra workbench --no-emit-project --no-hashes             --format requirements.txt --output-file "${RUNNER_TEMP}/release-workbench-locked.txt"
+          uv export --locked --extra workbench --no-emit-project --no-hashes \
+            --format requirements.txt --output-file "${RUNNER_TEMP}/release-workbench-locked.txt"
           python - <<'PY'
           import os
           from pathlib import Path
 
           source = Path(os.environ["RUNNER_TEMP"]) / "release-workbench-locked.txt"
-          pypi = Path(os.environ["RUNNER_TEMP"]) / "release-workbench-pypi.txt"
-          torch = Path(os.environ["RUNNER_TEMP"]) / "release-workbench-torch.txt"
           lines = source.read_text(encoding="utf-8").splitlines()
-          cpu_lines = [
-              line for line in lines if line.startswith("torch==") and "+cpu" in line
-          ]
-          if len(cpu_lines) != 1:
-              raise SystemExit(f"expected exactly one locked CPU torch record, found {len(cpu_lines)}")
-          pypi.write_text(
-              "\n".join(line for line in lines if not line.startswith("torch==")) + "\n",
-              encoding="utf-8",
-          )
-          torch.write_text(cpu_lines[0] + "\n", encoding="utf-8")
+          names = {
+              line.split("==", 1)[0].strip().lower().replace("_", "-")
+              for line in lines
+              if "==" in line and not line.lstrip().startswith("#")
+          }
+          forbidden = {"torch", "transformers", "sentence-transformers", "openai"}
+          unexpected = sorted(names & forbidden)
+          if unexpected:
+              raise SystemExit(f"thin Workbench lock contains optional providers: {unexpected}")
           PY
           uv venv "${RUNNER_TEMP}/release-venv" --python 3.12
-          uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python"             --no-deps --index-url https://pypi.org/simple             -r "${RUNNER_TEMP}/release-workbench-pypi.txt"
-          torch_requirement="$(cat "${RUNNER_TEMP}/release-workbench-torch.txt")"
-          uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python"             --no-deps --index-url https://download.pytorch.org/whl/cpu             "$torch_requirement"
-          uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python"             --no-deps "${wheel}[workbench]"
+          uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python" \
+            --no-deps --index-url https://pypi.org/simple \
+            -r "${RUNNER_TEMP}/release-workbench-locked.txt"
+          uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python" \
+            --no-deps "${wheel}[workbench]"
           cd "${RUNNER_TEMP}"
           "${RUNNER_TEMP}/release-venv/bin/shadowseed" workbench --help
-          "${RUNNER_TEMP}/release-venv/bin/shadowseed-workbench" --self-test             --workspace "${RUNNER_TEMP}/wheel-workspace"             --self-test-output "${RUNNER_TEMP}/wheel-self-test.json"
+          "${RUNNER_TEMP}/release-venv/bin/shadowseed-workbench" --self-test \
+            --workspace "${RUNNER_TEMP}/wheel-workspace" \
+            --self-test-output "${RUNNER_TEMP}/wheel-self-test.json"
           "${RUNNER_TEMP}/release-venv/bin/python" - <<'PY'
           import json
+          from importlib.util import find_spec
           from pathlib import Path
+
           payload = json.loads(Path("wheel-self-test.json").read_text(encoding="utf-8"))
           assert payload["runtime_mode"] == "live"
           assert payload["comparison_generated"] is True
           assert payload["report_verified"] is True
           assert payload["support_verified"] is True
           assert payload["production_resolution_ui"] is True
-          print("installed wheel Workbench smoke OK")
+          for module in ("torch", "transformers", "sentence_transformers", "openai"):
+              assert find_spec(module) is None, module
+          print("installed thin wheel Workbench smoke OK")
           PY
 
       - name: Generate SHA256SUMS

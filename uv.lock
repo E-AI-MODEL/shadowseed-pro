@@ -4635,11 +4635,6 @@ vector-faiss = [
 workbench = [
     { name = "gradio" },
     { name = "httpx", extra = ["socks"] },
-    { name = "openai" },
-    { name = "sentence-transformers" },
-    { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'linux' and sys_platform != 'win32'" },
-    { name = "torch", version = "2.13.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-    { name = "transformers" },
 ]
 
 [package.metadata]
@@ -4651,23 +4646,18 @@ requires-dist = [
     { name = "httpx", extras = ["socks"], marker = "extra == 'workbench'", specifier = ">=0.28.0,<1" },
     { name = "numpy", specifier = ">=1.24" },
     { name = "openai", marker = "extra == 'openai'", specifier = ">=1.40" },
-    { name = "openai", marker = "extra == 'workbench'", specifier = ">=1.40" },
     { name = "pip-audit", marker = "extra == 'security'", specifier = "==2.10.1" },
     { name = "pyinstaller", marker = "extra == 'standalone-build'", specifier = "==6.15.0" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8.0" },
     { name = "pytest-cov", marker = "extra == 'test'", specifier = ">=5.0" },
     { name = "ruff", marker = "extra == 'test'", specifier = ">=0.6" },
     { name = "sentence-transformers", marker = "extra == 'models'", specifier = ">=2.7" },
-    { name = "sentence-transformers", marker = "extra == 'workbench'", specifier = ">=2.7" },
     { name = "setuptools", marker = "extra == 'build'", specifier = "==83.0.0" },
     { name = "shadowseed", extras = ["test", "build", "standalone-build", "security", "models", "vector", "openai", "workbench"], marker = "extra == 'dev'" },
     { name = "shadowseed", extras = ["vector-faiss", "vector-chroma"], marker = "extra == 'vector'" },
     { name = "torch", marker = "(sys_platform == 'linux' and extra == 'models') or (sys_platform == 'win32' and extra == 'models')", specifier = ">=2.2", index = "https://download.pytorch.org/whl/cpu" },
-    { name = "torch", marker = "(sys_platform == 'linux' and extra == 'workbench') or (sys_platform == 'win32' and extra == 'workbench')", specifier = ">=2.2", index = "https://download.pytorch.org/whl/cpu" },
     { name = "torch", marker = "sys_platform != 'linux' and sys_platform != 'win32' and extra == 'models'", specifier = ">=2.2" },
-    { name = "torch", marker = "sys_platform != 'linux' and sys_platform != 'win32' and extra == 'workbench'", specifier = ">=2.2" },
     { name = "transformers", marker = "extra == 'models'", specifier = ">=4.51" },
-    { name = "transformers", marker = "extra == 'workbench'", specifier = ">=4.51" },
     { name = "wheel", marker = "extra == 'build'", specifier = "==0.47.0" },
 ]
 provides-extras = ["models", "openai", "vector-faiss", "vector-chroma", "vector", "workbench", "test", "build", "standalone-build", "security", "dev"]
