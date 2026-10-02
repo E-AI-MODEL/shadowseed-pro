@@ -1260,9 +1260,9 @@ def build_vnext_app(
                 *result,
                 _seed_lifecycle(None),
                 gr.update(),
+                *_seed_action_updates(None),
                 extra_note,
                 extra_attest,
-                *_seed_action_updates(None),
             )
         try:
             view = ctl.session_view(session_id)
@@ -1278,21 +1278,21 @@ def build_vnext_app(
                     choices=_recent_seed_choices(view),
                     value=seed_id,
                 ),
+                *_seed_action_updates(seed),
                 extra_note,
                 extra_attest,
-                *_seed_action_updates(seed),
             )
         except Exception:
             return (
                 *result,
                 _seed_lifecycle(None),
                 gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
                 extra_note,
                 extra_attest,
-                gr.update(),
-                gr.update(),
-                gr.update(),
-                gr.update(),
             )
 
     def contradict_shell(session_id: str | None, seed_id: str | None):
@@ -2347,12 +2347,12 @@ def build_vnext_app(
                 seed_select,
                 lifecycle,
                 recent_seed,
-                evidence_note,
-                evidence_attest,
                 contradiction_button,
                 evidence_button,
                 resolution_basis,
                 resolve_contradiction_button,
+                evidence_note,
+                evidence_attest,
             ],
         )
 
@@ -2367,12 +2367,12 @@ def build_vnext_app(
                 seed_select,
                 lifecycle,
                 recent_seed,
-                evidence_note,
-                evidence_attest,
                 contradiction_button,
                 evidence_button,
                 resolution_basis,
                 resolve_contradiction_button,
+                evidence_note,
+                evidence_attest,
             ],
         )
 
