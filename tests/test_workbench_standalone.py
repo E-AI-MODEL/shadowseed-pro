@@ -35,10 +35,8 @@ def test_standalone_port_falls_back_to_another_loopback_port() -> None:
 
 def test_standalone_product_self_test(tmp_path: Path) -> None:
     pytest.importorskip("gradio")
-    pytest.importorskip("sentence_transformers")
-    pytest.importorskip("transformers")
-    pytest.importorskip("torch")
-    pytest.importorskip("openai")
+    pytest.importorskip("httpx")
+    pytest.importorskip("numpy")
 
     output = tmp_path / "self-test.json"
     payload = run_standalone_self_test(tmp_path / "workspace", output_path=output)
@@ -51,6 +49,10 @@ def test_standalone_product_self_test(tmp_path: Path) -> None:
     assert payload["multiprocessing_spawn"] is None
     assert set(payload["runtime_imports"]) >= {
         "gradio",
+        "httpx",
+        "numpy",
+    }
+    assert set(payload["optional_provider_modules"]) == {
         "sentence_transformers",
         "transformers",
         "torch",
@@ -66,3 +68,12 @@ def test_standalone_entrypoint_calls_freeze_support_before_main() -> None:
 
     assert "multiprocessing.freeze_support()" in entrypoint
     assert entrypoint.index("multiprocessing.freeze_support()") < entrypoint.index("main()")
+
+
+def test_frozen_build_excludes_optional_provider_stacks() -> None:
+    source = Path("scripts/build_standalone.py").read_text(encoding="utf-8")
+
+    for module in ("sentence_transformers", "transformers", "torch", "openai"):
+        assert f'"--exclude-module",\n        "{module}",' in source
+    assert '"--collect-data",\n        "sentence_transformers",' not in source
+    assert '"--collect-submodules",\n        "transformers.models",' not in source
