@@ -719,3 +719,22 @@ def test_default_revision_role_reuses_generation_backend() -> None:
     state = session.to_state()
     assert state["session_config"]["revision_backend"] == "fixture"
     assert state["session_config"]["revision_model_id"] is None
+
+
+
+def test_revision_role_roundtrip_preserves_effective_configuration() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        revision_backend="fixture",
+        runtime_mode="live",
+        embedding_backend="lexical",
+        allow_same_turn_revision=True,
+    )
+
+    state = session.to_state()
+    restored = ShadowChatSession.from_state(state)
+
+    assert restored.revision_backend == "fixture"
+    assert restored.revision_model_id is None
+    assert restored.allow_same_turn_revision is True
+    assert restored.revision_model is restored.model
