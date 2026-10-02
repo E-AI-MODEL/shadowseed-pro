@@ -474,6 +474,8 @@ def test_maximum_gate_strictness_uses_canonical_evidence_backed_policy() -> None
 
     assert settings["authority_profile_id"] == "strict"
     assert settings["gate_policy_id"] == "evidence_backed"
+    assert settings["promotion_threshold"] == 0.6
+    assert settings["validation_increment"] == 0.2
     assert settings["gate_policy_id"] != "legacy_evidence_required"
 
 
