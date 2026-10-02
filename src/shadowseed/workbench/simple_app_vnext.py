@@ -181,7 +181,7 @@ _PRESET_SETTINGS: dict[str, dict[str, Any]] = {
         "min_trace_for_gate": 0.5,
         "promotion_threshold": 0.6,
         "validation_increment": 0.2,
-        "allow_self_reinforcement": False,
+        "allow_same_turn_revision": False,
     },
     "gebalanceerd": {
         "surface_threshold": 0.30,
@@ -195,7 +195,7 @@ _PRESET_SETTINGS: dict[str, dict[str, Any]] = {
         "min_trace_for_gate": 0.5,
         "promotion_threshold": 0.5,
         "validation_increment": 0.2,
-        "allow_self_reinforcement": False,
+        "allow_same_turn_revision": False,
     },
     "onderzoekend": {
         "surface_threshold": 0.20,
@@ -209,7 +209,7 @@ _PRESET_SETTINGS: dict[str, dict[str, Any]] = {
         "min_trace_for_gate": 0.0,
         "promotion_threshold": 0.4,
         "validation_increment": 0.2,
-        "allow_self_reinforcement": False,
+        "allow_same_turn_revision": False,
     },
 }
 
@@ -1374,7 +1374,12 @@ def build_vnext_app(
             str(settings.get("authority_profile_id", "strict")),
             str(settings.get("gate_policy_id") or "evidence_backed"),
             str(settings.get("recurrence_mode", "cluster")),
-            bool(settings.get("allow_self_reinforcement", False)),
+            bool(
+                settings.get(
+                    "allow_same_turn_revision",
+                    settings.get("allow_self_reinforcement", False),
+                )
+            ),
             _settings_json(view),
         )
 
@@ -1430,7 +1435,7 @@ def build_vnext_app(
         authority_value: str,
         gate_policy_value: str,
         recurrence_value: str,
-        self_reinforcement_value: bool,
+        same_turn_revision_value: bool,
         external_confirmed: bool,
         force: bool,
     ):
@@ -1444,7 +1449,7 @@ def build_vnext_app(
             "authority_profile_id": authority_value,
             "gate_policy_id": gate_policy_value,
             "recurrence_mode": recurrence_value,
-            "allow_self_reinforcement": bool(self_reinforcement_value),
+            "allow_same_turn_revision": bool(same_turn_revision_value),
         }
         try:
             view = ctl.update_session_advanced(
@@ -1498,7 +1503,7 @@ def build_vnext_app(
             authority_profile_id=str(settings.get("authority_profile_id", "strict")),
             embedding_backend=ctl.default_embedding_backend(provider_value),
             external_confirmed=bool(hosted_confirmed),
-            allow_self_reinforcement=bool(settings.get("allow_self_reinforcement", False)),
+            allow_same_turn_revision=bool(settings.get("allow_same_turn_revision", False)),
         )
         ctl.update_session_advanced(
             session_id,
@@ -1667,8 +1672,8 @@ def build_vnext_app(
                             value=initial_controls[8],
                             label="Recurrence",
                         )
-                        self_reinforcement_control = gr.Checkbox(
-                            label="Self-reinforcement",
+                        same_turn_revision_control = gr.Checkbox(
+                            label="Herziening in dezelfde beurt",
                             value=initial_controls[9],
                         )
                         god_force = gr.Checkbox(
@@ -2092,7 +2097,7 @@ def build_vnext_app(
             authority_control,
             gate_policy_control,
             recurrence_control,
-            self_reinforcement_control,
+            same_turn_revision_control,
             god_json,
             control_result,
         ]
@@ -2114,7 +2119,7 @@ def build_vnext_app(
                 authority_control,
                 gate_policy_control,
                 recurrence_control,
-                self_reinforcement_control,
+                same_turn_revision_control,
                 settings_external_confirm,
                 god_force,
             ],
