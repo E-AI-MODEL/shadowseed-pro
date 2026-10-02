@@ -672,15 +672,11 @@ class ShadowChatSession:
         """Apply the self-derived observation boundary.
 
         A turn that already received SSL context is fail-closed by default.
-        The bounded experimental policy may retain those candidates as typed
-        self-derived observations, but they are never relabeled as ordinary
-        recurrence at the Gate.
+        Research policies may retain that detector output in the immutable
+        observation ledger, but it never enters canonical recurrence state.
         """
         if not surfaced_seed_ids:
             return list(candidates), []
-        # Self-derived detector output is always excluded from the canonical
-        # recurrence state. Research policies may retain it in the observation
-        # ledger, but cannot raise occurrence_count indirectly.
         return [], list(candidates)
 
     def _turn_live(self, question: str) -> dict[str, Any]:
@@ -1820,34 +1816,65 @@ class ShadowChatSession:
         }
 
         cluster_state = state.get("cluster_state")
-        if cluster_state is not None:
-            clusterer = RecurrenceClusterer(
-                threshold=float(cluster_state.get("threshold", DEFAULT_CLUSTER_THRESHOLD))
-            )
-            clusterer.centroids = [
-                np.asarray(items, dtype=float) for items in cluster_state.get("centroids", [])
-            ]
-            clusterer.centroid_counts = [
-                int(item) for item in cluster_state.get("centroid_counts", [])
-            ]
-            clusterer.recurrence_counts = [
-                int(item) for item in cluster_state.get("recurrence_counts", [])
-            ]
-            clusterer.counts = clusterer.recurrence_counts
-            clusterer.members = [list(items) for items in cluster_state.get("members", [])]
-            raw_seen_refs = cluster_state.get("seen_observation_refs")
-            if raw_seen_refs is None:
-                # Historical snapshots predate observation-scoped recurrence.
-                # Preserve their stored recurrence count and start tracking refs
-                # only for future observations after restoration.
-                clusterer.seen_observation_refs = [set() for _ in clusterer.centroids]
-            else:
-                clusterer.seen_observation_refs = [
-                    {str(ref) for ref in items} for items in raw_seen_refs
+        if session.recurrence_mode == "cluster":
+            if cluster_state is not None:
+                stored_threshold = float(
+                    cluster_state.get("threshold", DEFAULT_CLUSTER_THRESHOLD)
+                )
+                active_threshold = (
+                    DEFAULT_CLUSTER_THRESHOLD
+                    if session.clusterer is None
+                    else float(session.clusterer.threshold)
+                )
+                if not math.isclose(
+                    stored_threshold,
+                    active_threshold,
+                    rel_tol=0.0,
+                    abs_tol=1e-12,
+                ):
+                    raise ValueError(
+                        "persisted cluster_state threshold does not match the "
+                        "active cluster_threshold; start a new session or rebuild "
+                        "recurrence state"
+                    )
+                clusterer = RecurrenceClusterer(threshold=active_threshold)
+                clusterer.centroids = [
+                    np.asarray(items, dtype=float)
+                    for items in cluster_state.get("centroids", [])
                 ]
-                if len(clusterer.seen_observation_refs) != len(clusterer.centroids):
-                    raise ValueError("invalid cluster observation-ref state")
-            session.clusterer = clusterer
+                clusterer.centroid_counts = [
+                    int(item) for item in cluster_state.get("centroid_counts", [])
+                ]
+                clusterer.recurrence_counts = [
+                    int(item) for item in cluster_state.get("recurrence_counts", [])
+                ]
+                clusterer.counts = clusterer.recurrence_counts
+                clusterer.members = [
+                    list(items) for items in cluster_state.get("members", [])
+                ]
+                raw_seen_refs = cluster_state.get("seen_observation_refs")
+                if raw_seen_refs is None:
+                    # Historical snapshots predate observation-scoped recurrence.
+                    # Preserve their stored recurrence count and start tracking refs
+                    # only for future observations after restoration.
+                    clusterer.seen_observation_refs = [
+                        set() for _ in clusterer.centroids
+                    ]
+                else:
+                    clusterer.seen_observation_refs = [
+                        {str(ref) for ref in items} for items in raw_seen_refs
+                    ]
+                    if len(clusterer.seen_observation_refs) != len(
+                        clusterer.centroids
+                    ):
+                        raise ValueError("invalid cluster observation-ref state")
+                session.clusterer = clusterer
+        else:
+            # A pairwise session must not silently reactivate persisted cluster
+            # state. Structural recurrence changes require an explicit rebuild.
+            session.clusterer = None
+            session.seed_to_cluster = {}
+            session.cluster_rep = {}
         return session
 
     def transcript(self) -> dict[str, Any]:
