@@ -105,6 +105,133 @@ def authority_config_digest(state: Mapping[str, Any]) -> str:
     return sha256_text(canonical_json(authority_config_projection(state)))
 
 
+_BEHAVIOR_SESSION_CONFIG_KEYS = (
+    "backend",
+    "model_id",
+    "revision_backend",
+    "revision_model_id",
+    "max_new_tokens",
+    "embedding_backend",
+    "embedding_model",
+    "surface_threshold",
+    "surface_top_k",
+    "early_turn_margin",
+    "early_turn_history",
+    "resurface_margin",
+    "max_seeds_per_turn",
+    "recurrence_mode",
+    "cluster_threshold",
+    "runtime_mode",
+    "gate_policy_id",
+    "authority_profile_id",
+    "allow_toy_embedder",
+    "revalidate_current_gate",
+    "allow_same_turn_revision",
+    "self_derived_signal_policy",
+)
+_BEHAVIOR_MANAGER_CONFIG_KEYS = (
+    "trace_start",
+    "half_life_turns",
+    "dedup_threshold",
+    "promotion_threshold",
+    "dormant_threshold",
+    "validation_increment",
+    "contradiction_penalty",
+    "reward_step",
+    "penalty_step",
+    "max_trace",
+    "reactivation_increment",
+    "min_occurrences_for_gate",
+    "min_evidence_for_gate",
+    "min_trace_for_gate",
+    "max_seed_words",
+    "dormant_ttl_turns",
+    "contradiction_trace_penalty",
+)
+
+
+def _project_prompt_contracts(value: Any) -> dict[str, dict[str, Any]]:
+    if not isinstance(value, Mapping):
+        return {}
+    projected: dict[str, dict[str, Any]] = {}
+    for role, raw in sorted(value.items(), key=lambda item: str(item[0])):
+        if not isinstance(raw, Mapping):
+            continue
+        projected[str(role)] = {
+            "prompt_id": raw.get("prompt_id"),
+            "prompt_version": raw.get("prompt_version"),
+            "component": raw.get("component"),
+            "template_sha256": raw.get("template_sha256"),
+            "input_contract": list(raw.get("input_contract", []) or []),
+            "output_contract": raw.get("output_contract"),
+        }
+    return projected
+
+
+def behavior_config_projection(state: Mapping[str, Any]) -> dict[str, Any]:
+    """Project only configuration that can materially change runtime behavior.
+
+    The authority digest remains a separate security contract. This broader
+    projection exists for reproducibility and deliberately excludes titles,
+    notes, UI state and other display-only metadata.
+    """
+
+    session_config = state.get("session_config", {})
+    if not isinstance(session_config, Mapping):
+        session_config = {}
+    manager = state.get("manager", {})
+    if not isinstance(manager, Mapping):
+        manager = {}
+    manager_config = manager.get("config", {})
+    if not isinstance(manager_config, Mapping):
+        manager_config = {}
+    runtime = state.get("behavior_runtime", {})
+    if not isinstance(runtime, Mapping):
+        runtime = {}
+
+    model_roles = runtime.get("model_roles", {})
+    if not isinstance(model_roles, Mapping):
+        model_roles = {}
+    detector_role = runtime.get("detector_role", {})
+    if not isinstance(detector_role, Mapping):
+        detector_role = {}
+
+    return {
+        "session_config": {
+            key: session_config.get(key) for key in _BEHAVIOR_SESSION_CONFIG_KEYS
+        },
+        "manager_config": {
+            key: manager_config.get(key) for key in _BEHAVIOR_MANAGER_CONFIG_KEYS
+        },
+        "model_roles": {
+            str(role): {
+                "backend": value.get("backend"),
+                "model_id": value.get("model_id"),
+                "runtime_name": value.get("runtime_name"),
+            }
+            for role, value in sorted(model_roles.items(), key=lambda item: str(item[0]))
+            if isinstance(value, Mapping)
+        },
+        "detector_role": {
+            "backend": detector_role.get("backend"),
+            "model_id": detector_role.get("model_id"),
+            "runtime_name": detector_role.get("runtime_name"),
+        },
+        "prompt_contracts": _project_prompt_contracts(
+            runtime.get("prompt_contracts", {})
+        ),
+    }
+
+
+def behavior_config_digest(state: Mapping[str, Any]) -> str:
+    return sha256_text(canonical_json(behavior_config_projection(state)))
+
+
+def behavior_config_epoch(state: Mapping[str, Any]) -> str:
+    digest = behavior_config_digest(state)
+    return f"behavior-sha256::{digest[:24]}"
+
+
 def minimal_runtime_commit(state: Mapping[str, Any]) -> dict[str, Any]:
     """Commit to authority/Gate/use records without storing prompts, answers or seed text."""
 
@@ -127,6 +254,9 @@ def minimal_runtime_commit(state: Mapping[str, Any]) -> dict[str, Any]:
         "authority_digest": authority_digest(state),
         "authority_config": authority_config_projection(state),
         "authority_config_digest": authority_config_digest(state),
+        "behavior_config": behavior_config_projection(state),
+        "behavior_config_digest": behavior_config_digest(state),
+        "behavior_config_epoch": behavior_config_epoch(state),
         "gate_events": event_commitments(manager.get("gate_events", []), "event_id"),
         "contradictions": event_commitments(
             manager.get("contradiction_records", []), "contradiction_id"
