@@ -8,6 +8,17 @@ from pathlib import Path
 from shadowseed.workbench.controller import WorkbenchController
 
 
+def _gradio():
+    try:
+        import gradio as gr
+    except ImportError as exc:  # pragma: no cover - optional dependency
+        raise RuntimeError(
+            "The Workbench UI requires the workbench extra: "
+            "python -m pip install 'shadowseed[workbench]'"
+        ) from exc
+    return gr
+
+
 def _is_loopback(host: str) -> bool:
     normalized = str(host).strip().lower()
     if normalized == "localhost":
