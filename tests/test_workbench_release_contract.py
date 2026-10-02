@@ -89,6 +89,7 @@ def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -
     assert '.head_sha == $sha' in workflow
     assert 'gh run watch "$run_id" --exit-status' in workflow
     assert 'if [ "$conclusion" != "success" ]; then' in workflow
+    assert "main advanced while release assurance was running" in workflow
     assert "standalone_run_id" in workflow
     assert "steps.preflight.outputs.standalone_run_id" in workflow
     assert 'release_tag="v${release_version}"' in workflow
