@@ -686,6 +686,25 @@ class ShadowChatSession:
             "transport": "role_structured_chat" if native_chat else "compat_prompt_fallback",
         }
 
+    def _model_role_audit(self) -> dict[str, dict[str, Any]]:
+        """Describe model roles without exposing credentials or provider state."""
+
+        return {
+            "generation": {
+                "backend": self.backend,
+                "model_id": self.model_id,
+                "runtime_name": str(getattr(self.model, "name", "unknown")),
+            },
+            "revision": {
+                "backend": self.revision_backend,
+                "model_id": self.revision_model_id,
+                "runtime_name": str(
+                    getattr(self.revision_model, "name", "unknown")
+                ),
+                "shares_generation_backend": self.revision_model is self.model,
+            },
+        }
+
     def _detector_audit(self) -> dict[str, Any]:
         """Return the detector contract and parser trace without mutating state."""
 
@@ -1202,21 +1221,7 @@ class ShadowChatSession:
                 "accepted": [dict(item) for item in ingest.get("accepted", [])],
                 "rejected": [dict(item) for item in ingest.get("rejected", [])],
             },
-            "model_roles": {
-                "generation": {
-                    "backend": self.backend,
-                    "model_id": self.model_id,
-                    "runtime_name": str(getattr(self.model, "name", "unknown")),
-                },
-                "revision": {
-                    "backend": self.revision_backend,
-                    "model_id": self.revision_model_id,
-                    "runtime_name": str(
-                        getattr(self.revision_model, "name", "unknown")
-                    ),
-                    "shares_generation_backend": self.revision_model is self.model,
-                },
-            },
+            "model_roles": self._model_role_audit(),
             "prompt_contracts": {
                 "answer_generation": dict(ANSWER_GENERATION_PROMPT_META),
                 "candidate_context": dict(CANDIDATE_CONTEXT_PROMPT_META),
@@ -1426,6 +1431,7 @@ class ShadowChatSession:
             ),
             "detected_candidates": candidates,
             "detector_audit": self._detector_audit(),
+            "model_roles": self._model_role_audit(),
             "intake_diagnostics": {
                 "normalized_candidates": list(ingest.get("normalized_candidates", [])),
                 "accepted": [dict(item) for item in ingest.get("accepted", [])],
