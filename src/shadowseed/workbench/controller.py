@@ -15,6 +15,7 @@ from shadowseed.authority_profiles import AUTHORITY_PROFILES, get_authority_prof
 from shadowseed.core_config import SSLCoreConfig
 from shadowseed.application.ingest import prepare_sources
 from shadowseed.application.comparison import ComparisonService
+from shadowseed.application.contradiction_resolution import resolve_authorized_contradiction
 from shadowseed.application.exports import ExportService, verify_workbench_export
 from shadowseed.application.feedback import FeedbackService
 from shadowseed.application.inspection import InspectionService
@@ -629,6 +630,27 @@ class WorkbenchController:
             session_id,
             seed_id,
             actor=actor,
+        )
+
+    def resolve_contradiction(
+        self,
+        session_id: str,
+        seed_id: str,
+        *,
+        basis: str,
+        contradiction_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Resolve a blocking contradiction through the existing production flow."""
+
+        actor = self.workspace.local_actor_context()
+        return resolve_authorized_contradiction(
+            self.workspace.repository,
+            session_id,
+            seed_id,
+            basis=basis,
+            contradiction_id=contradiction_id,
+            actor=actor,
+            scope_id=self.workspace.workspace_id,
         )
 
     def submit_verified_evidence(
