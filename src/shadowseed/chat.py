@@ -678,8 +678,9 @@ class ShadowChatSession:
         """
         if not surfaced_seed_ids:
             return list(candidates), []
-        if self.self_derived_signal_policy == "bounded_experimental":
-            return list(candidates), []
+        # Self-derived detector output is always excluded from the canonical
+        # recurrence state. Research policies may retain it in the observation
+        # ledger, but cannot raise occurrence_count indirectly.
         return [], list(candidates)
 
     def _turn_live(self, question: str) -> dict[str, Any]:
@@ -942,30 +943,9 @@ class ShadowChatSession:
                 cluster_id = self.seed_to_cluster.get(seed_id)
                 if cluster_id is not None and self.cluster_rep.get(cluster_id) != seed_id:
                     continue
-            if (
-                first_pass_surfaced_seed_ids
-                and self.self_derived_signal_policy == "bounded_experimental"
-            ):
-                support_signal = ValidationSignal(
-                    kind=SignalKind.SELF_DERIVED,
-                    direction=SignalDirection.SUPPORT,
-                    strength=1.0,
-                    source_ref=provisional_context_ref,
-                    verified=False,
-                    independent=False,
-                    reason=(
-                        "candidate derived from an answer that already received "
-                        "Shadowseed context"
-                    ),
-                )
-            else:
-                support_signal = recurrence_signal(
-                    seed.occurrence_count,
-                    threshold=recurrence_threshold,
-                )
             event = self.manager.submit_signals(
                 seed_id,
-                [support_signal],
+                [recurrence_signal(seed.occurrence_count, threshold=recurrence_threshold)],
                 policy_id=self.gate_policy_id,
             )
             if (
