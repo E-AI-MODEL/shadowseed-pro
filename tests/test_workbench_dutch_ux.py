@@ -7,6 +7,7 @@ from shadowseed.workbench.simple_app_vnext import (
     _audit_summary,
     _authority_gate_summary,
     _orchestration_panel,
+    _provider_choices,
     _ollama_note,
     _seed_action_flags,
     _seed_story as _vnext_seed_story,
@@ -62,6 +63,18 @@ def test_default_workbench_is_dutch_chat_first_surface() -> None:
         '"Refresh runs"',
     ):
         assert refresh_label not in vnext_source
+
+def test_vnext_provider_choices_hide_uninstalled_optional_runtimes() -> None:
+    class ThinController:
+        @staticmethod
+        def backend_available(backend: str) -> bool:
+            return backend in {"ollama", "fixture"}
+
+    assert _provider_choices(ThinController()) == [
+        ("Ollama · lokaal", "ollama"),
+        ("Offline demo", "fixture"),
+    ]
+
 
 def test_vnext_ollama_note_makes_embedding_dependency_explicit() -> None:
     note = _ollama_note(["qwen3:8b"], "qwen3:8b")
