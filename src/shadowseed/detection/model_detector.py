@@ -438,12 +438,16 @@ CURRENT_PAIR_PROMPT_META = prompt_contract_metadata(
     prompt_version=CURRENT_PAIR_DETECTOR_VERSION,
     component="chat_detection",
     template=CURRENT_PAIR_GENERATIVE_PROMPT,
+    input_contract=("current_question", "draft_answer", "max_seeds", "max_seed_words"),
+    output_contract="zero_or_more_numbered_candidate_directions_or_NONE",
 )
 SOURCE_OBSERVATION_PROMPT_META = prompt_contract_metadata(
     prompt_id=SOURCE_OBSERVATION_DETECTOR_ID,
     prompt_version=SOURCE_OBSERVATION_DETECTOR_VERSION,
     component="source_detection",
     template=SOURCE_OBSERVATION_GENERATIVE_PROMPT,
+    input_contract=("source_observation", "source_context", "max_seeds", "max_seed_words"),
+    output_contract="zero_or_more_numbered_candidate_directions_or_NONE",
 )
 
 PROMPT_VARIANTS: tuple[str, ...] = ("absence", "generative", "current_pair")
