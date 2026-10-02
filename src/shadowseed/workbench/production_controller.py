@@ -37,15 +37,21 @@ class ProductionLocalWorkbenchController(WorkbenchController):
         backend: str,
         *,
         model_id: str | None,
+        revision_backend: str | None = None,
+        revision_model_id: str | None = None,
         runtime_mode: str = "live",
         embedding_backend: str = "lexical",
         allow_toy_embedder: bool = False,
         external_confirmed: bool,
     ) -> None:
         validate_production_local_backend(backend, embedding_backend)
+        effective_revision_backend = revision_backend or backend
+        validate_production_local_backend(effective_revision_backend, embedding_backend)
         WorkbenchController._validate_backend(
             backend,
             model_id=model_id,
+            revision_backend=revision_backend,
+            revision_model_id=revision_model_id,
             runtime_mode=runtime_mode,
             embedding_backend=embedding_backend,
             allow_toy_embedder=allow_toy_embedder,

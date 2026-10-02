@@ -203,6 +203,16 @@ class InspectionService:
             "profile_id": stored["profile_id"],
             "backend": stored["backend"],
             "model_id": stored["model_id"],
+            "revision_backend": (
+                session_config.get("revision_backend")
+                or persisted_config.get("revision_backend")
+                or stored["backend"]
+            ),
+            "revision_model_id": (
+                session_config.get("revision_model_id")
+                if session_config.get("revision_model_id") is not None
+                else persisted_config.get("revision_model_id", stored["model_id"])
+            ),
             "runtime_mode": runtime_mode,
             "authority_profile_id": authority_profile_id,
             "effective_gate_policy_id": effective_gate_policy_id,

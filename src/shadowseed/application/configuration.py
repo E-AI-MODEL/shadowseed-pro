@@ -42,6 +42,16 @@ SETTING_METADATA: dict[str, dict[str, str]] = {
         STATEFUL,
         "A model change affects future model calls but does not rewrite prior turns.",
     ),
+    "revision_backend": _meta(
+        "same_turn_revision",
+        STATEFUL,
+        "A revision provider change affects only future revision calls and does not rewrite prior turns.",
+    ),
+    "revision_model_id": _meta(
+        "same_turn_revision",
+        STATEFUL,
+        "A revision model change affects only future revision calls and does not rewrite prior turns.",
+    ),
     "max_new_tokens": _meta(
         "answer_generation",
         IMMEDIATE,

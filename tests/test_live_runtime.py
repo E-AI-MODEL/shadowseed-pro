@@ -374,6 +374,9 @@ def test_evaluation_mode_keeps_baseline_history_isolation(monkeypatch):
     assert [mode for _prompt, mode, _seeds in model.calls] == ["baseline", "ssl"]
     assert report["answer"] == "SSL answer."
     assert report["baseline_answer"] == "Baseline answer."
+    assert report["model_roles"]["generation"]["runtime_name"] == "recording"
+    assert report["model_roles"]["revision"]["runtime_name"] == "recording"
+    assert report["model_roles"]["revision"]["shares_generation_backend"] is True
     assert session.history == [("What about privacy and data?", "Baseline answer.")]
 
 
