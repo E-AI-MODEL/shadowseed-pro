@@ -44,6 +44,10 @@ def test_default_workbench_is_dutch_chat_first_surface() -> None:
     assert "from shadowseed.workbench.simple_app_vnext import build_vnext_app" in app_source
     assert "return build_vnext_app(workspace, controller=controller)" in app_source
 
+    assert 'gr.Markdown("Versie **0.10.1**"' not in vnext_source
+    assert 'f"Versie **{update_service.current_version}**"' in vnext_source
+    assert "Geen nieuwere release beschikbaar" in vnext_source
+
     for contract in (
         'elem_id="ss-left"',
         'elem_id="ss-center"',
