@@ -2257,7 +2257,15 @@ def build_vnext_app(
         seed_select.change(
             inspect_seed_shell,
             inputs=[active_session, seed_select],
-            outputs=[seed_story, lifecycle, seed_json],
+            outputs=[
+                seed_story,
+                lifecycle,
+                seed_json,
+                contradiction_button,
+                evidence_button,
+                resolution_basis,
+                resolve_contradiction_button,
+            ],
         )
 
         contradiction_button.click(
@@ -2273,6 +2281,10 @@ def build_vnext_app(
                 recent_seed,
                 evidence_note,
                 evidence_attest,
+                contradiction_button,
+                evidence_button,
+                resolution_basis,
+                resolve_contradiction_button,
             ],
         )
 
@@ -2289,6 +2301,30 @@ def build_vnext_app(
                 recent_seed,
                 evidence_note,
                 evidence_attest,
+                contradiction_button,
+                evidence_button,
+                resolution_basis,
+                resolve_contradiction_button,
+            ],
+        )
+
+        resolve_contradiction_button.click(
+            resolve_contradiction_shell,
+            inputs=[active_session, seed_select, resolution_basis],
+            outputs=[
+                seed_story,
+                shadow_metrics,
+                context_banner,
+                session_json,
+                seed_select,
+                lifecycle,
+                recent_seed,
+                evidence_note,
+                evidence_attest,
+                contradiction_button,
+                evidence_button,
+                resolution_basis,
+                resolve_contradiction_button,
             ],
         )
 
