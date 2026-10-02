@@ -15,8 +15,6 @@ on:
       - "docs/workbench/**"
       - ".github/workflows/standalone-workbench.yml"
       - ".github/workflows/release-workbench.yml"
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
