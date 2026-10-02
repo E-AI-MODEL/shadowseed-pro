@@ -93,7 +93,6 @@ def authority_config_projection(state: Mapping[str, Any]) -> dict[str, Any]:
         manager_config = {}
 
     return {
-        "projection_version": BEHAVIOR_CONFIG_PROJECTION_VERSION,
         "session_config": {
             key: session_config.get(key) for key in _AUTHORITY_SESSION_CONFIG_KEYS
         },
@@ -199,6 +198,7 @@ def behavior_config_projection(state: Mapping[str, Any]) -> dict[str, Any]:
         detector_role = {}
 
     return {
+        "projection_version": BEHAVIOR_CONFIG_PROJECTION_VERSION,
         "session_config": {
             key: session_config.get(key) for key in _BEHAVIOR_SESSION_CONFIG_KEYS
         },
