@@ -346,25 +346,37 @@ A blocking seed shows Geblokkeerd and identifies the required human resolution p
 
 Verified support does not silently close an open contradiction.
 
-### 13. Split same-turn revision from contaminated-observation handling
+### 13. Split same-turn revision from self-derived observation handling
 
 The current allow_self_reinforcement flag conflates two different mechanisms:
 
 1. whether a seed promoted during the current turn may trigger one bounded answer revision;
-2. whether detector output from an SSL-exposed answer is processed for research/audit.
+2. whether detector output that was causally exposed to SSL may later participate in Shadowseed learning.
 
-The canonical 0.11.0 concepts become:
+These become separate concepts:
 
 ~~~text
 allow_same_turn_revision
-allow_contaminated_observation_analysis
+self_derived_signal_policy
 ~~~
 
-allow_contaminated_observation_analysis controls whether SSL-exposed detector output is preserved and analysed as contaminated observation data. It does **not** make that output independent recurrence and does not grant it an authority-bearing recurrence path.
+Every SSL-exposed detector observation keeps explicit provenance linking it to the surfaced seed or seeds. It is never relabeled as independent recurrence and never becomes external evidence.
 
-ADR-003 remains binding: an SSL-exposed observation never earns independent recurrence credit on the same turn. A later clean observation may independently match the same candidate and enter normal recurrence.
+ADR-009 reopens the stronger ADR-003 decision that such an observation can never contribute authority at all. 0.11 may support a separately typed Gate signal, for example SELF_DERIVED, under a policy that can reject, cap, discount or delay that contribution.
 
-The historical 0.10.x allow_self_reinforcement value remains readable as compatibility metadata, but 0.11.0 must not translate it into a canonical setting that bypasses ADR-003.
+The required invariant is provenance and signal identity:
+
+~~~text
+clean independent recurrence -> RECURRENCE
+SSL-exposed observation      -> SELF_DERIVED, only if policy permits
+verified external support    -> EXTERNAL EVIDENCE
+~~~
+
+These signal classes are never interchangeable.
+
+The 0.11 default self_derived_signal_policy is selected only after testing for feedback-loop drift, false promotion, recovery and answer quality. A fail-closed setting remains available, but it is no longer doctrine solely because ADR-003 previously chose it.
+
+Same-turn revision itself never directly grants authority to the seed that caused the revision.
 
 ### 14. Same-turn influence is revision, not free regeneration
 
@@ -554,7 +566,7 @@ The production ledger already records runtime reconfiguration and authority-rela
 - recurrence mode;
 - cluster threshold;
 - Validation Gate profile/policy and authority thresholds;
-- contaminated-observation analysis policy;
+- self-derived signal policy and provenance;
 - same-turn revision policy;
 - surfacing policy.
 
@@ -572,7 +584,7 @@ Historical turn meaning is never silently rewritten after a God-mode change.
 6. Human actions first pass deployment authorization and then submit typed evidence/contradiction/resolution to canonical services. Verified support carries stable evidence identity under ADR-004. Humans do not edit weight or promotion directly.
 7. Relevance selects among eligible seeds. It does not validate them.
 8. Point-of-use must record allow/deny before influence.
-9. Revision may alter answer wording but cannot strengthen the seed that caused it. Any detector output from an SSL-exposed answer is contaminated under ADR-003 and earns no independent recurrence credit on that turn; only a later clean observation may qualify independently.
+9. Revision may alter answer wording but does not directly strengthen the seed that caused it. SSL-exposed detector output remains causally marked and, if a self-derived policy is enabled, may contribute only through its distinct typed Gate signal, never as independent recurrence or external evidence.
 10. A/B control output never enters live SSL state.
 11. UI state never substitutes for runtime state.
 12. God-mode changes are auditable and cannot silently reinterpret incompatible persisted state.
@@ -646,7 +658,7 @@ A 0.10.x patch remains appropriate only for isolated operational fixes that do n
 6. vNext exposes session- and seed-level human/SSL orchestration state.
 7. Assisted review-required seeds are visible in normal vNext UX.
 8. Blocking contradictions expose authorized resolution where supported.
-9. Same-turn revision and contaminated-observation analysis are independently configurable, while contaminated observations remain recurrence-ineligible under ADR-003.
+9. Same-turn revision and self-derived signal policy are independently configurable, and SSL-exposed observations remain explicitly typed rather than counted as independent recurrence.
 10. Same-turn revision receives the existing draft and may return it unchanged.
 11. Recurrence-mode/cluster-threshold changes cannot restore contradictory stale state.
 12. Embedding-space changes require new-session, rebuild or re-embedding semantics.
@@ -655,6 +667,7 @@ A 0.10.x patch remains appropriate only for isolated operational fixes that do n
 15. Same-turn A/B distinguishes exposure, textual change and human quality judgment.
 16. Source ingestion refreshes the same human/SSL handoff model.
 17. Turn reports carry a behavior/configuration epoch or digest.
-18. Existing Gate, contaminated-observation, evidence-identity, point-of-use, actor-authorization and production-audit invariants remain covered by regression tests.
-19. Ordinary new product sessions remain live/evidence-backed unless an explicit research mode selects another Gate regime.
-20. Expiry-related authority reset remains routed through the Validation Gate rather than direct lifecycle mutation.
+18. Existing Gate, evidence-identity, point-of-use and audit invariants retained by ADR-009 remain covered by regression tests.
+19. The 0.11 Research Preview default authority regime is chosen from new product evidence and is not inherited automatically from ADR-005/ADR-006.
+20. Self-derived observations keep explicit provenance and typed semantics; every permissive policy is tested for drift, self-amplification and false-promotion risk.
+21. Expiry-related authority reset remains routed through the Validation Gate rather than direct lifecycle mutation.
