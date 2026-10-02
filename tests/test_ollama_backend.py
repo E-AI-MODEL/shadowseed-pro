@@ -140,6 +140,57 @@ def test_client_embed_accepts_batch_input(monkeypatch) -> None:
     assert captured["body"]["input"] == ["eerste", "tweede"]
 
 
+def test_embeddinggemma_404_reports_required_ollama_version(monkeypatch) -> None:
+    calls: list[str] = []
+
+    def _urlopen(request, timeout=None):
+        calls.append(request.full_url)
+        if request.full_url.endswith("/api/embed"):
+            raise ollama_client.urllib.error.HTTPError(
+                request.full_url,
+                404,
+                "Not Found",
+                {},
+                io.BytesIO(b"404 page not found"),
+            )
+        if request.full_url.endswith("/api/version"):
+            return _FakeResponse(json.dumps({"version": "0.10.9"}).encode("utf-8"))
+        raise AssertionError(request.full_url)
+
+    monkeypatch.setattr(ollama_client.urllib.request, "urlopen", _urlopen)
+    client = OllamaClient(model="embeddinggemma", host="http://localhost:11434")
+
+    with pytest.raises(RuntimeError, match=r"requires Ollama v0\.11\.10 or later") as exc:
+        client.embed("zelfde betekenis")
+
+    assert "0.10.9" in str(exc.value)
+    assert "Update Ollama" in str(exc.value)
+    assert calls == [
+        "http://localhost:11434/api/embed",
+        "http://localhost:11434/api/version",
+    ]
+
+
+def test_embeddinggemma_model_missing_keeps_pull_model_diagnostic(monkeypatch) -> None:
+    def _urlopen(request, timeout=None):
+        raise ollama_client.urllib.error.HTTPError(
+            request.full_url,
+            404,
+            "Not Found",
+            {},
+            io.BytesIO(b'{"error":"model \'embeddinggemma\' not found"}'),
+        )
+
+    monkeypatch.setattr(ollama_client.urllib.request, "urlopen", _urlopen)
+    client = OllamaClient(model="embeddinggemma", host="http://localhost:11434")
+
+    with pytest.raises(RuntimeError, match="ollama pull embeddinggemma") as exc:
+        client.embed("zelfde betekenis")
+
+    assert "requires Ollama" not in str(exc.value)
+
+
+
 def test_client_embed_rejects_vector_count_mismatch(monkeypatch) -> None:
     def _urlopen(request, timeout=None):
         payload = json.dumps({"embeddings": [[1.0, 0.0]]}).encode("utf-8")
