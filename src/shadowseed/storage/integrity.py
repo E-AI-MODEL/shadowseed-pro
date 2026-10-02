@@ -13,6 +13,7 @@ from typing import Any, Iterable, Mapping
 GENESIS_HASH = "0" * 64
 EVENT_FORMAT_VERSION = 1
 ANCHOR_FORMAT_VERSION = 1
+BEHAVIOR_CONFIG_PROJECTION_VERSION = 1
 
 
 def canonical_json(value: Any) -> str:
@@ -92,6 +93,7 @@ def authority_config_projection(state: Mapping[str, Any]) -> dict[str, Any]:
         manager_config = {}
 
     return {
+        "projection_version": BEHAVIOR_CONFIG_PROJECTION_VERSION,
         "session_config": {
             key: session_config.get(key) for key in _AUTHORITY_SESSION_CONFIG_KEYS
         },
