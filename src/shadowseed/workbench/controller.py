@@ -15,6 +15,7 @@ from shadowseed.authority_profiles import AUTHORITY_PROFILES, get_authority_prof
 from shadowseed.core_config import SSLCoreConfig
 from shadowseed.application.ingest import prepare_sources
 from shadowseed.application.comparison import ComparisonService
+from shadowseed.application.contradiction_resolution import resolve_authorized_contradiction
 from shadowseed.application.exports import ExportService, verify_workbench_export
 from shadowseed.application.feedback import FeedbackService
 from shadowseed.application.inspection import InspectionService
@@ -233,6 +234,7 @@ class WorkbenchController:
         external_confirmed: bool = False,
         ssl_intensity: int | float | None = None,
         gate_strictness: int | float | None = None,
+        allow_same_turn_revision: bool | None = None,
         allow_self_reinforcement: bool = False,
     ) -> str:
         resolved_embedding = embedding_backend or self.default_embedding_backend(backend)
@@ -254,6 +256,11 @@ class WorkbenchController:
             allow_toy_embedder=allow_toy_embedder,
             external_confirmed=external_confirmed,
         )
+        effective_same_turn_revision = (
+            bool(allow_self_reinforcement)
+            if allow_same_turn_revision is None
+            else bool(allow_same_turn_revision)
+        )
         config_overrides: dict[str, Any] = {}
         if ssl_intensity is not None:
             config_overrides.update(self.ssl_intensity_settings(ssl_intensity))
@@ -270,7 +277,7 @@ class WorkbenchController:
                 embedding_model=embedding_model or None,
                 allow_toy_embedder=allow_toy_embedder,
                 revalidate_current_gate=gate_strictness is not None,
-                allow_same_turn_revision=bool(allow_self_reinforcement),
+                allow_same_turn_revision=effective_same_turn_revision,
                 self_derived_signal_policy="fail_closed",
                 allow_self_reinforcement=bool(allow_self_reinforcement),
             ),
@@ -629,6 +636,27 @@ class WorkbenchController:
             session_id,
             seed_id,
             actor=actor,
+        )
+
+    def resolve_contradiction(
+        self,
+        session_id: str,
+        seed_id: str,
+        *,
+        basis: str,
+        contradiction_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Resolve a blocking contradiction through the existing production flow."""
+
+        actor = self.workspace.local_actor_context()
+        return resolve_authorized_contradiction(
+            self.workspace.repository,
+            session_id,
+            seed_id,
+            basis=basis,
+            contradiction_id=contradiction_id,
+            actor=actor,
+            scope_id=self.workspace.workspace_id,
         )
 
     def submit_verified_evidence(
