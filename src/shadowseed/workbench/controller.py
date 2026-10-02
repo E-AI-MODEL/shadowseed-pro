@@ -197,8 +197,8 @@ class WorkbenchController:
             "min_occurrences_for_gate": 4,
             "min_evidence_for_gate": 3,
             "min_trace_for_gate": 0.5,
-            "promotion_threshold": 0.5,
-            "validation_increment": 0.5,
+            "promotion_threshold": 0.6,
+            "validation_increment": 0.2,
         }
 
     @staticmethod
