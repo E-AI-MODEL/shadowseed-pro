@@ -4,9 +4,11 @@ from pathlib import Path
 
 from shadowseed.workbench.feature_help import render_feature_help
 from shadowseed.workbench.simple_app_vnext import (
+    _authority_gate_summary,
     _orchestration_panel,
     _seed_action_flags,
     _seed_story as _vnext_seed_story,
+    _statefulness_summary,
     _ui_error,
 )
 from shadowseed.workbench.simple_app import (
@@ -205,28 +207,58 @@ def test_feature_help_preserves_ssl_semantics_and_explains_combinations() -> Non
     assert "één extra control-generatie" in text
 
 
-def test_feature_help_distinguishes_self_reinforcement_on_and_off() -> None:
+def test_feature_help_separates_same_turn_revision_from_self_derived_authority() -> None:
     off = render_feature_help(
-        "self_reinforcement",
+        "same_turn_revision",
         view={
             "effective_gate_policy_id": "evidence_backed",
             "authority_profile_id": "strict",
-            "allow_self_reinforcement": False,
+            "allow_same_turn_revision": False,
+            "self_derived_signal_policy": "fail_closed",
         },
     )
     on = render_feature_help(
-        "self_reinforcement",
+        "same_turn_revision",
         view={
             "effective_gate_policy_id": "evidence_backed",
             "authority_profile_id": "strict",
-            "allow_self_reinforcement": True,
+            "allow_same_turn_revision": True,
+            "self_derived_signal_policy": "bounded_experimental",
         },
     )
 
-    assert "Self-reinforcement staat uit" in off
-    assert "niet teruggevoerd" in off
-    assert "Self-reinforcement staat aan" in on
-    assert "versterken" in on.lower()
+    assert "Herziening in dezelfde beurt staat uit" in off
+    assert "Self-derived authority staat fail-closed" in off
+    assert "Herziening in dezelfde beurt staat aan" in on
+    assert "maximaal één keer" in on
+    assert "verhogen geen canonical recurrence" in on
+    assert "geen authority" in on
+
+
+def test_vnext_exposes_profile_gate_relation_and_rebuild_metadata() -> None:
+    view = {
+        "authority_profile_id": "autonomous",
+        "profile_default_gate_policy_id": "exploratory",
+        "configured_gate_policy_id": "evidence_backed",
+        "effective_gate_policy_id": "evidence_backed",
+        "gate_policy_override_active": True,
+        "setting_metadata": {
+            "recurrence_mode": {"apply_mode": "rebuild_required"},
+            "cluster_threshold": {"apply_mode": "rebuild_required"},
+            "surface_top_k": {"apply_mode": "immediate"},
+        },
+    }
+
+    relation = _authority_gate_summary(view)
+    statefulness = _statefulness_summary(view)
+
+    assert "autonomous" in relation
+    assert "exploratory" in relation
+    assert "override" in relation.lower()
+    assert "evidence_backed" in relation
+    assert "recurrence_mode" in statefulness
+    assert "cluster_threshold" in statefulness
+    assert "surface_top_k" not in statefulness
 
 
 def test_simple_start_automatically_prefers_local_model_then_safe_demo() -> None:
