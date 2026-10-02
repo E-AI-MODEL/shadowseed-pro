@@ -487,6 +487,8 @@ def submit_signals(
             if new_status.value == "PROMOTED"
             else GateDecision.VALIDATED
         )
+    elif proposal.verdict is ProposedVerdict.NO_CHANGE and proposal.satisfied:
+        decision = GateDecision.NO_CHANGE
     else:
         decision = GateDecision.BLOCKED
 
