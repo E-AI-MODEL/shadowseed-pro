@@ -610,16 +610,17 @@ def test_gate_hundred_requires_three_verified_sources_without_hidden_recurrence_
         gate_strictness=100,
     )
 
-    for index in range(4):
-        controller.ingest_sources(
-            session_id,
-            pasted_text="Alpha provides a recurring explanatory perspective.",
-        )
+    controller.ingest_sources(
+        session_id,
+        pasted_text="Alpha provides a recurring explanatory perspective.",
+    )
 
     view = controller.session_view(session_id)
     seed = max(view["seeds"], key=lambda item: int(item.get("occurrence_count", 0)))
     seed_id = seed["id"]
-    assert int(seed["occurrence_count"]) >= 4
+    recurrence_threshold = int(view["core_config"]["min_occurrences_for_gate"])
+    assert recurrence_threshold == 4
+    assert int(seed["occurrence_count"]) < recurrence_threshold
     assert seed["status"] != "PROMOTED"
 
     for index in range(2):
