@@ -10,6 +10,17 @@ This plan treats prompt wording as runtime behavior. It does not change Gate aut
 
 The target is not to make prompts more elaborate. The target is to make each prompt narrower, auditable and aligned with one component.
 
+## Cross-ADR constraints
+
+This PvA is subordinate to the accepted architecture contracts:
+
+- prompt output never changes authority directly; only the Validation Gate can do that;
+- semantic atomicity is the invariant, while max_seed_words is a configurable calibration heuristic;
+- detector output from an SSL-exposed answer is a contaminated observation under ADR-003 and never earns independent recurrence credit on that turn;
+- human quality review is measurement only unless a separately authorized evidence action with stable evidence identity is performed;
+- ordinary new product sessions remain live/evidence-backed unless an explicit research mode selects another regime;
+- prompt experiments do not bypass local/hosted actor authorization, evidence identity, point-of-use or deployment boundaries.
+
 ## 1. Live prompt inventory
 
 The current live path has four language interventions that matter directly to normal chat.
@@ -342,7 +353,7 @@ Prompt tests are not valid until these plumbing changes exist:
 2. max_seed_words is available to the detector prompt;
 3. parser accepts explicit NONE without treating it as malformed output;
 4. same-turn revision prompt receives the existing draft in actual model input;
-5. allow_same_turn_revision is separate from allow_ssl_generated_recurrence;
+5. allow_same_turn_revision is separate from contaminated-observation analysis, and contaminated observations remain recurrence-ineligible under ADR-003;
 6. prompt id/version/hash are written into turn audit;
 7. candidate-context and revision prompt are distinguishable in audit;
 8. answer truncation is observable rather than merely called invalid in prompt text.
@@ -412,7 +423,7 @@ A prompt change may become default only if:
 6. revision can make no change;
 7. candidate context cannot directly change authority;
 8. blinded comparison does not show systematic quality loss versus the current baseline;
-9. all Gate, contaminated-observation and point-of-use invariants remain green;
+9. all Gate, contaminated-observation, evidence-identity, actor-authorization and point-of-use invariants remain green;
 10. prompt id/version/hash allow a turn to be reproduced and interpreted later.
 
 ## 7. Sequence of work
@@ -421,7 +432,7 @@ A prompt change may become default only if:
 2. Implement prompt registry and audit identifiers without changing wording.
 3. Add current-pair detector plumbing and NONE/max-word support.
 4. Add separate same-turn revision plumbing.
-5. Split the self-reinforcement configuration.
+5. Split same-turn revision from contaminated-observation analysis without creating an ADR-003 bypass.
 6. Run D1-D4 with current Gate/embedding configuration fixed.
 7. Run G1.
 8. Run I1 and R1.
