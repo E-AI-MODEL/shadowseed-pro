@@ -44,7 +44,14 @@ def test_real_model_product_default_uses_semantic_embedding() -> None:
         assert WorkbenchController.default_embedding_backend(backend) == "sentence-transformers"
 
 
-def test_ollama_workbench_session_persists_resolved_embedding_identity(tmp_path) -> None:
+def test_ollama_workbench_session_persists_resolved_embedding_identity(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    monkeypatch.setattr(
+        "shadowseed.adapters.ollama_client.OllamaClient.embed",
+        lambda self, text: [[1.0, 0.0, 0.0]],
+    )
     controller = WorkbenchController(tmp_path / "workspace")
     session_id = controller.create_session(
         title="Ollama embedding provenance",
