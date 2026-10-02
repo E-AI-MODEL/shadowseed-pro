@@ -4,6 +4,8 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
+from shadowseed.gate.policies import AuthoritySnapshot, ProposedVerdict, resolve_policy
+from shadowseed.gate.signals import SignalKind, ValidationSignal
 from shadowseed.observations import CandidateObservationLedger
 
 
@@ -250,3 +252,24 @@ def test_packaged_observation_contract_keeps_v1_v2_and_adds_v3() -> None:
     assert v3["schema_version"] == 3
     assert "self_derived_policy_id" in v3["observation"]["required"]
     assert v3["record_schema_versions_supported"] == [1, 2, 3]
+
+
+def test_self_derived_signal_is_not_ordinary_recurrence_or_external_evidence() -> None:
+    signal = ValidationSignal(kind=SignalKind.SELF_DERIVED)
+
+    assert signal.kind is SignalKind.SELF_DERIVED
+    assert signal.kind is not SignalKind.RECURRENCE
+    assert signal.is_external_evidence is False
+
+    authority = AuthoritySnapshot(
+        weight=0.0,
+        status="NEW",
+        has_blocking_contradiction=False,
+    )
+    exploratory = resolve_policy("exploratory").propose([signal], authority)
+    evidence_backed = resolve_policy("evidence_backed").propose([signal], authority)
+
+    assert exploratory.verdict is ProposedVerdict.BLOCK
+    assert exploratory.satisfied is False
+    assert evidence_backed.verdict is ProposedVerdict.BLOCK
+    assert evidence_backed.satisfied is False
