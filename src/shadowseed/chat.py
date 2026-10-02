@@ -151,6 +151,8 @@ class ShadowChatSession:
         *,
         backend: str = "fixture",
         model_id: str | None = None,
+        revision_backend: str | None = None,
+        revision_model_id: str | None = None,
         max_new_tokens: int = 700,
         embedding_backend: str = "lexical",
         embedding_model: str | None = None,
@@ -174,12 +176,19 @@ class ShadowChatSession:
         self_derived_signal_policy: str = "fail_closed",
         allow_self_reinforcement: bool = False,
         model_backend: ModelBackend | None = None,
+        revision_model_backend: ModelBackend | None = None,
         detector_backend: DetectorBackend | None = None,
         embedding_fn: EmbedFn | None = None,
         core_config: SSLCoreConfig | None = None,
     ) -> None:
         self.backend = backend
         self.model_id = model_id
+        self.revision_backend = revision_backend or backend
+        self.revision_model_id = (
+            revision_model_id
+            if revision_model_id is not None
+            else (model_id if self.revision_backend == backend else None)
+        )
         self.max_new_tokens = max_new_tokens
         self.embedding_backend = embedding_backend
         self.embedding_model = embedding_model
@@ -237,6 +246,19 @@ class ShadowChatSession:
                 max_new_tokens=max_new_tokens,
             )
         )
+        if revision_model_backend is not None:
+            self.revision_model = revision_model_backend
+        elif (
+            self.revision_backend == backend
+            and self.revision_model_id == model_id
+        ):
+            self.revision_model = self.model
+        else:
+            self.revision_model = make_backend(
+                backend=self.revision_backend,
+                model_id=self.revision_model_id,
+                max_new_tokens=max_new_tokens,
+            )
         self.detector = (
             detector_backend
             if detector_backend is not None
@@ -1061,7 +1083,7 @@ class ShadowChatSession:
                         turn,
                     )
                     try:
-                        final_answer = self.model.generate(
+                        final_answer = self.revision_model.generate(
                             build_revision_prompt(
                                 question,
                                 draft_answer,
@@ -1179,6 +1201,21 @@ class ShadowChatSession:
                 "normalized_candidates": list(ingest.get("normalized_candidates", [])),
                 "accepted": [dict(item) for item in ingest.get("accepted", [])],
                 "rejected": [dict(item) for item in ingest.get("rejected", [])],
+            },
+            "model_roles": {
+                "generation": {
+                    "backend": self.backend,
+                    "model_id": self.model_id,
+                    "runtime_name": str(getattr(self.model, "name", "unknown")),
+                },
+                "revision": {
+                    "backend": self.revision_backend,
+                    "model_id": self.revision_model_id,
+                    "runtime_name": str(
+                        getattr(self.revision_model, "name", "unknown")
+                    ),
+                    "shares_generation_backend": self.revision_model is self.model,
+                },
             },
             "prompt_contracts": {
                 "answer_generation": dict(ANSWER_GENERATION_PROMPT_META),
@@ -1652,6 +1689,8 @@ class ShadowChatSession:
             "session_config": {
                 "backend": self.backend,
                 "model_id": self.model_id,
+                "revision_backend": self.revision_backend,
+                "revision_model_id": self.revision_model_id,
                 "max_new_tokens": self.max_new_tokens,
                 "embedding_backend": self.embedding_backend,
                 "embedding_model": self.embedding_model,
@@ -1713,6 +1752,7 @@ class ShadowChatSession:
         state: dict[str, Any],
         *,
         model_backend: ModelBackend | None = None,
+        revision_model_backend: ModelBackend | None = None,
         detector_backend: DetectorBackend | None = None,
         embedding_fn: EmbedFn | None = None,
     ) -> "ShadowChatSession":
@@ -1739,6 +1779,7 @@ class ShadowChatSession:
             **config,
             contract=contract,
             model_backend=model_backend,
+            revision_model_backend=revision_model_backend,
             detector_backend=detector_backend,
             embedding_fn=embedding_fn,
         )
