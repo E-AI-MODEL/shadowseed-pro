@@ -16,6 +16,7 @@ from shadowseed.application.orchestration import (
     derive_seed_orchestration,
 )
 from shadowseed.application.sessions import SessionService
+from shadowseed.authority_profiles import resolve_authority_runtime
 from shadowseed.gate.current_authority import snapshot_meets_current_gate
 
 
@@ -106,10 +107,20 @@ class InspectionService:
             session_config.get("authority_profile_id")
             or persisted_config.get("authority_profile_id", "strict")
         )
+        configured_gate_policy_id = persisted_config.get("gate_policy_id")
+        profile_default_gate_policy_id = resolve_authority_runtime(
+            authority_profile_id,
+            runtime_mode=runtime_mode,
+            configured_gate_policy_id=None,
+        ).gate_policy_id
         effective_gate_policy_id = str(
             session_config.get("gate_policy_id")
-            or persisted_config.get("gate_policy_id")
-            or ("evidence_backed" if runtime_mode == "live" else "exploratory")
+            or configured_gate_policy_id
+            or profile_default_gate_policy_id
+        )
+        gate_policy_override_active = bool(
+            configured_gate_policy_id
+            and str(configured_gate_policy_id) != profile_default_gate_policy_id
         )
         blocking_ids = {
             str(item.get("seed_id"))
@@ -203,9 +214,22 @@ class InspectionService:
             "profile_id": stored["profile_id"],
             "backend": stored["backend"],
             "model_id": stored["model_id"],
+            "revision_backend": (
+                session_config.get("revision_backend")
+                or persisted_config.get("revision_backend")
+                or stored["backend"]
+            ),
+            "revision_model_id": (
+                session_config.get("revision_model_id")
+                if session_config.get("revision_model_id") is not None
+                else persisted_config.get("revision_model_id", stored["model_id"])
+            ),
             "runtime_mode": runtime_mode,
             "authority_profile_id": authority_profile_id,
+            "profile_default_gate_policy_id": profile_default_gate_policy_id,
+            "configured_gate_policy_id": configured_gate_policy_id,
             "effective_gate_policy_id": effective_gate_policy_id,
+            "gate_policy_override_active": gate_policy_override_active,
             "embedding_backend": str(
                 session_config.get("embedding_backend")
                 or persisted_config.get("embedding_backend", "lexical")

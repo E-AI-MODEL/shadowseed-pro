@@ -205,21 +205,36 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
             "Onafhankelijk van de normale same-turn vergelijking: dit beantwoordt een andere onderzoeksvraag.",
         ),
     },
-    "self_reinforcement": {
-        "title": "Self-reinforcement",
+    "same_turn_revision": {
+        "title": "Herziening in dezelfde beurt",
         "eli8": (
-            "Normaal mag Shadowseed niet zijn eigen tip terughoren en dan zeggen: 'zie je wel, die tip "
-            "kwam nog een keer terug'. Met self-reinforcement aan laat je dat experimenteel wel toe."
+            "Shadowseed schrijft niet opnieuw vanaf nul. Als een nieuw geheugenpunt in deze beurt "
+            "geautoriseerd raakt, mag het bestaande conceptantwoord één keer voorzichtig worden aangepast."
         ),
         "does": (
-            "Laat kandidaten uit SSL-blootgestelde antwoorden terug de recurrence/authority-lus in en "
-            "kan een begrensde same-turn refinement activeren wanneer nieuwe promotie optreedt."
+            "Geeft de revision-rol maximaal één extra pass met de echte draft en alleen geautoriseerde "
+            "candidate-context."
         ),
-        "does_not": "Maakt bewijs niet onafhankelijk en heft contradictions niet op.",
+        "does_not": (
+            "Geeft modeloutput geen recurrence, evidence of authority en start geen herhalende feedbacklus."
+        ),
         "relations": (
-            "Aan: feedbacklus wordt sterker en causale interpretatie wordt moeilijker.",
-            "Uit: SSL-blootgestelde output kan zijn eigen recurrence/authority niet versterken.",
-            "Blijft onder Gate en point-of-use; het is geen bypass.",
+            "Revision en self-derived observaties zijn aparte mechanismen.",
+            "De herziene tekst blijft SSL-blootgesteld in provenance.",
+            "SELF_DERIVED blijft onder de normale Gate-policies fail-closed voor authority.",
+        ),
+    },
+    "self_reinforcement": {
+        "title": "Legacy self-reinforcement-instelling",
+        "eli8": (
+            "Oude sessies hadden één knop voor twee verschillende dingen. In 0.11 wordt die oude knop "
+            "alleen nog vertaald naar herziening in dezelfde beurt."
+        ),
+        "does": "Behoudt oude sessies zonder opnieuw een modeloutput-naar-recurrence-lus te openen.",
+        "does_not": "Laat SSL-blootgestelde modeloutput niet meetellen als gewone recurrence of bewijs.",
+        "relations": (
+            "Nieuwe UI gebruikt allow_same_turn_revision rechtstreeks.",
+            "Self-derived observaties houden een aparte provenance-policy.",
         ),
     },
 }
@@ -238,7 +253,15 @@ def _current_combination(
     if view:
         gate = str(view.get("effective_gate_policy_id", "unknown"))
         authority = str(view.get("authority_profile_id", "unknown"))
-        self_loop = bool(view.get("allow_self_reinforcement", False))
+        same_turn_revision = bool(
+            view.get(
+                "allow_same_turn_revision",
+                view.get("allow_self_reinforcement", False),
+            )
+        )
+        self_derived_policy = str(
+            view.get("self_derived_signal_policy", "fail_closed")
+        )
 
         if gate == "evidence_backed":
             lines.append(
@@ -253,15 +276,26 @@ def _current_combination(
         else:
             lines.append(f"**Gate nu:** `{gate}` · authority-profiel `{authority}`.")
 
-        if self_loop:
+        if same_turn_revision:
             lines.append(
-                "**Self-reinforcement staat aan.** SSL-blootgestelde output kan de eigen geheugenlus "
-                "versterken. Dat is experimenteel."
+                "**Herziening in dezelfde beurt staat aan.** Een nieuw geautoriseerd geheugenpunt kan "
+                "het bestaande draftantwoord maximaal één keer laten herzien."
             )
         else:
             lines.append(
-                "**Self-reinforcement staat uit.** Als een antwoord SSL-context kreeg, worden kandidaten "
-                "uit dat antwoord niet teruggevoerd om dezelfde recurrence/authority-lus te versterken."
+                "**Herziening in dezelfde beurt staat uit.** De eerste zichtbare draft blijft dan de "
+                "enige generatie voor deze beurt."
+            )
+
+        if self_derived_policy == "bounded_experimental":
+            lines.append(
+                "**Self-derived observaties staan in onderzoeksmodus.** Ze mogen voor audit worden "
+                "bewaard, maar verhogen geen canonical recurrence en leveren geen authority."
+            )
+        else:
+            lines.append(
+                "**Self-derived authority staat fail-closed.** SSL-blootgestelde modeloutput kan de "
+                "eigen recurrence- of authority-lus niet versterken."
             )
 
         embedding = str(view.get("embedding_backend", "lexical"))
@@ -288,27 +322,17 @@ def _current_combination(
                 "worden aangeboden als hij relevant is; hij **moet niet** worden aangeboden."
             )
 
-        if gate == "evidence_backed" and not self_loop:
+        if gate == "evidence_backed":
             lines.append(
-                "**Combinatie Gate evidence-backed + self-reinforcement uit:** herhaling **kan** een patroon "
-                "zichtbaarder maken, maar eigen SSL-output **mag niet** de recurrence/authority-lus versterken "
-                "en recurrence alleen **mag niet** verified evidence vervangen."
-            )
-        elif gate == "evidence_backed" and self_loop:
-            lines.append(
-                "**Combinatie Gate evidence-backed + self-reinforcement aan:** eigen SSL-output **kan** de "
-                "geheugenlus versterken, maar authority **moet nog steeds** voldoen aan de evidence-backed Gate."
-            )
-        elif gate == "exploratory" and self_loop:
-            lines.append(
-                "**Combinatie exploratory Gate + self-reinforcement aan:** recurrence **kan** authority sterker "
-                "maken en eigen SSL-output **kan** die lus verder voeden. Dit is de meest versterkende researchcombinatie."
+                "**Combinatie met evidence-backed:** recurrence kan een patroon zichtbaar maken, maar "
+                "verified external evidence blijft de authority-basis. Revision verandert dat niet."
             )
         elif gate == "exploratory":
             lines.append(
-                "**Combinatie exploratory Gate + self-reinforcement uit:** recurrence **kan** authority verhogen, "
-                "maar SSL-blootgestelde output **mag niet** zijn eigen recurrence versterken."
+                "**Combinatie met exploratory:** onafhankelijke recurrence kan authority bijdragen. "
+                "SSL-blootgestelde modeloutput telt daarbij niet als nieuwe recurrence."
             )
+
 
     if compare_enabled:
         lines.append(
