@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import importlib
 import json
+import multiprocessing
 import os
 import platform
 import socket
@@ -57,6 +58,32 @@ def _write_startup_error(workspace: Path, exc: BaseException) -> Path:
         except OSError:
             pass
     return path
+
+
+def _standalone_spawn_probe() -> None:
+    """Top-level no-op target used to prove frozen multiprocessing bootstrap."""
+
+
+def _multiprocessing_spawn_smoke(*, timeout: float = 20.0) -> bool:
+    """Prove a fresh spawned child can start and exit normally."""
+
+    context = multiprocessing.get_context("spawn")
+    process = context.Process(
+        target=_standalone_spawn_probe,
+        name="shadowseed-standalone-spawn-smoke",
+    )
+    process.start()
+    process.join(timeout)
+    if process.is_alive():
+        process.terminate()
+        process.join(5.0)
+        raise RuntimeError("standalone multiprocessing spawn smoke timed out")
+    if process.exitcode != 0:
+        raise RuntimeError(
+            "standalone multiprocessing spawn smoke failed "
+            f"with exit code {process.exitcode}"
+        )
+    return True
 
 
 def _runtime_imports() -> dict[str, str]:
@@ -113,6 +140,8 @@ def run_standalone_self_test(
     if build_production_local_app(controller=controller) is None:
         raise RuntimeError("standalone self-test could not build the production-local UI")
 
+    multiprocessing_spawn = _multiprocessing_spawn_smoke()
+
     payload: dict[str, Any] = {
         "artifact": "shadowseed_standalone_self_test",
         "frozen": bool(getattr(sys, "frozen", False)),
@@ -126,6 +155,7 @@ def run_standalone_self_test(
         "support_verified": True,
         "production_local_controller": True,
         "production_resolution_ui": True,
+        "multiprocessing_spawn": multiprocessing_spawn,
         "workspace": str(paths.root),
     }
     destination = Path(output_path) if output_path else paths.exports / "standalone-self-test.json"
@@ -184,4 +214,5 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     raise SystemExit(main())
