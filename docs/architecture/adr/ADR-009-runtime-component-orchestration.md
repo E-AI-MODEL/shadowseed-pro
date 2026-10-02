@@ -4,7 +4,7 @@ Status: Proposed
 Date: 2026-10-02  
 Owners: Shadowseed maintainers  
 Target release: 0.11.0 Research Preview  
-Refines: ADR-001 through ADR-008
+Precedence: where ADR-009 explicitly re-decides a product or runtime question covered by an earlier ADR, ADR-009 becomes the new source of truth. Earlier ADRs remain historical records and continue to apply only where not superseded here.
 
 ## Context
 
@@ -35,17 +35,31 @@ The existing SSL doctrine remains valid:
 
 This ADR aligns implementation, configuration and UX around those boundaries before prompt wording and 0.11.0 implementation are changed.
 
-## Alignment with accepted ADRs
+## Precedence over earlier ADRs
 
-This ADR does not supersede ADR-001 through ADR-008. Where this ADR adds orchestration or configuration semantics, the earlier accepted invariants remain binding:
+ADR decisions are not permanent constraints on a better product. They record why an earlier design was chosen. A later ADR may retain, amend or supersede an earlier decision when new evidence, a clearer model or a better product contract justifies that change.
 
-- **ADR-001:** only the Validation Gate changes authority. Lifecycle expiry may be detected outside the Gate, but any authority reset caused by expiry is routed through the Gate. Point-of-use still requires current authority and a current authorizing Gate event.
-- **ADR-002:** semantic atomicity is doctrine; word limits, similarity thresholds and fixed increments are calibration. A configured max_seed_words value may guide a detector or intake heuristic but is never the definition of a valid Shadow Seed.
-- **ADR-003:** SSL-exposed output is a contaminated observation. It may be preserved and analysed, but it never earns independent recurrence credit on the same turn and cannot become external evidence by relabeling.
-- **ADR-004:** verified external support is deduplicated by underlying evidence identity. Human verification or a different signal channel does not turn the same source_ref into a second independent evidence unit.
-- **ADR-005 and ADR-006:** ordinary new product sessions remain live and evidence-backed unless an explicit research mode selects otherwise. The autonomous/open exploratory path in this ADR is a research regime, not a replacement product default.
-- **ADR-006 and ADR-007:** actor authorization and deployment security remain separate from Gate authority. A UI may offer an authority-bearing action only when the current deployment authorizes that actor/capability. God mode does not bypass local or hosted authorization boundaries.
-- **ADR-008:** normal product UX remains chat-first. Raw Gate, embedding, recurrence and prompt controls belong in Research/Advanced surfaces; normal UX exposes user decisions, lifecycle meaning and human/SSL handoffs rather than mechanism clutter.
+For overlapping topics, ADR-009 uses four statuses:
+
+- **retain**: the earlier decision remains the best current contract;
+- **amend**: the core remains but part of the contract changes;
+- **supersede**: ADR-009 becomes the new source of truth for that topic;
+- **reopen/test**: the earlier choice is no longer treated as settled and 0.11.0 decides it from new evidence before the default is frozen.
+
+Current precedence map:
+
+| Earlier ADR | 0.11 status | ADR-009 decision |
+| --- | --- | --- |
+| ADR-001 Validation Gate | retain | The Gate remains the sole authority-changing boundary and point-of-use remains separate. |
+| ADR-002 Epistemic seed contract | retain + amend implementation | Atomic, weightless candidates remain doctrine; word limits, thresholds and detector wording remain calibration. |
+| ADR-003 Contaminated observation | reopen/test | Provenance and causal labeling remain mandatory, but the permanent ban on any authority contribution from SSL-exposed output is reopened for a separately typed, bounded self-derived signal experiment. |
+| ADR-004 Evidence identity | retain | External evidence identity remains source-based and channel-independent unless a richer evidence-id contract replaces it. |
+| ADR-005 Chat-first product surface | retain chat-first; supersede inherited default | Chat-first and non-mutating same-turn A/B remain. The old live/evidence-backed default does not dictate the 0.11 Research Preview default. |
+| ADR-006 Production-local boundary | retain for production-local claims | Security, actor attribution and audit rules remain relevant to production-local claims, but do not choose the 0.11 Research Preview authority profile. |
+| ADR-007 Hosted production boundary | retain | Hosted deployment remains a separate security architecture. |
+| ADR-008 Workbench UI reset | supersede where overlapping | Chat-first remains, while ADR-009 becomes the source of truth for component ownership, God-mode grouping and human/SSL orchestration UX. |
+
+Historical ADRs explain previous decisions. They do not silently veto a better later product decision.
 
 ## Decision
 
