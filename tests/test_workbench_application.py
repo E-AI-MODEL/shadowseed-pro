@@ -110,6 +110,8 @@ def test_controller_creates_and_lists_explicit_live_session(tmp_path) -> None:
     assert stored["config"]["runtime_mode"] == "live"
     assert stored["config"]["embedding_backend"] == "lexical"
     assert view["runtime_mode"] == "live"
+    assert view["revision_backend"] == "fixture"
+    assert view["revision_model_id"] is None
     assert choices[0][0] == "Live fixture · SSL chat · fixture · 0 turns"
 
 
