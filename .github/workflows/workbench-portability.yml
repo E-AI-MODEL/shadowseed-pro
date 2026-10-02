@@ -16,8 +16,7 @@ on:
       - "uv.lock"
       - "Dockerfile.workbench"
       - ".github/workflows/workbench-portability.yml"
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
