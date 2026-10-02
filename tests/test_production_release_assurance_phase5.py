@@ -43,10 +43,15 @@ def test_release_workflow_is_bound_to_exact_main_sha_and_post_download_verificat
     assert 'release_sha="$(git rev-parse origin/main)"' in workflow
     assert 'test "$(git rev-parse HEAD)" = "$release_sha"' in workflow
     assert "steps.preflight.outputs.release_sha" in workflow
-    assert "actions/runs?head_sha=${release_sha}&per_page=100" in workflow
+    assert "actions/workflows/ci.yml/runs?event=push&branch=main" in workflow
+    assert 'gh workflow run "$workflow" --ref main' in workflow
+    assert "workflow_dispatch&branch=main" in workflow
+    assert '.head_sha == $sha' in workflow
     assert '.head_branch == "main"' in workflow
-    assert '.status == "completed"' in workflow
-    assert '.conclusion == "success"' in workflow
+    assert '.event == "workflow_dispatch"' in workflow
+    assert 'gh run watch "$run_id" --exit-status' in workflow
+    assert 'if [ "$conclusion" != "success" ]; then' in workflow
+    assert "main advanced while release assurance was running" in workflow
     assert 'test "$(git rev-parse origin/main)" = "$RELEASE_SHA"' in workflow
     assert '--target "$RELEASE_SHA"' in workflow
     assert "main advanced during publication" in workflow
