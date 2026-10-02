@@ -27,6 +27,7 @@ EmbedFn = Callable[[str], np.ndarray]
 SUPPORTED_EMBEDDING_BACKENDS: tuple[str, ...] = (
     "lexical",
     "sentence-transformers",
+    "ollama",
     "openai",
 )
 
@@ -54,6 +55,9 @@ def make_embedding_fn(
     - ``sentence-transformers``: local SentenceTransformer inference. When a
       revision is supplied it is passed to ``SentenceTransformer`` and therefore
       constrains the actual loaded model snapshot.
+    - ``ollama``: local embeddings via Ollama's ``/api/embed`` endpoint. The
+      default model is ``embeddinggemma``; model identity is the selected model
+      name and no weights are downloaded by Shadowseed.
     - ``openai``: real embeddings via ``OpenAIClient.embed`` (needs the
       ``openai`` extra and ``OPENAI_API_KEY``, or an injected ``client``). Hosted
       model snapshot identity is represented by the chosen model id; a separate
@@ -88,6 +92,32 @@ def make_embedding_fn(
             return np.asarray(encoder.encode(text, normalize_embeddings=True), dtype=float)
 
         return sentence_transformer_embed, dimension
+
+    if backend == "ollama":
+        if revision is not None:
+            raise ValueError(
+                "Ollama embedding identity must be expressed by model_id; "
+                "a separate revision cannot be applied by this adapter"
+            )
+        from shadowseed.adapters.ollama_client import (
+            DEFAULT_OLLAMA_EMBEDDING_MODEL,
+            OllamaClient,
+        )
+
+        model = model_id or DEFAULT_OLLAMA_EMBEDDING_MODEL
+        oc = client if client is not None else OllamaClient(model=model)
+
+        def ollama_embed(text: str) -> np.ndarray:
+            vectors = oc.embed(text)
+            if len(vectors) != 1:
+                raise RuntimeError("Ollama single-text embedding returned multiple vectors")
+            vector = np.asarray(vectors[0], dtype=float)
+            if vector.ndim != 1 or vector.size == 0:
+                raise RuntimeError("Ollama embedding returned an invalid vector")
+            return vector
+
+        probe = ollama_embed("dimension probe")
+        return ollama_embed, int(probe.size)
 
     if backend == "openai":
         if revision is not None:
