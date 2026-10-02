@@ -3,7 +3,12 @@ from __future__ import annotations
 from pathlib import Path
 
 from shadowseed.workbench.feature_help import render_feature_help
-from shadowseed.workbench.simple_app_vnext import _ui_error
+from shadowseed.workbench.simple_app_vnext import (
+    _orchestration_panel,
+    _seed_action_flags,
+    _seed_story as _vnext_seed_story,
+    _ui_error,
+)
 from shadowseed.workbench.simple_app import (
     _authority_explainer,
     _chat_status,
@@ -755,3 +760,74 @@ def test_sources_ingest_errors_preserve_gate_notice() -> None:
     assert "pasted_text," in exception_body
     assert "gr.update()," in exception_body
     assert not exception_body.rstrip().endswith('""\n            )')
+
+
+
+def test_vnext_renders_session_orchestration_without_inventing_ui_rules() -> None:
+    view = {
+        "orchestration": {
+            "state": "human_turn",
+            "reason_code": "verified_support_required",
+            "required_action": "submit_verified_support",
+        },
+        "turn_reports": [],
+    }
+
+    rendered = _orchestration_panel(view)
+
+    assert "Wie is aan zet?" in rendered
+    assert "Jij bent aan zet" in rendered
+    assert "geverifieerde ondersteuning" in rendered
+    assert "Voeg geverifieerde ondersteuning toe" in rendered
+
+
+def test_vnext_seed_actions_follow_required_action_only() -> None:
+    evidence = _seed_action_flags(
+        {
+            "blocking": False,
+            "orchestration": {
+                "required_action": "submit_verified_support",
+            },
+        }
+    )
+    blocked = _seed_action_flags(
+        {
+            "blocking": True,
+            "orchestration": {
+                "required_action": "resolve_contradiction",
+            },
+        }
+    )
+
+    assert evidence == {
+        "contradict": True,
+        "verified_support": True,
+        "resolve_contradiction": False,
+    }
+    assert blocked == {
+        "contradict": False,
+        "verified_support": False,
+        "resolve_contradiction": True,
+    }
+
+
+def test_vnext_seed_story_explains_who_is_next_and_why() -> None:
+    rendered = _vnext_seed_story(
+        {
+            "text": "Privacy boundary",
+            "blocking": True,
+            "current_gate_authorized": False,
+            "occurrence_count": 4,
+            "evidence_count": 1,
+            "orchestration": {
+                "state": "blocked",
+                "reason_code": "blocking_contradiction",
+                "required_action": "resolve_contradiction",
+            },
+        }
+    )
+
+    assert "Wie is aan zet" in rendered
+    assert "Eerst een blokkade oplossen" in rendered
+    assert "tegenspraak" in rendered.lower()
+    assert "Leg vast waarom de tegenspraak is opgelost" in rendered
