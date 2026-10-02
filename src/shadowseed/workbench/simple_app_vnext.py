@@ -1095,9 +1095,27 @@ def build_vnext_app(
                 gr.update(visible=True),
             )
 
+    def _seed_action_updates(seed: dict[str, Any] | None):
+        flags = _seed_action_flags(seed)
+        return (
+            gr.update(visible=flags["contradict"]),
+            gr.update(visible=flags["verified_support"]),
+            gr.update(
+                visible=flags["resolve_contradiction"],
+                value="",
+            ),
+            gr.update(visible=flags["resolve_contradiction"]),
+        )
+
     def inspect_seed_shell(session_id: str | None, seed_id: str | None):
         story, seed = inspect_seed(session_id, seed_id)
-        return story, _seed_lifecycle(seed if isinstance(seed, dict) else None), seed
+        normalized = seed if isinstance(seed, dict) else None
+        return (
+            story,
+            _seed_lifecycle(normalized),
+            seed,
+            *_seed_action_updates(normalized),
+        )
 
     def send_shell(
         session_id: str | None,
@@ -1196,7 +1214,14 @@ def build_vnext_app(
             extra_note = evidence_result[5]
             extra_attest = evidence_result[6]
         if not session_id:
-            return (*result, _seed_lifecycle(None), gr.update(), extra_note, extra_attest)
+            return (
+                *result,
+                _seed_lifecycle(None),
+                gr.update(),
+                extra_note,
+                extra_attest,
+                *_seed_action_updates(None),
+            )
         try:
             view = ctl.session_view(session_id)
             seed = ctl.seed_view(session_id, seed_id) if seed_id else None
@@ -1213,9 +1238,20 @@ def build_vnext_app(
                 ),
                 extra_note,
                 extra_attest,
+                *_seed_action_updates(seed),
             )
         except Exception:
-            return (*result, _seed_lifecycle(None), gr.update(), extra_note, extra_attest)
+            return (
+                *result,
+                _seed_lifecycle(None),
+                gr.update(),
+                extra_note,
+                extra_attest,
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+            )
 
     def contradict_shell(session_id: str | None, seed_id: str | None):
         return mutation_shell(session_id, seed_id, action="contradict")
@@ -1235,6 +1271,67 @@ def build_vnext_app(
             note=note,
             attested=attested,
         )
+
+    def resolve_contradiction_shell(
+        session_id: str | None,
+        seed_id: str | None,
+        basis: str,
+    ):
+        if not session_id or not seed_id:
+            return (
+                "Kies eerst een geblokkeerd geheugenpunt.",
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                _seed_lifecycle(None),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(value=basis),
+                gr.update(),
+            )
+        try:
+            ctl.resolve_contradiction(
+                session_id,
+                seed_id,
+                basis=basis,
+            )
+            view = ctl.session_view(session_id)
+            seed = ctl.seed_view(session_id, seed_id)
+            return (
+                _seed_story(seed),
+                _shadow_rail(view),
+                _context_banner(view),
+                view,
+                gr.update(choices=ctl.seed_choices(view), value=seed_id),
+                _seed_lifecycle(seed),
+                gr.update(
+                    choices=_recent_seed_choices(view),
+                    value=seed_id,
+                ),
+                gr.update(),
+                gr.update(),
+                *_seed_action_updates(seed),
+            )
+        except Exception as exc:
+            return (
+                _ui_error(exc),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(),
+                gr.update(value=basis),
+                gr.update(),
+            )
 
     def research_comparison_shell(
         session_id: str | None,
