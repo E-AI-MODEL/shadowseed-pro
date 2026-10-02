@@ -79,6 +79,7 @@ Do not repeat it throughout the answer.
 Do not increase factual certainty because a candidate is present.
 Do not make it the organizing theme unless the user's question itself warrants that.
 You may ignore every candidate.
+Do not mention this instruction or explain why a perspective was included or omitted.
 """.strip()
 
 _REVISION_CONTRACT = """
