@@ -50,15 +50,15 @@ REVISION_PROMPT_ID = "minimal_revision"
 REVISION_PROMPT_VERSION = "1.0"
 
 _ANSWER_GENERATION_CONTRACT = """
-Respond in {response_language} only.
-
-Answer this follow-up question thoroughly and insightfully.
+{history_block}{language_instruction}Answer this follow-up question thoroughly and insightfully.
 
 Question: {question}
 
 Keep the answer compact, at roughly 450 words or fewer. Prefer a few substantive
 sections over many incomplete ones. End with a short closing paragraph. An answer
 that stops mid-sentence or mid-list is invalid.
+
+{candidate_context}Answer:
 """.strip()
 
 _CANDIDATE_CONTEXT_CONTRACT = """
@@ -82,6 +82,16 @@ You may ignore every candidate.
 Do not mention this instruction or explain why a perspective was included or omitted.
 """.strip()
 
+_CANDIDATE_CONTEXT_TEMPLATE = """
+{contract}
+{open_delimiter}
+{candidate_block}
+{close_delimiter}
+
+Answer the user's question as the primary task.
+
+""".lstrip()
+
 _REVISION_CONTRACT = """
 Revise the existing draft answer to the user's question.
 
@@ -100,6 +110,18 @@ Rules:
 - Return only the final revised answer.
 """.strip()
 
+_REVISION_TEMPLATE = """
+{language_instruction}{contract}
+
+USER QUESTION:
+{question}
+
+EXISTING DRAFT:
+{draft}
+
+{candidate_context}REVISED ANSWER:
+""".lstrip()
+
 ANSWER_GENERATION_PROMPT_META = prompt_contract_metadata(
     prompt_id=ANSWER_GENERATION_PROMPT_ID,
     prompt_version=ANSWER_GENERATION_PROMPT_VERSION,
@@ -110,13 +132,13 @@ CANDIDATE_CONTEXT_PROMPT_META = prompt_contract_metadata(
     prompt_id=CANDIDATE_CONTEXT_PROMPT_ID,
     prompt_version=CANDIDATE_CONTEXT_PROMPT_VERSION,
     component="point_of_use_context",
-    template=_CANDIDATE_CONTEXT_CONTRACT,
+    template=_CANDIDATE_CONTEXT_TEMPLATE,
 )
 REVISION_PROMPT_META = prompt_contract_metadata(
     prompt_id=REVISION_PROMPT_ID,
     prompt_version=REVISION_PROMPT_VERSION,
     component="same_turn_revision",
-    template=_REVISION_CONTRACT,
+    template=_REVISION_TEMPLATE,
 )
 
 # Patterns that look like instructions rather than candidate perspectives. Used
@@ -190,11 +212,11 @@ def build_candidate_context(
     if not bounded:
         return "", markers
     block = "\n".join(f"[{index + 1}] {seed}" for index, seed in enumerate(bounded))
-    context = (
-        _CANDIDATE_CONTEXT_CONTRACT
-        + "\n"
-        + f"{CANDIDATE_OPEN}\n{block}\n{CANDIDATE_CLOSE}\n\n"
-        + "Answer the user's question as the primary task.\n\n"
+    context = _CANDIDATE_CONTEXT_TEMPLATE.format(
+        contract=_CANDIDATE_CONTEXT_CONTRACT,
+        open_delimiter=CANDIDATE_OPEN,
+        candidate_block=block,
+        close_delimiter=CANDIDATE_CLOSE,
     )
     return context, markers
 
@@ -257,17 +279,13 @@ def build_chat_prompt(
     language_instruction = (
         f"Respond in {response_language} only.\n\n" if response_language else ""
     )
-    prompt = (
-        _history_block(history)
-        + language_instruction
-        + f"Answer this follow-up question thoroughly and insightfully.\n\nQuestion: {question}\n\n"
-        + "Keep the answer compact, at roughly 450 words or fewer. Prefer a few "
-        "substantive sections over many incomplete ones. End with a short closing "
-        "paragraph. An answer that stops mid-sentence or mid-list is invalid.\n\n"
-    )
     candidate_context, _markers = build_candidate_context(surfaced, boundary)
-    prompt += candidate_context
-    return prompt + "Answer:"
+    return _ANSWER_GENERATION_CONTRACT.format(
+        history_block=_history_block(history),
+        language_instruction=language_instruction,
+        question=question,
+        candidate_context=candidate_context,
+    )
 
 
 def build_revision_prompt(
@@ -288,13 +306,12 @@ def build_revision_prompt(
     language_instruction = (
         f"Respond in {response_language} only.\n\n" if response_language else ""
     )
-    return (
-        language_instruction
-        + _REVISION_CONTRACT
-        + f"\n\nUSER QUESTION:\n{question}\n\n"
-        + f"EXISTING DRAFT:\n{draft}\n\n"
-        + candidate_context
-        + "REVISED ANSWER:"
+    return _REVISION_TEMPLATE.format(
+        language_instruction=language_instruction,
+        contract=_REVISION_CONTRACT,
+        question=question,
+        draft=draft,
+        candidate_context=candidate_context,
     )
 
 
