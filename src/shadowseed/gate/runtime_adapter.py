@@ -511,6 +511,59 @@ def submit_signals(
     return event
 
 
+def expire_seed(
+    manager: Any,
+    seed_id: str,
+    *,
+    reason: str,
+    source_ref: str | None = None,
+) -> GateEvent:
+    """Apply terminal lifecycle expiry through the canonical authority boundary.
+
+    Expiry is mechanically triggered by lifecycle state, not by evidentiary
+    support. It still clears authority-bearing fields, so ADR-001 requires the
+    transition to be recorded inside the Gate engine with a typed signal and
+    immutable Gate event.
+    """
+
+    from shadowseed.models import SeedStatus
+
+    seed = manager._seeds[seed_id]
+    status_before = seed.status.value
+    weight_before = seed.weight
+    contradiction_before = manager._contradiction_state(seed)
+    signal = ValidationSignal(
+        kind=SignalKind.LIFECYCLE_EXPIRY,
+        direction=SignalDirection.NEUTRAL,
+        strength=1.0,
+        source_ref=source_ref,
+        verified=False,
+        independent=False,
+        reason=reason,
+    )
+
+    if seed.status is not SeedStatus.EXPIRED:
+        manager._set_authority(
+            seed,
+            status=SeedStatus.EXPIRED,
+            weight=0.0,
+        )
+        manager._touch_seed(seed)
+
+    event = manager._record_gate_event(
+        seed,
+        GateDecision.EXPIRED,
+        [signal],
+        policy_id="lifecycle_expiry",
+        status_before=status_before,
+        weight_before=weight_before,
+        contradiction_before=contradiction_before,
+        reason=reason,
+    )
+    manager._sync_seed(seed_id)
+    return event
+
+
 def resolve_contradiction(
     manager: Any,
     seed_id: str,
