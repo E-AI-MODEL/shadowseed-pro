@@ -659,23 +659,6 @@ class WorkbenchController:
             scope_id=self.workspace.workspace_id,
         )
 
-    def resolve_contradiction(
-        self,
-        session_id: str,
-        seed_id: str,
-        *,
-        basis: str,
-    ) -> dict[str, Any]:
-        """Resolve an open contradiction with trusted local authorization."""
-
-        actor = self.workspace.local_actor_context()
-        return self.sessions.resolve_contradiction_authorized(
-            session_id,
-            seed_id,
-            basis=basis,
-            actor=actor,
-        )
-
     def submit_verified_evidence(
         self,
         session_id: str,
