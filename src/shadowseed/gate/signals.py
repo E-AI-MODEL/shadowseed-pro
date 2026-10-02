@@ -44,6 +44,7 @@ class SignalKind(str, Enum):
     TASK_OUTCOME = "task_outcome"
     CONTRADICTION = "contradiction"
     CONTRADICTION_RESOLUTION = "contradiction_resolution"
+    LIFECYCLE_EXPIRY = "lifecycle_expiry"
 
 
 #: Signal kinds that represent externally sourced evidence (as opposed to
