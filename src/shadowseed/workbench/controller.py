@@ -193,12 +193,12 @@ class WorkbenchController:
         return {
             **common,
             "authority_profile_id": "strict",
-            "gate_policy_id": "legacy_evidence_required",
+            "gate_policy_id": "evidence_backed",
             "min_occurrences_for_gate": 4,
             "min_evidence_for_gate": 3,
             "min_trace_for_gate": 0.5,
-            "promotion_threshold": 0.5,
-            "validation_increment": 0.5,
+            "promotion_threshold": 0.6,
+            "validation_increment": 0.2,
         }
 
     @staticmethod
@@ -317,6 +317,8 @@ class WorkbenchController:
             **gate_settings,
             "authority_profile_id": authority_profile_id,
             "revalidate_current_gate": True,
+            "allow_same_turn_revision": bool(allow_self_reinforcement),
+            "self_derived_signal_policy": "fail_closed",
             "allow_self_reinforcement": bool(allow_self_reinforcement),
         }
         self.sessions.update_controls(
@@ -342,9 +344,11 @@ class WorkbenchController:
         SessionConfig, ShadowChatSession session_config, and SSLCoreConfig snapshot
         consumed by the next runtime turn.
 
-        Changes to the embedding backend/model are blocked once seeds exist unless
-        force is explicit, because persisted seed vectors may no longer match the
-        new embedding space.
+        Structural semantic-memory settings are blocked once seeds exist.
+        Embedding backend/model, recurrence mode, and cluster threshold determine
+        how persisted seed state is interpreted and therefore require a new
+        session or an explicit rebuild/migration path. God-mode force does not
+        reinterpret existing vectors or recurrence state.
         """
 
         if not isinstance(settings, dict):
@@ -369,13 +373,29 @@ class WorkbenchController:
         )
         desired_toy = bool(desired.get("allow_toy_embedder", False))
 
-        embedding_changed = any(
-            key in settings and settings.get(key) != persisted.get(key)
-            for key in ("embedding_backend", "embedding_model")
+        structural_keys = (
+            "embedding_backend",
+            "embedding_model",
+            "recurrence_mode",
+            "cluster_threshold",
         )
-        if embedding_changed and view.get("seeds") and not force:
+        structural_changes = [
+            key
+            for key in structural_keys
+            if key in settings and settings.get(key) != persisted.get(key)
+        ]
+        if structural_changes and view.get("seeds"):
+            forced = (
+                " God mode force cannot bypass this boundary."
+                if force
+                else ""
+            )
             raise ValueError(
-                "embedding backend/model cannot be changed after seeds exist unless God mode force is enabled"
+                "structural setting(s) "
+                + ", ".join(structural_changes)
+                + " cannot be changed after seeds exist; start a new session "
+                "or use a future explicit rebuild/migration path."
+                + forced
             )
 
         self._validate_backend(
