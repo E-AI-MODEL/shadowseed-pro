@@ -4,6 +4,8 @@ import json
 
 import pytest
 
+from shadowseed.adapters.embedding import SUPPORTED_EMBEDDING_BACKENDS
+
 from shadowseed.application.comparison import ComparisonService
 from shadowseed.application.inspection import InspectionService
 from shadowseed.application.models import SessionConfig
@@ -29,9 +31,16 @@ def test_new_application_sessions_default_to_live_ssl(tmp_path) -> None:
     assert controller.session_view(session_id)["runtime_mode"] == "live"
 
 
+def test_workbench_uses_canonical_embedding_backend_registry() -> None:
+    assert WorkbenchController.embedding_backends() == SUPPORTED_EMBEDDING_BACKENDS
+
+
 def test_real_model_product_default_uses_semantic_embedding() -> None:
     assert WorkbenchController.default_embedding_backend("fixture") == "lexical"
-    for backend in ("ollama", "hf-transformers", "openai"):
+    assert WorkbenchController.default_embedding_backend("ollama") == "ollama"
+    assert WorkbenchController.default_embedding_model("ollama") == "embeddinggemma"
+    assert WorkbenchController.default_embedding_model("sentence-transformers") is None
+    for backend in ("hf-transformers", "openai"):
         assert WorkbenchController.default_embedding_backend(backend) == "sentence-transformers"
 
 
