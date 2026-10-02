@@ -140,11 +140,12 @@ def run_standalone_self_test(
     if build_production_local_app(controller=controller) is None:
         raise RuntimeError("standalone self-test could not build the production-local UI")
 
-    multiprocessing_spawn = _multiprocessing_spawn_smoke()
+    frozen = bool(getattr(sys, "frozen", False))
+    multiprocessing_spawn = _multiprocessing_spawn_smoke() if frozen else None
 
     payload: dict[str, Any] = {
         "artifact": "shadowseed_standalone_self_test",
-        "frozen": bool(getattr(sys, "frozen", False)),
+        "frozen": frozen,
         "python": platform.python_version(),
         "platform": platform.platform(),
         "machine": platform.machine(),
