@@ -1,1 +1,128 @@
-"""Effective authorization under the Gate configuration active now.\n\nHistorical promotion stays immutable audit history. Product sessions that opt in\nto current-Gate revalidation additionally require a promoted seed to remain\neligible under the semantics of the Gate policy active now.\n\nThe current check is read-only. It never replays or reapplies authority. Instead,\nit evaluates the canonical policy against authority-supporting signals that were\nactually recorded in immutable Gate events after the latest contradiction.\n"""\n\nfrom __future__ import annotations\n\nfrom collections.abc import Iterable\nfrom dataclasses import replace\nfrom typing import Any, Mapping\n\nfrom shadowseed.gate.events import GateDecision, GateEvent\nfrom shadowseed.gate.policies import (\n    AuthoritySnapshot,\n    ProposedVerdict,\n    resolve_policy,\n)\nfrom shadowseed.gate.signals import ValidationSignal\nfrom shadowseed.models import SeedStatus\n\n\n_AUTHORITY_CONFIRMING_DECISIONS = frozenset(\n    {GateDecision.VALIDATED, GateDecision.PROMOTED}\n)\n\n\ndef _coerce_gate_event(value: GateEvent | Mapping[str, Any]) -> GateEvent:\n    if isinstance(value, GateEvent):\n        return value\n    return GateEvent.from_dict(dict(value))\n\n\ndef _current_support_signals(\n    seed_id: str,\n    gate_events: Iterable[GateEvent | Mapping[str, Any]],\n) -> tuple[ValidationSignal, ...]:\n    """Return audited support offered after the seed's latest contradiction."""\n\n    events = [\n        _coerce_gate_event(item)\n        for item in gate_events\n        if str(\n            item.seed_id\n            if isinstance(item, GateEvent)\n            else item.get("seed_id", "")\n        )\n        == str(seed_id)\n    ]\n    latest_contradiction = max(\n        (\n            index\n            for index, event in enumerate(events)\n            if event.decision is GateDecision.CONTRADICTED\n        ),\n        default=-1,\n    )\n\n    signals: list[ValidationSignal] = []\n    for index, event in enumerate(events):\n        if index <= latest_contradiction:\n            continue\n        if event.decision not in _AUTHORITY_CONFIRMING_DECISIONS:\n            continue\n        signals.extend(event.signals)\n    return tuple(signals)\n\n\ndef _policy_for_current_config(\n    policy_id: str | None,\n    config: Mapping[str, Any],\n):\n    selected = str(policy_id or "exploratory")\n    policy = resolve_policy(selected)\n    if selected == "legacy_evidence_required":\n        return replace(\n            policy,\n            weight_increment=float(config.get("validation_increment", 0.2)),\n            min_occurrences=int(config.get("min_occurrences_for_gate", 3)),\n            min_evidence=int(config.get("min_evidence_for_gate", 2)),\n            min_trace=float(config.get("min_trace_for_gate", 0.5)),\n        )\n    return policy\n\n\ndef snapshot_meets_current_gate(\n    seed: Mapping[str, Any],\n    config: Mapping[str, Any],\n    policy_id: str | None,\n    *,\n    blocking: bool = False,\n    gate_events: Iterable[GateEvent | Mapping[str, Any]] = (),\n) -> bool:\n    """Return whether a promoted snapshot remains eligible under today's policy."""\n\n    if str(seed.get("status", "")) != SeedStatus.PROMOTED.value:\n        return False\n    if blocking:\n        return False\n\n    weight = float(seed.get("weight", 0.0))\n    promotion_threshold = float(config.get("promotion_threshold", 0.5))\n    if weight < promotion_threshold:\n        return False\n\n    try:\n        policy = _policy_for_current_config(policy_id, config)\n    except ValueError:\n        return False\n\n    snapshot = AuthoritySnapshot(\n        weight=weight,\n        status=SeedStatus.PROMOTED.value,\n        has_blocking_contradiction=blocking,\n        evidence_count=int(seed.get("evidence_count", 0)),\n        occurrence_count=int(seed.get("occurrence_count", 0)),\n        trace=float(seed.get("trace", 0.0)),\n    )\n    signals = _current_support_signals(str(seed.get("id", "")), gate_events)\n    proposal = policy.propose(signals, snapshot)\n    return bool(\n        proposal.satisfied\n        and proposal.verdict is ProposedVerdict.PROMOTE_OR_VALIDATE\n    )\n\n\n__all__ = ["snapshot_meets_current_gate"]\n
+"""Effective authorization under the Gate configuration active now.
+
+Historical promotion stays immutable audit history. Product sessions that opt in
+to current-Gate revalidation additionally require a promoted seed to remain
+eligible under the semantics of the Gate policy active now.
+
+The current check is read-only. It never replays or reapplies authority. Instead,
+it evaluates the canonical policy against authority-supporting signals that were
+actually recorded in immutable Gate events after the latest contradiction.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Iterable
+from dataclasses import replace
+from typing import Any, Mapping
+
+from shadowseed.gate.events import GateDecision, GateEvent
+from shadowseed.gate.policies import AuthoritySnapshot, ProposedVerdict, resolve_policy
+from shadowseed.gate.signals import ValidationSignal
+from shadowseed.models import SeedStatus
+
+
+_AUTHORITY_CONFIRMING_DECISIONS = frozenset(
+    {GateDecision.VALIDATED, GateDecision.PROMOTED}
+)
+
+
+def _coerce_gate_event(value: GateEvent | Mapping[str, Any]) -> GateEvent:
+    if isinstance(value, GateEvent):
+        return value
+    return GateEvent.from_dict(dict(value))
+
+
+def _current_support_signals(
+    seed_id: str,
+    gate_events: Iterable[GateEvent | Mapping[str, Any]],
+) -> tuple[ValidationSignal, ...]:
+    """Return audited support offered after the seed's latest contradiction."""
+
+    events = [
+        _coerce_gate_event(item)
+        for item in gate_events
+        if str(
+            item.seed_id
+            if isinstance(item, GateEvent)
+            else item.get("seed_id", "")
+        )
+        == str(seed_id)
+    ]
+    latest_contradiction = max(
+        (
+            index
+            for index, event in enumerate(events)
+            if event.decision is GateDecision.CONTRADICTED
+        ),
+        default=-1,
+    )
+
+    signals: list[ValidationSignal] = []
+    for index, event in enumerate(events):
+        if index <= latest_contradiction:
+            continue
+        if event.decision not in _AUTHORITY_CONFIRMING_DECISIONS:
+            continue
+        signals.extend(event.signals)
+    return tuple(signals)
+
+
+def _policy_for_current_config(
+    policy_id: str | None,
+    config: Mapping[str, Any],
+):
+    selected = str(policy_id or "exploratory")
+    policy = resolve_policy(selected)
+    if selected == "legacy_evidence_required":
+        return replace(
+            policy,
+            weight_increment=float(config.get("validation_increment", 0.2)),
+            min_occurrences=int(config.get("min_occurrences_for_gate", 3)),
+            min_evidence=int(config.get("min_evidence_for_gate", 2)),
+            min_trace=float(config.get("min_trace_for_gate", 0.5)),
+        )
+    return policy
+
+
+def snapshot_meets_current_gate(
+    seed: Mapping[str, Any],
+    config: Mapping[str, Any],
+    policy_id: str | None,
+    *,
+    blocking: bool = False,
+    gate_events: Iterable[GateEvent | Mapping[str, Any]] = (),
+) -> bool:
+    """Return whether a promoted snapshot remains eligible under today's policy."""
+
+    if str(seed.get("status", "")) != SeedStatus.PROMOTED.value:
+        return False
+    if blocking:
+        return False
+
+    weight = float(seed.get("weight", 0.0))
+    promotion_threshold = float(config.get("promotion_threshold", 0.5))
+    if weight < promotion_threshold:
+        return False
+
+    try:
+        policy = _policy_for_current_config(policy_id, config)
+    except ValueError:
+        return False
+
+    snapshot = AuthoritySnapshot(
+        weight=weight,
+        status=SeedStatus.PROMOTED.value,
+        has_blocking_contradiction=blocking,
+        evidence_count=int(seed.get("evidence_count", 0)),
+        occurrence_count=int(seed.get("occurrence_count", 0)),
+        trace=float(seed.get("trace", 0.0)),
+    )
+    signals = _current_support_signals(str(seed.get("id", "")), gate_events)
+    proposal = policy.propose(signals, snapshot)
+    return bool(
+        proposal.satisfied
+        and proposal.verdict is ProposedVerdict.PROMOTE_OR_VALIDATE
+    )
+
+
+__all__ = ["snapshot_meets_current_gate"]
