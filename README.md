@@ -66,7 +66,7 @@ For a verified GitHub release, the intended tester path is:
 download -> extract/open -> choose model -> create chat -> chat with SSL -> optionally compare one message with SSL off
 ```
 
-The standalone release contract builds Windows, macOS, and Linux archives with an embedded Python runtime. A normal tester does not need Git, system Python, `pip`, benchmark JSON, or an authored baseline answer. Model weights remain separate: the deterministic fixture works immediately for mechanics, local Ollama models can be discovered, Hugging Face models may be acquired on first use, and hosted OpenAI use stays explicit and credential-dependent.
+The standalone release contract builds Windows, macOS, and Linux archives with an embedded Python runtime. A normal tester does not need Git, system Python, `pip`, benchmark JSON, or an authored baseline answer. The normal standalone is deliberately thin: the deterministic fixture works immediately and local Ollama provides chat plus semantic embeddings when its models are installed. Hugging Face and hosted OpenAI remain explicit optional provider extras for Python/wheel installations and are not bundled into the normal standalone.
 
 Source and release availability are separate facts. Treat a version as publicly released only after its immutable tag and verified release assets exist.
 
@@ -92,7 +92,7 @@ shadowseed chat --backend fixture --show-shadow
 Real local model example:
 
 ```bash
-shadowseed chat --backend ollama --model-id <model> --embedding-backend sentence-transformers
+shadowseed chat --backend ollama --model-id <model> --embedding-backend ollama --embedding-model embeddinggemma
 ```
 
 For research/evaluation tooling, install the separate research distribution on top of the product checkout:
@@ -148,7 +148,7 @@ python -m shadowseed_research.benchmark.evidence_efficacy run \
   --suite path/to/evidence-efficacy-suite.json \
   --preregistration src/shadowseed/data/evidence_efficacy_preregistration_v1.json \
   --output-dir results/evidence-efficacy/<run> \
-  --embedding-backend <lexical|sentence-transformers|openai>
+  --embedding-backend <lexical|sentence-transformers|ollama|openai>
 
 python -m shadowseed_research.benchmark.evidence_efficacy verify \
   results/evidence-efficacy/<run>
@@ -298,7 +298,9 @@ Optional stacks:
 pip install -e ".[models]"      # Transformers / Sentence Transformers / Torch
 pip install -e ".[openai]"      # hosted OpenAI adapter
 pip install -e ".[vector]"      # FAISS and Chroma
-pip install -e ".[workbench]"   # local Gradio Workbench
+pip install -e ".[workbench]"   # thin local Gradio Workbench: fixture + Ollama
+pip install -e ".[workbench,models]"  # add local Hugging Face/Sentence Transformers
+pip install -e ".[workbench,openai]"  # add hosted OpenAI
 pip install -e ".[dev]"         # development extras
 ```
 
