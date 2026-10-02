@@ -51,19 +51,19 @@ def test_workbench_release_metadata_stays_aligned() -> None:
 
 
 
-def test_release_evidence_workflows_run_on_every_main_push() -> None:
+def test_heavy_release_evidence_is_pr_scoped_or_explicitly_dispatched() -> None:
     for path in (
         ".github/workflows/workbench-ci.yml",
         ".github/workflows/workbench-portability.yml",
         ".github/workflows/research-package-ci.yml",
+        ".github/workflows/standalone-workbench.yml",
     ):
         workflow = Path(path).read_text(encoding="utf-8")
-        push_start = workflow.index("  push:")
-        permissions_start = workflow.index("\n\npermissions:", push_start)
-        push_block = workflow[push_start:permissions_start]
+        trigger_block = workflow[workflow.index("on:"):workflow.index("\n\npermissions:")]
 
-        assert "main" in push_block
-        assert "paths:" not in push_block
+        assert "pull_request:" in trigger_block
+        assert "workflow_dispatch:" in trigger_block
+        assert "push:" not in trigger_block
 
 def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -> None:
     workflow = Path(".github/workflows/release-workbench.yml").read_text(encoding="utf-8")
@@ -81,10 +81,14 @@ def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -
         "standalone-workbench.yml",
     ):
         assert required in workflow
-    assert "actions/runs?head_sha=${release_sha}&per_page=100" in workflow
-    assert '.path == $workflow' in workflow
-    assert '.event == "push"' in workflow
-    assert '.conclusion == "success"' in workflow
+    assert "actions: write" in workflow
+    assert "actions/workflows/ci.yml/runs?event=push&branch=main" in workflow
+    assert 'gh workflow run "$workflow" --ref main' in workflow
+    assert "workflow_dispatch&branch=main" in workflow
+    assert '.event == "workflow_dispatch"' in workflow
+    assert '.head_sha == $sha' in workflow
+    assert 'gh run watch "$run_id" --exit-status' in workflow
+    assert 'if [ "$conclusion" != "success" ]; then' in workflow
     assert "standalone_run_id" in workflow
     assert "steps.preflight.outputs.standalone_run_id" in workflow
     assert 'release_tag="v${release_version}"' in workflow
