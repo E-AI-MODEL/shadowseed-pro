@@ -331,6 +331,7 @@ def _verify_frozen(executable: Path, root: Path, work_dir: Path) -> dict[str, ob
         "comparison_generated",
         "report_verified",
         "support_verified",
+        "multiprocessing_spawn",
     )
     for key in required_true:
         if payload.get(key) is not True:

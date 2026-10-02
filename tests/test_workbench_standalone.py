@@ -48,6 +48,7 @@ def test_standalone_product_self_test(tmp_path: Path) -> None:
     assert payload["comparison_generated"] is True
     assert payload["report_verified"] is True
     assert payload["support_verified"] is True
+    assert payload["multiprocessing_spawn"] is None
     assert set(payload["runtime_imports"]) >= {
         "gradio",
         "sentence_transformers",
@@ -57,3 +58,11 @@ def test_standalone_product_self_test(tmp_path: Path) -> None:
     }
     persisted = json.loads(output.read_text(encoding="utf-8"))
     assert persisted["artifact"] == "shadowseed_standalone_self_test"
+
+
+def test_standalone_entrypoint_calls_freeze_support_before_main() -> None:
+    source = Path("src/shadowseed/workbench/standalone.py").read_text(encoding="utf-8")
+    entrypoint = source[source.index('if __name__ == "__main__":'):]
+
+    assert "multiprocessing.freeze_support()" in entrypoint
+    assert entrypoint.index("multiprocessing.freeze_support()") < entrypoint.index("main()")
