@@ -14,6 +14,7 @@ from shadowseed.surfacing import (
     PromptBoundary,
     apply_prompt_boundary,
     build_chat_prompt,
+    build_revision_prompt,
     flag_instruction_like,
 )
 
@@ -89,3 +90,18 @@ def test_default_boundary_values_are_sane():
     assert DEFAULT_PROMPT_BOUNDARY.max_seeds >= 1
     assert DEFAULT_PROMPT_BOUNDARY.max_seed_chars >= 50
     assert DEFAULT_PROMPT_BOUNDARY.max_total_chars >= DEFAULT_PROMPT_BOUNDARY.max_seed_chars
+
+
+def test_same_turn_revision_prompt_contains_existing_draft_and_can_ignore_seed():
+    prompt = build_revision_prompt(
+        "Wat betekent dit?",
+        "Dit is het bestaande antwoord.",
+        ["Een mogelijke aanvullende invalshoek."],
+        response_language="the same language as the user's current question",
+    )
+    assert "EXISTING DRAFT:" in prompt
+    assert "Dit is het bestaande antwoord." in prompt
+    assert "return the draft unchanged" in prompt
+    assert "You may ignore every candidate." in prompt
+    assert CANDIDATE_OPEN in prompt
+    assert CANDIDATE_CLOSE in prompt

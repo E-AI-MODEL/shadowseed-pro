@@ -39,8 +39,10 @@ class StaticDetector:
 
     def __init__(self, seed: str | None) -> None:
         self.seed = seed
+        self.last_item = None
 
     def detect_seeds(self, item, max_seeds=5):
+        self.last_item = dict(item)
         return [] if self.seed is None else [self.seed]
 
 
@@ -77,6 +79,20 @@ def test_live_turn_uses_one_generation_and_stores_visible_answer(monkeypatch):
     assert report["answer"] == "What the user read."
     assert report["baseline_answer"] is None
     assert session.history == [("Question?", "What the user read.")]
+
+
+def test_live_detector_receives_current_question_and_draft(monkeypatch):
+    session, _model = _session(
+        monkeypatch,
+        detector_seed=None,
+        answer="Dit is het draftantwoord.",
+    )
+
+    session.turn("Welke invalshoek mist nog?")
+
+    assert session.detector.last_item["question"] == "Welke invalshoek mist nog?"
+    assert session.detector.last_item["text"] == "Dit is het draftantwoord."
+    assert session.detector.last_item["max_seed_words"] == session.manager.config.max_seed_words
 
 
 def test_session_api_defaults_to_live_runtime(monkeypatch):

@@ -59,12 +59,16 @@ from shadowseed.gate.signals import (
 )
 from shadowseed.recurrence import refresh_cluster_representative
 from shadowseed.surfacing import (
+    ANSWER_GENERATION_PROMPT_META,
+    CANDIDATE_CONTEXT_PROMPT_META,
     DEFAULT_PROMPT_BOUNDARY,
+    REVISION_PROMPT_META,
     SurfacingCandidate,
     SurfacingPolicy,
     apply_prompt_boundary,
     build_candidate_context,
     build_chat_prompt,
+    build_revision_prompt,
     collect_eligible_promoted_seeds,
     mark_surfaced,
     seed_threshold,
@@ -224,7 +228,7 @@ class ShadowChatSession:
                 backend,
                 model_id=model_id,
                 max_new_tokens=max_new_tokens,
-                prompt_variant="generative",
+                prompt_variant="current_pair",
             )
         )
         self.manager = SSLManager(embedding_fn=embed_fn, config=core_config)
@@ -863,7 +867,12 @@ class ShadowChatSession:
         first_pass_context_ref = provisional_context_ref
 
         raw_candidates = self.detector.detect_seeds(
-            {"text": final_answer}, max_seeds=self.max_seeds_per_turn
+            {
+                "question": question,
+                "text": draft_answer,
+                "max_seed_words": self.manager.config.max_seed_words,
+            },
+            max_seeds=self.max_seeds_per_turn,
         )
         candidates, suppressed_self = self._filter_ssl_attributed_candidates(
             raw_candidates, surfaced_seed_ids
@@ -1020,9 +1029,9 @@ class ShadowChatSession:
                     )
                     try:
                         final_answer = self.model.generate(
-                            build_chat_prompt(
-                                self.history,
+                            build_revision_prompt(
                                 question,
+                                draft_answer,
                                 surfaced,
                                 response_language=(
                                     "the same language as the user's current question"
@@ -1033,6 +1042,7 @@ class ShadowChatSession:
                                 "turn": turn,
                                 "baseline_answer": draft_answer,
                                 "self_reinforcement": True,
+                                "revision_prompt": REVISION_PROMPT_META,
                             },
                             "ssl",
                             surfaced,
@@ -1095,9 +1105,13 @@ class ShadowChatSession:
             context_ref=first_pass_context_ref,
             detector_backend=str(getattr(self.detector, "name", "unknown")),
             detector_prompt_provenance=(
-                None
-                if getattr(self.detector, "prompt_variant", None) is None
-                else str(getattr(self.detector, "prompt_variant"))
+                str(getattr(self.detector, "last_prompt_metadata", {}).get("prompt_id"))
+                if getattr(self.detector, "last_prompt_metadata", None)
+                else (
+                    None
+                    if getattr(self.detector, "prompt_variant", None) is None
+                    else str(getattr(self.detector, "prompt_variant"))
+                )
             ),
             candidate_type=CandidateType.POSSIBLE_COMPLETION.value,
             ssl_exposed=bool(first_pass_surfaced_seed_ids),
@@ -1124,6 +1138,18 @@ class ShadowChatSession:
                 dict(item) for item in prepared.influence_decisions
             ] + self_reinforcement_decisions,
             "detected_candidates": raw_candidates,
+            "prompt_contracts": {
+                "answer_generation": dict(ANSWER_GENERATION_PROMPT_META),
+                "candidate_context": dict(CANDIDATE_CONTEXT_PROMPT_META),
+                "detection": (
+                    dict(getattr(self.detector, "last_prompt_metadata"))
+                    if getattr(self.detector, "last_prompt_metadata", None)
+                    else None
+                ),
+                "same_turn_revision": (
+                    dict(REVISION_PROMPT_META) if self_reinforcement_applied else None
+                ),
+            },
             "suppressed_self_attributed_candidates": suppressed_self,
             "self_reinforcement_enabled": self.allow_self_reinforcement,
             "self_reinforcement_applied": self_reinforcement_applied,
@@ -1223,16 +1249,25 @@ class ShadowChatSession:
         # self-reinforcing history contamination. Every accepted seed starts at
         # weight zero.
         candidates = self.detector.detect_seeds(
-            {"text": baseline_answer}, max_seeds=self.max_seeds_per_turn
+            {
+                "question": question,
+                "text": baseline_answer,
+                "max_seed_words": self.manager.config.max_seed_words,
+            },
+            max_seeds=self.max_seeds_per_turn,
         )
         turn_observations = self.observation_ledger.record_batch(
             candidates,
             context_ref=f"turn:{turn}:baseline_answer",
             detector_backend=str(getattr(self.detector, "name", "unknown")),
             detector_prompt_provenance=(
-                None
-                if getattr(self.detector, "prompt_variant", None) is None
-                else str(getattr(self.detector, "prompt_variant"))
+                str(getattr(self.detector, "last_prompt_metadata", {}).get("prompt_id"))
+                if getattr(self.detector, "last_prompt_metadata", None)
+                else (
+                    None
+                    if getattr(self.detector, "prompt_variant", None) is None
+                    else str(getattr(self.detector, "prompt_variant"))
+                )
             ),
             candidate_type=CandidateType.POSSIBLE_COMPLETION.value,
             ssl_exposed=False,
@@ -1347,16 +1382,25 @@ class ShadowChatSession:
         source_text = text.strip()
         recurrence_observation_ref = self._source_observation_ref(context_ref)
         raw_candidates = self.detector.detect_seeds(
-            {"text": source_text}, max_seeds=self.max_seeds_per_turn
+            {
+                "text": source_text,
+                "source_context": context_ref,
+                "max_seed_words": self.manager.config.max_seed_words,
+            },
+            max_seeds=self.max_seeds_per_turn,
         )
         observations = self.observation_ledger.record_batch(
             raw_candidates,
             context_ref=context_ref,
             detector_backend=str(getattr(self.detector, "name", "unknown")),
             detector_prompt_provenance=(
-                None
-                if getattr(self.detector, "prompt_variant", None) is None
-                else str(getattr(self.detector, "prompt_variant"))
+                str(getattr(self.detector, "last_prompt_metadata", {}).get("prompt_id"))
+                if getattr(self.detector, "last_prompt_metadata", None)
+                else (
+                    None
+                    if getattr(self.detector, "prompt_variant", None) is None
+                    else str(getattr(self.detector, "prompt_variant"))
+                )
             ),
             candidate_type=CandidateType.POSSIBLE_COMPLETION.value,
             ssl_exposed=False,
@@ -1430,6 +1474,11 @@ class ShadowChatSession:
             "context_ref": context_ref,
             "characters": len(source_text),
             "detected_candidates": raw_candidates,
+            "detection_prompt_contract": (
+                dict(getattr(self.detector, "last_prompt_metadata"))
+                if getattr(self.detector, "last_prompt_metadata", None)
+                else None
+            ),
             "candidate_observations": [item.to_dict() for item in observations],
             "seeds_born_weightless": born,
             "promoted_this_observation": promoted_now,

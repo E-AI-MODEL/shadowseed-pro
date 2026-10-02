@@ -389,6 +389,7 @@ def test_source_observation_rejects_pending_live_turn_without_mutation() -> None
         context_ref="source:test:instance:allowed:chunk:00000",
     )
     assert report["context_ref"] == "source:test:instance:allowed:chunk:00000"
+    assert report["detection_prompt_contract"]["prompt_id"] == "detector_source_observation"
 
 
 
