@@ -24,7 +24,7 @@
       "same-turn revision and self-derived observation policy are separate mechanisms",
       "schema v3 ssl_exposed observations carry an explicit self_derived_policy_id",
       "fail_closed self-derived observations are never recurrence-eligible",
-      "bounded_experimental self-derived observations may be retained but are never relabeled as ordinary recurrence at the Validation Gate",
+      "bounded_experimental self-derived observations may be retained for research but never increment canonical recurrence state",
       "recording an observation never directly changes weight, evidence, Gate state, or authority version",
       "historical observations are immutable",
       "later clean recovery is represented by an appended link rather than mutation"
