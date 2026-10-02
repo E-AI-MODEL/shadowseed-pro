@@ -560,7 +560,10 @@ def expire_seed(
         contradiction_before=contradiction_before,
         reason=reason,
     )
-    manager._sync_seed(seed_id)
+    # Keep the Gate boundary focused on authority and its immutable audit.
+    # Callers own non-authority projections such as vector-store housekeeping.
+    # In particular, vector housekeeping deliberately deletes expired open
+    # seeds and must not have that deletion undone by a Gate-side sync.
     return event
 
 
@@ -886,6 +889,7 @@ def run_validation_gate(
 
 __all__ = [
     "submit_signals",
+    "expire_seed",
     "run_validation_gate",
     "run_validation_gate_detailed",
     "log_validation_from_signals",
