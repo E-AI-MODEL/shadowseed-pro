@@ -5,6 +5,8 @@ import json
 import sqlite3
 
 from shadowseed.storage.integrity import (
+    authority_config_digest,
+    authority_config_projection,
     behavior_config_digest,
     behavior_config_epoch,
     behavior_config_projection,
@@ -89,6 +91,21 @@ def _behavior_state() -> dict:
             },
         },
     }
+
+
+def test_behavior_projection_version_keeps_authority_contract_unchanged() -> None:
+    before = _behavior_state()
+    after = deepcopy(before)
+    after["session_config"]["embedding_backend"] = "sentence-transformers"
+
+    authority_projection = authority_config_projection(before)
+    behavior_projection = behavior_config_projection(before)
+
+    assert set(authority_projection) == {"session_config", "manager_config"}
+    assert "projection_version" not in authority_projection
+    assert behavior_projection["projection_version"] == 1
+    assert authority_config_digest(before) == authority_config_digest(after)
+    assert behavior_config_digest(before) != behavior_config_digest(after)
 
 
 def test_material_behavior_change_produces_new_digest_and_epoch() -> None:
