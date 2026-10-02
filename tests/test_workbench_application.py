@@ -471,6 +471,68 @@ def test_advanced_controls_reject_unknown_keys(tmp_path) -> None:
         )
 
 
+def test_structural_advanced_controls_are_allowed_before_seed_state_exists(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Structural before seeds",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+    )
+
+    view = controller.update_session_advanced(
+        session_id,
+        settings={
+            "recurrence_mode": "pairwise",
+            "cluster_threshold": 0.72,
+        },
+    )
+
+    assert view["session_config"]["recurrence_mode"] == "pairwise"
+    assert view["session_config"]["cluster_threshold"] == 0.72
+
+
+def test_structural_advanced_controls_fail_closed_after_seeds_exist(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Structural after seeds",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+    )
+    controller.send_turn(session_id, "What Privacy Gap Remains?")
+    assert controller.session_view(session_id)["seeds"]
+
+    with pytest.raises(ValueError, match="structural setting"):
+        controller.update_session_advanced(
+            session_id,
+            settings={"recurrence_mode": "pairwise"},
+        )
+
+    with pytest.raises(ValueError, match="force cannot bypass"):
+        controller.update_session_advanced(
+            session_id,
+            settings={"cluster_threshold": 0.72},
+            force=True,
+        )
+
+
+def test_maximum_gate_strictness_uses_canonical_evidence_backed_policy() -> None:
+    settings = WorkbenchController.gate_strictness_settings(100)
+
+    assert settings["authority_profile_id"] == "strict"
+    assert settings["gate_policy_id"] == "evidence_backed"
+    assert settings["promotion_threshold"] == 0.6
+    assert settings["validation_increment"] == 0.2
+    assert settings["gate_policy_id"] != "legacy_evidence_required"
+
+
+def test_normal_gate_strictness_mapping_never_selects_legacy_policy() -> None:
+    for percent in range(0, 101):
+        settings = WorkbenchController.gate_strictness_settings(percent)
+        assert settings["gate_policy_id"] != "legacy_evidence_required"
+
+
 def test_setting_metadata_covers_full_runtime_configuration() -> None:
     metadata = setting_metadata()
     expected = set(SessionConfig.__dataclass_fields__) | set(SSLCoreConfig.__dataclass_fields__)
