@@ -66,5 +66,6 @@ Shadowseed Workbench 0.10.1 remains a local research preview and production-loca
 - Frozen bundles must pass their packaged self-test before upload.
 - macOS bundles must also pass strict code-signature verification before archiving and after the exact ZIP is re-extracted.
 - Model weights are not bundled. Model acquisition, provider availability and credentials remain separate dependencies.
-- The browser UI uses Gradio 6 through the `[workbench]` extra.
+- The normal `[workbench]` extra and standalone intentionally omit the heavy Hugging Face/Sentence Transformers/Torch stack and the hosted OpenAI SDK. Add `[models]` or `[openai]` explicitly to a Python installation when those providers are required.
+- The browser UI uses Gradio 6 through the `[workbench]` extra. The provider selector shows optional providers only when their runtime is installed.
 - Workspace schema migration remains conservative; back up valuable prerelease workspaces before upgrades.

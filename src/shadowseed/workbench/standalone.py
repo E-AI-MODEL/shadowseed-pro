@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import importlib
+from importlib.util import find_spec
 import json
 import multiprocessing
 import os
@@ -92,14 +93,26 @@ def _runtime_imports() -> dict[str, str]:
     versions: dict[str, str] = {}
     for module_name in (
         "gradio",
-        "sentence_transformers",
-        "transformers",
-        "torch",
-        "openai",
+        "httpx",
+        "numpy",
     ):
         module = importlib.import_module(module_name)
         versions[module_name] = str(getattr(module, "__version__", "present"))
     return versions
+
+
+def _optional_provider_modules() -> dict[str, bool]:
+    """Report whether provider extras are present in this runtime."""
+
+    return {
+        module_name: find_spec(module_name) is not None
+        for module_name in (
+            "sentence_transformers",
+            "transformers",
+            "torch",
+            "openai",
+        )
+    }
 
 
 def run_standalone_self_test(
@@ -150,6 +163,7 @@ def run_standalone_self_test(
         "platform": platform.platform(),
         "machine": platform.machine(),
         "runtime_imports": _runtime_imports(),
+        "optional_provider_modules": _optional_provider_modules(),
         "runtime_mode": result["session"]["runtime_mode"],
         "comparison_generated": True,
         "report_verified": True,

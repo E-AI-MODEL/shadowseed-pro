@@ -350,6 +350,24 @@ def _ollama_note(models: list[str], selected: str | None) -> str:
     )
 
 
+_PROVIDER_LABELS = {
+    "ollama": "Ollama · lokaal",
+    "openai": "OpenAI · online",
+    "hf-transformers": "Hugging Face · lokaal",
+    "fixture": "Offline demo",
+}
+
+
+def _provider_choices(ctl: WorkbenchController) -> list[tuple[str, str]]:
+    """Show only providers whose optional runtime is actually installed."""
+
+    return [
+        (_PROVIDER_LABELS[backend], backend)
+        for backend in ("ollama", "openai", "hf-transformers", "fixture")
+        if ctl.backend_available(backend)
+    ]
+
+
 def _recommended_setup(ctl: WorkbenchController) -> tuple[str, str | None, str]:
     try:
         models = ctl.discover_models("ollama")
@@ -1681,12 +1699,7 @@ def build_vnext_app(
 
                     with gr.Accordion("Model & runtime", open=True):
                         settings_provider = gr.Dropdown(
-                            choices=[
-                                ("Ollama · lokaal", "ollama"),
-                                ("OpenAI · online", "openai"),
-                                ("Hugging Face · lokaal", "hf-transformers"),
-                                ("Offline demo", "fixture"),
-                            ],
+                            choices=_provider_choices(ctl),
                             value=initial_controls[2],
                             label="Provider",
                         )

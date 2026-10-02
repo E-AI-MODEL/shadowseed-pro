@@ -82,20 +82,16 @@ def _pyinstaller_command(root: Path, dist_dir: Path, work_dir: Path) -> list[str
         "safehttpx",
         "--collect-data",
         "groovy",
-        "--collect-data",
-        "sentence_transformers",
-        "--collect-data",
-        "transformers",
-        "--collect-submodules",
-        "sentence_transformers",
-        "--collect-submodules",
-        "transformers.models",
-        "--collect-submodules",
-        "scipy._external.array_api_compat",
-        "--collect-submodules",
-        "openai",
         "--hidden-import",
         "socksio",
+        "--exclude-module",
+        "sentence_transformers",
+        "--exclude-module",
+        "transformers",
+        "--exclude-module",
+        "torch",
+        "--exclude-module",
+        "openai",
     ]
     for package in (
         "shadowseed",
@@ -104,10 +100,8 @@ def _pyinstaller_command(root: Path, dist_dir: Path, work_dir: Path) -> list[str
         "fastapi",
         "pydantic",
         "huggingface_hub",
-        "sentence-transformers",
-        "transformers",
-        "torch",
-        "openai",
+        "httpx",
+        "numpy",
     ):
         command.extend(["--copy-metadata", package])
     command.append(str(root / "src" / "shadowseed" / "workbench" / "standalone.py"))
@@ -339,9 +333,15 @@ def _verify_frozen(executable: Path, root: Path, work_dir: Path) -> dict[str, ob
     if payload.get("runtime_mode") != "live":
         raise RuntimeError("packaged self-test did not use the live product runtime")
     imports = payload.get("runtime_imports", {})
-    for required in ("gradio", "sentence_transformers", "transformers", "torch", "openai"):
+    for required in ("gradio", "httpx", "numpy"):
         if required not in imports:
             raise RuntimeError(f"packaged self-test is missing runtime dependency: {required}")
+    optional = payload.get("optional_provider_modules", {})
+    for excluded in ("sentence_transformers", "transformers", "torch", "openai"):
+        if optional.get(excluded) is not False:
+            raise RuntimeError(
+                f"thin standalone unexpectedly contains optional provider module: {excluded}"
+            )
     return payload
 
 

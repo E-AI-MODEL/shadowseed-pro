@@ -51,6 +51,36 @@ def test_workbench_release_metadata_stays_aligned() -> None:
 
 
 
+def test_workbench_extra_is_thin_and_provider_extras_are_explicit() -> None:
+    project = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))["project"]
+    extras = project["optional-dependencies"]
+
+    workbench = {item.split(">=", 1)[0].split("<", 1)[0] for item in extras["workbench"]}
+    assert "gradio" in workbench
+    assert "httpx[socks]" in workbench
+    assert not (workbench & {"sentence-transformers", "transformers", "torch", "openai"})
+
+    models = "\n".join(extras["models"])
+    assert "sentence-transformers" in models
+    assert "transformers" in models
+    assert "torch" in models
+    assert any(item.startswith("openai") for item in extras["openai"])
+
+
+def test_release_assurance_rejects_optional_provider_stacks_in_thin_artifacts() -> None:
+    release = Path(".github/workflows/release-workbench.yml").read_text(encoding="utf-8")
+    workbench_ci = Path(".github/workflows/workbench-ci.yml").read_text(encoding="utf-8")
+
+    for name in ("torch", "transformers", "sentence-transformers", "openai"):
+        assert name in release
+        assert name in workbench_ci
+    assert "thin release SBOM contains optional provider stacks" in release
+    assert "thin Workbench lock contains optional providers" in release
+    assert "thin Workbench lock contains optional providers" in workbench_ci
+    assert "download.pytorch.org" not in release
+    assert "download.pytorch.org" not in workbench_ci
+
+
 def test_heavy_release_evidence_is_pr_scoped_or_explicitly_dispatched() -> None:
     for path in (
         ".github/workflows/workbench-ci.yml",
