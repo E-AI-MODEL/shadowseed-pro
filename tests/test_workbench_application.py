@@ -513,3 +513,19 @@ def test_structural_advanced_controls_fail_closed_after_seeds_exist(tmp_path) ->
             settings={"cluster_threshold": 0.72},
             force=True,
         )
+
+
+def test_maximum_gate_strictness_uses_canonical_evidence_backed_policy() -> None:
+    settings = WorkbenchController.gate_strictness_settings(100)
+
+    assert settings["authority_profile_id"] == "strict"
+    assert settings["gate_policy_id"] == "evidence_backed"
+    assert settings["promotion_threshold"] == 0.6
+    assert settings["validation_increment"] == 0.2
+    assert settings["gate_policy_id"] != "legacy_evidence_required"
+
+
+def test_normal_gate_strictness_mapping_never_selects_legacy_policy() -> None:
+    for percent in range(0, 101):
+        settings = WorkbenchController.gate_strictness_settings(percent)
+        assert settings["gate_policy_id"] != "legacy_evidence_required"

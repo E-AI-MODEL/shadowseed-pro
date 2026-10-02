@@ -193,12 +193,12 @@ class WorkbenchController:
         return {
             **common,
             "authority_profile_id": "strict",
-            "gate_policy_id": "legacy_evidence_required",
+            "gate_policy_id": "evidence_backed",
             "min_occurrences_for_gate": 4,
             "min_evidence_for_gate": 3,
             "min_trace_for_gate": 0.5,
-            "promotion_threshold": 0.5,
-            "validation_increment": 0.5,
+            "promotion_threshold": 0.6,
+            "validation_increment": 0.2,
         }
 
     @staticmethod
