@@ -127,18 +127,24 @@ ANSWER_GENERATION_PROMPT_META = prompt_contract_metadata(
     prompt_version=ANSWER_GENERATION_PROMPT_VERSION,
     component="answer_generation",
     template=_ANSWER_GENERATION_CONTRACT,
+    input_contract=("visible_history", "current_question", "authorized_candidate_context"),
+    output_contract="draft_or_final_answer",
 )
 CANDIDATE_CONTEXT_PROMPT_META = prompt_contract_metadata(
     prompt_id=CANDIDATE_CONTEXT_PROMPT_ID,
     prompt_version=CANDIDATE_CONTEXT_PROMPT_VERSION,
     component="point_of_use_context",
     template=_CANDIDATE_CONTEXT_TEMPLATE,
+    input_contract=("authorized_candidate_directions",),
+    output_contract="bounded_untrusted_candidate_context",
 )
 REVISION_PROMPT_META = prompt_contract_metadata(
     prompt_id=REVISION_PROMPT_ID,
     prompt_version=REVISION_PROMPT_VERSION,
     component="same_turn_revision",
     template=_REVISION_TEMPLATE,
+    input_contract=("current_question", "existing_draft", "authorized_candidate_context"),
+    output_contract="revised_answer_or_unchanged_draft",
 )
 
 # Patterns that look like instructions rather than candidate perspectives. Used
