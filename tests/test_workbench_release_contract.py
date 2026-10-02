@@ -70,6 +70,7 @@ def test_workbench_extra_is_thin_and_provider_extras_are_explicit() -> None:
 def test_release_assurance_rejects_optional_provider_stacks_in_thin_artifacts() -> None:
     release = Path(".github/workflows/release-workbench.yml").read_text(encoding="utf-8")
     workbench_ci = Path(".github/workflows/workbench-ci.yml").read_text(encoding="utf-8")
+    ci = Path(".github/workflows/ci.yml").read_text(encoding="utf-8")
 
     for name in ("torch", "transformers", "sentence-transformers", "openai"):
         assert name in release
@@ -77,6 +78,8 @@ def test_release_assurance_rejects_optional_provider_stacks_in_thin_artifacts() 
     assert "thin release SBOM contains optional provider stacks" in release
     assert "thin Workbench lock contains optional providers" in release
     assert "thin Workbench lock contains optional providers" in workbench_ci
+    assert "thin production dependency inventory contains optional providers" in ci
+    assert "thin production SBOM contains optional provider stacks" in ci
     assert "download.pytorch.org" not in release
     assert "download.pytorch.org" not in workbench_ci
 
