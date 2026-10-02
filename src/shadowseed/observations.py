@@ -86,13 +86,10 @@ class CandidateObservation:
                     "schema v3 SSL-exposed observations require an explicit "
                     "self-derived policy"
                 )
-            if (
-                self.recurrence_eligible
-                != (self.self_derived_policy_id == "bounded_experimental")
-            ):
+            if self.recurrence_eligible:
                 raise ValueError(
-                    "schema v3 recurrence eligibility must match the recorded "
-                    "self-derived observation policy"
+                    "schema v3 self-derived observations are audit-only and "
+                    "cannot be recurrence-eligible"
                 )
         elif self.self_derived_policy_id is not None:
             raise ValueError(
@@ -273,10 +270,7 @@ class CandidateObservationLedger:
                 candidate_type=candidate_type,
                 ssl_exposed=ssl_exposed,
                 surfaced_seed_ids=surfaced,
-                recurrence_eligible=(
-                    not ssl_exposed
-                    or effective_self_derived_policy == "bounded_experimental"
-                ),
+                recurrence_eligible=not ssl_exposed,
                 created_at=created_at,
                 self_reinforcement_allowed=False,
                 self_derived_policy_id=effective_self_derived_policy,
