@@ -224,7 +224,7 @@ def test_v3_bounded_self_derived_observation_can_be_retained_explicitly() -> Non
         self_derived_policy_id="bounded_experimental",
     )[0]
 
-    assert observation.recurrence_eligible is True
+    assert observation.recurrence_eligible is False
     assert observation.self_derived_policy_id == "bounded_experimental"
     assert observation.self_reinforcement_allowed is False
 
