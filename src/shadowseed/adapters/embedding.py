@@ -79,7 +79,10 @@ def make_embedding_fn(
         model = model_id or "sentence-transformers/all-MiniLM-L6-v2"
         kwargs = {"revision": revision} if revision is not None else {}
         encoder = SentenceTransformer(model, **kwargs)
-        dimension = int(encoder.get_sentence_embedding_dimension())
+        get_dimension = getattr(encoder, "get_embedding_dimension", None)
+        if get_dimension is None:
+            get_dimension = encoder.get_sentence_embedding_dimension
+        dimension = int(get_dimension())
 
         def sentence_transformer_embed(text: str) -> np.ndarray:
             return np.asarray(encoder.encode(text, normalize_embeddings=True), dtype=float)
