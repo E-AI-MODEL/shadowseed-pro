@@ -9,6 +9,7 @@ from typing import Any
 from uuid import uuid4
 
 from shadowseed.application.auth import (
+    CONTRADICTION_RESOLVE,
     CONTRADICTION_SUBMIT,
     EVIDENCE_VERIFY,
     ActorContext,
@@ -572,6 +573,50 @@ class SessionService:
                 event_metadata={"action": "operator_falsification"},
             )
             return {**persisted, "authorization": authz}
+
+    def resolve_contradiction_authorized(
+        self,
+        session_id: str,
+        seed_id: str,
+        *,
+        basis: str,
+        actor: ActorContext,
+    ) -> dict[str, Any]:
+        """Resolve an open contradiction through the canonical Gate boundary."""
+
+        normalized_basis = str(basis or "").strip()
+        if not normalized_basis:
+            raise ValueError("contradiction resolution requires a non-empty basis")
+        authz = self._authorize(actor, CONTRADICTION_RESOLVE)
+        with self._session_lock(session_id):
+            replay = self.repository.authorized_request_result(
+                actor.request_id,
+                event_type=CONTRADICTION_RESOLVE,
+                session_id=session_id,
+                seed_id=seed_id,
+            )
+            if replay is not None:
+                return {**replay, "authorization": authz}
+
+            stored = self.repository.load_session(session_id)
+            session = ShadowChatSession.from_state(stored["state"])
+            event = session.manager.resolve_contradiction(
+                seed_id,
+                basis=normalized_basis,
+                resolver=str(authz["actor_id"]),
+            )
+            result = event.to_dict()
+            persisted = self.repository.save_authorized_session(
+                session_id,
+                session.to_state(),
+                updated_at=datetime.now().isoformat(),
+                authorization=authz,
+                event_type=CONTRADICTION_RESOLVE,
+                seed_id=seed_id,
+                operation_result=result,
+                event_metadata={"action": "operator_contradiction_resolution"},
+            )
+            return {**persisted, **result, "authorization": authz}
 
     def submit_verified_evidence(
         self,
