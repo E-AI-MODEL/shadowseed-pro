@@ -81,6 +81,7 @@ def test_vnext_ollama_note_makes_embedding_dependency_explicit() -> None:
 
     assert "Lokaal chatmodel geselecteerd" in note
     assert "Semantisch matchen gebruikt lokaal `embeddinggemma`" in note
+    assert "vereist Ollama v0.11.10 of nieuwer" in note
     assert "ollama pull embeddinggemma" in note
 
 
