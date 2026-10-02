@@ -264,6 +264,8 @@ class WorkbenchController:
                 embedding_model=embedding_model or None,
                 allow_toy_embedder=allow_toy_embedder,
                 revalidate_current_gate=gate_strictness is not None,
+                allow_same_turn_revision=bool(allow_self_reinforcement),
+                self_derived_signal_policy="fail_closed",
                 allow_self_reinforcement=bool(allow_self_reinforcement),
             ),
             backend=backend,
@@ -306,6 +308,8 @@ class WorkbenchController:
             "gate_policy_id": gate_policy_id,
             "authority_profile_id": authority_profile_id,
             "revalidate_current_gate": True,
+            "allow_same_turn_revision": bool(allow_self_reinforcement),
+            "self_derived_signal_policy": "fail_closed",
             "allow_self_reinforcement": bool(allow_self_reinforcement),
         }
         config_updates = {
@@ -384,6 +388,17 @@ class WorkbenchController:
         )
 
         config_updates = dict(settings)
+        # The pre-0.11 expert flag is a compatibility alias for revision only.
+        # It never opens self-derived recurrence.
+        if "allow_self_reinforcement" in settings:
+            compatibility_revision = bool(settings["allow_self_reinforcement"])
+            config_updates["allow_same_turn_revision"] = compatibility_revision
+            config_updates["self_derived_signal_policy"] = "fail_closed"
+            settings = {
+                **settings,
+                "allow_same_turn_revision": compatibility_revision,
+                "self_derived_signal_policy": "fail_closed",
+            }
         product_only_fields = {"ssl_intensity", "gate_strictness"}
         state_updates = {
             key: value
@@ -451,13 +466,22 @@ class WorkbenchController:
         *,
         allow_self_reinforcement: bool,
     ) -> dict[str, Any]:
-        """Toggle only the experimental feedback loop on an existing chat."""
+        """Compatibility toggle for bounded same-turn revision only.
+
+        The historical control name is retained for older callers. In 0.11 it
+        never enables self-derived recurrence; that policy remains fail-closed.
+        """
 
         loop = bool(allow_self_reinforcement)
+        updates = {
+            "allow_self_reinforcement": loop,
+            "allow_same_turn_revision": loop,
+            "self_derived_signal_policy": "fail_closed",
+        }
         self.sessions.update_controls(
             session_id,
-            config_updates={"allow_self_reinforcement": loop},
-            session_config_updates={"allow_self_reinforcement": loop},
+            config_updates=updates,
+            session_config_updates=updates,
             core_config_updates={},
         )
         return self.inspection.session_view(session_id)
