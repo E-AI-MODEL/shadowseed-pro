@@ -34,9 +34,10 @@ def test_workbench_release_metadata_stays_aligned() -> None:
     citation = Path("CITATION.cff").read_text(encoding="utf-8")
     research_status = Path("docs/research/status.md").read_text(encoding="utf-8")
     assert f'version: "{version}"' in citation
-    assert f"`v{version}` is a published Research Preview with verified release assets." in research_status
-    assert f"create a fresh immutable `v{version}` tag" not in research_status
-    assert "current `main` contains unreleased 0.11 development" in research_status
+    assert f"Current source version: **{version}**." in research_status
+    assert f"release candidate for `v{version}`" in research_status
+    assert "publication is a separate fact" in research_status
+    assert "`v0.10.1` remains the latest published Research Preview" in research_status
 
     workbench_readme = Path("docs/workbench/README.md").read_text(encoding="utf-8")
     limitations = Path("docs/workbench/limitations.md").read_text(encoding="utf-8")
