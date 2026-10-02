@@ -1424,6 +1424,23 @@ class ShadowChatSession:
                 if selected
                 else []
             ),
+            "detected_candidates": candidates,
+            "detector_audit": self._detector_audit(),
+            "intake_diagnostics": {
+                "normalized_candidates": list(ingest.get("normalized_candidates", [])),
+                "accepted": [dict(item) for item in ingest.get("accepted", [])],
+                "rejected": [dict(item) for item in ingest.get("rejected", [])],
+            },
+            "prompt_contracts": {
+                "answer_generation": dict(ANSWER_GENERATION_PROMPT_META),
+                "candidate_context": dict(CANDIDATE_CONTEXT_PROMPT_META),
+                "detection": (
+                    dict(getattr(self.detector, "last_prompt_metadata"))
+                    if getattr(self.detector, "last_prompt_metadata", None)
+                    else None
+                ),
+                "same_turn_revision": None,
+            },
             "candidate_observations": [
                 observation.to_dict() for observation in turn_observations
             ],
