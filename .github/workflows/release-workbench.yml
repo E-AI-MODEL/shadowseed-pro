@@ -179,6 +179,12 @@ jobs:
 
           test -n "$standalone_run_id"
 
+          git fetch origin main --force
+          if [ "$(git rev-parse origin/main)" != "$release_sha" ]; then
+            echo "main advanced while release assurance was running" >&2
+            exit 1
+          fi
+
           echo "should_release=true" >> "$GITHUB_OUTPUT"
           echo "release_sha=$release_sha" >> "$GITHUB_OUTPUT"
           echo "release_version=$release_version" >> "$GITHUB_OUTPUT"
