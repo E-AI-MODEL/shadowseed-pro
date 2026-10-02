@@ -17,7 +17,7 @@ Live testing also showed that the runtime, configuration and Workbench do not al
 - the application can identify Assisted seeds that need human review, while vNext does not make that handoff first-class;
 - current Gate revalidation can apply semantics that differ from the named canonical Gate policy;
 - legacy_evidence_required can appear as a normal strictness endpoint although it is a compatibility policy;
-- one allow_self_reinforcement flag controls both same-turn answer revision and handling of SSL-exposed detector output, even though ADR-003 forbids treating that output as independent recurrence;
+- one allow_self_reinforcement flag controls both same-turn answer revision and handling of SSL-exposed detector output; 0.11 separates those mechanisms and reopens whether self-derived observations may contribute through a distinct bounded Gate signal.
 - recurrence mode, cluster threshold and embedding-space changes are stateful but can look like ordinary hot settings;
 - generation, detection and revision are separate roles but normally share one physical model;
 - live prompts are distributed across modules and are not represented as one versioned runtime contract;
@@ -30,7 +30,7 @@ The existing SSL doctrine remains valid:
 - the Validation Gate is the sole authority decision boundary;
 - promotion is eligibility, not mandatory influence;
 - point-of-use authorization is mandatory before influence;
-- SSL-exposed output is not independent recurrence by default;
+- SSL-exposed output carries explicit causal provenance and must never be mislabeled as independent recurrence;
 - the Workbench is a presentation layer and must not reimplement authority semantics.
 
 This ADR aligns implementation, configuration and UX around those boundaries before prompt wording and 0.11.0 implementation are changed.
@@ -176,9 +176,9 @@ revision context = current question + existing draft + allowed seed context
 
 The Workbench therefore uses component-qualified labels such as Detectiecontext, Recurrence, Relevantiematch and Invloed op antwoord. A generic Context: current/pair control is not sufficient.
 
-### 3. Golden path: autonomous exploratory research
+### 3. Golden path: autonomous exploratory
 
-The research-mode happy flow for an autonomous exploratory session is:
+The happy flow for an autonomous exploratory session is:
 
 ~~~text
 1. User asks a question.
@@ -202,7 +202,7 @@ The research-mode happy flow for an autonomous exploratory session is:
 
 Promotion does not force step 13 or step 15.
 
-This is not the ordinary product default. Under ADR-005 and ADR-006, a fresh ordinary live product session remains evidence-backed unless an explicit research mode selects exploratory behavior.
+ADR-009 does not inherit the old evidence-backed product default. The 0.11 Research Preview default authority regime is a new product decision and is frozen only after the orchestration and prompt experiments in this ADR/PvA. Autonomous exploratory is therefore a candidate product regime, not automatically a research-only path.
 
 ### 4. Golden path: Assisted evidence-backed
 
