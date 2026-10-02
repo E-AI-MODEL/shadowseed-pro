@@ -11,6 +11,7 @@ from shadowseed.application.inspection import InspectionService
 from shadowseed.application.models import SessionConfig
 from shadowseed.application.scenarios import parse_scenario
 from shadowseed.application.sessions import service_for_workspace
+from shadowseed.core_config import SSLCoreConfig
 from shadowseed.workbench.controller import WorkbenchController
 
 
