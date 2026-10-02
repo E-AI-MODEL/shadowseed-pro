@@ -657,3 +657,65 @@ def test_visible_first_pass_creation_event_matches_observation_provenance() -> N
         str(event.detail["origin"].get("context_ref", "")).endswith(":visible_answer")
         for event in created_events
     )
+
+
+
+class _DedicatedRevisionModel:
+    name = "dedicated-revision-test"
+
+    def __init__(self) -> None:
+        self.calls: list[dict] = []
+
+    def generate(self, _prompt, scenario, mode, ssl_seeds):
+        self.calls.append(
+            {
+                "scenario": dict(scenario),
+                "mode": mode,
+                "ssl_seeds": list(ssl_seeds),
+            }
+        )
+        return "Dedicated revision result."
+
+
+def test_same_turn_revision_can_use_a_distinct_model_role() -> None:
+    revision = _DedicatedRevisionModel()
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="autonomous",
+        embedding_backend="lexical",
+        detector_backend=_NearDuplicateDetector(),
+        embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+        core_config=SSLCoreConfig(
+            min_occurrences_for_gate=1,
+            promotion_threshold=0.2,
+        ),
+        surface_threshold=0.0,
+        early_turn_margin=0.0,
+        resurface_margin=0.0,
+        allow_same_turn_revision=True,
+        revision_model_backend=revision,
+    )
+
+    report = session.turn("Which explanatory boundary matters?")
+
+    assert report["same_turn_revision_applied"] is True
+    assert report["answer"] == "Dedicated revision result."
+    assert len(revision.calls) == 1
+    assert revision.calls[0]["scenario"]["same_turn_revision"] is True
+    assert report["model_roles"]["generation"]["runtime_name"] == "fixture"
+    assert report["model_roles"]["revision"]["runtime_name"] == "dedicated-revision-test"
+    assert report["model_roles"]["revision"]["shares_generation_backend"] is False
+
+
+def test_default_revision_role_reuses_generation_backend() -> None:
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        embedding_backend="lexical",
+    )
+
+    assert session.revision_model is session.model
+    state = session.to_state()
+    assert state["session_config"]["revision_backend"] == "fixture"
+    assert state["session_config"]["revision_model_id"] is None
