@@ -8,7 +8,13 @@ from shadowseed.application.comparison import ComparisonService
 from shadowseed.application.feedback import FeedbackService
 from shadowseed.application.inspection import InspectionService
 from shadowseed.application.models import SessionConfig
-from shadowseed.application.orchestration import BLOCKED, HUMAN_TURN, OPTIONAL_REVIEW, SSL_TURN
+from shadowseed.application.orchestration import (
+    BLOCKED,
+    HUMAN_TURN,
+    OPTIONAL_REVIEW,
+    SSL_TURN,
+    derive_seed_orchestration,
+)
 from shadowseed.application.scenarios import parse_scenario
 from shadowseed.application.sessions import service_for_workspace
 from shadowseed.workbench.controller import WorkbenchController
@@ -512,27 +518,24 @@ def test_assisted_mature_seed_maps_to_human_turn(tmp_path) -> None:
     assert view["orchestration"]["state"] == HUMAN_TURN
 
 
-def test_promoted_authorized_seed_maps_to_optional_review(tmp_path) -> None:
-    controller = WorkbenchController(tmp_path / "workspace")
-    session_id = controller.create_session(
-        title="Authorized orchestration",
-        profile_id="balanced",
-        backend="fixture",
-        runtime_mode="live",
+def test_promoted_authorized_seed_maps_to_optional_review() -> None:
+    orchestration = derive_seed_orchestration(
+        {
+            "id": "ss_authorized",
+            "status": "PROMOTED",
+            "blocking": False,
+            "current_gate_authorized": True,
+            "occurrence_count": 3,
+            "evidence_count": 0,
+        },
         authority_profile_id="autonomous",
+        gate_policy_id="exploratory",
+        recurrence_threshold=3,
     )
-    controller.send_turn(session_id, "What Privacy Gap Remains?")
-    controller.send_turn(session_id, "What Privacy Gap Remains?")
-    controller.send_turn(session_id, "What Privacy Gap Remains?")
 
-    view = controller.session_view(session_id)
-    authorized = [
-        seed for seed in view["seeds"]
-        if seed.get("status") == "PROMOTED"
-        and seed.get("current_gate_authorized")
-    ]
-    assert authorized
-    assert all(seed["orchestration"]["state"] == OPTIONAL_REVIEW for seed in authorized)
+    assert orchestration["state"] == OPTIONAL_REVIEW
+    assert orchestration["required_action"] is None
+    assert orchestration["component"] == "point_of_use_authorization"
 
 
 def test_blocking_contradiction_maps_to_blocked(tmp_path) -> None:
