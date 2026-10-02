@@ -546,12 +546,7 @@ def test_blocking_contradiction_maps_to_blocked(tmp_path) -> None:
     controller.send_turn(session_id, "What Privacy Gap Remains?")
     view = controller.session_view(session_id)
     seed_id = str(view["seeds"][0]["id"])
-    controller.submit_contradiction(
-        session_id,
-        seed_id,
-        reason="Contradictory reviewer evidence",
-        source_ref="reviewer:test",
-    )
+    controller.falsify_seed(session_id, seed_id)
 
     blocked_view = controller.session_view(session_id)
     blocked = next(seed for seed in blocked_view["seeds"] if str(seed["id"]) == seed_id)
