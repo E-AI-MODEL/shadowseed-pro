@@ -339,13 +339,18 @@ def _ui_error(exc: BaseException) -> str:
 
 
 def _ollama_note(models: list[str], selected: str | None) -> str:
-    from shadowseed.adapters.ollama_client import DEFAULT_OLLAMA_EMBEDDING_MODEL
+    from shadowseed.adapters.ollama_client import (
+        DEFAULT_OLLAMA_EMBEDDING_MODEL,
+        MIN_OLLAMA_EMBEDDINGGEMMA_VERSION,
+    )
 
     if not models:
         return "Geen lokaal Ollama-chatmodel gevonden."
+    minimum = ".".join(str(part) for part in MIN_OLLAMA_EMBEDDINGGEMMA_VERSION)
     return (
         f"Lokaal chatmodel geselecteerd: `{selected or models[0]}`. "
-        f"Semantisch matchen gebruikt lokaal `{DEFAULT_OLLAMA_EMBEDDING_MODEL}`. "
+        f"Semantisch matchen gebruikt lokaal `{DEFAULT_OLLAMA_EMBEDDING_MODEL}` "
+        f"en vereist Ollama v{minimum} of nieuwer. "
         f"Ontbreekt dat model, voer eenmalig `ollama pull {DEFAULT_OLLAMA_EMBEDDING_MODEL}` uit."
     )
 
