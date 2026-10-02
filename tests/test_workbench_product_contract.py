@@ -100,6 +100,7 @@ def test_workbench_app_is_thin_vnext_entrypoint() -> None:
     source = Path("src/shadowseed/workbench/app.py").read_text(encoding="utf-8")
 
     assert "_build_legacy_app" not in source
+    assert "def _gradio():" in source
     assert "from shadowseed.workbench.simple_app_vnext import build_vnext_app" in source
     assert "return build_vnext_app(workspace, controller=controller)" in source
     assert "remote Workbench binding is disabled by default" in source
