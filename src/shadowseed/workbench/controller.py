@@ -234,6 +234,7 @@ class WorkbenchController:
         external_confirmed: bool = False,
         ssl_intensity: int | float | None = None,
         gate_strictness: int | float | None = None,
+        allow_same_turn_revision: bool | None = None,
         allow_self_reinforcement: bool = False,
     ) -> str:
         resolved_embedding = embedding_backend or self.default_embedding_backend(backend)
@@ -255,6 +256,11 @@ class WorkbenchController:
             allow_toy_embedder=allow_toy_embedder,
             external_confirmed=external_confirmed,
         )
+        effective_same_turn_revision = (
+            bool(allow_self_reinforcement)
+            if allow_same_turn_revision is None
+            else bool(allow_same_turn_revision)
+        )
         config_overrides: dict[str, Any] = {}
         if ssl_intensity is not None:
             config_overrides.update(self.ssl_intensity_settings(ssl_intensity))
@@ -271,7 +277,7 @@ class WorkbenchController:
                 embedding_model=embedding_model or None,
                 allow_toy_embedder=allow_toy_embedder,
                 revalidate_current_gate=gate_strictness is not None,
-                allow_same_turn_revision=bool(allow_self_reinforcement),
+                allow_same_turn_revision=effective_same_turn_revision,
                 self_derived_signal_policy="fail_closed",
                 allow_self_reinforcement=bool(allow_self_reinforcement),
             ),
