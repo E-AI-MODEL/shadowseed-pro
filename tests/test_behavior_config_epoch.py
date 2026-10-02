@@ -139,6 +139,7 @@ def test_turn_keeps_original_behavior_digest_after_reconfigure(tmp_path) -> None
     assert reports[1]["behavior_config_digest"] == view["behavior_config_digest"]
 
     projection = reports[1]["behavior_config"]
+    assert projection["projection_version"] == 1
     assert projection["model_roles"]["generation"]["backend"] == "fixture"
     assert projection["model_roles"]["revision"]["backend"] == "fixture"
     assert projection["detector_role"]["backend"] == "fixture"
