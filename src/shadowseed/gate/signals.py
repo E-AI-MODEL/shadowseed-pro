@@ -35,6 +35,7 @@ class SignalKind(str, Enum):
     """
 
     RECURRENCE = "recurrence"
+    SELF_DERIVED = "self_derived"
     SSOT = "ssot"
     HUMAN_FEEDBACK = "human_feedback"
     RETRIEVAL = "retrieval"
@@ -95,7 +96,7 @@ class ValidationSignal:
     def is_external_evidence(self) -> bool:
         """Whether this signal counts as external evidence.
 
-        Recurrence, probe, dialectic, and task-outcome signals return ``False``
+        Recurrence, self-derived, probe, dialectic, and task-outcome signals return ``False``
         even when they support promotion. This is the code-level guarantee that
         recurrence is not external evidence.
         """
