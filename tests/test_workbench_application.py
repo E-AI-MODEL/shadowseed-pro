@@ -647,3 +647,26 @@ def test_blocking_contradiction_maps_to_blocked(tmp_path) -> None:
     assert blocked["orchestration"]["state"] == BLOCKED
     assert blocked["orchestration"]["required_action"] == "resolve_contradiction"
     assert blocked_view["orchestration"]["state"] == BLOCKED
+
+
+def test_legacy_self_reinforcement_control_maps_to_revision_only(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Legacy revision adapter",
+        profile_id="balanced",
+        backend="fixture",
+        runtime_mode="live",
+    )
+
+    view = controller.update_session_self_reinforcement(
+        session_id,
+        allow_self_reinforcement=True,
+    )
+    stored = controller.sessions.load(session_id)
+
+    assert view["allow_same_turn_revision"] is True
+    assert view["self_derived_signal_policy"] == "fail_closed"
+    assert stored["config"]["allow_same_turn_revision"] is True
+    assert stored["config"]["self_derived_signal_policy"] == "fail_closed"
+    assert stored["state"]["session_config"]["allow_same_turn_revision"] is True
+    assert stored["state"]["session_config"]["self_derived_signal_policy"] == "fail_closed"

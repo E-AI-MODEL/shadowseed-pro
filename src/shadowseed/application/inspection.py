@@ -230,6 +230,15 @@ class InspectionService:
                 if persisted_config.get("gate_strictness") is not None
                 else None
             ),
+            "allow_same_turn_revision": bool(
+                persisted_config.get(
+                    "allow_same_turn_revision",
+                    persisted_config.get("allow_self_reinforcement", False),
+                )
+            ),
+            "self_derived_signal_policy": str(
+                persisted_config.get("self_derived_signal_policy", "fail_closed")
+            ),
             "allow_self_reinforcement": bool(
                 persisted_config.get("allow_self_reinforcement", False)
             ),

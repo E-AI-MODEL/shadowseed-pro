@@ -19,6 +19,7 @@ def test_ssl_exposed_observation_cannot_be_constructed_as_recurrence_eligible() 
             surfaced_seed_ids=("seed_1",),
             recurrence_eligible=True,
             created_at="2026-08-19T22:00:00+00:00",
+            self_derived_policy_id="fail_closed",
         )
 
 

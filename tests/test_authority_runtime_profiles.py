@@ -366,7 +366,7 @@ def test_expired_cluster_representative_is_replaced_by_live_redetection() -> Non
 
 
 
-def test_self_reinforcement_toggle_controls_ssl_attributed_recurrence() -> None:
+def test_legacy_self_reinforcement_toggle_no_longer_opens_ssl_recurrence() -> None:
     def make(enabled: bool) -> ShadowChatSession:
         return ShadowChatSession(
             backend="fixture",
@@ -408,20 +408,26 @@ def test_self_reinforcement_toggle_controls_ssl_attributed_recurrence() -> None:
     open_seed = next(iter(open_loop.manager.seeds.values()))
 
     assert guarded_seed.occurrence_count == 1
-    assert open_seed.occurrence_count == 2
+    assert open_seed.occurrence_count == 1
     assert guarded.turn_reports[-1]["suppressed_self_attributed_candidates"]
+    assert open_loop.turn_reports[-1]["suppressed_self_attributed_candidates"]
     assert guarded.turn_reports[-1]["self_reinforcement_enabled"] is False
-    assert open_loop.turn_reports[-1]["suppressed_self_attributed_candidates"] == []
     assert open_loop.turn_reports[-1]["self_reinforcement_enabled"] is True
+    assert guarded.turn_reports[-1]["same_turn_revision_enabled"] is False
+    assert open_loop.turn_reports[-1]["same_turn_revision_enabled"] is True
+    assert guarded.turn_reports[-1]["self_derived_signal_policy"] == "fail_closed"
+    assert open_loop.turn_reports[-1]["self_derived_signal_policy"] == "fail_closed"
 
     guarded_observation = guarded.turn_reports[-1]["candidate_observations"][0]
     open_observation = open_loop.turn_reports[-1]["candidate_observations"][0]
     assert guarded_observation["ssl_exposed"] is True
     assert guarded_observation["recurrence_eligible"] is False
     assert guarded_observation["self_reinforcement_allowed"] is False
+    assert guarded_observation["self_derived_policy_id"] == "fail_closed"
     assert open_observation["ssl_exposed"] is True
-    assert open_observation["recurrence_eligible"] is True
-    assert open_observation["self_reinforcement_allowed"] is True
+    assert open_observation["recurrence_eligible"] is False
+    assert open_observation["self_reinforcement_allowed"] is False
+    assert open_observation["self_derived_policy_id"] == "fail_closed"
 
 
 
@@ -467,7 +473,7 @@ class _RefinementFailingModel:
     name = "refinement-failing-test"
 
     def generate(self, _prompt, scenario, _mode, _ssl_seeds):
-        if scenario.get("self_reinforcement"):
+        if scenario.get("same_turn_revision"):
             raise RuntimeError("refinement unavailable")
         return "Alpha identifies a missing explanatory boundary."
 

@@ -170,6 +170,8 @@ class ShadowChatSession:
         authority_profile_id: str = "strict",
         allow_toy_embedder: bool = False,
         revalidate_current_gate: bool = False,
+        allow_same_turn_revision: bool | None = None,
+        self_derived_signal_policy: str = "fail_closed",
         allow_self_reinforcement: bool = False,
         model_backend: ModelBackend | None = None,
         detector_backend: DetectorBackend | None = None,
@@ -196,7 +198,21 @@ class ShadowChatSession:
         self.gate_policy_id = self.authority_runtime.gate_policy_id
         self.allow_toy_embedder = allow_toy_embedder
         self.revalidate_current_gate = bool(revalidate_current_gate)
+        if self_derived_signal_policy not in {"fail_closed", "bounded_experimental"}:
+            raise ValueError(
+                "self_derived_signal_policy must be 'fail_closed' or "
+                "'bounded_experimental'"
+            )
+        self.self_derived_signal_policy = str(self_derived_signal_policy)
+        # Backward compatibility is deliberately one-way: the old broad flag
+        # may still restore same-turn revision for an old session, but it never
+        # re-opens model-output recurrence in 0.11.
         self.allow_self_reinforcement = bool(allow_self_reinforcement)
+        self.allow_same_turn_revision = (
+            bool(allow_self_reinforcement)
+            if allow_same_turn_revision is None
+            else bool(allow_same_turn_revision)
+        )
         if (
             runtime_mode == "live"
             and backend != "fixture"
@@ -653,15 +669,13 @@ class ShadowChatSession:
         candidates: list[str],
         surfaced_seed_ids: list[str],
     ) -> tuple[list[str], list[str]]:
-        """Apply the configurable self-reinforcement boundary.
+        """Apply the self-derived observation boundary.
 
-        By default, a turn that already received SSL context cannot credit its
-        own generated candidates back into recurrence or authority. Experimental
-        self-reinforcement deliberately opens that boundary: those candidates
-        are accepted and may strengthen the same memory loop on later turns.
-        Provenance remains recorded so the feedback chain stays inspectable.
+        A turn that already received SSL context is fail-closed by default.
+        Research policies may retain that detector output in the immutable
+        observation ledger, but it never enters canonical recurrence state.
         """
-        if not surfaced_seed_ids or self.allow_self_reinforcement:
+        if not surfaced_seed_ids:
             return list(candidates), []
         return [], list(candidates)
 
@@ -883,8 +897,9 @@ class ShadowChatSession:
         origin = SeedOrigin(
             candidate_type=CandidateType.POSSIBLE_COMPLETION,
             detection_basis=(
-                "first_pass_ssl_exposed_self_reinforcement_allowed"
-                if first_pass_surfaced_seed_ids and self.allow_self_reinforcement
+                "first_pass_ssl_exposed_self_derived"
+                if first_pass_surfaced_seed_ids
+                and self.self_derived_signal_policy == "bounded_experimental"
                 else "first_pass_answer"
             ),
             context_ref=provisional_context_ref,
@@ -943,7 +958,7 @@ class ShadowChatSession:
         # question. This is intentionally capped at one pass: the revised answer
         # is not detected again, preventing an unbounded recursive generation loop.
         if (
-            self.allow_self_reinforcement
+            self.allow_same_turn_revision
             and promoted_now
             and self.surfacing_policy.surface_top_k != 0
         ):
@@ -1041,7 +1056,7 @@ class ShadowChatSession:
                                 "question": question,
                                 "turn": turn,
                                 "baseline_answer": draft_answer,
-                                "self_reinforcement": True,
+                                "same_turn_revision": True,
                                 "revision_prompt": REVISION_PROMPT_META,
                             },
                             "ssl",
@@ -1067,14 +1082,15 @@ class ShadowChatSession:
             else f"turn:{turn}:visible_answer"
         )
         first_pass_detection_basis = (
-            "draft_answer_ssl_exposed_self_reinforcement_allowed"
+            "draft_answer_ssl_exposed_same_turn_revision"
             if self_reinforcement_applied and first_pass_surfaced_seed_ids
             else (
-                "draft_answer_self_reinforcement_enabled"
+                "draft_answer_same_turn_revision"
                 if self_reinforcement_applied
                 else (
-                    "visible_answer_ssl_exposed_self_reinforcement_allowed"
-                    if first_pass_surfaced_seed_ids and self.allow_self_reinforcement
+                    "visible_answer_ssl_exposed_self_derived"
+                    if first_pass_surfaced_seed_ids
+                    and self.self_derived_signal_policy == "bounded_experimental"
                     else "visible_answer_non_ssl_attributed"
                 )
             )
@@ -1117,10 +1133,53 @@ class ShadowChatSession:
             ssl_exposed=bool(first_pass_surfaced_seed_ids),
             surfaced_seed_ids=first_pass_surfaced_seed_ids,
             created_at=self.manager._now_iso(),
-            allow_ssl_recurrence=bool(
-                first_pass_surfaced_seed_ids and self.allow_self_reinforcement
+            self_derived_policy_id=(
+                self.self_derived_signal_policy
+                if first_pass_surfaced_seed_ids
+                else None
             ),
         )
+
+        self_derived_contribution_audit: list[dict[str, Any]] = []
+        if (
+            self.self_derived_signal_policy == "bounded_experimental"
+            and first_pass_surfaced_seed_ids
+            and raw_candidates
+        ):
+            strength = min(
+                1.0,
+                len(raw_candidates) / max(1, self.max_seeds_per_turn),
+            )
+            for causal_seed_id in sorted(set(first_pass_surfaced_seed_ids)):
+                event = self.manager.submit_signals(
+                    causal_seed_id,
+                    [
+                        ValidationSignal(
+                            kind=SignalKind.SELF_DERIVED,
+                            direction=SignalDirection.SUPPORT,
+                            strength=strength,
+                            source_ref=first_pass_context_ref,
+                            verified=False,
+                            independent=False,
+                            reason=(
+                                f"{len(raw_candidates)} SSL-exposed detector "
+                                "candidate(s) retained for bounded S1 audit"
+                            ),
+                        )
+                    ],
+                    policy_id="bounded_self_derived",
+                )
+                self_derived_contribution_audit.append(
+                    {
+                        "seed_id": causal_seed_id,
+                        "loop_depth": 1,
+                        "candidate_count": len(raw_candidates),
+                        "policy_id": event.policy_id,
+                        "decision": event.decision.value,
+                        "authority_contribution": event.weight_delta,
+                        "event_id": event.event_id,
+                    }
+                )
 
         self.history.append((question, final_answer))
         self._turn += 1
@@ -1151,6 +1210,12 @@ class ShadowChatSession:
                 ),
             },
             "suppressed_self_attributed_candidates": suppressed_self,
+            "same_turn_revision_enabled": self.allow_same_turn_revision,
+            "same_turn_revision_applied": self_reinforcement_applied,
+            "self_derived_signal_policy": self.self_derived_signal_policy,
+            "self_derived_contribution_audit": self_derived_contribution_audit,
+            # Legacy report keys remain during the 0.11 migration so old
+            # analysis tooling can read the report without granting semantics.
             "self_reinforcement_enabled": self.allow_self_reinforcement,
             "self_reinforcement_applied": self_reinforcement_applied,
             "self_reinforcement_seed_ids": self_reinforcement_seed_ids,
@@ -1617,6 +1682,8 @@ class ShadowChatSession:
                 "authority_profile_id": self.authority_profile_id,
                 "allow_toy_embedder": self.allow_toy_embedder,
                 "revalidate_current_gate": self.revalidate_current_gate,
+                "allow_same_turn_revision": self.allow_same_turn_revision,
+                "self_derived_signal_policy": self.self_derived_signal_policy,
                 "allow_self_reinforcement": self.allow_self_reinforcement,
             },
             "contract": asdict(self.contract),
