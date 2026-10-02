@@ -5,6 +5,7 @@ from dataclasses import replace
 import pytest
 
 from shadowseed.application.auth import (
+    CONTRADICTION_RESOLVE,
     CONTRADICTION_SUBMIT,
     EVIDENCE_VERIFY,
     ActorContext,
@@ -200,3 +201,21 @@ def test_workbench_contradiction_is_attributable(tmp_path) -> None:
     assert authz["authorized"] is True
     assert authz["scope_id"] == controller.workspace.workspace_id
     assert authz["capability"] == CONTRADICTION_SUBMIT
+
+
+
+def test_workbench_can_resolve_contradiction_through_existing_production_flow(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id, seed_id = _live_seed(controller)
+    controller.falsify_seed(session_id, seed_id)
+    assert controller.seed_view(session_id, seed_id)["blocking"] is True
+
+    result = controller.resolve_contradiction(
+        session_id,
+        seed_id,
+        basis="Operator rechecked the contradiction against the source.",
+    )
+
+    assert result["decision"] == "contradiction_resolved"
+    assert result["authorization"]["capability"] == CONTRADICTION_RESOLVE
+    assert controller.seed_view(session_id, seed_id)["blocking"] is False
