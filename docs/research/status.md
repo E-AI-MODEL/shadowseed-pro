@@ -4,7 +4,7 @@
 
 The repository is **research-ready, locally mass-testable, able to produce structured privacy-minimized tester datasets, and equipped for preregistered evidence-backed paired efficacy studies**. Core mechanics, benchmark harnesses, a broad regression suite, a chat-first local Workbench, standalone build contracts, verifiable exports, support-bundle aggregation, candidate review packets, and influence-opportunity accounting are present. This status does not by itself imply `production-ready/local` or general answer-quality benefit.
 
-Current source version: **0.11.0**. This source state is the release candidate for `v0.11.0`; publication is a separate fact established only after the exact-SHA release workflow succeeds. Until then, `v0.10.1` remains the latest published Research Preview with verified release assets. Neither source-candidate nor published-preview status implies `production-ready/local` unless the exact candidate satisfies the documented acceptance and unchanged-candidate soak requirements. Older tags remain immutable historical software references and are not rewritten by later development.
+Current source version: **0.11.0**. `v0.11.0` is a published Research Preview with verified release assets from exact source SHA `28abd476f9f3f4e4725ad1b59aac0abfbff90c4a`. Publication, production status and source state remain separate facts: this release does not imply `production-ready/local` unless the exact candidate also satisfies the documented unchanged-candidate soak and production-promotion requirements. Older tags remain immutable historical software references and are not rewritten by later development.
 
 ## Research access
 
@@ -80,10 +80,10 @@ Issue #63 remains the natural home for high-end capability/evidence follow-up. C
 
 ## Remaining production work
 
-The first production target remains `production-ready/local`. Published `v0.10.1` keeps its own immutable release evidence. Source version 0.11.0 is a separate release candidate and must establish fresh exact-SHA CI, heavy release-assurance, provenance, checksum, SBOM and standalone evidence before publication. Any later candidate must do the same rather than inherit a prior release claim. Production promotion additionally requires the documented unchanged-candidate soak and no unresolved P0/P1 production findings.
+The first production target remains `production-ready/local`. Published `v0.11.0` now has fresh exact-SHA CI, heavy release-assurance, provenance, checksum, SBOM and standalone evidence. Those release facts do not complete production promotion: the candidate still requires the documented unchanged-candidate soak and no unresolved P0/P1 production findings. Any later source/release candidate must establish its own evidence rather than inherit the `v0.11.0` claim.
 
 Protected-main quality gates are active. Hosted production remains a separate target and still requires its own authentication, tenancy, hostile-network, abuse-control, managed-secret, and service-operation controls. Native Apple notarization/Developer ID signing, Windows Authenticode signing, and broader real-world usability/safety evaluation also remain outside the current local production claim.
 
 ## Appropriate use today
 
-Appropriate uses include local tester studies, mechanism inspection, controlled experiments, benchmark development, structured support-data collection, candidate-quality review, and preregistered evidence-backed paired studies. Published software remains a Research Preview unless explicitly promoted under a stronger acceptance claim; source version 0.11.0 must be judged on its own exact-SHA evidence. Do not treat Shadowseed Pro as a certified safety layer for healthcare, finance, employment, law, public administration, education decisions, or autonomous high-impact action.
+Appropriate uses include local tester studies, mechanism inspection, controlled experiments, benchmark development, structured support-data collection, candidate-quality review, and preregistered evidence-backed paired studies. Published `v0.11.0` remains a Research Preview and must be judged on its exact-SHA evidence; it has not been promoted to a stronger production claim. Do not treat Shadowseed Pro as a certified safety layer for healthcare, finance, employment, law, public administration, education decisions, or autonomous high-impact action.
