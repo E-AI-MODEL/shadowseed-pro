@@ -5,11 +5,20 @@ import json
 import pytest
 
 from shadowseed.application.comparison import ComparisonService
+from shadowseed.application.configuration import REBUILD_REQUIRED, setting_metadata
 from shadowseed.application.feedback import FeedbackService
 from shadowseed.application.inspection import InspectionService
 from shadowseed.application.models import SessionConfig
+from shadowseed.application.orchestration import (
+    BLOCKED,
+    HUMAN_TURN,
+    OPTIONAL_REVIEW,
+    SSL_TURN,
+    derive_seed_orchestration,
+)
 from shadowseed.application.scenarios import parse_scenario
 from shadowseed.application.sessions import service_for_workspace
+from shadowseed.core_config import SSLCoreConfig
 from shadowseed.workbench.controller import WorkbenchController
 
 
@@ -467,6 +476,177 @@ def test_advanced_controls_reject_unknown_keys(tmp_path) -> None:
             session_id,
             settings={"magic_hidden_switch": True},
         )
+
+
+def test_structural_advanced_controls_are_allowed_before_seed_state_exists(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Structural before seeds",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+    )
+
+    view = controller.update_session_advanced(
+        session_id,
+        settings={
+            "recurrence_mode": "pairwise",
+            "cluster_threshold": 0.72,
+        },
+    )
+
+    assert view["session_config"]["recurrence_mode"] == "pairwise"
+    assert view["session_config"]["cluster_threshold"] == 0.72
+
+
+def test_structural_advanced_controls_fail_closed_after_seeds_exist(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Structural after seeds",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+    )
+    controller.send_turn(session_id, "What Privacy Gap Remains?")
+    assert controller.session_view(session_id)["seeds"]
+
+    with pytest.raises(ValueError, match="structural setting"):
+        controller.update_session_advanced(
+            session_id,
+            settings={"recurrence_mode": "pairwise"},
+        )
+
+    with pytest.raises(ValueError, match="force cannot bypass"):
+        controller.update_session_advanced(
+            session_id,
+            settings={"cluster_threshold": 0.72},
+            force=True,
+        )
+
+
+def test_maximum_gate_strictness_uses_canonical_evidence_backed_policy() -> None:
+    settings = WorkbenchController.gate_strictness_settings(100)
+
+    assert settings["authority_profile_id"] == "strict"
+    assert settings["gate_policy_id"] == "evidence_backed"
+    assert settings["promotion_threshold"] == 0.6
+    assert settings["validation_increment"] == 0.2
+    assert settings["gate_policy_id"] != "legacy_evidence_required"
+
+
+def test_normal_gate_strictness_mapping_never_selects_legacy_policy() -> None:
+    for percent in range(0, 101):
+        settings = WorkbenchController.gate_strictness_settings(percent)
+        assert settings["gate_policy_id"] != "legacy_evidence_required"
+
+
+def test_setting_metadata_covers_full_runtime_configuration() -> None:
+    metadata = setting_metadata()
+    expected = set(SessionConfig.__dataclass_fields__) | set(SSLCoreConfig.__dataclass_fields__)
+
+    assert expected <= set(metadata)
+    assert metadata["embedding_backend"]["apply_mode"] == REBUILD_REQUIRED
+    assert metadata["embedding_model"]["apply_mode"] == REBUILD_REQUIRED
+    assert metadata["recurrence_mode"]["apply_mode"] == REBUILD_REQUIRED
+    assert metadata["cluster_threshold"]["apply_mode"] == REBUILD_REQUIRED
+
+
+def test_inspection_exposes_setting_owner_and_apply_mode(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Config semantics",
+        profile_id="balanced",
+        backend="fixture",
+        runtime_mode="live",
+    )
+
+    view = controller.session_view(session_id)
+
+    recurrence = view["setting_metadata"]["recurrence_mode"]
+    assert recurrence["component"] == "recurrence"
+    assert recurrence["apply_mode"] == REBUILD_REQUIRED
+
+
+def test_orchestration_is_read_only_and_defaults_to_ssl_turn(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Orchestration empty",
+        profile_id="balanced",
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="autonomous",
+    )
+    before = controller.sessions.load(session_id)["state"]
+
+    view = controller.session_view(session_id)
+    after = controller.sessions.load(session_id)["state"]
+
+    assert view["orchestration"]["state"] == SSL_TURN
+    assert before == after
+
+
+def test_assisted_mature_seed_maps_to_human_turn(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Assisted handoff",
+        profile_id="balanced",
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="assisted",
+    )
+    controller.send_turn(session_id, "What Privacy Gap Remains?")
+    controller.send_turn(session_id, "What Privacy Gap Remains?")
+    controller.send_turn(session_id, "What Privacy Gap Remains?")
+
+    view = controller.session_view(session_id)
+    mature = [
+        seed for seed in view["seeds"]
+        if int(seed.get("occurrence_count", 0))
+        >= int(view["core_config"].get("min_occurrences_for_gate", 3))
+    ]
+    assert mature
+    assert any(seed["orchestration"]["state"] == HUMAN_TURN for seed in mature)
+    assert view["orchestration"]["state"] == HUMAN_TURN
+
+
+def test_promoted_authorized_seed_maps_to_optional_review() -> None:
+    orchestration = derive_seed_orchestration(
+        {
+            "id": "ss_authorized",
+            "status": "PROMOTED",
+            "blocking": False,
+            "current_gate_authorized": True,
+            "occurrence_count": 3,
+            "evidence_count": 0,
+        },
+        authority_profile_id="autonomous",
+        gate_policy_id="exploratory",
+        recurrence_threshold=3,
+    )
+
+    assert orchestration["state"] == OPTIONAL_REVIEW
+    assert orchestration["required_action"] is None
+    assert orchestration["component"] == "point_of_use_authorization"
+
+
+def test_blocking_contradiction_maps_to_blocked(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Blocked orchestration",
+        profile_id="balanced",
+        backend="fixture",
+        runtime_mode="live",
+    )
+    controller.send_turn(session_id, "What Privacy Gap Remains?")
+    view = controller.session_view(session_id)
+    seed_id = str(view["seeds"][0]["id"])
+    controller.falsify_seed(session_id, seed_id)
+
+    blocked_view = controller.session_view(session_id)
+    blocked = next(seed for seed in blocked_view["seeds"] if str(seed["id"]) == seed_id)
+    assert blocked["orchestration"]["state"] == BLOCKED
+    assert blocked["orchestration"]["required_action"] == "resolve_contradiction"
+    assert blocked_view["orchestration"]["state"] == BLOCKED
 
 
 def test_legacy_self_reinforcement_control_maps_to_revision_only(tmp_path) -> None:
