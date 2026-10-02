@@ -44,6 +44,22 @@ def test_real_model_product_default_uses_semantic_embedding() -> None:
         assert WorkbenchController.default_embedding_backend(backend) == "sentence-transformers"
 
 
+def test_ollama_workbench_session_persists_resolved_embedding_identity(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Ollama embedding provenance",
+        profile_id="balanced",
+        backend="ollama",
+        model_id="qwen3:8b",
+        runtime_mode="live",
+    )
+
+    stored = controller.sessions.load(session_id)
+
+    assert stored["config"]["embedding_backend"] == "ollama"
+    assert stored["config"]["embedding_model"] == "embeddinggemma"
+
+
 def _seed_state(stored: dict) -> list[tuple[str, int, float, float, str]]:
     return sorted(
         (
