@@ -73,8 +73,8 @@ def derive_seed_orchestration(
             BLOCKED,
             reason_code="blocking_contradiction",
             reason_text=(
-                "Een open tegenspraak blokkeert invloed. Die tegenspraak moet "
-                "eerst expliciet worden afgehandeld."
+                "An open contradiction blocks influence and must be resolved "
+                "explicitly first."
             ),
             required_action="resolve_contradiction",
             no_action_effect="The seed remains blocked and cannot influence an answer.",
@@ -97,8 +97,8 @@ def derive_seed_orchestration(
             OPTIONAL_REVIEW,
             reason_code="authorized_for_consideration",
             reason_text=(
-                "De seed is Gate-geautoriseerd. Relevantie en de point-of-use "
-                "controle bepalen pas bij een concrete vraag of hij wordt gebruikt."
+                "The seed is Gate-authorized. Relevance and point-of-use checks "
+                "still decide whether it may be used for a concrete question."
             ),
             optional_actions=("inspect_seed",),
             no_action_effect="Shadowseed may continue autonomously; human review is optional.",
@@ -112,8 +112,8 @@ def derive_seed_orchestration(
                 HUMAN_TURN,
                 reason_code="current_gate_requires_verified_support",
                 reason_text=(
-                    "De seed was eerder gepromoveerd, maar voldoet niet aan de "
-                    "huidige evidence-backed autorisatie."
+                    "The seed was promoted earlier but does not satisfy the "
+                    "current evidence-backed authorization."
                 ),
                 required_action="submit_verified_support",
                 optional_actions=("inspect_gate_history",),
@@ -125,9 +125,9 @@ def derive_seed_orchestration(
             SSL_TURN,
             reason_code="current_gate_not_yet_satisfied",
             reason_text=(
-                "De seed is historisch gepromoveerd, maar de huidige Gate-basis "
-                "is niet toereikend. De autonome runtime kan nieuwe kwalificerende "
-                "ondersteuning verzamelen."
+                "The seed was historically promoted, but the current Gate basis "
+                "is insufficient. The autonomous runtime may collect new "
+                "qualifying support."
             ),
             optional_actions=("inspect_gate_history",),
             no_action_effect="Shadowseed keeps observing; the seed is not used while authorization is missing.",
@@ -143,8 +143,8 @@ def derive_seed_orchestration(
             HUMAN_TURN,
             reason_code="verified_support_required",
             reason_text=(
-                "De seed is vaak genoeg teruggekomen om aandacht te verdienen, "
-                "maar deze authority-route vereist nog geverifieerde ondersteuning."
+                "The seed has recurred enough to require attention, but this "
+                "authority route still requires verified support."
             ),
             required_action="submit_verified_support",
             optional_actions=("inspect_seed",),
