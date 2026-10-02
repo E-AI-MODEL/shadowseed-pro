@@ -390,6 +390,17 @@ def test_source_observation_rejects_pending_live_turn_without_mutation() -> None
     )
     assert report["context_ref"] == "source:test:instance:allowed:chunk:00000"
     assert report["detection_prompt_contract"]["prompt_id"] == "detector_source_observation"
+    assert report["detector_audit"]["prompt_contract"]["input_contract"] == [
+        "source_observation",
+        "source_context",
+        "max_seeds",
+        "max_seed_words",
+    ]
+    assert report["detector_audit"]["raw_output"]
+    assert report["detector_audit"]["parse_diagnostics"]["accepted_candidates"] >= 1
+    assert report["intake_diagnostics"]["accepted"]
+    assert "normalized_candidates" in report["intake_diagnostics"]
+    assert "rejected" in report["intake_diagnostics"]
 
 
 
