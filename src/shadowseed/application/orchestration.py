@@ -77,7 +77,7 @@ def derive_seed_orchestration(
                 "eerst expliciet worden afgehandeld."
             ),
             required_action="resolve_contradiction",
-            no_action_effect="De seed blijft geblokkeerd en kan geen antwoord beïnvloeden.",
+            no_action_effect="The seed remains blocked and cannot influence an answer.",
             component="contradiction_resolution",
             seed_id=seed_id,
         )
@@ -86,8 +86,8 @@ def derive_seed_orchestration(
         return _result(
             BLOCKED,
             reason_code="expired_terminal",
-            reason_text="De seed is verlopen en hoort niet meer bij de actieve memory.",
-            no_action_effect="Er is geen actie nodig; de verlopen seed blijft buiten invloed.",
+            reason_text="The seed is expired and no longer belongs to active memory.",
+            no_action_effect="No action is required; the expired seed remains outside influence.",
             component="lifecycle",
             seed_id=seed_id,
         )
@@ -101,7 +101,7 @@ def derive_seed_orchestration(
                 "controle bepalen pas bij een concrete vraag of hij wordt gebruikt."
             ),
             optional_actions=("inspect_seed",),
-            no_action_effect="Shadowseed kan zelfstandig doorgaan; menselijke review is optioneel.",
+            no_action_effect="Shadowseed may continue autonomously; human review is optional.",
             component="point_of_use_authorization",
             seed_id=seed_id,
         )
@@ -117,7 +117,7 @@ def derive_seed_orchestration(
                 ),
                 required_action="submit_verified_support",
                 optional_actions=("inspect_gate_history",),
-                no_action_effect="De historische promotie blijft auditgeschiedenis, maar invloed blijft geblokkeerd.",
+                no_action_effect="Historical promotion remains audit history, but influence stays blocked.",
                 component="validation_gate",
                 seed_id=seed_id,
             )
@@ -130,7 +130,7 @@ def derive_seed_orchestration(
                 "ondersteuning verzamelen."
             ),
             optional_actions=("inspect_gate_history",),
-            no_action_effect="Shadowseed blijft observeren; de seed wordt niet gebruikt zolang autorisatie ontbreekt.",
+            no_action_effect="Shadowseed keeps observing; the seed is not used while authorization is missing.",
             component="validation_gate",
             seed_id=seed_id,
         )
@@ -148,7 +148,7 @@ def derive_seed_orchestration(
             ),
             required_action="submit_verified_support",
             optional_actions=("inspect_seed",),
-            no_action_effect="De seed blijft in shadow memory zonder authority voor invloed.",
+            no_action_effect="The seed remains in shadow memory without authority to influence.",
             component="human_authority_actions",
             seed_id=seed_id,
         )
@@ -157,9 +157,9 @@ def derive_seed_orchestration(
         return _result(
             SSL_TURN,
             reason_code="autonomous_observation",
-            reason_text="De runtime kan deze seed zelfstandig verder observeren en via de Gate laten beoordelen.",
+            reason_text="The runtime may continue observing this seed autonomously and submit qualifying support to the Gate.",
             optional_actions=("inspect_seed",),
-            no_action_effect="Geen menselijke actie nodig; Shadowseed gaat verder met observeren.",
+            no_action_effect="No human action is required; Shadowseed continues observing.",
             component="human_ssl_orchestration",
             seed_id=seed_id,
         )
@@ -167,9 +167,9 @@ def derive_seed_orchestration(
     return _result(
         SSL_TURN,
         reason_code="awaiting_more_observation",
-        reason_text="Er is nog geen menselijke authority-actie nodig; eerst is meer geldige observatie nodig.",
+        reason_text="No human authority action is required yet; more valid observation is needed first.",
         optional_actions=("inspect_seed",),
-        no_action_effect="Shadowseed blijft observeren totdat een volgende beslisgrens wordt bereikt.",
+        no_action_effect="Shadowseed keeps observing until the next decision boundary is reached.",
         component="human_ssl_orchestration",
         seed_id=seed_id,
     )
@@ -192,8 +192,8 @@ def aggregate_session_orchestration(
         return _result(
             SSL_TURN,
             reason_code="no_seed_action",
-            reason_text="Er is op dit moment geen seed waarvoor menselijke actie nodig is.",
-            no_action_effect="Shadowseed kan de sessie normaal blijven observeren.",
+            reason_text="No seed currently requires human action.",
+            no_action_effect="Shadowseed may continue observing the session normally.",
             component="human_ssl_orchestration",
         )
 
