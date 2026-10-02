@@ -8,6 +8,7 @@ from shadowseed.application.comparison import ComparisonService
 from shadowseed.application.feedback import FeedbackService
 from shadowseed.application.inspection import InspectionService
 from shadowseed.application.models import SessionConfig
+from shadowseed.application.orchestration import BLOCKED, HUMAN_TURN, OPTIONAL_REVIEW, SSL_TURN
 from shadowseed.application.scenarios import parse_scenario
 from shadowseed.application.sessions import service_for_workspace
 from shadowseed.workbench.controller import WorkbenchController
@@ -467,3 +468,93 @@ def test_advanced_controls_reject_unknown_keys(tmp_path) -> None:
             session_id,
             settings={"magic_hidden_switch": True},
         )
+
+
+def test_orchestration_is_read_only_and_defaults_to_ssl_turn(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Orchestration empty",
+        profile_id="balanced",
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="autonomous",
+    )
+    before = controller.sessions.load(session_id)["state"]
+
+    view = controller.session_view(session_id)
+    after = controller.sessions.load(session_id)["state"]
+
+    assert view["orchestration"]["state"] == SSL_TURN
+    assert before == after
+
+
+def test_assisted_mature_seed_maps_to_human_turn(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Assisted handoff",
+        profile_id="balanced",
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="assisted",
+    )
+    controller.send_turn(session_id, "What Privacy Gap Remains?")
+    controller.send_turn(session_id, "What Privacy Gap Remains?")
+    controller.send_turn(session_id, "What Privacy Gap Remains?")
+
+    view = controller.session_view(session_id)
+    mature = [
+        seed for seed in view["seeds"]
+        if int(seed.get("occurrence_count", 0))
+        >= int(view["core_config"].get("min_occurrences_for_gate", 3))
+    ]
+    assert mature
+    assert any(seed["orchestration"]["state"] == HUMAN_TURN for seed in mature)
+    assert view["orchestration"]["state"] == HUMAN_TURN
+
+
+def test_promoted_authorized_seed_maps_to_optional_review(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Authorized orchestration",
+        profile_id="balanced",
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="autonomous",
+    )
+    controller.send_turn(session_id, "What Privacy Gap Remains?")
+    controller.send_turn(session_id, "What Privacy Gap Remains?")
+    controller.send_turn(session_id, "What Privacy Gap Remains?")
+
+    view = controller.session_view(session_id)
+    authorized = [
+        seed for seed in view["seeds"]
+        if seed.get("status") == "PROMOTED"
+        and seed.get("current_gate_authorized")
+    ]
+    assert authorized
+    assert all(seed["orchestration"]["state"] == OPTIONAL_REVIEW for seed in authorized)
+
+
+def test_blocking_contradiction_maps_to_blocked(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Blocked orchestration",
+        profile_id="balanced",
+        backend="fixture",
+        runtime_mode="live",
+    )
+    controller.send_turn(session_id, "What Privacy Gap Remains?")
+    view = controller.session_view(session_id)
+    seed_id = str(view["seeds"][0]["id"])
+    controller.submit_contradiction(
+        session_id,
+        seed_id,
+        reason="Contradictory reviewer evidence",
+        source_ref="reviewer:test",
+    )
+
+    blocked_view = controller.session_view(session_id)
+    blocked = next(seed for seed in blocked_view["seeds"] if str(seed["id"]) == seed_id)
+    assert blocked["orchestration"]["state"] == BLOCKED
+    assert blocked["orchestration"]["required_action"] == "resolve_contradiction"
+    assert blocked_view["orchestration"]["state"] == BLOCKED
