@@ -10,12 +10,13 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
+from shadowseed.application.configuration import setting_metadata
 from shadowseed.application.orchestration import (
     aggregate_session_orchestration,
     derive_seed_orchestration,
 )
 from shadowseed.application.sessions import SessionService
-from shadowseed.manager import snapshot_meets_current_gate
+from shadowseed.gate.current_authority import snapshot_meets_current_gate
 
 
 _STATUS_EXPLANATIONS = {
@@ -132,6 +133,7 @@ class InspectionService:
                     manager_config,
                     effective_gate_policy_id,
                     blocking=blocking,
+                    gate_events=manager.get("gate_events", []),
                 )
                 if revalidate_current_gate
                 else (
@@ -247,6 +249,7 @@ class InspectionService:
             "persisted_config": persisted_config,
             "session_config": session_config,
             "core_config": manager_config,
+            "setting_metadata": setting_metadata(),
         }
 
     def seed_view(self, session_id: str, seed_id: str) -> dict[str, Any]:
