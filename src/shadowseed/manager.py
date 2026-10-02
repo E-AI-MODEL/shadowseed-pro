@@ -249,6 +249,7 @@ class SSLManager:
             self.config.to_dict(),
             policy_id,
             blocking=self.is_blocking_contradiction(seed_id),
+            gate_events=self.gate_events,
         )
 
     @property

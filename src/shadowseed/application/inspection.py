@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from shadowseed.application.sessions import SessionService
-from shadowseed.manager import snapshot_meets_current_gate
+from shadowseed.gate.current_authority import snapshot_meets_current_gate
 
 
 _STATUS_EXPLANATIONS = {
@@ -128,6 +128,7 @@ class InspectionService:
                     manager_config,
                     effective_gate_policy_id,
                     blocking=blocking,
+                    gate_events=manager.get("gate_events", []),
                 )
                 if revalidate_current_gate
                 else (
