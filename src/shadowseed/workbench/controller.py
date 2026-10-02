@@ -883,12 +883,6 @@ class WorkbenchController:
     ) -> None:
         if backend not in BACKENDS:
             raise ValueError(f"unsupported Workbench backend: {backend}")
-        if not WorkbenchController.backend_available(backend):
-            extra = "openai" if backend == "openai" else "models"
-            raise ValueError(
-                f"backend {backend!r} is not installed; install shadowseed[{extra}] "
-                "alongside shadowseed[workbench]"
-            )
         if runtime_mode not in RUNTIME_MODES:
             raise ValueError(f"unsupported Workbench runtime mode: {runtime_mode}")
         if embedding_backend not in EMBEDDING_BACKENDS:
@@ -904,12 +898,6 @@ class WorkbenchController:
         if effective_revision_backend not in BACKENDS:
             raise ValueError(
                 f"unsupported Workbench revision backend: {effective_revision_backend}"
-            )
-        if not WorkbenchController.backend_available(effective_revision_backend):
-            extra = "openai" if effective_revision_backend == "openai" else "models"
-            raise ValueError(
-                f"revision backend {effective_revision_backend!r} is not installed; "
-                f"install shadowseed[{extra}] alongside shadowseed[workbench]"
             )
         if (
             effective_revision_backend != "fixture"
