@@ -43,6 +43,10 @@ class SessionConfig:
     ssl_intensity: int | None = None
     gate_strictness: int | None = None
     revalidate_current_gate: bool = False
+    # 0.11 splits answer revision from model-output feedback. The legacy flag is
+    # retained only so older persisted sessions can be restored explicitly.
+    allow_same_turn_revision: bool = False
+    self_derived_signal_policy: str = "fail_closed"
     allow_self_reinforcement: bool = False
     min_occurrences_for_gate: int = 3
     min_evidence_for_gate: int = 2
