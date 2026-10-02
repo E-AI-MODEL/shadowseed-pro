@@ -1487,7 +1487,7 @@ def build_vnext_app(
                             label="Authority-profiel",
                         )
                         gate_policy_control = gr.Dropdown(
-                            choices=["evidence_backed", "exploratory", "legacy_evidence_required"],
+                            choices=["evidence_backed", "exploratory"],
                             value=initial_controls[7],
                             label="Gate-policy",
                         )
