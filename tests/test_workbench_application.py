@@ -5,6 +5,7 @@ import json
 import pytest
 
 from shadowseed.application.comparison import ComparisonService
+from shadowseed.application.configuration import REBUILD_REQUIRED, setting_metadata
 from shadowseed.application.feedback import FeedbackService
 from shadowseed.application.inspection import InspectionService
 from shadowseed.application.models import SessionConfig
@@ -467,3 +468,30 @@ def test_advanced_controls_reject_unknown_keys(tmp_path) -> None:
             session_id,
             settings={"magic_hidden_switch": True},
         )
+
+
+def test_setting_metadata_covers_full_runtime_configuration() -> None:
+    metadata = setting_metadata()
+    expected = set(SessionConfig.__dataclass_fields__) | set(SSLCoreConfig.__dataclass_fields__)
+
+    assert expected <= set(metadata)
+    assert metadata["embedding_backend"]["apply_mode"] == REBUILD_REQUIRED
+    assert metadata["embedding_model"]["apply_mode"] == REBUILD_REQUIRED
+    assert metadata["recurrence_mode"]["apply_mode"] == REBUILD_REQUIRED
+    assert metadata["cluster_threshold"]["apply_mode"] == REBUILD_REQUIRED
+
+
+def test_inspection_exposes_setting_owner_and_apply_mode(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Config semantics",
+        profile_id="balanced",
+        backend="fixture",
+        runtime_mode="live",
+    )
+
+    view = controller.session_view(session_id)
+
+    recurrence = view["setting_metadata"]["recurrence_mode"]
+    assert recurrence["component"] == "recurrence"
+    assert recurrence["apply_mode"] == REBUILD_REQUIRED
