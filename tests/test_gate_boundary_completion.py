@@ -150,6 +150,7 @@ def test_direct_authority_transitions_are_exactly_allowlisted() -> None:
         "gate/runtime_adapter.py": {
             "_submit_legacy_signals": 3,
             "apply_probe_feedback": 1,
+            "expire_seed": 1,
             "resolve_contradiction": 1,
             "submit_signals": 2,
         },
@@ -157,8 +158,7 @@ def test_direct_authority_transitions_are_exactly_allowlisted() -> None:
             "activate_existing_seed": 1,
         },
         "lifecycle.py": {
-            "decay_traces": 2,
-            "expire_vector_only_open_seeds": 1,
+            "decay_traces": 1,
             "reactivate_by_text": 1,
         },
         "recurrence.py": {

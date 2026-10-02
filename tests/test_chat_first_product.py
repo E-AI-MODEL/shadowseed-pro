@@ -567,10 +567,12 @@ def test_product_sliders_are_independent_and_persisted(tmp_path) -> None:
     assert strict_stored["config"]["ssl_intensity"] == 100
     assert strict_stored["config"]["gate_strictness"] == 100
     assert strict_stored["config"]["surface_top_k"] == 3
-    assert strict_stored["config"]["gate_policy_id"] == "legacy_evidence_required"
+    assert strict_stored["config"]["gate_policy_id"] == "evidence_backed"
+    assert strict_stored["config"]["authority_profile_id"] == "strict"
     assert strict_stored["config"]["min_occurrences_for_gate"] == 4
     assert strict_stored["config"]["min_evidence_for_gate"] == 3
-    assert strict_stored["config"]["promotion_threshold"] == 0.5
+    assert strict_stored["config"]["promotion_threshold"] == 0.6
+    assert strict_stored["config"]["validation_increment"] == 0.2
 
     open_view = controller.session_view(open_id)
     strict_view = controller.session_view(strict_id)
@@ -598,7 +600,7 @@ def test_gate_zero_promotes_first_observation_but_ssl_zero_never_surfaces(tmp_pa
     assert second["report"]["surfaced_seed_ids"] == []
 
 
-def test_gate_hundred_requires_recurrence_and_three_verified_sources(tmp_path) -> None:
+def test_gate_hundred_requires_three_verified_sources_without_hidden_recurrence_gate(tmp_path) -> None:
     controller = WorkbenchController(tmp_path / "workspace")
     session_id = controller.create_session(
         title="Strict Gate",
@@ -608,16 +610,17 @@ def test_gate_hundred_requires_recurrence_and_three_verified_sources(tmp_path) -
         gate_strictness=100,
     )
 
-    for index in range(4):
-        controller.ingest_sources(
-            session_id,
-            pasted_text="Alpha provides a recurring explanatory perspective.",
-        )
+    controller.ingest_sources(
+        session_id,
+        pasted_text="Alpha provides a recurring explanatory perspective.",
+    )
 
     view = controller.session_view(session_id)
     seed = max(view["seeds"], key=lambda item: int(item.get("occurrence_count", 0)))
     seed_id = seed["id"]
-    assert int(seed["occurrence_count"]) >= 4
+    recurrence_threshold = int(view["core_config"]["min_occurrences_for_gate"])
+    assert recurrence_threshold == 4
+    assert int(seed["occurrence_count"]) < recurrence_threshold
     assert seed["status"] != "PROMOTED"
 
     for index in range(2):

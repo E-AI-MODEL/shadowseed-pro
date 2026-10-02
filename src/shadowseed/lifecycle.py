@@ -49,10 +49,10 @@ def decay_traces(manager: Any, turns_passed: int = 1) -> None:
                 manager.dormant_ttl_turns > 0
                 and seed.turns_dormant >= manager.dormant_ttl_turns
             ):
-                manager._set_authority(
-                    seed,
-                    status=SeedStatus.EXPIRED,
-                    weight=0.0,
+                manager.expire_seed(
+                    seed_id,
+                    reason="dormant_ttl",
+                    source_ref=f"dormant_ttl:{manager.dormant_ttl_turns}",
                 )
                 expired = True
         else:
@@ -146,12 +146,11 @@ def expire_vector_only_open_seeds(
     for seed_id in expired:
         if seed_id in manager._seeds:
             seed = manager._seeds[seed_id]
-            manager._set_authority(
-                seed,
-                status=SeedStatus.EXPIRED,
-                weight=0.0,
+            manager.expire_seed(
+                seed_id,
+                reason="vector_housekeeping",
+                source_ref=f"vector_housekeeping:{max_age_days}d",
             )
-            manager._touch_seed(seed)
             manager._record_event("expired", seed_id, max_age_days=max_age_days)
     return expired
 

@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import numpy as np
 
+from shadowseed.gate.events import GateDecision
+from shadowseed.gate.signals import SignalKind
 from shadowseed.manager import SSLManager, SeedStatus
 
 
@@ -39,6 +41,10 @@ def test_dormant_seed_expires_after_ttl():
     assert m.seeds[sid].status == SeedStatus.EXPIRED
     assert m.seeds[sid].weight == 0.0
     assert any(e.event_type == "expired" for e in m.event_log)
+    expiry = m.gate_events[-1]
+    assert expiry.decision is GateDecision.EXPIRED
+    assert expiry.policy_id == "lifecycle_expiry"
+    assert expiry.signals[0].kind is SignalKind.LIFECYCLE_EXPIRY
 
 
 def test_expired_seed_is_not_reactivated_or_decayed():
@@ -105,3 +111,25 @@ def test_reactivation_resets_dormancy_clock():
     m.reactivate_by_text(text)
     assert m.seeds[sid].status == SeedStatus.NEW
     assert m.seeds[sid].turns_dormant == 0
+
+
+def test_expire_seed_routes_promoted_authority_reset_through_gate():
+    m = _manager()
+    sid = m.add_or_update_seed("A promoted seed that reaches terminal expiry.")
+    m.seeds[sid].unsafe_set_authority(weight=0.6, status=SeedStatus.PROMOTED)
+    version_before = m.seeds[sid].authority_version
+
+    event = m.expire_seed(
+        sid,
+        reason="test_terminal_expiry",
+        source_ref="test:lifecycle",
+    )
+
+    seed = m.seeds[sid]
+    assert seed.status is SeedStatus.EXPIRED
+    assert seed.weight == 0.0
+    assert seed.authority_version > version_before
+    assert event.decision is GateDecision.EXPIRED
+    assert event.authority_version == seed.authority_version
+    assert event.signals[0].kind is SignalKind.LIFECYCLE_EXPIRY
+    assert event.signals[0].source_ref == "test:lifecycle"
