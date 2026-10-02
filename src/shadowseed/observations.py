@@ -43,6 +43,9 @@ class CandidateObservation:
     created_at: str
     self_reinforcement_allowed: bool = False
     self_derived_policy_id: str | None = None
+    self_derived_loop_depth: int = 0
+    authority_contribution: float = 0.0
+    contribution_policy_id: str | None = None
     legacy_projection: bool = False
     schema_version: int = OBSERVATION_SCHEMA_VERSION
 
@@ -77,6 +80,13 @@ class CandidateObservation:
                 "schema v3 no longer uses self_reinforcement_allowed; "
                 "record self-derived policy separately"
             )
+        if self.self_derived_loop_depth < 0:
+            raise ValueError("self-derived loop depth cannot be negative")
+        if self.authority_contribution != 0.0:
+            raise ValueError(
+                "schema v3 bounded SELF_DERIVED policy is audit-only; "
+                "authority contribution must remain zero"
+            )
         if self.ssl_exposed:
             if self.self_derived_policy_id not in {
                 "fail_closed",
@@ -91,10 +101,32 @@ class CandidateObservation:
                     "schema v3 self-derived observations are audit-only and "
                     "cannot be recurrence-eligible"
                 )
-        elif self.self_derived_policy_id is not None:
-            raise ValueError(
-                "clean observations cannot carry a self-derived policy id"
+            if self.self_derived_loop_depth < 1:
+                raise ValueError(
+                    "schema v3 SSL-exposed observations require loop depth >= 1"
+                )
+            expected_contribution_policy = (
+                "bounded_self_derived"
+                if self.self_derived_policy_id == "bounded_experimental"
+                else None
             )
+            if self.contribution_policy_id != expected_contribution_policy:
+                raise ValueError(
+                    "schema v3 contribution policy must match self-derived policy"
+                )
+        else:
+            if self.self_derived_policy_id is not None:
+                raise ValueError(
+                    "clean observations cannot carry a self-derived policy id"
+                )
+            if self.self_derived_loop_depth != 0:
+                raise ValueError(
+                    "clean observations cannot carry self-derived loop depth"
+                )
+            if self.contribution_policy_id is not None:
+                raise ValueError(
+                    "clean observations cannot carry a contribution policy"
+                )
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -131,6 +163,18 @@ class CandidateObservation:
                 None
                 if payload.get("self_derived_policy_id") is None
                 else str(payload.get("self_derived_policy_id"))
+            ),
+            self_derived_loop_depth=int(
+                payload.get(
+                    "self_derived_loop_depth",
+                    1 if payload.get("ssl_exposed", False) else 0,
+                )
+            ),
+            authority_contribution=float(payload.get("authority_contribution", 0.0)),
+            contribution_policy_id=(
+                None
+                if payload.get("contribution_policy_id") is None
+                else str(payload.get("contribution_policy_id"))
             ),
             legacy_projection=bool(payload.get("legacy_projection", False)),
             schema_version=int(payload.get("schema_version", 1)),
@@ -274,6 +318,13 @@ class CandidateObservationLedger:
                 created_at=created_at,
                 self_reinforcement_allowed=False,
                 self_derived_policy_id=effective_self_derived_policy,
+                self_derived_loop_depth=1 if ssl_exposed else 0,
+                authority_contribution=0.0,
+                contribution_policy_id=(
+                    "bounded_self_derived"
+                    if effective_self_derived_policy == "bounded_experimental"
+                    else None
+                ),
                 legacy_projection=legacy_projection,
             )
             if observation.observation_id in self._observation_ids:
