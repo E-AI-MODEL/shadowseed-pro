@@ -177,6 +177,51 @@ class ExploratoryPolicy:
 
 
 @dataclass(frozen=True)
+class BoundedSelfDerivedPolicy:
+    """Research-only policy that records SELF_DERIVED pressure without authority.
+
+    ADR-009 reopens self-derived authority as an experiment, but does not select
+    a positive authority delta. This bounded policy therefore delays any
+    authority contribution: the typed signal reaches the canonical Gate and is
+    auditable, while weight, status, evidence and recurrence remain unchanged.
+    """
+
+    policy_id: str = "bounded_self_derived"
+
+    def propose(
+        self,
+        signals: Sequence[ValidationSignal],
+        authority: AuthoritySnapshot,
+    ) -> GateDecisionProposal:
+        contradiction = _contradiction_proposal(self.policy_id, signals, authority)
+        if contradiction is not None:
+            return contradiction
+
+        self_derived = any(
+            signal.kind is SignalKind.SELF_DERIVED
+            and signal.direction is SignalDirection.SUPPORT
+            for signal in signals
+        )
+        if self_derived:
+            return GateDecisionProposal(
+                self.policy_id,
+                ProposedVerdict.NO_CHANGE,
+                weight_delta=0.0,
+                reason=(
+                    "bounded experimental SELF_DERIVED signal recorded; "
+                    "authority contribution delayed"
+                ),
+                satisfied=True,
+            )
+        return GateDecisionProposal(
+            self.policy_id,
+            ProposedVerdict.BLOCK,
+            reason="no SELF_DERIVED support signal",
+            missing=("self_derived_support",),
+        )
+
+
+@dataclass(frozen=True)
 class EvidenceBackedPolicy:
     """Strict policy: verified external evidence is required."""
 
@@ -287,6 +332,9 @@ _PUBLIC_REGISTRY: dict[str, GatePolicy] = {
     ExploratoryPolicy().policy_id: ExploratoryPolicy(),
     EvidenceBackedPolicy().policy_id: EvidenceBackedPolicy(),
 }
+_EXPERIMENTAL_REGISTRY: dict[str, GatePolicy] = {
+    BoundedSelfDerivedPolicy().policy_id: BoundedSelfDerivedPolicy(),
+}
 _COMPATIBILITY_REGISTRY: dict[str, GatePolicy] = {
     LegacyEvidenceRequiredPolicy().policy_id: LegacyEvidenceRequiredPolicy(),
 }
@@ -305,6 +353,8 @@ def resolve_policy(policy_id: str | None) -> GatePolicy:
         return default_policy()
     if policy_id in _PUBLIC_REGISTRY:
         return _PUBLIC_REGISTRY[policy_id]
+    if policy_id in _EXPERIMENTAL_REGISTRY:
+        return _EXPERIMENTAL_REGISTRY[policy_id]
     if policy_id in _COMPATIBILITY_REGISTRY:
         return _COMPATIBILITY_REGISTRY[policy_id]
     if policy_id in EXAMPLE_POLICY_IDS:
@@ -313,7 +363,9 @@ def resolve_policy(policy_id: str | None) -> GatePolicy:
             "not implemented yet. Use 'exploratory' or 'evidence_backed', or "
             "register a concrete policy."
         )
-    known = sorted({*_PUBLIC_REGISTRY, *_COMPATIBILITY_REGISTRY})
+    known = sorted(
+        {*_PUBLIC_REGISTRY, *_EXPERIMENTAL_REGISTRY, *_COMPATIBILITY_REGISTRY}
+    )
     raise ValueError(f"Unknown Gate policy '{policy_id}'. Known policies: {known}.")
 
 
