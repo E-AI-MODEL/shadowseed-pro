@@ -201,6 +201,10 @@ class ShadowChatSession:
         )
         self.max_new_tokens = max_new_tokens
         self.embedding_backend = embedding_backend
+        if embedding_backend == "ollama" and embedding_model is None:
+            from shadowseed.adapters.ollama_client import DEFAULT_OLLAMA_EMBEDDING_MODEL
+
+            embedding_model = DEFAULT_OLLAMA_EMBEDDING_MODEL
         self.embedding_model = embedding_model
         self.recurrence_mode = recurrence_mode
         self.cluster_threshold = cluster_threshold
@@ -240,13 +244,13 @@ class ShadowChatSession:
         ):
             raise ValueError(
                 "live runtime requires a semantic embedding backend; "
-                "use sentence-transformers/openai or pass allow_toy_embedder=True "
+                "use sentence-transformers/ollama/openai or pass allow_toy_embedder=True "
                 "only for an explicit non-production experiment"
             )
 
         embed_fn = embedding_fn
         if embed_fn is None:
-            embed_fn, _dim = make_embedding_fn(embedding_backend, embedding_model)
+            embed_fn, _dim = make_embedding_fn(embedding_backend, self.embedding_model)
         self.model = (
             model_backend
             if model_backend is not None

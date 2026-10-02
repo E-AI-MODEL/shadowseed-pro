@@ -484,7 +484,7 @@ def build_parser() -> argparse.ArgumentParser:
     chat.add_argument("--max-new-tokens", type=int, default=700)
     chat.add_argument(
         "--embedding-backend",
-        choices=["lexical", "sentence-transformers", "openai"],
+        choices=["lexical", "sentence-transformers", "ollama", "openai"],
         default="lexical",
     )
     chat.add_argument(
@@ -554,7 +554,7 @@ def build_parser() -> argparse.ArgumentParser:
     ssl_session.add_argument("--max-new-tokens", type=int, default=400)
     ssl_session.add_argument(
         "--embedding-backend",
-        choices=["lexical", "sentence-transformers", "openai"],
+        choices=["lexical", "sentence-transformers", "ollama", "openai"],
         default="lexical",
     )
     ssl_session.add_argument("--embedding-model", default=None)

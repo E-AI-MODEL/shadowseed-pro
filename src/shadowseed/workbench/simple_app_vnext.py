@@ -338,13 +338,25 @@ def _ui_error(exc: BaseException) -> str:
     return f"**Fout:** {sanitized_exception_line(exc)}"
 
 
+def _ollama_note(models: list[str], selected: str | None) -> str:
+    from shadowseed.adapters.ollama_client import DEFAULT_OLLAMA_EMBEDDING_MODEL
+
+    if not models:
+        return "Geen lokaal Ollama-chatmodel gevonden."
+    return (
+        f"Lokaal chatmodel geselecteerd: `{selected or models[0]}`. "
+        f"Semantisch matchen gebruikt lokaal `{DEFAULT_OLLAMA_EMBEDDING_MODEL}`. "
+        f"Ontbreekt dat model, voer eenmalig `ollama pull {DEFAULT_OLLAMA_EMBEDDING_MODEL}` uit."
+    )
+
+
 def _recommended_setup(ctl: WorkbenchController) -> tuple[str, str | None, str]:
     try:
         models = ctl.discover_models("ollama")
     except Exception:
         models = []
     if models:
-        return "ollama", models[0], f"Lokaal model gevonden: `{models[0]}`."
+        return "ollama", models[0], _ollama_note(models, models[0])
     return "fixture", None, "Geen lokaal Ollama-model gevonden. De offline demo is geselecteerd."
 
 
@@ -749,7 +761,7 @@ def build_vnext_app(
                 )
             return (
                 gr.update(choices=models, value=(models[0] if models else None)),
-                ("Lokaal Ollama-model geselecteerd." if models else "Geen lokaal Ollama-model gevonden."),
+                _ollama_note(models, models[0] if models else None),
             )
         if provider == "fixture":
             return gr.update(choices=[], value=None), "Offline demo. Geen extern model nodig."

@@ -6,7 +6,7 @@ import urllib.request
 
 import pytest
 
-from shadowseed.adapters.ollama_client import list_ollama_models
+from shadowseed.adapters.ollama_client import list_ollama_chat_models, list_ollama_models
 from shadowseed.workbench.controller import WorkbenchController
 
 
@@ -77,9 +77,51 @@ def test_list_ollama_models_reports_unavailable_server(monkeypatch) -> None:
         list_ollama_models(host="http://127.0.0.1:11434")
 
 
+def test_list_ollama_chat_models_filters_embedding_only_models(monkeypatch) -> None:
+    calls: list[tuple[str, dict | None]] = []
+
+    def fake_urlopen(request, timeout):
+        body = json.loads(request.data.decode("utf-8")) if request.data else None
+        calls.append((request.full_url, body))
+        if request.full_url.endswith("/api/tags"):
+            return _Response(
+                {
+                    "models": [
+                        {"name": "qwen3:8b"},
+                        {"name": "embeddinggemma:latest"},
+                    ]
+                }
+            )
+        if request.full_url.endswith("/api/show") and body == {"model": "qwen3:8b"}:
+            return _Response({"capabilities": ["completion", "tools"]})
+        if request.full_url.endswith("/api/show") and body == {
+            "model": "embeddinggemma:latest"
+        }:
+            return _Response({"capabilities": ["embedding"]})
+        raise AssertionError((request.full_url, body))
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+
+    models = list_ollama_chat_models(host="http://127.0.0.1:11434")
+
+    assert models == ["qwen3:8b"]
+    assert len(calls) == 3
+
+
+def test_list_ollama_chat_models_keeps_unknown_capability_models(monkeypatch) -> None:
+    def fake_urlopen(request, timeout):
+        if request.full_url.endswith("/api/tags"):
+            return _Response({"models": [{"name": "legacy-model:latest"}]})
+        return _Response({})
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+
+    assert list_ollama_chat_models() == ["legacy-model:latest"]
+
+
 def test_workbench_controller_exposes_ollama_discovery(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr(
-        "shadowseed.adapters.ollama_client.list_ollama_models",
+        "shadowseed.adapters.ollama_client.list_ollama_chat_models",
         lambda: ["model-a:latest", "model-b:7b"],
     )
     controller = WorkbenchController(tmp_path / "workspace")

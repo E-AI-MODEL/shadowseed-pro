@@ -11,6 +11,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
+from shadowseed.adapters.embedding import SUPPORTED_EMBEDDING_BACKENDS
 from shadowseed.authority_profiles import AUTHORITY_PROFILES, get_authority_profile
 from shadowseed.core_config import SSLCoreConfig
 from shadowseed.application.ingest import prepare_sources
@@ -27,7 +28,7 @@ from shadowseed.application.workspace import WorkspaceService
 
 
 BACKENDS = ("fixture", "hf-transformers", "ollama", "openai")
-EMBEDDING_BACKENDS = ("lexical", "sentence-transformers", "openai")
+EMBEDDING_BACKENDS = SUPPORTED_EMBEDDING_BACKENDS
 RUNTIME_MODES = ("evaluation", "live")
 _EXTERNAL_PROMPT_BACKENDS = {"openai"}
 
@@ -105,7 +106,19 @@ class WorkbenchController:
 
         if backend == "fixture":
             return "lexical"
+        if backend == "ollama":
+            return "ollama"
         return "sentence-transformers"
+
+    @staticmethod
+    def default_embedding_model(embedding_backend: str) -> str | None:
+        """Return the explicit product default model for an embedding backend."""
+
+        if embedding_backend == "ollama":
+            from shadowseed.adapters.ollama_client import DEFAULT_OLLAMA_EMBEDDING_MODEL
+
+            return DEFAULT_OLLAMA_EMBEDDING_MODEL
+        return None
 
     @staticmethod
     def ssl_intensity_settings(percent: int | float) -> dict[str, float | int]:
@@ -207,9 +220,9 @@ class WorkbenchController:
         """Discover locally available models without changing provider state."""
 
         if backend == "ollama":
-            from shadowseed.adapters.ollama_client import list_ollama_models
+            from shadowseed.adapters.ollama_client import list_ollama_chat_models
 
-            return list_ollama_models()
+            return list_ollama_chat_models()
         # Hosted providers and arbitrary HF repositories keep a custom-value
         # field. Fixture needs no model id.
         return []
@@ -238,6 +251,11 @@ class WorkbenchController:
         allow_self_reinforcement: bool = False,
     ) -> str:
         resolved_embedding = embedding_backend or self.default_embedding_backend(backend)
+        resolved_embedding_model = (
+            embedding_model
+            if embedding_model is not None
+            else self.default_embedding_model(resolved_embedding)
+        )
         gate_settings = (
             self.gate_strictness_settings(gate_strictness)
             if gate_strictness is not None
@@ -274,7 +292,7 @@ class WorkbenchController:
                 revision_model_id=revision_model_id,
                 authority_profile_id=authority_profile.id.value,
                 embedding_backend=resolved_embedding,
-                embedding_model=embedding_model or None,
+                embedding_model=resolved_embedding_model,
                 allow_toy_embedder=allow_toy_embedder,
                 revalidate_current_gate=gate_strictness is not None,
                 allow_same_turn_revision=effective_same_turn_revision,
@@ -876,8 +894,8 @@ class WorkbenchController:
             and not allow_toy_embedder
         ):
             raise ValueError(
-                "live non-fixture sessions require sentence-transformers or openai "
-                "embeddings; enable the toy override only for an explicit test"
+                "live non-fixture sessions require a semantic embedding backend "
+                "(sentence-transformers, ollama or openai); enable the toy override only for an explicit test"
             )
         uses_external_provider = (
             backend in _EXTERNAL_PROMPT_BACKENDS

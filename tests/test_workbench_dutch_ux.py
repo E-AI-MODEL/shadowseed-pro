@@ -7,6 +7,7 @@ from shadowseed.workbench.simple_app_vnext import (
     _audit_summary,
     _authority_gate_summary,
     _orchestration_panel,
+    _ollama_note,
     _seed_action_flags,
     _seed_story as _vnext_seed_story,
     _statefulness_summary,
@@ -61,6 +62,14 @@ def test_default_workbench_is_dutch_chat_first_surface() -> None:
         '"Refresh runs"',
     ):
         assert refresh_label not in vnext_source
+
+def test_vnext_ollama_note_makes_embedding_dependency_explicit() -> None:
+    note = _ollama_note(["qwen3:8b"], "qwen3:8b")
+
+    assert "Lokaal chatmodel geselecteerd" in note
+    assert "Semantisch matchen gebruikt lokaal `embeddinggemma`" in note
+    assert "ollama pull embeddinggemma" in note
+
 
 def test_vnext_error_text_redacts_known_secrets(monkeypatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test-secret-value-123456")

@@ -4,6 +4,8 @@ import json
 
 import pytest
 
+from shadowseed.adapters.embedding import SUPPORTED_EMBEDDING_BACKENDS
+
 from shadowseed.application.comparison import ComparisonService
 from shadowseed.application.inspection import InspectionService
 from shadowseed.application.models import SessionConfig
@@ -29,10 +31,40 @@ def test_new_application_sessions_default_to_live_ssl(tmp_path) -> None:
     assert controller.session_view(session_id)["runtime_mode"] == "live"
 
 
+def test_workbench_uses_canonical_embedding_backend_registry() -> None:
+    assert WorkbenchController.embedding_backends() == SUPPORTED_EMBEDDING_BACKENDS
+
+
 def test_real_model_product_default_uses_semantic_embedding() -> None:
     assert WorkbenchController.default_embedding_backend("fixture") == "lexical"
-    for backend in ("ollama", "hf-transformers", "openai"):
+    assert WorkbenchController.default_embedding_backend("ollama") == "ollama"
+    assert WorkbenchController.default_embedding_model("ollama") == "embeddinggemma"
+    assert WorkbenchController.default_embedding_model("sentence-transformers") is None
+    for backend in ("hf-transformers", "openai"):
         assert WorkbenchController.default_embedding_backend(backend) == "sentence-transformers"
+
+
+def test_ollama_workbench_session_persists_resolved_embedding_identity(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    monkeypatch.setattr(
+        "shadowseed.adapters.ollama_client.OllamaClient.embed",
+        lambda self, text: [[1.0, 0.0, 0.0]],
+    )
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Ollama embedding provenance",
+        profile_id="balanced",
+        backend="ollama",
+        model_id="qwen3:8b",
+        runtime_mode="live",
+    )
+
+    stored = controller.sessions.load(session_id)
+
+    assert stored["config"]["embedding_backend"] == "ollama"
+    assert stored["config"]["embedding_model"] == "embeddinggemma"
 
 
 def _seed_state(stored: dict) -> list[tuple[str, int, float, float, str]]:

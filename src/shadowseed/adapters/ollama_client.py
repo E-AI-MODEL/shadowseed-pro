@@ -16,6 +16,7 @@ from typing import Any
 
 DEFAULT_OLLAMA_HOST = "http://localhost:11434"
 DEFAULT_PROVIDER_TIMEOUT_SECONDS = 120.0
+DEFAULT_OLLAMA_EMBEDDING_MODEL = "embeddinggemma"
 
 
 def ollama_host() -> str:
@@ -67,6 +68,64 @@ def list_ollama_models(
         if name:
             names_by_key.setdefault(name.casefold(), name)
     return sorted(names_by_key.values(), key=str.casefold)
+
+
+def ollama_model_capabilities(
+    model: str,
+    *,
+    host: str | None = None,
+    timeout: float = 5.0,
+) -> tuple[str, ...]:
+    """Return model capabilities reported by Ollama's read-only /api/show endpoint."""
+
+    base = (host or ollama_host()).rstrip("/")
+    data = json.dumps({"model": model}).encode("utf-8")
+    request = urllib.request.Request(
+        f"{base}/api/show",
+        data=data,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    payload = _read_json(request, timeout=timeout)
+    raw = payload.get("capabilities", [])
+    if raw is None:
+        return ()
+    if not isinstance(raw, list):
+        raise RuntimeError("Ollama /api/show response contains invalid capabilities")
+    return tuple(
+        str(item).strip().casefold()
+        for item in raw
+        if str(item).strip()
+    )
+
+
+def list_ollama_chat_models(
+    *,
+    host: str | None = None,
+    timeout: float = 5.0,
+) -> list[str]:
+    """Return installed models that are completion-capable.
+
+    Older Ollama servers or models that do not expose capabilities remain visible
+    as a compatibility fallback. Embedding-only models are filtered when Ollama
+    explicitly advertises their capability set.
+    """
+
+    models = list_ollama_models(host=host, timeout=timeout)
+    selected: list[str] = []
+    for model in models:
+        try:
+            capabilities = ollama_model_capabilities(
+                model,
+                host=host,
+                timeout=timeout,
+            )
+        except RuntimeError:
+            selected.append(model)
+            continue
+        if not capabilities or "completion" in capabilities:
+            selected.append(model)
+    return selected
 
 
 class OllamaClient:
@@ -164,3 +223,50 @@ class OllamaClient:
         if not isinstance(message, dict):
             raise RuntimeError("Ollama /api/chat response does not contain a message")
         return str(message.get("content", "")).strip()
+
+
+    def embed(self, text: str | list[str]) -> list[list[float]]:
+        """Generate one or more embeddings through Ollama's local /api/embed endpoint."""
+
+        if isinstance(text, list) and not text:
+            raise ValueError("Ollama embedding input must not be empty")
+        payload = {
+            "model": self.model,
+            "input": text,
+        }
+        data = json.dumps(payload).encode("utf-8")
+        request = urllib.request.Request(
+            f"{self.host}/api/embed",
+            data=data,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            body = _read_json(request, timeout=self.timeout)
+        except RuntimeError as exc:  # pragma: no cover - network dependent
+            raise RuntimeError(
+                f"Could not embed with Ollama model {self.model!r} at {self.host}. "
+                "Is Ollama running and has the embedding model been pulled with "
+                f"ollama pull {self.model}? {exc}"
+            ) from exc
+
+        embeddings = body.get("embeddings")
+        if not isinstance(embeddings, list) or not embeddings:
+            raise RuntimeError("Ollama /api/embed response does not contain embeddings")
+        expected = len(text) if isinstance(text, list) else 1
+        if len(embeddings) != expected:
+            raise RuntimeError(
+                "Ollama /api/embed returned a different number of vectors than inputs"
+            )
+
+        normalized: list[list[float]] = []
+        for vector in embeddings:
+            if not isinstance(vector, list) or not vector:
+                raise RuntimeError("Ollama /api/embed returned an invalid embedding vector")
+            try:
+                normalized.append([float(value) for value in vector])
+            except (TypeError, ValueError) as exc:
+                raise RuntimeError(
+                    "Ollama /api/embed returned a non-numeric embedding vector"
+                ) from exc
+        return normalized
