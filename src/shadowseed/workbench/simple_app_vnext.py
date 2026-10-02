@@ -249,6 +249,48 @@ def _settings_json(view: dict[str, Any] | None) -> str:
     return json.dumps(_full_settings(view), indent=2, sort_keys=True, ensure_ascii=False)
 
 
+def _authority_gate_summary(view: dict[str, Any] | None) -> str:
+    if not view:
+        return (
+            "**Authority & Gate** · het profiel bepaalt de standaardroute; "
+            "een expliciete Gate-policy kan die standaard overschrijven."
+        )
+    profile = str(view.get("authority_profile_id") or "onbekend")
+    default_gate = str(view.get("profile_default_gate_policy_id") or "onbekend")
+    effective_gate = str(view.get("effective_gate_policy_id") or "onbekend")
+    configured = view.get("configured_gate_policy_id")
+    if bool(view.get("gate_policy_override_active", False)):
+        relation = (
+            f"Profiel `{profile}` heeft standaard Gate `{default_gate}`. "
+            f"Expliciete override `{configured}` is actief, dus effectief `{effective_gate}`."
+        )
+    else:
+        relation = (
+            f"Profiel `{profile}` → standaard Gate `{default_gate}` → "
+            f"effectief `{effective_gate}`."
+        )
+    return f"**Authority & Validation Gate · stateful**  \n{relation}"
+
+
+def _statefulness_summary(view: dict[str, Any] | None) -> str:
+    metadata = dict((view or {}).get("setting_metadata") or {})
+    rebuild = sorted(
+        key
+        for key, item in metadata.items()
+        if isinstance(item, dict) and item.get("apply_mode") == "rebuild_required"
+    )
+    if not rebuild:
+        return (
+            "**Instellingencontract** · structurele wijzigingen mogen bestaande "
+            "semantic-memory-state niet stilzwijgend herinterpreteren."
+        )
+    return (
+        "**Rebuild required na bestaande state:** "
+        + ", ".join(f"`{key}`" for key in rebuild)
+        + ". Deze grens kan niet met God mode worden omzeild."
+    )
+
+
 def _audit_summary(view: dict[str, Any] | None) -> str:
     if not view:
         return "### Live audit\nGeen actief gesprek."
@@ -1642,7 +1684,8 @@ def build_vnext_app(
                             value=False,
                         )
 
-                    with gr.Accordion("Microcontrole", open=False):
+                    with gr.Accordion("Microcontrole per component", open=False):
+                        gr.Markdown("**Relevantie & surfacing · direct toepasbaar**")
                         surface_threshold_control = gr.Slider(
                             minimum=0.0,
                             maximum=1.0,
@@ -1657,32 +1700,48 @@ def build_vnext_app(
                             value=initial_controls[5],
                             label="Max. seeds per antwoord",
                         )
+
+                        authority_gate_note = gr.Markdown(
+                            _authority_gate_summary(initial_view),
+                            elem_classes=["ss-muted"],
+                        )
                         authority_control = gr.Dropdown(
                             choices=["strict", "assisted", "autonomous", "open"],
                             value=initial_controls[6],
-                            label="Authority-profiel",
+                            label="Authority-profiel · stateful",
                         )
                         gate_policy_control = gr.Dropdown(
                             choices=["evidence_backed", "exploratory"],
                             value=initial_controls[7],
-                            label="Gate-policy",
+                            label="Gate-policy · expliciete override",
+                        )
+
+                        gr.Markdown(
+                            "**Recurrence · structurele semantic-memory-state**  \n"
+                            "Wijzigen nadat seeds bestaan vereist een nieuwe sessie of expliciete rebuild."
                         )
                         recurrence_control = gr.Dropdown(
                             choices=["cluster", "pairwise"],
                             value=initial_controls[8],
-                            label="Recurrence",
+                            label="Recurrence · rebuild required",
                         )
+
+                        gr.Markdown("**Same-turn revision · stateful**")
                         same_turn_revision_control = gr.Checkbox(
                             label="Herziening in dezelfde beurt",
                             value=initial_controls[9],
                         )
                         god_force = gr.Checkbox(
-                            label="God mode: riskante wijzigingen forceren",
+                            label="God mode force (structurele grenzen blijven gelden)",
                             value=False,
                         )
                         apply_micro_button = gr.Button("Micro-instellingen opslaan", variant="primary")
 
                     with gr.Accordion("God mode · alle instellingen", open=False):
+                        statefulness_note = gr.Markdown(
+                            _statefulness_summary(initial_view),
+                            elem_classes=["ss-muted"],
+                        )
                         gr.Markdown(
                             "Hier staat de werkelijk opgeslagen configuratie. Wijzig alleen waarden die je bewust wilt overschrijven."
                         )
@@ -1941,8 +2000,8 @@ def build_vnext_app(
                     research_vanilla_answer = gr.Markdown(label="Onafhankelijk vanilla-pad")
             with gr.Accordion("Matching", open=False):
                 semantic_info = gr.Button("ⓘ Leg semantisch matchen uit")
-            with gr.Accordion("Self-reinforcement", open=False):
-                self_reinforcement_info = gr.Button("ⓘ Leg self-reinforcement uit")
+            with gr.Accordion("Herziening in dezelfde beurt", open=False):
+                same_turn_revision_info = gr.Button("ⓘ Leg same-turn revision uit")
             with gr.Accordion("Validation Gate", open=False):
                 gr.Markdown(
                     "De Gate bepaalt authority. In de gewone chat is dit geen losse schuifregelaar."
@@ -2022,7 +2081,7 @@ def build_vnext_app(
             (longitudinal_info, "longitudinal"),
             (research_run_info, "longitudinal"),
             (semantic_info, "semantic_matching"),
-            (self_reinforcement_info, "self_reinforcement"),
+            (same_turn_revision_info, "same_turn_revision"),
             (gate_info, "research"),
             (audit_info, "technical_audit"),
             (model_menu_info, "model"),
