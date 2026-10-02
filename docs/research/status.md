@@ -4,7 +4,7 @@
 
 The repository is **research-ready, locally mass-testable, able to produce structured privacy-minimized tester datasets, and equipped for preregistered evidence-backed paired efficacy studies**. Core mechanics, benchmark harnesses, a broad regression suite, a chat-first local Workbench, standalone build contracts, verifiable exports, support-bundle aggregation, candidate review packets, and influence-opportunity accounting are present. This status does not by itself imply `production-ready/local` or general answer-quality benefit.
 
-Current source version: **0.11.0**. `v0.11.0` is a published Research Preview with verified release assets from exact source SHA `28abd476f9f3f4e4725ad1b59aac0abfbff90c4a`. Publication, production status and source state remain separate facts: this release does not imply `production-ready/local` unless the exact candidate also satisfies the documented unchanged-candidate soak and production-promotion requirements. Older tags remain immutable historical software references and are not rewritten by later development.
+Current source version: **0.11.1**. This source state is the hotfix release candidate for `v0.11.1`; publication is a separate fact established only after the exact-SHA release workflow succeeds. Until then, `v0.11.0` remains the latest published Research Preview with verified release assets. The hotfix corrects Ollama/EmbeddingGemma compatibility diagnostics; it does not change the `production-ready/local` claim. Older tags remain immutable historical software references and are not rewritten by later development.
 
 ## Research access
 
