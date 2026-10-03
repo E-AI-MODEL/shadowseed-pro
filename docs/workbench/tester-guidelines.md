@@ -1,6 +1,6 @@
 # Workbench tester guidelines
 
-Shadowseed Workbench 0.11.1 is a local hotfix release candidate and production-local assurance candidate for using Shadow Seed Learning in an ordinary chat; `v0.11.0` remains the latest published Research Preview until publication succeeds. It is not yet a completed `production-ready/local` release. A normal tester should not need to understand the research harness, author a baseline answer, prepare benchmark JSON, install Git, or install a system Python runtime when a verified standalone release is available.
+Shadowseed Workbench 0.11.1 is the latest published Research Preview for using Shadow Seed Learning in an ordinary chat. It is not yet a completed `production-ready/local` release. A normal tester should not need to understand the research harness, author a baseline answer, prepare benchmark JSON, install Git, or install a system Python runtime when a verified standalone release is available.
 
 Repository states/releases containing `LICENSE` are available under PolyForm Noncommercial License 1.0.0. Read the terms before copying, modifying or redistributing the software. Commercial use requires separate permission.
 
