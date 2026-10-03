@@ -1,6 +1,6 @@
 # Workbench privacy guidance
 
-Shadowseed Workbench 0.11.1 is local-first, but local-first does not make all entered or exported data non-sensitive. Version 0.11.1 is the current hotfix release candidate and production-local assurance candidate; `v0.11.0` remains the latest published Research Preview until publication succeeds. Testers and study owners remain responsible for the content they enter and for artifacts they choose to share.
+Shadowseed Workbench 0.11.1 is local-first, but local-first does not make all entered or exported data non-sensitive. Version 0.11.1 is the latest published Research Preview. Testers and study owners remain responsible for the content they enter and for artifacts they choose to share.
 
 ## Local workspace
 
