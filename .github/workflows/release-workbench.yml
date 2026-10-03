@@ -39,6 +39,9 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
       - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
           version: "0.8.14"
@@ -116,6 +119,7 @@ jobs:
             "workbench-portability.yml"
             "research-package-ci.yml"
             "standalone-workbench.yml"
+            "web-client-ci.yml"
           )
           dispatch_started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
@@ -335,6 +339,17 @@ jobs:
               encoding="utf-8",
           )
 
+      - name: Build packaged web client
+        if: steps.preflight.outputs.should_release == 'true'
+        working-directory: apps/web
+        run: |
+          npm install --ignore-scripts
+          npm run build
+
+      - name: Sync web assets into Python distribution
+        if: steps.preflight.outputs.should_release == 'true'
+        run: python scripts/sync_web_assets.py
+
       - name: Build Python distribution from locked build tooling
         if: steps.preflight.outputs.should_release == 'true'
         run: |
@@ -378,6 +393,9 @@ jobs:
           "${RUNNER_TEMP}/release-venv/bin/shadowseed-workbench" --self-test \
             --workspace "${RUNNER_TEMP}/wheel-workspace" \
             --self-test-output "${RUNNER_TEMP}/wheel-self-test.json"
+          "${RUNNER_TEMP}/release-venv/bin/shadowseed-web" --self-test \
+            --workspace "${RUNNER_TEMP}/web-wheel-workspace" \
+            --self-test-output "${RUNNER_TEMP}/web-wheel-self-test.json"
           "${RUNNER_TEMP}/release-venv/bin/python" - <<'PY'
           import json
           from importlib.util import find_spec
@@ -389,6 +407,13 @@ jobs:
           assert payload["report_verified"] is True
           assert payload["support_verified"] is True
           assert payload["production_resolution_ui"] is True
+          web_payload = json.loads(
+              Path("web-wheel-self-test.json").read_text(encoding="utf-8")
+          )
+          assert web_payload["static_assets_verified"] is True
+          assert web_payload["loopback_only"] is True
+          assert web_payload["runtime_mode"] == "live"
+          assert web_payload["turn"] == 1
           for module in ("torch", "transformers", "sentence_transformers", "openai"):
               assert find_spec(module) is None, module
           print("installed thin wheel Workbench smoke OK")
