@@ -9,6 +9,7 @@ from typing import Any
 from uuid import uuid4
 
 from shadowseed.application.auth import (
+    CHAT_USE,
     CONTRADICTION_SUBMIT,
     EVIDENCE_VERIFY,
     ActorContext,
@@ -48,6 +49,47 @@ class SessionService:
         """Return the repository-wide process-local lock for one session."""
 
         return session_mutation_lock(self.repository, session_id)
+
+    @staticmethod
+    def _turn_request_fingerprint(
+        question: str,
+        *,
+        compare_without_ssl: bool,
+        comparison_mode: str,
+    ) -> str:
+        payload = (
+            question
+            + "\x00"
+            + ("1" if compare_without_ssl else "0")
+            + "\x00"
+            + comparison_mode
+        )
+        return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+    @staticmethod
+    def _replayed_turn_report(
+        stored: dict[str, Any],
+        replay: dict[str, Any],
+        *,
+        expected_fingerprint: str,
+    ) -> dict[str, Any]:
+        if replay.get("request_fingerprint") != expected_fingerprint:
+            raise WorkspaceStorageError(
+                "request_id was replayed with different chat input"
+            )
+        try:
+            expected_turn = int(replay["turn"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise WorkspaceStorageError(
+                "stored chat idempotency result is invalid"
+            ) from exc
+        reports = stored.get("state", {}).get("turn_reports", [])
+        for item in reports:
+            if isinstance(item, dict) and int(item.get("turn", -1)) == expected_turn:
+                return dict(item)
+        raise WorkspaceStorageError(
+            "stored chat idempotency result does not match persisted session state"
+        )
 
     def create_session(
         self,
@@ -277,11 +319,36 @@ class SessionService:
         *,
         compare_without_ssl: bool = False,
         comparison_mode: str = "authorized",
+        actor: ActorContext | None = None,
     ) -> dict[str, Any]:
         # Validate before loading runtime state or calling a provider so a rejected
         # message cannot partially mutate the session or consume an expensive call.
         normalized_question = validate_message(question)
+        authorization = self._authorize(actor, CHAT_USE) if actor is not None else None
+        request_fingerprint = (
+            self._turn_request_fingerprint(
+                normalized_question,
+                compare_without_ssl=compare_without_ssl,
+                comparison_mode=comparison_mode,
+            )
+            if actor is not None
+            else None
+        )
         with self._session_lock(session_id):
+            if actor is not None and request_fingerprint is not None:
+                replay = self.repository.authorized_request_result(
+                    actor.request_id,
+                    event_type=CHAT_USE,
+                    session_id=session_id,
+                    seed_id="",
+                )
+                if replay is not None:
+                    return self._replayed_turn_report(
+                        self.repository.load_session(session_id),
+                        replay,
+                        expected_fingerprint=request_fingerprint,
+                    )
+
             stored = self.repository.load_session(session_id)
             session = ShadowChatSession.from_state(stored["state"])
 
@@ -441,11 +508,37 @@ class SessionService:
                 if session.turn_reports:
                     session.turn_reports[-1].update(comparison_fields)
 
-            self.repository.save_session(
-                session_id,
-                session.to_state(),
-                updated_at=datetime.now().isoformat(),
-            )
+            state = session.to_state()
+            updated_at = datetime.now().isoformat()
+            if authorization is None or actor is None or request_fingerprint is None:
+                self.repository.save_session(
+                    session_id,
+                    state,
+                    updated_at=updated_at,
+                )
+            else:
+                persisted = self.repository.save_authorized_session(
+                    session_id,
+                    state,
+                    updated_at=updated_at,
+                    authorization=authorization,
+                    event_type=CHAT_USE,
+                    seed_id="",
+                    operation_result={
+                        "request_fingerprint": request_fingerprint,
+                        "turn": int(report["turn"]),
+                    },
+                    event_metadata={
+                        "compare_without_ssl": bool(compare_without_ssl),
+                        "comparison_mode": comparison_mode,
+                    },
+                )
+                if persisted.get("idempotent_replay"):
+                    return self._replayed_turn_report(
+                        self.repository.load_session(session_id),
+                        persisted,
+                        expected_fingerprint=request_fingerprint,
+                    )
             return report
 
     def ingest_source_chunks(
