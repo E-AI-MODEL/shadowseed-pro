@@ -1,4 +1,4 @@
-name: Research - Qwen 7B gap resilience live run 1
+name: Research - Laptop-model gap resilience matrix
 
 on:
   pull_request:
@@ -14,14 +14,19 @@ concurrency:
   group: qwen7b-gap-resilience-live1
   cancel-in-progress: true
 
-env:
-  MODEL_ID: qwen2.5:7b-instruct-q4_K_M
-  RUN_BASELINE: benchmarks/results/gap_resilience/qwen2.5_7b_q4km_runtime_v06_controlled_screen.json
-  RUN_V1: benchmarks/results/gap_resilience/qwen2.5_7b_q4km_candidate_v1_controlled_screen.json
-
 jobs:
   gap-resilience:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - model_id: deepseek-r1:latest
+            slug: deepseek-r1_latest
+          - model_id: gemma2:latest
+            slug: gemma2_latest
+          - model_id: llama3.1:latest
+            slug: llama3.1_latest
     timeout-minutes: 330
 
     steps:
@@ -54,9 +59,11 @@ jobs:
           curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
           echo "OLLAMA_VERSION=$(ollama --version 2>&1 | tr '\n' ' ')" >> "$GITHUB_ENV"
 
-      - name: Pull and fingerprint Qwen 2.5 7B q4_K_M
+      - name: Pull and fingerprint selected laptop model
+        env:
+          MODEL_ID: ${{ matrix.model_id }}
         run: |
-          ollama pull "$MODEL_ID"
+          ollama pull "${{ matrix.model_id }}"
           ollama list
           python - <<'PY'
           import json
@@ -84,14 +91,14 @@ jobs:
           PY
 
       - name: Run controlled baseline and candidate arm
+        env:
+          MODEL_ID: ${{ matrix.model_id }}
+          MODEL_SLUG: ${{ matrix.slug }}
         run: |
-          mkdir -p "$(dirname "$RUN_V1")"
+          run_dir="benchmarks/results/gap_resilience/laptop_models"
+          mkdir -p "$run_dir"
           for profile in runtime_v06 candidate_v1; do
-            if [ "$profile" = "runtime_v06" ]; then
-              output="$RUN_BASELINE"
-            else
-              output="$RUN_V1"
-            fi
+            output="$run_dir/${MODEL_SLUG}_${profile}_controlled_screen.json"
             GITHUB_SHA="$(git rev-parse HEAD)" python scripts/run_gap_resilience_benchmark.py \
               --backend ollama \
               --model-id "$MODEL_ID" \
@@ -104,6 +111,9 @@ jobs:
           done
 
       - name: Add runtime provenance and verify result
+        env:
+          MODEL_ID: ${{ matrix.model_id }}
+          MODEL_SLUG: ${{ matrix.slug }}
         run: |
           python - <<'PY'
           import json
@@ -118,14 +128,17 @@ jobs:
               text=True,
           ).stdout.strip()
 
-          for env_name, profile in (("RUN_BASELINE", "runtime_v06"), ("RUN_V1", "candidate_v1")):
-              path = Path(os.environ[env_name])
+          model_slug = os.environ["MODEL_SLUG"]
+          model_id = os.environ["MODEL_ID"]
+          run_dir = Path("benchmarks/results/gap_resilience/laptop_models")
+          for profile in ("runtime_v06", "candidate_v1"):
+              path = run_dir / f"{model_slug}_{profile}_controlled_screen.json"
               report = json.loads(path.read_text(encoding="utf-8"))
               assert report["artifact"] == "shadowseed-gap-resilience-v1"
               assert report["run_type"] == "live_benchmark"
               assert report["shadowseed_source_ref"] == expected_head
               assert report["backend"] == "ollama"
-              assert report["model_id"] == os.environ["MODEL_ID"]
+              assert report["model_id"] == model_id
               assert report["model_revision"] == os.environ["MODEL_DIGEST"]
               assert report["prompt_profile"] == profile
               assert report["repeats"] == 2
@@ -140,6 +153,7 @@ jobs:
               assert "winner" not in report["summary"]
               report["runtime_provenance"] = {
                   "github_run_id": os.environ["GITHUB_RUN_ID"],
+                  "execution_note": "Quality screening on GitHub Linux runner; latency is not representative of the user's laptop.",
                   "github_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
                   "runner_os": os.environ.get("RUNNER_OS"),
                   "runner_arch": os.environ.get("RUNNER_ARCH"),
@@ -157,15 +171,14 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$RUN_BASELINE" "$RUN_V1"
+          git add benchmarks/results/gap_resilience/laptop_models/
           git diff --cached --check
-          git commit -m "Record Qwen 7B controlled gap resilience screening"
+          git commit -m "Record ${{ matrix.model_id }} controlled gap resilience screening"
+          git pull --rebase origin "${{ github.event.pull_request.head.ref }}"
           git push origin HEAD:"${{ github.event.pull_request.head.ref }}"
 
       - name: Upload live benchmark result
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: qwen2.5-7b-gap-resilience-controlled-screen
-          path: |
-            ${{ env.RUN_BASELINE }}
-            ${{ env.RUN_V1 }}
+          name: gap-resilience-${{ matrix.slug }}
+          path: benchmarks/results/gap_resilience/laptop_models/${{ matrix.slug }}_*_controlled_screen.json
