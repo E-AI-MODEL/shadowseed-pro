@@ -61,7 +61,7 @@ def test_web_launcher_static_integrity_detects_tampering(tmp_path: Path) -> None
     assert _verify_static_assets(root)["files"]
 
     (root / "index.html").write_text("tampered", encoding="utf-8")
-    with pytest.raises(RuntimeError, match="failed integrity check"):
+    with pytest.raises(RuntimeError, match="Shadowseed web asset"):
         _verify_static_assets(root)
 
 
