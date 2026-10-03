@@ -49,7 +49,6 @@ export type Seed = {
   current_gate_authorized?: boolean;
   plain_explanation?: string;
   orchestration?: Orchestration;
-  provider_ready?: boolean;
 };
 
 export type SeedDetail = Seed & {
@@ -71,6 +70,7 @@ export type SessionView = {
   messages: ChatMessage[];
   seeds: Seed[];
   orchestration?: Orchestration;
+  provider_ready?: boolean;
 };
 
 export type CreateSessionInput = {
