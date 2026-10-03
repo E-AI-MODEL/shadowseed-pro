@@ -185,6 +185,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--port", type=int, default=7860, help="Preferred local UI port.")
     parser.add_argument("--no-browser", action="store_true", help="Do not open the browser.")
     parser.add_argument(
+        "--web",
+        action="store_true",
+        help="Launch the packaged web client instead of the legacy Gradio Workbench.",
+    )
+    parser.add_argument(
         "--self-test",
         action="store_true",
         help="Run the packaged product smoke test and exit.",
@@ -201,6 +206,23 @@ def main(argv: list[str] | None = None) -> int:
     service = WorkspaceService(args.workspace)
     try:
         paths = service.initialize()
+        if args.web:
+            from shadowseed_webapi.launcher import main as web_main
+
+            web_args = [
+                "--workspace",
+                str(paths.root),
+                "--port",
+                str(args.port),
+            ]
+            if args.no_browser:
+                web_args.append("--no-browser")
+            if args.self_test:
+                web_args.append("--self-test")
+                if args.self_test_output:
+                    web_args.extend(["--self-test-output", str(args.self_test_output)])
+            return web_main(web_args)
+
         if args.self_test:
             run_standalone_self_test(paths.root, output_path=args.self_test_output)
             return 0
