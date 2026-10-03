@@ -215,3 +215,18 @@ def test_web_api_rejects_explicit_null_evidence_note_before_mutation(tmp_path) -
                 "operator_verified": True,
             },
         )
+
+
+def test_web_api_clears_stale_model_id_for_fixture(tmp_path) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    created = api.create_session(
+        {
+            "title": "Fixture provenance",
+            "backend": "fixture",
+            "authority_mode": "assisted",
+            "model_id": "qwen2.5:7b",
+        }
+    )
+
+    assert created["backend"] == "fixture"
+    assert created["model_id"] is None
