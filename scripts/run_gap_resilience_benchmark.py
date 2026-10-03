@@ -287,24 +287,74 @@ def run_cases(
     reports: list[dict[str, Any]] = []
     for case in cases:
         runs: list[list[str]] = []
+        audits: list[dict[str, Any]] = []
         for _ in range(repeats):
-            runs.append(
-                list(
-                    detector.detect_seeds(
-                        {
-                            "question": str(case["question"]),
-                            "text": str(case["draft_answer"]),
-                            "conversation_context": str(
-                                case.get("conversation_context") or "NONE"
-                            ),
-                        },
-                        max_seeds=max_seeds,
-                    )
+            candidates = list(
+                detector.detect_seeds(
+                    {
+                        "question": str(case["question"]),
+                        "text": str(case["draft_answer"]),
+                        "conversation_context": str(
+                            case.get("conversation_context") or "NONE"
+                        ),
+                    },
+                    max_seeds=max_seeds,
                 )
             )
-        reports.append(score_case(case, runs, threshold=threshold))
+            runs.append(candidates)
+            raw_output = getattr(detector, "last_raw_output", None)
+            parse_diagnostics = getattr(detector, "last_parse_diagnostics", None)
+            prompt_metadata = getattr(detector, "last_prompt_metadata", None)
+            audits.append(
+                {
+                    "raw_output": None if raw_output is None else str(raw_output),
+                    "parse_diagnostics": (
+                        dict(parse_diagnostics)
+                        if isinstance(parse_diagnostics, dict)
+                        else None
+                    ),
+                    "prompt_contract": (
+                        dict(prompt_metadata)
+                        if isinstance(prompt_metadata, dict)
+                        else None
+                    ),
+                }
+            )
+        report = score_case(case, runs, threshold=threshold)
+        explicit_none_runs = 0
+        parser_empty_nonblank_runs = 0
+        for detail, audit in zip(report["run_details"], audits, strict=True):
+            detail["detector_audit"] = audit
+            diagnostics = audit.get("parse_diagnostics") or {}
+            if diagnostics.get("explicit_none"):
+                explicit_none_runs += 1
+            if (
+                diagnostics
+                and not diagnostics.get("explicit_none")
+                and int(diagnostics.get("nonblank_lines", 0)) > 0
+                and int(diagnostics.get("accepted_candidates", 0)) == 0
+            ):
+                parser_empty_nonblank_runs += 1
+        report["explicit_none_runs"] = explicit_none_runs
+        report["parser_empty_nonblank_runs"] = parser_empty_nonblank_runs
+        reports.append(report)
 
-    return {"summary": summarize(reports), "cases": reports}
+    scored = {"summary": summarize(reports), "cases": reports}
+    total_runs = sum(item["runs"] for item in reports)
+    scored["summary"]["explicit_none_rate"] = (
+        round(sum(item["explicit_none_runs"] for item in reports) / total_runs, 4)
+        if total_runs
+        else None
+    )
+    scored["summary"]["parser_empty_nonblank_rate"] = (
+        round(
+            sum(item["parser_empty_nonblank_runs"] for item in reports) / total_runs,
+            4,
+        )
+        if total_runs
+        else None
+    )
+    return scored
 
 
 def _load_cases(path: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
