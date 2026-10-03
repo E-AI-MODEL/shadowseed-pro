@@ -79,3 +79,6 @@ def test_frozen_build_excludes_optional_provider_stacks() -> None:
         assert f'"--exclude-module",\n        "{module}",' in source
     assert '"--collect-data",\n        "sentence_transformers",' not in source
     assert '"--collect-submodules",\n        "transformers.models",' not in source
+    assert '"--collect-data",\n        "shadowseed_webapi",' in source
+    assert "_verify_frozen_web(" in source
+    assert '"web_static_assets_bundled": True' in source
