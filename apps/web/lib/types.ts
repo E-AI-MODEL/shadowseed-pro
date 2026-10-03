@@ -11,6 +11,17 @@ export type SessionSummary = {
   turn_count: number;
   seed_count: number;
   runtime_mode: string;
+  provider_ready?: boolean;
+};
+
+export type ProviderStatus = {
+  provider: "fixture" | "ollama" | "openai";
+  label: string;
+  available: boolean;
+  configured: boolean;
+  ready: boolean;
+  external: boolean;
+  default_model?: string;
 };
 
 export type Orchestration = {
@@ -59,14 +70,16 @@ export type SessionView = {
   messages: ChatMessage[];
   seeds: Seed[];
   orchestration?: Orchestration;
+  provider_ready?: boolean;
 };
 
 export type CreateSessionInput = {
   title: string;
-  backend: "fixture" | "ollama";
+  backend: "fixture" | "ollama" | "openai";
   model_id?: string;
   authority_mode: "controlled" | "assisted" | "exploratory";
   allow_same_turn_revision?: boolean;
+  external_confirmed?: boolean;
 };
 
 export type TurnResult = {

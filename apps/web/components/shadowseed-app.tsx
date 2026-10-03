@@ -3,8 +3,11 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import {
+  clearOpenAI,
+  configureOpenAI,
   contradictSeed,
   createSession,
+  getProviderStatus,
   getSeed,
   getSession,
   listSessions,
@@ -14,6 +17,7 @@ import {
 } from "@/lib/api";
 import type {
   CreateSessionInput,
+  ProviderStatus,
   Seed,
   SeedDetail,
   SeedTimelineEvent,
@@ -25,6 +29,7 @@ const emptyDraft: CreateSessionInput = {
   title: "Nieuw gesprek",
   backend: "fixture",
   authority_mode: "assisted",
+  external_confirmed: false,
 };
 
 function authorityLabel(profile: string) {
@@ -134,6 +139,12 @@ export function ShadowseedApp() {
     requestId: string;
   } | null>(null);
   const [draft, setDraft] = useState<CreateSessionInput>(emptyDraft);
+  const [providers, setProviders] = useState<ProviderStatus[]>([]);
+  const [openaiKey, setOpenaiKey] = useState("");
+  const [providerBusy, setProviderBusy] = useState(false);
+  const [providerError, setProviderError] = useState<string | null>(null);
+  const [providerNotice, setProviderNotice] = useState<string | null>(null);
+  const [externalTurnConfirmed, setExternalTurnConfirmed] = useState(false);
   const [creating, setCreating] = useState(false);
   const [sending, setSending] = useState(false);
   const [loadingSession, setLoadingSession] = useState(false);
@@ -275,11 +286,36 @@ export function ShadowseedApp() {
     }
   }
 
+  async function refreshProviderStatus() {
+    const next = await getProviderStatus();
+    setProviders(next);
+    return next;
+  }
+
+  async function syncSelectedProviderReadiness() {
+    if (!session) return;
+    try {
+      setSession(await getSession(session.session_id));
+    } catch {
+      return;
+    }
+  }
+
   useEffect(() => {
     refreshSessions().catch((cause: unknown) => {
       setError(cause instanceof Error ? cause.message : "API niet bereikbaar");
     });
+    refreshProviderStatus().catch((cause: unknown) => {
+      setProviderError(
+        cause instanceof Error ? cause.message : "Providerstatus niet bereikbaar",
+      );
+    });
   }, []);
+
+  const openaiStatus = useMemo(
+    () => providers.find((item) => item.provider === "openai") ?? null,
+    [providers],
+  );
 
   const sortedSeeds = useMemo(
     () =>
@@ -295,6 +331,7 @@ export function ShadowseedApp() {
     setError(null);
     setNotice(null);
     setRetryTurn(null);
+    setExternalTurnConfirmed(false);
     clearSeedDetail();
     setMobileNavOpen(false);
     try {
@@ -304,9 +341,85 @@ export function ShadowseedApp() {
     }
   }
 
+  async function onConfigureOpenAI(event: FormEvent) {
+    event.preventDefault();
+    if (!openaiKey.trim() || providerBusy) return;
+    setProviderBusy(true);
+    setProviderError(null);
+    setProviderNotice(null);
+
+    try {
+      const next = await configureOpenAI(openaiKey.trim());
+      setProviders(next);
+      setOpenaiKey("");
+      setProviderNotice(
+        "OpenAI is voor deze lokale app-sessie geconfigureerd. De sleutel wordt niet in de workspace opgeslagen.",
+      );
+    } catch (cause) {
+      setProviderError(
+        cause instanceof Error ? cause.message : "OpenAI kon niet worden geconfigureerd",
+      );
+      setProviderBusy(false);
+      return;
+    }
+
+    try {
+      setSessions(await listSessions());
+      await syncSelectedProviderReadiness();
+    } catch {
+      setProviderNotice(
+        "OpenAI is geconfigureerd, maar de gespreksstatus kon niet worden vernieuwd.",
+      );
+    } finally {
+      setProviderBusy(false);
+    }
+  }
+
+  async function onClearOpenAI() {
+    if (providerBusy) return;
+    setProviderBusy(true);
+    setProviderError(null);
+    setProviderNotice(null);
+
+    try {
+      const next = await clearOpenAI();
+      setProviders(next);
+      setOpenaiKey("");
+      setProviderNotice(
+        "De tijdelijke OpenAI-sleutel is uit het procesgeheugen gewist. Een OPENAI_API_KEY uit de omgeving blijft actief.",
+      );
+    } catch (cause) {
+      setProviderError(
+        cause instanceof Error ? cause.message : "OpenAI-instelling kon niet worden gewist",
+      );
+      setProviderBusy(false);
+      return;
+    }
+
+    try {
+      setSessions(await listSessions());
+      await syncSelectedProviderReadiness();
+    } catch {
+      setProviderNotice(
+        "De tijdelijke sleutel is gewist, maar de gespreksstatus kon niet worden vernieuwd.",
+      );
+    } finally {
+      setProviderBusy(false);
+    }
+  }
+
   async function onCreate(event: FormEvent) {
     event.preventDefault();
-    if (sending || loadingSession || seedActionBusy) return;
+    if (sending || loadingSession || seedActionBusy || providerBusy) return;
+    if (
+      draft.backend === "openai" &&
+      (!openaiStatus?.ready || !draft.external_confirmed)
+    ) {
+      setError(
+        "Configureer OpenAI en bevestig externe verwerking voordat je deze sessie maakt.",
+      );
+      return;
+    }
     setCreating(true);
     setError(null);
     setNotice(null);
@@ -319,6 +432,10 @@ export function ShadowseedApp() {
       setLoadingSession(false);
       setSession(created);
       setRetryTurn(null);
+      setExternalTurnConfirmed(false);
+      if (draft.backend === "openai") {
+        setDraft({ ...draft, external_confirmed: false });
+      }
       clearSeedDetail();
       setMobileNavOpen(false);
 
@@ -358,13 +475,21 @@ export function ShadowseedApp() {
     setNotice(null);
 
     try {
-      const result = await sendTurn(session.session_id, text, requestId);
+      const result = await sendTurn(
+        session.session_id,
+        text,
+        requestId,
+        session.backend === "openai" ? externalTurnConfirmed : false,
+      );
       if (selectedSeed) {
         await refreshSeedAfterMutation(result.session, selectedSeed.id);
       } else {
         setSession(result.session);
       }
       setRetryTurn(null);
+      if (session.backend === "openai") {
+        setExternalTurnConfirmed(false);
+      }
 
       try {
         setSessions(await listSessions());
@@ -623,7 +748,13 @@ export function ShadowseedApp() {
           </select>
           <select
             aria-label="Modelprovider"
-            disabled={sending || creating || loadingSession || seedActionBusy}
+            disabled={
+              sending ||
+              creating ||
+              loadingSession ||
+              seedActionBusy ||
+              providerBusy
+            }
             value={draft.backend}
             onChange={(event) => {
               const backend =
@@ -631,12 +762,19 @@ export function ShadowseedApp() {
               setDraft({
                 ...draft,
                 backend,
-                model_id: backend === "fixture" ? undefined : draft.model_id,
+                model_id:
+                  backend === "openai"
+                    ? openaiStatus?.default_model ?? "gpt-4o-mini"
+                    : undefined,
+                external_confirmed: false,
               });
             }}
           >
             <option value="fixture">Offline demo</option>
             <option value="ollama">Ollama lokaal</option>
+            <option disabled={!openaiStatus?.ready} value="openai">
+              OpenAI hosted
+            </option>
           </select>
           {draft.backend === "ollama" ? (
             <input
@@ -649,13 +787,136 @@ export function ShadowseedApp() {
               }
             />
           ) : null}
+          {draft.backend === "openai" ? (
+            <>
+              <input
+                aria-label="OpenAI model"
+                disabled={
+                  sending ||
+                  creating ||
+                  loadingSession ||
+                  seedActionBusy ||
+                  providerBusy
+                }
+                placeholder={openaiStatus?.default_model ?? "gpt-4o-mini"}
+                value={draft.model_id ?? ""}
+                onChange={(event) =>
+                  setDraft({ ...draft, model_id: event.target.value })
+                }
+              />
+              <label className="external-consent">
+                <input
+                  checked={Boolean(draft.external_confirmed)}
+                  disabled={creating || providerBusy || !openaiStatus?.ready}
+                  onChange={(event) =>
+                    setDraft({
+                      ...draft,
+                      external_confirmed: event.target.checked,
+                    })
+                  }
+                  type="checkbox"
+                />
+                <span>
+                  Ik bevestig dat prompts, Shadow-context en embeddings voor
+                  deze sessie naar OpenAI mogen worden gestuurd.
+                </span>
+              </label>
+            </>
+          ) : null}
           <button
             type="submit"
-            disabled={creating || sending || loadingSession || seedActionBusy}
+            disabled={
+              creating ||
+              sending ||
+              loadingSession ||
+              seedActionBusy ||
+              providerBusy ||
+              (draft.backend === "openai" &&
+                (!openaiStatus?.ready ||
+                  !draft.external_confirmed ||
+                  !draft.model_id?.trim()))
+            }
           >
             {creating ? "Maken..." : "+ Nieuw gesprek"}
           </button>
         </form>
+
+        <details className="provider-settings">
+          <summary>
+            <span>Providers</span>
+            <strong>
+              {openaiStatus?.ready
+                ? "OpenAI gereed"
+                : openaiStatus?.configured
+                  ? "OpenAI mist runtime"
+                  : "OpenAI niet ingesteld"}
+            </strong>
+          </summary>
+          <div className="provider-settings__body">
+            <div className="provider-status-row">
+              <div>
+                <strong>OpenAI</strong>
+                <span>Hosted provider</span>
+              </div>
+              <span
+                className={
+                  openaiStatus?.ready
+                    ? "provider-badge provider-badge--ready"
+                    : "provider-badge"
+                }
+              >
+                {openaiStatus?.ready ? "gereed" : "niet gereed"}
+              </span>
+            </div>
+            {!openaiStatus?.available ? (
+              <p>
+                De OpenAI-runtime is niet geïnstalleerd. Installeer de
+                <code> shadowseed[openai] </code>
+                extra voordat je deze provider gebruikt.
+              </p>
+            ) : null}
+            <form onSubmit={onConfigureOpenAI}>
+              <label>
+                Tijdelijke API-key
+                <input
+                  aria-label="OpenAI API-key"
+                  autoComplete="off"
+                  disabled={providerBusy}
+                  onChange={(event) => setOpenaiKey(event.target.value)}
+                  placeholder="sk-..."
+                  type="password"
+                  value={openaiKey}
+                />
+              </label>
+              <button
+                disabled={providerBusy || !openaiKey.trim()}
+                type="submit"
+              >
+                {providerBusy ? "Bezig..." : "Configureer"}
+              </button>
+            </form>
+            {openaiStatus?.configured ? (
+              <button
+                className="provider-clear"
+                disabled={providerBusy}
+                onClick={onClearOpenAI}
+                type="button"
+              >
+                Wis tijdelijke sleutel
+              </button>
+            ) : null}
+            <p>
+              De sleutel gaat alleen naar de lokale Python-API en wordt niet
+              in de workspace, browseropslag of exports bewaard.
+            </p>
+            {providerNotice ? (
+              <div className="provider-notice">{providerNotice}</div>
+            ) : null}
+            {providerError ? (
+              <div className="provider-error">{providerError}</div>
+            ) : null}
+          </div>
+        </details>
 
         <nav className="conversation-list" aria-label="Gesprekken">
           {sessions.map((item) => (
@@ -673,6 +934,7 @@ export function ShadowseedApp() {
               <strong>{item.title}</strong>
               <span>
                 {item.turn_count} beurten · {item.seed_count} punten
+                {item.provider_ready === false ? " · provider instellen" : ""}
               </span>
             </button>
           ))}
@@ -717,6 +979,9 @@ export function ShadowseedApp() {
             >
               Shadow {sortedSeeds.length}
             </button>
+            {session?.provider_ready === false ? (
+              <span className="provider-warning-pill">Provider instellen</span>
+            ) : null}
             {session ? (
               <span className="policy-pill">
                 {session.effective_gate_policy_id}
@@ -758,14 +1023,41 @@ export function ShadowseedApp() {
         </div>
 
         <form className="composer" onSubmit={onSend}>
+          {session?.backend === "openai" ? (
+            <label className="composer-consent">
+              <input
+                checked={externalTurnConfirmed}
+                disabled={
+                  sending ||
+                  loadingSession ||
+                  session.provider_ready === false
+                }
+                onChange={(event) =>
+                  setExternalTurnConfirmed(event.target.checked)
+                }
+                type="checkbox"
+              />
+              <span>
+                Deze invoer en de gebruikte Shadow-context mogen voor deze
+                beurt naar OpenAI worden gestuurd.
+              </span>
+            </label>
+          ) : null}
           <textarea
             aria-label="Bericht"
-            disabled={!session || sending || loadingSession}
+            disabled={
+              !session ||
+              sending ||
+              loadingSession ||
+              session.provider_ready === false
+            }
             placeholder={
               session
-                ? loadingSession
-                  ? "Gesprek laden..."
-                  : "Typ je bericht..."
+                ? session.provider_ready === false
+                  ? "Configureer eerst de provider..."
+                  : loadingSession
+                    ? "Gesprek laden..."
+                    : "Typ je bericht..."
                 : "Maak eerst een gesprek..."
             }
             value={question}
@@ -784,6 +1076,8 @@ export function ShadowseedApp() {
               sending ||
               loadingSession ||
               seedActionBusy ||
+              session.provider_ready === false ||
+              (session.backend === "openai" && !externalTurnConfirmed) ||
               !question.trim()
             }
           >

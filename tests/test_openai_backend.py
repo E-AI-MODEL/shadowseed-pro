@@ -6,12 +6,25 @@ from types import SimpleNamespace
 
 import pytest
 
-from shadowseed.adapters.openai_client import OpenAIClient, openai_api_key
+from shadowseed.adapters.openai_client import (
+    OpenAIClient,
+    clear_process_openai_api_key,
+    configure_process_openai_api_key,
+    openai_api_key,
+    openai_api_key_configured,
+)
 from shadowseed.detection.model_detector import (
     SUPPORTED_MODEL_BACKENDS,
     OpenAIDetectorBackend,
     make_detector_backend,
 )
+
+
+@pytest.fixture(autouse=True)
+def _clear_process_openai_key():
+    clear_process_openai_api_key()
+    yield
+    clear_process_openai_api_key()
 
 
 class _FakeChatCompletions:
@@ -58,6 +71,22 @@ def test_openai_api_key_missing_raises(monkeypatch):
 def test_openai_api_key_reads_env(monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "  sk-test  ")
     assert openai_api_key() == "sk-test"
+
+
+def test_process_openai_api_key_overrides_environment_without_persistence(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-env")
+    configure_process_openai_api_key("  sk-process  ")
+
+    assert openai_api_key() == "sk-process"
+    assert openai_api_key_configured() is True
+
+    clear_process_openai_api_key()
+    assert openai_api_key() == "sk-env"
+
+
+def test_process_openai_api_key_rejects_empty_value():
+    with pytest.raises(ValueError, match="must not be empty"):
+        configure_process_openai_api_key("   ")
 
 
 def test_client_generate_sends_expected_request():
