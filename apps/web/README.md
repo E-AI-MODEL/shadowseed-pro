@@ -21,6 +21,11 @@ In a second terminal:
 
 Open http://127.0.0.1:3000.
 
+The web v1 transport is deliberately loopback-only. The Python API cannot bind
+to a remote interface, and `NEXT_PUBLIC_SHADOWSEED_API_URL` may only point to
+`127.0.0.1` or `localhost`. Ollama generation, revision and embedding routes
+are likewise rejected when `OLLAMA_HOST` is not loopback.
+
 ## First vertical slice
 
 - list/open persisted sessions;
