@@ -168,3 +168,29 @@ def test_committed_case_set_is_valid_and_contains_all_core_lanes() -> None:
 
     ids = [case["case_id"] for case in cases]
     assert len(ids) == len(set(ids))
+
+
+
+def test_fixture_cli_executes_as_benchmark_smoke(tmp_path) -> None:
+    output = tmp_path / "gap-resilience.json"
+
+    assert (
+        bench.main(
+            [
+                "--backend",
+                "fixture",
+                "--repeats",
+                "2",
+                "--output",
+                str(output),
+            ]
+        )
+        == 0
+    )
+
+    report = json.loads(output.read_text(encoding="utf-8"))
+    assert report["artifact"] == "shadowseed-gap-resilience-v1"
+    assert report["run_type"] == "benchmark_smoke"
+    assert report["backend"] == "fixture"
+    assert report["repeats"] == 2
+    assert "score" not in report["summary"]
