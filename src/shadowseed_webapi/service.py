@@ -97,6 +97,16 @@ def _request_id(payload: dict[str, Any]) -> str:
     return value
 
 
+def _raise_idempotency_conflict(exc: WorkspaceStorageError) -> None:
+    message = str(exc)
+    if (
+        "request_id was already used" in message
+        or "request_id was replayed" in message
+    ):
+        raise ValueError(message) from exc
+    raise exc
+
+
 class WebApiService:
     """Expose product-shaped operations without reimplementing SSL semantics."""
 
@@ -193,9 +203,7 @@ class WebApiService:
                 request_id=request_id,
             )
         except WorkspaceStorageError as exc:
-            if "request_id was already used" in str(exc):
-                raise ValueError(str(exc)) from exc
-            raise
+            _raise_idempotency_conflict(exc)
         return {
             "report": result["report"],
             "comparison": result["comparison"],
@@ -210,6 +218,7 @@ class WebApiService:
     ) -> dict[str, Any]:
         source_ref = _required_json_string(payload, "source_ref")
         note = _defaulted_json_string(payload, "note", "")
+        request_id = _request_id(payload)
 
         operator_verified = payload.get("operator_verified")
         if operator_verified is not True:
@@ -218,22 +227,64 @@ class WebApiService:
             )
 
         self._supported_session_view(session_id)
-        self.controller.submit_verified_evidence(
-            session_id,
-            seed_id,
-            source_ref=source_ref,
-            note=note,
-            operator_verified=True,
-        )
+        try:
+            self.controller.submit_verified_evidence(
+                session_id,
+                seed_id,
+                source_ref=source_ref,
+                note=note,
+                operator_verified=True,
+                request_id=request_id,
+            )
+        except WorkspaceStorageError as exc:
+            _raise_idempotency_conflict(exc)
         return self.get_session(session_id)
 
     def contradict_seed(
         self,
         session_id: str,
         seed_id: str,
+        payload: dict[str, Any],
     ) -> dict[str, Any]:
+        request_id = _request_id(payload)
         self._supported_session_view(session_id)
-        self.controller.falsify_seed(session_id, seed_id)
+        try:
+            self.controller.falsify_seed(
+                session_id,
+                seed_id,
+                request_id=request_id,
+            )
+        except WorkspaceStorageError as exc:
+            _raise_idempotency_conflict(exc)
+        return self.get_session(session_id)
+
+    def resolve_contradiction(
+        self,
+        session_id: str,
+        seed_id: str,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        basis = _required_json_string(payload, "basis")
+        request_id = _request_id(payload)
+        contradiction_id = _json_string(
+            payload,
+            "contradiction_id",
+            allow_null=True,
+        )
+        if contradiction_id == "":
+            contradiction_id = None
+
+        self._supported_session_view(session_id)
+        try:
+            self.controller.resolve_contradiction(
+                session_id,
+                seed_id,
+                basis=basis,
+                contradiction_id=contradiction_id,
+                request_id=request_id,
+            )
+        except WorkspaceStorageError as exc:
+            _raise_idempotency_conflict(exc)
         return self.get_session(session_id)
 
     @staticmethod
