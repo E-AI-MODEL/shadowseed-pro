@@ -135,6 +135,7 @@ def score_case(
     runs: list[list[str]],
     *,
     threshold: float = DEFAULT_MATCH_THRESHOLD,
+    run_audits: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     expected = _groups(case, "expected_gap_groups")
     resolved = _groups(case, "resolved_gap_groups")
@@ -145,12 +146,24 @@ def score_case(
     resolved_opportunities = len(resolved) * len(runs)
     resolved_reopens = 0
     empty_runs = 0
+    explicit_none_runs = 0
+    parser_empty_non_none_runs = 0
     run_details: list[dict[str, Any]] = []
 
     for index, candidates in enumerate(runs, start=1):
         candidates = [str(value).strip() for value in candidates if str(value).strip()]
+        audit = (
+            run_audits[index - 1]
+            if run_audits is not None and index - 1 < len(run_audits)
+            else {}
+        )
+        parse_diagnostics = audit.get("parse_diagnostics") or {}
         if not candidates:
             empty_runs += 1
+            if parse_diagnostics.get("explicit_none"):
+                explicit_none_runs += 1
+            elif audit.get("raw_output"):
+                parser_empty_non_none_runs += 1
 
         expected_detail: list[dict[str, Any]] = []
         for group in expected:
@@ -185,6 +198,9 @@ def score_case(
                 "candidates": candidates,
                 "expected": expected_detail,
                 "resolved": resolved_detail,
+                "detector_raw_output": audit.get("raw_output"),
+                "detector_parse_diagnostics": parse_diagnostics or None,
+                "detector_prompt_metadata": audit.get("prompt_metadata"),
             }
         )
 
@@ -223,6 +239,8 @@ def score_case(
             else None
         ),
         "repeatability": round(repeatability, 4),
+        "explicit_none_runs": explicit_none_runs,
+        "parser_empty_non_none_runs": parser_empty_non_none_runs,
         "run_details": run_details,
     }
 
@@ -243,6 +261,10 @@ def summarize(case_reports: list[dict[str, Any]]) -> dict[str, Any]:
         int(item["abstention_opportunities"] or 0) for item in case_reports
     )
     repeatability = [float(item["repeatability"]) for item in case_reports]
+    explicit_none_runs = sum(int(item.get("explicit_none_runs", 0)) for item in case_reports)
+    parser_empty_non_none_runs = sum(
+        int(item.get("parser_empty_non_none_runs", 0)) for item in case_reports
+    )
 
     return {
         "cases": len(case_reports),
@@ -270,6 +292,8 @@ def summarize(case_reports: list[dict[str, Any]]) -> dict[str, Any]:
         "repeatability_mean": (
             round(mean(repeatability), 4) if repeatability else None
         ),
+        "explicit_none_runs": explicit_none_runs,
+        "parser_empty_non_none_runs": parser_empty_non_none_runs,
     }
 
 
@@ -287,6 +311,7 @@ def run_cases(
     reports: list[dict[str, Any]] = []
     for case in cases:
         runs: list[list[str]] = []
+        audits: list[dict[str, Any]] = []
         for _ in range(repeats):
             runs.append(
                 list(
@@ -302,7 +327,23 @@ def run_cases(
                     )
                 )
             )
-        reports.append(score_case(case, runs, threshold=threshold))
+            audits.append(
+                {
+                    "raw_output": getattr(detector, "last_raw_output", None),
+                    "parse_diagnostics": getattr(
+                        detector, "last_parse_diagnostics", None
+                    ),
+                    "prompt_metadata": getattr(detector, "last_prompt_metadata", None),
+                }
+            )
+        reports.append(
+            score_case(
+                case,
+                runs,
+                threshold=threshold,
+                run_audits=audits,
+            )
+        )
 
     return {"summary": summarize(reports), "cases": reports}
 
