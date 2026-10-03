@@ -15,11 +15,47 @@ DEFAULT_EMBEDDING_MODEL = "text-embedding-3-small"
 DEFAULT_PROVIDER_TIMEOUT_SECONDS = 120.0
 DEFAULT_PROVIDER_MAX_RETRIES = 0
 
+_PROCESS_OPENAI_API_KEY: str | None = None
+
+
+def configure_process_openai_api_key(api_key: str) -> None:
+    """Keep a user-supplied API key in process memory only.
+
+    This is intentionally not persisted to workspace state, config files, browser
+    storage, exports, or logs. Environment credentials remain supported as the
+    normal non-interactive path.
+    """
+
+    key = api_key.strip()
+    if not key:
+        raise ValueError("OpenAI API key must not be empty")
+    global _PROCESS_OPENAI_API_KEY
+    _PROCESS_OPENAI_API_KEY = key
+
+
+def clear_process_openai_api_key() -> None:
+    """Forget only the process-memory override, leaving environment config intact."""
+
+    global _PROCESS_OPENAI_API_KEY
+    _PROCESS_OPENAI_API_KEY = None
+
+
+def openai_api_key_configured() -> bool:
+    """Return credential presence without exposing the secret or its source."""
+
+    return bool(
+        (_PROCESS_OPENAI_API_KEY or "").strip()
+        or os.environ.get("OPENAI_API_KEY", "").strip()
+    )
+
 
 def openai_api_key() -> str:
-    """Resolve the OpenAI API key from ``OPENAI_API_KEY`` or fail clearly."""
+    """Resolve the OpenAI API key from process memory or ``OPENAI_API_KEY``."""
 
-    key = os.environ.get("OPENAI_API_KEY", "").strip()
+    key = (
+        (_PROCESS_OPENAI_API_KEY or "").strip()
+        or os.environ.get("OPENAI_API_KEY", "").strip()
+    )
     if not key:
         raise RuntimeError(
             "OPENAI_API_KEY is not set. Export it locally "
