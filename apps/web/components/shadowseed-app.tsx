@@ -74,6 +74,7 @@ export function ShadowseedApp() {
   const [sending, setSending] = useState(false);
   const [loadingSession, setLoadingSession] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [shadowOpen, setShadowOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const sessionRequestId = useRef(0);
@@ -234,6 +235,16 @@ export function ShadowseedApp() {
         onClick={() => setMobileNavOpen(false)}
         type="button"
       />
+      <button
+        aria-label="Sluit Shadow"
+        className={
+          shadowOpen
+            ? "shadow-backdrop shadow-backdrop--open"
+            : "shadow-backdrop"
+        }
+        onClick={() => setShadowOpen(false)}
+        type="button"
+      />
 
       <aside
         className={mobileNavOpen ? "sidebar sidebar--open" : "sidebar"}
@@ -346,7 +357,10 @@ export function ShadowseedApp() {
               aria-expanded={mobileNavOpen}
               className="mobile-nav-button"
               disabled={sending || creating}
-              onClick={() => setMobileNavOpen(true)}
+              onClick={() => {
+                setShadowOpen(false);
+                setMobileNavOpen(true);
+              }}
               type="button"
             >
               Gesprekken
@@ -360,11 +374,25 @@ export function ShadowseedApp() {
               </p>
             </div>
           </div>
-          {session ? (
-            <span className="policy-pill">
-              {session.effective_gate_policy_id}
-            </span>
-          ) : null}
+          <div className="chat-header__actions">
+            <button
+              aria-controls="shadow-inspector"
+              aria-expanded={shadowOpen}
+              className="shadow-toggle-button"
+              onClick={() => {
+                setMobileNavOpen(false);
+                setShadowOpen(true);
+              }}
+              type="button"
+            >
+              Shadow {sortedSeeds.length}
+            </button>
+            {session ? (
+              <span className="policy-pill">
+                {session.effective_gate_policy_id}
+              </span>
+            ) : null}
+          </div>
         </header>
 
         <div className="messages">
@@ -426,13 +454,26 @@ export function ShadowseedApp() {
         {error ? <div className="error-banner">{error}</div> : null}
       </section>
 
-      <aside className="shadow-column">
+      <aside
+        className={shadowOpen ? "shadow-column shadow-column--open" : "shadow-column"}
+        id="shadow-inspector"
+      >
         <div className="shadow-heading">
           <div>
             <span className="eyebrow">SHADOW</span>
             <h2>Wat speelt mee?</h2>
           </div>
-          <span className="shadow-count">{sortedSeeds.length}</span>
+          <div className="shadow-heading__actions">
+            <span className="shadow-count">{sortedSeeds.length}</span>
+            <button
+              aria-label="Sluit Shadow"
+              className="shadow-close"
+              onClick={() => setShadowOpen(false)}
+              type="button"
+            >
+              Sluiten
+            </button>
+          </div>
         </div>
 
         {session?.orchestration ? (
