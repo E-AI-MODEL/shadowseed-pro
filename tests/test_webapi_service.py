@@ -376,14 +376,25 @@ def test_web_api_hides_existing_sessions_when_ollama_ceases_to_be_local(
     session_id = controller.create_session(
         title="Local provider becomes remote",
         profile_id="balanced",
-        backend=backend,
-        model_id=model_id,
-        revision_backend=revision_backend,
-        revision_model_id=revision_model_id,
+        backend="fixture",
+        model_id=None,
         runtime_mode="live",
         authority_profile_id="assisted",
-        embedding_backend=embedding_backend,
+        embedding_backend="lexical",
         external_confirmed=False,
+    )
+    provider_config = {
+        "backend": backend,
+        "model_id": model_id,
+        "revision_backend": revision_backend,
+        "revision_model_id": revision_model_id,
+        "embedding_backend": embedding_backend,
+    }
+    controller.sessions.update_controls(
+        session_id,
+        config_updates=provider_config,
+        session_config_updates=provider_config,
+        core_config_updates={},
     )
 
     monkeypatch.setenv("OLLAMA_HOST", "http://192.0.2.25:11434")
