@@ -179,9 +179,19 @@ class ProductionLocalWorkbenchController(WorkbenchController):
         )
         return result
 
-    def falsify_seed(self, session_id: str, seed_id: str) -> dict[str, Any]:
+    def falsify_seed(
+        self,
+        session_id: str,
+        seed_id: str,
+        *,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
         try:
-            result = super().falsify_seed(session_id, seed_id)
+            result = super().falsify_seed(
+                session_id,
+                seed_id,
+                request_id=request_id,
+            )
         except Exception as exc:
             self._emit_failure(
                 "contradiction.submit",
@@ -206,10 +216,15 @@ class ProductionLocalWorkbenchController(WorkbenchController):
         *,
         basis: str,
         contradiction_id: str | None = None,
+        request_id: str | None = None,
     ) -> dict[str, Any]:
         """Resolve a blocking contradiction through the distinct production capability."""
 
-        actor = self.workspace.local_actor_context()
+        actor = (
+            self.workspace.local_actor_context()
+            if request_id is None
+            else self.workspace.local_actor_context(request_id=request_id)
+        )
         try:
             result = resolve_authorized_contradiction(
                 self.workspace.repository,
@@ -247,6 +262,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
         source_ref: str,
         note: str = "",
         operator_verified: bool = False,
+        request_id: str | None = None,
     ) -> dict[str, Any]:
         try:
             result = super().submit_verified_evidence(
@@ -255,6 +271,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
                 source_ref=source_ref,
                 note=note,
                 operator_verified=operator_verified,
+                request_id=request_id,
             )
         except Exception as exc:
             self._emit_failure(

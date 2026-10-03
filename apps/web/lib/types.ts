@@ -19,6 +19,13 @@ export type Orchestration = {
   required_action?: string | null;
 };
 
+export type SeedTimelineEvent = {
+  sequence: number;
+  type: string;
+  timestamp?: string | null;
+  payload: Record<string, unknown>;
+};
+
 export type Seed = {
   id: string;
   text: string;
@@ -31,6 +38,14 @@ export type Seed = {
   current_gate_authorized?: boolean;
   plain_explanation?: string;
   orchestration?: Orchestration;
+};
+
+export type SeedDetail = Seed & {
+  authority_profile_id: string;
+  effective_gate_policy_id?: string | null;
+  review_required: boolean;
+  plain_explanation: string;
+  timeline: SeedTimelineEvent[];
 };
 
 export type SessionView = {

@@ -239,3 +239,89 @@ def test_remote_binding_is_rejected_without_escape_hatch(tmp_path) -> None:
             host="0.0.0.0",
             port=0,
         )
+
+
+
+def test_seed_authority_routes_reach_canonical_service(tmp_path) -> None:
+    service = WebApiService(tmp_path / "workspace")
+    created = service.create_session(
+        {
+            "title": "Seed HTTP routes",
+            "backend": "fixture",
+            "authority_mode": "assisted",
+        }
+    )
+    session_id = created["session_id"]
+    turn = service.run_turn(
+        session_id,
+        {
+            "question": "What is missing from this plan?",
+            "request_id": "web-turn:http-seed-routes",
+        },
+    )
+    seed_id = turn["session"]["seeds"][0]["id"]
+    seed_path = (
+        f"/api/v1/sessions/{session_id}/seeds/{seed_id}"
+    )
+
+    detail_status, detail = _request(
+        service,
+        method="GET",
+        path=seed_path,
+    )
+    assert detail_status == 200
+    assert detail["id"] == seed_id
+    assert isinstance(detail["timeline"], list)
+
+    contradiction_status, contradicted = _request(
+        service,
+        method="POST",
+        path=seed_path + "/contradictions",
+        body=json.dumps(
+            {"request_id": "web-contradiction:http-seed-routes"}
+        ),
+        headers={"Content-Type": "application/json"},
+    )
+    assert contradiction_status == 200
+    contradicted_seed = next(
+        item for item in contradicted["seeds"] if item["id"] == seed_id
+    )
+    assert contradicted_seed["blocking"] is True
+
+    resolve_status, resolved = _request(
+        service,
+        method="POST",
+        path=seed_path + "/contradictions/resolve",
+        body=json.dumps(
+            {
+                "basis": "Independent review resolved the conflict.",
+                "request_id": "web-contradiction-resolve:http-seed-routes",
+            }
+        ),
+        headers={"Content-Type": "application/json"},
+    )
+    assert resolve_status == 200
+    resolved_seed = next(
+        item for item in resolved["seeds"] if item["id"] == seed_id
+    )
+    assert resolved_seed["blocking"] is False
+
+    evidence_status, supported = _request(
+        service,
+        method="POST",
+        path=seed_path + "/evidence",
+        body=json.dumps(
+            {
+                "source_ref": "reviewer:http-seed-routes",
+                "note": "Checked independently.",
+                "operator_verified": True,
+                "request_id": "web-evidence:http-seed-routes",
+            }
+        ),
+        headers={"Content-Type": "application/json"},
+    )
+    assert evidence_status == 200
+    supported_seed = next(
+        item for item in supported["seeds"] if item["id"] == seed_id
+    )
+    assert supported_seed["evidence_count"] == 1

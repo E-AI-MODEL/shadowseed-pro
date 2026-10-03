@@ -214,7 +214,22 @@ def make_handler(
                     ):
                         return self._write_json(
                             HTTPStatus.OK,
-                            service.contradict_seed(parts[3], parts[5]),
+                            service.contradict_seed(parts[3], parts[5], payload),
+                        )
+                    if (
+                        len(parts) == 8
+                        and parts[:3] == ["api", "v1", "sessions"]
+                        and parts[4] == "seeds"
+                        and parts[6] == "contradictions"
+                        and parts[7] == "resolve"
+                    ):
+                        return self._write_json(
+                            HTTPStatus.OK,
+                            service.resolve_contradiction(
+                                parts[3],
+                                parts[5],
+                                payload,
+                            ),
                         )
                     self._write_json(HTTPStatus.NOT_FOUND, {"error": "not_found"})
             except KeyError:

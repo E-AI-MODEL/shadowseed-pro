@@ -3,14 +3,20 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import {
+  contradictSeed,
   createSession,
+  getSeed,
   getSession,
   listSessions,
+  resolveSeedContradiction,
   sendTurn,
+  submitSeedEvidence,
 } from "@/lib/api";
 import type {
   CreateSessionInput,
   Seed,
+  SeedDetail,
+  SeedTimelineEvent,
   SessionSummary,
   SessionView,
 } from "@/lib/types";
@@ -34,7 +40,13 @@ function orchestrationLabel(state?: string) {
   return "Geen actie nodig";
 }
 
-function SeedCard({ seed }: { seed: Seed }) {
+function SeedCard({
+  seed,
+  onOpen,
+}: {
+  seed: Seed;
+  onOpen: () => void;
+}) {
   return (
     <article className="seed-card">
       <div className="seed-card__top">
@@ -61,7 +73,54 @@ function SeedCard({ seed }: { seed: Seed }) {
       {seed.orchestration?.reason_text ? (
         <p className="seed-note">{seed.orchestration.reason_text}</p>
       ) : null}
+      <button className="seed-open" onClick={onOpen} type="button">
+        Bekijk details
+      </button>
     </article>
+  );
+}
+
+function timelineLabel(type: string) {
+  if (type === "seed_event") return "Geheugen";
+  if (type === "validation") return "Validatie";
+  if (type === "gate") return "Gate";
+  if (type === "contradiction") return "Tegenspraak";
+  if (type === "probe_feedback") return "Feedback";
+  if (type === "influence") return "Gebruik";
+  return type;
+}
+
+function timelineTimestamp(event: SeedTimelineEvent) {
+  if (!event.timestamp) return "Geen tijd vastgelegd";
+  const value = new Date(event.timestamp);
+  return Number.isNaN(value.getTime())
+    ? String(event.timestamp)
+    : value.toLocaleString("nl-NL");
+}
+
+function SeedTimeline({ events }: { events: SeedTimelineEvent[] }) {
+  if (!events.length) {
+    return <p className="seed-detail__muted">Nog geen timeline-events.</p>;
+  }
+
+  return (
+    <ol className="seed-timeline">
+      {events.map((event) => (
+        <li key={event.type + "-" + event.sequence}>
+          <div className="seed-timeline__marker" />
+          <div className="seed-timeline__body">
+            <div className="seed-timeline__top">
+              <strong>{timelineLabel(event.type)}</strong>
+              <span>{timelineTimestamp(event)}</span>
+            </div>
+            <details>
+              <summary>Canonical record</summary>
+              <pre>{JSON.stringify(event.payload, null, 2)}</pre>
+            </details>
+          </div>
+        </li>
+      ))}
+    </ol>
   );
 }
 
@@ -80,10 +139,87 @@ export function ShadowseedApp() {
   const [loadingSession, setLoadingSession] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [shadowOpen, setShadowOpen] = useState(false);
+  const [selectedSeed, setSelectedSeed] = useState<SeedDetail | null>(null);
+  const [loadingSeed, setLoadingSeed] = useState(false);
+  const [seedActionBusy, setSeedActionBusy] = useState(false);
+  const [seedError, setSeedError] = useState<string | null>(null);
+  const [seedNotice, setSeedNotice] = useState<string | null>(null);
+  const [evidenceRef, setEvidenceRef] = useState("");
+  const [evidenceNote, setEvidenceNote] = useState("");
+  const [evidenceVerified, setEvidenceVerified] = useState(false);
+  const [resolutionBasis, setResolutionBasis] = useState("");
+  const [retrySeedAction, setRetrySeedAction] = useState<{
+    kind: "evidence" | "contradict" | "resolve";
+    sessionId: string;
+    seedId: string;
+    fingerprint: string;
+    requestId: string;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const sessionRequestId = useRef(0);
   const refreshRequestId = useRef(0);
+  const seedRequestId = useRef(0);
+
+  function clearSeedDetail() {
+    seedRequestId.current += 1;
+    setLoadingSeed(false);
+    setSelectedSeed(null);
+    setSeedError(null);
+    setSeedNotice(null);
+    setRetrySeedAction(null);
+    setEvidenceRef("");
+    setEvidenceNote("");
+    setEvidenceVerified(false);
+    setResolutionBasis("");
+  }
+
+  async function openSeed(seedId: string) {
+    if (!session || seedActionBusy) return;
+    const requestId = ++seedRequestId.current;
+    setLoadingSeed(true);
+    setSeedError(null);
+    setSeedNotice(null);
+    try {
+      const detail = await getSeed(session.session_id, seedId);
+      if (seedRequestId.current === requestId) {
+        setSelectedSeed(detail);
+      }
+    } catch (cause) {
+      if (seedRequestId.current === requestId) {
+        setSeedError(
+          cause instanceof Error ? cause.message : "Geheugenpunt kon niet laden",
+        );
+      }
+    } finally {
+      if (seedRequestId.current === requestId) {
+        setLoadingSeed(false);
+      }
+    }
+  }
+
+  async function refreshSeedAfterMutation(
+    nextSession: SessionView,
+    seedId: string,
+  ) {
+    setSession(nextSession);
+    const requestId = ++seedRequestId.current;
+    try {
+      const detail = await getSeed(nextSession.session_id, seedId);
+      if (seedRequestId.current === requestId) {
+        setSelectedSeed(detail);
+      }
+      return true;
+    } catch {
+      if (seedRequestId.current === requestId) {
+        setSelectedSeed(null);
+        setSeedNotice(
+          "De wijziging is opgeslagen, maar de detailweergave kon niet worden vernieuwd.",
+        );
+      }
+      return false;
+    }
+  }
 
   async function loadSession(sessionId: string) {
     const requestId = ++sessionRequestId.current;
@@ -154,11 +290,12 @@ export function ShadowseedApp() {
   );
 
   async function selectSession(sessionId: string) {
-    if (sending || creating) return;
+    if (sending || creating || seedActionBusy) return;
     refreshRequestId.current += 1;
     setError(null);
     setNotice(null);
     setRetryTurn(null);
+    clearSeedDetail();
     setMobileNavOpen(false);
     try {
       await loadSession(sessionId);
@@ -169,7 +306,7 @@ export function ShadowseedApp() {
 
   async function onCreate(event: FormEvent) {
     event.preventDefault();
-    if (sending || loadingSession) return;
+    if (sending || loadingSession || seedActionBusy) return;
     setCreating(true);
     setError(null);
     setNotice(null);
@@ -182,6 +319,7 @@ export function ShadowseedApp() {
       setLoadingSession(false);
       setSession(created);
       setRetryTurn(null);
+      clearSeedDetail();
       setMobileNavOpen(false);
 
       try {
@@ -202,7 +340,13 @@ export function ShadowseedApp() {
 
   async function onSend(event: FormEvent) {
     event.preventDefault();
-    if (!session || !question.trim() || sending || loadingSession) return;
+    if (
+      !session ||
+      !question.trim() ||
+      sending ||
+      loadingSession ||
+      seedActionBusy
+    ) return;
     const text = question.trim();
     const requestId =
       retryTurn?.sessionId === session.session_id && retryTurn.text === text
@@ -215,7 +359,11 @@ export function ShadowseedApp() {
 
     try {
       const result = await sendTurn(session.session_id, text, requestId);
-      setSession(result.session);
+      if (selectedSeed) {
+        await refreshSeedAfterMutation(result.session, selectedSeed.id);
+      } else {
+        setSession(result.session);
+      }
       setRetryTurn(null);
 
       try {
@@ -239,6 +387,171 @@ export function ShadowseedApp() {
       setSending(false);
     }
   }
+
+  function seedRequestKey(
+    kind: "evidence" | "contradict" | "resolve",
+    seedId: string,
+    fingerprint: string,
+  ) {
+    if (
+      session &&
+      retrySeedAction?.kind === kind &&
+      retrySeedAction.sessionId === session.session_id &&
+      retrySeedAction.seedId === seedId &&
+      retrySeedAction.fingerprint === fingerprint
+    ) {
+      return retrySeedAction.requestId;
+    }
+    return "web-seed-" + kind + ":" + crypto.randomUUID();
+  }
+
+  async function onSubmitEvidence(event: FormEvent) {
+    event.preventDefault();
+    if (
+      !session ||
+      !selectedSeed ||
+      seedActionBusy ||
+      !evidenceRef.trim() ||
+      !evidenceVerified
+    ) {
+      return;
+    }
+
+    const sourceRef = evidenceRef.trim();
+    const note = evidenceNote.trim();
+    const fingerprint = sourceRef + "\u0000" + note;
+    const requestId = seedRequestKey(
+      "evidence",
+      selectedSeed.id,
+      fingerprint,
+    );
+    setSeedActionBusy(true);
+    setSeedError(null);
+    setSeedNotice(null);
+
+    try {
+      const nextSession = await submitSeedEvidence(
+        session.session_id,
+        selectedSeed.id,
+        { sourceRef, note, requestId },
+      );
+      setRetrySeedAction(null);
+      setEvidenceRef("");
+      setEvidenceNote("");
+      setEvidenceVerified(false);
+      const refreshed = await refreshSeedAfterMutation(
+        nextSession,
+        selectedSeed.id,
+      );
+      if (refreshed) {
+        setSeedNotice("Geverifieerde steun is opgeslagen.");
+      }
+    } catch (cause) {
+      setRetrySeedAction({
+        kind: "evidence",
+        sessionId: session.session_id,
+        seedId: selectedSeed.id,
+        fingerprint,
+        requestId,
+      });
+      setSeedError(
+        cause instanceof Error ? cause.message : "Steun kon niet worden opgeslagen",
+      );
+    } finally {
+      setSeedActionBusy(false);
+    }
+  }
+
+  async function onContradictSeed() {
+    if (!session || !selectedSeed || seedActionBusy) return;
+    const fingerprint = "contradict";
+    const requestId = seedRequestKey(
+      "contradict",
+      selectedSeed.id,
+      fingerprint,
+    );
+    setSeedActionBusy(true);
+    setSeedError(null);
+    setSeedNotice(null);
+
+    try {
+      const nextSession = await contradictSeed(
+        session.session_id,
+        selectedSeed.id,
+        requestId,
+      );
+      setRetrySeedAction(null);
+      const refreshed = await refreshSeedAfterMutation(
+        nextSession,
+        selectedSeed.id,
+      );
+      if (refreshed) {
+        setSeedNotice("Tegenspraak is vastgelegd. Dit punt is nu geblokkeerd.");
+      }
+    } catch (cause) {
+      setRetrySeedAction({
+        kind: "contradict",
+        sessionId: session.session_id,
+        seedId: selectedSeed.id,
+        fingerprint,
+        requestId,
+      });
+      setSeedError(
+        cause instanceof Error ? cause.message : "Tegenspraak kon niet worden opgeslagen",
+      );
+    } finally {
+      setSeedActionBusy(false);
+    }
+  }
+
+  async function onResolveContradiction(event: FormEvent) {
+    event.preventDefault();
+    if (
+      !session ||
+      !selectedSeed ||
+      seedActionBusy ||
+      !resolutionBasis.trim()
+    ) {
+      return;
+    }
+
+    const basis = resolutionBasis.trim();
+    const requestId = seedRequestKey("resolve", selectedSeed.id, basis);
+    setSeedActionBusy(true);
+    setSeedError(null);
+    setSeedNotice(null);
+
+    try {
+      const nextSession = await resolveSeedContradiction(
+        session.session_id,
+        selectedSeed.id,
+        { basis, requestId },
+      );
+      setRetrySeedAction(null);
+      setResolutionBasis("");
+      const refreshed = await refreshSeedAfterMutation(
+        nextSession,
+        selectedSeed.id,
+      );
+      if (refreshed) {
+        setSeedNotice("De tegenspraak is opnieuw door de Gate beoordeeld.");
+      }
+    } catch (cause) {
+      setRetrySeedAction({
+        kind: "resolve",
+        sessionId: session.session_id,
+        seedId: selectedSeed.id,
+        fingerprint: basis,
+        requestId,
+      });
+      setSeedError(
+        cause instanceof Error ? cause.message : "Tegenspraak kon niet worden opgelost",
+      );
+    } finally {
+      setSeedActionBusy(false);
+    }
+  }
+
 
   return (
     <main className="product-shell">
@@ -286,7 +599,7 @@ export function ShadowseedApp() {
         <form className="new-chat" onSubmit={onCreate}>
           <input
             aria-label="Titel nieuw gesprek"
-            disabled={sending || creating || loadingSession}
+            disabled={sending || creating || loadingSession || seedActionBusy}
             value={draft.title}
             onChange={(event) =>
               setDraft({ ...draft, title: event.target.value })
@@ -294,7 +607,7 @@ export function ShadowseedApp() {
           />
           <select
             aria-label="Authority-regime"
-            disabled={sending || creating || loadingSession}
+            disabled={sending || creating || loadingSession || seedActionBusy}
             value={draft.authority_mode}
             onChange={(event) =>
               setDraft({
@@ -310,7 +623,7 @@ export function ShadowseedApp() {
           </select>
           <select
             aria-label="Modelprovider"
-            disabled={sending || creating || loadingSession}
+            disabled={sending || creating || loadingSession || seedActionBusy}
             value={draft.backend}
             onChange={(event) => {
               const backend =
@@ -328,7 +641,7 @@ export function ShadowseedApp() {
           {draft.backend === "ollama" ? (
             <input
               aria-label="Ollama model"
-              disabled={sending || creating || loadingSession}
+              disabled={sending || creating || loadingSession || seedActionBusy}
               placeholder="bijv. qwen2.5:7b"
               value={draft.model_id ?? ""}
               onChange={(event) =>
@@ -338,7 +651,7 @@ export function ShadowseedApp() {
           ) : null}
           <button
             type="submit"
-            disabled={creating || sending || loadingSession}
+            disabled={creating || sending || loadingSession || seedActionBusy}
           >
             {creating ? "Maken..." : "+ Nieuw gesprek"}
           </button>
@@ -352,7 +665,7 @@ export function ShadowseedApp() {
                   ? "conversation conversation--active"
                   : "conversation"
               }
-              disabled={sending || creating}
+              disabled={sending || creating || seedActionBusy}
               key={item.session_id}
               onClick={() => selectSession(item.session_id)}
               type="button"
@@ -467,7 +780,11 @@ export function ShadowseedApp() {
           />
           <button
             disabled={
-              !session || sending || loadingSession || !question.trim()
+              !session ||
+              sending ||
+              loadingSession ||
+              seedActionBusy ||
+              !question.trim()
             }
           >
             {sending ? "Bezig..." : "Verstuur"}
@@ -499,27 +816,217 @@ export function ShadowseedApp() {
           </div>
         </div>
 
-        {session?.orchestration ? (
-          <section className="handoff-card">
-            <span>{orchestrationLabel(session.orchestration.state)}</span>
-            <p>{session.orchestration.reason_text}</p>
-          </section>
+        {seedNotice ? (
+          <div className="seed-notice">{seedNotice}</div>
+        ) : null}
+        {seedError ? (
+          <div className="seed-error">{seedError}</div>
         ) : null}
 
-        <div className="seed-list">
-          {sortedSeeds.length ? (
-            sortedSeeds.map((seed) => (
-              <SeedCard key={seed.id} seed={seed} />
-            ))
-          ) : (
-            <div className="shadow-empty">
-              <strong>Nog geen geheugenpunten</strong>
+        {selectedSeed ? (
+          <div className="seed-detail">
+            <button
+              className="seed-detail__back"
+              disabled={seedActionBusy}
+              onClick={clearSeedDetail}
+              type="button"
+            >
+              ← Alle geheugenpunten
+            </button>
+
+            <section className="seed-detail__summary">
+              <div className="seed-card__top">
+                <span className="seed-state">
+                  {selectedSeed.current_gate_authorized
+                    ? "TOEGESTAAN"
+                    : selectedSeed.status}
+                </span>
+                <strong>{Number(selectedSeed.weight ?? 0).toFixed(2)}</strong>
+              </div>
+              <h3>{selectedSeed.text}</h3>
+              <p>{selectedSeed.plain_explanation}</p>
+              <dl className="seed-detail__facts">
+                <div>
+                  <dt>Teruggezien</dt>
+                  <dd>{selectedSeed.occurrence_count ?? 0}</dd>
+                </div>
+                <div>
+                  <dt>Geverifieerde steun</dt>
+                  <dd>{selectedSeed.evidence_count ?? 0}</dd>
+                </div>
+                <div>
+                  <dt>Tegenspraak</dt>
+                  <dd>{selectedSeed.blocking ? "open" : "geen"}</dd>
+                </div>
+                <div>
+                  <dt>Gate</dt>
+                  <dd>{selectedSeed.effective_gate_policy_id ?? "onbekend"}</dd>
+                </div>
+              </dl>
+              {selectedSeed.review_required ? (
+                <p className="seed-review-flag">
+                  Dit punt vraagt nog om menselijke beoordeling.
+                </p>
+              ) : null}
+            </section>
+
+            <section className="seed-action-card">
+              <h3>Geverifieerde steun</h3>
               <p>
-                Nieuwe kandidaten starten zonder steering authority.
+                Gebruik dit alleen als je de bron zelf hebt gecontroleerd en
+                die dit geheugenpunt daadwerkelijk ondersteunt. Een bron
+                toevoegen is niet automatisch bewijs.
               </p>
-            </div>
-          )}
-        </div>
+              <form onSubmit={onSubmitEvidence}>
+                <label>
+                  Bronverwijzing
+                  <input
+                    disabled={seedActionBusy}
+                    placeholder="URL, document-ID of andere stabiele verwijzing"
+                    value={evidenceRef}
+                    onChange={(event) => {
+                      setEvidenceRef(event.target.value);
+                      if (retrySeedAction?.kind === "evidence") {
+                        setRetrySeedAction(null);
+                      }
+                    }}
+                  />
+                </label>
+                <label>
+                  Toelichting
+                  <textarea
+                    disabled={seedActionBusy}
+                    placeholder="Optioneel: waarom ondersteunt deze bron dit punt?"
+                    rows={3}
+                    value={evidenceNote}
+                    onChange={(event) => {
+                      setEvidenceNote(event.target.value);
+                      if (retrySeedAction?.kind === "evidence") {
+                        setRetrySeedAction(null);
+                      }
+                    }}
+                  />
+                </label>
+                <label className="verification-check">
+                  <input
+                    checked={evidenceVerified}
+                    disabled={seedActionBusy}
+                    onChange={(event) =>
+                      setEvidenceVerified(event.target.checked)
+                    }
+                    type="checkbox"
+                  />
+                  <span>
+                    Ik heb deze bron gecontroleerd en bevestig dat deze dit
+                    punt ondersteunt.
+                  </span>
+                </label>
+                <button
+                  disabled={
+                    seedActionBusy ||
+                    !evidenceRef.trim() ||
+                    !evidenceVerified
+                  }
+                  type="submit"
+                >
+                  {seedActionBusy ? "Bezig..." : "Steun vastleggen"}
+                </button>
+              </form>
+            </section>
+
+            <section className="seed-action-card">
+              <h3>Tegenspraak</h3>
+              {selectedSeed.blocking ? (
+                <form onSubmit={onResolveContradiction}>
+                  <p>
+                    Dit geheugenpunt is nu geblokkeerd. Leg vast waarom de
+                    tegenspraak volgens jou kan worden opgelost. De Gate
+                    beoordeelt daarna opnieuw wat er met de authority gebeurt.
+                  </p>
+                  <label>
+                    Basis voor oplossing
+                    <textarea
+                      disabled={seedActionBusy}
+                      placeholder="Waarom kan deze blokkade worden opgeheven?"
+                      rows={3}
+                      value={resolutionBasis}
+                      onChange={(event) => {
+                        setResolutionBasis(event.target.value);
+                        if (retrySeedAction?.kind === "resolve") {
+                          setRetrySeedAction(null);
+                        }
+                      }}
+                    />
+                  </label>
+                  <button
+                    disabled={seedActionBusy || !resolutionBasis.trim()}
+                    type="submit"
+                  >
+                    {seedActionBusy ? "Bezig..." : "Tegenspraak oplossen"}
+                  </button>
+                </form>
+              ) : (
+                <>
+                  <p>
+                    Gebruik dit als informatie dit geheugenpunt tegenspreekt.
+                    Het punt wordt dan geblokkeerd totdat de tegenspraak via de
+                    bestaande Gate-flow is opgelost.
+                  </p>
+                  <button
+                    className="danger-secondary"
+                    disabled={seedActionBusy}
+                    onClick={onContradictSeed}
+                    type="button"
+                  >
+                    {seedActionBusy ? "Bezig..." : "Markeer als tegengesproken"}
+                  </button>
+                </>
+              )}
+            </section>
+
+            <section className="seed-detail__timeline">
+              <div>
+                <span className="eyebrow">TIMELINE</span>
+                <h3>Wat is er met dit punt gebeurd?</h3>
+              </div>
+              <SeedTimeline events={selectedSeed.timeline} />
+            </section>
+          </div>
+        ) : (
+          <>
+            {session?.orchestration ? (
+              <section className="handoff-card">
+                <span>{orchestrationLabel(session.orchestration.state)}</span>
+                <p>{session.orchestration.reason_text}</p>
+              </section>
+            ) : null}
+
+            {loadingSeed ? (
+              <div className="shadow-empty">
+                <strong>Geheugenpunt laden...</strong>
+              </div>
+            ) : (
+              <div className="seed-list">
+                {sortedSeeds.length ? (
+                  sortedSeeds.map((seed) => (
+                    <SeedCard
+                      key={seed.id}
+                      onOpen={() => openSeed(seed.id)}
+                      seed={seed}
+                    />
+                  ))
+                ) : (
+                  <div className="shadow-empty">
+                    <strong>Nog geen geheugenpunten</strong>
+                    <p>
+                      Nieuwe kandidaten starten zonder steering authority.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
 
         {session ? (
           <footer className="runtime-footer">
