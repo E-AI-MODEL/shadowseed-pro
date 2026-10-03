@@ -394,7 +394,6 @@ def test_source_observation_rejects_pending_live_turn_without_mutation() -> None
         "source_observation",
         "source_context",
         "max_seeds",
-        "max_seed_words",
     ]
     assert report["detector_audit"]["raw_output"]
     assert report["detector_audit"]["parse_diagnostics"]["accepted_candidates"] >= 1
