@@ -85,8 +85,14 @@ export function ShadowseedApp() {
       const loaded = await getSession(sessionId);
       if (sessionRequestId.current === requestId) {
         setSession(loaded);
+        return loaded;
       }
-      return loaded;
+      return null;
+    } catch (cause) {
+      if (sessionRequestId.current === requestId) {
+        throw cause;
+      }
+      return null;
     } finally {
       if (sessionRequestId.current === requestId) {
         setLoadingSession(false);
