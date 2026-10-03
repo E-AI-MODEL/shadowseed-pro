@@ -15,6 +15,7 @@ _AUTHORITY_MODE_TO_PROFILE = {
 }
 _MISSING = object()
 _WEB_V1_BACKENDS = frozenset({"fixture", "ollama"})
+_WEB_V1_EMBEDDING_BACKENDS = frozenset({"lexical", "ollama"})
 
 
 def _optional_json_bool(
@@ -95,11 +96,14 @@ class WebApiService:
         return {"ok": True, "api_version": "v1"}
 
     def list_sessions(self) -> dict[str, Any]:
-        sessions = [
-            item
-            for item in self.controller.list_sessions()
-            if item.get("backend") in _WEB_V1_BACKENDS
-        ]
+        sessions = []
+        for item in self.controller.list_sessions():
+            try:
+                view = self.controller.session_view(str(item["session_id"]))
+            except KeyError:
+                continue
+            if self._session_provider_supported(view):
+                sessions.append(item)
         return {"sessions": sessions}
 
     def get_session(self, session_id: str) -> dict[str, Any]:
@@ -206,12 +210,26 @@ class WebApiService:
         self.controller.falsify_seed(session_id, seed_id)
         return self.get_session(session_id)
 
+    @staticmethod
+    def _session_provider_supported(view: dict[str, Any]) -> bool:
+        backend = str(view.get("backend") or "").strip()
+        revision_backend = str(
+            view.get("revision_backend") or backend
+        ).strip()
+        embedding_backend = str(
+            view.get("embedding_backend") or "lexical"
+        ).strip()
+        return (
+            backend in _WEB_V1_BACKENDS
+            and revision_backend in _WEB_V1_BACKENDS
+            and embedding_backend in _WEB_V1_EMBEDDING_BACKENDS
+        )
+
     def _supported_session_view(self, session_id: str) -> dict[str, Any]:
         view = self.controller.session_view(session_id)
-        backend = str(view.get("backend") or "").strip()
-        if backend not in _WEB_V1_BACKENDS:
+        if not self._session_provider_supported(view):
             raise ValueError(
-                "web client v1 supports only fixture and Ollama sessions"
+                "web client v1 does not support this session provider configuration"
             )
         return view
 
