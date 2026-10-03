@@ -3,14 +3,20 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import {
+  contradictSeed,
   createSession,
+  getSeed,
   getSession,
   listSessions,
+  resolveSeedContradiction,
   sendTurn,
+  submitSeedEvidence,
 } from "@/lib/api";
 import type {
   CreateSessionInput,
   Seed,
+  SeedDetail,
+  SeedTimelineEvent,
   SessionSummary,
   SessionView,
 } from "@/lib/types";
@@ -34,9 +40,15 @@ function orchestrationLabel(state?: string) {
   return "Geen actie nodig";
 }
 
-function SeedCard({ seed }: { seed: Seed }) {
+function SeedCard({
+  seed,
+  onOpen,
+}: {
+  seed: Seed;
+  onOpen: () => void;
+}) {
   return (
-    <article className="seed-card">
+    <button className="seed-card seed-card--button" onClick={onOpen} type="button">
       <div className="seed-card__top">
         <span className="seed-state">
           {seed.current_gate_authorized ? "TOEGESTAAN" : seed.status}
@@ -61,7 +73,52 @@ function SeedCard({ seed }: { seed: Seed }) {
       {seed.orchestration?.reason_text ? (
         <p className="seed-note">{seed.orchestration.reason_text}</p>
       ) : null}
-    </article>
+      <span className="seed-open">Bekijk details</span>
+    </button>
+  );
+}
+
+function timelineLabel(type: string) {
+  if (type === "seed_event") return "Geheugen";
+  if (type === "validation") return "Validatie";
+  if (type === "gate") return "Gate";
+  if (type === "contradiction") return "Tegenspraak";
+  if (type === "probe_feedback") return "Feedback";
+  if (type === "influence") return "Gebruik";
+  return type;
+}
+
+function timelineTimestamp(event: SeedTimelineEvent) {
+  if (!event.timestamp) return "Geen tijd vastgelegd";
+  const value = new Date(event.timestamp);
+  return Number.isNaN(value.getTime())
+    ? String(event.timestamp)
+    : value.toLocaleString("nl-NL");
+}
+
+function SeedTimeline({ events }: { events: SeedTimelineEvent[] }) {
+  if (!events.length) {
+    return <p className="seed-detail__muted">Nog geen timeline-events.</p>;
+  }
+
+  return (
+    <ol className="seed-timeline">
+      {events.map((event) => (
+        <li key={event.type + "-" + event.sequence}>
+          <div className="seed-timeline__marker" />
+          <div className="seed-timeline__body">
+            <div className="seed-timeline__top">
+              <strong>{timelineLabel(event.type)}</strong>
+              <span>{timelineTimestamp(event)}</span>
+            </div>
+            <details>
+              <summary>Canonical record</summary>
+              <pre>{JSON.stringify(event.payload, null, 2)}</pre>
+            </details>
+          </div>
+        </li>
+      ))}
+    </ol>
   );
 }
 
