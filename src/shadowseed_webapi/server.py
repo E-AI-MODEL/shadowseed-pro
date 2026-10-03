@@ -24,13 +24,24 @@ _MAX_BODY_BYTES = 1_000_000
 
 
 def _is_loopback(host: str) -> bool:
+    """Return whether host is a loopback supported by the IPv4 HTTP server."""
+
     normalized = str(host).strip().lower()
     if normalized == "localhost":
         return True
     try:
-        return ipaddress.ip_address(normalized).is_loopback
+        address = ipaddress.ip_address(normalized)
     except ValueError:
         return False
+    return address.version == 4 and address.is_loopback
+
+
+def _is_ipv6_loopback(host: str) -> bool:
+    try:
+        address = ipaddress.ip_address(str(host).strip().lower())
+    except ValueError:
+        return False
+    return address.version == 6 and address.is_loopback
 
 
 def _parts(path: str) -> list[str]:
@@ -221,10 +232,15 @@ def serve(
     port: int = DEFAULT_PORT,
     allow_remote: bool = False,
 ) -> None:
+    if _is_ipv6_loopback(host):
+        raise ValueError(
+            "IPv6 loopback binding is not supported by the local web API; "
+            "use 127.0.0.1 or localhost"
+        )
     if not _is_loopback(host) and not allow_remote:
         raise ValueError(
-            "remote web API binding is disabled by default; this local product "
-            "adapter has no hosted multi-user authentication layer"
+            "remote Workbench binding is disabled by default; use --allow-remote only "
+            "inside a trusted environment because the preview has no multi-user auth layer"
         )
     service = WebApiService(workspace)
     server = ThreadingHTTPServer((host, int(port)), make_handler(service))
