@@ -1,0 +1,218 @@
+"""Loopback-only JSON HTTP server for the Shadowseed web product client."""
+
+from __future__ import annotations
+
+import argparse
+import ipaddress
+import json
+from http import HTTPStatus
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from typing import Any
+from urllib.parse import unquote, urlsplit
+
+from shadowseed.application.error_safety import sanitized_exception_line
+from shadowseed_webapi.service import WebApiService
+
+
+DEFAULT_HOST = "127.0.0.1"
+DEFAULT_PORT = 8765
+DEFAULT_WEB_ORIGINS = frozenset(
+    {"http://127.0.0.1:3000", "http://localhost:3000"}
+)
+_MAX_BODY_BYTES = 1_000_000
+
+
+def _is_loopback(host: str) -> bool:
+    normalized = str(host).strip().lower()
+    if normalized == "localhost":
+        return True
+    try:
+        return ipaddress.ip_address(normalized).is_loopback
+    except ValueError:
+        return False
+
+
+def _parts(path: str) -> list[str]:
+    return [
+        unquote(part)
+        for part in urlsplit(path).path.strip("/").split("/")
+        if part
+    ]
+
+
+def make_handler(
+    service: WebApiService,
+    *,
+    allowed_origins: frozenset[str] = DEFAULT_WEB_ORIGINS,
+):
+    class Handler(BaseHTTPRequestHandler):
+        server_version = "ShadowseedWebApi/1"
+
+        def _cors_origin(self) -> str | None:
+            origin = self.headers.get("Origin")
+            return origin if origin in allowed_origins else None
+
+        def _write_json(self, status: int, payload: Any) -> None:
+            data = json.dumps(
+                payload, ensure_ascii=False, separators=(",", ":")
+            ).encode("utf-8")
+            self.send_response(status)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Cache-Control", "no-store")
+            origin = self._cors_origin()
+            if origin:
+                self.send_header("Access-Control-Allow-Origin", origin)
+                self.send_header("Vary", "Origin")
+            self.end_headers()
+            self.wfile.write(data)
+
+        def _read_json(self) -> dict[str, Any]:
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+            except ValueError as exc:
+                raise ValueError("invalid Content-Length") from exc
+            if length < 0 or length > _MAX_BODY_BYTES:
+                raise ValueError("request body is too large")
+            raw = self.rfile.read(length) if length else b"{}"
+            try:
+                payload = json.loads(raw.decode("utf-8"))
+            except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+                raise ValueError("request body must be valid UTF-8 JSON") from exc
+            if not isinstance(payload, dict):
+                raise ValueError("request body must be a JSON object")
+            return payload
+
+        def do_OPTIONS(self) -> None:  # noqa: N802
+            origin = self._cors_origin()
+            self.send_response(HTTPStatus.NO_CONTENT)
+            if origin:
+                self.send_header("Access-Control-Allow-Origin", origin)
+                self.send_header("Vary", "Origin")
+            self.send_header("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type")
+            self.send_header("Access-Control-Max-Age", "600")
+            self.end_headers()
+
+        def do_GET(self) -> None:  # noqa: N802
+            try:
+                parts = _parts(self.path)
+                if parts == ["api", "v1", "health"]:
+                    return self._write_json(HTTPStatus.OK, service.health())
+                if parts == ["api", "v1", "sessions"]:
+                    return self._write_json(HTTPStatus.OK, service.list_sessions())
+                if len(parts) == 4 and parts[:3] == ["api", "v1", "sessions"]:
+                    return self._write_json(
+                        HTTPStatus.OK, service.get_session(parts[3])
+                    )
+                if (
+                    len(parts) == 6
+                    and parts[:3] == ["api", "v1", "sessions"]
+                    and parts[4] == "seeds"
+                ):
+                    return self._write_json(
+                        HTTPStatus.OK, service.get_seed(parts[3], parts[5])
+                    )
+                self._write_json(HTTPStatus.NOT_FOUND, {"error": "not_found"})
+            except ValueError as exc:
+                self._write_json(
+                    HTTPStatus.BAD_REQUEST,
+                    {"error": sanitized_exception_line(exc)},
+                )
+            except Exception as exc:  # pragma: no cover
+                self._write_json(
+                    HTTPStatus.INTERNAL_SERVER_ERROR,
+                    {"error": sanitized_exception_line(exc)},
+                )
+
+        def do_POST(self) -> None:  # noqa: N802
+            try:
+                parts = _parts(self.path)
+                payload = self._read_json()
+                if parts == ["api", "v1", "sessions"]:
+                    return self._write_json(
+                        HTTPStatus.CREATED, service.create_session(payload)
+                    )
+                if (
+                    len(parts) == 5
+                    and parts[:3] == ["api", "v1", "sessions"]
+                    and parts[4] == "turns"
+                ):
+                    return self._write_json(
+                        HTTPStatus.OK, service.run_turn(parts[3], payload)
+                    )
+                if (
+                    len(parts) == 7
+                    and parts[:3] == ["api", "v1", "sessions"]
+                    and parts[4] == "seeds"
+                    and parts[6] == "evidence"
+                ):
+                    return self._write_json(
+                        HTTPStatus.OK,
+                        service.submit_evidence(parts[3], parts[5], payload),
+                    )
+                if (
+                    len(parts) == 7
+                    and parts[:3] == ["api", "v1", "sessions"]
+                    and parts[4] == "seeds"
+                    and parts[6] == "contradictions"
+                ):
+                    return self._write_json(
+                        HTTPStatus.OK,
+                        service.contradict_seed(parts[3], parts[5]),
+                    )
+                self._write_json(HTTPStatus.NOT_FOUND, {"error": "not_found"})
+            except ValueError as exc:
+                self._write_json(
+                    HTTPStatus.BAD_REQUEST,
+                    {"error": sanitized_exception_line(exc)},
+                )
+            except Exception as exc:  # pragma: no cover
+                self._write_json(
+                    HTTPStatus.INTERNAL_SERVER_ERROR,
+                    {"error": sanitized_exception_line(exc)},
+                )
+
+        def log_message(self, format: str, *args: Any) -> None:
+            return None
+
+    return Handler
+
+
+def serve(
+    *,
+    workspace: str | Path | None = None,
+    host: str = DEFAULT_HOST,
+    port: int = DEFAULT_PORT,
+    allow_remote: bool = False,
+) -> None:
+    if not _is_loopback(host) and not allow_remote:
+        raise ValueError(
+            "remote web API binding is disabled by default; this local product "
+            "adapter has no hosted multi-user authentication layer"
+        )
+    service = WebApiService(workspace)
+    server = ThreadingHTTPServer((host, int(port)), make_handler(service))
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.server_close()
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Run the local Shadowseed web API")
+    parser.add_argument("--workspace", default=None)
+    parser.add_argument("--host", default=DEFAULT_HOST)
+    parser.add_argument("--port", type=int, default=DEFAULT_PORT)
+    parser.add_argument("--allow-remote", action="store_true")
+    args = parser.parse_args(argv)
+    serve(
+        workspace=args.workspace,
+        host=args.host,
+        port=args.port,
+        allow_remote=bool(args.allow_remote),
+    )
+    return 0
