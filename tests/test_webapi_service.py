@@ -25,7 +25,10 @@ def test_web_api_vertical_slice_uses_canonical_session_runtime(tmp_path) -> None
 
     result = api.run_turn(
         session_id,
-        {"question": "Which boundary might be missing here?"},
+        {
+            "question": "Which boundary might be missing here?",
+            "request_id": "web-turn:test-vertical-slice",
+        },
     )
     messages = result["session"]["messages"]
 
@@ -417,3 +420,86 @@ def test_web_api_hides_existing_sessions_when_ollama_ceases_to_be_local(
         match="web client v1 does not support this session provider configuration",
     ):
         api.run_turn(session_id, {"question": "Do not call the remote provider"})
+
+
+
+def test_web_api_turn_retry_is_idempotent_across_service_restart(tmp_path) -> None:
+    workspace = tmp_path / "workspace"
+    api = WebApiService(workspace)
+    created = api.create_session(
+        {
+            "title": "Idempotent retry",
+            "backend": "fixture",
+            "authority_mode": "assisted",
+        }
+    )
+    payload = {
+        "question": "Persist this turn once.",
+        "request_id": "web-turn:retry-once",
+    }
+
+    first = api.run_turn(created["session_id"], payload)
+    restarted = WebApiService(workspace)
+    replay = restarted.run_turn(created["session_id"], payload)
+
+    assert replay["report"]["turn"] == first["report"]["turn"]
+    assert replay["report"]["answer"] == first["report"]["answer"]
+    assert replay["session"]["turn"] == first["session"]["turn"]
+    assert [item["role"] for item in replay["session"]["messages"]] == [
+        "user",
+        "assistant",
+    ]
+
+
+def test_web_api_rejects_reusing_turn_request_id_with_different_question(
+    tmp_path,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    created = api.create_session(
+        {
+            "title": "Idempotency conflict",
+            "backend": "fixture",
+            "authority_mode": "assisted",
+        }
+    )
+    request_id = "web-turn:conflict"
+
+    api.run_turn(
+        created["session_id"],
+        {
+            "question": "Original question",
+            "request_id": request_id,
+        },
+    )
+
+    with pytest.raises(ValueError, match="different chat input"):
+        api.run_turn(
+            created["session_id"],
+            {
+                "question": "Changed question",
+                "request_id": request_id,
+            },
+        )
+
+    after = api.get_session(created["session_id"])
+    assert after["turn"] == 1
+    assert len(after["messages"]) == 2
+
+
+def test_web_api_requires_turn_request_id(tmp_path) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    created = api.create_session(
+        {
+            "title": "Request id required",
+            "backend": "fixture",
+            "authority_mode": "assisted",
+        }
+    )
+
+    with pytest.raises(ValueError, match="request_id is required"):
+        api.run_turn(
+            created["session_id"],
+            {"question": "Do not persist without an idempotency key"},
+        )
+
+    assert api.get_session(created["session_id"])["turn"] == 0
