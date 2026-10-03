@@ -347,6 +347,7 @@ export function ShadowseedApp() {
     setProviderBusy(true);
     setProviderError(null);
     setProviderNotice(null);
+
     try {
       const next = await configureOpenAI(openaiKey.trim());
       setProviders(next);
@@ -354,11 +355,20 @@ export function ShadowseedApp() {
       setProviderNotice(
         "OpenAI is voor deze lokale app-sessie geconfigureerd. De sleutel wordt niet in de workspace opgeslagen.",
       );
-      setSessions(await listSessions());
-      await syncSelectedProviderReadiness();
     } catch (cause) {
       setProviderError(
         cause instanceof Error ? cause.message : "OpenAI kon niet worden geconfigureerd",
+      );
+      setProviderBusy(false);
+      return;
+    }
+
+    try {
+      setSessions(await listSessions());
+      await syncSelectedProviderReadiness();
+    } catch {
+      setProviderNotice(
+        "OpenAI is geconfigureerd, maar de gespreksstatus kon niet worden vernieuwd.",
       );
     } finally {
       setProviderBusy(false);
@@ -370,6 +380,7 @@ export function ShadowseedApp() {
     setProviderBusy(true);
     setProviderError(null);
     setProviderNotice(null);
+
     try {
       const next = await clearOpenAI();
       setProviders(next);
@@ -377,11 +388,20 @@ export function ShadowseedApp() {
       setProviderNotice(
         "De tijdelijke OpenAI-sleutel is uit het procesgeheugen gewist. Een OPENAI_API_KEY uit de omgeving blijft actief.",
       );
-      setSessions(await listSessions());
-      await syncSelectedProviderReadiness();
     } catch (cause) {
       setProviderError(
         cause instanceof Error ? cause.message : "OpenAI-instelling kon niet worden gewist",
+      );
+      setProviderBusy(false);
+      return;
+    }
+
+    try {
+      setSessions(await listSessions());
+      await syncSelectedProviderReadiness();
+    } catch {
+      setProviderNotice(
+        "De tijdelijke sleutel is gewist, maar de gespreksstatus kon niet worden vernieuwd.",
       );
     } finally {
       setProviderBusy(false);
