@@ -400,3 +400,40 @@ def test_run_chat_script_mode_writes_audited_transcript(tmp_path: Path):
     for rec in payload["shadow"]["influence_records"]:
         if rec["allowed"]:
             assert rec["seed_weight"] > 0.0
+
+
+
+def test_detector_context_excludes_prior_ssl_influenced_live_answers(monkeypatch):
+    session = _make_session(monkeypatch, runtime_mode="live")
+    session.history = [
+        ("Schone vraag", "Schoon antwoord"),
+        ("SSL-vraag", "Antwoord met seedinvloed"),
+        ("Revisievraag", "Antwoord na same-turn revision"),
+        ("Tweede schone vraag", "Tweede schoon antwoord"),
+    ]
+    session.turn_reports = [
+        {"surfaced_seed_ids": [], "same_turn_revision_applied": False},
+        {"surfaced_seed_ids": ["ss_001"], "same_turn_revision_applied": False},
+        {"surfaced_seed_ids": [], "same_turn_revision_applied": True},
+        {"surfaced_seed_ids": [], "same_turn_revision_applied": False},
+    ]
+
+    context = session._detector_conversation_context()
+
+    assert "Schone vraag" in context
+    assert "Tweede schone vraag" in context
+    assert "SSL-vraag" not in context
+    assert "Revisievraag" not in context
+
+
+def test_detector_born_seed_and_observation_remain_unclassified(monkeypatch):
+    session = _make_session(monkeypatch)
+
+    report = session.turn("Welke ontbrekende relatie verdient controle?")
+
+    seed_id = report["seeds_born_weightless"][0]
+    seed = session.manager.seeds[seed_id]
+    assert seed.origin is not None
+    assert seed.origin.candidate_type.value == "unspecified"
+    assert seed.weight == 0.0
+    assert report["candidate_observations"][0]["candidate_type"] == "unspecified"
