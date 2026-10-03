@@ -1,19 +1,19 @@
 {
   "schema_version": 1,
-  "case_set": "gap_resilience_core",
-  "case_set_version": "1.0",
-  "description": "Small authored benchmark for gap recall, no-gap abstention, resolved-gap currentness, and repeated-run stability. Alias matching is a deterministic scoring aid, not semantic truth.",
+  "case_set": "gap_resilience_controlled",
+  "case_set_version": "1.1",
+  "description": "Controlled gap-resilience cases. Each question explicitly bounds the relevant information categories so recall, abstention and supersession are falsifiable without assuming one arbitrary gap from an open-ended space.",
   "cases": [
     {
-      "case_id": "api-auth-missing",
+      "case_id": "api-auth-controlled",
       "language": "en",
-      "question": "What still needs to be specified before clients can use the API?",
+      "question": "The API requirements say clients must authenticate before calling endpoints. Looking only at authentication, what remains unspecified?",
       "draft_answer": "The API endpoint is https://api.example.test/v1. Clients may send 60 requests per minute and responses use JSON.",
       "conversation_context": "NONE",
       "negative_control": false,
       "expected_gap_groups": [
         {
-          "id": "client-authentication",
+          "id": "client-authentication-method",
           "aliases": [
             "client authentication method",
             "API authentication method",
@@ -25,11 +25,11 @@
       "resolved_gap_groups": []
     },
     {
-      "case_id": "retention-currentness",
+      "case_id": "retention-backups-controlled",
       "language": "en",
-      "question": "What is still unclear about retention?",
+      "question": "The retention policy must state what happens to both primary-store data and backup copies. What part is still unspecified?",
       "draft_answer": "Customer event data is retained for 14 days. After that period the deletion job removes it from the primary store.",
-      "conversation_context": "PRIOR TURN 1\nUSER: What is the retention period?\nASSISTANT: The old 30-day policy was replaced. The current retention period is 14 days.",
+      "conversation_context": "PRIOR TURN 1\nUSER: What is the current retention period?\nASSISTANT: The old 30-day policy was replaced. The current retention period is 14 days.",
       "negative_control": false,
       "expected_gap_groups": [
         {
@@ -37,7 +37,8 @@
           "aliases": [
             "deletion timing for backups",
             "when retained data is removed from backups",
-            "backup copy deletion after retention"
+            "backup copy deletion after retention",
+            "what happens to backup copies after retention"
           ]
         }
       ],
@@ -53,36 +54,9 @@
       ]
     },
     {
-      "case_id": "complete-negative-control",
+      "case_id": "support-response-target-controlled",
       "language": "en",
-      "question": "What remains unspecified about the password reset flow?",
-      "draft_answer": "A reset link is valid for 20 minutes, can be used once, invalidates all older reset links, and sends a confirmation email after success.",
-      "conversation_context": "PRIOR TURN 1\nUSER: Which channel sends the link?\nASSISTANT: The reset link is sent by email only.",
-      "negative_control": true,
-      "expected_gap_groups": [],
-      "resolved_gap_groups": [
-        {
-          "id": "reset-link-channel",
-          "aliases": [
-            "password reset delivery channel",
-            "channel used to send the reset link",
-            "how the reset link is delivered"
-          ]
-        },
-        {
-          "id": "reset-link-validity",
-          "aliases": [
-            "password reset link validity period",
-            "how long the reset link remains valid",
-            "reset link expiry time"
-          ]
-        }
-      ]
-    },
-    {
-      "case_id": "support-hours-supersession",
-      "language": "en",
-      "question": "What operational detail is still missing?",
+      "question": "The support policy must state coverage hours and a response target for each severity. What remains unspecified?",
       "draft_answer": "Support coverage is now 24/7 for production incidents. Requests enter one shared queue and severity determines escalation.",
       "conversation_context": "PRIOR TURN 1\nUSER: Is support still limited to business hours?\nASSISTANT: No. The previous 09:00-17:00 schedule was superseded by 24/7 production-incident coverage.",
       "negative_control": false,
@@ -92,7 +66,8 @@
           "aliases": [
             "response target by severity",
             "severity-specific response time",
-            "incident response target for each severity"
+            "incident response target for each severity",
+            "response time guarantee for each severity"
           ]
         }
       ],
@@ -108,9 +83,9 @@
       ]
     },
     {
-      "case_id": "other-subject-trap",
+      "case_id": "alice-failover-controlled",
       "language": "en",
-      "question": "What is still missing from Alice's deployment description?",
+      "question": "The deployment standard requires region, number of availability zones, and failover behavior between zones. What remains unspecified for Alice's service?",
       "draft_answer": "Alice's service is deployed in the EU region and uses two availability zones.",
       "conversation_context": "PRIOR TURN 1\nUSER: Where is Alice's service deployed?\nASSISTANT: Alice's service is in the EU region. Bob's separate service was later moved to the US region.",
       "negative_control": false,
@@ -120,7 +95,8 @@
           "aliases": [
             "failover behavior between Alice's availability zones",
             "Alice service failover mechanism",
-            "how Alice's service fails over between zones"
+            "how Alice's service fails over between zones",
+            "failover between availability zones"
           ]
         }
       ],
@@ -136,9 +112,9 @@
       ]
     },
     {
-      "case_id": "rollbackcriteria-nl",
+      "case_id": "rollbackcriteria-nl-controlled",
       "language": "nl",
-      "question": "Wat is nog niet vastgelegd voor de migratie?",
+      "question": "Voor de migratie moeten starttijd, volgorde en criteria voor terugrollen zijn vastgelegd. Wat is nog niet gespecificeerd?",
       "draft_answer": "De migratie start op maandag om 18.00 uur. Eerst worden de accounts overgezet en daarna de gedeelde bestanden. Bij problemen kan het team terug naar de oude omgeving.",
       "conversation_context": "NONE",
       "negative_control": false,
@@ -148,12 +124,78 @@
           "aliases": [
             "criteria voor terugrollen",
             "voorwaarden voor terugkeer naar de oude omgeving",
-            "wanneer de rollback wordt gestart",
-            "besliscriteria voor rollback"
+            "wanneer moet worden teruggerold",
+            "besliscriteria voor rollback",
+            "criteria om terug te gaan naar de oude omgeving"
           ]
         }
       ],
       "resolved_gap_groups": []
+    },
+    {
+      "case_id": "password-reset-bounded-negative",
+      "language": "nl",
+      "question": "Beoordeel alleen twee punten: via welk kanaal de resetlink wordt verstuurd en hoe lang die geldig is. Is een van beide nog ongespecificeerd?",
+      "draft_answer": "Een resetlink is 20 minuten geldig, kan één keer worden gebruikt, maakt alle oudere resetlinks ongeldig en stuurt na succes een bevestigingsmail.",
+      "conversation_context": "PRIOR TURN 1\nUSER: Via welk kanaal wordt de resetlink verstuurd?\nASSISTANT: De resetlink wordt uitsluitend per e-mail verstuurd.",
+      "negative_control": true,
+      "expected_gap_groups": [],
+      "resolved_gap_groups": [
+        {
+          "id": "reset-link-channel",
+          "aliases": [
+            "kanaal voor de resetlink",
+            "hoe de resetlink wordt verstuurd",
+            "resetlink per e-mail"
+          ]
+        },
+        {
+          "id": "reset-link-validity",
+          "aliases": [
+            "geldigheidsduur van de resetlink",
+            "hoe lang de resetlink geldig is",
+            "resetlink 20 minuten geldig"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "support-hours-superseded-negative",
+      "language": "en",
+      "question": "Assess only the current support coverage hours for production incidents. Are they still unspecified?",
+      "draft_answer": "Support coverage is 24/7 for production incidents.",
+      "conversation_context": "PRIOR TURN 1\nUSER: Is support still limited to 09:00-17:00?\nASSISTANT: No. That schedule was superseded; current production-incident coverage is 24/7.",
+      "negative_control": true,
+      "expected_gap_groups": [],
+      "resolved_gap_groups": [
+        {
+          "id": "support-hours",
+          "aliases": [
+            "support coverage hours",
+            "24/7 production support",
+            "hours when production support is available"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "alice-region-other-subject-negative",
+      "language": "en",
+      "question": "Assess only Alice's deployment region. Is it still unspecified?",
+      "draft_answer": "Alice's service is deployed in the EU region and uses two availability zones.",
+      "conversation_context": "PRIOR TURN 1\nUSER: Where is Alice's service deployed?\nASSISTANT: Alice's service is in the EU region. Bob's separate service was later moved to the US region.",
+      "negative_control": true,
+      "expected_gap_groups": [],
+      "resolved_gap_groups": [
+        {
+          "id": "alice-region",
+          "aliases": [
+            "Alice deployment region",
+            "EU region for Alice",
+            "region where Alice's service is deployed"
+          ]
+        }
+      ]
     }
   ]
 }
