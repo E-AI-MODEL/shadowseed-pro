@@ -22,6 +22,7 @@ benchmarks/private/
 apps/web/node_modules/
 apps/web/.next/
 apps/web/out/
+src/shadowseed_webapi/static/
 apps/web/.env.local
 apps/web/.env.*.local
 .secrets/
