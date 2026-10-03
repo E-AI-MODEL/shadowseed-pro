@@ -94,10 +94,10 @@ def test_live_fixture_report_exposes_detector_and_intake_audit() -> None:
     audit = report["detector_audit"]
     assert audit["prompt_contract"]["prompt_id"] == "detector_current_pair"
     assert audit["prompt_contract"]["input_contract"] == [
+        "bounded_clean_conversation_context",
         "current_question",
         "draft_answer",
         "max_seeds",
-        "max_seed_words",
     ]
     assert audit["raw_output"]
     assert audit["parse_diagnostics"]["accepted_candidates"] == len(
@@ -119,7 +119,8 @@ def test_live_detector_receives_current_question_and_draft(monkeypatch):
 
     assert session.detector.last_item["question"] == "Welke invalshoek mist nog?"
     assert session.detector.last_item["text"] == "Dit is het draftantwoord."
-    assert session.detector.last_item["max_seed_words"] == session.manager.config.max_seed_words
+    assert session.detector.last_item["conversation_context"] == "NONE"
+    assert "max_seed_words" not in session.detector.last_item
 
 
 def test_session_api_defaults_to_live_runtime(monkeypatch):
