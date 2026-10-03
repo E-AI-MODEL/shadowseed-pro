@@ -220,7 +220,11 @@ class ProductionLocalWorkbenchController(WorkbenchController):
     ) -> dict[str, Any]:
         """Resolve a blocking contradiction through the distinct production capability."""
 
-        actor = self.workspace.local_actor_context(request_id=request_id)
+        actor = (
+            self.workspace.local_actor_context()
+            if request_id is None
+            else self.workspace.local_actor_context(request_id=request_id)
+        )
         try:
             result = resolve_authorized_contradiction(
                 self.workspace.repository,
