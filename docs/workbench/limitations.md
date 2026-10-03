@@ -1,6 +1,6 @@
 # Workbench 0.11.1 limitations
 
-Shadowseed Workbench 0.11.1 is a local hotfix release candidate and production-local assurance candidate for single-user use; `v0.11.0` remains the latest published Research Preview until publication succeeds. It is not yet a completed `production-ready/local` release, a hostile-network service, a multi-user authorization boundary, or a scientific evidence generator by itself. The noncommercial research access and efficacy instrumentation introduced in 0.6.0 remain available; neither feature upgrades the assurance claim automatically.
+Shadowseed Workbench 0.11.1 is the latest published Research Preview for local single-user use. It is not yet a completed `production-ready/local` release, a hostile-network service, a multi-user authorization boundary, or a scientific evidence generator by itself. The noncommercial research access and efficacy instrumentation introduced in 0.6.0 remain available; neither feature upgrades the assurance claim automatically.
 
 ## Security and deployment
 
