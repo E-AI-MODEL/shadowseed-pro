@@ -292,20 +292,12 @@ button:disabled, textarea:disabled { cursor: not-allowed; opacity: 0.55; }
   background: white;
 }
 
-.seed-card--button {
-  width: 100%;
-  color: var(--ink);
-  text-align: left;
-}
-
-.seed-card--button:hover {
-  border-color: #d9c8cf;
-  box-shadow: 0 8px 22px rgba(36, 28, 39, 0.06);
-}
-
 .seed-open {
   display: inline-block;
   margin-top: 11px;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--accent);
   font-size: 11px;
   font-weight: 750;
