@@ -48,7 +48,7 @@ function SeedCard({
   onOpen: () => void;
 }) {
   return (
-    <button className="seed-card seed-card--button" onClick={onOpen} type="button">
+    <article className="seed-card">
       <div className="seed-card__top">
         <span className="seed-state">
           {seed.current_gate_authorized ? "TOEGESTAAN" : seed.status}
@@ -73,8 +73,10 @@ function SeedCard({
       {seed.orchestration?.reason_text ? (
         <p className="seed-note">{seed.orchestration.reason_text}</p>
       ) : null}
-      <span className="seed-open">Bekijk details</span>
-    </button>
+      <button className="seed-open" onClick={onOpen} type="button">
+        Bekijk details
+      </button>
+    </article>
   );
 }
 
