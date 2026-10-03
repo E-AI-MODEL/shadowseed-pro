@@ -229,3 +229,13 @@ def test_missing_seed_returns_404(tmp_path) -> None:
 
     assert status == 404
     assert payload == {"error": "not_found"}
+
+
+
+def test_remote_binding_is_rejected_without_escape_hatch(tmp_path) -> None:
+    with pytest.raises(ValueError, match="loopback-only"):
+        serve(
+            workspace=tmp_path / "workspace",
+            host="0.0.0.0",
+            port=0,
+        )
