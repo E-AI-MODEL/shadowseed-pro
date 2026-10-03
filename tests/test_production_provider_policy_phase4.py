@@ -9,6 +9,7 @@ from shadowseed.application.provider_policy import (
     production_local_ollama_host,
 )
 from shadowseed.workbench.production_controller import ProductionLocalWorkbenchController
+from shadowseed_webapi.controller import WebWorkbenchController
 
 
 def test_production_local_ollama_accepts_loopback(monkeypatch) -> None:
@@ -88,3 +89,40 @@ def test_production_operational_log_never_contains_prompt_or_evidence_text(tmp_p
     assert "PRIVATE-NOTE-SENTINEL" not in text
     assert '"event":"session.turn"' in text
     assert '"event":"evidence.verify"' in text
+
+
+
+def test_web_controller_allows_openai_only_with_external_consent() -> None:
+    with pytest.raises(ValueError, match="external-provider confirmation"):
+        WebWorkbenchController._validate_backend(
+            "openai",
+            model_id="gpt-4o-mini",
+            runtime_mode="live",
+            embedding_backend="openai",
+            external_confirmed=False,
+        )
+
+    WebWorkbenchController._validate_backend(
+        "openai",
+        model_id="gpt-4o-mini",
+        runtime_mode="live",
+        embedding_backend="openai",
+        external_confirmed=True,
+    )
+
+
+def test_web_controller_does_not_weaken_remote_ollama_policy_for_mixed_routes(
+    monkeypatch,
+) -> None:
+    monkeypatch.setenv("OLLAMA_HOST", "http://192.0.2.25:11434")
+
+    with pytest.raises(ProviderPolicyError, match="loopback endpoint"):
+        WebWorkbenchController._validate_backend(
+            "ollama",
+            model_id="local-model",
+            revision_backend="openai",
+            revision_model_id="gpt-4o-mini",
+            runtime_mode="live",
+            embedding_backend="openai",
+            external_confirmed=True,
+        )
