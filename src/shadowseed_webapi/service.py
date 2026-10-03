@@ -86,6 +86,16 @@ def _required_json_string(payload: dict[str, Any], key: str) -> str:
     return value
 
 
+def _request_id(payload: dict[str, Any]) -> str:
+    value = _required_json_string(payload, "request_id")
+    allowed = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.:")
+    if len(value) > 128 or any(character not in allowed for character in value):
+        raise ValueError(
+            "request_id must be 1-128 characters using letters, numbers, '-', '_', '.', or ':'"
+        )
+    return value
+
+
 class WebApiService:
     """Expose product-shaped operations without reimplementing SSL semantics."""
 
@@ -167,6 +177,7 @@ class WebApiService:
     def run_turn(self, session_id: str, payload: dict[str, Any]) -> dict[str, Any]:
         self._supported_session_view(session_id)
         question = _required_json_string(payload, "question")
+        request_id = _request_id(payload)
 
         result = self.controller.send_turn(
             session_id,
@@ -177,6 +188,7 @@ class WebApiService:
             ),
             comparison_mode="authorized",
             external_confirmed=False,
+            request_id=request_id,
         )
         return {
             "report": result["report"],
