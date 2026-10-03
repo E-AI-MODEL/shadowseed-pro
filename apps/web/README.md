@@ -6,6 +6,21 @@ This client deliberately does not reimplement Gate, recurrence, evidence,
 lifecycle, authority or point-of-use semantics in TypeScript. Those remain in
 the Python runtime/application layer.
 
+## Packaged local app
+
+Release and wheel builds package the static Next export into the Python product.
+The normal tester path is therefore one process:
+
+    shadowseed-web
+
+The launcher serves both the web client and `/api/v1` from the same loopback
+origin, chooses another local port if 8765 is occupied, and opens the browser.
+Use `--no-browser` when the browser should not open automatically.
+
+The existing Gradio Workbench remains available separately. Its standalone
+launcher also accepts `--web` so frozen bundles can exercise the packaged web
+mode without replacing the legacy UI.
+
 ## Local development
 
 From the repository root:
@@ -15,6 +30,9 @@ From the repository root:
 For hosted OpenAI support, install the explicit provider extra instead:
 
     python -m pip install -e ".[test,openai]"
+
+For live Next development, run the API and Next dev server separately:
+
     python -m shadowseed_webapi --port 8765
 
 In a second terminal:
@@ -23,12 +41,22 @@ In a second terminal:
     npm install
     npm run dev
 
-Open http://127.0.0.1:3000.
+Open http://127.0.0.1:3000. The development client routes API calls to the
+loopback API on port 8765.
 
-The web v1 transport is deliberately loopback-only. The Python API cannot bind
-to a remote interface, and `NEXT_PUBLIC_SHADOWSEED_API_URL` may only point to
-`127.0.0.1` or `localhost`. Ollama generation, revision and embedding routes
-are likewise rejected when `OLLAMA_HOST` is not loopback.
+To test the packaged one-process path from source:
+
+    cd apps/web
+    npm run build
+    cd ../..
+    python scripts/sync_web_assets.py
+    shadowseed-web
+
+The web transport is deliberately loopback-only. In packaged mode the browser
+uses the same origin as the Python server, so no separate Node server or CORS
+hop is needed. A development `NEXT_PUBLIC_SHADOWSEED_API_URL` override may only
+point to `127.0.0.1` or `localhost`. Ollama generation, revision and embedding
+routes are likewise rejected when `OLLAMA_HOST` is not loopback.
 
 OpenAI is opt-in. A key entered in the web client is sent only to the loopback
 Python API and kept in process memory; it is not written to the workspace,
