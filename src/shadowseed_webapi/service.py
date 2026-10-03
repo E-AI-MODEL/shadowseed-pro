@@ -17,7 +17,7 @@ from shadowseed.application.provider_policy import (
 )
 from shadowseed.storage.sqlite import WorkspaceStorageError
 from shadowseed.workbench.controller import WorkbenchController
-from shadowseed.workbench.production_controller import ProductionLocalWorkbenchController
+from shadowseed_webapi.controller import WebWorkbenchController
 
 
 _AUTHORITY_MODE_TO_PROFILE = {
@@ -122,18 +122,13 @@ class WebApiService:
         *,
         controller: WorkbenchController | None = None,
     ) -> None:
-        if controller is None:
-            self.controller = ProductionLocalWorkbenchController(workspace)
-            self.hosted_controller = WorkbenchController(self.controller.workspace_root)
-        else:
-            self.controller = controller
-            self.hosted_controller = controller
+        self.controller = controller or WebWorkbenchController(workspace)
 
     def health(self) -> dict[str, Any]:
         return {"ok": True, "api_version": "v1"}
 
     def provider_status(self) -> dict[str, Any]:
-        openai_available = self.hosted_controller.backend_available("openai")
+        openai_available = self.controller.backend_available("openai")
         openai_configured = openai_api_key_configured()
         return {
             "providers": [
@@ -236,12 +231,11 @@ class WebApiService:
                     "confirm external processing before creating the session"
                 )
 
-        target_controller = self._controller_for_backend(backend)
-        embedding_backend = target_controller.default_embedding_backend(backend)
+        embedding_backend = self.controller.default_embedding_backend(backend)
         if backend != "openai":
             validate_production_local_backend(backend, embedding_backend)
 
-        session_id = target_controller.create_session(
+        session_id = self.controller.create_session(
             title=title,
             profile_id="balanced",
             backend=backend,
@@ -274,10 +268,8 @@ class WebApiService:
                     "OpenAI sends this turn to an external provider; "
                     "confirm external processing before sending"
                 )
-        target_controller = self._controller_for_backend(backend)
-
         try:
-            result = target_controller.send_turn(
+            result = self.controller.send_turn(
                 session_id,
                 question,
                 compare_without_ssl=_optional_json_bool(
@@ -373,11 +365,8 @@ class WebApiService:
             _raise_idempotency_conflict(exc)
         return self.get_session(session_id)
 
-    def _controller_for_backend(self, backend: str) -> WorkbenchController:
-        return self.hosted_controller if backend == "openai" else self.controller
-
     def _require_openai_ready(self) -> None:
-        if not self.hosted_controller.backend_available("openai"):
+        if not self.controller.backend_available("openai"):
             raise ValueError(
                 "OpenAI support is not installed; install the shadowseed openai extra"
             )
@@ -391,7 +380,7 @@ class WebApiService:
         if backend != "openai":
             return True
         return (
-            self.hosted_controller.backend_available("openai")
+            self.controller.backend_available("openai")
             and openai_api_key_configured()
         )
 
@@ -434,11 +423,8 @@ class WebApiService:
         return view
 
     def _session_payload(self, view: dict[str, Any]) -> dict[str, Any]:
-        target_controller = self._controller_for_backend(
-            str(view.get("backend") or "").strip()
-        )
         return {
             **view,
             "provider_ready": self._provider_ready_for_view(view),
-            "messages": target_controller.chat_messages(view),
+            "messages": self.controller.chat_messages(view),
         }
