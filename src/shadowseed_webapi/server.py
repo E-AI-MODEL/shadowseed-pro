@@ -244,17 +244,15 @@ def serve(
     workspace: str | Path | None = None,
     host: str = DEFAULT_HOST,
     port: int = DEFAULT_PORT,
-    allow_remote: bool = False,
 ) -> None:
     if _is_ipv6_loopback(host):
         raise ValueError(
             "IPv6 loopback binding is not supported by the local web API; "
             "use 127.0.0.1 or localhost"
         )
-    if not _is_loopback(host) and not allow_remote:
+    if not _is_loopback(host):
         raise ValueError(
-            "remote web API binding is disabled by default; use --allow-remote only "
-            "inside a trusted environment because the preview has no multi-user auth layer"
+            "the Shadowseed web API is loopback-only; use 127.0.0.1 or localhost"
         )
     service = WebApiService(workspace)
     server = ThreadingHTTPServer((host, int(port)), make_handler(service))
@@ -271,12 +269,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--workspace", default=None)
     parser.add_argument("--host", default=DEFAULT_HOST)
     parser.add_argument("--port", type=int, default=DEFAULT_PORT)
-    parser.add_argument("--allow-remote", action="store_true")
     args = parser.parse_args(argv)
     serve(
         workspace=args.workspace,
         host=args.host,
         port=args.port,
-        allow_remote=bool(args.allow_remote),
     )
     return 0
