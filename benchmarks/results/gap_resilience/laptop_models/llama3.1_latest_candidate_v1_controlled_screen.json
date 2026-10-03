@@ -1,0 +1,850 @@
+{
+  "artifact": "shadowseed-gap-resilience-v1",
+  "schema_version": 1,
+  "run_type": "live_benchmark",
+  "disclaimer": "Benchmark measurements are diagnostic, not evidence or authority. The fixture backend is a harness smoke test only. No aggregate metric is an overall Shadowseed quality score.",
+  "generated_at": "2026-10-03T21:35:10.920424+00:00",
+  "shadowseed_source_ref": "eba041faa04bf4a4f72120265b4a54b90fa3ac94",
+  "case_set": "gap_resilience_controlled",
+  "case_set_version": "1.1",
+  "backend": "ollama",
+  "model_id": "llama3.1:latest",
+  "model_revision": "46e0c10c039e019119339687c3c1757cc81b9da49709a3b3924863ba87ca666e",
+  "prompt_variant": "current_pair",
+  "prompt_profile": "candidate_v1",
+  "repeats": 2,
+  "max_seeds": 3,
+  "match_threshold": 0.35,
+  "summary": {
+    "cases": 8,
+    "expected_gap_recall": 0.9,
+    "expected_gap_hits": 9,
+    "expected_gap_opportunities": 10,
+    "negative_control_abstention_rate": 0.0,
+    "negative_control_abstention_successes": 0,
+    "negative_control_abstention_opportunities": 6,
+    "resolved_gap_reopen_rate": 0.2857,
+    "resolved_gap_reopens": 4,
+    "resolved_gap_opportunities": 14,
+    "repeatability_mean": 0.8922,
+    "explicit_none_runs": 0,
+    "parser_empty_non_none_runs": 0
+  },
+  "cases": [
+    {
+      "case_id": "api-auth-controlled",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 3,
+      "expected_gap_hits": 1,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 0.5,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 0,
+      "resolved_gap_reopen_rate": null,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 0.5833,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 3,
+          "candidates": [
+            "The specific authentication method(s) that clients must use.",
+            "The mechanism for clients to obtain authentication credentials.",
+            "The expected behavior when authentication fails."
+          ],
+          "expected": [
+            {
+              "gap_id": "client-authentication-method",
+              "hit": true,
+              "best_similarity": 0.5,
+              "best_candidate": "The mechanism for clients to obtain authentication credentials."
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. The specific authentication method(s) that clients must use.\n2. The mechanism for clients to obtain authentication credentials.\n3. The expected behavior when authentication fails.",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "The specific authentication method(s) that clients must use.",
+            "The format and content of the authentication request.",
+            "The mechanism for clients to obtain an access token or other authentication credentials."
+          ],
+          "expected": [
+            {
+              "gap_id": "client-authentication-method",
+              "hit": false,
+              "best_similarity": 0.3333,
+              "best_candidate": "The mechanism for clients to obtain an access token or other authentication credentials."
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. The specific authentication method(s) that clients must use.\n2. The format and content of the authentication request.\n3. The mechanism for clients to obtain an access token or other authentication credentials.",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "retention-backups-controlled",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 3,
+      "expected_gap_hits": 2,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 1.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 0.8095,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 3,
+          "candidates": [
+            "What happens to backup copies after the 14-day period?",
+            "Is the deletion job automated or manual?",
+            "Are there any exceptions or special cases for retaining primary-store data or backup copies?"
+          ],
+          "expected": [
+            {
+              "gap_id": "backup-deletion",
+              "hit": true,
+              "best_similarity": 0.625,
+              "best_candidate": "What happens to backup copies after the 14-day period?"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "retention-period",
+              "reopened": false,
+              "best_similarity": 0.1111,
+              "best_candidate": "What happens to backup copies after the 14-day period?"
+            }
+          ],
+          "detector_raw_output": "1. What happens to backup copies after the 14-day period?\n2. Is the deletion job automated or manual?\n3. Are there any exceptions or special cases for retaining primary-store data or backup copies?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "What happens to backup copies after the 14-day period?",
+            "Is the deletion job automated or manual?",
+            "Are there any exceptions to the 14-day retention period for primary-store data?"
+          ],
+          "expected": [
+            {
+              "gap_id": "backup-deletion",
+              "hit": true,
+              "best_similarity": 0.625,
+              "best_candidate": "What happens to backup copies after the 14-day period?"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "retention-period",
+              "reopened": false,
+              "best_similarity": 0.3333,
+              "best_candidate": "Are there any exceptions to the 14-day retention period for primary-store data?"
+            }
+          ],
+          "detector_raw_output": "1. What happens to backup copies after the 14-day period?\n2. Is the deletion job automated or manual?\n3. Are there any exceptions to the 14-day retention period for primary-store data?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "support-response-target-controlled",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 3,
+      "expected_gap_hits": 2,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 1.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 3,
+          "candidates": [
+            "What are the specific response targets for each severity level?",
+            "How does the shared queue handle requests that are not production incidents?",
+            "Are there any exceptions or exclusions to the 24/7 coverage policy?"
+          ],
+          "expected": [
+            {
+              "gap_id": "severity-response-target",
+              "hit": true,
+              "best_similarity": 0.375,
+              "best_candidate": "What are the specific response targets for each severity level?"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.125,
+              "best_candidate": "Are there any exceptions or exclusions to the 24/7 coverage policy?"
+            }
+          ],
+          "detector_raw_output": "1. What are the specific response targets for each severity level?\n2. How does the shared queue handle requests that are not production incidents?\n3. Are there any exceptions or exclusions to the 24/7 coverage policy?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "What are the specific response targets for each severity level?",
+            "How does the shared queue handle requests that are not production incidents?",
+            "Are there any exceptions or exclusions to the 24/7 coverage policy?"
+          ],
+          "expected": [
+            {
+              "gap_id": "severity-response-target",
+              "hit": true,
+              "best_similarity": 0.375,
+              "best_candidate": "What are the specific response targets for each severity level?"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.125,
+              "best_candidate": "Are there any exceptions or exclusions to the 24/7 coverage policy?"
+            }
+          ],
+          "detector_raw_output": "1. What are the specific response targets for each severity level?\n2. How does the shared queue handle requests that are not production incidents?\n3. Are there any exceptions or exclusions to the 24/7 coverage policy?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "alice-failover-controlled",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 3,
+      "expected_gap_hits": 2,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 1.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 3,
+          "candidates": [
+            "The number of availability zones for Bob's service, which was moved to the US region.",
+            "The failover behavior between zones for Alice's service.",
+            "The failover behavior between zones for Bob's service, which was moved to the US region."
+          ],
+          "expected": [
+            {
+              "gap_id": "alice-failover",
+              "hit": true,
+              "best_similarity": 0.7143,
+              "best_candidate": "The failover behavior between zones for Alice's service."
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.2857,
+              "best_candidate": "The failover behavior between zones for Alice's service."
+            }
+          ],
+          "detector_raw_output": "1. The number of availability zones for Bob's service, which was moved to the US region.\n2. The failover behavior between zones for Alice's service.\n3. The failover behavior between zones for Bob's service, which was moved to the US region.",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "The number of availability zones for Bob's service, which was moved to the US region.",
+            "The failover behavior between zones for Alice's service.",
+            "The failover behavior between zones for Bob's service, which was moved to the US region."
+          ],
+          "expected": [
+            {
+              "gap_id": "alice-failover",
+              "hit": true,
+              "best_similarity": 0.7143,
+              "best_candidate": "The failover behavior between zones for Alice's service."
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.2857,
+              "best_candidate": "The failover behavior between zones for Alice's service."
+            }
+          ],
+          "detector_raw_output": "1. The number of availability zones for Bob's service, which was moved to the US region.\n2. The failover behavior between zones for Alice's service.\n3. The failover behavior between zones for Bob's service, which was moved to the US region.",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "rollbackcriteria-nl-controlled",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 3,
+      "expected_gap_hits": 2,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 1.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 0,
+      "resolved_gap_reopen_rate": null,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 3,
+          "candidates": [
+            "Wat zijn de criteria voor terugrollen?",
+            "Hoe lang duurt de migratie?",
+            "Wie is verantwoordelijk voor de migratie?"
+          ],
+          "expected": [
+            {
+              "gap_id": "rollbackcriteria",
+              "hit": true,
+              "best_similarity": 0.5,
+              "best_candidate": "Wat zijn de criteria voor terugrollen?"
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. Wat zijn de criteria voor terugrollen?\n2. Hoe lang duurt de migratie?\n3. Wie is verantwoordelijk voor de migratie?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "Wat zijn de criteria voor terugrollen?",
+            "Hoe lang duurt de migratie?",
+            "Wie is verantwoordelijk voor de migratie?"
+          ],
+          "expected": [
+            {
+              "gap_id": "rollbackcriteria",
+              "hit": true,
+              "best_similarity": 0.5,
+              "best_candidate": "Wat zijn de criteria voor terugrollen?"
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. Wat zijn de criteria voor terugrollen?\n2. Hoe lang duurt de migratie?\n3. Wie is verantwoordelijk voor de migratie?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "password-reset-bounded-negative",
+      "negative_control": true,
+      "runs": 2,
+      "mean_candidates_per_run": 3,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 0,
+      "expected_gap_recall": null,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 4,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": 0,
+      "abstention_opportunities": 2,
+      "abstention_rate": 0.0,
+      "repeatability": 0.7451,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 3,
+          "candidates": [
+            "Via welk kanaal de resetlink wordt verstuurd (al is in de prior context al een antwoord gegeven, maar het is niet expliciet genoemd in de huidige vraag)",
+            "Hoe lang de resetlink geldig is (al is in de draft antwoord een specifieke tijd genoemd, maar het is niet expliciet genoemd in de huidige vraag)",
+            "Of de resetlink na gebruik nog steeds ongeldig maakt voor oudere resetlinks (de draft antwoord spreekt over \""
+          ],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "reset-link-channel",
+              "reopened": false,
+              "best_similarity": 0.1333,
+              "best_candidate": "Via welk kanaal de resetlink wordt verstuurd (al is in de prior context al een antwoord gegeven, maar het is niet expliciet genoemd in de huidige vraag)"
+            },
+            {
+              "gap_id": "reset-link-validity",
+              "reopened": false,
+              "best_similarity": 0.2857,
+              "best_candidate": "Hoe lang de resetlink geldig is (al is in de draft antwoord een specifieke tijd genoemd, maar het is niet expliciet genoemd in de huidige vraag)"
+            }
+          ],
+          "detector_raw_output": "1. Via welk kanaal de resetlink wordt verstuurd (al is in de prior context al een antwoord gegeven, maar het is niet expliciet genoemd in de huidige vraag)\n2. Hoe lang de resetlink geldig is (al is in de draft antwoord een specifieke tijd genoemd, maar het is niet expliciet genoemd in de huidige vraag)\n3. Of de resetlink na gebruik nog steeds ongeldig maakt voor oudere resetlinks (de draft antwoord spreekt over \"",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "Via welk kanaal de resetlink wordt verstuurd (al is in de prior context al een antwoord gegeven, maar het is niet expliciet genoemd in de huidige vraag)",
+            "Hoe lang de resetlink geldig is (al is in de draft antwoord een specifieke tijd genoemd, maar het is niet expliciet genoemd in de huidige vraag)",
+            "Of de resetlink na gebruik nog steeds geldig is voor andere doeleinden (bijv. voor herstel van andere"
+          ],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "reset-link-channel",
+              "reopened": false,
+              "best_similarity": 0.1333,
+              "best_candidate": "Via welk kanaal de resetlink wordt verstuurd (al is in de prior context al een antwoord gegeven, maar het is niet expliciet genoemd in de huidige vraag)"
+            },
+            {
+              "gap_id": "reset-link-validity",
+              "reopened": false,
+              "best_similarity": 0.2857,
+              "best_candidate": "Hoe lang de resetlink geldig is (al is in de draft antwoord een specifieke tijd genoemd, maar het is niet expliciet genoemd in de huidige vraag)"
+            }
+          ],
+          "detector_raw_output": "1. Via welk kanaal de resetlink wordt verstuurd (al is in de prior context al een antwoord gegeven, maar het is niet expliciet genoemd in de huidige vraag)\n2. Hoe lang de resetlink geldig is (al is in de draft antwoord een specifieke tijd genoemd, maar het is niet expliciet genoemd in de huidige vraag)\n3. Of de resetlink na gebruik nog steeds geldig is voor andere doeleinden (bijv. voor herstel van andere",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "support-hours-superseded-negative",
+      "negative_control": true,
+      "runs": 2,
+      "mean_candidates_per_run": 3,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 0,
+      "expected_gap_recall": null,
+      "resolved_gap_reopens": 2,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 1.0,
+      "abstention_successes": 0,
+      "abstention_opportunities": 2,
+      "abstention_rate": 0.0,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 3,
+          "candidates": [
+            "The specific hours of the 24/7 coverage period.",
+            "The definition of \"production incidents\" for the purpose of support coverage.",
+            "The mechanism or process for determining when an incident is considered a production incident."
+          ],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": true,
+              "best_similarity": 0.4,
+              "best_candidate": "The specific hours of the 24/7 coverage period."
+            }
+          ],
+          "detector_raw_output": "1. The specific hours of the 24/7 coverage period.\n2. The definition of \"production incidents\" for the purpose of support coverage.\n3. The mechanism or process for determining when an incident is considered a production incident.",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "The specific hours of the 24/7 coverage period.",
+            "The definition of \"production incidents\" for the purpose of support coverage.",
+            "The mechanism or process for determining when an incident is considered a production incident."
+          ],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": true,
+              "best_similarity": 0.4,
+              "best_candidate": "The specific hours of the 24/7 coverage period."
+            }
+          ],
+          "detector_raw_output": "1. The specific hours of the 24/7 coverage period.\n2. The definition of \"production incidents\" for the purpose of support coverage.\n3. The mechanism or process for determining when an incident is considered a production incident.",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "alice-region-other-subject-negative",
+      "negative_control": true,
+      "runs": 2,
+      "mean_candidates_per_run": 3,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 0,
+      "expected_gap_recall": null,
+      "resolved_gap_reopens": 2,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 1.0,
+      "abstention_successes": 0,
+      "abstention_opportunities": 2,
+      "abstention_rate": 0.0,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 3,
+          "candidates": [
+            "What is the specific EU region where Alice's service is deployed?",
+            "Are there any plans to move Alice's service to a different region?",
+            "How many availability zones are used by Alice's service in the EU region?"
+          ],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": true,
+              "best_similarity": 0.7143,
+              "best_candidate": "What is the specific EU region where Alice's service is deployed?"
+            }
+          ],
+          "detector_raw_output": "1. What is the specific EU region where Alice's service is deployed?\n2. Are there any plans to move Alice's service to a different region?\n3. How many availability zones are used by Alice's service in the EU region?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "What is the specific EU region where Alice's service is deployed?",
+            "Are there any plans to move Alice's service to a different region?",
+            "How many availability zones are used by Alice's service in the EU region?"
+          ],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": true,
+              "best_similarity": 0.7143,
+              "best_candidate": "What is the specific EU region where Alice's service is deployed?"
+            }
+          ],
+          "detector_raw_output": "1. What is the specific EU region where Alice's service is deployed?\n2. Are there any plans to move Alice's service to a different region?\n3. How many availability zones are used by Alice's service in the EU region?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    }
+  ],
+  "runtime_provenance": {
+    "github_run_id": "37154929960",
+    "execution_note": "Quality screening on GitHub Linux runner; latency is not representative of the user's laptop.",
+    "github_run_attempt": "1",
+    "runner_os": "Linux",
+    "runner_arch": "X64",
+    "ollama_version": "ollama version is 0.35.1 ",
+    "model_digest": "46e0c10c039e019119339687c3c1757cc81b9da49709a3b3924863ba87ca666e"
+  }
+}
