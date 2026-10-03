@@ -12,6 +12,7 @@ dependencies = [
 [project.scripts]
 shadowseed = "shadowseed.cli:main"
 shadowseed-workbench = "shadowseed.workbench.standalone:main"
+shadowseed-web = "shadowseed_webapi.launcher:main"
 
 [project.optional-dependencies]
 models = [
@@ -89,6 +90,7 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 shadowseed = ["data/*.json"]
+shadowseed_webapi = ["static/*", "static/**/*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
