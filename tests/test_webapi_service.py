@@ -2,10 +2,22 @@ from __future__ import annotations
 
 import pytest
 
+from shadowseed.adapters.openai_client import (
+    clear_process_openai_api_key,
+    configure_process_openai_api_key,
+)
 from shadowseed.application.provider_policy import ProviderPolicyError
 from shadowseed.workbench.controller import WorkbenchController
 from shadowseed.workbench.production_controller import ProductionLocalWorkbenchController
 from shadowseed_webapi.service import WebApiService
+
+
+@pytest.fixture(autouse=True)
+def _clear_web_openai_process_key(monkeypatch):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    clear_process_openai_api_key()
+    yield
+    clear_process_openai_api_key()
 
 
 def test_web_api_vertical_slice_uses_canonical_session_runtime(tmp_path) -> None:
@@ -238,7 +250,7 @@ def test_web_api_clears_stale_model_id_for_fixture(tmp_path) -> None:
     assert created["model_id"] is None
 
 
-def test_web_api_hides_and_rejects_existing_unsupported_provider_sessions(
+def test_web_api_lists_hosted_session_read_only_when_provider_not_ready(
     tmp_path,
 ) -> None:
     api = WebApiService(tmp_path / "workspace")
@@ -249,7 +261,7 @@ def test_web_api_hides_and_rejects_existing_unsupported_provider_sessions(
             "authority_mode": "assisted",
         }
     )
-    unsupported_id = api.controller.create_session(
+    hosted_id = api.hosted_controller.create_session(
         title="Existing hosted session",
         profile_id="balanced",
         backend="openai",
@@ -260,24 +272,16 @@ def test_web_api_hides_and_rejects_existing_unsupported_provider_sessions(
         external_confirmed=True,
     )
 
-    listed_ids = {
-        item["session_id"]
+    listed = {
+        item["session_id"]: item
         for item in api.list_sessions()["sessions"]
     }
-    assert supported["session_id"] in listed_ids
-    assert unsupported_id not in listed_ids
+    assert listed[supported["session_id"]]["provider_ready"] is True
+    assert listed[hosted_id]["provider_ready"] is False
 
-    with pytest.raises(
-        ValueError,
-        match="web client v1 does not support this session provider configuration",
-    ):
-        api.get_session(unsupported_id)
-
-    with pytest.raises(
-        ValueError,
-        match="web client v1 does not support this session provider configuration",
-    ):
-        api.run_turn(unsupported_id, {"question": "Do not call the provider"})
+    hosted = api.get_session(hosted_id)
+    assert hosted["backend"] == "openai"
+    assert hosted["provider_ready"] is False
 
 
 
