@@ -8,6 +8,7 @@ import json
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from threading import RLock
 from typing import Any
 from urllib.parse import unquote, urlsplit
 
@@ -73,6 +74,8 @@ def make_handler(
     *,
     allowed_origins: frozenset[str] = DEFAULT_WEB_ORIGINS,
 ):
+    mutation_lock = RLock()
+
     class Handler(BaseHTTPRequestHandler):
         server_version = "ShadowseedWebApi/1"
 
@@ -158,6 +161,11 @@ def make_handler(
                         HTTPStatus.OK, service.get_seed(parts[3], parts[5])
                     )
                 self._write_json(HTTPStatus.NOT_FOUND, {"error": "not_found"})
+            except KeyError:
+                self._write_json(
+                    HTTPStatus.NOT_FOUND,
+                    {"error": "not_found"},
+                )
             except ValueError as exc:
                 self._write_json(
                     HTTPStatus.BAD_REQUEST,
@@ -175,39 +183,45 @@ def make_handler(
             try:
                 parts = _parts(self.path)
                 payload = self._read_json()
-                if parts == ["api", "v1", "sessions"]:
-                    return self._write_json(
-                        HTTPStatus.CREATED, service.create_session(payload)
-                    )
-                if (
-                    len(parts) == 5
-                    and parts[:3] == ["api", "v1", "sessions"]
-                    and parts[4] == "turns"
-                ):
-                    return self._write_json(
-                        HTTPStatus.OK, service.run_turn(parts[3], payload)
-                    )
-                if (
-                    len(parts) == 7
-                    and parts[:3] == ["api", "v1", "sessions"]
-                    and parts[4] == "seeds"
-                    and parts[6] == "evidence"
-                ):
-                    return self._write_json(
-                        HTTPStatus.OK,
-                        service.submit_evidence(parts[3], parts[5], payload),
-                    )
-                if (
-                    len(parts) == 7
-                    and parts[:3] == ["api", "v1", "sessions"]
-                    and parts[4] == "seeds"
-                    and parts[6] == "contradictions"
-                ):
-                    return self._write_json(
-                        HTTPStatus.OK,
-                        service.contradict_seed(parts[3], parts[5]),
-                    )
-                self._write_json(HTTPStatus.NOT_FOUND, {"error": "not_found"})
+                with mutation_lock:
+                    if parts == ["api", "v1", "sessions"]:
+                        return self._write_json(
+                            HTTPStatus.CREATED, service.create_session(payload)
+                        )
+                    if (
+                        len(parts) == 5
+                        and parts[:3] == ["api", "v1", "sessions"]
+                        and parts[4] == "turns"
+                    ):
+                        return self._write_json(
+                            HTTPStatus.OK, service.run_turn(parts[3], payload)
+                        )
+                    if (
+                        len(parts) == 7
+                        and parts[:3] == ["api", "v1", "sessions"]
+                        and parts[4] == "seeds"
+                        and parts[6] == "evidence"
+                    ):
+                        return self._write_json(
+                            HTTPStatus.OK,
+                            service.submit_evidence(parts[3], parts[5], payload),
+                        )
+                    if (
+                        len(parts) == 7
+                        and parts[:3] == ["api", "v1", "sessions"]
+                        and parts[4] == "seeds"
+                        and parts[6] == "contradictions"
+                    ):
+                        return self._write_json(
+                            HTTPStatus.OK,
+                            service.contradict_seed(parts[3], parts[5]),
+                        )
+                    self._write_json(HTTPStatus.NOT_FOUND, {"error": "not_found"})
+            except KeyError:
+                self._write_json(
+                    HTTPStatus.NOT_FOUND,
+                    {"error": "not_found"},
+                )
             except ValueError as exc:
                 self._write_json(
                     HTTPStatus.BAD_REQUEST,
