@@ -305,3 +305,23 @@ def test_seed_authority_routes_reach_canonical_service(tmp_path) -> None:
         item for item in resolved["seeds"] if item["id"] == seed_id
     )
     assert resolved_seed["blocking"] is False
+
+    evidence_status, supported = _request(
+        service,
+        method="POST",
+        path=seed_path + "/evidence",
+        body=json.dumps(
+            {
+                "source_ref": "reviewer:http-seed-routes",
+                "note": "Checked independently.",
+                "operator_verified": True,
+                "request_id": "web-evidence:http-seed-routes",
+            }
+        ),
+        headers={"Content-Type": "application/json"},
+    )
+    assert evidence_status == 200
+    supported_seed = next(
+        item for item in supported["seeds"] if item["id"] == seed_id
+    )
+    assert supported_seed["evidence_count"] == 1
