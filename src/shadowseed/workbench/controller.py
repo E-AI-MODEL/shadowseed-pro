@@ -672,10 +672,16 @@ class WorkbenchController:
     def session_view(self, session_id: str) -> dict[str, Any]:
         return self.inspection.session_view(session_id)
 
-    def falsify_seed(self, session_id: str, seed_id: str) -> dict[str, Any]:
+    def falsify_seed(
+        self,
+        session_id: str,
+        seed_id: str,
+        *,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
         """Submit an attributed local-owner contradiction through authorization."""
 
-        actor = self.workspace.local_actor_context()
+        actor = self.workspace.local_actor_context(request_id=request_id)
         return self.sessions.falsify_authorized(
             session_id,
             seed_id,
@@ -689,10 +695,11 @@ class WorkbenchController:
         *,
         basis: str,
         contradiction_id: str | None = None,
+        request_id: str | None = None,
     ) -> dict[str, Any]:
         """Resolve a blocking contradiction through the existing production flow."""
 
-        actor = self.workspace.local_actor_context()
+        actor = self.workspace.local_actor_context(request_id=request_id)
         return resolve_authorized_contradiction(
             self.workspace.repository,
             session_id,
@@ -711,6 +718,7 @@ class WorkbenchController:
         source_ref: str,
         note: str = "",
         operator_verified: bool = False,
+        request_id: str | None = None,
     ) -> dict[str, Any]:
         """Submit verified support with UI attestation plus trusted local authorization.
 
@@ -721,7 +729,7 @@ class WorkbenchController:
 
         if not operator_verified:
             raise ValueError("operator verification must be explicitly confirmed")
-        actor = self.workspace.local_actor_context()
+        actor = self.workspace.local_actor_context(request_id=request_id)
         return self.sessions.submit_verified_evidence_authorized(
             session_id,
             seed_id,
