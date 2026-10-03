@@ -146,6 +146,8 @@ def make_handler(
                 parts = _parts(self.path)
                 if parts == ["api", "v1", "health"]:
                     return self._write_json(HTTPStatus.OK, service.health())
+                if parts == ["api", "v1", "providers"]:
+                    return self._write_json(HTTPStatus.OK, service.provider_status())
                 if parts == ["api", "v1", "sessions"]:
                     return self._write_json(HTTPStatus.OK, service.list_sessions())
                 if len(parts) == 4 and parts[:3] == ["api", "v1", "sessions"]:
@@ -184,6 +186,23 @@ def make_handler(
                 parts = _parts(self.path)
                 payload = self._read_json()
                 with mutation_lock:
+                    if parts == ["api", "v1", "providers", "openai", "credential"]:
+                        return self._write_json(
+                            HTTPStatus.OK,
+                            service.configure_openai(payload),
+                        )
+                    if parts == [
+                        "api",
+                        "v1",
+                        "providers",
+                        "openai",
+                        "credential",
+                        "clear",
+                    ]:
+                        return self._write_json(
+                            HTTPStatus.OK,
+                            service.clear_openai(),
+                        )
                     if parts == ["api", "v1", "sessions"]:
                         return self._write_json(
                             HTTPStatus.CREATED, service.create_session(payload)
