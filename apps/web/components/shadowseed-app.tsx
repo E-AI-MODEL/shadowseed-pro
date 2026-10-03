@@ -331,6 +331,7 @@ export function ShadowseedApp() {
     setError(null);
     setNotice(null);
     setRetryTurn(null);
+    setExternalTurnConfirmed(false);
     clearSeedDetail();
     setMobileNavOpen(false);
     try {
@@ -340,9 +341,65 @@ export function ShadowseedApp() {
     }
   }
 
+  async function onConfigureOpenAI(event: FormEvent) {
+    event.preventDefault();
+    if (!openaiKey.trim() || providerBusy) return;
+    setProviderBusy(true);
+    setProviderError(null);
+    setProviderNotice(null);
+    try {
+      const next = await configureOpenAI(openaiKey.trim());
+      setProviders(next);
+      setOpenaiKey("");
+      setProviderNotice(
+        "OpenAI is voor deze lokale app-sessie geconfigureerd. De sleutel wordt niet in de workspace opgeslagen.",
+      );
+      setSessions(await listSessions());
+      await syncSelectedProviderReadiness();
+    } catch (cause) {
+      setProviderError(
+        cause instanceof Error ? cause.message : "OpenAI kon niet worden geconfigureerd",
+      );
+    } finally {
+      setProviderBusy(false);
+    }
+  }
+
+  async function onClearOpenAI() {
+    if (providerBusy) return;
+    setProviderBusy(true);
+    setProviderError(null);
+    setProviderNotice(null);
+    try {
+      const next = await clearOpenAI();
+      setProviders(next);
+      setOpenaiKey("");
+      setProviderNotice(
+        "De tijdelijke OpenAI-sleutel is uit het procesgeheugen gewist. Een OPENAI_API_KEY uit de omgeving blijft actief.",
+      );
+      setSessions(await listSessions());
+      await syncSelectedProviderReadiness();
+    } catch (cause) {
+      setProviderError(
+        cause instanceof Error ? cause.message : "OpenAI-instelling kon niet worden gewist",
+      );
+    } finally {
+      setProviderBusy(false);
+    }
+  }
+
   async function onCreate(event: FormEvent) {
     event.preventDefault();
-    if (sending || loadingSession || seedActionBusy) return;
+    if (sending || loadingSession || seedActionBusy || providerBusy) return;
+    if (
+      draft.backend === "openai" &&
+      (!openaiStatus?.ready || !draft.external_confirmed)
+    ) {
+      setError(
+        "Configureer OpenAI en bevestig externe verwerking voordat je deze sessie maakt.",
+      );
+      return;
+    }
     setCreating(true);
     setError(null);
     setNotice(null);
@@ -355,6 +412,10 @@ export function ShadowseedApp() {
       setLoadingSession(false);
       setSession(created);
       setRetryTurn(null);
+      setExternalTurnConfirmed(false);
+      if (draft.backend === "openai") {
+        setDraft({ ...draft, external_confirmed: false });
+      }
       clearSeedDetail();
       setMobileNavOpen(false);
 
@@ -394,13 +455,21 @@ export function ShadowseedApp() {
     setNotice(null);
 
     try {
-      const result = await sendTurn(session.session_id, text, requestId);
+      const result = await sendTurn(
+        session.session_id,
+        text,
+        requestId,
+        session.backend === "openai" ? externalTurnConfirmed : false,
+      );
       if (selectedSeed) {
         await refreshSeedAfterMutation(result.session, selectedSeed.id);
       } else {
         setSession(result.session);
       }
       setRetryTurn(null);
+      if (session.backend === "openai") {
+        setExternalTurnConfirmed(false);
+      }
 
       try {
         setSessions(await listSessions());
