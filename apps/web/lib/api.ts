@@ -5,9 +5,21 @@ import type {
   TurnResult,
 } from "@/lib/types";
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_SHADOWSEED_API_URL ??
-  "http://127.0.0.1:8765/api/v1";
+function localApiBase(raw?: string): string {
+  const candidate = raw ?? "http://127.0.0.1:8765/api/v1";
+  const url = new URL(candidate);
+  if (
+    !["http:", "https:"].includes(url.protocol) ||
+    !["127.0.0.1", "localhost"].includes(url.hostname)
+  ) {
+    throw new Error(
+      "Shadowseed web API must use a loopback URL (127.0.0.1 or localhost)",
+    );
+  }
+  return candidate.replace(/\/$/, "");
+}
+
+const API_BASE = localApiBase(process.env.NEXT_PUBLIC_SHADOWSEED_API_URL);
 
 async function request<T>(
   path: string,
