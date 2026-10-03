@@ -284,12 +284,15 @@ export function ShadowseedApp() {
             aria-label="Modelprovider"
             disabled={sending || creating || loadingSession}
             value={draft.backend}
-            onChange={(event) =>
+            onChange={(event) => {
+              const backend =
+                event.target.value as CreateSessionInput["backend"];
               setDraft({
                 ...draft,
-                backend: event.target.value as CreateSessionInput["backend"],
-              })
-            }
+                backend,
+                model_id: backend === "fixture" ? undefined : draft.model_id,
+              });
+            }}
           >
             <option value="fixture">Offline demo</option>
             <option value="ollama">Ollama lokaal</option>
