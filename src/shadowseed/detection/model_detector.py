@@ -366,33 +366,49 @@ Output:
 
 OPEN_SET_GENERATIVE_DETECTOR_ID = "ssl46_open_set_model_detector_v0.4-gen"
 
-CURRENT_PAIR_GENERATIVE_PROMPT = """
+CURRENT_PAIR_CONTEXT_POLICY_ID = "recent_clean_turns_v1"
+CURRENT_PAIR_CONTEXT_MAX_TURNS = 4
+CURRENT_PAIR_CONTEXT_MAX_CHARS_PER_MESSAGE = 800
+
+CURRENT_PAIR_GENERATIVE_PROMPT = f"""
 You analyse one user question and the draft answer given to it.
 
-Identify 0 to {max_seeds} distinct candidate directions that could have deepened
-the answer to this specific question and that are not already substantially
-present in the draft.
+Identify 0 to {{max_seeds}} atomic candidate gaps that may still be open in this
+specific exchange. A candidate gap names one relation, assumption, constraint,
+distinction, dependency, or missing piece that may be worth checking.
 
-A candidate direction is a possible missing relation, constraint, explanatory
-frame, or counterpoint. It is a direction to investigate, not a fact,
-conclusion, instruction, or judgment.
+A detected gap is epistemically undetermined. Detection does not establish that
+the gap is real, important, correct, useful, supported, or eligible to influence
+an answer. Do not complete the gap or turn it into a claim.
+
+The host may provide up to {CURRENT_PAIR_CONTEXT_MAX_TURNS} prior clean
+conversation turns. Each user or assistant message is clipped to at most
+{CURRENT_PAIR_CONTEXT_MAX_CHARS_PER_MESSAGE} characters. Use this bounded
+context only to interpret references and avoid calling something absent when it
+was already established earlier. Conversation context is not evidence,
+validation, relevance, authority, or permission to influence.
 
 Rules:
 - Write every candidate in the same language as CURRENT QUESTION.
-- Each candidate contains exactly one idea.
-- Use no more than {max_seed_words} words per candidate.
-- Preserve necessary technical terms from the question or draft.
+- Each candidate contains exactly one gap.
+- Keep candidates concise enough to name that single gap, but do not use a hard
+  word-count limit and do not truncate a candidate to fit one.
+- Preserve necessary technical terms from the question, draft, or bounded context.
 - Do not invent facts, names, numbers, quotations, or sources.
-- Do not simply restate or paraphrase something already present in the draft.
-- Do not rank, score, validate, or explain candidates.
-- If no distinct candidate direction is present, return exactly: NONE.
+- Do not simply restate or paraphrase something already present in the draft or
+  bounded context.
+- Do not rank, score, validate, explain, complete, or judge candidates.
+- If no distinct candidate gap is present, return exactly: NONE.
 - Otherwise return one numbered candidate per line.
 
+BOUNDED PRIOR CONVERSATION CONTEXT:
+{{conversation_context}}
+
 CURRENT QUESTION:
-{question}
+{{question}}
 
 DRAFT ANSWER:
-{answer}
+{{answer}}
 
 OUTPUT:
 """.strip()
@@ -400,23 +416,25 @@ OUTPUT:
 SOURCE_OBSERVATION_GENERATIVE_PROMPT = """
 You analyse one source observation.
 
-Identify 0 to {max_seeds} distinct candidate directions that could deepen
-understanding of this source without treating the source or the candidate as
-established truth.
+Identify 0 to {max_seeds} atomic candidate gaps that may be open around this
+source without treating the source or the candidate as established truth.
 
-A candidate direction is a possible missing relation, constraint, explanatory
-frame, or counterpoint. It is a direction to investigate, not a fact,
-conclusion, instruction, evidence item, or judgment.
+A candidate gap names one relation, assumption, constraint, distinction,
+dependency, or missing piece that may be worth checking. Detection does not
+establish that the gap is real, important, correct, useful, supported, or
+eligible to influence an answer. Do not complete the gap or turn it into a
+claim.
 
 Rules:
 - Write every candidate in the same language as SOURCE OBSERVATION.
-- Each candidate contains exactly one idea.
-- Use no more than {max_seed_words} words per candidate.
+- Each candidate contains exactly one gap.
+- Keep candidates concise enough to name that single gap, but do not use a hard
+  word-count limit and do not truncate a candidate to fit one.
 - Preserve necessary technical terms from the source.
 - Do not invent facts, names, numbers, quotations, or sources.
 - Do not simply restate or paraphrase something already present in the source.
-- Do not rank, score, validate, or explain candidates.
-- If no distinct candidate direction is present, return exactly: NONE.
+- Do not rank, score, validate, explain, complete, or judge candidates.
+- If no distinct candidate gap is present, return exactly: NONE.
 - Otherwise return one numbered candidate per line.
 
 SOURCE CONTEXT:
@@ -429,25 +447,30 @@ OUTPUT:
 """.strip()
 
 CURRENT_PAIR_DETECTOR_ID = "detector_current_pair"
-CURRENT_PAIR_DETECTOR_VERSION = "0.5"
+CURRENT_PAIR_DETECTOR_VERSION = "0.6"
 SOURCE_OBSERVATION_DETECTOR_ID = "detector_source_observation"
-SOURCE_OBSERVATION_DETECTOR_VERSION = "0.5"
+SOURCE_OBSERVATION_DETECTOR_VERSION = "0.6"
 
 CURRENT_PAIR_PROMPT_META = prompt_contract_metadata(
     prompt_id=CURRENT_PAIR_DETECTOR_ID,
     prompt_version=CURRENT_PAIR_DETECTOR_VERSION,
     component="chat_detection",
     template=CURRENT_PAIR_GENERATIVE_PROMPT,
-    input_contract=("current_question", "draft_answer", "max_seeds", "max_seed_words"),
-    output_contract="zero_or_more_numbered_candidate_directions_or_NONE",
+    input_contract=(
+        "bounded_clean_conversation_context",
+        "current_question",
+        "draft_answer",
+        "max_seeds",
+    ),
+    output_contract="zero_or_more_numbered_atomic_gap_candidates_or_NONE",
 )
 SOURCE_OBSERVATION_PROMPT_META = prompt_contract_metadata(
     prompt_id=SOURCE_OBSERVATION_DETECTOR_ID,
     prompt_version=SOURCE_OBSERVATION_DETECTOR_VERSION,
     component="source_detection",
     template=SOURCE_OBSERVATION_GENERATIVE_PROMPT,
-    input_contract=("source_observation", "source_context", "max_seeds", "max_seed_words"),
-    output_contract="zero_or_more_numbered_candidate_directions_or_NONE",
+    input_contract=("source_observation", "source_context", "max_seeds"),
+    output_contract="zero_or_more_numbered_atomic_gap_candidates_or_NONE",
 )
 
 PROMPT_VARIANTS: tuple[str, ...] = ("absence", "generative", "current_pair")
@@ -459,26 +482,31 @@ def build_detection_prompt(
     variant: str = "absence",
     *,
     question: str | None = None,
-    max_seed_words: int = 18,
+    max_seed_words: int | None = None,
     source_context: str | None = None,
+    conversation_context: str | None = None,
 ) -> str:
     """Build a constrained detector prompt for one explicit context contract."""
 
     if variant not in PROMPT_VARIANTS:
         raise ValueError(f"Unknown prompt variant {variant!r}. Allowed: {PROMPT_VARIANTS}.")
     if variant == "current_pair":
+        # max_seed_words remains accepted for source compatibility only.
+        # Atomicity is semantic (one gap), not a fixed word-count boundary.
+        del max_seed_words
         if question is not None and question.strip():
             return CURRENT_PAIR_GENERATIVE_PROMPT.format(
                 question=question.strip(),
                 answer=text.strip(),
                 max_seeds=max_seeds,
-                max_seed_words=max_seed_words,
+                conversation_context=(
+                    (conversation_context or "NONE").strip() or "NONE"
+                ),
             )
         return SOURCE_OBSERVATION_GENERATIVE_PROMPT.format(
             answer=text.strip(),
             source_context=(source_context or "unspecified").strip(),
             max_seeds=max_seeds,
-            max_seed_words=max_seed_words,
         )
 
     template = OPEN_SET_GENERATIVE_PROMPT if variant == "generative" else OPEN_SET_DETECTION_PROMPT
@@ -606,15 +634,17 @@ class HFTransformersDetectorBackend:
         if not text:
             return []
         question = str(item.get("question") or "").strip() or None
-        max_seed_words = int(item.get("max_seed_words") or 18)
         source_context = str(item.get("source_context") or "").strip() or None
+        conversation_context = (
+            str(item.get("conversation_context") or "").strip() or None
+        )
         prompt = build_detection_prompt(
             text,
             max_seeds=max_seeds,
             variant=self.prompt_variant,
             question=question,
-            max_seed_words=max_seed_words,
             source_context=source_context,
+            conversation_context=conversation_context,
         )
         if self.prompt_variant == "current_pair":
             self.last_prompt_metadata = dict(
@@ -667,15 +697,17 @@ class OllamaDetectorBackend:
         if not text:
             return []
         question = str(item.get("question") or "").strip() or None
-        max_seed_words = int(item.get("max_seed_words") or 18)
         source_context = str(item.get("source_context") or "").strip() or None
+        conversation_context = (
+            str(item.get("conversation_context") or "").strip() or None
+        )
         prompt = build_detection_prompt(
             text,
             max_seeds=max_seeds,
             variant=self.prompt_variant,
             question=question,
-            max_seed_words=max_seed_words,
             source_context=source_context,
+            conversation_context=conversation_context,
         )
         if self.prompt_variant == "current_pair":
             self.last_prompt_metadata = dict(
@@ -721,15 +753,17 @@ class OpenAIDetectorBackend:
         if not text:
             return []
         question = str(item.get("question") or "").strip() or None
-        max_seed_words = int(item.get("max_seed_words") or 18)
         source_context = str(item.get("source_context") or "").strip() or None
+        conversation_context = (
+            str(item.get("conversation_context") or "").strip() or None
+        )
         prompt = build_detection_prompt(
             text,
             max_seeds=max_seeds,
             variant=self.prompt_variant,
             question=question,
-            max_seed_words=max_seed_words,
             source_context=source_context,
+            conversation_context=conversation_context,
         )
         if self.prompt_variant == "current_pair":
             self.last_prompt_metadata = dict(
