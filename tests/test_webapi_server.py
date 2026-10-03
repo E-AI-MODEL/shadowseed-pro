@@ -131,3 +131,101 @@ def test_explicit_null_string_field_returns_400_not_500(tmp_path) -> None:
 
     assert status == 400
     assert "backend must be a JSON string" in payload["error"]
+
+
+
+class _ConcurrentMutationService(_FakeService):
+    def __init__(self) -> None:
+        super().__init__()
+        self._guard = threading.Lock()
+        self.active = 0
+        self.max_active = 0
+
+    def create_session(self, payload: dict[str, Any]) -> dict[str, Any]:
+        with self._guard:
+            self.active += 1
+            self.max_active = max(self.max_active, self.active)
+        try:
+            threading.Event().wait(0.1)
+            return {"session_id": f"session::{payload.get('title', 'fake')}"}
+        finally:
+            with self._guard:
+                self.active -= 1
+
+
+def test_threaded_server_serializes_workspace_mutations() -> None:
+    service = _ConcurrentMutationService()
+    server = ThreadingHTTPServer(
+        ("127.0.0.1", 0),
+        make_handler(service),
+    )
+    server_thread = threading.Thread(target=server.serve_forever, daemon=True)
+    server_thread.start()
+    statuses: list[int] = []
+    statuses_lock = threading.Lock()
+
+    def post(title: str) -> None:
+        connection = http.client.HTTPConnection(
+            "127.0.0.1",
+            server.server_address[1],
+            timeout=3,
+        )
+        connection.request(
+            "POST",
+            "/api/v1/sessions",
+            body=json.dumps({"title": title}),
+            headers={"Content-Type": "application/json"},
+        )
+        response = connection.getresponse()
+        response.read()
+        connection.close()
+        with statuses_lock:
+            statuses.append(response.status)
+
+    clients = [
+        threading.Thread(target=post, args=(f"chat-{index}",))
+        for index in range(4)
+    ]
+    try:
+        for client in clients:
+            client.start()
+        for client in clients:
+            client.join(timeout=3)
+
+        assert sorted(statuses) == [201, 201, 201, 201]
+        assert service.max_active == 1
+    finally:
+        server.shutdown()
+        server.server_close()
+        server_thread.join(timeout=3)
+
+
+def test_missing_session_returns_404(tmp_path) -> None:
+    service = WebApiService(tmp_path / "workspace")
+    status, payload = _request(
+        service,
+        method="GET",
+        path="/api/v1/sessions/session::missing",
+    )
+
+    assert status == 404
+    assert payload == {"error": "not_found"}
+
+
+def test_missing_seed_returns_404(tmp_path) -> None:
+    service = WebApiService(tmp_path / "workspace")
+    created = service.create_session(
+        {
+            "title": "Seed lookup",
+            "backend": "fixture",
+            "authority_mode": "assisted",
+        }
+    )
+    status, payload = _request(
+        service,
+        method="GET",
+        path=f"/api/v1/sessions/{created['session_id']}/seeds/seed::missing",
+    )
+
+    assert status == 404
+    assert payload == {"error": "not_found"}
