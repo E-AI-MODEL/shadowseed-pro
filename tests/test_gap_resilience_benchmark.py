@@ -194,3 +194,48 @@ def test_fixture_cli_executes_as_benchmark_smoke(tmp_path) -> None:
     assert report["backend"] == "fixture"
     assert report["repeats"] == 2
     assert "score" not in report["summary"]
+
+
+
+def test_runner_records_explicit_none_and_parser_empty_separately() -> None:
+    class AuditedDetector:
+        def __init__(self) -> None:
+            self.index = 0
+            self.last_raw_output = None
+            self.last_parse_diagnostics = None
+            self.last_prompt_metadata = {"prompt_id": "detector_current_pair"}
+
+        def detect_seeds(self, item, max_seeds=5):
+            del item, max_seeds
+            self.index += 1
+            if self.index == 1:
+                self.last_raw_output = "NONE"
+                self.last_parse_diagnostics = {
+                    "explicit_none": True,
+                    "nonblank_lines": 1,
+                    "accepted_candidates": 0,
+                }
+            else:
+                self.last_raw_output = "Unnumbered candidate"
+                self.last_parse_diagnostics = {
+                    "explicit_none": False,
+                    "nonblank_lines": 1,
+                    "accepted_candidates": 0,
+                }
+            return []
+
+    result = bench.run_cases(
+        [_case()],
+        AuditedDetector(),
+        repeats=2,
+        max_seeds=5,
+        threshold=0.35,
+    )
+
+    case = result["cases"][0]
+    assert case["explicit_none_runs"] == 1
+    assert case["parser_empty_nonblank_runs"] == 1
+    assert result["summary"]["explicit_none_rate"] == 0.5
+    assert result["summary"]["parser_empty_nonblank_rate"] == 0.5
+    assert case["run_details"][0]["detector_audit"]["raw_output"] == "NONE"
+    assert case["run_details"][1]["detector_audit"]["raw_output"] == "Unnumbered candidate"
