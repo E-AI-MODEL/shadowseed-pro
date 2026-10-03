@@ -21,7 +21,7 @@ import argparse
 import json
 import os
 import re
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from itertools import combinations
 from pathlib import Path
 from statistics import mean
@@ -363,7 +363,7 @@ def main(argv: list[str] | None = None) -> int:
             "The fixture backend is a harness smoke test only. No aggregate "
             "metric is an overall Shadowseed quality score."
         ),
-        "generated_at": datetime.now(UTC).isoformat(),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
         "shadowseed_source_ref": os.environ.get("GITHUB_SHA", "working-tree"),
         "case_set": case_payload.get("case_set", args.cases.name),
         "case_set_version": case_payload.get("case_set_version", "unknown"),
