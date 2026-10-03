@@ -336,7 +336,13 @@ export function ShadowseedApp() {
 
   async function onSend(event: FormEvent) {
     event.preventDefault();
-    if (!session || !question.trim() || sending || loadingSession) return;
+    if (
+      !session ||
+      !question.trim() ||
+      sending ||
+      loadingSession ||
+      seedActionBusy
+    ) return;
     const text = question.trim();
     const requestId =
       retryTurn?.sessionId === session.session_id && retryTurn.text === text
@@ -755,7 +761,11 @@ export function ShadowseedApp() {
           />
           <button
             disabled={
-              !session || sending || loadingSession || !question.trim()
+              !session ||
+              sending ||
+              loadingSession ||
+              seedActionBusy ||
+              !question.trim()
             }
           >
             {sending ? "Bezig..." : "Verstuur"}
@@ -787,27 +797,217 @@ export function ShadowseedApp() {
           </div>
         </div>
 
-        {session?.orchestration ? (
-          <section className="handoff-card">
-            <span>{orchestrationLabel(session.orchestration.state)}</span>
-            <p>{session.orchestration.reason_text}</p>
-          </section>
+        {seedNotice ? (
+          <div className="seed-notice">{seedNotice}</div>
+        ) : null}
+        {seedError ? (
+          <div className="seed-error">{seedError}</div>
         ) : null}
 
-        <div className="seed-list">
-          {sortedSeeds.length ? (
-            sortedSeeds.map((seed) => (
-              <SeedCard key={seed.id} seed={seed} />
-            ))
-          ) : (
-            <div className="shadow-empty">
-              <strong>Nog geen geheugenpunten</strong>
+        {selectedSeed ? (
+          <div className="seed-detail">
+            <button
+              className="seed-detail__back"
+              disabled={seedActionBusy}
+              onClick={clearSeedDetail}
+              type="button"
+            >
+              ← Alle geheugenpunten
+            </button>
+
+            <section className="seed-detail__summary">
+              <div className="seed-card__top">
+                <span className="seed-state">
+                  {selectedSeed.current_gate_authorized
+                    ? "TOEGESTAAN"
+                    : selectedSeed.status}
+                </span>
+                <strong>{Number(selectedSeed.weight ?? 0).toFixed(2)}</strong>
+              </div>
+              <h3>{selectedSeed.text}</h3>
+              <p>{selectedSeed.plain_explanation}</p>
+              <dl className="seed-detail__facts">
+                <div>
+                  <dt>Teruggezien</dt>
+                  <dd>{selectedSeed.occurrence_count ?? 0}</dd>
+                </div>
+                <div>
+                  <dt>Geverifieerde steun</dt>
+                  <dd>{selectedSeed.evidence_count ?? 0}</dd>
+                </div>
+                <div>
+                  <dt>Tegenspraak</dt>
+                  <dd>{selectedSeed.blocking ? "open" : "geen"}</dd>
+                </div>
+                <div>
+                  <dt>Gate</dt>
+                  <dd>{selectedSeed.effective_gate_policy_id ?? "onbekend"}</dd>
+                </div>
+              </dl>
+              {selectedSeed.review_required ? (
+                <p className="seed-review-flag">
+                  Dit punt vraagt nog om menselijke beoordeling.
+                </p>
+              ) : null}
+            </section>
+
+            <section className="seed-action-card">
+              <h3>Geverifieerde steun</h3>
               <p>
-                Nieuwe kandidaten starten zonder steering authority.
+                Gebruik dit alleen als je de bron zelf hebt gecontroleerd en
+                die dit geheugenpunt daadwerkelijk ondersteunt. Een bron
+                toevoegen is niet automatisch bewijs.
               </p>
-            </div>
-          )}
-        </div>
+              <form onSubmit={onSubmitEvidence}>
+                <label>
+                  Bronverwijzing
+                  <input
+                    disabled={seedActionBusy}
+                    placeholder="URL, document-ID of andere stabiele verwijzing"
+                    value={evidenceRef}
+                    onChange={(event) => {
+                      setEvidenceRef(event.target.value);
+                      if (retrySeedAction?.kind === "evidence") {
+                        setRetrySeedAction(null);
+                      }
+                    }}
+                  />
+                </label>
+                <label>
+                  Toelichting
+                  <textarea
+                    disabled={seedActionBusy}
+                    placeholder="Optioneel: waarom ondersteunt deze bron dit punt?"
+                    rows={3}
+                    value={evidenceNote}
+                    onChange={(event) => {
+                      setEvidenceNote(event.target.value);
+                      if (retrySeedAction?.kind === "evidence") {
+                        setRetrySeedAction(null);
+                      }
+                    }}
+                  />
+                </label>
+                <label className="verification-check">
+                  <input
+                    checked={evidenceVerified}
+                    disabled={seedActionBusy}
+                    onChange={(event) =>
+                      setEvidenceVerified(event.target.checked)
+                    }
+                    type="checkbox"
+                  />
+                  <span>
+                    Ik heb deze bron gecontroleerd en bevestig dat deze dit
+                    punt ondersteunt.
+                  </span>
+                </label>
+                <button
+                  disabled={
+                    seedActionBusy ||
+                    !evidenceRef.trim() ||
+                    !evidenceVerified
+                  }
+                  type="submit"
+                >
+                  {seedActionBusy ? "Bezig..." : "Steun vastleggen"}
+                </button>
+              </form>
+            </section>
+
+            <section className="seed-action-card">
+              <h3>Tegenspraak</h3>
+              {selectedSeed.blocking ? (
+                <form onSubmit={onResolveContradiction}>
+                  <p>
+                    Dit geheugenpunt is nu geblokkeerd. Leg vast waarom de
+                    tegenspraak volgens jou kan worden opgelost. De Gate
+                    beoordeelt daarna opnieuw wat er met de authority gebeurt.
+                  </p>
+                  <label>
+                    Basis voor oplossing
+                    <textarea
+                      disabled={seedActionBusy}
+                      placeholder="Waarom kan deze blokkade worden opgeheven?"
+                      rows={3}
+                      value={resolutionBasis}
+                      onChange={(event) => {
+                        setResolutionBasis(event.target.value);
+                        if (retrySeedAction?.kind === "resolve") {
+                          setRetrySeedAction(null);
+                        }
+                      }}
+                    />
+                  </label>
+                  <button
+                    disabled={seedActionBusy || !resolutionBasis.trim()}
+                    type="submit"
+                  >
+                    {seedActionBusy ? "Bezig..." : "Tegenspraak oplossen"}
+                  </button>
+                </form>
+              ) : (
+                <>
+                  <p>
+                    Gebruik dit als informatie dit geheugenpunt tegenspreekt.
+                    Het punt wordt dan geblokkeerd totdat de tegenspraak via de
+                    bestaande Gate-flow is opgelost.
+                  </p>
+                  <button
+                    className="danger-secondary"
+                    disabled={seedActionBusy}
+                    onClick={onContradictSeed}
+                    type="button"
+                  >
+                    {seedActionBusy ? "Bezig..." : "Markeer als tegengesproken"}
+                  </button>
+                </>
+              )}
+            </section>
+
+            <section className="seed-detail__timeline">
+              <div>
+                <span className="eyebrow">TIMELINE</span>
+                <h3>Wat is er met dit punt gebeurd?</h3>
+              </div>
+              <SeedTimeline events={selectedSeed.timeline} />
+            </section>
+          </div>
+        ) : (
+          <>
+            {session?.orchestration ? (
+              <section className="handoff-card">
+                <span>{orchestrationLabel(session.orchestration.state)}</span>
+                <p>{session.orchestration.reason_text}</p>
+              </section>
+            ) : null}
+
+            {loadingSeed ? (
+              <div className="shadow-empty">
+                <strong>Geheugenpunt laden...</strong>
+              </div>
+            ) : (
+              <div className="seed-list">
+                {sortedSeeds.length ? (
+                  sortedSeeds.map((seed) => (
+                    <SeedCard
+                      key={seed.id}
+                      onOpen={() => openSeed(seed.id)}
+                      seed={seed}
+                    />
+                  ))
+                ) : (
+                  <div className="shadow-empty">
+                    <strong>Nog geen geheugenpunten</strong>
+                    <p>
+                      Nieuwe kandidaten starten zonder steering authority.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
 
         {session ? (
           <footer className="runtime-footer">
