@@ -99,7 +99,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
     def delete_session(self, session_id: str) -> dict[str, Any]:
         """Delete a live session through the attributed production lifecycle boundary."""
 
-        actor = self.workspace.local_actor_context(request_id=request_id)
+        actor = self.workspace.local_actor_context()
         authorization = require_capability(
             actor,
             scope_id=self.workspace.workspace_id,
