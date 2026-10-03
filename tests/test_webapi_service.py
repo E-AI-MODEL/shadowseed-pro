@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import pytest
 
+from shadowseed.application.provider_policy import ProviderPolicyError
+from shadowseed.workbench.controller import WorkbenchController
+from shadowseed.workbench.production_controller import ProductionLocalWorkbenchController
 from shadowseed_webapi.service import WebApiService
 
 
@@ -319,3 +322,87 @@ def test_web_api_hides_sessions_with_unsupported_secondary_providers(
         match="web client v1 does not support this session provider configuration",
     ):
         api.run_turn(session_id, {"question": "Do not call the provider"})
+
+
+
+def test_web_api_uses_production_local_controller_by_default(tmp_path) -> None:
+    api = WebApiService(tmp_path / "workspace")
+
+    assert isinstance(api.controller, ProductionLocalWorkbenchController)
+
+
+def test_web_api_rejects_remote_ollama_before_creation_even_with_generic_controller(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    monkeypatch.setenv("OLLAMA_HOST", "http://192.0.2.25:11434")
+    controller = WorkbenchController(tmp_path / "workspace")
+    api = WebApiService(controller=controller)
+    before = controller.workspace.repository.counts()["sessions"]
+
+    with pytest.raises(ProviderPolicyError, match="loopback endpoint"):
+        api.create_session(
+            {
+                "title": "Remote Ollama",
+                "backend": "ollama",
+                "model_id": "example",
+                "authority_mode": "assisted",
+            }
+        )
+
+    assert controller.workspace.repository.counts()["sessions"] == before
+
+
+@pytest.mark.parametrize(
+    ("backend", "model_id", "revision_backend", "revision_model_id", "embedding_backend"),
+    [
+        ("ollama", "example", None, None, "ollama"),
+        ("fixture", None, "ollama", "example", "lexical"),
+        ("fixture", None, None, None, "ollama"),
+    ],
+)
+def test_web_api_hides_existing_sessions_when_ollama_ceases_to_be_local(
+    monkeypatch,
+    tmp_path,
+    backend,
+    model_id,
+    revision_backend,
+    revision_model_id,
+    embedding_backend,
+) -> None:
+    monkeypatch.setenv("OLLAMA_HOST", "http://127.0.0.1:11434")
+    workspace = tmp_path / "workspace"
+    controller = WorkbenchController(workspace)
+    session_id = controller.create_session(
+        title="Local provider becomes remote",
+        profile_id="balanced",
+        backend=backend,
+        model_id=model_id,
+        revision_backend=revision_backend,
+        revision_model_id=revision_model_id,
+        runtime_mode="live",
+        authority_profile_id="assisted",
+        embedding_backend=embedding_backend,
+        external_confirmed=False,
+    )
+
+    monkeypatch.setenv("OLLAMA_HOST", "http://192.0.2.25:11434")
+    api = WebApiService(workspace)
+
+    listed_ids = {
+        item["session_id"]
+        for item in api.list_sessions()["sessions"]
+    }
+    assert session_id not in listed_ids
+
+    with pytest.raises(
+        ValueError,
+        match="web client v1 does not support this session provider configuration",
+    ):
+        api.get_session(session_id)
+
+    with pytest.raises(
+        ValueError,
+        match="web client v1 does not support this session provider configuration",
+    ):
+        api.run_turn(session_id, {"question": "Do not call the remote provider"})
