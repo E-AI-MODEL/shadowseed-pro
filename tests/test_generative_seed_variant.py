@@ -32,18 +32,23 @@ def test_generative_prompt_asks_what_could_have_been():
     assert "explanatory frame" in p
 
 
-def test_current_pair_prompt_uses_question_answer_and_configured_word_limit():
+def test_current_pair_prompt_uses_bounded_context_without_word_limit():
     p = build_detection_prompt(
         "Dit is het draftantwoord.",
         variant="current_pair",
         question="Wat mist er inhoudelijk?",
         max_seed_words=30,
+        conversation_context="PRIOR TURN 1\nUSER: Eerder besproken.",
     )
     assert "CURRENT QUESTION:" in p
     assert "Wat mist er inhoudelijk?" in p
     assert "DRAFT ANSWER:" in p
     assert "Dit is het draftantwoord." in p
-    assert "30 words" in p
+    assert "PRIOR TURN 1" in p
+    assert "30 words" not in p
+    assert "hard word-count limit" in p
+    assert "epistemically undetermined" in p
+    assert "not evidence" in p
     assert "return exactly: NONE" in p
     assert "Colonial capital" not in p
 
@@ -58,7 +63,8 @@ def test_current_pair_variant_falls_back_to_source_observation_context():
     assert "SOURCE OBSERVATION:" in p
     assert "SOURCE CONTEXT:" in p
     assert "source:file-1" in p
-    assert "24 words" in p
+    assert "24 words" not in p
+    assert "hard word-count limit" in p
 
 
 def test_explicit_none_is_a_valid_zero_candidate_result():
@@ -88,23 +94,24 @@ def test_fixture_backend_reflects_variant():
 
 def test_prompt_metadata_declares_detector_input_and_output_contracts() -> None:
     assert CURRENT_PAIR_PROMPT_META["input_contract"] == [
+        "bounded_clean_conversation_context",
         "current_question",
         "draft_answer",
         "max_seeds",
-        "max_seed_words",
     ]
     assert SOURCE_OBSERVATION_PROMPT_META["input_contract"] == [
         "source_observation",
         "source_context",
         "max_seeds",
-        "max_seed_words",
     ]
     assert CURRENT_PAIR_PROMPT_META["output_contract"] == (
-        "zero_or_more_numbered_candidate_directions_or_NONE"
+        "zero_or_more_numbered_atomic_gap_candidates_or_NONE"
     )
     assert SOURCE_OBSERVATION_PROMPT_META["output_contract"] == (
-        "zero_or_more_numbered_candidate_directions_or_NONE"
+        "zero_or_more_numbered_atomic_gap_candidates_or_NONE"
     )
+    assert CURRENT_PAIR_PROMPT_META["prompt_version"] == "0.6"
+    assert SOURCE_OBSERVATION_PROMPT_META["prompt_version"] == "0.6"
 
 
 def test_fixture_detector_exposes_raw_and_parser_audit() -> None:
