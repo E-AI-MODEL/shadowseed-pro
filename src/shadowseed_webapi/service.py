@@ -15,6 +15,20 @@ _AUTHORITY_MODE_TO_PROFILE = {
 }
 
 
+def _optional_json_bool(
+    payload: dict[str, Any],
+    key: str,
+    *,
+    default: bool = False,
+) -> bool:
+    """Return a JSON boolean without accepting truthy strings or numbers."""
+
+    value = payload.get(key, default)
+    if not isinstance(value, bool):
+        raise ValueError(f"{key} must be a JSON boolean")
+    return value
+
+
 class WebApiService:
     """Expose product-shaped operations without reimplementing SSL semantics."""
 
@@ -64,8 +78,9 @@ class WebApiService:
             runtime_mode="live",
             authority_profile_id=authority_profile_id,
             embedding_backend=self.controller.default_embedding_backend(backend),
-            allow_same_turn_revision=bool(
-                payload.get("allow_same_turn_revision", False)
+            allow_same_turn_revision=_optional_json_bool(
+                payload,
+                "allow_same_turn_revision",
             ),
             allow_self_reinforcement=False,
             external_confirmed=False,
@@ -80,7 +95,10 @@ class WebApiService:
         result = self.controller.send_turn(
             session_id,
             question,
-            compare_without_ssl=bool(payload.get("compare_without_ssl", False)),
+            compare_without_ssl=_optional_json_bool(
+                payload,
+                "compare_without_ssl",
+            ),
             comparison_mode="authorized",
             external_confirmed=False,
         )
@@ -99,12 +117,19 @@ class WebApiService:
         source_ref = str(payload.get("source_ref") or "").strip()
         if not source_ref:
             raise ValueError("source_ref is required")
+
+        operator_verified = payload.get("operator_verified")
+        if operator_verified is not True:
+            raise ValueError(
+                "operator_verified must be the literal JSON boolean true"
+            )
+
         self.controller.submit_verified_evidence(
             session_id,
             seed_id,
             source_ref=source_ref,
             note=str(payload.get("note") or ""),
-            operator_verified=bool(payload.get("operator_verified", False)),
+            operator_verified=True,
         )
         return self.get_session(session_id)
 
