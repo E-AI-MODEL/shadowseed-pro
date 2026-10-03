@@ -261,7 +261,7 @@ def test_web_api_lists_hosted_session_read_only_when_provider_not_ready(
             "authority_mode": "assisted",
         }
     )
-    hosted_id = api.hosted_controller.create_session(
+    hosted_id = api.controller.create_session(
         title="Existing hosted session",
         profile_id="balanced",
         backend="openai",
