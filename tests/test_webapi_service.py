@@ -263,12 +263,59 @@ def test_web_api_hides_and_rejects_existing_unsupported_provider_sessions(
 
     with pytest.raises(
         ValueError,
-        match="web client v1 supports only fixture and Ollama sessions",
+        match="web client v1 does not support this session provider configuration",
     ):
         api.get_session(unsupported_id)
 
     with pytest.raises(
         ValueError,
-        match="web client v1 supports only fixture and Ollama sessions",
+        match="web client v1 does not support this session provider configuration",
     ):
         api.run_turn(unsupported_id, {"question": "Do not call the provider"})
+
+
+
+@pytest.mark.parametrize(
+    ("revision_backend", "revision_model_id", "embedding_backend"),
+    [
+        ("openai", "gpt-4o-mini", "lexical"),
+        (None, None, "openai"),
+    ],
+)
+def test_web_api_hides_sessions_with_unsupported_secondary_providers(
+    tmp_path,
+    revision_backend,
+    revision_model_id,
+    embedding_backend,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    session_id = api.controller.create_session(
+        title="Unsupported secondary provider",
+        profile_id="balanced",
+        backend="fixture",
+        model_id=None,
+        revision_backend=revision_backend,
+        revision_model_id=revision_model_id,
+        runtime_mode="live",
+        authority_profile_id="assisted",
+        embedding_backend=embedding_backend,
+        external_confirmed=True,
+    )
+
+    listed_ids = {
+        item["session_id"]
+        for item in api.list_sessions()["sessions"]
+    }
+    assert session_id not in listed_ids
+
+    with pytest.raises(
+        ValueError,
+        match="web client v1 does not support this session provider configuration",
+    ):
+        api.get_session(session_id)
+
+    with pytest.raises(
+        ValueError,
+        match="web client v1 does not support this session provider configuration",
+    ):
+        api.run_turn(session_id, {"question": "Do not call the provider"})
