@@ -137,8 +137,18 @@ button { cursor: pointer; }
 
 .mobile-nav-button,
 .sidebar-close,
-.mobile-nav-backdrop {
+.mobile-nav-backdrop,
+.shadow-toggle-button,
+.shadow-close,
+.shadow-backdrop {
   display: none;
+}
+
+.chat-header__actions,
+.shadow-heading__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .policy-pill {
@@ -313,7 +323,61 @@ button:disabled, textarea:disabled { cursor: not-allowed; opacity: 0.55; }
 
 @media (max-width: 1080px) {
   .product-shell { grid-template-columns: 220px minmax(0, 1fr); }
-  .shadow-column { display: none; }
+
+  .shadow-column {
+    position: fixed;
+    z-index: 40;
+    inset: 0 0 0 auto;
+    display: flex;
+    width: min(92vw, 370px);
+    transform: translateX(105%);
+    transition: transform 180ms ease;
+    box-shadow: -18px 0 45px rgba(20, 16, 22, 0.18);
+  }
+
+  .shadow-column--open {
+    transform: translateX(0);
+  }
+
+  .shadow-backdrop {
+    position: fixed;
+    z-index: 35;
+    inset: 0;
+    width: 100%;
+    border: 0;
+    background: rgba(20, 16, 22, 0.32);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+  }
+
+  .shadow-backdrop--open {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .shadow-toggle-button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 0 10px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: white;
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 750;
+  }
+
+  .shadow-close {
+    display: inline-flex;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+  }
 }
 
 @media (max-width: 720px) {
@@ -396,6 +460,10 @@ button:disabled, textarea:disabled { cursor: not-allowed; opacity: 0.55; }
     gap: 9px;
   }
 
+  .chat-header__actions {
+    gap: 6px;
+  }
+
   .chat-header h1 {
     max-width: 46vw;
     overflow: hidden;
@@ -405,6 +473,11 @@ button:disabled, textarea:disabled { cursor: not-allowed; opacity: 0.55; }
 
   .policy-pill {
     display: none;
+  }
+
+  .shadow-toggle-button {
+    min-height: 34px;
+    padding: 0 8px;
   }
 
   .messages { padding: 22px 18px; }
