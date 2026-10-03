@@ -69,6 +69,11 @@ export function ShadowseedApp() {
   const [sessions, setSessions] = useState<SessionSummary[]>([]);
   const [session, setSession] = useState<SessionView | null>(null);
   const [question, setQuestion] = useState("");
+  const [retryTurn, setRetryTurn] = useState<{
+    sessionId: string;
+    text: string;
+    requestId: string;
+  } | null>(null);
   const [draft, setDraft] = useState<CreateSessionInput>(emptyDraft);
   const [creating, setCreating] = useState(false);
   const [sending, setSending] = useState(false);
@@ -153,6 +158,7 @@ export function ShadowseedApp() {
     refreshRequestId.current += 1;
     setError(null);
     setNotice(null);
+    setRetryTurn(null);
     setMobileNavOpen(false);
     try {
       await loadSession(sessionId);
@@ -175,6 +181,7 @@ export function ShadowseedApp() {
       sessionRequestId.current += 1;
       setLoadingSession(false);
       setSession(created);
+      setRetryTurn(null);
       setMobileNavOpen(false);
 
       try {
@@ -197,14 +204,19 @@ export function ShadowseedApp() {
     event.preventDefault();
     if (!session || !question.trim() || sending || loadingSession) return;
     const text = question.trim();
+    const requestId =
+      retryTurn?.sessionId === session.session_id && retryTurn.text === text
+        ? retryTurn.requestId
+        : "web-turn:" + crypto.randomUUID();
     setQuestion("");
     setSending(true);
     setError(null);
     setNotice(null);
 
     try {
-      const result = await sendTurn(session.session_id, text);
+      const result = await sendTurn(session.session_id, text, requestId);
       setSession(result.session);
+      setRetryTurn(null);
 
       try {
         setSessions(await listSessions());
@@ -215,6 +227,11 @@ export function ShadowseedApp() {
       }
     } catch (cause) {
       setQuestion(text);
+      setRetryTurn({
+        sessionId: session.session_id,
+        text,
+        requestId,
+      });
       setError(
         cause instanceof Error ? cause.message : "Bericht kon niet worden verstuurd",
       );
@@ -439,7 +456,13 @@ export function ShadowseedApp() {
                 : "Maak eerst een gesprek..."
             }
             value={question}
-            onChange={(event) => setQuestion(event.target.value)}
+            onChange={(event) => {
+              const value = event.target.value;
+              setQuestion(value);
+              if (retryTurn && value.trim() !== retryTurn.text) {
+                setRetryTurn(null);
+              }
+            }}
             rows={2}
           />
           <button
