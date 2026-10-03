@@ -3,8 +3,11 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import {
+  clearOpenAI,
+  configureOpenAI,
   contradictSeed,
   createSession,
+  getProviderStatus,
   getSeed,
   getSession,
   listSessions,
@@ -14,6 +17,7 @@ import {
 } from "@/lib/api";
 import type {
   CreateSessionInput,
+  ProviderStatus,
   Seed,
   SeedDetail,
   SeedTimelineEvent,
@@ -25,6 +29,7 @@ const emptyDraft: CreateSessionInput = {
   title: "Nieuw gesprek",
   backend: "fixture",
   authority_mode: "assisted",
+  external_confirmed: false,
 };
 
 function authorityLabel(profile: string) {
@@ -134,6 +139,12 @@ export function ShadowseedApp() {
     requestId: string;
   } | null>(null);
   const [draft, setDraft] = useState<CreateSessionInput>(emptyDraft);
+  const [providers, setProviders] = useState<ProviderStatus[]>([]);
+  const [openaiKey, setOpenaiKey] = useState("");
+  const [providerBusy, setProviderBusy] = useState(false);
+  const [providerError, setProviderError] = useState<string | null>(null);
+  const [providerNotice, setProviderNotice] = useState<string | null>(null);
+  const [externalTurnConfirmed, setExternalTurnConfirmed] = useState(false);
   const [creating, setCreating] = useState(false);
   const [sending, setSending] = useState(false);
   const [loadingSession, setLoadingSession] = useState(false);
