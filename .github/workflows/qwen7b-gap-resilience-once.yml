@@ -16,7 +16,8 @@ concurrency:
 
 env:
   MODEL_ID: qwen2.5:7b-instruct-q4_K_M
-  RUN_FILE: benchmarks/results/gap_resilience/qwen2.5_7b_q4km_v06_live2_diagnostic.json
+  RUN_V1: benchmarks/results/gap_resilience/qwen2.5_7b_q4km_candidate_v1.json
+  RUN_V2: benchmarks/results/gap_resilience/qwen2.5_7b_q4km_candidate_v2.json
 
 jobs:
   gap-resilience:
@@ -82,17 +83,25 @@ jobs:
           print("resolved model digest", match["digest"])
           PY
 
-      - name: Run gap resilience benchmark
+      - name: Run candidate prompt arms
         run: |
-          mkdir -p "$(dirname "$RUN_FILE")"
-          GITHUB_SHA="$(git rev-parse HEAD)" python scripts/run_gap_resilience_benchmark.py \
-            --backend ollama \
-            --model-id "$MODEL_ID" \
-            --model-revision "$MODEL_DIGEST" \
-            --repeats 5 \
-            --max-seeds 5 \
-            --max-new-tokens 220 \
-            --output "$RUN_FILE"
+          mkdir -p "$(dirname "$RUN_V1")"
+          for profile in candidate_v1 candidate_v2; do
+            if [ "$profile" = "candidate_v1" ]; then
+              output="$RUN_V1"
+            else
+              output="$RUN_V2"
+            fi
+            GITHUB_SHA="$(git rev-parse HEAD)" python scripts/run_gap_resilience_benchmark.py \
+              --backend ollama \
+              --model-id "$MODEL_ID" \
+              --model-revision "$MODEL_DIGEST" \
+              --prompt-profile "$profile" \
+              --repeats 5 \
+              --max-seeds 5 \
+              --max-new-tokens 220 \
+              --output "$output"
+          done
 
       - name: Add runtime provenance and verify result
         run: |
@@ -102,8 +111,6 @@ jobs:
           import subprocess
           from pathlib import Path
 
-          path = Path(os.environ["RUN_FILE"])
-          report = json.loads(path.read_text(encoding="utf-8"))
           expected_head = subprocess.run(
               ["git", "rev-parse", "HEAD"],
               check=True,
@@ -111,46 +118,54 @@ jobs:
               text=True,
           ).stdout.strip()
 
-          assert report["artifact"] == "shadowseed-gap-resilience-v1"
-          assert report["run_type"] == "live_benchmark"
-          assert report["shadowseed_source_ref"] == expected_head
-          assert report["backend"] == "ollama"
-          assert report["model_id"] == os.environ["MODEL_ID"]
-          assert report["model_revision"] == os.environ["MODEL_DIGEST"]
-          assert report["repeats"] == 5
-          assert report["summary"]["cases"] == 6
-          assert sum(len(case["run_details"]) for case in report["cases"]) == 30
-          assert all(
-              detail["detector_raw_output"] is not None
-              for case in report["cases"]
-              for detail in case["run_details"]
-          )
-          assert "score" not in report["summary"]
-          assert "winner" not in report["summary"]
-
-          report["runtime_provenance"] = {
-              "github_run_id": os.environ["GITHUB_RUN_ID"],
-              "github_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
-              "runner_os": os.environ.get("RUNNER_OS"),
-              "runner_arch": os.environ.get("RUNNER_ARCH"),
-              "ollama_version": os.environ["OLLAMA_VERSION"],
-              "model_digest": os.environ["MODEL_DIGEST"],
-          }
-          path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-          print(json.dumps(report["summary"], indent=2))
+          for env_name, profile in (("RUN_V1", "candidate_v1"), ("RUN_V2", "candidate_v2")):
+              path = Path(os.environ[env_name])
+              report = json.loads(path.read_text(encoding="utf-8"))
+              assert report["artifact"] == "shadowseed-gap-resilience-v1"
+              assert report["run_type"] == "live_benchmark"
+              assert report["shadowseed_source_ref"] == expected_head
+              assert report["backend"] == "ollama"
+              assert report["model_id"] == os.environ["MODEL_ID"]
+              assert report["model_revision"] == os.environ["MODEL_DIGEST"]
+              assert report["prompt_profile"] == profile
+              assert report["repeats"] == 5
+              assert report["summary"]["cases"] == 6
+              assert sum(len(case["run_details"]) for case in report["cases"]) == 30
+              assert all(
+                  detail["detector_raw_output"] is not None
+                  for case in report["cases"]
+                  for detail in case["run_details"]
+              )
+              assert "score" not in report["summary"]
+              assert "winner" not in report["summary"]
+              report["runtime_provenance"] = {
+                  "github_run_id": os.environ["GITHUB_RUN_ID"],
+                  "github_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                  "runner_os": os.environ.get("RUNNER_OS"),
+                  "runner_arch": os.environ.get("RUNNER_ARCH"),
+                  "ollama_version": os.environ["OLLAMA_VERSION"],
+                  "model_digest": os.environ["MODEL_DIGEST"],
+              }
+              path.write_text(
+                  json.dumps(report, indent=2, ensure_ascii=False) + "\n",
+                  encoding="utf-8",
+              )
+              print(profile, json.dumps(report["summary"], indent=2))
           PY
 
       - name: Commit live benchmark result to this branch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$RUN_FILE"
+          git add "$RUN_V1" "$RUN_V2"
           git diff --cached --check
-          git commit -m "Record Qwen 7B gap resilience live run 1"
+          git commit -m "Record Qwen 7B gap resilience prompt A/B"
           git push origin HEAD:"${{ github.event.pull_request.head.ref }}"
 
       - name: Upload live benchmark result
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: qwen2.5-7b-gap-resilience-live1
-          path: ${{ env.RUN_FILE }}
+          name: qwen2.5-7b-gap-resilience-prompt-ab
+          path: |
+            ${{ env.RUN_V1 }}
+            ${{ env.RUN_V2 }}
