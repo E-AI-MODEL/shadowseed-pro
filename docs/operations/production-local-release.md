@@ -13,31 +13,33 @@ Before publication, record:
 - schema/audit format versions;
 - CI run IDs for `test (3.10)`, `test (3.12)` and the required `build` status;
 - the `production-local` Linux/macOS/Windows acceptance jobs transitively required by `build`;
-- Standalone Workbench run ID and all three platform manifests;
+- Web Client CI run ID for the packaged static client/API contract;
+- Standalone Workbench run ID and all three platform manifests, including frozen web self-test evidence;
 - dependency-audit and SBOM result;
 - independent-assurance verdict from #95;
 - unresolved production findings, which must contain no P0/P1 item.
 
 ## Required repository gate
 
-`build` remains one of the repository-required CI checks. It has a hard `needs` dependency on the always-running `production-local` matrix in `ci.yml`, runs with `always()`, and explicitly fails unless the matrix result is `success`. Therefore a failed or cancelled Linux, macOS or Windows production-local job cannot be hidden behind a skipped required `build` status. Workbench CI, Workbench Portability and Research Package CI remain path-filtered for pull requests, but now run on every push to `main` so explicit release publication can require exact-SHA evidence from all three. The unconditional `ci.yml` production-local matrix remains the repository-layer production gate rather than those supplementary workflows.
+`build` remains one of the repository-required CI checks. It has a hard `needs` dependency on the always-running `production-local` matrix in `ci.yml`, runs with `always()`, and explicitly fails unless the matrix result is `success`. Therefore a failed or cancelled Linux, macOS or Windows production-local job cannot be hidden behind a skipped required `build` status. Workbench CI, Workbench Portability, Research Package CI and Web Client CI remain scoped away from duplicate feature-branch push runs and are explicitly dispatched by Release Workbench for the exact `main` candidate so publication can require fresh exact-SHA evidence from all four. The unconditional `ci.yml` production-local matrix remains the repository-layer production gate rather than those supplementary workflows.
 
 A change that removes this dependency, removes the explicit result propagation, or makes the production-local matrix conditional is a production-governance change and requires the same protected review path.
 
 ## Release artifact verification
 
-The release workflow is started explicitly by a maintainer after the candidate is green. It binds to the exact current protected `main` SHA, requires successful exact-SHA CI, Workbench, portability, research-package and `Standalone Workbench` runs, and reuses the standalone artifacts from that exact SHA. It must continue to fail closed if `main` advances before publication.
+The release workflow is started explicitly by a maintainer after the candidate is green. It binds to the exact current protected `main` SHA, requires successful exact-SHA CI, Web Client CI, Workbench, portability, research-package and `Standalone Workbench` runs, and reuses the standalone artifacts from that exact SHA. It must continue to fail closed if `main` advances before publication.
 
 Before publishing, it verifies:
 
 1. the checked-out commit equals the explicitly selected current `origin/main` release SHA;
 2. the dependency lock is current;
 3. each standalone manifest names the candidate SHA and expected version;
-4. each frozen standalone passed its packaged self-test;
-5. wheel and sdist contain the exact repository license;
-6. release SBOM, `PROVENANCE.json`, `uv.lock`, license, manifests and standalone archives are present;
-7. `SHA256SUMS` validates every release asset;
-8. a clean installed-wheel Workbench self-test passes outside the source tree.
+4. each frozen standalone passed both its legacy product self-test and packaged web self-test;
+5. wheel and sdist contain the exact repository license and packaged static web assets;
+6. a clean installed wheel passes `shadowseed-web --self-test` outside the source tree;
+7. release SBOM, `PROVENANCE.json`, `uv.lock`, license, manifests and standalone archives are present;
+8. `SHA256SUMS` validates every release asset;
+9. a clean installed-wheel Workbench self-test passes outside the source tree.
 
 After those checks and **before publication**, the trusted `Release Workbench` workflow generates Sigstore-backed GitHub artifact attestations for every subject listed in `release-assets/SHA256SUMS` and separately attests the `SHA256SUMS` manifest itself. Publication must not happen before these attestations succeed.
 
