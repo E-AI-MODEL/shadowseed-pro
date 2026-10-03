@@ -1,6 +1,6 @@
 # Shadowseed Tester Workbench
 
-The Workbench is the local-first chat surface for testing Shadow Seed Learning in an ordinary LLM conversation. Version 0.11.1 is the current hotfix release candidate; `v0.11.0` remains the latest published Research Preview until the exact-SHA release workflow succeeds. It carries forward the low-friction tester path, noncommercial research access and evidence-measurement tooling while adding the 0.11 runtime/audit alignment and an Ollama-first thin local distribution. It is not `production-ready/local` until the exact-SHA release-assurance and unchanged-candidate soak requirements are complete.
+The Workbench is the local-first product surface for testing Shadow Seed Learning in an ordinary LLM conversation. Version 0.12.0 is the current Research Preview release candidate; `v0.11.1` remains the latest published Research Preview until the exact-SHA release workflow succeeds. The 0.12 line adds a packaged web client, canonical seed-detail and authority actions, explicit OpenAI provider setup, and a one-process loopback launcher while retaining the legacy Gradio Workbench. It is not `production-ready/local` until the exact-SHA release-assurance and unchanged-candidate soak requirements are complete.
 
 ```text
 download -> extract/open -> choose model -> create chat -> chat with SSL -> optionally compare the current answer with SSL off
@@ -21,7 +21,7 @@ Use the download/open route only when a verified GitHub release for the version 
 
 Model weights are intentionally separate. Fixture works offline for mechanics. The normal Workbench and standalone are Ollama-first: Ollama uses locally installed chat models plus `embeddinggemma` for semantic matching. EmbeddingGemma requires Ollama v0.11.10 or later. Hugging Face/Sentence Transformers require the separate `models` extra, and hosted OpenAI requires the separate `openai` extra. Those optional provider stacks are not bundled into the normal standalone.
 
-A valid 0.11.1 release contains three standalone archives and manifests, `PROVENANCE.json`, `SHA256SUMS`, a Python wheel, source distribution, and `LICENSE`. Frozen bundles must pass their packaged product self-test and carry the exact repository license hash before upload. The macOS archive must additionally preserve a valid final application seal after every bundle mutation, contain the first-launch helper and README, survive archive extraction, and pass the frozen self-test from the round-tripped app before release. Apple Developer ID signing and notarization are not required or claimed.
+A valid 0.12.0 release contains three standalone archives and manifests, `PROVENANCE.json`, `SHA256SUMS`, a Python wheel, source distribution, and `LICENSE`. The Python wheel must also contain the packaged static web client and pass `shadowseed-web --self-test` after clean installation. Frozen bundles must pass their packaged product self-test and carry the exact repository license hash before upload. The macOS archive must additionally preserve a valid final application seal after every bundle mutation, contain the first-launch helper and README, survive archive extraction, and pass the frozen self-test from the round-tripped app before release. Apple Developer ID signing and notarization are not required or claimed.
 
 ## Research access
 
@@ -141,17 +141,17 @@ shadowseed-workbench
 The optional container route remains available for development/testing:
 
 ```bash
-docker build -f Dockerfile.workbench -t shadowseed-workbench:0.11.1 .
+docker build -f Dockerfile.workbench -t shadowseed-workbench:0.12.0 .
 docker run --rm \
   -p 127.0.0.1:7860:7860 \
   -v shadowseed-data:/data \
-  shadowseed-workbench:0.11.1
+  shadowseed-workbench:0.12.0
 ```
 
 Do not expose this preview directly to an untrusted network.
 
 ## Claim boundary
 
-Version 0.11.1 is the current hotfix release candidate and production-local assurance candidate. Packaging, licensing, tester observations, support-dataset aggregation, release hardening and the existence of an efficacy runner do not establish general answer-quality benefit, semantic truth, hostile-network production security or high-impact deployment readiness. The `production-ready/local` claim remains gated on exact protected-main release evidence and the unchanged-candidate soak defined by the production acceptance contract.
+Version 0.12.0 is the current Research Preview release candidate and production-local assurance candidate. Packaging, licensing, tester observations, support-dataset aggregation, release hardening and the existence of an efficacy runner do not establish general answer-quality benefit, semantic truth, hostile-network production security or high-impact deployment readiness. The `production-ready/local` claim remains gated on exact protected-main release evidence and the unchanged-candidate soak defined by the production acceptance contract.
 
 The scientific/authority constraints remain in the canonical runtime. Historical evaluation sessions, benchmark artifacts and compatibility surfaces remain research/provenance material rather than product prerequisites.
