@@ -47,155 +47,6 @@ function SeedCard({
   seed: Seed;
   onOpen: () => void;
 }) {
-  function seedRequestKey(
-    kind: "evidence" | "contradict" | "resolve",
-    seedId: string,
-    fingerprint: string,
-  ) {
-    if (
-      session &&
-      retrySeedAction?.kind === kind &&
-      retrySeedAction.sessionId === session.session_id &&
-      retrySeedAction.seedId === seedId &&
-      retrySeedAction.fingerprint === fingerprint
-    ) {
-      return retrySeedAction.requestId;
-    }
-    return "web-seed-" + kind + ":" + crypto.randomUUID();
-  }
-
-  async function onSubmitEvidence(event: FormEvent) {
-    event.preventDefault();
-    if (
-      !session ||
-      !selectedSeed ||
-      seedActionBusy ||
-      !evidenceRef.trim() ||
-      !evidenceVerified
-    ) {
-      return;
-    }
-
-    const sourceRef = evidenceRef.trim();
-    const note = evidenceNote.trim();
-    const fingerprint = sourceRef + "\u0000" + note;
-    const requestId = seedRequestKey(
-      "evidence",
-      selectedSeed.id,
-      fingerprint,
-    );
-    setSeedActionBusy(true);
-    setSeedError(null);
-    setSeedNotice(null);
-
-    try {
-      const nextSession = await submitSeedEvidence(
-        session.session_id,
-        selectedSeed.id,
-        { sourceRef, note, requestId },
-      );
-      setRetrySeedAction(null);
-      setEvidenceRef("");
-      setEvidenceNote("");
-      setEvidenceVerified(false);
-      await refreshSeedAfterMutation(nextSession, selectedSeed.id);
-      setSeedNotice("Geverifieerde steun is opgeslagen.");
-    } catch (cause) {
-      setRetrySeedAction({
-        kind: "evidence",
-        sessionId: session.session_id,
-        seedId: selectedSeed.id,
-        fingerprint,
-        requestId,
-      });
-      setSeedError(
-        cause instanceof Error ? cause.message : "Steun kon niet worden opgeslagen",
-      );
-    } finally {
-      setSeedActionBusy(false);
-    }
-  }
-
-  async function onContradictSeed() {
-    if (!session || !selectedSeed || seedActionBusy) return;
-    const fingerprint = "contradict";
-    const requestId = seedRequestKey(
-      "contradict",
-      selectedSeed.id,
-      fingerprint,
-    );
-    setSeedActionBusy(true);
-    setSeedError(null);
-    setSeedNotice(null);
-
-    try {
-      const nextSession = await contradictSeed(
-        session.session_id,
-        selectedSeed.id,
-        requestId,
-      );
-      setRetrySeedAction(null);
-      await refreshSeedAfterMutation(nextSession, selectedSeed.id);
-      setSeedNotice("Tegenspraak is vastgelegd. Dit punt is nu geblokkeerd.");
-    } catch (cause) {
-      setRetrySeedAction({
-        kind: "contradict",
-        sessionId: session.session_id,
-        seedId: selectedSeed.id,
-        fingerprint,
-        requestId,
-      });
-      setSeedError(
-        cause instanceof Error ? cause.message : "Tegenspraak kon niet worden opgeslagen",
-      );
-    } finally {
-      setSeedActionBusy(false);
-    }
-  }
-
-  async function onResolveContradiction(event: FormEvent) {
-    event.preventDefault();
-    if (
-      !session ||
-      !selectedSeed ||
-      seedActionBusy ||
-      !resolutionBasis.trim()
-    ) {
-      return;
-    }
-
-    const basis = resolutionBasis.trim();
-    const requestId = seedRequestKey("resolve", selectedSeed.id, basis);
-    setSeedActionBusy(true);
-    setSeedError(null);
-    setSeedNotice(null);
-
-    try {
-      const nextSession = await resolveSeedContradiction(
-        session.session_id,
-        selectedSeed.id,
-        { basis, requestId },
-      );
-      setRetrySeedAction(null);
-      setResolutionBasis("");
-      await refreshSeedAfterMutation(nextSession, selectedSeed.id);
-      setSeedNotice("De tegenspraak is opnieuw door de Gate beoordeeld.");
-    } catch (cause) {
-      setRetrySeedAction({
-        kind: "resolve",
-        sessionId: session.session_id,
-        seedId: selectedSeed.id,
-        fingerprint: basis,
-        requestId,
-      });
-      setSeedError(
-        cause instanceof Error ? cause.message : "Tegenspraak kon niet worden opgelost",
-      );
-    } finally {
-      setSeedActionBusy(false);
-    }
-  }
-
   return (
     <button className="seed-card seed-card--button" onClick={onOpen} type="button">
       <div className="seed-card__top">
@@ -526,6 +377,156 @@ export function ShadowseedApp() {
       setSending(false);
     }
   }
+
+  function seedRequestKey(
+    kind: "evidence" | "contradict" | "resolve",
+    seedId: string,
+    fingerprint: string,
+  ) {
+    if (
+      session &&
+      retrySeedAction?.kind === kind &&
+      retrySeedAction.sessionId === session.session_id &&
+      retrySeedAction.seedId === seedId &&
+      retrySeedAction.fingerprint === fingerprint
+    ) {
+      return retrySeedAction.requestId;
+    }
+    return "web-seed-" + kind + ":" + crypto.randomUUID();
+  }
+
+  async function onSubmitEvidence(event: FormEvent) {
+    event.preventDefault();
+    if (
+      !session ||
+      !selectedSeed ||
+      seedActionBusy ||
+      !evidenceRef.trim() ||
+      !evidenceVerified
+    ) {
+      return;
+    }
+
+    const sourceRef = evidenceRef.trim();
+    const note = evidenceNote.trim();
+    const fingerprint = sourceRef + "\u0000" + note;
+    const requestId = seedRequestKey(
+      "evidence",
+      selectedSeed.id,
+      fingerprint,
+    );
+    setSeedActionBusy(true);
+    setSeedError(null);
+    setSeedNotice(null);
+
+    try {
+      const nextSession = await submitSeedEvidence(
+        session.session_id,
+        selectedSeed.id,
+        { sourceRef, note, requestId },
+      );
+      setRetrySeedAction(null);
+      setEvidenceRef("");
+      setEvidenceNote("");
+      setEvidenceVerified(false);
+      await refreshSeedAfterMutation(nextSession, selectedSeed.id);
+      setSeedNotice("Geverifieerde steun is opgeslagen.");
+    } catch (cause) {
+      setRetrySeedAction({
+        kind: "evidence",
+        sessionId: session.session_id,
+        seedId: selectedSeed.id,
+        fingerprint,
+        requestId,
+      });
+      setSeedError(
+        cause instanceof Error ? cause.message : "Steun kon niet worden opgeslagen",
+      );
+    } finally {
+      setSeedActionBusy(false);
+    }
+  }
+
+  async function onContradictSeed() {
+    if (!session || !selectedSeed || seedActionBusy) return;
+    const fingerprint = "contradict";
+    const requestId = seedRequestKey(
+      "contradict",
+      selectedSeed.id,
+      fingerprint,
+    );
+    setSeedActionBusy(true);
+    setSeedError(null);
+    setSeedNotice(null);
+
+    try {
+      const nextSession = await contradictSeed(
+        session.session_id,
+        selectedSeed.id,
+        requestId,
+      );
+      setRetrySeedAction(null);
+      await refreshSeedAfterMutation(nextSession, selectedSeed.id);
+      setSeedNotice("Tegenspraak is vastgelegd. Dit punt is nu geblokkeerd.");
+    } catch (cause) {
+      setRetrySeedAction({
+        kind: "contradict",
+        sessionId: session.session_id,
+        seedId: selectedSeed.id,
+        fingerprint,
+        requestId,
+      });
+      setSeedError(
+        cause instanceof Error ? cause.message : "Tegenspraak kon niet worden opgeslagen",
+      );
+    } finally {
+      setSeedActionBusy(false);
+    }
+  }
+
+  async function onResolveContradiction(event: FormEvent) {
+    event.preventDefault();
+    if (
+      !session ||
+      !selectedSeed ||
+      seedActionBusy ||
+      !resolutionBasis.trim()
+    ) {
+      return;
+    }
+
+    const basis = resolutionBasis.trim();
+    const requestId = seedRequestKey("resolve", selectedSeed.id, basis);
+    setSeedActionBusy(true);
+    setSeedError(null);
+    setSeedNotice(null);
+
+    try {
+      const nextSession = await resolveSeedContradiction(
+        session.session_id,
+        selectedSeed.id,
+        { basis, requestId },
+      );
+      setRetrySeedAction(null);
+      setResolutionBasis("");
+      await refreshSeedAfterMutation(nextSession, selectedSeed.id);
+      setSeedNotice("De tegenspraak is opnieuw door de Gate beoordeeld.");
+    } catch (cause) {
+      setRetrySeedAction({
+        kind: "resolve",
+        sessionId: session.session_id,
+        seedId: selectedSeed.id,
+        fingerprint: basis,
+        requestId,
+      });
+      setSeedError(
+        cause instanceof Error ? cause.message : "Tegenspraak kon niet worden opgelost",
+      );
+    } finally {
+      setSeedActionBusy(false);
+    }
+  }
+
 
   return (
     <main className="product-shell">
