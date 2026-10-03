@@ -194,3 +194,48 @@ def test_fixture_cli_executes_as_benchmark_smoke(tmp_path) -> None:
     assert report["backend"] == "fixture"
     assert report["repeats"] == 2
     assert "score" not in report["summary"]
+
+
+
+def test_detector_audit_distinguishes_explicit_none_from_parser_empty() -> None:
+    case = _case(case_id="audit")
+
+    explicit_none = bench.score_case(
+        case,
+        [[]],
+        run_audits=[
+            {
+                "raw_output": "NONE",
+                "parse_diagnostics": {
+                    "explicit_none": True,
+                    "nonblank_lines": 1,
+                    "accepted_candidates": 0,
+                },
+                "prompt_metadata": {"prompt_id": "detector_current_pair"},
+            }
+        ],
+    )
+    parser_empty = bench.score_case(
+        case,
+        [[]],
+        run_audits=[
+            {
+                "raw_output": "Missing authentication method",
+                "parse_diagnostics": {
+                    "explicit_none": False,
+                    "nonblank_lines": 1,
+                    "unnumbered_nonblank_lines": 1,
+                    "accepted_candidates": 0,
+                },
+            }
+        ],
+    )
+
+    assert explicit_none["explicit_none_runs"] == 1
+    assert explicit_none["parser_empty_non_none_runs"] == 0
+    assert (
+        explicit_none["run_details"][0]["detector_raw_output"]
+        == "NONE"
+    )
+    assert parser_empty["explicit_none_runs"] == 0
+    assert parser_empty["parser_empty_non_none_runs"] == 1
