@@ -14,6 +14,7 @@ _AUTHORITY_MODE_TO_PROFILE = {
     "exploratory": "autonomous",
 }
 _MISSING = object()
+_WEB_V1_BACKENDS = frozenset({"fixture", "ollama"})
 
 
 def _optional_json_bool(
@@ -94,12 +95,18 @@ class WebApiService:
         return {"ok": True, "api_version": "v1"}
 
     def list_sessions(self) -> dict[str, Any]:
-        return {"sessions": self.controller.list_sessions()}
+        sessions = [
+            item
+            for item in self.controller.list_sessions()
+            if item.get("backend") in _WEB_V1_BACKENDS
+        ]
+        return {"sessions": sessions}
 
     def get_session(self, session_id: str) -> dict[str, Any]:
-        return self._session_payload(self.controller.session_view(session_id))
+        return self._session_payload(self._supported_session_view(session_id))
 
     def get_seed(self, session_id: str, seed_id: str) -> dict[str, Any]:
+        self._supported_session_view(session_id)
         return self.controller.seed_view(session_id, seed_id)
 
     def create_session(self, payload: dict[str, Any]) -> dict[str, Any]:
@@ -146,6 +153,7 @@ class WebApiService:
         return self.get_session(session_id)
 
     def run_turn(self, session_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        self._supported_session_view(session_id)
         question = _required_json_string(payload, "question")
 
         result = self.controller.send_turn(
@@ -170,6 +178,7 @@ class WebApiService:
         seed_id: str,
         payload: dict[str, Any],
     ) -> dict[str, Any]:
+        self._supported_session_view(session_id)
         source_ref = _required_json_string(payload, "source_ref")
         note = _defaulted_json_string(payload, "note", "")
 
@@ -193,8 +202,18 @@ class WebApiService:
         session_id: str,
         seed_id: str,
     ) -> dict[str, Any]:
+        self._supported_session_view(session_id)
         self.controller.falsify_seed(session_id, seed_id)
         return self.get_session(session_id)
+
+    def _supported_session_view(self, session_id: str) -> dict[str, Any]:
+        view = self.controller.session_view(session_id)
+        backend = str(view.get("backend") or "").strip()
+        if backend not in _WEB_V1_BACKENDS:
+            raise ValueError(
+                "web client v1 supports only fixture and Ollama sessions"
+            )
+        return view
 
     def _session_payload(self, view: dict[str, Any]) -> dict[str, Any]:
         return {**view, "messages": self.controller.chat_messages(view)}
