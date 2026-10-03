@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import ipaddress
 import json
+import mimetypes
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -69,23 +70,46 @@ def _is_json_content_type(content_type: str | None) -> bool:
     return media_type == "application/json"
 
 
+def _static_candidate(static_root: Path, request_path: str) -> Path | None:
+    """Resolve one static request without allowing traversal outside the export."""
+
+    root = static_root.resolve()
+    relative = unquote(urlsplit(request_path).path).lstrip("/") or "index.html"
+    candidate = (root / relative).resolve()
+    if candidate != root and root not in candidate.parents:
+        return None
+    if candidate.is_dir():
+        candidate = candidate / "index.html"
+    return candidate if candidate.is_file() else None
+
+
 def make_handler(
     service: WebApiService,
     *,
     allowed_origins: frozenset[str] = DEFAULT_WEB_ORIGINS,
+    static_root: str | Path | None = None,
 ):
     mutation_lock = RLock()
+    resolved_static_root = Path(static_root).resolve() if static_root else None
 
     class Handler(BaseHTTPRequestHandler):
         server_version = "ShadowseedWebApi/1"
 
-        def _cors_origin(self) -> str | None:
-            origin = self.headers.get("Origin")
-            return origin if origin in allowed_origins else None
-
-        def _reject_unapproved_origin(self) -> bool:
+        def _origin_allowed(self) -> bool:
             origin = self.headers.get("Origin")
             if _origin_is_allowed(origin, allowed_origins):
+                return True
+            if not origin:
+                return True
+            host = self.headers.get("Host", "").strip()
+            return bool(host and origin == f"http://{host}")
+
+        def _cors_origin(self) -> str | None:
+            origin = self.headers.get("Origin")
+            return origin if origin and self._origin_allowed() else None
+
+        def _reject_unapproved_origin(self) -> bool:
+            if self._origin_allowed():
                 return False
             self._write_json(
                 HTTPStatus.FORBIDDEN,
@@ -107,6 +131,50 @@ def make_handler(
                 self.send_header("Vary", "Origin")
             self.end_headers()
             self.wfile.write(data)
+
+        def _write_file(
+            self,
+            path: Path,
+            *,
+            status: int = HTTPStatus.OK,
+            head_only: bool = False,
+        ) -> None:
+            data = path.read_bytes()
+            content_type, _encoding = mimetypes.guess_type(path.name)
+            self.send_response(status)
+            self.send_header(
+                "Content-Type",
+                (content_type or "application/octet-stream")
+                + ("; charset=utf-8" if content_type and content_type.startswith("text/") else ""),
+            )
+            self.send_header("Content-Length", str(len(data)))
+            cache_control = (
+                "public, max-age=31536000, immutable"
+                if "/_next/static/" in path.as_posix()
+                else "no-store"
+            )
+            self.send_header("Cache-Control", cache_control)
+            self.end_headers()
+            if not head_only:
+                self.wfile.write(data)
+
+        def _serve_static(self, *, head_only: bool = False) -> None:
+            if resolved_static_root is None:
+                return self._write_json(
+                    HTTPStatus.NOT_FOUND,
+                    {"error": "not_found"},
+                )
+            candidate = _static_candidate(resolved_static_root, self.path)
+            if candidate is not None:
+                return self._write_file(candidate, head_only=head_only)
+            fallback = resolved_static_root / "404.html"
+            if fallback.is_file():
+                return self._write_file(
+                    fallback,
+                    status=HTTPStatus.NOT_FOUND,
+                    head_only=head_only,
+                )
+            self._write_json(HTTPStatus.NOT_FOUND, {"error": "not_found"})
 
         def _read_json(self) -> dict[str, Any]:
             if not _is_json_content_type(self.headers.get("Content-Type")):
@@ -162,7 +230,12 @@ def make_handler(
                     return self._write_json(
                         HTTPStatus.OK, service.get_seed(parts[3], parts[5])
                     )
-                self._write_json(HTTPStatus.NOT_FOUND, {"error": "not_found"})
+                if parts[:2] == ["api", "v1"]:
+                    return self._write_json(
+                        HTTPStatus.NOT_FOUND,
+                        {"error": "not_found"},
+                    )
+                self._serve_static()
             except KeyError:
                 self._write_json(
                     HTTPStatus.NOT_FOUND,
@@ -267,18 +340,30 @@ def make_handler(
                     {"error": sanitized_exception_line(exc)},
                 )
 
+        def do_HEAD(self) -> None:  # noqa: N802
+            if self._reject_unapproved_origin():
+                return
+            parts = _parts(self.path)
+            if parts[:2] == ["api", "v1"]:
+                self.send_response(HTTPStatus.METHOD_NOT_ALLOWED)
+                self.send_header("Allow", "GET,POST,OPTIONS")
+                self.end_headers()
+                return
+            self._serve_static(head_only=True)
+
         def log_message(self, format: str, *args: Any) -> None:
             return None
 
     return Handler
 
 
-def serve(
+def create_server(
     *,
     workspace: str | Path | None = None,
     host: str = DEFAULT_HOST,
     port: int = DEFAULT_PORT,
-) -> None:
+    static_root: str | Path | None = None,
+) -> ThreadingHTTPServer:
     if _is_ipv6_loopback(host):
         raise ValueError(
             "IPv6 loopback binding is not supported by the local web API; "
@@ -289,7 +374,25 @@ def serve(
             "the Shadowseed web API is loopback-only; use 127.0.0.1 or localhost"
         )
     service = WebApiService(workspace)
-    server = ThreadingHTTPServer((host, int(port)), make_handler(service))
+    return ThreadingHTTPServer(
+        (host, int(port)),
+        make_handler(service, static_root=static_root),
+    )
+
+
+def serve(
+    *,
+    workspace: str | Path | None = None,
+    host: str = DEFAULT_HOST,
+    port: int = DEFAULT_PORT,
+    static_root: str | Path | None = None,
+) -> None:
+    server = create_server(
+        workspace=workspace,
+        host=host,
+        port=port,
+        static_root=static_root,
+    )
     try:
         server.serve_forever()
     except KeyboardInterrupt:
