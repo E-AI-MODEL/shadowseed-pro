@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   createSession,
@@ -72,7 +72,25 @@ export function ShadowseedApp() {
   const [draft, setDraft] = useState<CreateSessionInput>(emptyDraft);
   const [creating, setCreating] = useState(false);
   const [sending, setSending] = useState(false);
+  const [loadingSession, setLoadingSession] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const sessionRequestId = useRef(0);
+
+  async function loadSession(sessionId: string) {
+    const requestId = ++sessionRequestId.current;
+    setLoadingSession(true);
+    try {
+      const loaded = await getSession(sessionId);
+      if (sessionRequestId.current === requestId) {
+        setSession(loaded);
+      }
+      return loaded;
+    } finally {
+      if (sessionRequestId.current === requestId) {
+        setLoadingSession(false);
+      }
+    }
+  }
 
   async function refreshSessions(preferredId?: string) {
     const next = await listSessions();
@@ -82,8 +100,10 @@ export function ShadowseedApp() {
       session?.session_id ??
       next.at(0)?.session_id;
     if (target) {
-      setSession(await getSession(target));
+      await loadSession(target);
     } else {
+      sessionRequestId.current += 1;
+      setLoadingSession(false);
       setSession(null);
     }
   }
@@ -103,10 +123,10 @@ export function ShadowseedApp() {
   );
 
   async function selectSession(sessionId: string) {
-    if (sending) return;
+    if (sending || creating) return;
     setError(null);
     try {
-      setSession(await getSession(sessionId));
+      await loadSession(sessionId);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Gesprek kon niet laden");
     }
@@ -114,11 +134,12 @@ export function ShadowseedApp() {
 
   async function onCreate(event: FormEvent) {
     event.preventDefault();
-    if (sending) return;
+    if (sending || loadingSession) return;
     setCreating(true);
     setError(null);
     try {
       const created = await createSession(draft);
+      sessionRequestId.current += 1;
       setSession(created);
       await refreshSessions(created.session_id);
     } catch (cause) {
@@ -130,7 +151,7 @@ export function ShadowseedApp() {
 
   async function onSend(event: FormEvent) {
     event.preventDefault();
-    if (!session || !question.trim() || sending) return;
+    if (!session || !question.trim() || sending || loadingSession) return;
     const text = question.trim();
     setQuestion("");
     setSending(true);
@@ -161,7 +182,7 @@ export function ShadowseedApp() {
         <form className="new-chat" onSubmit={onCreate}>
           <input
             aria-label="Titel nieuw gesprek"
-            disabled={sending || creating}
+            disabled={sending || creating || loadingSession}
             value={draft.title}
             onChange={(event) =>
               setDraft({ ...draft, title: event.target.value })
@@ -169,7 +190,7 @@ export function ShadowseedApp() {
           />
           <select
             aria-label="Authority-regime"
-            disabled={sending || creating}
+            disabled={sending || creating || loadingSession}
             value={draft.authority_mode}
             onChange={(event) =>
               setDraft({
@@ -185,7 +206,7 @@ export function ShadowseedApp() {
           </select>
           <select
             aria-label="Modelprovider"
-            disabled={sending || creating}
+            disabled={sending || creating || loadingSession}
             value={draft.backend}
             onChange={(event) =>
               setDraft({
@@ -200,7 +221,7 @@ export function ShadowseedApp() {
           {draft.backend === "ollama" ? (
             <input
               aria-label="Ollama model"
-              disabled={sending || creating}
+              disabled={sending || creating || loadingSession}
               placeholder="bijv. qwen2.5:7b"
               value={draft.model_id ?? ""}
               onChange={(event) =>
@@ -208,7 +229,10 @@ export function ShadowseedApp() {
               }
             />
           ) : null}
-          <button type="submit" disabled={creating || sending}>
+          <button
+            type="submit"
+            disabled={creating || sending || loadingSession}
+          >
             {creating ? "Maken..." : "+ Nieuw gesprek"}
           </button>
         </form>
@@ -221,7 +245,7 @@ export function ShadowseedApp() {
                   ? "conversation conversation--active"
                   : "conversation"
               }
-              disabled={sending}
+              disabled={sending || creating}
               key={item.session_id}
               onClick={() => selectSession(item.session_id)}
               type="button"
@@ -287,15 +311,23 @@ export function ShadowseedApp() {
         <form className="composer" onSubmit={onSend}>
           <textarea
             aria-label="Bericht"
-            disabled={!session || sending}
+            disabled={!session || sending || loadingSession}
             placeholder={
-              session ? "Typ je bericht..." : "Maak eerst een gesprek..."
+              session
+                ? loadingSession
+                  ? "Gesprek laden..."
+                  : "Typ je bericht..."
+                : "Maak eerst een gesprek..."
             }
             value={question}
             onChange={(event) => setQuestion(event.target.value)}
             rows={2}
           />
-          <button disabled={!session || sending || !question.trim()}>
+          <button
+            disabled={
+              !session || sending || loadingSession || !question.trim()
+            }
+          >
             {sending ? "Bezig..." : "Verstuur"}
           </button>
         </form>
