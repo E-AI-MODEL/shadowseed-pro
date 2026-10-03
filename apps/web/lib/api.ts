@@ -37,11 +37,12 @@ async function request<T>(
   const response = await fetch(
     localApiBase(process.env.NEXT_PUBLIC_SHADOWSEED_API_URL) + path,
     {
-    ...init,
-    cache: "no-store",
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers ?? {}),
+      ...init,
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        ...(init?.headers ?? {}),
+      },
     },
   );
 
