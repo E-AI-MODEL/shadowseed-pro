@@ -17,6 +17,13 @@ benchmarks/private/
 .env
 .env.*
 !.env.example
+
+# Web product client
+apps/web/node_modules/
+apps/web/.next/
+apps/web/out/
+apps/web/.env.local
+apps/web/.env.*.local
 .secrets/
 
 # Transient open-set run scratch: written by run-open-set-seed-review and the
