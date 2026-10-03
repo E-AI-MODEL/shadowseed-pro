@@ -404,7 +404,7 @@ def test_run_chat_script_mode_writes_audited_transcript(tmp_path: Path):
 
 
 def test_detector_context_excludes_prior_ssl_influenced_live_answers(monkeypatch):
-    session = _make_session(monkeypatch, runtime_mode="live")
+    session = _make_session(monkeypatch, runtime_mode="live", allow_toy_embedder=True)
     session.history = [
         ("Schone vraag", "Schoon antwoord"),
         ("SSL-vraag", "Antwoord met seedinvloed"),
