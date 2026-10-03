@@ -21,7 +21,6 @@ from shadowseed.seed_normalization import (
 )
 
 
-_DEFAULT_MAX_SEED_WORDS = SSLCoreConfig().max_seed_words
 
 
 def load_embedder(manager: Any):
