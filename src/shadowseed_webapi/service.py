@@ -123,7 +123,9 @@ class WebApiService:
 
         if backend not in {"fixture", "ollama"}:
             raise ValueError("web client v1 supports only fixture and Ollama")
-        if backend == "ollama" and not model_id:
+        if backend == "fixture":
+            model_id = None
+        elif not model_id:
             raise ValueError("Ollama requires a model_id")
 
         session_id = self.controller.create_session(
