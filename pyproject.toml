@@ -90,7 +90,14 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 shadowseed = ["data/*.json"]
-shadowseed_webapi = ["static/*", "static/**/*"]
+shadowseed_webapi = [
+  "static/*",
+  "static/**/*",
+  "static/*/*",
+  "static/*/*/*",
+  "static/*/*/*/*",
+  "static/*/*/*/*/*",
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
