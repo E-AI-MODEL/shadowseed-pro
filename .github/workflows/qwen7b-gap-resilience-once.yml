@@ -16,8 +16,8 @@ concurrency:
 
 env:
   MODEL_ID: qwen2.5:7b-instruct-q4_K_M
-  RUN_V1: benchmarks/results/gap_resilience/qwen2.5_7b_q4km_candidate_v1_screen.json
-  RUN_V2: benchmarks/results/gap_resilience/qwen2.5_7b_q4km_candidate_v2_screen.json
+  RUN_BASELINE: benchmarks/results/gap_resilience/qwen2.5_7b_q4km_runtime_v06_controlled_screen.json
+  RUN_V1: benchmarks/results/gap_resilience/qwen2.5_7b_q4km_candidate_v1_controlled_screen.json
 
 jobs:
   gap-resilience:
@@ -83,14 +83,14 @@ jobs:
           print("resolved model digest", match["digest"])
           PY
 
-      - name: Run candidate prompt arms
+      - name: Run controlled baseline and candidate arm
         run: |
           mkdir -p "$(dirname "$RUN_V1")"
-          for profile in candidate_v1 candidate_v2; do
-            if [ "$profile" = "candidate_v1" ]; then
-              output="$RUN_V1"
+          for profile in runtime_v06 candidate_v1; do
+            if [ "$profile" = "runtime_v06" ]; then
+              output="$RUN_BASELINE"
             else
-              output="$RUN_V2"
+              output="$RUN_V1"
             fi
             GITHUB_SHA="$(git rev-parse HEAD)" python scripts/run_gap_resilience_benchmark.py \
               --backend ollama \
@@ -118,7 +118,7 @@ jobs:
               text=True,
           ).stdout.strip()
 
-          for env_name, profile in (("RUN_V1", "candidate_v1"), ("RUN_V2", "candidate_v2")):
+          for env_name, profile in (("RUN_BASELINE", "runtime_v06"), ("RUN_V1", "candidate_v1")):
               path = Path(os.environ[env_name])
               report = json.loads(path.read_text(encoding="utf-8"))
               assert report["artifact"] == "shadowseed-gap-resilience-v1"
@@ -129,8 +129,8 @@ jobs:
               assert report["model_revision"] == os.environ["MODEL_DIGEST"]
               assert report["prompt_profile"] == profile
               assert report["repeats"] == 2
-              assert report["summary"]["cases"] == 6
-              assert sum(len(case["run_details"]) for case in report["cases"]) == 12
+              assert report["summary"]["cases"] == 8
+              assert sum(len(case["run_details"]) for case in report["cases"]) == 16
               assert all(
                   detail["detector_raw_output"] is not None
                   for case in report["cases"]
@@ -157,15 +157,15 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$RUN_V1" "$RUN_V2"
+          git add "$RUN_BASELINE" "$RUN_V1"
           git diff --cached --check
-          git commit -m "Record Qwen 7B gap resilience prompt screening"
+          git commit -m "Record Qwen 7B controlled gap resilience screening"
           git push origin HEAD:"${{ github.event.pull_request.head.ref }}"
 
       - name: Upload live benchmark result
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: qwen2.5-7b-gap-resilience-prompt-ab
+          name: qwen2.5-7b-gap-resilience-controlled-screen
           path: |
+            ${{ env.RUN_BASELINE }}
             ${{ env.RUN_V1 }}
-            ${{ env.RUN_V2 }}
