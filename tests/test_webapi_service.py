@@ -449,6 +449,8 @@ def test_web_api_turn_retry_is_idempotent_across_service_restart(tmp_path) -> No
         "user",
         "assistant",
     ]
+    integrity = restarted.controller.workspace.repository.verify_production_integrity()
+    assert integrity["sequence_no"] == integrity["anchor_sequence_no"]
 
 
 def test_web_api_rejects_reusing_turn_request_id_with_different_question(
@@ -503,3 +505,42 @@ def test_web_api_requires_turn_request_id(tmp_path) -> None:
         )
 
     assert api.get_session(created["session_id"])["turn"] == 0
+
+
+
+def test_web_api_rejects_reusing_turn_request_id_across_sessions(tmp_path) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    first = api.create_session(
+        {
+            "title": "First request scope",
+            "backend": "fixture",
+            "authority_mode": "assisted",
+        }
+    )
+    second = api.create_session(
+        {
+            "title": "Second request scope",
+            "backend": "fixture",
+            "authority_mode": "assisted",
+        }
+    )
+    request_id = "web-turn:cross-session-conflict"
+
+    api.run_turn(
+        first["session_id"],
+        {
+            "question": "First session only",
+            "request_id": request_id,
+        },
+    )
+
+    with pytest.raises(ValueError, match="request_id was already used"):
+        api.run_turn(
+            second["session_id"],
+            {
+                "question": "Do not reuse this id",
+                "request_id": request_id,
+            },
+        )
+
+    assert api.get_session(second["session_id"])["turn"] == 0
