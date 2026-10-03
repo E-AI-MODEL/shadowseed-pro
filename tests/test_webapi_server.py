@@ -3,10 +3,12 @@ from __future__ import annotations
 import http.client
 import json
 import threading
+
+import pytest
 from http.server import ThreadingHTTPServer
 from typing import Any
 
-from shadowseed_webapi.server import make_handler
+from shadowseed_webapi.server import make_handler, serve
 
 
 class _FakeService:
@@ -105,3 +107,12 @@ def test_text_plain_post_is_rejected_even_without_origin() -> None:
     assert status == 400
     assert "application/json" in payload["error"]
     assert service.created == []
+
+
+def test_ipv6_loopback_is_rejected_before_server_construction(tmp_path) -> None:
+    with pytest.raises(ValueError, match="IPv6 loopback binding is not supported"):
+        serve(
+            workspace=tmp_path / "workspace",
+            host="::1",
+            port=0,
+        )
