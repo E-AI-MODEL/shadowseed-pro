@@ -4,7 +4,7 @@
 
 The repository is **research-ready, locally mass-testable, able to produce structured privacy-minimized tester datasets, and equipped for preregistered evidence-backed paired efficacy studies**. Core mechanics, benchmark harnesses, a broad regression suite, a chat-first local Workbench, standalone build contracts, verifiable exports, support-bundle aggregation, candidate review packets, and influence-opportunity accounting are present. This status does not by itself imply `production-ready/local` or general answer-quality benefit.
 
-Current source version: **0.11.1**. This source state is the hotfix release candidate for `v0.11.1`; publication is a separate fact established only after the exact-SHA release workflow succeeds. Until then, `v0.11.0` remains the latest published Research Preview with verified release assets. The hotfix corrects Ollama/EmbeddingGemma compatibility diagnostics; it does not change the `production-ready/local` claim. Older tags remain immutable historical software references and are not rewritten by later development.
+Current source version: **0.11.1**. `v0.11.1` is the latest published Research Preview, published from exact source SHA `5fc933daa33665352674f3b168db89e0680c6249` after ordinary CI and the heavy release-assurance workflows passed on that SHA. The hotfix corrects Ollama/EmbeddingGemma compatibility diagnostics; it does not change the `production-ready/local` claim. Older tags remain immutable historical software references and are not rewritten by later development.
 
 ## Research access
 
@@ -80,10 +80,10 @@ Issue #63 remains the natural home for high-end capability/evidence follow-up. C
 
 ## Remaining production work
 
-The first production target remains `production-ready/local`. Published `v0.11.0` now has fresh exact-SHA CI, heavy release-assurance, provenance, checksum, SBOM and standalone evidence. Those release facts do not complete production promotion: the candidate still requires the documented unchanged-candidate soak and no unresolved P0/P1 production findings. Any later source/release candidate must establish its own evidence rather than inherit the `v0.11.0` claim.
+The first production target remains `production-ready/local`. Published `v0.11.1` has exact-SHA CI, heavy release-assurance, provenance, checksum, SBOM and standalone evidence. Those release facts do not complete production promotion: a production candidate still requires the documented unchanged-candidate soak and no unresolved P0/P1 production findings. Any later source/release candidate must establish its own evidence rather than inherit the `v0.11.1` release evidence.
 
 Protected-main quality gates are active. Hosted production remains a separate target and still requires its own authentication, tenancy, hostile-network, abuse-control, managed-secret, and service-operation controls. Native Apple notarization/Developer ID signing, Windows Authenticode signing, and broader real-world usability/safety evaluation also remain outside the current local production claim.
 
 ## Appropriate use today
 
-Appropriate uses include local tester studies, mechanism inspection, controlled experiments, benchmark development, structured support-data collection, candidate-quality review, and preregistered evidence-backed paired studies. Published `v0.11.0` remains a Research Preview and must be judged on its exact-SHA evidence; it has not been promoted to a stronger production claim. Do not treat Shadowseed Pro as a certified safety layer for healthcare, finance, employment, law, public administration, education decisions, or autonomous high-impact action.
+Appropriate uses include local tester studies, mechanism inspection, controlled experiments, benchmark development, structured support-data collection, candidate-quality review, and preregistered evidence-backed paired studies. Published `v0.11.1` remains a Research Preview and must be judged on its exact-SHA evidence; it has not been promoted to a stronger production claim. Do not treat Shadowseed Pro as a certified safety layer for healthcare, finance, employment, law, public administration, education decisions, or autonomous high-impact action.
