@@ -14,7 +14,6 @@ from typing import Any, Iterable
 
 import numpy as np
 
-from shadowseed.core_config import SSLCoreConfig
 from shadowseed.models import SeedOrigin, SeedStatus, ShadowSeed
 from shadowseed.seed_normalization import (
     normalize_detection_candidates as normalize_candidates,
