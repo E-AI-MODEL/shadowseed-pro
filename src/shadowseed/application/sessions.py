@@ -74,7 +74,7 @@ class SessionService:
         expected_fingerprint: str,
     ) -> dict[str, Any]:
         if replay.get("request_fingerprint") != expected_fingerprint:
-            raise WorkspaceStorageError(
+            raise ValueError(
                 "request_id was replayed with different chat input"
             )
         try:
