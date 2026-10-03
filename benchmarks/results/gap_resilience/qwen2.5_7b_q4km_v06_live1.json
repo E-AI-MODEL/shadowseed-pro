@@ -1,0 +1,703 @@
+{
+  "artifact": "shadowseed-gap-resilience-v1",
+  "schema_version": 1,
+  "run_type": "live_benchmark",
+  "disclaimer": "Benchmark measurements are diagnostic, not evidence or authority. The fixture backend is a harness smoke test only. No aggregate metric is an overall Shadowseed quality score.",
+  "generated_at": "2026-10-03T21:01:07.610819+00:00",
+  "shadowseed_source_ref": "a0ded95927d57682e967321d70f48d891f3dc241",
+  "case_set": "gap_resilience_core",
+  "case_set_version": "1.0",
+  "backend": "ollama",
+  "model_id": "qwen2.5:7b-instruct-q4_K_M",
+  "model_revision": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+  "prompt_variant": "current_pair",
+  "repeats": 5,
+  "max_seeds": 5,
+  "match_threshold": 0.35,
+  "summary": {
+    "cases": 6,
+    "expected_gap_recall": 0.0,
+    "expected_gap_hits": 0,
+    "expected_gap_opportunities": 25,
+    "negative_control_abstention_rate": 1.0,
+    "negative_control_abstention_successes": 5,
+    "negative_control_abstention_opportunities": 5,
+    "resolved_gap_reopen_rate": 0.0,
+    "resolved_gap_reopens": 0,
+    "resolved_gap_opportunities": 25,
+    "repeatability_mean": 1.0
+  },
+  "cases": [
+    {
+      "case_id": "api-auth-missing",
+      "negative_control": false,
+      "runs": 5,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 5,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 0,
+      "resolved_gap_reopen_rate": null,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "client-authentication",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": []
+        },
+        {
+          "run": 2,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "client-authentication",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": []
+        },
+        {
+          "run": 3,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "client-authentication",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": []
+        },
+        {
+          "run": 4,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "client-authentication",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": []
+        },
+        {
+          "run": 5,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "client-authentication",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": []
+        }
+      ]
+    },
+    {
+      "case_id": "retention-currentness",
+      "negative_control": false,
+      "runs": 5,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 5,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 5,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "backup-deletion",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "retention-period",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        },
+        {
+          "run": 2,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "backup-deletion",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "retention-period",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        },
+        {
+          "run": 3,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "backup-deletion",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "retention-period",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        },
+        {
+          "run": 4,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "backup-deletion",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "retention-period",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        },
+        {
+          "run": 5,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "backup-deletion",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "retention-period",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "complete-negative-control",
+      "negative_control": true,
+      "runs": 5,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 0,
+      "expected_gap_recall": null,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 10,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": 5,
+      "abstention_opportunities": 5,
+      "abstention_rate": 1.0,
+      "repeatability": 1.0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "reset-link-channel",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            },
+            {
+              "gap_id": "reset-link-validity",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        },
+        {
+          "run": 2,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "reset-link-channel",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            },
+            {
+              "gap_id": "reset-link-validity",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        },
+        {
+          "run": 3,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "reset-link-channel",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            },
+            {
+              "gap_id": "reset-link-validity",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        },
+        {
+          "run": 4,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "reset-link-channel",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            },
+            {
+              "gap_id": "reset-link-validity",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        },
+        {
+          "run": 5,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "reset-link-channel",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            },
+            {
+              "gap_id": "reset-link-validity",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "support-hours-supersession",
+      "negative_control": false,
+      "runs": 5,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 5,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 5,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "severity-response-target",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        },
+        {
+          "run": 2,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "severity-response-target",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        },
+        {
+          "run": 3,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "severity-response-target",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        },
+        {
+          "run": 4,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "severity-response-target",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        },
+        {
+          "run": 5,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "severity-response-target",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "other-subject-trap",
+      "negative_control": false,
+      "runs": 5,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 5,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 5,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "alice-failover",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        },
+        {
+          "run": 2,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "alice-failover",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        },
+        {
+          "run": 3,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "alice-failover",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        },
+        {
+          "run": 4,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "alice-failover",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        },
+        {
+          "run": 5,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "alice-failover",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "rollbackcriteria-nl",
+      "negative_control": false,
+      "runs": 5,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 5,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 0,
+      "resolved_gap_reopen_rate": null,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "rollbackcriteria",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": []
+        },
+        {
+          "run": 2,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "rollbackcriteria",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": []
+        },
+        {
+          "run": 3,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "rollbackcriteria",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": []
+        },
+        {
+          "run": 4,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "rollbackcriteria",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": []
+        },
+        {
+          "run": 5,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "rollbackcriteria",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": []
+        }
+      ]
+    }
+  ],
+  "runtime_provenance": {
+    "github_run_id": "37153487557",
+    "github_run_attempt": "1",
+    "runner_os": "Linux",
+    "runner_arch": "X64",
+    "ollama_version": "ollama version is 0.35.1 ",
+    "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+  }
+}
