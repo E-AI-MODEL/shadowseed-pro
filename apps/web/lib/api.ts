@@ -1,5 +1,6 @@
 import type {
   CreateSessionInput,
+  ProviderStatus,
   SeedDetail,
   SessionSummary,
   SessionView,
@@ -42,6 +43,35 @@ async function request<T>(
   return payload;
 }
 
+export async function getProviderStatus(): Promise<ProviderStatus[]> {
+  const payload = await request<{ providers: ProviderStatus[] }>("/providers");
+  return payload.providers;
+}
+
+export async function configureOpenAI(
+  apiKey: string,
+): Promise<ProviderStatus[]> {
+  const payload = await request<{ providers: ProviderStatus[] }>(
+    "/providers/openai/credential",
+    {
+      method: "POST",
+      body: JSON.stringify({ api_key: apiKey }),
+    },
+  );
+  return payload.providers;
+}
+
+export async function clearOpenAI(): Promise<ProviderStatus[]> {
+  const payload = await request<{ providers: ProviderStatus[] }>(
+    "/providers/openai/credential/clear",
+    {
+      method: "POST",
+      body: "{}",
+    },
+  );
+  return payload.providers;
+}
+
 export async function listSessions(): Promise<SessionSummary[]> {
   const payload = await request<{ sessions: SessionSummary[] }>("/sessions");
   return payload.sessions;
@@ -64,12 +94,17 @@ export async function sendTurn(
   sessionId: string,
   question: string,
   requestId: string,
+  externalConfirmed = false,
 ): Promise<TurnResult> {
   return request<TurnResult>(
     "/sessions/" + encodeURIComponent(sessionId) + "/turns",
     {
       method: "POST",
-      body: JSON.stringify({ question, request_id: requestId }),
+      body: JSON.stringify({
+        question,
+        request_id: requestId,
+        external_confirmed: externalConfirmed,
+      }),
     },
   );
 }
