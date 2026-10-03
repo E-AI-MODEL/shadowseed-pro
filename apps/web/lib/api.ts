@@ -62,12 +62,13 @@ export async function createSession(
 export async function sendTurn(
   sessionId: string,
   question: string,
+  requestId: string,
 ): Promise<TurnResult> {
   return request<TurnResult>(
     "/sessions/" + encodeURIComponent(sessionId) + "/turns",
     {
       method: "POST",
-      body: JSON.stringify({ question }),
+      body: JSON.stringify({ question, request_id: requestId }),
     },
   );
 }
