@@ -286,11 +286,36 @@ export function ShadowseedApp() {
     }
   }
 
+  async function refreshProviderStatus() {
+    const next = await getProviderStatus();
+    setProviders(next);
+    return next;
+  }
+
+  async function syncSelectedProviderReadiness() {
+    if (!session) return;
+    try {
+      setSession(await getSession(session.session_id));
+    } catch {
+      return;
+    }
+  }
+
   useEffect(() => {
     refreshSessions().catch((cause: unknown) => {
       setError(cause instanceof Error ? cause.message : "API niet bereikbaar");
     });
+    refreshProviderStatus().catch((cause: unknown) => {
+      setProviderError(
+        cause instanceof Error ? cause.message : "Providerstatus niet bereikbaar",
+      );
+    });
   }, []);
+
+  const openaiStatus = useMemo(
+    () => providers.find((item) => item.provider === "openai") ?? null,
+    [providers],
+  );
 
   const sortedSeeds = useMemo(
     () =>
