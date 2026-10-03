@@ -1,5 +1,6 @@
 import type {
   CreateSessionInput,
+  SeedDetail,
   SessionSummary,
   SessionView,
   TurnResult,
@@ -69,6 +70,88 @@ export async function sendTurn(
     {
       method: "POST",
       body: JSON.stringify({ question, request_id: requestId }),
+    },
+  );
+}
+
+
+export async function getSeed(
+  sessionId: string,
+  seedId: string,
+): Promise<SeedDetail> {
+  return request<SeedDetail>(
+    "/sessions/" +
+      encodeURIComponent(sessionId) +
+      "/seeds/" +
+      encodeURIComponent(seedId),
+  );
+}
+
+export async function submitSeedEvidence(
+  sessionId: string,
+  seedId: string,
+  input: {
+    sourceRef: string;
+    note: string;
+    requestId: string;
+  },
+): Promise<SessionView> {
+  return request<SessionView>(
+    "/sessions/" +
+      encodeURIComponent(sessionId) +
+      "/seeds/" +
+      encodeURIComponent(seedId) +
+      "/evidence",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        source_ref: input.sourceRef,
+        note: input.note,
+        operator_verified: true,
+        request_id: input.requestId,
+      }),
+    },
+  );
+}
+
+export async function contradictSeed(
+  sessionId: string,
+  seedId: string,
+  requestId: string,
+): Promise<SessionView> {
+  return request<SessionView>(
+    "/sessions/" +
+      encodeURIComponent(sessionId) +
+      "/seeds/" +
+      encodeURIComponent(seedId) +
+      "/contradictions",
+    {
+      method: "POST",
+      body: JSON.stringify({ request_id: requestId }),
+    },
+  );
+}
+
+export async function resolveSeedContradiction(
+  sessionId: string,
+  seedId: string,
+  input: {
+    basis: string;
+    requestId: string;
+  },
+): Promise<SessionView> {
+  return request<SessionView>(
+    "/sessions/" +
+      encodeURIComponent(sessionId) +
+      "/seeds/" +
+      encodeURIComponent(seedId) +
+      "/contradictions/resolve",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        basis: input.basis,
+        request_id: input.requestId,
+      }),
     },
   );
 }
