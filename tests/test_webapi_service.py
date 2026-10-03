@@ -230,3 +230,45 @@ def test_web_api_clears_stale_model_id_for_fixture(tmp_path) -> None:
 
     assert created["backend"] == "fixture"
     assert created["model_id"] is None
+
+
+def test_web_api_hides_and_rejects_existing_unsupported_provider_sessions(
+    tmp_path,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    supported = api.create_session(
+        {
+            "title": "Supported",
+            "backend": "fixture",
+            "authority_mode": "assisted",
+        }
+    )
+    unsupported_id = api.controller.create_session(
+        title="Existing hosted session",
+        profile_id="balanced",
+        backend="openai",
+        model_id="gpt-4o-mini",
+        runtime_mode="live",
+        authority_profile_id="assisted",
+        embedding_backend="openai",
+        external_confirmed=True,
+    )
+
+    listed_ids = {
+        item["session_id"]
+        for item in api.list_sessions()["sessions"]
+    }
+    assert supported["session_id"] in listed_ids
+    assert unsupported_id not in listed_ids
+
+    with pytest.raises(
+        ValueError,
+        match="web client v1 supports only fixture and Ollama sessions",
+    ):
+        api.get_session(unsupported_id)
+
+    with pytest.raises(
+        ValueError,
+        match="web client v1 supports only fixture and Ollama sessions",
+    ):
+        api.run_turn(unsupported_id, {"question": "Do not call the provider"})
