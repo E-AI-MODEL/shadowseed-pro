@@ -681,7 +681,11 @@ class WorkbenchController:
     ) -> dict[str, Any]:
         """Submit an attributed local-owner contradiction through authorization."""
 
-        actor = self.workspace.local_actor_context(request_id=request_id)
+        actor = (
+            self.workspace.local_actor_context()
+            if request_id is None
+            else self.workspace.local_actor_context(request_id=request_id)
+        )
         return self.sessions.falsify_authorized(
             session_id,
             seed_id,
@@ -699,7 +703,11 @@ class WorkbenchController:
     ) -> dict[str, Any]:
         """Resolve a blocking contradiction through the existing production flow."""
 
-        actor = self.workspace.local_actor_context(request_id=request_id)
+        actor = (
+            self.workspace.local_actor_context()
+            if request_id is None
+            else self.workspace.local_actor_context(request_id=request_id)
+        )
         return resolve_authorized_contradiction(
             self.workspace.repository,
             session_id,
@@ -729,7 +737,11 @@ class WorkbenchController:
 
         if not operator_verified:
             raise ValueError("operator verification must be explicitly confirmed")
-        actor = self.workspace.local_actor_context(request_id=request_id)
+        actor = (
+            self.workspace.local_actor_context()
+            if request_id is None
+            else self.workspace.local_actor_context(request_id=request_id)
+        )
         return self.sessions.submit_verified_evidence_authorized(
             session_id,
             seed_id,
