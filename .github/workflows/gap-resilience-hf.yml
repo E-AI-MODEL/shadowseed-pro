@@ -102,6 +102,8 @@ jobs:
               "negative_control_abstention_rate",
               "resolved_gap_reopen_rate",
               "repeatability_mean",
+              "explicit_none_rate",
+              "parser_empty_nonblank_rate",
           ):
               assert key in summary
           assert "score" not in summary
@@ -120,6 +122,7 @@ jobs:
                       {
                           "run": run["run"],
                           "candidates": run["candidates"],
+                          "detector_audit": run["detector_audit"],
                       }
                       for run in case["run_details"]
                   ],
