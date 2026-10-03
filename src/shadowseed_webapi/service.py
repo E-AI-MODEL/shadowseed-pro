@@ -5,7 +5,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from shadowseed.application.provider_policy import (
+    ProviderPolicyError,
+    validate_production_local_backend,
+)
 from shadowseed.workbench.controller import WorkbenchController
+from shadowseed.workbench.production_controller import ProductionLocalWorkbenchController
 
 
 _AUTHORITY_MODE_TO_PROFILE = {
@@ -90,7 +95,7 @@ class WebApiService:
         *,
         controller: WorkbenchController | None = None,
     ) -> None:
-        self.controller = controller or WorkbenchController(workspace)
+        self.controller = controller or ProductionLocalWorkbenchController(workspace)
 
     def health(self) -> dict[str, Any]:
         return {"ok": True, "api_version": "v1"}
@@ -139,6 +144,9 @@ class WebApiService:
         elif not model_id:
             raise ValueError("Ollama requires a model_id")
 
+        embedding_backend = self.controller.default_embedding_backend(backend)
+        validate_production_local_backend(backend, embedding_backend)
+
         session_id = self.controller.create_session(
             title=title,
             profile_id="balanced",
@@ -146,7 +154,7 @@ class WebApiService:
             model_id=model_id,
             runtime_mode="live",
             authority_profile_id=authority_profile_id,
-            embedding_backend=self.controller.default_embedding_backend(backend),
+            embedding_backend=embedding_backend,
             allow_same_turn_revision=_optional_json_bool(
                 payload,
                 "allow_same_turn_revision",
@@ -219,11 +227,18 @@ class WebApiService:
         embedding_backend = str(
             view.get("embedding_backend") or "lexical"
         ).strip()
-        return (
+        if not (
             backend in _WEB_V1_BACKENDS
             and revision_backend in _WEB_V1_BACKENDS
             and embedding_backend in _WEB_V1_EMBEDDING_BACKENDS
-        )
+        ):
+            return False
+        try:
+            validate_production_local_backend(backend, embedding_backend)
+            validate_production_local_backend(revision_backend, embedding_backend)
+        except ProviderPolicyError:
+            return False
+        return True
 
     def _supported_session_view(self, session_id: str) -> dict[str, Any]:
         view = self.controller.session_view(session_id)
