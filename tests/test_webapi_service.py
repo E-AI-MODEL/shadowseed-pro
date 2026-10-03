@@ -544,3 +544,164 @@ def test_web_api_rejects_reusing_turn_request_id_across_sessions(tmp_path) -> No
         )
 
     assert api.get_session(second["session_id"])["turn"] == 0
+
+
+
+def _web_seed_fixture(api: WebApiService) -> tuple[str, str]:
+    created = api.create_session(
+        {
+            "title": "Seed actions",
+            "backend": "fixture",
+            "authority_mode": "assisted",
+        }
+    )
+    session_id = created["session_id"]
+    turn = api.run_turn(
+        session_id,
+        {
+            "question": "What is missing from this privacy plan?",
+            "request_id": "web-turn:seed-action-fixture",
+        },
+    )
+    return session_id, turn["session"]["seeds"][0]["id"]
+
+
+def test_web_api_seed_detail_exposes_canonical_timeline(tmp_path) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    session_id, seed_id = _web_seed_fixture(api)
+
+    detail = api.get_seed(session_id, seed_id)
+
+    assert detail["id"] == seed_id
+    assert detail["plain_explanation"]
+    assert detail["effective_gate_policy_id"] == "evidence_backed"
+    assert isinstance(detail["timeline"], list)
+    assert detail["timeline"]
+    assert all("type" in item and "payload" in item for item in detail["timeline"])
+
+
+def test_web_api_evidence_retry_is_idempotent(tmp_path) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    session_id, seed_id = _web_seed_fixture(api)
+    payload = {
+        "source_ref": "reviewer:web-evidence",
+        "note": "Checked independently.",
+        "operator_verified": True,
+        "request_id": "web-evidence:retry-once",
+    }
+
+    first = api.submit_evidence(session_id, seed_id, payload)
+    after_first = api.controller.workspace.repository.verify_production_integrity()
+    second = api.submit_evidence(session_id, seed_id, payload)
+    after_second = api.controller.workspace.repository.verify_production_integrity()
+
+    first_seed = next(item for item in first["seeds"] if item["id"] == seed_id)
+    second_seed = next(item for item in second["seeds"] if item["id"] == seed_id)
+    assert first_seed["evidence_count"] == 1
+    assert second_seed["evidence_count"] == 1
+    assert after_second["sequence_no"] == after_first["sequence_no"]
+    assert after_second["head_hash"] == after_first["head_hash"]
+
+
+def test_web_api_contradiction_retry_is_idempotent(tmp_path) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    session_id, seed_id = _web_seed_fixture(api)
+    payload = {"request_id": "web-contradiction:retry-once"}
+
+    first = api.contradict_seed(session_id, seed_id, payload)
+    after_first = api.controller.workspace.repository.verify_production_integrity()
+    second = api.contradict_seed(session_id, seed_id, payload)
+    after_second = api.controller.workspace.repository.verify_production_integrity()
+
+    first_seed = next(item for item in first["seeds"] if item["id"] == seed_id)
+    second_seed = next(item for item in second["seeds"] if item["id"] == seed_id)
+    assert first_seed["blocking"] is True
+    assert second_seed["blocking"] is True
+    assert after_second["sequence_no"] == after_first["sequence_no"]
+    assert after_second["head_hash"] == after_first["head_hash"]
+
+
+def test_web_api_contradiction_resolution_retry_is_idempotent(tmp_path) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    session_id, seed_id = _web_seed_fixture(api)
+    api.contradict_seed(
+        session_id,
+        seed_id,
+        {"request_id": "web-contradiction:before-resolution"},
+    )
+    payload = {
+        "basis": "Independent review resolved the conflict.",
+        "request_id": "web-contradiction-resolve:retry-once",
+    }
+
+    first = api.resolve_contradiction(session_id, seed_id, payload)
+    after_first = api.controller.workspace.repository.verify_production_integrity()
+    second = api.resolve_contradiction(session_id, seed_id, payload)
+    after_second = api.controller.workspace.repository.verify_production_integrity()
+
+    first_seed = next(item for item in first["seeds"] if item["id"] == seed_id)
+    second_seed = next(item for item in second["seeds"] if item["id"] == seed_id)
+    assert first_seed["blocking"] is False
+    assert second_seed["blocking"] is False
+    assert after_second["sequence_no"] == after_first["sequence_no"]
+    assert after_second["head_hash"] == after_first["head_hash"]
+
+
+def test_web_api_rejects_changed_resolution_for_same_request_id(tmp_path) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    session_id, seed_id = _web_seed_fixture(api)
+    api.contradict_seed(
+        session_id,
+        seed_id,
+        {"request_id": "web-contradiction:resolution-conflict"},
+    )
+    request_id = "web-contradiction-resolve:conflict"
+    api.resolve_contradiction(
+        session_id,
+        seed_id,
+        {
+            "basis": "First checked basis.",
+            "request_id": request_id,
+        },
+    )
+
+    with pytest.raises(ValueError, match="different contradiction-resolution input"):
+        api.resolve_contradiction(
+            session_id,
+            seed_id,
+            {
+                "basis": "Different basis.",
+                "request_id": request_id,
+            },
+        )
+
+
+@pytest.mark.parametrize(
+    ("method", "payload"),
+    [
+        (
+            "evidence",
+            {
+                "source_ref": "reviewer:missing-id",
+                "operator_verified": True,
+            },
+        ),
+        ("contradict", {}),
+        ("resolve", {"basis": "Checked basis"}),
+    ],
+)
+def test_web_api_seed_mutations_require_request_id(
+    tmp_path,
+    method,
+    payload,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    session_id, seed_id = _web_seed_fixture(api)
+
+    with pytest.raises(ValueError, match="request_id is required"):
+        if method == "evidence":
+            api.submit_evidence(session_id, seed_id, payload)
+        elif method == "contradict":
+            api.contradict_seed(session_id, seed_id, payload)
+        else:
+            api.resolve_contradiction(session_id, seed_id, payload)
