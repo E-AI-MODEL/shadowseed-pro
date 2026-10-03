@@ -1,8 +1,9 @@
 """Minimal OpenAI client wrapper for real-model SSL runs.
 
 The client keeps provider behavior explicit: bounded requests, no automatic SDK
-retries, and no network activity at import or construction time. Product code
-reads credentials from the environment and does not accept them as arguments.
+retries, and no network activity at import or construction time. Non-interactive
+product use reads credentials from the environment; the local web product may
+also install a process-memory-only credential that is never persisted.
 """
 
 from __future__ import annotations
@@ -92,7 +93,8 @@ class OpenAIClient:
     """Thin wrapper around the OpenAI chat-completions and embeddings APIs.
 
     ``client`` may be injected for testing; when omitted it is constructed from
-    ``OPENAI_API_KEY`` on first use. Automatic SDK retries are disabled so a
+    the process-memory credential or ``OPENAI_API_KEY`` on first use. Automatic
+    SDK retries are disabled so a
     provider failure is surfaced to the application instead of being silently
     replayed behind an authority-bearing product flow.
     """
