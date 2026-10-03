@@ -103,6 +103,7 @@ export function ShadowseedApp() {
   );
 
   async function selectSession(sessionId: string) {
+    if (sending) return;
     setError(null);
     try {
       setSession(await getSession(sessionId));
@@ -113,6 +114,7 @@ export function ShadowseedApp() {
 
   async function onCreate(event: FormEvent) {
     event.preventDefault();
+    if (sending) return;
     setCreating(true);
     setError(null);
     try {
@@ -128,7 +130,7 @@ export function ShadowseedApp() {
 
   async function onSend(event: FormEvent) {
     event.preventDefault();
-    if (!session || !question.trim()) return;
+    if (!session || !question.trim() || sending) return;
     const text = question.trim();
     setQuestion("");
     setSending(true);
@@ -159,6 +161,7 @@ export function ShadowseedApp() {
         <form className="new-chat" onSubmit={onCreate}>
           <input
             aria-label="Titel nieuw gesprek"
+            disabled={sending || creating}
             value={draft.title}
             onChange={(event) =>
               setDraft({ ...draft, title: event.target.value })
@@ -166,6 +169,7 @@ export function ShadowseedApp() {
           />
           <select
             aria-label="Authority-regime"
+            disabled={sending || creating}
             value={draft.authority_mode}
             onChange={(event) =>
               setDraft({
@@ -181,6 +185,7 @@ export function ShadowseedApp() {
           </select>
           <select
             aria-label="Modelprovider"
+            disabled={sending || creating}
             value={draft.backend}
             onChange={(event) =>
               setDraft({
@@ -195,6 +200,7 @@ export function ShadowseedApp() {
           {draft.backend === "ollama" ? (
             <input
               aria-label="Ollama model"
+              disabled={sending || creating}
               placeholder="bijv. qwen2.5:7b"
               value={draft.model_id ?? ""}
               onChange={(event) =>
@@ -202,7 +208,7 @@ export function ShadowseedApp() {
               }
             />
           ) : null}
-          <button type="submit" disabled={creating}>
+          <button type="submit" disabled={creating || sending}>
             {creating ? "Maken..." : "+ Nieuw gesprek"}
           </button>
         </form>
@@ -215,6 +221,7 @@ export function ShadowseedApp() {
                   ? "conversation conversation--active"
                   : "conversation"
               }
+              disabled={sending}
               key={item.session_id}
               onClick={() => selectSession(item.session_id)}
               type="button"
