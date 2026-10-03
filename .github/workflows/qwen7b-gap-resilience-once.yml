@@ -1,0 +1,150 @@
+name: Research - Qwen 7B gap resilience live run 1
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/qwen7b-gap-resilience-once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: qwen7b-gap-resilience-live1
+  cancel-in-progress: true
+
+env:
+  MODEL_ID: qwen2.5:7b-instruct-q4_K_M
+  RUN_FILE: benchmarks/results/gap_resilience/qwen2.5_7b_q4km_v06_live1.json
+
+jobs:
+  gap-resilience:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.11"
+
+      - name: Install Shadowseed
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Install and start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve > /tmp/ollama.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then
+              break
+            fi
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
+          echo "OLLAMA_VERSION=$(ollama --version 2>&1 | tr '\n' ' ')" >> "$GITHUB_ENV"
+
+      - name: Pull and fingerprint Qwen 2.5 7B q4_K_M
+        run: |
+          ollama pull "$MODEL_ID"
+          ollama list
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          with urllib.request.urlopen("http://127.0.0.1:11434/api/tags", timeout=30) as response:
+              payload = json.load(response)
+          requested = os.environ["MODEL_ID"]
+          match = next(
+              (
+                  model
+                  for model in payload.get("models", [])
+                  if model.get("name") == requested
+                  or model.get("model") == requested
+                  or str(model.get("name", "")).startswith(requested + ":")
+              ),
+              None,
+          )
+          if match is None or not match.get("digest"):
+              raise SystemExit(f"unable to resolve Ollama digest for {requested}: {payload}")
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as handle:
+              handle.write(f"MODEL_DIGEST={match['digest']}\n")
+          print("resolved model digest", match["digest"])
+          PY
+
+      - name: Run gap resilience benchmark
+        run: |
+          mkdir -p "$(dirname "$RUN_FILE")"
+          GITHUB_SHA="$(git rev-parse HEAD)" python scripts/run_gap_resilience_benchmark.py \
+            --backend ollama \
+            --model-id "$MODEL_ID" \
+            --model-revision "$MODEL_DIGEST" \
+            --repeats 5 \
+            --max-seeds 5 \
+            --max-new-tokens 220 \
+            --output "$RUN_FILE"
+
+      - name: Add runtime provenance and verify result
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          path = Path(os.environ["RUN_FILE"])
+          report = json.loads(path.read_text(encoding="utf-8"))
+          expected_head = subprocess.run(
+              ["git", "rev-parse", "HEAD"],
+              check=True,
+              capture_output=True,
+              text=True,
+          ).stdout.strip()
+
+          assert report["artifact"] == "shadowseed-gap-resilience-v1"
+          assert report["run_type"] == "live_benchmark"
+          assert report["shadowseed_source_ref"] == expected_head
+          assert report["backend"] == "ollama"
+          assert report["model_id"] == os.environ["MODEL_ID"]
+          assert report["model_revision"] == os.environ["MODEL_DIGEST"]
+          assert report["repeats"] == 5
+          assert report["summary"]["cases"] == 6
+          assert "score" not in report["summary"]
+          assert "winner" not in report["summary"]
+
+          report["runtime_provenance"] = {
+              "github_run_id": os.environ["GITHUB_RUN_ID"],
+              "github_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "runner_os": os.environ.get("RUNNER_OS"),
+              "runner_arch": os.environ.get("RUNNER_ARCH"),
+              "ollama_version": os.environ["OLLAMA_VERSION"],
+              "model_digest": os.environ["MODEL_DIGEST"],
+          }
+          path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          print(json.dumps(report["summary"], indent=2))
+          PY
+
+      - name: Commit live benchmark result to this branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$RUN_FILE"
+          git diff --cached --check
+          git commit -m "Record Qwen 7B gap resilience live run 1"
+          git push origin HEAD:"${{ github.event.pull_request.head.ref }}"
+
+      - name: Upload live benchmark result
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: qwen2.5-7b-gap-resilience-live1
+          path: ${{ env.RUN_FILE }}
