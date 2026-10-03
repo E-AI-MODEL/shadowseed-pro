@@ -1497,7 +1497,7 @@ class ShadowChatSession:
                     else str(getattr(self.detector, "prompt_variant"))
                 )
             ),
-            candidate_type=CandidateType.POSSIBLE_COMPLETION.value,
+            candidate_type=CandidateType.UNSPECIFIED.value,
             ssl_exposed=False,
             created_at=self.manager._now_iso(),
         )
@@ -1654,7 +1654,7 @@ class ShadowChatSession:
                     else str(getattr(self.detector, "prompt_variant"))
                 )
             ),
-            candidate_type=CandidateType.POSSIBLE_COMPLETION.value,
+            candidate_type=CandidateType.UNSPECIFIED.value,
             ssl_exposed=False,
             created_at=self.manager._now_iso(),
         )
@@ -1662,7 +1662,7 @@ class ShadowChatSession:
             seed_id: seed.occurrence_count for seed_id, seed in self.manager.seeds.items()
         }
         origin = SeedOrigin(
-            candidate_type=CandidateType.POSSIBLE_COMPLETION,
+            candidate_type=CandidateType.UNSPECIFIED,
             detection_basis="uploaded_source_text",
             context_ref=context_ref,
         )
