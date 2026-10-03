@@ -207,6 +207,7 @@ export function ShadowseedApp() {
       if (seedRequestId.current === requestId) {
         setSelectedSeed(detail);
       }
+      return true;
     } catch {
       if (seedRequestId.current === requestId) {
         setSelectedSeed(null);
@@ -214,6 +215,7 @@ export function ShadowseedApp() {
           "De wijziging is opgeslagen, maar de detailweergave kon niet worden vernieuwd.",
         );
       }
+      return false;
     }
   }
 
@@ -302,7 +304,7 @@ export function ShadowseedApp() {
 
   async function onCreate(event: FormEvent) {
     event.preventDefault();
-    if (sending || loadingSession) return;
+    if (sending || loadingSession || seedActionBusy) return;
     setCreating(true);
     setError(null);
     setNotice(null);
@@ -435,8 +437,13 @@ export function ShadowseedApp() {
       setEvidenceRef("");
       setEvidenceNote("");
       setEvidenceVerified(false);
-      await refreshSeedAfterMutation(nextSession, selectedSeed.id);
-      setSeedNotice("Geverifieerde steun is opgeslagen.");
+      const refreshed = await refreshSeedAfterMutation(
+        nextSession,
+        selectedSeed.id,
+      );
+      if (refreshed) {
+        setSeedNotice("Geverifieerde steun is opgeslagen.");
+      }
     } catch (cause) {
       setRetrySeedAction({
         kind: "evidence",
@@ -472,8 +479,13 @@ export function ShadowseedApp() {
         requestId,
       );
       setRetrySeedAction(null);
-      await refreshSeedAfterMutation(nextSession, selectedSeed.id);
-      setSeedNotice("Tegenspraak is vastgelegd. Dit punt is nu geblokkeerd.");
+      const refreshed = await refreshSeedAfterMutation(
+        nextSession,
+        selectedSeed.id,
+      );
+      if (refreshed) {
+        setSeedNotice("Tegenspraak is vastgelegd. Dit punt is nu geblokkeerd.");
+      }
     } catch (cause) {
       setRetrySeedAction({
         kind: "contradict",
@@ -515,8 +527,13 @@ export function ShadowseedApp() {
       );
       setRetrySeedAction(null);
       setResolutionBasis("");
-      await refreshSeedAfterMutation(nextSession, selectedSeed.id);
-      setSeedNotice("De tegenspraak is opnieuw door de Gate beoordeeld.");
+      const refreshed = await refreshSeedAfterMutation(
+        nextSession,
+        selectedSeed.id,
+      );
+      if (refreshed) {
+        setSeedNotice("De tegenspraak is opnieuw door de Gate beoordeeld.");
+      }
     } catch (cause) {
       setRetrySeedAction({
         kind: "resolve",
@@ -580,7 +597,7 @@ export function ShadowseedApp() {
         <form className="new-chat" onSubmit={onCreate}>
           <input
             aria-label="Titel nieuw gesprek"
-            disabled={sending || creating || loadingSession}
+            disabled={sending || creating || loadingSession || seedActionBusy}
             value={draft.title}
             onChange={(event) =>
               setDraft({ ...draft, title: event.target.value })
@@ -588,7 +605,7 @@ export function ShadowseedApp() {
           />
           <select
             aria-label="Authority-regime"
-            disabled={sending || creating || loadingSession}
+            disabled={sending || creating || loadingSession || seedActionBusy}
             value={draft.authority_mode}
             onChange={(event) =>
               setDraft({
@@ -604,7 +621,7 @@ export function ShadowseedApp() {
           </select>
           <select
             aria-label="Modelprovider"
-            disabled={sending || creating || loadingSession}
+            disabled={sending || creating || loadingSession || seedActionBusy}
             value={draft.backend}
             onChange={(event) => {
               const backend =
@@ -622,7 +639,7 @@ export function ShadowseedApp() {
           {draft.backend === "ollama" ? (
             <input
               aria-label="Ollama model"
-              disabled={sending || creating || loadingSession}
+              disabled={sending || creating || loadingSession || seedActionBusy}
               placeholder="bijv. qwen2.5:7b"
               value={draft.model_id ?? ""}
               onChange={(event) =>
@@ -632,7 +649,7 @@ export function ShadowseedApp() {
           ) : null}
           <button
             type="submit"
-            disabled={creating || sending || loadingSession}
+            disabled={creating || sending || loadingSession || seedActionBusy}
           >
             {creating ? "Maken..." : "+ Nieuw gesprek"}
           </button>
@@ -646,7 +663,7 @@ export function ShadowseedApp() {
                   ? "conversation conversation--active"
                   : "conversation"
               }
-              disabled={sending || creating}
+              disabled={sending || creating || seedActionBusy}
               key={item.session_id}
               onClick={() => selectSession(item.session_id)}
               type="button"
