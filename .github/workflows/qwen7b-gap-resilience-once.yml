@@ -16,7 +16,7 @@ concurrency:
 
 env:
   MODEL_ID: qwen2.5:7b-instruct-q4_K_M
-  RUN_FILE: benchmarks/results/gap_resilience/qwen2.5_7b_q4km_v06_live1.json
+  RUN_FILE: benchmarks/results/gap_resilience/qwen2.5_7b_q4km_v06_live2_diagnostic.json
 
 jobs:
   gap-resilience:
@@ -119,6 +119,12 @@ jobs:
           assert report["model_revision"] == os.environ["MODEL_DIGEST"]
           assert report["repeats"] == 5
           assert report["summary"]["cases"] == 6
+          assert sum(len(case["run_details"]) for case in report["cases"]) == 30
+          assert all(
+              detail["detector_raw_output"] is not None
+              for case in report["cases"]
+              for detail in case["run_details"]
+          )
           assert "score" not in report["summary"]
           assert "winner" not in report["summary"]
 
