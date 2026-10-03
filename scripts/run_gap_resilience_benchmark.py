@@ -27,11 +27,138 @@ from pathlib import Path
 from statistics import mean
 from typing import Any, Iterable
 
-from shadowseed.detection.model_detector import make_detector_backend
+from shadowseed.adapters.ollama_client import OllamaClient
+from shadowseed.detection.model_detector import (
+    make_detector_backend,
+    parse_numbered_seeds_with_diagnostics,
+)
 
 SCHEMA_VERSION = 1
 ARTIFACT = "shadowseed-gap-resilience-v1"
 DEFAULT_MATCH_THRESHOLD = 0.35
+
+
+EXPERIMENTAL_PROMPTS: dict[str, str] = {
+    "candidate_v1": """
+You analyse one user question, a draft answer, and optional bounded prior context.
+
+Name up to {max_seeds} plausible unresolved information gaps that may still
+deserve checking for this specific question.
+
+A candidate gap is only a dimension or information slot to investigate. It is
+NOT a claim that the gap is definitely real, important, correct, supported, or
+eligible to influence an answer. You may name a relevant dimension even when
+the draft does not mention it explicitly, but never invent the missing value or
+answer.
+
+Use prior context only to avoid reopening something already established.
+
+Rules:
+- Use the same language as CURRENT QUESTION.
+- Each candidate names exactly one unresolved dimension.
+- Prefer a concrete relation, condition, dependency, criterion, timing,
+  ownership, interface, or distinction when relevant to the question.
+- Do not invent facts, values, names, numbers, quotations, or sources.
+- Do not output a gap that the draft or bounded prior context already answers.
+- Do not rank, validate, complete, or explain candidates.
+- Return one numbered candidate per line.
+- Return exactly NONE only when no plausible unresolved dimension directly
+  relevant to the user's current question can be named without inventing its
+  answer.
+
+BOUNDED PRIOR CONTEXT:
+{conversation_context}
+
+CURRENT QUESTION:
+{question}
+
+DRAFT ANSWER:
+{answer}
+
+OUTPUT:
+""".strip(),
+    "candidate_v2": """
+Perform a contrastive coverage check of the current exchange.
+
+First use DRAFT ANSWER and BOUNDED PRIOR CONTEXT only to subtract what is
+already established. Then output up to {max_seeds} concrete information slots
+that remain plausibly unresolved for answering CURRENT QUESTION.
+
+The output is exploratory detector material only. Naming a slot does not prove
+that it is missing, useful, true, supported, or authorized. Do not supply the
+answer to the slot.
+
+Rules:
+- Use the same language as CURRENT QUESTION.
+- One candidate = one information slot.
+- A candidate may be a noun phrase or concise question-like label.
+- Prefer specific conditions, criteria, dependencies, timing, ownership,
+  failure behavior, interfaces, or distinctions over generic checklist items.
+- Do not invent facts, values, sources, names, or quotations.
+- Never repeat a slot already settled by the draft or prior context.
+- Return one numbered candidate per line, no commentary.
+- Return exactly NONE only when every material slot you can name for this
+  specific question is already settled by the draft or bounded prior context.
+
+BOUNDED PRIOR CONTEXT:
+{conversation_context}
+
+CURRENT QUESTION:
+{question}
+
+DRAFT ANSWER:
+{answer}
+
+OUTPUT:
+""".strip(),
+}
+
+
+class ExperimentalOllamaDetector:
+    """Benchmark-only prompt arm; never used by the product runtime."""
+
+    def __init__(self, model_id: str, profile: str, max_new_tokens: int) -> None:
+        if profile not in EXPERIMENTAL_PROMPTS:
+            raise ValueError(f"unknown experimental prompt profile: {profile}")
+        self.name = f"ollama:{model_id}:{profile}"
+        self.model_id = model_id
+        self.profile = profile
+        self.max_new_tokens = max_new_tokens
+        self.client = OllamaClient(model=model_id)
+        self.last_raw_output: str | None = None
+        self.last_parse_diagnostics: dict[str, int | bool] | None = None
+        self.last_prompt_metadata: dict[str, Any] | None = None
+
+    def detect_seeds(self, item: dict[str, Any], max_seeds: int = 5) -> list[str]:
+        question = str(item.get("question") or "").strip()
+        answer = str(item.get("text") or item.get("input") or "").strip()
+        context = str(item.get("conversation_context") or "NONE").strip() or "NONE"
+        if not question or not answer:
+            self.last_raw_output = "NONE"
+            seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
+                "NONE", max_seeds=max_seeds, source_text=answer
+            )
+            self.last_parse_diagnostics = diagnostics
+            return seeds
+
+        prompt = EXPERIMENTAL_PROMPTS[self.profile].format(
+            max_seeds=max_seeds,
+            conversation_context=context,
+            question=question,
+            answer=answer,
+        )
+        raw = self.client.generate(prompt, max_new_tokens=self.max_new_tokens)
+        seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
+            raw, max_seeds=max_seeds, source_text=answer
+        )
+        self.last_raw_output = raw
+        self.last_parse_diagnostics = diagnostics
+        self.last_prompt_metadata = {
+            "prompt_id": f"benchmark_gap_resilience_{self.profile}",
+            "prompt_profile": self.profile,
+            "authority": "benchmark_only",
+        }
+        return seeds
 
 _STOPWORDS = frozenset(
     {
@@ -372,6 +499,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--model-id", default=None)
     parser.add_argument("--model-revision", default=None)
+    parser.add_argument(
+        "--prompt-profile",
+        choices=("runtime_v06", "candidate_v1", "candidate_v2"),
+        default="runtime_v06",
+    )
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--max-seeds", type=int, default=5)
     parser.add_argument("--max-new-tokens", type=int, default=400)
@@ -380,13 +512,24 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     case_payload, cases = _load_cases(args.cases)
-    detector = make_detector_backend(
-        args.backend,
-        model_id=args.model_id,
-        max_new_tokens=args.max_new_tokens,
-        prompt_variant="current_pair",
-        model_revision=args.model_revision,
-    )
+    if args.prompt_profile == "runtime_v06":
+        detector = make_detector_backend(
+            args.backend,
+            model_id=args.model_id,
+            max_new_tokens=args.max_new_tokens,
+            prompt_variant="current_pair",
+            model_revision=args.model_revision,
+        )
+    else:
+        if args.backend != "ollama":
+            raise ValueError("experimental prompt profiles currently require --backend ollama")
+        if not args.model_id:
+            raise ValueError("experimental prompt profiles require --model-id")
+        detector = ExperimentalOllamaDetector(
+            model_id=args.model_id,
+            profile=args.prompt_profile,
+            max_new_tokens=args.max_new_tokens,
+        )
     scored = run_cases(
         cases,
         detector,
@@ -412,6 +555,7 @@ def main(argv: list[str] | None = None) -> int:
         "model_id": args.model_id,
         "model_revision": args.model_revision,
         "prompt_variant": "current_pair",
+        "prompt_profile": args.prompt_profile,
         "repeats": args.repeats,
         "max_seeds": args.max_seeds,
         "match_threshold": args.match_threshold,
