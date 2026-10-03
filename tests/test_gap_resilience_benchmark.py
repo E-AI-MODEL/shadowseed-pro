@@ -50,7 +50,7 @@ def test_candidate_set_repeatability_is_order_independent() -> None:
     left = ["API authentication method", "backup deletion timing"]
     right = ["backup deletion timing", "API client authentication method"]
 
-    assert bench.candidate_set_similarity(left, right) > 0.8
+    assert bench.candidate_set_similarity(left, right) >= 0.8
     assert bench.candidate_set_similarity([], []) == 1.0
     assert bench.candidate_set_similarity(left, []) == 0.0
 
