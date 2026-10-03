@@ -8,8 +8,17 @@ import type {
 } from "@/lib/types";
 
 function localApiBase(raw?: string): string {
-  const candidate = raw ?? "http://127.0.0.1:8765/api/v1";
-  const url = new URL(candidate);
+  if (!raw) {
+    if (
+      typeof window !== "undefined" &&
+      window.location.port === "3000"
+    ) {
+      return "http://127.0.0.1:8765/api/v1";
+    }
+    return "/api/v1";
+  }
+
+  const url = new URL(raw);
   if (
     !["http:", "https:"].includes(url.protocol) ||
     !["127.0.0.1", "localhost"].includes(url.hostname)
@@ -18,23 +27,23 @@ function localApiBase(raw?: string): string {
       "Shadowseed web API must use a loopback URL (127.0.0.1 or localhost)",
     );
   }
-  return candidate.replace(/\/$/, "");
+  return raw.replace(/\/$/, "");
 }
-
-const API_BASE = localApiBase(process.env.NEXT_PUBLIC_SHADOWSEED_API_URL);
 
 async function request<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
-  const response = await fetch(API_BASE + path, {
+  const response = await fetch(
+    localApiBase(process.env.NEXT_PUBLIC_SHADOWSEED_API_URL) + path,
+    {
     ...init,
     cache: "no-store",
     headers: {
       "Content-Type": "application/json",
       ...(init?.headers ?? {}),
     },
-  });
+  );
 
   const payload = (await response.json()) as T & { error?: string };
   if (!response.ok) {
