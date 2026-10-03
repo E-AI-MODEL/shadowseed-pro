@@ -137,10 +137,85 @@ export function ShadowseedApp() {
   const [loadingSession, setLoadingSession] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [shadowOpen, setShadowOpen] = useState(false);
+  const [selectedSeed, setSelectedSeed] = useState<SeedDetail | null>(null);
+  const [loadingSeed, setLoadingSeed] = useState(false);
+  const [seedActionBusy, setSeedActionBusy] = useState(false);
+  const [seedError, setSeedError] = useState<string | null>(null);
+  const [seedNotice, setSeedNotice] = useState<string | null>(null);
+  const [evidenceRef, setEvidenceRef] = useState("");
+  const [evidenceNote, setEvidenceNote] = useState("");
+  const [evidenceVerified, setEvidenceVerified] = useState(false);
+  const [resolutionBasis, setResolutionBasis] = useState("");
+  const [retrySeedAction, setRetrySeedAction] = useState<{
+    kind: "evidence" | "contradict" | "resolve";
+    sessionId: string;
+    seedId: string;
+    fingerprint: string;
+    requestId: string;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const sessionRequestId = useRef(0);
   const refreshRequestId = useRef(0);
+  const seedRequestId = useRef(0);
+
+  function clearSeedDetail() {
+    seedRequestId.current += 1;
+    setLoadingSeed(false);
+    setSelectedSeed(null);
+    setSeedError(null);
+    setSeedNotice(null);
+    setRetrySeedAction(null);
+    setEvidenceRef("");
+    setEvidenceNote("");
+    setEvidenceVerified(false);
+    setResolutionBasis("");
+  }
+
+  async function openSeed(seedId: string) {
+    if (!session || seedActionBusy) return;
+    const requestId = ++seedRequestId.current;
+    setLoadingSeed(true);
+    setSeedError(null);
+    setSeedNotice(null);
+    try {
+      const detail = await getSeed(session.session_id, seedId);
+      if (seedRequestId.current === requestId) {
+        setSelectedSeed(detail);
+      }
+    } catch (cause) {
+      if (seedRequestId.current === requestId) {
+        setSeedError(
+          cause instanceof Error ? cause.message : "Geheugenpunt kon niet laden",
+        );
+      }
+    } finally {
+      if (seedRequestId.current === requestId) {
+        setLoadingSeed(false);
+      }
+    }
+  }
+
+  async function refreshSeedAfterMutation(
+    nextSession: SessionView,
+    seedId: string,
+  ) {
+    setSession(nextSession);
+    const requestId = ++seedRequestId.current;
+    try {
+      const detail = await getSeed(nextSession.session_id, seedId);
+      if (seedRequestId.current === requestId) {
+        setSelectedSeed(detail);
+      }
+    } catch {
+      if (seedRequestId.current === requestId) {
+        setSelectedSeed(null);
+        setSeedNotice(
+          "De wijziging is opgeslagen, maar de detailweergave kon niet worden vernieuwd.",
+        );
+      }
+    }
+  }
 
   async function loadSession(sessionId: string) {
     const requestId = ++sessionRequestId.current;
