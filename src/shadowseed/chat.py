@@ -841,6 +841,8 @@ class ShadowChatSession:
                     continue
                 if report.get("same_turn_revision_applied"):
                     continue
+                if report.get("self_reinforcement_applied"):
+                    continue
             clean_turns.append((question, answer))
 
         bounded = clean_turns[-CURRENT_PAIR_CONTEXT_MAX_TURNS:]
@@ -1575,6 +1577,7 @@ class ShadowChatSession:
                 else []
             ),
             "detected_candidates": candidates,
+            "detector_context_policy": CURRENT_PAIR_CONTEXT_POLICY_ID,
             "detector_audit": self._detector_audit(),
             "model_roles": self._model_role_audit(),
             "intake_diagnostics": {
