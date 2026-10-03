@@ -4,9 +4,9 @@ This document describes the bounded single-user `production-ready/local` target 
 
 ## Supported launcher boundary
 
-The standalone product launcher uses `shadowseed.workbench.production_local.launch_production_local_workbench`. Its network host is fixed to `127.0.0.1`; the API has no host override and no remote-allow option.
+The packaged web product uses `shadowseed-web`, which serves the static browser client and `/api/v1` from one Python process on IPv4 loopback. Its host is fixed to `127.0.0.1`; there is no remote-bind option. If the preferred port is occupied, the launcher may choose another loopback port but may not widen the host boundary. The browser and API use the same local origin in packaged mode.
 
-The generic source command `shadowseed workbench --host ... --allow-remote` remains a trusted-environment/development preview surface. It has no multi-user authentication layer and is outside the `production-ready/local` claim.
+The existing frozen Gradio launcher remains supported and uses `shadowseed.workbench.production_local.launch_production_local_workbench`; frozen bundles can explicitly select the packaged web surface with `Shadowseed --web`. The generic source command `shadowseed workbench --host ... --allow-remote` remains a trusted-environment/development preview surface. It has no multi-user authentication layer and is outside the `production-ready/local` claim.
 
 ## Container boundary
 
@@ -48,7 +48,7 @@ No secure physical-media erasure claim is made beyond the underlying filesystem/
 
 Production-local operational JSONL logs use an explicit metadata allow-list, bounded rotation and restrictive local file permissions where supported. Raw prompts, answers, messages, seed text, evidence references/notes, credentials and arbitrary exception payloads are not accepted as structured operational fields.
 
-Credential-like environment values are also removed from production error rendering when an underlying provider or integration error includes them. Standalone startup diagnostics sanitize both the displayed error and persisted traceback text before writing the diagnostic file. This minimization does not hide the exception type or replace the normal fail-closed behavior.
+Credential-like environment values are also removed from production error rendering when an underlying provider or integration error includes them. A browser-entered OpenAI credential is held only in process memory, is not returned by provider-status APIs, and is separate from explicit per-session/per-turn external-processing consent. Standalone startup diagnostics sanitize both the displayed error and persisted traceback text before writing the diagnostic file. This minimization does not hide the exception type or replace the normal fail-closed behavior.
 
 ## Recovery
 

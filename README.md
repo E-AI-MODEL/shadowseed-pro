@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/E-AI-MODEL/shadowseed-pro/actions/workflows/ci.yml"><img alt="Continuous integration" src="https://github.com/E-AI-MODEL/shadowseed-pro/actions/workflows/ci.yml/badge.svg"></a>
-  <img alt="Repository version 0.11.1" src="https://img.shields.io/badge/repository-0.11.1-2f6f5e">
+  <img alt="Repository version 0.12.0" src="https://img.shields.io/badge/repository-0.12.0-2f6f5e">
   <img alt="Python 3.10 or higher" src="https://img.shields.io/badge/Python-3.10%2B-3776AB">
   <img alt="Research status research ready" src="https://img.shields.io/badge/status-research--ready-c88719">
   <img alt="PolyForm Noncommercial 1.0.0" src="https://img.shields.io/badge/license-PolyForm_Noncommercial_1.0.0-5b4b8a">
@@ -22,7 +22,7 @@ complete client of that pipeline: it provides chat, inspection, comparison,
 feedback, export, and standalone packaging.
 
 > [!IMPORTANT]
-> **Shadowseed Pro is research-ready, not yet production-ready.** Source version 0.11.1 is the current hotfix release candidate; `v0.11.0` remains the latest published Research Preview until the exact-SHA release workflow succeeds. Publication, production readiness and general answer-quality evidence remain separate claims. This candidate does not establish universal missing-information detection, semantic truth, hostile-network safety, hosted/multi-user readiness, or a completed `production-ready/local` claim before the exact-SHA release assurance and soak gates finish.
+> **Shadowseed Pro is research-ready, not yet production-ready.** Source version 0.12.0 is the current Research Preview release candidate; `v0.11.1` remains the latest published Research Preview until the exact-SHA release workflow succeeds for 0.12.0. Publication, production readiness and general answer-quality evidence remain separate claims. This candidate does not establish universal missing-information detection, semantic truth, hostile-network safety, hosted/multi-user readiness, or a completed `production-ready/local` claim before the exact-SHA release assurance and soak gates finish.
 
 > [!NOTE]
 > Repository states and releases that include [`LICENSE`](LICENSE) are source-available under **PolyForm Noncommercial License 1.0.0**. Noncommercial research, experiment, testing, modification, and distribution are permitted according to those terms. Commercial use requires separate permission. This is not an OSI open-source license. Historical artifacts keep the rights terms distributed with those versions; the new license is not retroactive.
@@ -66,7 +66,9 @@ For a verified GitHub release, the intended tester path is:
 download -> extract/open -> choose model -> create chat -> chat with SSL -> optionally compare one message with SSL off
 ```
 
-The standalone release contract builds Windows, macOS, and Linux archives with an embedded Python runtime. A normal tester does not need Git, system Python, `pip`, benchmark JSON, or an authored baseline answer. The normal standalone is deliberately thin: the deterministic fixture works immediately and local Ollama provides chat plus semantic embeddings when its models are installed. The default `embeddinggemma` semantic model requires Ollama v0.11.10 or later. Hugging Face and hosted OpenAI remain explicit optional provider extras for Python/wheel installations and are not bundled into the normal standalone.
+The 0.12 product line adds a packaged local web client on top of the same canonical Python runtime. `shadowseed-web` serves the static web interface and `/api/v1` from one loopback-only Python process and opens the browser automatically; packaged users do not need a Node runtime or a second terminal. The existing Gradio Workbench remains available separately, and frozen bundles can launch the same packaged web mode through `Shadowseed --web`.
+
+The standalone release contract builds Windows, macOS, and Linux archives with an embedded Python runtime. A normal tester does not need Git, system Python, `pip`, benchmark JSON, or an authored baseline answer. The normal standalone is deliberately thin: the deterministic fixture works immediately and local Ollama provides chat plus semantic embeddings when its models are installed. The default `embeddinggemma` semantic model requires Ollama v0.11.10 or later. Hosted OpenAI is available only when the explicit `openai` provider extra is installed; that SDK is not bundled into the thin frozen standalone.
 
 Source and release availability are separate facts. Treat a version as publicly released only after its immutable tag and verified release assets exist.
 
@@ -80,6 +82,8 @@ pip install -e ".[test,workbench]"
 python -m pytest -q
 python -m ruff check .
 shadowseed --help
+shadowseed-web
+# Legacy Gradio surface remains available:
 shadowseed-workbench
 ```
 
@@ -165,7 +169,7 @@ Real-model runs must pin the model and embedding provenance required by the sele
 
 For a visual walkthrough of the product experience, including the model-independent engine, chat, shadow-memory inspection, evidence review, SSL-on/off comparison, exports, and local delivery, see the [product high-level design](docs/architecture/high-level-design.md).
 
-The repository currently identifies software 0.11.1 as the hotfix release candidate. `v0.11.0` remains the latest published Research Preview until `v0.11.1` is created from an exact verified source SHA; public release availability and production readiness remain separate facts. The manuscript is a reviewed methods/systems snapshot, not a moving release brochure. It carries two explicit historical anchors: the reviewed SSL core at source version 0.5.0, and a separate assurance anchor at software 0.7.1 covering only the persistence, audit, and release-assurance sections. Releases after 0.5.0 extend the product, research instrumentation, persistence, and release-assurance layers around that reviewed core without redefining its authority model. We do not rewrite the compiled paper merely to make a release badge match; a manuscript revision must rebuild `main.tex`, bibliography, and PDF together.
+The repository currently identifies software 0.12.0 as the Research Preview release candidate. `v0.11.1` remains the latest published Research Preview until `v0.12.0` is created from an exact verified source SHA; public release availability and production readiness remain separate facts. The manuscript is a reviewed methods/systems snapshot, not a moving release brochure. It carries two explicit historical anchors: the reviewed SSL core at source version 0.5.0, and a separate assurance anchor at software 0.7.1 covering only the persistence, audit, and release-assurance sections. Releases after 0.5.0 extend the product, research instrumentation, persistence, and release-assurance layers around that reviewed core without redefining its authority model. We do not rewrite the compiled paper merely to make a release badge match; a manuscript revision must rebuild `main.tex`, bibliography, and PDF together.
 
 Every entry in the bibliography is recorded in [`paper/references-verification.md`](paper/references-verification.md) with the venue it was checked against and the level of that check. A contract test fails if a citation is added without a verification record.
 

@@ -101,6 +101,16 @@ def test_heavy_release_evidence_is_pr_scoped_or_explicitly_dispatched() -> None:
         assert "workflow_dispatch:" in trigger_block
         assert "push:" not in trigger_block
 
+    web_workflow = Path(".github/workflows/web-client-ci.yml").read_text(
+        encoding="utf-8"
+    )
+    web_trigger_block = web_workflow[
+        web_workflow.index("on:"):web_workflow.index("\n\npermissions:")
+    ]
+    assert "pull_request:" in web_trigger_block
+    assert "workflow_dispatch:" in web_trigger_block
+    assert "push:\n    branches: [main]" in web_trigger_block
+
 def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -> None:
     workflow = Path(".github/workflows/release-workbench.yml").read_text(encoding="utf-8")
 
@@ -115,6 +125,7 @@ def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -
         "workbench-portability.yml",
         "research-package-ci.yml",
         "standalone-workbench.yml",
+        "web-client-ci.yml",
     ):
         assert required in workflow
     assert "actions: write" in workflow
