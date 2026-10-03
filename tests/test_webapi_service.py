@@ -709,3 +709,172 @@ def test_web_api_seed_mutations_require_request_id(
             api.contradict_seed(session_id, seed_id, payload)
         else:
             api.resolve_contradiction(session_id, seed_id, payload)
+
+
+
+def test_web_api_provider_status_never_returns_or_persists_openai_key(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    workspace = tmp_path / "workspace"
+    api = WebApiService(workspace)
+    monkeypatch.setattr(
+        api.controller,
+        "backend_available",
+        lambda backend: backend == "openai",
+    )
+    secret = "sk-provider-secret-marker"
+
+    before = api.provider_status()
+    assert next(
+        item for item in before["providers"] if item["provider"] == "openai"
+    )["configured"] is False
+
+    configured = api.configure_openai({"api_key": secret})
+    openai = next(
+        item for item in configured["providers"] if item["provider"] == "openai"
+    )
+    assert openai["configured"] is True
+    assert openai["ready"] is True
+    assert secret not in repr(configured)
+
+    for path in workspace.rglob("*"):
+        if path.is_file():
+            assert secret.encode("utf-8") not in path.read_bytes()
+
+    cleared = api.clear_openai()
+    openai = next(
+        item for item in cleared["providers"] if item["provider"] == "openai"
+    )
+    assert openai["configured"] is False
+    assert openai["ready"] is False
+
+
+def test_web_api_openai_creation_requires_configured_provider(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    monkeypatch.setattr(
+        api.controller,
+        "backend_available",
+        lambda backend: backend == "openai",
+    )
+
+    with pytest.raises(ValueError, match="OpenAI is not configured"):
+        api.create_session(
+            {
+                "title": "Hosted",
+                "backend": "openai",
+                "model_id": "gpt-4o-mini",
+                "authority_mode": "assisted",
+                "external_confirmed": True,
+            }
+        )
+
+
+def test_web_api_openai_creation_requires_explicit_external_consent(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    monkeypatch.setattr(
+        api.controller,
+        "backend_available",
+        lambda backend: backend == "openai",
+    )
+    configure_process_openai_api_key("sk-test")
+
+    with pytest.raises(ValueError, match="confirm external processing"):
+        api.create_session(
+            {
+                "title": "Hosted",
+                "backend": "openai",
+                "model_id": "gpt-4o-mini",
+                "authority_mode": "assisted",
+            }
+        )
+
+
+def test_web_api_openai_session_is_visible_and_ready_when_configured(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    monkeypatch.setattr(
+        api.controller,
+        "backend_available",
+        lambda backend: backend == "openai",
+    )
+    configure_process_openai_api_key("sk-test")
+
+    created = api.create_session(
+        {
+            "title": "Hosted",
+            "backend": "openai",
+            "model_id": "gpt-4o-mini",
+            "authority_mode": "assisted",
+            "external_confirmed": True,
+        }
+    )
+
+    assert created["backend"] == "openai"
+    assert created["provider_ready"] is True
+    assert created["embedding_backend"] == "openai"
+    listed = {
+        item["session_id"]: item
+        for item in api.list_sessions()["sessions"]
+    }
+    assert listed[created["session_id"]]["provider_ready"] is True
+
+
+def test_web_api_openai_turn_requires_fresh_external_consent(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    monkeypatch.setattr(
+        api.controller,
+        "backend_available",
+        lambda backend: backend == "openai",
+    )
+    configure_process_openai_api_key("sk-test")
+    created = api.create_session(
+        {
+            "title": "Hosted",
+            "backend": "openai",
+            "model_id": "gpt-4o-mini",
+            "authority_mode": "assisted",
+            "external_confirmed": True,
+        }
+    )
+
+    with pytest.raises(ValueError, match="confirm external processing"):
+        api.run_turn(
+            created["session_id"],
+            {
+                "question": "Do not send this without consent.",
+                "request_id": "web-turn:openai-consent",
+            },
+        )
+
+    assert api.get_session(created["session_id"])["turn"] == 0
+
+
+def test_web_api_openai_status_distinguishes_key_from_missing_runtime(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    monkeypatch.setattr(api.controller, "backend_available", lambda backend: False)
+    configure_process_openai_api_key("sk-test")
+
+    status = next(
+        item
+        for item in api.provider_status()["providers"]
+        if item["provider"] == "openai"
+    )
+
+    assert status["configured"] is True
+    assert status["available"] is False
+    assert status["ready"] is False
