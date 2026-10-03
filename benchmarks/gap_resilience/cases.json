@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "case_set": "gap_resilience_core",
+  "case_set_version": "1.0",
+  "description": "Small authored benchmark for gap recall, no-gap abstention, resolved-gap currentness, and repeated-run stability. Alias matching is a deterministic scoring aid, not semantic truth.",
+  "cases": [
+    {
+      "case_id": "api-auth-missing",
+      "language": "en",
+      "question": "What still needs to be specified before clients can use the API?",
+      "draft_answer": "The API endpoint is https://api.example.test/v1. Clients may send 60 requests per minute and responses use JSON.",
+      "conversation_context": "NONE",
+      "negative_control": false,
+      "expected_gap_groups": [
+        {
+          "id": "client-authentication",
+          "aliases": [
+            "client authentication method",
+            "API authentication method",
+            "authentication mechanism for API clients",
+            "how clients authenticate to the API"
+          ]
+        }
+      ],
+      "resolved_gap_groups": []
+    },
+    {
+      "case_id": "retention-currentness",
+      "language": "en",
+      "question": "What is still unclear about retention?",
+      "draft_answer": "Customer event data is retained for 14 days. After that period the deletion job removes it from the primary store.",
+      "conversation_context": "PRIOR TURN 1\nUSER: What is the retention period?\nASSISTANT: The old 30-day policy was replaced. The current retention period is 14 days.",
+      "negative_control": false,
+      "expected_gap_groups": [
+        {
+          "id": "backup-deletion",
+          "aliases": [
+            "deletion timing for backups",
+            "when retained data is removed from backups",
+            "backup copy deletion after retention"
+          ]
+        }
+      ],
+      "resolved_gap_groups": [
+        {
+          "id": "retention-period",
+          "aliases": [
+            "data retention period",
+            "retention duration",
+            "how long customer event data is retained"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "complete-negative-control",
+      "language": "en",
+      "question": "What remains unspecified about the password reset flow?",
+      "draft_answer": "A reset link is valid for 20 minutes, can be used once, invalidates all older reset links, and sends a confirmation email after success.",
+      "conversation_context": "PRIOR TURN 1\nUSER: Which channel sends the link?\nASSISTANT: The reset link is sent by email only.",
+      "negative_control": true,
+      "expected_gap_groups": [],
+      "resolved_gap_groups": [
+        {
+          "id": "reset-link-channel",
+          "aliases": [
+            "password reset delivery channel",
+            "channel used to send the reset link",
+            "how the reset link is delivered"
+          ]
+        },
+        {
+          "id": "reset-link-validity",
+          "aliases": [
+            "password reset link validity period",
+            "how long the reset link remains valid",
+            "reset link expiry time"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "support-hours-supersession",
+      "language": "en",
+      "question": "What operational detail is still missing?",
+      "draft_answer": "Support coverage is now 24/7 for production incidents. Requests enter one shared queue and severity determines escalation.",
+      "conversation_context": "PRIOR TURN 1\nUSER: Is support still limited to business hours?\nASSISTANT: No. The previous 09:00-17:00 schedule was superseded by 24/7 production-incident coverage.",
+      "negative_control": false,
+      "expected_gap_groups": [
+        {
+          "id": "severity-response-target",
+          "aliases": [
+            "response target by severity",
+            "severity-specific response time",
+            "incident response target for each severity"
+          ]
+        }
+      ],
+      "resolved_gap_groups": [
+        {
+          "id": "support-hours",
+          "aliases": [
+            "support coverage hours",
+            "hours when production support is available",
+            "support availability schedule"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "other-subject-trap",
+      "language": "en",
+      "question": "What is still missing from Alice's deployment description?",
+      "draft_answer": "Alice's service is deployed in the EU region and uses two availability zones.",
+      "conversation_context": "PRIOR TURN 1\nUSER: Where is Alice's service deployed?\nASSISTANT: Alice's service is in the EU region. Bob's separate service was later moved to the US region.",
+      "negative_control": false,
+      "expected_gap_groups": [
+        {
+          "id": "alice-failover",
+          "aliases": [
+            "failover behavior between Alice's availability zones",
+            "Alice service failover mechanism",
+            "how Alice's service fails over between zones"
+          ]
+        }
+      ],
+      "resolved_gap_groups": [
+        {
+          "id": "alice-region",
+          "aliases": [
+            "Alice deployment region",
+            "region where Alice's service is deployed",
+            "Alice service location"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "rollbackcriteria-nl",
+      "language": "nl",
+      "question": "Wat is nog niet vastgelegd voor de migratie?",
+      "draft_answer": "De migratie start op maandag om 18.00 uur. Eerst worden de accounts overgezet en daarna de gedeelde bestanden. Bij problemen kan het team terug naar de oude omgeving.",
+      "conversation_context": "NONE",
+      "negative_control": false,
+      "expected_gap_groups": [
+        {
+          "id": "rollbackcriteria",
+          "aliases": [
+            "criteria voor terugrollen",
+            "voorwaarden voor terugkeer naar de oude omgeving",
+            "wanneer de rollback wordt gestart",
+            "besliscriteria voor rollback"
+          ]
+        }
+      ],
+      "resolved_gap_groups": []
+    }
+  ]
+}
