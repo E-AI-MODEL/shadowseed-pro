@@ -576,6 +576,7 @@ class WorkbenchController:
         compare_without_ssl: bool = False,
         comparison_mode: str = "authorized",
         external_confirmed: bool = False,
+        request_id: str | None = None,
     ) -> dict[str, Any]:
         stored = self.sessions.load(session_id)
         config = dict(stored.get("config", {}))
@@ -597,11 +598,17 @@ class WorkbenchController:
             allow_toy_embedder=bool(config.get("allow_toy_embedder", False)),
             external_confirmed=external_confirmed,
         )
+        actor = (
+            self.workspace.local_actor_context(request_id=request_id)
+            if request_id is not None
+            else None
+        )
         report = self.sessions.run_turn(
             session_id,
             question,
             compare_without_ssl=compare_without_ssl,
             comparison_mode=comparison_mode,
+            actor=actor,
         )
         comparison = None
         if compare_without_ssl:
