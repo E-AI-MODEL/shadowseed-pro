@@ -14,14 +14,12 @@ from typing import Any, Iterable
 
 import numpy as np
 
-from shadowseed.core_config import SSLCoreConfig
 from shadowseed.models import SeedOrigin, SeedStatus, ShadowSeed
 from shadowseed.seed_normalization import (
     normalize_detection_candidates as normalize_candidates,
 )
 
 
-_DEFAULT_MAX_SEED_WORDS = SSLCoreConfig().max_seed_words
 
 
 def load_embedder(manager: Any):
@@ -87,7 +85,10 @@ def is_atomic_seed(text: str, max_seed_words: int | None = None) -> bool:
         "kolonialisme",
         "context",
     }
-    word_limit = _DEFAULT_MAX_SEED_WORDS if max_seed_words is None else max_seed_words
+    # max_seed_words is retained as a compatibility argument for callers
+    # and persisted 0.12-era configs. Atomicity is semantic: one gap, not a
+    # fixed number of words.
+    del max_seed_words
     has_many_separators = sum(separator in lowered for separator in separators) >= 2
     has_broad_terms = any(term in lowered for term in broad_terms)
     word_count = len(re.findall(r"\w+", text))
@@ -97,7 +98,7 @@ def is_atomic_seed(text: str, max_seed_words: int | None = None) -> bool:
         and ("ontbreekt" in lowered or "ontbreken" in lowered)
     ):
         return False
-    return not has_many_separators and not has_broad_terms and word_count <= word_limit
+    return not has_many_separators and not has_broad_terms
 
 
 def normalize_detection_candidates(

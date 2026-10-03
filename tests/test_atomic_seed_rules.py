@@ -35,3 +35,13 @@ def test_analysis_framework_seed_fails():
     assert not SSLManager.is_atomic_seed(
         "Een volledig analysekader met oorzaken, gevolgen, contexten en perspectieven ontbreekt."
     )
+
+
+def test_atomic_seed_is_not_rejected_only_for_exceeding_legacy_word_limit():
+    candidate = (
+        "De relatie tussen de eerder beschreven bewaartermijn en de concrete "
+        "verwijderprocedure voor gegevens van voormalige gebruikers binnen "
+        "dezelfde verwerkingsgrondslag en hetzelfde systeem."
+    )
+    assert len(candidate.split()) > 18
+    assert SSLManager.is_atomic_seed(candidate, max_seed_words=18)

@@ -103,7 +103,7 @@ def test_behavior_projection_version_keeps_authority_contract_unchanged() -> Non
 
     assert set(authority_projection) == {"session_config", "manager_config"}
     assert "projection_version" not in authority_projection
-    assert behavior_projection["projection_version"] == 1
+    assert behavior_projection["projection_version"] == 2
     assert authority_config_digest(before) == authority_config_digest(after)
     assert behavior_config_digest(before) != behavior_config_digest(after)
 
@@ -156,13 +156,13 @@ def test_turn_keeps_original_behavior_digest_after_reconfigure(tmp_path) -> None
     assert reports[1]["behavior_config_digest"] == view["behavior_config_digest"]
 
     projection = reports[1]["behavior_config"]
-    assert projection["projection_version"] == 1
+    assert projection["projection_version"] == 2
     assert projection["model_roles"]["generation"]["backend"] == "fixture"
     assert projection["model_roles"]["revision"]["backend"] == "fixture"
     assert projection["detector_role"]["backend"] == "fixture"
     assert "detector_current_pair" in projection["prompt_contracts"]
     assert projection["manager_config"]["dedup_threshold"] == 0.85
-    assert projection["manager_config"]["max_seed_words"] == 18
+    assert "max_seed_words" not in projection["manager_config"]
 
 
 def test_reconfigure_ledger_commits_behavior_projection(tmp_path) -> None:

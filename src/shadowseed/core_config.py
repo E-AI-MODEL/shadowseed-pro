@@ -32,6 +32,8 @@ class SSLCoreConfig:
     min_occurrences_for_gate: int = 3
     min_evidence_for_gate: int = 2
     min_trace_for_gate: float = 0.5
+    # Legacy compatibility field. Detector contract v0.6 no longer uses a
+    # hard word-count limit; one-gap semantics define atomicity instead.
     max_seed_words: int = 18
     # TTL to disappearance (4.5 §10/§12.2): a seed that stays DORMANT without a
     # re-recognising trigger for this many decay turns becomes EXPIRED — the

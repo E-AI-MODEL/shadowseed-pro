@@ -42,6 +42,9 @@ import numpy as np
 from shadowseed.adapters.embedding import EmbedFn, make_embedding_fn
 from shadowseed.authority_profiles import resolve_authority_runtime
 from shadowseed.detection.model_detector import (
+    CURRENT_PAIR_CONTEXT_MAX_CHARS_PER_MESSAGE,
+    CURRENT_PAIR_CONTEXT_MAX_TURNS,
+    CURRENT_PAIR_CONTEXT_POLICY_ID,
     CURRENT_PAIR_PROMPT_META,
     SOURCE_OBSERVATION_PROMPT_META,
     DetectorBackend,
@@ -819,6 +822,46 @@ class ShadowChatSession:
             ),
         }
 
+    def _detector_conversation_context(self) -> str:
+        """Return bounded prior context that cannot carry SSL-derived influence.
+
+        Evaluation history is baseline-only by construction. Live history is
+        included only for turns whose visible answer received no surfaced seed
+        and no same-turn SSL revision. Context helps interpret references and
+        prior coverage; it never contributes evidence or authority.
+        """
+
+        clean_turns: list[tuple[str, str]] = []
+        for index, (question, answer) in enumerate(self.history):
+            if self.runtime_mode == "live":
+                if index >= len(self.turn_reports):
+                    continue
+                report = self.turn_reports[index]
+                if report.get("surfaced_seed_ids"):
+                    continue
+                if report.get("same_turn_revision_applied"):
+                    continue
+                if report.get("self_reinforcement_applied"):
+                    continue
+            clean_turns.append((question, answer))
+
+        bounded = clean_turns[-CURRENT_PAIR_CONTEXT_MAX_TURNS:]
+        if not bounded:
+            return "NONE"
+
+        def _clip(value: str) -> str:
+            return str(value).strip()[:CURRENT_PAIR_CONTEXT_MAX_CHARS_PER_MESSAGE]
+
+        blocks: list[str] = []
+        for offset, (question, answer) in enumerate(bounded, start=1):
+            blocks.append(
+                f"PRIOR TURN {offset}\n"
+                f"USER: {_clip(question)}\n"
+                f"ASSISTANT: {_clip(answer)}"
+            )
+        return "\n\n".join(blocks)
+
+
     def _filter_ssl_attributed_candidates(
         self,
         candidates: list[str],
@@ -1039,7 +1082,7 @@ class ShadowChatSession:
             {
                 "question": question,
                 "text": draft_answer,
-                "max_seed_words": self.manager.config.max_seed_words,
+                "conversation_context": self._detector_conversation_context(),
             },
             max_seeds=self.max_seeds_per_turn,
         )
@@ -1050,7 +1093,7 @@ class ShadowChatSession:
             seed_id: seed.occurrence_count for seed_id, seed in self.manager.seeds.items()
         }
         origin = SeedOrigin(
-            candidate_type=CandidateType.POSSIBLE_COMPLETION,
+            candidate_type=CandidateType.UNSPECIFIED,
             detection_basis=(
                 "first_pass_ssl_exposed_self_derived"
                 if first_pass_surfaced_seed_ids
@@ -1284,7 +1327,7 @@ class ShadowChatSession:
                     else str(getattr(self.detector, "prompt_variant"))
                 )
             ),
-            candidate_type=CandidateType.POSSIBLE_COMPLETION.value,
+            candidate_type=CandidateType.UNSPECIFIED.value,
             ssl_exposed=bool(first_pass_surfaced_seed_ids),
             surfaced_seed_ids=first_pass_surfaced_seed_ids,
             created_at=self.manager._now_iso(),
@@ -1311,6 +1354,7 @@ class ShadowChatSession:
                 dict(item) for item in prepared.influence_decisions
             ] + self_reinforcement_decisions,
             "detected_candidates": raw_candidates,
+            "detector_context_policy": CURRENT_PAIR_CONTEXT_POLICY_ID,
             "detector_audit": self._detector_audit(),
             "intake_diagnostics": {
                 "normalized_candidates": list(ingest.get("normalized_candidates", [])),
@@ -1438,7 +1482,7 @@ class ShadowChatSession:
             {
                 "question": question,
                 "text": baseline_answer,
-                "max_seed_words": self.manager.config.max_seed_words,
+                "conversation_context": self._detector_conversation_context(),
             },
             max_seeds=self.max_seeds_per_turn,
         )
@@ -1455,14 +1499,20 @@ class ShadowChatSession:
                     else str(getattr(self.detector, "prompt_variant"))
                 )
             ),
-            candidate_type=CandidateType.POSSIBLE_COMPLETION.value,
+            candidate_type=CandidateType.UNSPECIFIED.value,
             ssl_exposed=False,
             created_at=self.manager._now_iso(),
+        )
+        origin = SeedOrigin(
+            candidate_type=CandidateType.UNSPECIFIED,
+            detection_basis="baseline_answer",
+            context_ref=f"turn:{turn}:baseline_answer",
         )
         ingest = self.manager.ingest_detection_candidates(
             candidates,
             expand_short_fragments=False,
             split_broad=False,
+            origin=origin,
         )
         born: list[str] = []
         for accepted in ingest.get("accepted", []):
@@ -1527,6 +1577,7 @@ class ShadowChatSession:
                 else []
             ),
             "detected_candidates": candidates,
+            "detector_context_policy": CURRENT_PAIR_CONTEXT_POLICY_ID,
             "detector_audit": self._detector_audit(),
             "model_roles": self._model_role_audit(),
             "intake_diagnostics": {
@@ -1590,7 +1641,6 @@ class ShadowChatSession:
             {
                 "text": source_text,
                 "source_context": context_ref,
-                "max_seed_words": self.manager.config.max_seed_words,
             },
             max_seeds=self.max_seeds_per_turn,
         )
@@ -1607,7 +1657,7 @@ class ShadowChatSession:
                     else str(getattr(self.detector, "prompt_variant"))
                 )
             ),
-            candidate_type=CandidateType.POSSIBLE_COMPLETION.value,
+            candidate_type=CandidateType.UNSPECIFIED.value,
             ssl_exposed=False,
             created_at=self.manager._now_iso(),
         )
@@ -1615,7 +1665,7 @@ class ShadowChatSession:
             seed_id: seed.occurrence_count for seed_id, seed in self.manager.seeds.items()
         }
         origin = SeedOrigin(
-            candidate_type=CandidateType.POSSIBLE_COMPLETION,
+            candidate_type=CandidateType.UNSPECIFIED,
             detection_basis="uploaded_source_text",
             context_ref=context_ref,
         )

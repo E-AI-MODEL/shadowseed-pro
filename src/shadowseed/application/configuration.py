@@ -106,9 +106,9 @@ SETTING_METADATA: dict[str, dict[str, str]] = {
         "The cap bounds future detector output only.",
     ),
     "max_seed_words": _meta(
-        "detection_intake",
+        "compatibility",
         IMMEDIATE,
-        "The limit constrains future detector/intake candidates and leaves accepted historical seeds unchanged.",
+        "Legacy persisted setting retained for 0.12 compatibility; detector v0.6 no longer uses a hard word-count limit.",
     ),
     "dedup_threshold": _meta(
         "intake_deduplication",
