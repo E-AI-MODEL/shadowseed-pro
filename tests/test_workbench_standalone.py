@@ -17,10 +17,12 @@ def test_standalone_parser_has_no_remote_bind_option() -> None:
     parser = build_parser()
     help_text = parser.format_help()
     assert "--allow-remote" not in help_text
+    assert "--web" in help_text
     args = parser.parse_args([])
     assert args.port == 7860
     assert args.workspace is None
     assert args.self_test is False
+    assert args.web is False
 
 
 def test_standalone_port_falls_back_to_another_loopback_port() -> None:
