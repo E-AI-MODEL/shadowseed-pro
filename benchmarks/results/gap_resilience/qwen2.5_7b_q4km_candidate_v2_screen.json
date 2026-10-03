@@ -1,0 +1,635 @@
+{
+  "artifact": "shadowseed-gap-resilience-v1",
+  "schema_version": 1,
+  "run_type": "live_benchmark",
+  "disclaimer": "Benchmark measurements are diagnostic, not evidence or authority. The fixture backend is a harness smoke test only. No aggregate metric is an overall Shadowseed quality score.",
+  "generated_at": "2026-10-03T21:18:13.392995+00:00",
+  "shadowseed_source_ref": "a18fc8280ab6fc4b33eb3c24fa84aa53b536c440",
+  "case_set": "gap_resilience_core",
+  "case_set_version": "1.0",
+  "backend": "ollama",
+  "model_id": "qwen2.5:7b-instruct-q4_K_M",
+  "model_revision": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+  "prompt_variant": "current_pair",
+  "prompt_profile": "candidate_v2",
+  "repeats": 2,
+  "max_seeds": 3,
+  "match_threshold": 0.35,
+  "summary": {
+    "cases": 6,
+    "expected_gap_recall": 0.1,
+    "expected_gap_hits": 1,
+    "expected_gap_opportunities": 10,
+    "negative_control_abstention_rate": 0.0,
+    "negative_control_abstention_successes": 0,
+    "negative_control_abstention_opportunities": 2,
+    "resolved_gap_reopen_rate": 0.1,
+    "resolved_gap_reopens": 1,
+    "resolved_gap_opportunities": 10,
+    "repeatability_mean": 0.557,
+    "explicit_none_runs": 6,
+    "parser_empty_non_none_runs": 0
+  },
+  "cases": [
+    {
+      "case_id": "api-auth-missing",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 2,
+      "expected_gap_hits": 1,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 0.5,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 0,
+      "resolved_gap_reopen_rate": null,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 0.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 1,
+          "candidates": [
+            "Error handling mechanism"
+          ],
+          "expected": [
+            {
+              "gap_id": "client-authentication",
+              "hit": false,
+              "best_similarity": 0.1667,
+              "best_candidate": "Error handling mechanism"
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. Authentication method\n2. Required headers\n3. Error handling mechanism",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 2,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v2",
+            "prompt_profile": "candidate_v2",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "Authentication method for clients",
+            "List of allowed HTTP methods for each endpoint",
+            "Format of request payloads"
+          ],
+          "expected": [
+            {
+              "gap_id": "client-authentication",
+              "hit": true,
+              "best_similarity": 0.5,
+              "best_candidate": "Authentication method for clients"
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. Authentication method for clients\n2. List of allowed HTTP methods for each endpoint\n3. Format of request payloads",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v2",
+            "prompt_profile": "candidate_v2",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "retention-currentness",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 2,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "backup-deletion",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "retention-period",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "NONE",
+          "detector_parse_diagnostics": {
+            "explicit_none": true,
+            "nonblank_lines": 1,
+            "numbered_lines": 0,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v2",
+            "prompt_profile": "candidate_v2",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "backup-deletion",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "retention-period",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "NONE",
+          "detector_parse_diagnostics": {
+            "explicit_none": true,
+            "nonblank_lines": 1,
+            "numbered_lines": 0,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v2",
+            "prompt_profile": "candidate_v2",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "complete-negative-control",
+      "negative_control": true,
+      "runs": 2,
+      "mean_candidates_per_run": 3,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 0,
+      "expected_gap_recall": null,
+      "resolved_gap_reopens": 1,
+      "resolved_gap_opportunities": 4,
+      "resolved_gap_reopen_rate": 0.25,
+      "abstention_successes": 0,
+      "abstention_opportunities": 2,
+      "abstention_rate": 0.0,
+      "repeatability": 0.2255,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 3,
+          "candidates": [
+            "What is the frequency of sending confirmation emails?",
+            "Who can request a password reset?",
+            "How is the reset link generated and stored securely?"
+          ],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "reset-link-channel",
+              "reopened": true,
+              "best_similarity": 0.4286,
+              "best_candidate": "How is the reset link generated and stored securely?"
+            },
+            {
+              "gap_id": "reset-link-validity",
+              "reopened": false,
+              "best_similarity": 0.3333,
+              "best_candidate": "How is the reset link generated and stored securely?"
+            }
+          ],
+          "detector_raw_output": "1. What is the frequency of sending confirmation emails?\n2. Who can request a password reset?\n3. How is the reset link generated and stored securely?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v2",
+            "prompt_profile": "candidate_v2",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "What is the frequency of sending reset links?",
+            "Are there any alternative methods for sending reset links besides email?",
+            "What happens if a reset link is not used within the 20-minute window?"
+          ],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "reset-link-channel",
+              "reopened": false,
+              "best_similarity": 0.2727,
+              "best_candidate": "What happens if a reset link is not used within the 20-minute window?"
+            },
+            {
+              "gap_id": "reset-link-validity",
+              "reopened": false,
+              "best_similarity": 0.1818,
+              "best_candidate": "What happens if a reset link is not used within the 20-minute window?"
+            }
+          ],
+          "detector_raw_output": "1. What is the frequency of sending reset links?\n2. Are there any alternative methods for sending reset links besides email?\n3. What happens if a reset link is not used within the 20-minute window?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v2",
+            "prompt_profile": "candidate_v2",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "support-hours-supersession",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 2,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "severity-response-target",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "NONE",
+          "detector_parse_diagnostics": {
+            "explicit_none": true,
+            "nonblank_lines": 1,
+            "numbered_lines": 0,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v2",
+            "prompt_profile": "candidate_v2",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "severity-response-target",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "NONE",
+          "detector_parse_diagnostics": {
+            "explicit_none": true,
+            "nonblank_lines": 1,
+            "numbered_lines": 0,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v2",
+            "prompt_profile": "candidate_v2",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "other-subject-trap",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 2,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "alice-failover",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "NONE",
+          "detector_parse_diagnostics": {
+            "explicit_none": true,
+            "nonblank_lines": 1,
+            "numbered_lines": 0,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v2",
+            "prompt_profile": "candidate_v2",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "alice-failover",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "NONE",
+          "detector_parse_diagnostics": {
+            "explicit_none": true,
+            "nonblank_lines": 1,
+            "numbered_lines": 0,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v2",
+            "prompt_profile": "candidate_v2",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "rollbackcriteria-nl",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 3,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 0,
+      "resolved_gap_reopen_rate": null,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 0.1163,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 3,
+          "candidates": [
+            "Hoe wordt de migratie beïnvloed door externe factoren?",
+            "Welke specifieke stappen volgen na de overdracht van gedeelde bestanden?",
+            "Welke criteria worden gebruikt om te bepalen of de migratie naar de nieuwe omgeving volledig is?"
+          ],
+          "expected": [
+            {
+              "gap_id": "rollbackcriteria",
+              "hit": false,
+              "best_similarity": 0.1667,
+              "best_candidate": "Welke criteria worden gebruikt om te bepalen of de migratie naar de nieuwe omgeving volledig is?"
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. Hoe wordt de migratie beïnvloed door externe factoren?\n2. Welke specifieke stappen volgen na de overdracht van gedeelde bestanden?\n3. Welke criteria worden gebruikt om te bepalen of de migratie naar de nieuwe omgeving volledig is?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v2",
+            "prompt_profile": "candidate_v2",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "De volgorde van overdracht voor specifieke bestandssoorten",
+            "De beveiligingsmetingen die nodig zijn tijdens de migratie",
+            "De exacte tijdstippen voor het terugvallen bij problemen"
+          ],
+          "expected": [
+            {
+              "gap_id": "rollbackcriteria",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. De volgorde van overdracht voor specifieke bestandssoorten\n2. De beveiligingsmetingen die nodig zijn tijdens de migratie\n3. De exacte tijdstippen voor het terugvallen bij problemen",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v2",
+            "prompt_profile": "candidate_v2",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    }
+  ],
+  "runtime_provenance": {
+    "github_run_id": "37154309057",
+    "github_run_attempt": "1",
+    "runner_os": "Linux",
+    "runner_arch": "X64",
+    "ollama_version": "ollama version is 0.35.1 ",
+    "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+  }
+}

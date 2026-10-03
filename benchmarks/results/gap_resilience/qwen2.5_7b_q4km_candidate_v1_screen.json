@@ -1,0 +1,661 @@
+{
+  "artifact": "shadowseed-gap-resilience-v1",
+  "schema_version": 1,
+  "run_type": "live_benchmark",
+  "disclaimer": "Benchmark measurements are diagnostic, not evidence or authority. The fixture backend is a harness smoke test only. No aggregate metric is an overall Shadowseed quality score.",
+  "generated_at": "2026-10-03T21:16:37.399547+00:00",
+  "shadowseed_source_ref": "a18fc8280ab6fc4b33eb3c24fa84aa53b536c440",
+  "case_set": "gap_resilience_core",
+  "case_set_version": "1.0",
+  "backend": "ollama",
+  "model_id": "qwen2.5:7b-instruct-q4_K_M",
+  "model_revision": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+  "prompt_variant": "current_pair",
+  "prompt_profile": "candidate_v1",
+  "repeats": 2,
+  "max_seeds": 3,
+  "match_threshold": 0.35,
+  "summary": {
+    "cases": 6,
+    "expected_gap_recall": 0.2,
+    "expected_gap_hits": 2,
+    "expected_gap_opportunities": 10,
+    "negative_control_abstention_rate": 0.0,
+    "negative_control_abstention_successes": 0,
+    "negative_control_abstention_opportunities": 2,
+    "resolved_gap_reopen_rate": 0.2,
+    "resolved_gap_reopens": 2,
+    "resolved_gap_opportunities": 10,
+    "repeatability_mean": 0.8982,
+    "explicit_none_runs": 0,
+    "parser_empty_non_none_runs": 0
+  },
+  "cases": [
+    {
+      "case_id": "api-auth-missing",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 3,
+      "expected_gap_hits": 2,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 1.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 0,
+      "resolved_gap_reopen_rate": null,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 3,
+          "candidates": [
+            "Authentication method for API requests.",
+            "List of allowed HTTP methods for each endpoint.",
+            "Required headers or query parameters for API calls."
+          ],
+          "expected": [
+            {
+              "gap_id": "client-authentication",
+              "hit": true,
+              "best_similarity": 0.75,
+              "best_candidate": "Authentication method for API requests."
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. Authentication method for API requests.\n2. List of allowed HTTP methods for each endpoint.\n3. Required headers or query parameters for API calls.",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "Authentication method for API requests.",
+            "List of allowed HTTP methods for each endpoint.",
+            "Required headers or query parameters for API calls."
+          ],
+          "expected": [
+            {
+              "gap_id": "client-authentication",
+              "hit": true,
+              "best_similarity": 0.75,
+              "best_candidate": "Authentication method for API requests."
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. Authentication method for API requests.\n2. List of allowed HTTP methods for each endpoint.\n3. Required headers or query parameters for API calls.",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "retention-currentness",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 3,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 0.9167,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 3,
+          "candidates": [
+            "What triggers the deletion job to run?",
+            "Are there any exceptions to the 14-day retention period?",
+            "How is the data handled during the 14-day period before deletion?"
+          ],
+          "expected": [
+            {
+              "gap_id": "backup-deletion",
+              "hit": false,
+              "best_similarity": 0.1429,
+              "best_candidate": "What triggers the deletion job to run?"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "retention-period",
+              "reopened": false,
+              "best_similarity": 0.2857,
+              "best_candidate": "Are there any exceptions to the 14-day retention period?"
+            }
+          ],
+          "detector_raw_output": "1. What triggers the deletion job to run?\n2. Are there any exceptions to the 14-day retention period?\n3. How is the data handled during the 14-day period before deletion?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "What triggers the deletion job to run?",
+            "Are there any exceptions to the 14-day retention period?",
+            "How is the data handled during the 14-day period?"
+          ],
+          "expected": [
+            {
+              "gap_id": "backup-deletion",
+              "hit": false,
+              "best_similarity": 0.1429,
+              "best_candidate": "What triggers the deletion job to run?"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "retention-period",
+              "reopened": false,
+              "best_similarity": 0.2857,
+              "best_candidate": "Are there any exceptions to the 14-day retention period?"
+            }
+          ],
+          "detector_raw_output": "1. What triggers the deletion job to run?\n2. Are there any exceptions to the 14-day retention period?\n3. How is the data handled during the 14-day period?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "complete-negative-control",
+      "negative_control": true,
+      "runs": 2,
+      "mean_candidates_per_run": 3,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 0,
+      "expected_gap_recall": null,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 4,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": 0,
+      "abstention_opportunities": 2,
+      "abstention_rate": 0.0,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 3,
+          "candidates": [
+            "The email delivery time and reliability.",
+            "The process for requesting a new reset link if the initial one expires.",
+            "The criteria for when a reset link becomes invalid."
+          ],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "reset-link-channel",
+              "reopened": false,
+              "best_similarity": 0.25,
+              "best_candidate": "The criteria for when a reset link becomes invalid."
+            },
+            {
+              "gap_id": "reset-link-validity",
+              "reopened": false,
+              "best_similarity": 0.25,
+              "best_candidate": "The criteria for when a reset link becomes invalid."
+            }
+          ],
+          "detector_raw_output": "1. The email delivery time and reliability.\n2. The process for requesting a new reset link if the initial one expires.\n3. The criteria for when a reset link becomes invalid.",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "The email delivery time and reliability.",
+            "The process for requesting a new reset link if the initial one expires.",
+            "The criteria for when a reset link becomes invalid."
+          ],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "reset-link-channel",
+              "reopened": false,
+              "best_similarity": 0.25,
+              "best_candidate": "The criteria for when a reset link becomes invalid."
+            },
+            {
+              "gap_id": "reset-link-validity",
+              "reopened": false,
+              "best_similarity": 0.25,
+              "best_candidate": "The criteria for when a reset link becomes invalid."
+            }
+          ],
+          "detector_raw_output": "1. The email delivery time and reliability.\n2. The process for requesting a new reset link if the initial one expires.\n3. The criteria for when a reset link becomes invalid.",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "support-hours-supersession",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 3,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 0.6667,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 3,
+          "candidates": [
+            "Severity criteria for escalation",
+            "Queue management process",
+            "Incident response time guarantees"
+          ],
+          "expected": [
+            {
+              "gap_id": "severity-response-target",
+              "hit": false,
+              "best_similarity": 0.3333,
+              "best_candidate": "Incident response time guarantees"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "1. Severity criteria for escalation\n2. Queue management process\n3. Incident response time guarantees",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "Severity criteria for escalation",
+            "Queue management process",
+            "Onboarding procedures for new support staff"
+          ],
+          "expected": [
+            {
+              "gap_id": "severity-response-target",
+              "hit": false,
+              "best_similarity": 0.2,
+              "best_candidate": "Severity criteria for escalation"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.1429,
+              "best_candidate": "Onboarding procedures for new support staff"
+            }
+          ],
+          "detector_raw_output": "1. Severity criteria for escalation\n2. Queue management process\n3. Onboarding procedures for new support staff",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "other-subject-trap",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 3,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 2,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 1.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 0.8056,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 3,
+          "candidates": [
+            "The specific availability zones within the EU region where Alice's service is deployed.",
+            "Any additional regions or edge locations where Alice's service might also be deployed.",
+            "The current status of maintenance or updates for Alice's service deployment."
+          ],
+          "expected": [
+            {
+              "gap_id": "alice-failover",
+              "hit": false,
+              "best_similarity": 0.25,
+              "best_candidate": "The specific availability zones within the EU region where Alice's service is deployed."
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": true,
+              "best_similarity": 0.5556,
+              "best_candidate": "The specific availability zones within the EU region where Alice's service is deployed."
+            }
+          ],
+          "detector_raw_output": "1. The specific availability zones within the EU region where Alice's service is deployed.\n2. Any additional regions or edge locations where Alice's service might also be deployed.\n3. The current status of maintenance or updates for Alice's service deployment.",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "The specific availability zones within the EU region where Alice's service is deployed.",
+            "Any additional regions or edge locations where Alice's service might also be deployed.",
+            "The current maintenance status or any known outages affecting Alice's service in the EU region."
+          ],
+          "expected": [
+            {
+              "gap_id": "alice-failover",
+              "hit": false,
+              "best_similarity": 0.25,
+              "best_candidate": "The specific availability zones within the EU region where Alice's service is deployed."
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": true,
+              "best_similarity": 0.5556,
+              "best_candidate": "The specific availability zones within the EU region where Alice's service is deployed."
+            }
+          ],
+          "detector_raw_output": "1. The specific availability zones within the EU region where Alice's service is deployed.\n2. Any additional regions or edge locations where Alice's service might also be deployed.\n3. The current maintenance status or any known outages affecting Alice's service in the EU region.",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "rollbackcriteria-nl",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 3,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 0,
+      "resolved_gap_reopen_rate": null,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 3,
+          "candidates": [
+            "De volgorde van de overdracht van specifieke gedeelde bestanden.",
+            "De beveiligingsmetingen die nodig zijn tijdens de migratie.",
+            "De beschikbaarheid van ondersteuning tijdens de migratie."
+          ],
+          "expected": [
+            {
+              "gap_id": "rollbackcriteria",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. De volgorde van de overdracht van specifieke gedeelde bestanden.\n2. De beveiligingsmetingen die nodig zijn tijdens de migratie.\n3. De beschikbaarheid van ondersteuning tijdens de migratie.",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "De volgorde van de overdracht van specifieke gedeelde bestanden.",
+            "De beveiligingsmetingen die nodig zijn tijdens de migratie.",
+            "De beschikbaarheid van ondersteuning tijdens de migratie."
+          ],
+          "expected": [
+            {
+              "gap_id": "rollbackcriteria",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. De volgorde van de overdracht van specifieke gedeelde bestanden.\n2. De beveiligingsmetingen die nodig zijn tijdens de migratie.\n3. De beschikbaarheid van ondersteuning tijdens de migratie.",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    }
+  ],
+  "runtime_provenance": {
+    "github_run_id": "37154309057",
+    "github_run_attempt": "1",
+    "runner_os": "Linux",
+    "runner_arch": "X64",
+    "ollama_version": "ollama version is 0.35.1 ",
+    "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+  }
+}
