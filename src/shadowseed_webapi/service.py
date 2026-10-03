@@ -5,6 +5,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from shadowseed.adapters.openai_client import (
+    DEFAULT_CHAT_MODEL,
+    clear_process_openai_api_key,
+    configure_process_openai_api_key,
+    openai_api_key_configured,
+)
 from shadowseed.application.provider_policy import (
     ProviderPolicyError,
     validate_production_local_backend,
@@ -20,8 +26,8 @@ _AUTHORITY_MODE_TO_PROFILE = {
     "exploratory": "autonomous",
 }
 _MISSING = object()
-_WEB_V1_BACKENDS = frozenset({"fixture", "ollama"})
-_WEB_V1_EMBEDDING_BACKENDS = frozenset({"lexical", "ollama"})
+_WEB_V1_BACKENDS = frozenset({"fixture", "ollama", "openai"})
+_WEB_V1_EMBEDDING_BACKENDS = frozenset({"lexical", "ollama", "openai"})
 
 
 def _optional_json_bool(
@@ -116,10 +122,57 @@ class WebApiService:
         *,
         controller: WorkbenchController | None = None,
     ) -> None:
-        self.controller = controller or ProductionLocalWorkbenchController(workspace)
+        if controller is None:
+            self.controller = ProductionLocalWorkbenchController(workspace)
+            self.hosted_controller = WorkbenchController(self.controller.workspace_root)
+        else:
+            self.controller = controller
+            self.hosted_controller = controller
 
     def health(self) -> dict[str, Any]:
         return {"ok": True, "api_version": "v1"}
+
+    def provider_status(self) -> dict[str, Any]:
+        openai_available = self.hosted_controller.backend_available("openai")
+        openai_configured = openai_api_key_configured()
+        return {
+            "providers": [
+                {
+                    "provider": "fixture",
+                    "label": "Offline demo",
+                    "available": True,
+                    "configured": True,
+                    "ready": True,
+                    "external": False,
+                },
+                {
+                    "provider": "ollama",
+                    "label": "Ollama lokaal",
+                    "available": True,
+                    "configured": True,
+                    "ready": True,
+                    "external": False,
+                },
+                {
+                    "provider": "openai",
+                    "label": "OpenAI",
+                    "available": openai_available,
+                    "configured": openai_configured,
+                    "ready": openai_available and openai_configured,
+                    "external": True,
+                    "default_model": DEFAULT_CHAT_MODEL,
+                },
+            ]
+        }
+
+    def configure_openai(self, payload: dict[str, Any]) -> dict[str, Any]:
+        api_key = _required_json_string(payload, "api_key")
+        configure_process_openai_api_key(api_key)
+        return self.provider_status()
+
+    def clear_openai(self) -> dict[str, Any]:
+        clear_process_openai_api_key()
+        return self.provider_status()
 
     def list_sessions(self) -> dict[str, Any]:
         sessions = []
@@ -129,7 +182,12 @@ class WebApiService:
             except KeyError:
                 continue
             if self._session_provider_supported(view):
-                sessions.append(item)
+                sessions.append(
+                    {
+                        **item,
+                        "provider_ready": self._provider_ready_for_view(view),
+                    }
+                )
         return {"sessions": sessions}
 
     def get_session(self, session_id: str) -> dict[str, Any]:
@@ -158,17 +216,32 @@ class WebApiService:
             allowed = ", ".join(sorted(_AUTHORITY_MODE_TO_PROFILE))
             raise ValueError(f"authority_mode must be one of: {allowed}") from exc
 
-        if backend not in {"fixture", "ollama"}:
-            raise ValueError("web client v1 supports only fixture and Ollama")
+        if backend not in _WEB_V1_BACKENDS:
+            allowed = ", ".join(sorted(_WEB_V1_BACKENDS))
+            raise ValueError(f"web client v1 supports only: {allowed}")
+        external_confirmed = _optional_json_bool(
+            payload,
+            "external_confirmed",
+        )
         if backend == "fixture":
             model_id = None
-        elif not model_id:
+        elif backend == "ollama" and not model_id:
             raise ValueError("Ollama requires a model_id")
+        elif backend == "openai":
+            model_id = model_id or DEFAULT_CHAT_MODEL
+            self._require_openai_ready()
+            if not external_confirmed:
+                raise ValueError(
+                    "OpenAI sends content to an external provider; "
+                    "confirm external processing before creating the session"
+                )
 
-        embedding_backend = self.controller.default_embedding_backend(backend)
-        validate_production_local_backend(backend, embedding_backend)
+        target_controller = self._controller_for_backend(backend)
+        embedding_backend = target_controller.default_embedding_backend(backend)
+        if backend != "openai":
+            validate_production_local_backend(backend, embedding_backend)
 
-        session_id = self.controller.create_session(
+        session_id = target_controller.create_session(
             title=title,
             profile_id="balanced",
             backend=backend,
@@ -181,17 +254,30 @@ class WebApiService:
                 "allow_same_turn_revision",
             ),
             allow_self_reinforcement=False,
-            external_confirmed=False,
+            external_confirmed=external_confirmed,
         )
         return self.get_session(session_id)
 
     def run_turn(self, session_id: str, payload: dict[str, Any]) -> dict[str, Any]:
-        self._supported_session_view(session_id)
+        view = self._supported_session_view(session_id)
         question = _required_json_string(payload, "question")
         request_id = _request_id(payload)
+        external_confirmed = _optional_json_bool(
+            payload,
+            "external_confirmed",
+        )
+        backend = str(view.get("backend") or "").strip()
+        if backend == "openai":
+            self._require_openai_ready()
+            if not external_confirmed:
+                raise ValueError(
+                    "OpenAI sends this turn to an external provider; "
+                    "confirm external processing before sending"
+                )
+        target_controller = self._controller_for_backend(backend)
 
         try:
-            result = self.controller.send_turn(
+            result = target_controller.send_turn(
                 session_id,
                 question,
                 compare_without_ssl=_optional_json_bool(
@@ -199,7 +285,7 @@ class WebApiService:
                     "compare_without_ssl",
                 ),
                 comparison_mode="authorized",
-                external_confirmed=False,
+                external_confirmed=external_confirmed,
                 request_id=request_id,
             )
         except WorkspaceStorageError as exc:
@@ -287,6 +373,28 @@ class WebApiService:
             _raise_idempotency_conflict(exc)
         return self.get_session(session_id)
 
+    def _controller_for_backend(self, backend: str) -> WorkbenchController:
+        return self.hosted_controller if backend == "openai" else self.controller
+
+    def _require_openai_ready(self) -> None:
+        if not self.hosted_controller.backend_available("openai"):
+            raise ValueError(
+                "OpenAI support is not installed; install the shadowseed openai extra"
+            )
+        if not openai_api_key_configured():
+            raise ValueError(
+                "OpenAI is not configured; add an API key in provider settings"
+            )
+
+    def _provider_ready_for_view(self, view: dict[str, Any]) -> bool:
+        backend = str(view.get("backend") or "").strip()
+        if backend != "openai":
+            return True
+        return (
+            self.hosted_controller.backend_available("openai")
+            and openai_api_key_configured()
+        )
+
     @staticmethod
     def _session_provider_supported(view: dict[str, Any]) -> bool:
         backend = str(view.get("backend") or "").strip()
@@ -301,6 +409,14 @@ class WebApiService:
             and revision_backend in _WEB_V1_BACKENDS
             and embedding_backend in _WEB_V1_EMBEDDING_BACKENDS
         ):
+            return False
+        if backend == "fixture":
+            return revision_backend == "fixture" and embedding_backend == "lexical"
+        if backend == "openai":
+            return revision_backend == "openai" and embedding_backend == "openai"
+        if backend != "ollama":
+            return False
+        if revision_backend != "ollama" or embedding_backend != "ollama":
             return False
         try:
             validate_production_local_backend(backend, embedding_backend)
@@ -318,4 +434,11 @@ class WebApiService:
         return view
 
     def _session_payload(self, view: dict[str, Any]) -> dict[str, Any]:
-        return {**view, "messages": self.controller.chat_messages(view)}
+        target_controller = self._controller_for_backend(
+            str(view.get("backend") or "").strip()
+        )
+        return {
+            **view,
+            "provider_ready": self._provider_ready_for_view(view),
+            "messages": target_controller.chat_messages(view),
+        }
