@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from scripts.sync_web_assets import sync_web_assets
 from shadowseed_webapi.launcher import (
     _create_server_with_fallback,
     _verify_static_assets,
@@ -101,3 +102,47 @@ def test_web_launcher_falls_back_when_preferred_port_is_busy(tmp_path: Path) -> 
         assert int(server.server_address[1]) != preferred
     finally:
         server.server_close()
+
+
+
+def test_sync_web_assets_builds_integrity_manifest(tmp_path: Path) -> None:
+    source = tmp_path / "out"
+    asset = source / "_next" / "static" / "chunks" / "bundle.js"
+    asset.parent.mkdir(parents=True)
+    (source / "index.html").write_text("<html>packaged</html>", encoding="utf-8")
+    asset.write_text("console.log('bundle')", encoding="utf-8")
+    target = tmp_path / "package-static"
+
+    payload = sync_web_assets(source, target)
+
+    assert (target / "index.html").is_file()
+    assert (target / "_next" / "static" / "chunks" / "bundle.js").is_file()
+    assert (target / "web-assets-manifest.json").is_file()
+    assert len(payload["files"]) == 2
+    assert _verify_static_assets(target)["artifact"] == "shadowseed_web_static_export"
+
+
+def test_web_launcher_rejects_manifest_path_escape(tmp_path: Path) -> None:
+    root = tmp_path / "static"
+    root.mkdir()
+    outside = tmp_path / "outside.js"
+    outside.write_text("secret", encoding="utf-8")
+    (root / "index.html").write_text("ok", encoding="utf-8")
+    (root / "web-assets-manifest.json").write_text(
+        json.dumps(
+            {
+                "artifact": "shadowseed_web_static_export",
+                "files": [
+                    {
+                        "path": "../outside.js",
+                        "size": outside.stat().st_size,
+                        "sha256": hashlib.sha256(outside.read_bytes()).hexdigest(),
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(RuntimeError, match="missing or unsafe"):
+        _verify_static_assets(root)
