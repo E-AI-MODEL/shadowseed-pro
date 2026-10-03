@@ -3,6 +3,7 @@ from __future__ import annotations
 import http.client
 import json
 import threading
+from pathlib import Path
 
 import pytest
 from http.server import ThreadingHTTPServer
@@ -371,3 +372,119 @@ def test_provider_http_routes_never_echo_openai_key(tmp_path) -> None:
         assert openai["configured"] is False
     finally:
         clear_process_openai_api_key()
+
+
+
+def _raw_request(
+    service: Any,
+    *,
+    method: str,
+    path: str,
+    static_root: Path,
+    headers: dict[str, str] | None = None,
+) -> tuple[int, bytes, dict[str, str]]:
+    server = ThreadingHTTPServer(
+        ("127.0.0.1", 0),
+        make_handler(service, static_root=static_root),
+    )
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        connection = http.client.HTTPConnection(
+            "127.0.0.1",
+            server.server_address[1],
+            timeout=3,
+        )
+        connection.request(method, path, headers=headers or {})
+        response = connection.getresponse()
+        raw = response.read()
+        response_headers = {key.lower(): value for key, value in response.getheaders()}
+        status = response.status
+        connection.close()
+        return status, raw, response_headers
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=3)
+
+
+def test_static_client_is_served_without_node_runtime(tmp_path) -> None:
+    static_root = tmp_path / "static"
+    asset = static_root / "_next" / "static" / "chunks" / "app.js"
+    asset.parent.mkdir(parents=True)
+    (static_root / "index.html").write_text(
+        "<!doctype html><html><body>Shadowseed Web</body></html>",
+        encoding="utf-8",
+    )
+    asset.write_text("console.log('shadowseed')", encoding="utf-8")
+
+    service = _FakeService()
+    status, raw, headers = _raw_request(
+        service,
+        method="GET",
+        path="/",
+        static_root=static_root,
+    )
+    assert status == 200
+    assert b"Shadowseed Web" in raw
+    assert headers["cache-control"] == "no-store"
+
+    status, raw, headers = _raw_request(
+        service,
+        method="GET",
+        path="/_next/static/chunks/app.js",
+        static_root=static_root,
+    )
+    assert status == 200
+    assert b"shadowseed" in raw
+    assert headers["cache-control"] == "public, max-age=31536000, immutable"
+
+
+def test_static_client_rejects_path_traversal(tmp_path) -> None:
+    static_root = tmp_path / "static"
+    static_root.mkdir()
+    (static_root / "index.html").write_text("ok", encoding="utf-8")
+    outside = tmp_path / "secret.txt"
+    outside.write_text("PRIVATE", encoding="utf-8")
+
+    status, raw, _headers = _raw_request(
+        _FakeService(),
+        method="GET",
+        path="/%2e%2e/secret.txt",
+        static_root=static_root,
+    )
+
+    assert status == 404
+    assert b"PRIVATE" not in raw
+
+
+def test_same_origin_packaged_client_can_mutate_api() -> None:
+    service = _FakeService()
+    server = ThreadingHTTPServer(
+        ("127.0.0.1", 0),
+        make_handler(service),
+    )
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        port = int(server.server_address[1])
+        connection = http.client.HTTPConnection("127.0.0.1", port, timeout=3)
+        connection.request(
+            "POST",
+            "/api/v1/sessions",
+            body='{"title":"same-origin"}',
+            headers={
+                "Origin": f"http://127.0.0.1:{port}",
+                "Content-Type": "application/json",
+            },
+        )
+        response = connection.getresponse()
+        payload = json.loads(response.read().decode("utf-8"))
+        connection.close()
+        assert response.status == 201
+        assert payload == {"session_id": "session::fake"}
+        assert service.created == [{"title": "same-origin"}]
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=3)
