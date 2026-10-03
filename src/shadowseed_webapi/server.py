@@ -239,7 +239,7 @@ def serve(
         )
     if not _is_loopback(host) and not allow_remote:
         raise ValueError(
-            "remote Workbench binding is disabled by default; use --allow-remote only "
+            "remote web API binding is disabled by default; use --allow-remote only "
             "inside a trusted environment because the preview has no multi-user auth layer"
         )
     service = WebApiService(workspace)
