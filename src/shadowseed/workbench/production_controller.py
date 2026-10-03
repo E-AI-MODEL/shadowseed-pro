@@ -127,6 +127,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
         compare_without_ssl: bool = False,
         comparison_mode: str = "authorized",
         external_confirmed: bool = False,
+        request_id: str | None = None,
     ) -> dict[str, Any]:
         try:
             result = super().send_turn(
@@ -135,6 +136,7 @@ class ProductionLocalWorkbenchController(WorkbenchController):
                 compare_without_ssl=compare_without_ssl,
                 comparison_mode=comparison_mode,
                 external_confirmed=external_confirmed,
+                request_id=request_id,
             )
         except Exception as exc:
             self._emit_failure("session.turn", exc, session_id=session_id)

@@ -132,6 +132,7 @@ def expected_authority_snapshot_from_ledger(
             if isinstance(candidate, str):
                 digest = candidate
         elif event_type in {
+            "chat.use",
             "evidence.verify",
             "contradiction.submit",
             "contradiction.resolve",
@@ -209,6 +210,7 @@ def expected_authority_config_snapshot_from_ledger(
             if isinstance(candidate, str):
                 digest = candidate
         elif event_type in {
+            "chat.use",
             "evidence.verify",
             "contradiction.submit",
             "contradiction.resolve",

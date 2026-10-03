@@ -11,6 +11,7 @@ from types import MappingProxyType
 from typing import Mapping
 
 
+CHAT_USE = "chat.use"
 SESSION_MANAGE = "session.manage"
 EVIDENCE_VERIFY = "evidence.verify"
 CONTRADICTION_SUBMIT = "contradiction.submit"
@@ -20,7 +21,7 @@ WORKSPACE_INTEGRITY_RECOVER = "workspace.integrity_recover"
 
 LOCAL_PRODUCTION_CAPABILITIES = frozenset(
     {
-        "chat.use",
+        CHAT_USE,
         SESSION_MANAGE,
         "feedback.record",
         EVIDENCE_VERIFY,
