@@ -161,3 +161,57 @@ def test_web_api_rejects_non_string_evidence_note_before_mutation(tmp_path) -> N
                 "operator_verified": True,
             },
         )
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("title", None),
+        ("backend", None),
+        ("authority_mode", None),
+    ],
+)
+def test_web_api_rejects_explicit_null_for_defaulted_string_fields(
+    tmp_path,
+    field,
+    value,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    payload = {
+        "title": "Null contract",
+        "backend": "fixture",
+        "authority_mode": "assisted",
+    }
+    payload[field] = value
+
+    with pytest.raises(ValueError, match=rf"{field} must be a JSON string"):
+        api.create_session(payload)
+
+
+def test_web_api_allows_explicit_null_model_id_for_fixture(tmp_path) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    created = api.create_session(
+        {
+            "title": "Optional model",
+            "backend": "fixture",
+            "authority_mode": "assisted",
+            "model_id": None,
+        }
+    )
+
+    assert created["model_id"] is None
+
+
+def test_web_api_rejects_explicit_null_evidence_note_before_mutation(tmp_path) -> None:
+    api = WebApiService(tmp_path / "workspace")
+
+    with pytest.raises(ValueError, match="note must be a JSON string"):
+        api.submit_evidence(
+            "session::does-not-matter",
+            "seed::does-not-matter",
+            {
+                "source_ref": "source:test",
+                "note": None,
+                "operator_verified": True,
+            },
+        )
