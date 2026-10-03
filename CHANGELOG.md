@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.12.0 - Packaged local web product
+
+Version 0.12.0 adds a browser client and one-process packaged launcher while
+keeping Shadowseed authority semantics in the canonical Python runtime.
+
+- Added the Shadowseed web client for persisted chat, Shadow inspection and
+  canonical human/SSL orchestration without duplicating Gate or lifecycle logic.
+- Added canonical seed-detail timelines plus verified-evidence, contradiction
+  and contradiction-resolution actions through the existing application/Gate
+  boundaries.
+- Added explicit OpenAI provider setup for installations with the `openai`
+  extra, with process-memory-only browser-entered credentials and separate
+  external-processing consent for session creation and each hosted turn.
+- Added `shadowseed-web`: one loopback-only Python process now serves both the
+  static Next client and `/api/v1`, opens the browser, and needs no Node
+  runtime in packaged use.
+- Added deterministic static-export packaging with SHA-256 asset integrity
+  verification, clean-wheel `shadowseed-web --self-test`, and frozen web
+  self-tests on Windows, macOS and Linux.
+- Extended exact-SHA Release Workbench assurance to include Web Client CI and
+  the packaged web artifact path.
+- Kept the existing Gradio Workbench available and retained the thin standalone
+  provider boundary: the OpenAI SDK remains an explicit optional extra and is
+  not bundled into the normal frozen standalone.
+- This release does not change the distinction between observation, evidence,
+  authority, relevance, permission and use, and does not by itself establish a
+  `production-ready/local` or general efficacy claim.
+
 ## 0.10.0 - Workbench lifecycle and interface reset
 
 Version 0.10.0 rebuilds the normal Workbench around one active conversation and
