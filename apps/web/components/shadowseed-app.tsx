@@ -73,7 +73,9 @@ export function ShadowseedApp() {
   const [creating, setCreating] = useState(false);
   const [sending, setSending] = useState(false);
   const [loadingSession, setLoadingSession] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const sessionRequestId = useRef(0);
 
   async function loadSession(sessionId: string) {
@@ -125,6 +127,8 @@ export function ShadowseedApp() {
   async function selectSession(sessionId: string) {
     if (sending || creating) return;
     setError(null);
+    setNotice(null);
+    setMobileNavOpen(false);
     try {
       await loadSession(sessionId);
     } catch (cause) {
@@ -137,13 +141,27 @@ export function ShadowseedApp() {
     if (sending || loadingSession) return;
     setCreating(true);
     setError(null);
+    setNotice(null);
+
     try {
       const created = await createSession(draft);
+
       sessionRequestId.current += 1;
+      setLoadingSession(false);
       setSession(created);
-      await refreshSessions(created.session_id);
+      setMobileNavOpen(false);
+
+      try {
+        setSessions(await listSessions());
+      } catch {
+        setNotice(
+          "Het gesprek is gemaakt, maar de gesprekslijst kon niet worden vernieuwd.",
+        );
+      }
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Gesprek kon niet worden gemaakt");
+      setError(
+        cause instanceof Error ? cause.message : "Gesprek kon niet worden gemaakt",
+      );
     } finally {
       setCreating(false);
     }
@@ -156,13 +174,24 @@ export function ShadowseedApp() {
     setQuestion("");
     setSending(true);
     setError(null);
+    setNotice(null);
+
     try {
       const result = await sendTurn(session.session_id, text);
       setSession(result.session);
-      setSessions(await listSessions());
+
+      try {
+        setSessions(await listSessions());
+      } catch {
+        setNotice(
+          "Het bericht is verstuurd, maar de gesprekslijst kon niet worden vernieuwd.",
+        );
+      }
     } catch (cause) {
       setQuestion(text);
-      setError(cause instanceof Error ? cause.message : "Bericht kon niet worden verstuurd");
+      setError(
+        cause instanceof Error ? cause.message : "Bericht kon niet worden verstuurd",
+      );
     } finally {
       setSending(false);
     }
@@ -170,13 +199,35 @@ export function ShadowseedApp() {
 
   return (
     <main className="product-shell">
-      <aside className="sidebar">
+      <button
+        aria-label="Sluit gesprekken"
+        className={
+          mobileNavOpen
+            ? "mobile-nav-backdrop mobile-nav-backdrop--open"
+            : "mobile-nav-backdrop"
+        }
+        onClick={() => setMobileNavOpen(false)}
+        type="button"
+      />
+
+      <aside
+        className={mobileNavOpen ? "sidebar sidebar--open" : "sidebar"}
+        id="session-navigation"
+      >
         <div className="brand">
           <span className="brand-mark">S</span>
           <div>
             <strong>Shadowseed</strong>
             <small>web client</small>
           </div>
+          <button
+            aria-label="Sluit gesprekken"
+            className="sidebar-close"
+            onClick={() => setMobileNavOpen(false)}
+            type="button"
+          >
+            Sluiten
+          </button>
         </div>
 
         <form className="new-chat" onSubmit={onCreate}>
@@ -261,13 +312,25 @@ export function ShadowseedApp() {
 
       <section className="chat-column">
         <header className="chat-header">
-          <div>
-            <h1>{session?.title ?? "Shadowseed"}</h1>
-            <p>
-              {session
-                ? authorityLabel(session.authority_profile_id) + " · " + session.backend
-                : "Maak links een gesprek om te beginnen."}
-            </p>
+          <div className="chat-header__main">
+            <button
+              aria-controls="session-navigation"
+              aria-expanded={mobileNavOpen}
+              className="mobile-nav-button"
+              disabled={sending || creating}
+              onClick={() => setMobileNavOpen(true)}
+              type="button"
+            >
+              Gesprekken
+            </button>
+            <div>
+              <h1>{session?.title ?? "Shadowseed"}</h1>
+              <p>
+                {session
+                  ? authorityLabel(session.authority_profile_id) + " · " + session.backend
+                  : "Maak een gesprek om te beginnen."}
+              </p>
+            </div>
           </div>
           {session ? (
             <span className="policy-pill">
@@ -331,6 +394,7 @@ export function ShadowseedApp() {
             {sending ? "Bezig..." : "Verstuur"}
           </button>
         </form>
+        {notice ? <div className="notice-banner">{notice}</div> : null}
         {error ? <div className="error-banner">{error}</div> : null}
       </section>
 
