@@ -13,6 +13,7 @@ _AUTHORITY_MODE_TO_PROFILE = {
     "assisted": "assisted",
     "exploratory": "autonomous",
 }
+_MISSING = object()
 
 
 def _optional_json_bool(
@@ -33,22 +34,49 @@ def _json_string(
     payload: dict[str, Any],
     key: str,
     *,
-    default: str | None = None,
+    default: str | object = _MISSING,
     required: bool = False,
+    allow_null: bool = False,
 ) -> str | None:
-    """Return a trimmed JSON string without coercing objects, arrays, or numbers."""
+    """Validate a JSON string while keeping missing and explicit null distinct."""
 
-    value = payload.get(key, default)
-    if value is None:
+    if key not in payload:
+        if default is not _MISSING:
+            return str(default)
         if required:
             raise ValueError(f"{key} is required")
         return None
+
+    value = payload[key]
+    if value is None:
+        if allow_null:
+            return None
+        raise ValueError(f"{key} must be a JSON string")
     if not isinstance(value, str):
         raise ValueError(f"{key} must be a JSON string")
+
     normalized = value.strip()
     if required and not normalized:
         raise ValueError(f"{key} is required")
     return normalized
+
+
+def _defaulted_json_string(
+    payload: dict[str, Any],
+    key: str,
+    default: str,
+) -> str:
+    value = _json_string(payload, key, default=default)
+    if value is None:  # Defensive; explicit null is rejected by _json_string.
+        raise ValueError(f"{key} must be a JSON string")
+    return value
+
+
+def _required_json_string(payload: dict[str, Any], key: str) -> str:
+    value = _json_string(payload, key, required=True)
+    if value is None:  # Defensive; missing/null already raise above.
+        raise ValueError(f"{key} is required")
+    return value
 
 
 class WebApiService:
@@ -75,20 +103,18 @@ class WebApiService:
         return self.controller.seed_view(session_id, seed_id)
 
     def create_session(self, payload: dict[str, Any]) -> dict[str, Any]:
-        title = _json_string(payload, "title", default="Nieuw gesprek")
+        title = _defaulted_json_string(payload, "title", "Nieuw gesprek")
         title = title or "Nieuw gesprek"
-        backend = _json_string(payload, "backend", default="fixture")
-        authority_mode = _json_string(
+        backend = _defaulted_json_string(payload, "backend", "fixture")
+        authority_mode = _defaulted_json_string(
             payload,
             "authority_mode",
-            default="assisted",
+            "assisted",
         )
-        model_id = _json_string(payload, "model_id")
+        model_id = _json_string(payload, "model_id", allow_null=True)
         if model_id == "":
             model_id = None
 
-        assert backend is not None
-        assert authority_mode is not None
         try:
             authority_profile_id = _AUTHORITY_MODE_TO_PROFILE[authority_mode]
         except KeyError as exc:
@@ -118,8 +144,7 @@ class WebApiService:
         return self.get_session(session_id)
 
     def run_turn(self, session_id: str, payload: dict[str, Any]) -> dict[str, Any]:
-        question = _json_string(payload, "question", required=True)
-        assert question is not None
+        question = _required_json_string(payload, "question")
 
         result = self.controller.send_turn(
             session_id,
@@ -143,10 +168,8 @@ class WebApiService:
         seed_id: str,
         payload: dict[str, Any],
     ) -> dict[str, Any]:
-        source_ref = _json_string(payload, "source_ref", required=True)
-        note = _json_string(payload, "note", default="")
-        assert source_ref is not None
-        assert note is not None
+        source_ref = _required_json_string(payload, "source_ref")
+        note = _defaulted_json_string(payload, "note", "")
 
         operator_verified = payload.get("operator_verified")
         if operator_verified is not True:
