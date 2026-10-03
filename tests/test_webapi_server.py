@@ -8,6 +8,7 @@ import pytest
 from http.server import ThreadingHTTPServer
 from typing import Any
 
+from shadowseed.adapters.openai_client import clear_process_openai_api_key
 from shadowseed_webapi.server import make_handler, serve
 from shadowseed_webapi.service import WebApiService
 
@@ -325,3 +326,48 @@ def test_seed_authority_routes_reach_canonical_service(tmp_path) -> None:
         item for item in supported["seeds"] if item["id"] == seed_id
     )
     assert supported_seed["evidence_count"] == 1
+
+
+
+def test_provider_http_routes_never_echo_openai_key(tmp_path) -> None:
+    clear_process_openai_api_key()
+    service = WebApiService(tmp_path / "workspace")
+    secret = "sk-http-secret-marker"
+    try:
+        status, payload = _request(
+            service,
+            method="POST",
+            path="/api/v1/providers/openai/credential",
+            body=json.dumps({"api_key": secret}),
+            headers={"Content-Type": "application/json"},
+        )
+
+        assert status == 200
+        assert secret not in json.dumps(payload)
+        openai = next(
+            item for item in payload["providers"] if item["provider"] == "openai"
+        )
+        assert openai["configured"] is True
+
+        status, payload = _request(
+            service,
+            method="GET",
+            path="/api/v1/providers",
+        )
+        assert status == 200
+        assert secret not in json.dumps(payload)
+
+        status, payload = _request(
+            service,
+            method="POST",
+            path="/api/v1/providers/openai/credential/clear",
+            body="{}",
+            headers={"Content-Type": "application/json"},
+        )
+        assert status == 200
+        openai = next(
+            item for item in payload["providers"] if item["provider"] == "openai"
+        )
+        assert openai["configured"] is False
+    finally:
+        clear_process_openai_api_key()
