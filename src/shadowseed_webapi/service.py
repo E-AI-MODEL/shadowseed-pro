@@ -9,6 +9,7 @@ from shadowseed.application.provider_policy import (
     ProviderPolicyError,
     validate_production_local_backend,
 )
+from shadowseed.storage.sqlite import WorkspaceStorageError
 from shadowseed.workbench.controller import WorkbenchController
 from shadowseed.workbench.production_controller import ProductionLocalWorkbenchController
 
@@ -179,17 +180,22 @@ class WebApiService:
         question = _required_json_string(payload, "question")
         request_id = _request_id(payload)
 
-        result = self.controller.send_turn(
-            session_id,
-            question,
-            compare_without_ssl=_optional_json_bool(
-                payload,
-                "compare_without_ssl",
-            ),
-            comparison_mode="authorized",
-            external_confirmed=False,
-            request_id=request_id,
-        )
+        try:
+            result = self.controller.send_turn(
+                session_id,
+                question,
+                compare_without_ssl=_optional_json_bool(
+                    payload,
+                    "compare_without_ssl",
+                ),
+                comparison_mode="authorized",
+                external_confirmed=False,
+                request_id=request_id,
+            )
+        except WorkspaceStorageError as exc:
+            if "request_id was already used" in str(exc):
+                raise ValueError(str(exc)) from exc
+            raise
         return {
             "report": result["report"],
             "comparison": result["comparison"],
