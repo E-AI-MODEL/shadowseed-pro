@@ -218,13 +218,13 @@ class WebApiService:
     ) -> dict[str, Any]:
         source_ref = _required_json_string(payload, "source_ref")
         note = _defaulted_json_string(payload, "note", "")
-        request_id = _request_id(payload)
 
         operator_verified = payload.get("operator_verified")
         if operator_verified is not True:
             raise ValueError(
                 "operator_verified must be the literal JSON boolean true"
             )
+        request_id = _request_id(payload)
 
         self._supported_session_view(session_id)
         try:
