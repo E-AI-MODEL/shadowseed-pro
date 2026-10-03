@@ -77,6 +77,7 @@ export function ShadowseedApp() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const sessionRequestId = useRef(0);
+  const refreshRequestId = useRef(0);
 
   async function loadSession(sessionId: string) {
     const requestId = ++sessionRequestId.current;
@@ -101,15 +102,31 @@ export function ShadowseedApp() {
   }
 
   async function refreshSessions(preferredId?: string) {
-    const next = await listSessions();
+    const refreshId = ++refreshRequestId.current;
+    let next: SessionSummary[];
+
+    try {
+      next = await listSessions();
+    } catch (cause) {
+      if (refreshRequestId.current !== refreshId) {
+        return;
+      }
+      throw cause;
+    }
+
+    if (refreshRequestId.current !== refreshId) {
+      return;
+    }
+
     setSessions(next);
     const target =
       preferredId ??
       session?.session_id ??
       next.at(0)?.session_id;
+
     if (target) {
       await loadSession(target);
-    } else {
+    } else if (refreshRequestId.current === refreshId) {
       sessionRequestId.current += 1;
       setLoadingSession(false);
       setSession(null);
@@ -132,6 +149,7 @@ export function ShadowseedApp() {
 
   async function selectSession(sessionId: string) {
     if (sending || creating) return;
+    refreshRequestId.current += 1;
     setError(null);
     setNotice(null);
     setMobileNavOpen(false);
@@ -152,6 +170,7 @@ export function ShadowseedApp() {
     try {
       const created = await createSession(draft);
 
+      refreshRequestId.current += 1;
       sessionRequestId.current += 1;
       setLoadingSession(false);
       setSession(created);
