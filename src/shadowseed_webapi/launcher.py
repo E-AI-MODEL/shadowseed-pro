@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import socket
 import threading
 import webbrowser
 from pathlib import Path
@@ -46,9 +45,18 @@ def _verify_static_assets(root: Path) -> dict[str, Any]:
             raise RuntimeError("Shadowseed web asset manifest entry is invalid")
         relative = str(item.get("path") or "")
         expected = str(item.get("sha256") or "")
-        path = root / relative
-        if not relative or not expected or not path.is_file():
-            raise RuntimeError(f"Shadowseed web asset is missing: {relative}")
+        expected_size = item.get("size")
+        resolved_root = root.resolve()
+        path = (resolved_root / relative).resolve()
+        if (
+            not relative
+            or not expected
+            or (path != resolved_root and resolved_root not in path.parents)
+            or not path.is_file()
+        ):
+            raise RuntimeError(f"Shadowseed web asset is missing or unsafe: {relative}")
+        if expected_size is not None and path.stat().st_size != int(expected_size):
+            raise RuntimeError(f"Shadowseed web asset size mismatch: {relative}")
         actual = hashlib.sha256(path.read_bytes()).hexdigest()
         if actual != expected:
             raise RuntimeError(f"Shadowseed web asset failed integrity check: {relative}")
