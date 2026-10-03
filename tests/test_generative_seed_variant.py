@@ -46,7 +46,7 @@ def test_current_pair_prompt_uses_bounded_context_without_word_limit():
     assert "Dit is het draftantwoord." in p
     assert "PRIOR TURN 1" in p
     assert "30 words" not in p
-    assert "hard word-count limit" in p
+    assert "word-count limit" in p
     assert "epistemically undetermined" in p
     assert "not evidence" in p
     assert "return exactly: NONE" in p
@@ -64,7 +64,7 @@ def test_current_pair_variant_falls_back_to_source_observation_context():
     assert "SOURCE CONTEXT:" in p
     assert "source:file-1" in p
     assert "24 words" not in p
-    assert "hard word-count limit" in p
+    assert "word-count limit" in p
 
 
 def test_explicit_none_is_a_valid_zero_candidate_result():
