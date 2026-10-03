@@ -64,3 +64,45 @@ def test_web_api_rejects_unknown_authority_mode(tmp_path) -> None:
         api.create_session(
             {"title": "Nope", "backend": "fixture", "authority_mode": "mystery"}
         )
+
+
+def test_web_api_rejects_string_false_evidence_attestation(tmp_path) -> None:
+    api = WebApiService(tmp_path / "workspace")
+
+    with pytest.raises(ValueError, match="literal JSON boolean true"):
+        api.submit_evidence(
+            "session::does-not-matter",
+            "seed::does-not-matter",
+            {
+                "source_ref": "source:test",
+                "operator_verified": "false",
+            },
+        )
+
+
+def test_web_api_rejects_boolean_false_evidence_attestation(tmp_path) -> None:
+    api = WebApiService(tmp_path / "workspace")
+
+    with pytest.raises(ValueError, match="literal JSON boolean true"):
+        api.submit_evidence(
+            "session::does-not-matter",
+            "seed::does-not-matter",
+            {
+                "source_ref": "source:test",
+                "operator_verified": False,
+            },
+        )
+
+
+def test_web_api_rejects_truthy_string_for_product_boolean(tmp_path) -> None:
+    api = WebApiService(tmp_path / "workspace")
+
+    with pytest.raises(ValueError, match="allow_same_turn_revision must be a JSON boolean"):
+        api.create_session(
+            {
+                "title": "Strict JSON types",
+                "backend": "fixture",
+                "authority_mode": "assisted",
+                "allow_same_turn_revision": "false",
+            }
+        )
