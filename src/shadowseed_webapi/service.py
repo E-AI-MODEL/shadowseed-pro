@@ -178,7 +178,6 @@ class WebApiService:
         seed_id: str,
         payload: dict[str, Any],
     ) -> dict[str, Any]:
-        self._supported_session_view(session_id)
         source_ref = _required_json_string(payload, "source_ref")
         note = _defaulted_json_string(payload, "note", "")
 
@@ -188,6 +187,7 @@ class WebApiService:
                 "operator_verified must be the literal JSON boolean true"
             )
 
+        self._supported_session_view(session_id)
         self.controller.submit_verified_evidence(
             session_id,
             seed_id,
