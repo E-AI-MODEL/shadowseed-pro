@@ -41,6 +41,22 @@ def _parts(path: str) -> list[str]:
     ]
 
 
+def _origin_is_allowed(
+    origin: str | None,
+    allowed_origins: frozenset[str],
+) -> bool:
+    """Allow non-browser callers and explicitly trusted browser origins only."""
+
+    return origin is None or origin in allowed_origins
+
+
+def _is_json_content_type(content_type: str | None) -> bool:
+    if content_type is None:
+        return False
+    media_type = content_type.split(";", 1)[0].strip().lower()
+    return media_type == "application/json"
+
+
 def make_handler(
     service: WebApiService,
     *,
@@ -52,6 +68,16 @@ def make_handler(
         def _cors_origin(self) -> str | None:
             origin = self.headers.get("Origin")
             return origin if origin in allowed_origins else None
+
+        def _reject_unapproved_origin(self) -> bool:
+            origin = self.headers.get("Origin")
+            if _origin_is_allowed(origin, allowed_origins):
+                return False
+            self._write_json(
+                HTTPStatus.FORBIDDEN,
+                {"error": "origin_not_allowed"},
+            )
+            return True
 
         def _write_json(self, status: int, payload: Any) -> None:
             data = json.dumps(
@@ -69,6 +95,8 @@ def make_handler(
             self.wfile.write(data)
 
         def _read_json(self) -> dict[str, Any]:
+            if not _is_json_content_type(self.headers.get("Content-Type")):
+                raise ValueError("Content-Type must be application/json")
             try:
                 length = int(self.headers.get("Content-Length", "0"))
             except ValueError as exc:
@@ -85,6 +113,8 @@ def make_handler(
             return payload
 
         def do_OPTIONS(self) -> None:  # noqa: N802
+            if self._reject_unapproved_origin():
+                return
             origin = self._cors_origin()
             self.send_response(HTTPStatus.NO_CONTENT)
             if origin:
@@ -96,6 +126,8 @@ def make_handler(
             self.end_headers()
 
         def do_GET(self) -> None:  # noqa: N802
+            if self._reject_unapproved_origin():
+                return
             try:
                 parts = _parts(self.path)
                 if parts == ["api", "v1", "health"]:
@@ -127,6 +159,8 @@ def make_handler(
                 )
 
         def do_POST(self) -> None:  # noqa: N802
+            if self._reject_unapproved_origin():
+                return
             try:
                 parts = _parts(self.path)
                 payload = self._read_json()
