@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import hashlib
+import http.client
 import json
 import socket
+import threading
 from pathlib import Path
 
 import pytest
@@ -146,3 +148,36 @@ def test_web_launcher_rejects_manifest_path_escape(tmp_path: Path) -> None:
 
     with pytest.raises(RuntimeError, match="missing or unsafe"):
         _verify_static_assets(root)
+
+
+
+def test_one_process_server_serves_web_and_api_on_same_port(tmp_path: Path) -> None:
+    root = tmp_path / "static"
+    _write_static_fixture(root)
+    server = _create_server_with_fallback(
+        workspace=tmp_path / "workspace",
+        preferred_port=0,
+        static_root=root,
+    )
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        port = int(server.server_address[1])
+        connection = http.client.HTTPConnection("127.0.0.1", port, timeout=3)
+
+        connection.request("GET", "/")
+        page = connection.getresponse()
+        page_body = page.read()
+        assert page.status == 200
+        assert b"Shadowseed" in page_body
+
+        connection.request("GET", "/api/v1/health")
+        health = connection.getresponse()
+        health_payload = json.loads(health.read().decode("utf-8"))
+        assert health.status == 200
+        assert health_payload == {"ok": True, "api_version": "v1"}
+        connection.close()
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=3)
