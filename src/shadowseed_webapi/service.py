@@ -29,6 +29,28 @@ def _optional_json_bool(
     return value
 
 
+def _json_string(
+    payload: dict[str, Any],
+    key: str,
+    *,
+    default: str | None = None,
+    required: bool = False,
+) -> str | None:
+    """Return a trimmed JSON string without coercing objects, arrays, or numbers."""
+
+    value = payload.get(key, default)
+    if value is None:
+        if required:
+            raise ValueError(f"{key} is required")
+        return None
+    if not isinstance(value, str):
+        raise ValueError(f"{key} must be a JSON string")
+    normalized = value.strip()
+    if required and not normalized:
+        raise ValueError(f"{key} is required")
+    return normalized
+
+
 class WebApiService:
     """Expose product-shaped operations without reimplementing SSL semantics."""
 
@@ -53,12 +75,20 @@ class WebApiService:
         return self.controller.seed_view(session_id, seed_id)
 
     def create_session(self, payload: dict[str, Any]) -> dict[str, Any]:
-        title = str(payload.get("title") or "Nieuw gesprek").strip() or "Nieuw gesprek"
-        backend = str(payload.get("backend") or "fixture").strip()
-        model_id_raw = payload.get("model_id")
-        model_id = None if model_id_raw in (None, "") else str(model_id_raw).strip()
+        title = _json_string(payload, "title", default="Nieuw gesprek")
+        title = title or "Nieuw gesprek"
+        backend = _json_string(payload, "backend", default="fixture")
+        authority_mode = _json_string(
+            payload,
+            "authority_mode",
+            default="assisted",
+        )
+        model_id = _json_string(payload, "model_id")
+        if model_id == "":
+            model_id = None
 
-        authority_mode = str(payload.get("authority_mode") or "assisted").strip()
+        assert backend is not None
+        assert authority_mode is not None
         try:
             authority_profile_id = _AUTHORITY_MODE_TO_PROFILE[authority_mode]
         except KeyError as exc:
@@ -88,9 +118,8 @@ class WebApiService:
         return self.get_session(session_id)
 
     def run_turn(self, session_id: str, payload: dict[str, Any]) -> dict[str, Any]:
-        question = str(payload.get("question") or "").strip()
-        if not question:
-            raise ValueError("question is required")
+        question = _json_string(payload, "question", required=True)
+        assert question is not None
 
         result = self.controller.send_turn(
             session_id,
@@ -114,9 +143,10 @@ class WebApiService:
         seed_id: str,
         payload: dict[str, Any],
     ) -> dict[str, Any]:
-        source_ref = str(payload.get("source_ref") or "").strip()
-        if not source_ref:
-            raise ValueError("source_ref is required")
+        source_ref = _json_string(payload, "source_ref", required=True)
+        note = _json_string(payload, "note", default="")
+        assert source_ref is not None
+        assert note is not None
 
         operator_verified = payload.get("operator_verified")
         if operator_verified is not True:
@@ -128,7 +158,7 @@ class WebApiService:
             session_id,
             seed_id,
             source_ref=source_ref,
-            note=str(payload.get("note") or ""),
+            note=note,
             operator_verified=True,
         )
         return self.get_session(session_id)
