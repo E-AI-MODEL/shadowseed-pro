@@ -77,6 +77,8 @@ def _pyinstaller_command(root: Path, dist_dir: Path, work_dir: Path) -> list[str
         "--collect-data",
         "shadowseed",
         "--collect-data",
+        "shadowseed_webapi",
+        "--collect-data",
         "gradio_client",
         "--collect-data",
         "safehttpx",
@@ -345,6 +347,44 @@ def _verify_frozen(executable: Path, root: Path, work_dir: Path) -> dict[str, ob
     return payload
 
 
+def _verify_frozen_web(
+    executable: Path,
+    root: Path,
+    work_dir: Path,
+) -> dict[str, object]:
+    """Prove the frozen bundle also contains the one-process web product."""
+
+    work_dir.mkdir(parents=True, exist_ok=True)
+    workspace = work_dir / "web-self-test-workspace"
+    result_file = work_dir / "web-standalone-self-test.json"
+    command = [
+        str(executable),
+        "--web",
+        "--self-test",
+        "--workspace",
+        str(workspace),
+        "--self-test-output",
+        str(result_file),
+    ]
+    print("+", " ".join(command), flush=True)
+    completed = subprocess.run(command, cwd=root, check=False)
+    if completed.returncode != 0:
+        raise subprocess.CalledProcessError(completed.returncode, command)
+    if not result_file.is_file():
+        raise RuntimeError(
+            "frozen web self-test exited successfully without writing its result artifact"
+        )
+
+    payload = json.loads(result_file.read_text(encoding="utf-8"))
+    if payload.get("static_assets_verified") is not True:
+        raise RuntimeError("frozen web self-test did not verify packaged static assets")
+    if payload.get("loopback_only") is not True:
+        raise RuntimeError("frozen web self-test did not preserve loopback-only transport")
+    if payload.get("runtime_mode") != "live" or payload.get("turn") != 1:
+        raise RuntimeError("frozen web self-test did not exercise one canonical live turn")
+    return payload
+
+
 def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object]:
     root = Path(__file__).resolve().parents[1]
     output_dir = output_dir.resolve()
@@ -356,6 +396,13 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
     work_dir.mkdir(parents=True, exist_ok=True)
     (work_dir / "spec").mkdir(parents=True, exist_ok=True)
 
+    web_manifest = root / "src" / "shadowseed_webapi" / "static" / "web-assets-manifest.json"
+    if not web_manifest.is_file():
+        raise RuntimeError(
+            "standalone build requires packaged web assets; "
+            "run the Next export and scripts/sync_web_assets.py first"
+        )
+
     _run(_pyinstaller_command(root, dist_dir, work_dir), cwd=root)
     executable = _executable_path(dist_dir)
     bundle = _bundle_path(dist_dir)
@@ -366,6 +413,11 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
     license_relative = str(license_path.relative_to(bundle))
     license_sha256 = _sha256(license_path)
     self_test = None if skip_self_test else _verify_frozen(executable, root, work_dir)
+    web_self_test = (
+        None
+        if skip_self_test
+        else _verify_frozen_web(executable, root, work_dir / "web-self-test")
+    )
     macos_signature_mode = _seal_macos_bundle(bundle)
     macos_notarized = False if sys.platform == "darwin" else None
 
@@ -380,6 +432,7 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
         work_dir,
     )
     archive_roundtrip_self_test = None
+    archive_roundtrip_web_self_test = None
     if roundtrip_bundle is not None and not skip_self_test:
         roundtrip_executable = roundtrip_bundle / "Contents" / "MacOS" / "Shadowseed"
         if not roundtrip_executable.is_file():
@@ -388,6 +441,11 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
             roundtrip_executable,
             root,
             work_dir / "archive-roundtrip-self-test",
+        )
+        archive_roundtrip_web_self_test = _verify_frozen_web(
+            roundtrip_executable,
+            root,
+            work_dir / "archive-roundtrip-web-self-test",
         )
 
     manifest: dict[str, object] = {
@@ -408,6 +466,7 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
         "self_contained_python_runtime": True,
         "loopback_only_default": True,
         "gradio_source_files_bundled": True,
+        "web_static_assets_bundled": True,
         "macos_signature_mode": macos_signature_mode if system == "darwin" else None,
         "macos_bundle_seal_verified": macos_signature_mode is not None if system == "darwin" else None,
         "macos_notarized": macos_notarized if system == "darwin" else None,
@@ -415,7 +474,9 @@ def build(output_dir: Path, *, skip_self_test: bool = False) -> dict[str, object
         "macos_first_launch_helper": roundtrip_bundle is not None if system == "darwin" else None,
         "macos_archive_roundtrip_verified": roundtrip_bundle is not None if system == "darwin" else None,
         "archive_roundtrip_self_test": archive_roundtrip_self_test,
+        "archive_roundtrip_web_self_test": archive_roundtrip_web_self_test,
         "self_test": self_test,
+        "web_self_test": web_self_test,
     }
     manifest_path = output_dir / f"{stem}.manifest.json"
     manifest_path.write_text(
