@@ -1,0 +1,936 @@
+{
+  "artifact": "shadowseed-gap-resilience-v1",
+  "schema_version": 1,
+  "run_type": "live_benchmark",
+  "disclaimer": "Benchmark measurements are diagnostic, not evidence or authority. The fixture backend is a harness smoke test only. No aggregate metric is an overall Shadowseed quality score.",
+  "generated_at": "2026-10-03T21:30:11.417170+00:00",
+  "shadowseed_source_ref": "eba041faa04bf4a4f72120265b4a54b90fa3ac94",
+  "case_set": "gap_resilience_controlled",
+  "case_set_version": "1.1",
+  "backend": "ollama",
+  "model_id": "gemma2:latest",
+  "model_revision": "ff02c3702f322b9e075e9568332d96c0a7028002f1a5a056e0a6784320a4db0b",
+  "prompt_variant": "current_pair",
+  "prompt_profile": "runtime_v06",
+  "repeats": 2,
+  "max_seeds": 3,
+  "match_threshold": 0.35,
+  "summary": {
+    "cases": 8,
+    "expected_gap_recall": 0.8,
+    "expected_gap_hits": 8,
+    "expected_gap_opportunities": 10,
+    "negative_control_abstention_rate": 1.0,
+    "negative_control_abstention_successes": 6,
+    "negative_control_abstention_opportunities": 6,
+    "resolved_gap_reopen_rate": 0.0,
+    "resolved_gap_reopens": 0,
+    "resolved_gap_opportunities": 14,
+    "repeatability_mean": 1.0,
+    "explicit_none_runs": 2,
+    "parser_empty_non_none_runs": 4
+  },
+  "cases": [
+    {
+      "case_id": "api-auth-controlled",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 1,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 0,
+      "resolved_gap_reopen_rate": null,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 1,
+          "candidates": [
+            "Authentication credentials format"
+          ],
+          "expected": [
+            {
+              "gap_id": "client-authentication-method",
+              "hit": false,
+              "best_similarity": 0.2,
+              "best_candidate": "Authentication credentials format"
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. Authentication mechanism \n2.  Authentication credentials format",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 2,
+            "numbered_lines": 2,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 1,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 1,
+          "candidates": [
+            "Authentication credentials format"
+          ],
+          "expected": [
+            {
+              "gap_id": "client-authentication-method",
+              "hit": false,
+              "best_similarity": 0.2,
+              "best_candidate": "Authentication credentials format"
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. Authentication mechanism \n2.  Authentication credentials format",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 2,
+            "numbered_lines": 2,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 1,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "retention-backups-controlled",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 1,
+      "expected_gap_hits": 2,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 1.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 1,
+          "candidates": [
+            "What happens to backup copies of customer event data after 14 days?"
+          ],
+          "expected": [
+            {
+              "gap_id": "backup-deletion",
+              "hit": true,
+              "best_similarity": 0.5,
+              "best_candidate": "What happens to backup copies of customer event data after 14 days?"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "retention-period",
+              "reopened": false,
+              "best_similarity": 0.25,
+              "best_candidate": "What happens to backup copies of customer event data after 14 days?"
+            }
+          ],
+          "detector_raw_output": "1.  What happens to backup copies of customer event data after 14 days?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 1,
+          "candidates": [
+            "What happens to backup copies of customer event data after 14 days?"
+          ],
+          "expected": [
+            {
+              "gap_id": "backup-deletion",
+              "hit": true,
+              "best_similarity": 0.5,
+              "best_candidate": "What happens to backup copies of customer event data after 14 days?"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "retention-period",
+              "reopened": false,
+              "best_similarity": 0.25,
+              "best_candidate": "What happens to backup copies of customer event data after 14 days?"
+            }
+          ],
+          "detector_raw_output": "1.  What happens to backup copies of customer event data after 14 days?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "support-response-target-controlled",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 1,
+      "expected_gap_hits": 2,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 1.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 1,
+          "candidates": [
+            "response target for each severity"
+          ],
+          "expected": [
+            {
+              "gap_id": "severity-response-target",
+              "hit": true,
+              "best_similarity": 0.8,
+              "best_candidate": "response target for each severity"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "1. response target for each severity",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 1,
+          "candidates": [
+            "response target for each severity"
+          ],
+          "expected": [
+            {
+              "gap_id": "severity-response-target",
+              "hit": true,
+              "best_similarity": 0.8,
+              "best_candidate": "response target for each severity"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "1. response target for each severity",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "alice-failover-controlled",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 1,
+      "expected_gap_hits": 2,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 1.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 1,
+          "candidates": [
+            "failover behavior between zones"
+          ],
+          "expected": [
+            {
+              "gap_id": "alice-failover",
+              "hit": true,
+              "best_similarity": 0.6667,
+              "best_candidate": "failover behavior between zones"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "1. failover behavior between zones",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 1,
+          "candidates": [
+            "failover behavior between zones"
+          ],
+          "expected": [
+            {
+              "gap_id": "alice-failover",
+              "hit": true,
+              "best_similarity": 0.6667,
+              "best_candidate": "failover behavior between zones"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "1. failover behavior between zones",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "rollbackcriteria-nl-controlled",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 2,
+      "expected_gap_hits": 2,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 1.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 0,
+      "resolved_gap_reopen_rate": null,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 2,
+          "candidates": [
+            "criteria voor terugrollen",
+            "volgorde van terugrollen"
+          ],
+          "expected": [
+            {
+              "gap_id": "rollbackcriteria",
+              "hit": true,
+              "best_similarity": 1.0,
+              "best_candidate": "criteria voor terugrollen"
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. criteria voor terugrollen \n2. volgorde van terugrollen",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 2,
+            "numbered_lines": 2,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 2,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 2,
+          "candidates": [
+            "criteria voor terugrollen",
+            "volgorde van terugrollen"
+          ],
+          "expected": [
+            {
+              "gap_id": "rollbackcriteria",
+              "hit": true,
+              "best_similarity": 1.0,
+              "best_candidate": "criteria voor terugrollen"
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. criteria voor terugrollen \n2. volgorde van terugrollen",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 2,
+            "numbered_lines": 2,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 2,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "password-reset-bounded-negative",
+      "negative_control": true,
+      "runs": 2,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 0,
+      "expected_gap_recall": null,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 4,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": 2,
+      "abstention_opportunities": 2,
+      "abstention_rate": 1.0,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 2,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "reset-link-channel",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            },
+            {
+              "gap_id": "reset-link-validity",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "1.  kanaal resetlink\n2.  duur resetlink",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 2,
+            "numbered_lines": 2,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 2,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "reset-link-channel",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            },
+            {
+              "gap_id": "reset-link-validity",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "1.  kanaal resetlink\n2.  duur resetlink",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 2,
+            "numbered_lines": 2,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 2,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "support-hours-superseded-negative",
+      "negative_control": true,
+      "runs": 2,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 0,
+      "expected_gap_recall": null,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": 2,
+      "abstention_opportunities": 2,
+      "abstention_rate": 1.0,
+      "repeatability": 1.0,
+      "explicit_none_runs": 2,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "NONE",
+          "detector_parse_diagnostics": {
+            "explicit_none": true,
+            "nonblank_lines": 1,
+            "numbered_lines": 0,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "NONE",
+          "detector_parse_diagnostics": {
+            "explicit_none": true,
+            "nonblank_lines": 1,
+            "numbered_lines": 0,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "alice-region-other-subject-negative",
+      "negative_control": true,
+      "runs": 2,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 0,
+      "expected_gap_recall": null,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": 2,
+      "abstention_opportunities": 2,
+      "abstention_rate": 1.0,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 2,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "1. availability zones",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 1,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "1. availability zones",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 1,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          }
+        }
+      ]
+    }
+  ],
+  "runtime_provenance": {
+    "github_run_id": "37154929960",
+    "execution_note": "Quality screening on GitHub Linux runner; latency is not representative of the user's laptop.",
+    "github_run_attempt": "1",
+    "runner_os": "Linux",
+    "runner_arch": "X64",
+    "ollama_version": "ollama version is 0.35.1 ",
+    "model_digest": "ff02c3702f322b9e075e9568332d96c0a7028002f1a5a056e0a6784320a4db0b"
+  }
+}

@@ -1,0 +1,824 @@
+{
+  "artifact": "shadowseed-gap-resilience-v1",
+  "schema_version": 1,
+  "run_type": "live_benchmark",
+  "disclaimer": "Benchmark measurements are diagnostic, not evidence or authority. The fixture backend is a harness smoke test only. No aggregate metric is an overall Shadowseed quality score.",
+  "generated_at": "2026-10-03T21:34:02.841854+00:00",
+  "shadowseed_source_ref": "eba041faa04bf4a4f72120265b4a54b90fa3ac94",
+  "case_set": "gap_resilience_controlled",
+  "case_set_version": "1.1",
+  "backend": "ollama",
+  "model_id": "gemma2:latest",
+  "model_revision": "ff02c3702f322b9e075e9568332d96c0a7028002f1a5a056e0a6784320a4db0b",
+  "prompt_variant": "current_pair",
+  "prompt_profile": "candidate_v1",
+  "repeats": 2,
+  "max_seeds": 3,
+  "match_threshold": 0.35,
+  "summary": {
+    "cases": 8,
+    "expected_gap_recall": 0.8,
+    "expected_gap_hits": 8,
+    "expected_gap_opportunities": 10,
+    "negative_control_abstention_rate": 0.0,
+    "negative_control_abstention_successes": 0,
+    "negative_control_abstention_opportunities": 6,
+    "resolved_gap_reopen_rate": 0.2857,
+    "resolved_gap_reopens": 4,
+    "resolved_gap_opportunities": 14,
+    "repeatability_mean": 1.0,
+    "explicit_none_runs": 0,
+    "parser_empty_non_none_runs": 0
+  },
+  "cases": [
+    {
+      "case_id": "api-auth-controlled",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 2,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 0,
+      "resolved_gap_reopen_rate": null,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 2,
+          "candidates": [
+            "Consequences of unauthorized access",
+            "Format of authentication data"
+          ],
+          "expected": [
+            {
+              "gap_id": "client-authentication-method",
+              "hit": false,
+              "best_similarity": 0.2,
+              "best_candidate": "Format of authentication data"
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. Authentication mechanisms\n2.  Consequences of unauthorized access\n3.  Format of authentication data",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 1,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 2,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 2,
+          "candidates": [
+            "Consequences of unauthorized access",
+            "Format of authentication data"
+          ],
+          "expected": [
+            {
+              "gap_id": "client-authentication-method",
+              "hit": false,
+              "best_similarity": 0.2,
+              "best_candidate": "Format of authentication data"
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. Authentication mechanisms\n2.  Consequences of unauthorized access\n3.  Format of authentication data",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 1,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 2,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "retention-backups-controlled",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 1,
+      "expected_gap_hits": 2,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 1.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 1,
+          "candidates": [
+            "What happens to backup copies after 14 days?"
+          ],
+          "expected": [
+            {
+              "gap_id": "backup-deletion",
+              "hit": true,
+              "best_similarity": 0.7143,
+              "best_candidate": "What happens to backup copies after 14 days?"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "retention-period",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "1. What happens to backup copies after 14 days?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 1,
+          "candidates": [
+            "What happens to backup copies after 14 days?"
+          ],
+          "expected": [
+            {
+              "gap_id": "backup-deletion",
+              "hit": true,
+              "best_similarity": 0.7143,
+              "best_candidate": "What happens to backup copies after 14 days?"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "retention-period",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "1. What happens to backup copies after 14 days?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "support-response-target-controlled",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 1,
+      "expected_gap_hits": 2,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 1.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 1,
+          "candidates": [
+            "Response target for each severity level"
+          ],
+          "expected": [
+            {
+              "gap_id": "severity-response-target",
+              "hit": true,
+              "best_similarity": 0.6667,
+              "best_candidate": "Response target for each severity level"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "1. Response target for each severity level",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 1,
+          "candidates": [
+            "Response target for each severity level"
+          ],
+          "expected": [
+            {
+              "gap_id": "severity-response-target",
+              "hit": true,
+              "best_similarity": 0.6667,
+              "best_candidate": "Response target for each severity level"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "1. Response target for each severity level",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "alice-failover-controlled",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 1,
+      "expected_gap_hits": 2,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 1.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 1,
+          "candidates": [
+            "failover behavior between zones"
+          ],
+          "expected": [
+            {
+              "gap_id": "alice-failover",
+              "hit": true,
+              "best_similarity": 0.6667,
+              "best_candidate": "failover behavior between zones"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "1. failover behavior between zones",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 1,
+          "candidates": [
+            "failover behavior between zones"
+          ],
+          "expected": [
+            {
+              "gap_id": "alice-failover",
+              "hit": true,
+              "best_similarity": 0.6667,
+              "best_candidate": "failover behavior between zones"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_raw_output": "1. failover behavior between zones",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "rollbackcriteria-nl-controlled",
+      "negative_control": false,
+      "runs": 2,
+      "mean_candidates_per_run": 3,
+      "expected_gap_hits": 2,
+      "expected_gap_opportunities": 2,
+      "expected_gap_recall": 1.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 0,
+      "resolved_gap_reopen_rate": null,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 3,
+          "candidates": [
+            "criteria voor terugrollen",
+            "volgorde van terugrollen",
+            "starttijd voor terugrollen"
+          ],
+          "expected": [
+            {
+              "gap_id": "rollbackcriteria",
+              "hit": true,
+              "best_similarity": 1.0,
+              "best_candidate": "criteria voor terugrollen"
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. criteria voor terugrollen\n2. volgorde van terugrollen\n3. starttijd voor terugrollen",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 3,
+          "candidates": [
+            "criteria voor terugrollen",
+            "volgorde van terugrollen",
+            "starttijd voor terugrollen"
+          ],
+          "expected": [
+            {
+              "gap_id": "rollbackcriteria",
+              "hit": true,
+              "best_similarity": 1.0,
+              "best_candidate": "criteria voor terugrollen"
+            }
+          ],
+          "resolved": [],
+          "detector_raw_output": "1. criteria voor terugrollen\n2. volgorde van terugrollen\n3. starttijd voor terugrollen",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 3,
+            "numbered_lines": 3,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 3,
+            "truncated_after_max_seeds": true
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "password-reset-bounded-negative",
+      "negative_control": true,
+      "runs": 2,
+      "mean_candidates_per_run": 1,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 0,
+      "expected_gap_recall": null,
+      "resolved_gap_reopens": 4,
+      "resolved_gap_opportunities": 4,
+      "resolved_gap_reopen_rate": 1.0,
+      "abstention_successes": 0,
+      "abstention_opportunities": 2,
+      "abstention_rate": 0.0,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 1,
+          "candidates": [
+            "Hoe lang is de resetlink geldig?"
+          ],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "reset-link-channel",
+              "reopened": true,
+              "best_similarity": 0.4,
+              "best_candidate": "Hoe lang is de resetlink geldig?"
+            },
+            {
+              "gap_id": "reset-link-validity",
+              "reopened": true,
+              "best_similarity": 1.0,
+              "best_candidate": "Hoe lang is de resetlink geldig?"
+            }
+          ],
+          "detector_raw_output": "1.  Hoe lang is de resetlink geldig?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 1,
+          "candidates": [
+            "Hoe lang is de resetlink geldig?"
+          ],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "reset-link-channel",
+              "reopened": true,
+              "best_similarity": 0.4,
+              "best_candidate": "Hoe lang is de resetlink geldig?"
+            },
+            {
+              "gap_id": "reset-link-validity",
+              "reopened": true,
+              "best_similarity": 1.0,
+              "best_candidate": "Hoe lang is de resetlink geldig?"
+            }
+          ],
+          "detector_raw_output": "1.  Hoe lang is de resetlink geldig?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "support-hours-superseded-negative",
+      "negative_control": true,
+      "runs": 2,
+      "mean_candidates_per_run": 1,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 0,
+      "expected_gap_recall": null,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": 0,
+      "abstention_opportunities": 2,
+      "abstention_rate": 0.0,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 1,
+          "candidates": [
+            "Are there any exceptions or limitations to the 24/7 coverage?"
+          ],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.1429,
+              "best_candidate": "Are there any exceptions or limitations to the 24/7 coverage?"
+            }
+          ],
+          "detector_raw_output": "1.  Are there any exceptions or limitations to the 24/7 coverage?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 1,
+          "candidates": [
+            "Are there any exceptions or limitations to the 24/7 coverage?"
+          ],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.1429,
+              "best_candidate": "Are there any exceptions or limitations to the 24/7 coverage?"
+            }
+          ],
+          "detector_raw_output": "1.  Are there any exceptions or limitations to the 24/7 coverage?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "alice-region-other-subject-negative",
+      "negative_control": true,
+      "runs": 2,
+      "mean_candidates_per_run": 1,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 0,
+      "expected_gap_recall": null,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": 0,
+      "abstention_opportunities": 2,
+      "abstention_rate": 0.0,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 1,
+          "candidates": [
+            "What criteria determine the selection of availability zones within the EU region?"
+          ],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.1111,
+              "best_candidate": "What criteria determine the selection of availability zones within the EU region?"
+            }
+          ],
+          "detector_raw_output": "1.  What criteria determine the selection of availability zones within the EU region?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        },
+        {
+          "run": 2,
+          "candidate_count": 1,
+          "candidates": [
+            "What criteria determine the selection of availability zones within the EU region?"
+          ],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.1111,
+              "best_candidate": "What criteria determine the selection of availability zones within the EU region?"
+            }
+          ],
+          "detector_raw_output": "1.  What criteria determine the selection of availability zones within the EU region?",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 1,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          }
+        }
+      ]
+    }
+  ],
+  "runtime_provenance": {
+    "github_run_id": "37154929960",
+    "execution_note": "Quality screening on GitHub Linux runner; latency is not representative of the user's laptop.",
+    "github_run_attempt": "1",
+    "runner_os": "Linux",
+    "runner_arch": "X64",
+    "ollama_version": "ollama version is 0.35.1 ",
+    "model_digest": "ff02c3702f322b9e075e9568332d96c0a7028002f1a5a056e0a6784320a4db0b"
+  }
+}
