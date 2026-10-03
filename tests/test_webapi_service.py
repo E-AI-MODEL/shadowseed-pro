@@ -106,3 +106,58 @@ def test_web_api_rejects_truthy_string_for_product_boolean(tmp_path) -> None:
                 "allow_same_turn_revision": "false",
             }
         )
+
+
+@pytest.mark.parametrize("bad_question", [{"x": 1}, ["x"], 42, True])
+def test_web_api_rejects_non_string_questions_without_persisting_turn(
+    tmp_path,
+    bad_question,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    created = api.create_session(
+        {
+            "title": "Strict question types",
+            "backend": "fixture",
+            "authority_mode": "assisted",
+        }
+    )
+
+    with pytest.raises(ValueError, match="question must be a JSON string"):
+        api.run_turn(created["session_id"], {"question": bad_question})
+
+    after = api.get_session(created["session_id"])
+    assert after["messages"] == []
+    assert after["turn"] == 0
+
+
+@pytest.mark.parametrize("bad_source_ref", [{"url": "x"}, ["x"], 42, True])
+def test_web_api_rejects_non_string_evidence_reference_before_mutation(
+    tmp_path,
+    bad_source_ref,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+
+    with pytest.raises(ValueError, match="source_ref must be a JSON string"):
+        api.submit_evidence(
+            "session::does-not-matter",
+            "seed::does-not-matter",
+            {
+                "source_ref": bad_source_ref,
+                "operator_verified": True,
+            },
+        )
+
+
+def test_web_api_rejects_non_string_evidence_note_before_mutation(tmp_path) -> None:
+    api = WebApiService(tmp_path / "workspace")
+
+    with pytest.raises(ValueError, match="note must be a JSON string"):
+        api.submit_evidence(
+            "session::does-not-matter",
+            "seed::does-not-matter",
+            {
+                "source_ref": "source:test",
+                "note": {"unexpected": "object"},
+                "operator_verified": True,
+            },
+        )
