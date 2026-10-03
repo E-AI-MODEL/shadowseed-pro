@@ -9,6 +9,7 @@ from http.server import ThreadingHTTPServer
 from typing import Any
 
 from shadowseed_webapi.server import make_handler, serve
+from shadowseed_webapi.service import WebApiService
 
 
 class _FakeService:
@@ -27,7 +28,7 @@ class _FakeService:
 
 
 def _request(
-    service: _FakeService,
+    service: Any,
     *,
     method: str,
     path: str,
@@ -116,3 +117,17 @@ def test_ipv6_loopback_is_rejected_before_server_construction(tmp_path) -> None:
             host="::1",
             port=0,
         )
+
+
+def test_explicit_null_string_field_returns_400_not_500(tmp_path) -> None:
+    service = WebApiService(tmp_path / "workspace")
+    status, payload = _request(
+        service,
+        method="POST",
+        path="/api/v1/sessions",
+        body='{"backend":null}',
+        headers={"Content-Type": "application/json"},
+    )
+
+    assert status == 400
+    assert "backend must be a JSON string" in payload["error"]
