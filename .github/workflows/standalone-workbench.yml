@@ -130,6 +130,11 @@ jobs:
           assert manifest["model_weights_bundled"] is False
           assert manifest["self_test"]["frozen"] is True
           assert manifest["self_test"]["runtime_mode"] == "live"
+          assert manifest["web_static_assets_bundled"] is True
+          assert manifest["web_self_test"]["static_assets_verified"] is True
+          assert manifest["web_self_test"]["loopback_only"] is True
+          assert manifest["web_self_test"]["runtime_mode"] == "live"
+          assert manifest["web_self_test"]["turn"] == 1
           assert manifest["license_identifier"] == "PolyForm-Noncommercial-1.0.0"
           assert manifest["license_file"]
           expected_license = hashlib.sha256(Path("LICENSE").read_bytes()).hexdigest()
