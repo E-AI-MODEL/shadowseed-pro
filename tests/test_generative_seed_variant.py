@@ -172,3 +172,17 @@ def test_parser_drops_bare_two_word_proper_names() -> None:
 
     assert seeds == []
     assert diagnostics["dropped_citation_or_stub"] == 2
+
+
+
+def test_parser_strips_whole_candidate_markdown_wrappers() -> None:
+    seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
+        "1. **What is the relation between LLM memory and human memory?**\n"
+        "2. `Context-window limits compared with working memory`"
+    )
+
+    assert seeds == [
+        "What is the relation between LLM memory and human memory?",
+        "Context-window limits compared with working memory",
+    ]
+    assert diagnostics["markdown_wrappers_removed"] == 2
