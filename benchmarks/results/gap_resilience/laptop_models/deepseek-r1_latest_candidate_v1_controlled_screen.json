@@ -3,8 +3,8 @@
   "schema_version": 1,
   "run_type": "live_benchmark",
   "disclaimer": "Benchmark measurements are diagnostic, not evidence or authority. The fixture backend is a harness smoke test only. No aggregate metric is an overall Shadowseed quality score.",
-  "generated_at": "2026-10-03T21:39:27.457386+00:00",
-  "shadowseed_source_ref": "eba041faa04bf4a4f72120265b4a54b90fa3ac94",
+  "generated_at": "2026-10-04T08:29:14.245015+00:00",
+  "shadowseed_source_ref": "4d5a16e16c3c3b1554d7c62efde56a6de11e09c1",
   "case_set": "gap_resilience_controlled",
   "case_set_version": "1.1",
   "backend": "ollama",
@@ -12,6 +12,8 @@
   "model_revision": "6995872bfe4c521a67b32da386cd21d5c6e819b6e0d62f79f64ec83be99f5763",
   "prompt_variant": "current_pair",
   "prompt_profile": "candidate_v1",
+  "thinking_mode": "default",
+  "scoring_policy": "strict_model_abstention_v2",
   "repeats": 2,
   "max_seeds": 3,
   "match_threshold": 0.35,
@@ -20,14 +22,20 @@
     "expected_gap_recall": 0.0,
     "expected_gap_hits": 0,
     "expected_gap_opportunities": 10,
-    "negative_control_abstention_rate": 1.0,
-    "negative_control_abstention_successes": 6,
+    "negative_control_abstention_rate": 0.0,
+    "negative_control_abstention_successes": 0,
     "negative_control_abstention_opportunities": 6,
+    "negative_control_abstention_definition": "model_explicit_NONE_only",
+    "negative_control_parser_filtered_rate": 0.0,
+    "negative_control_parser_filtered_runs": 0,
     "resolved_gap_reopen_rate": 0.0,
     "resolved_gap_reopens": 0,
     "resolved_gap_opportunities": 14,
     "repeatability_mean": 1.0,
     "explicit_none_runs": 0,
+    "empty_response_runs": 16,
+    "thinking_only_runs": 16,
+    "candidate_response_runs": 0,
     "parser_empty_non_none_runs": 0
   },
   "cases": [
@@ -45,8 +53,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 2,
+      "thinking_only_runs": 2,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -62,7 +75,9 @@
             }
           ],
           "resolved": [],
+          "detector_output_class": "thinking_only",
           "detector_raw_output": "",
+          "detector_thinking_output": "Okay, let me start by understanding what the user is asking. They want to analyze the current question about API authentication requirements and identify any unresolved information gaps. The draft answer provided some details about the API endpoint, request limits, and JSON responses, but the main focus here is on authentication.\n\nFirst, the user mentioned that clients must authenticate before calling endpoints. So the question is specifically about authentication. The draft answer doesn't talk about authentication at all, just other aspects. That means the authentication part is the only thing being considered here. \n\nNow, I need to think about what aspects of",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -80,6 +95,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 23014737856,
+            "load_duration": 976014,
+            "prompt_eval_count": 315,
+            "eval_count": 120
           }
         },
         {
@@ -95,7 +117,9 @@
             }
           ],
           "resolved": [],
+          "detector_output_class": "thinking_only",
           "detector_raw_output": "",
+          "detector_thinking_output": "Okay, let me start by understanding what the user is asking. They want to identify three plausible unresolved information gaps related to authentication in the API requirements. The draft answer mentions the endpoint, rate limits, and JSON responses, but nothing about authentication. The prior context is empty, so I can't rely on any previous info.\n\nFirst, I need to focus on authentication. The main points are how clients authenticate, what credentials are needed, and how the API verifies them. The user might be developing an API and noticed that the authentication part isn't detailed. They probably need specifics to implement the",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -113,6 +137,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 14719733382,
+            "load_duration": 945128,
+            "prompt_eval_count": 315,
+            "eval_count": 120
           }
         }
       ]
@@ -131,8 +162,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 2,
+      "thinking_only_runs": 2,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -155,7 +191,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "thinking_only",
           "detector_raw_output": "",
+          "detector_thinking_output": "We are given:\n- BOUNDED PRIOR CONTEXT: The old 30-day policy was replaced. The current retention period is 14 days.\n- CURRENT QUESTION: The retention policy must state what happens to both primary-store data and backup copies. What part is still unspecified?\n- DRAFT ANSWER: Customer event data is retained for 14 days. After that period the deletion job removes it from the primary store.\n\nThe draft answer specifies that primary-store data is removed after 14 days. However, the question asks about both primary-store data and backup copies.\n\n",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -173,6 +211,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 17171548429,
+            "load_duration": 799467,
+            "prompt_eval_count": 352,
+            "eval_count": 120
           }
         },
         {
@@ -195,7 +240,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "thinking_only",
           "detector_raw_output": "",
+          "detector_thinking_output": "We are given a bounded prior context and a current question.\n\nBounded prior context:\n- The old 30-day policy was replaced.\n- The current retention period is 14 days.\n\nDraft answer:\n- Customer event data is retained for 14 days.\n- After that period the deletion job removes it from the primary store.\n\nCurrent question: \nThe retention policy must state what happens to both primary-store data and backup copies. What part is still unspecified?\n\nWe are to name up to 3 plausible unresolved information gaps that may still deserve checking.\n\nLet's analyze:\n\nThe draft",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -213,6 +260,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 14620964720,
+            "load_duration": 1000091,
+            "prompt_eval_count": 352,
+            "eval_count": 120
           }
         }
       ]
@@ -231,8 +285,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 2,
+      "thinking_only_runs": 2,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -255,7 +314,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "thinking_only",
           "detector_raw_output": "",
+          "detector_thinking_output": "Hmm, the user is asking me to analyze a question about support policy specifications and identify up to 3 plausible unresolved information gaps. They've provided bounded prior context showing that support is now 24/7 for production incidents, and they've given a draft answer about the queue and severity escalation.\n\nLooking at the current question, they're asking what remains unspecified in the support policy regarding coverage hours and response targets for each severity. The draft answer mentions the 24/7 coverage but doesn't specify exact hours or minutes, and it doesn't detail the response targets for different severities",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -273,6 +334,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 17392798803,
+            "load_duration": 1566177,
+            "prompt_eval_count": 360,
+            "eval_count": 120
           }
         },
         {
@@ -295,7 +363,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "thinking_only",
           "detector_raw_output": "",
+          "detector_thinking_output": "Okay, let's start by understanding the user's question. They want to know what remains unspecified in the support policy after the draft answer was provided. The draft mentions 24/7 coverage and a shared queue based on severity for escalation.\n\nFirst, I need to identify the key components of the support policy. The user is asking about coverage hours and response targets for each severity. The draft already clarified that the previous business hours schedule is gone and replaced with 24/7 coverage. So the first gap is the absence of specific response time targets for each severity level. The user",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -313,6 +383,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 14734875748,
+            "load_duration": 941212,
+            "prompt_eval_count": 360,
+            "eval_count": 120
           }
         }
       ]
@@ -331,8 +408,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 2,
+      "thinking_only_runs": 2,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -355,7 +437,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "thinking_only",
           "detector_raw_output": "",
+          "detector_thinking_output": "Okay, let me start by understanding the user's question. They want to know what remains unspecified for Alice's service regarding deployment standards. The deployment standard includes region, number of availability zones, and failover behavior between zones. The draft answer mentions that Alice's service is in the EU region and uses two availability zones. But the failover behavior isn't addressed.\n\nFirst, I need to identify the information gaps. The user mentioned three components: region, AZ count, and failover behavior. The draft covers the first two but not the third. So the main gap here is the fail",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -373,6 +457,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 17156661808,
+            "load_duration": 887316,
+            "prompt_eval_count": 348,
+            "eval_count": 120
           }
         },
         {
@@ -395,7 +486,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "thinking_only",
           "detector_raw_output": "",
+          "detector_thinking_output": "Okay, let me start by understanding the user's question. They want to know what remains unspecified for Alice's service regarding deployment standards. The deployment standard includes region, number of availability zones, and failover behavior between zones. The draft answer says the service is in the EU region with two availability zones, but it doesn't mention failover behavior.\n\nFirst, I need to identify the three aspects of the deployment standard. The draft covers region and number of zones, so the missing part is failover behavior. But the user might be asking for more than just the failover. Maybe they",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -413,6 +506,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 14392778711,
+            "load_duration": 901754,
+            "prompt_eval_count": 348,
+            "eval_count": 120
           }
         }
       ]
@@ -431,8 +531,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 2,
+      "thinking_only_runs": 2,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -448,7 +553,9 @@
             }
           ],
           "resolved": [],
+          "detector_output_class": "thinking_only",
           "detector_raw_output": "",
+          "detector_thinking_output": "Hmm, the user is asking about what hasn't been specified regarding the rollback criteria for a migration. They've provided a draft answer that mentions the start time and order of migration, but not the rollback criteria. \n\nThe user seems to be in a planning phase for a migration, likely a technical or project management role. They're focused on the rollback aspect, which is crucial for minimizing downtime and ensuring system stability. The draft answer gives a high-level overview but lacks the specific conditions that would trigger a rollback.\n\nLooking at the bounded prior context, it's empty, so I can't rely",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -466,6 +573,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 17000218657,
+            "load_duration": 932659,
+            "prompt_eval_count": 355,
+            "eval_count": 120
           }
         },
         {
@@ -481,7 +595,9 @@
             }
           ],
           "resolved": [],
+          "detector_output_class": "thinking_only",
           "detector_raw_output": "",
+          "detector_thinking_output": "Hmm, the user is asking about what hasn't been specified regarding the rollback criteria for a migration. They've provided a draft answer that mentions the start time and order of migration, but not the rollback criteria. \n\nThe user seems to be in a planning phase for a migration, likely in a technical or project management role. They're focused on the rollback aspect, which suggests they're concerned about risk management and having clear procedures in case things go wrong. \n\nLooking at the draft answer, it only mentions the start time and sequence of migration steps, but completely skips over the rollback criteria.",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -499,6 +615,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 14588959065,
+            "load_duration": 1903687,
+            "prompt_eval_count": 355,
+            "eval_count": 120
           }
         }
       ]
@@ -514,11 +637,16 @@
       "resolved_gap_reopens": 0,
       "resolved_gap_opportunities": 4,
       "resolved_gap_reopen_rate": 0.0,
-      "abstention_successes": 2,
+      "abstention_successes": 0,
       "abstention_opportunities": 2,
-      "abstention_rate": 1.0,
+      "abstention_rate": 0.0,
+      "negative_parser_filtered_runs": 0,
+      "negative_parser_filtered_rate": 0.0,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 2,
+      "thinking_only_runs": 2,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -540,7 +668,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "thinking_only",
           "detector_raw_output": "",
+          "detector_thinking_output": "Hmm, the user is asking me to analyze a question about password reset links, a draft answer, and identify up to three plausible unresolved information gaps. This seems to be about evaluating two specific points regarding password reset functionality.\n\nThe user wants me to identify potential gaps in information that aren't explicitly addressed in the draft answer or bounded prior context. They're specifically interested in two aspects: the channel through which reset links are sent and their validity duration.\n\nLooking at the bounded prior context, I see that in the previous interaction the user asked \"Via welk kanaal wordt de resetlink ver",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -558,6 +688,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 17928287056,
+            "load_duration": 830183,
+            "prompt_eval_count": 392,
+            "eval_count": 120
           }
         },
         {
@@ -579,7 +716,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "thinking_only",
           "detector_raw_output": "",
+          "detector_thinking_output": "Hmm, the user is asking me to analyze a question about resetlink channels and validity duration, along with a draft answer. They want me to identify up to 3 plausible unresolved information gaps that need checking.\n\nLooking at the bounded prior context, we know from the previous exchange that resetlinks are sent exclusively via email. The current question is asking to evaluate just two points: the channel and the validity duration, and determine if either remains unspecified.\n\nThe draft answer provides information about the resetlink being valid for 20 minutes, can be used once, makes older resetlinks invalid, and",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -597,6 +736,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 14235380543,
+            "load_duration": 906109,
+            "prompt_eval_count": 392,
+            "eval_count": 120
           }
         }
       ]
@@ -612,11 +758,16 @@
       "resolved_gap_reopens": 0,
       "resolved_gap_opportunities": 2,
       "resolved_gap_reopen_rate": 0.0,
-      "abstention_successes": 2,
+      "abstention_successes": 0,
       "abstention_opportunities": 2,
-      "abstention_rate": 1.0,
+      "abstention_rate": 0.0,
+      "negative_parser_filtered_runs": 0,
+      "negative_parser_filtered_rate": 0.0,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 2,
+      "thinking_only_runs": 2,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -632,7 +783,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "thinking_only",
           "detector_raw_output": "",
+          "detector_thinking_output": "Hmm, the user is asking me to analyze a question about support coverage hours, along with a draft answer, and identify up to 3 plausible unresolved information gaps. This is an interesting task that requires careful attention to detail.\n\nThe user's question is about whether support coverage hours for production incidents are still unspecified. The draft answer states that support coverage is 24/7 for production incidents. Looking at the bounded prior context, I see that the user previously asked if support was limited to 09:00-17:00, and I responded that this schedule was",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -650,6 +803,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 16203804718,
+            "load_duration": 783164,
+            "prompt_eval_count": 346,
+            "eval_count": 120
           }
         },
         {
@@ -665,7 +825,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "thinking_only",
           "detector_raw_output": "",
+          "detector_thinking_output": "Okay, let's tackle this query. The user wants me to identify up to three plausible unresolved information gaps in the current question about support coverage hours. The draft answer states that support coverage is 24/7 for production incidents. The prior context mentions that the previous schedule of 09:00-17:00 was superseded, and the assistant confirmed 24/7 coverage.\n\nFirst, I need to figure out what the user is really asking. They're checking if the support hours are still unspecified. The draft answer says they are 24/",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -683,6 +845,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 14158974135,
+            "load_duration": 1625808,
+            "prompt_eval_count": 346,
+            "eval_count": 120
           }
         }
       ]
@@ -698,11 +867,16 @@
       "resolved_gap_reopens": 0,
       "resolved_gap_opportunities": 2,
       "resolved_gap_reopen_rate": 0.0,
-      "abstention_successes": 2,
+      "abstention_successes": 0,
       "abstention_opportunities": 2,
-      "abstention_rate": 1.0,
+      "abstention_rate": 0.0,
+      "negative_parser_filtered_runs": 0,
+      "negative_parser_filtered_rate": 0.0,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 2,
+      "thinking_only_runs": 2,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -718,7 +892,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "thinking_only",
           "detector_raw_output": "",
+          "detector_thinking_output": "Hmm, the user is asking me to analyze a question about Alice's service deployment, a draft answer, and identify up to 3 plausible unresolved information gaps. They want me to assess whether Alice's deployment region is still unspecified, but also consider other relevant dimensions that might need clarification.\n\nLooking at the bounded prior context, the user previously asked \"Where is Alice's service deployed?\" and I responded that Alice's service is in the EU region. Then in the current question, they're asking to specifically assess if Alice's deployment region is still unspecified.\n\nThe draft answer states that Alice's service",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -736,6 +912,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 16129810673,
+            "load_duration": 963556,
+            "prompt_eval_count": 335,
+            "eval_count": 120
           }
         },
         {
@@ -751,7 +934,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "thinking_only",
           "detector_raw_output": "",
+          "detector_thinking_output": "Okay, let me start by understanding the user's question. They want to assess whether Alice's deployment region is still unspecified. The draft answer says it's in the EU region, but the user is asking if it's still unspecified. Hmm, wait, the draft answer explicitly states the region as EU. So why would the user think it's unspecified? Maybe there's a misunderstanding or conflicting information somewhere.\n\nLooking at the bounded prior context, the assistant mentioned in PRIOR TURN 1 that Alice's service is in the EU region. But the user is now asking if it's still unspecified",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -769,13 +954,20 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 14088920263,
+            "load_duration": 808141,
+            "prompt_eval_count": 335,
+            "eval_count": 120
           }
         }
       ]
     }
   ],
   "runtime_provenance": {
-    "github_run_id": "37154929960",
+    "github_run_id": "37188525722",
     "execution_note": "Quality screening on GitHub Linux runner; latency is not representative of the user's laptop.",
     "github_run_attempt": "1",
     "runner_os": "Linux",

@@ -3,8 +3,8 @@
   "schema_version": 1,
   "run_type": "live_benchmark",
   "disclaimer": "Benchmark measurements are diagnostic, not evidence or authority. The fixture backend is a harness smoke test only. No aggregate metric is an overall Shadowseed quality score.",
-  "generated_at": "2026-10-03T21:32:18.133557+00:00",
-  "shadowseed_source_ref": "eba041faa04bf4a4f72120265b4a54b90fa3ac94",
+  "generated_at": "2026-10-04T08:24:56.451275+00:00",
+  "shadowseed_source_ref": "4d5a16e16c3c3b1554d7c62efde56a6de11e09c1",
   "case_set": "gap_resilience_controlled",
   "case_set_version": "1.1",
   "backend": "ollama",
@@ -12,6 +12,8 @@
   "model_revision": "6995872bfe4c521a67b32da386cd21d5c6e819b6e0d62f79f64ec83be99f5763",
   "prompt_variant": "current_pair",
   "prompt_profile": "runtime_v06",
+  "thinking_mode": "default",
+  "scoring_policy": "strict_model_abstention_v2",
   "repeats": 2,
   "max_seeds": 3,
   "match_threshold": 0.35,
@@ -20,14 +22,20 @@
     "expected_gap_recall": 0.0,
     "expected_gap_hits": 0,
     "expected_gap_opportunities": 10,
-    "negative_control_abstention_rate": 1.0,
-    "negative_control_abstention_successes": 6,
+    "negative_control_abstention_rate": 0.0,
+    "negative_control_abstention_successes": 0,
     "negative_control_abstention_opportunities": 6,
+    "negative_control_abstention_definition": "model_explicit_NONE_only",
+    "negative_control_parser_filtered_rate": 0.0,
+    "negative_control_parser_filtered_runs": 0,
     "resolved_gap_reopen_rate": 0.0,
     "resolved_gap_reopens": 0,
     "resolved_gap_opportunities": 14,
     "repeatability_mean": 1.0,
     "explicit_none_runs": 0,
+    "empty_response_runs": 16,
+    "thinking_only_runs": 0,
+    "candidate_response_runs": 0,
     "parser_empty_non_none_runs": 0
   },
   "cases": [
@@ -45,8 +53,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 2,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -62,7 +75,9 @@
             }
           ],
           "resolved": [],
+          "detector_output_class": "empty_response",
           "detector_raw_output": "",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -88,7 +103,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -103,7 +119,9 @@
             }
           ],
           "resolved": [],
+          "detector_output_class": "empty_response",
           "detector_raw_output": "",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -129,7 +147,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -147,8 +166,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 2,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -171,7 +195,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "empty_response",
           "detector_raw_output": "",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -197,7 +223,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -219,7 +246,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "empty_response",
           "detector_raw_output": "",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -245,7 +274,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -263,8 +293,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 2,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -287,7 +322,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "empty_response",
           "detector_raw_output": "",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -313,7 +350,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -335,7 +373,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "empty_response",
           "detector_raw_output": "",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -361,7 +401,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -379,8 +420,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 2,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -403,7 +449,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "empty_response",
           "detector_raw_output": "",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -429,7 +477,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -451,7 +500,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "empty_response",
           "detector_raw_output": "",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -477,7 +528,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -495,8 +547,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 2,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -512,7 +569,9 @@
             }
           ],
           "resolved": [],
+          "detector_output_class": "empty_response",
           "detector_raw_output": "",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -538,7 +597,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -553,7 +613,9 @@
             }
           ],
           "resolved": [],
+          "detector_output_class": "empty_response",
           "detector_raw_output": "",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -579,7 +641,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -594,11 +657,16 @@
       "resolved_gap_reopens": 0,
       "resolved_gap_opportunities": 4,
       "resolved_gap_reopen_rate": 0.0,
-      "abstention_successes": 2,
+      "abstention_successes": 0,
       "abstention_opportunities": 2,
-      "abstention_rate": 1.0,
+      "abstention_rate": 0.0,
+      "negative_parser_filtered_runs": 0,
+      "negative_parser_filtered_rate": 0.0,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 2,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -620,7 +688,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "empty_response",
           "detector_raw_output": "",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -646,7 +716,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -667,7 +738,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "empty_response",
           "detector_raw_output": "",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -693,7 +766,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -708,11 +782,16 @@
       "resolved_gap_reopens": 0,
       "resolved_gap_opportunities": 2,
       "resolved_gap_reopen_rate": 0.0,
-      "abstention_successes": 2,
+      "abstention_successes": 0,
       "abstention_opportunities": 2,
-      "abstention_rate": 1.0,
+      "abstention_rate": 0.0,
+      "negative_parser_filtered_runs": 0,
+      "negative_parser_filtered_rate": 0.0,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 2,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -728,7 +807,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "empty_response",
           "detector_raw_output": "",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -754,7 +835,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -769,7 +851,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "empty_response",
           "detector_raw_output": "",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -795,7 +879,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -810,11 +895,16 @@
       "resolved_gap_reopens": 0,
       "resolved_gap_opportunities": 2,
       "resolved_gap_reopen_rate": 0.0,
-      "abstention_successes": 2,
+      "abstention_successes": 0,
       "abstention_opportunities": 2,
-      "abstention_rate": 1.0,
+      "abstention_rate": 0.0,
+      "negative_parser_filtered_runs": 0,
+      "negative_parser_filtered_rate": 0.0,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 2,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -830,7 +920,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "empty_response",
           "detector_raw_output": "",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -856,7 +948,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -871,7 +964,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "empty_response",
           "detector_raw_output": "",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 0,
@@ -897,13 +992,14 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     }
   ],
   "runtime_provenance": {
-    "github_run_id": "37154929960",
+    "github_run_id": "37188525722",
     "execution_note": "Quality screening on GitHub Linux runner; latency is not representative of the user's laptop.",
     "github_run_attempt": "1",
     "runner_os": "Linux",
