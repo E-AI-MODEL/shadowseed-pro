@@ -65,8 +65,6 @@ class HFTransformersBackend:
     models or any local text-generation model available in the HF cache.
     """
 
-    native_chat_transport = True
-
     def __init__(
         self,
         model_id: str,
@@ -87,6 +85,9 @@ class HFTransformersBackend:
         self.revision = revision
         tokenizer_kwargs = {"revision": revision} if revision is not None else {}
         self.tokenizer = AutoTokenizer.from_pretrained(model_id, **tokenizer_kwargs)
+        self.native_chat_transport = bool(
+            getattr(self.tokenizer, "chat_template", None)
+        )
         if torch.cuda.is_available():
             model_kwargs = {"torch_dtype": torch.float16, "device_map": "auto"}
         else:
@@ -119,7 +120,8 @@ class HFTransformersBackend:
     ) -> str:
         messages = chat_messages(history, question)
         chat_template = getattr(self.tokenizer, "apply_chat_template", None)
-        if callable(chat_template):
+        configured_template = getattr(self.tokenizer, "chat_template", None)
+        if callable(chat_template) and configured_template:
             prompt = chat_template(
                 messages,
                 tokenize=False,
