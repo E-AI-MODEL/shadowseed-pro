@@ -206,15 +206,11 @@ def _looks_like_citation_fragment(seed: str, source_text: str) -> bool:
         return True
     if _ACRONYM_ONLY.match(stripped):
         return True
+    if word_count == 2 and _TWO_WORD_PROPER_NAME.match(stripped):
+        return True
     if source_text and word_count <= 16:
         normalized_seed = re.sub(r"\s+", " ", stripped).strip(" .,:;-").lower()
         normalized_source = re.sub(r"\s+", " ", source_text).lower()
-        if (
-            word_count == 2
-            and _TWO_WORD_PROPER_NAME.match(stripped)
-            and normalized_seed in normalized_source
-        ):
-            return True
         # Long literal substring of input → almost certainly a citation.
         if len(normalized_seed) >= 20 and normalized_seed in normalized_source:
             return True
