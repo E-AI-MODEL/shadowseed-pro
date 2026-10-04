@@ -2,7 +2,7 @@
   "schema_version": 1,
   "case_set": "deepseek_thinking_probe",
   "case_set_version": "1.0",
-  "description": "Two-case language/control probe for DeepSeek R1 thinking-mode behavior before any full thinking-on benchmark.",
+  "description": "Single positive case to isolate DeepSeek R1 thinking-mode output behavior before full off-mode screening.",
   "cases": [
     {
       "case_id": "api-auth-controlled",
@@ -23,33 +23,6 @@
         }
       ],
       "resolved_gap_groups": []
-    },
-    {
-      "case_id": "password-reset-bounded-negative",
-      "language": "nl",
-      "question": "Beoordeel alleen twee punten: via welk kanaal de resetlink wordt verstuurd en hoe lang die geldig is. Is een van beide nog ongespecificeerd?",
-      "draft_answer": "Een resetlink is 20 minuten geldig, kan één keer worden gebruikt, maakt alle oudere resetlinks ongeldig en stuurt na succes een bevestigingsmail.",
-      "conversation_context": "PRIOR TURN 1\nUSER: Via welk kanaal wordt de resetlink verstuurd?\nASSISTANT: De resetlink wordt uitsluitend per e-mail verstuurd.",
-      "negative_control": true,
-      "expected_gap_groups": [],
-      "resolved_gap_groups": [
-        {
-          "id": "reset-link-channel",
-          "aliases": [
-            "kanaal voor de resetlink",
-            "hoe de resetlink wordt verstuurd",
-            "resetlink per e-mail"
-          ]
-        },
-        {
-          "id": "reset-link-validity",
-          "aliases": [
-            "geldigheidsduur van de resetlink",
-            "hoe lang de resetlink geldig is",
-            "resetlink 20 minuten geldig"
-          ]
-        }
-      ]
     }
   ]
 }
