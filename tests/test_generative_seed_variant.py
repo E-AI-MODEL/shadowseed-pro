@@ -144,3 +144,31 @@ def test_fixture_detector_records_explicit_none_for_empty_input() -> None:
     assert seeds == []
     assert detector.last_raw_output == "NONE"
     assert detector.last_parse_diagnostics["explicit_none"] is True
+
+
+
+def test_parser_preserves_two_word_gap_labels_but_drops_single_token_stubs() -> None:
+    seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
+        "1. Authentication mechanism\n"
+        "2. kanaal resetlink\n"
+        "3. availability zones\n"
+        "4. Context"
+    )
+
+    assert seeds == [
+        "Authentication mechanism",
+        "kanaal resetlink",
+        "availability zones",
+    ]
+    assert diagnostics["accepted_candidates"] == 3
+    assert diagnostics["dropped_citation_or_stub"] == 1
+
+
+def test_parser_drops_bare_two_word_proper_names() -> None:
+    seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
+        "1. Alice Smith\n"
+        "2. Data Drift"
+    )
+
+    assert seeds == []
+    assert diagnostics["dropped_citation_or_stub"] == 2
