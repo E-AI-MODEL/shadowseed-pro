@@ -1,0 +1,122 @@
+{
+  "artifact": "shadowseed-r1-cross-language-summary-v1",
+  "schema_version": 1,
+  "evidence_status": "verified_from_completed_github_actions_output",
+  "source": {
+    "paired_run_id": 37193789525,
+    "paired_job_id": 111411321706,
+    "paired_source_head": "cb82306b08acf89f0c5303ade12943e2156f28a0",
+    "model_id": "deepseek-r1:latest",
+    "model_revision": "6995872bfe4c521a67b32da386cd21d5c6e819b6e0d62f79f64ec83be99f5763",
+    "ollama_version": "0.35.1",
+    "max_new_tokens": 700,
+    "prompt_id": "minimal_revision",
+    "prompt_version": "1.0"
+  },
+  "paired_run_summary": {
+    "cases": 4,
+    "final_response_rate": 0.75,
+    "role_contract_pass_rate": 0.75,
+    "mean_addition_coverage": 0.75,
+    "mean_baseline_preservation": 0.75,
+    "mean_total_duration_seconds": 171.412
+  },
+  "language_summary": {
+    "en": {
+      "cases": 2,
+      "final_response_rate": 1,
+      "role_contract_pass_rate": 1,
+      "mean_addition_coverage": 1,
+      "mean_baseline_preservation": 1,
+      "mean_total_duration_seconds": 147.556
+    },
+    "nl": {
+      "cases": 2,
+      "final_response_rate": 0.5,
+      "role_contract_pass_rate": 0.5,
+      "mean_addition_coverage": 0.5,
+      "mean_baseline_preservation": 0.5,
+      "mean_total_duration_seconds": 195.267
+    }
+  },
+  "pair_comparison": [
+    {
+      "pair_id": "industrial-revolution",
+      "nl": {
+        "final_response_available": false,
+        "role_contract_pass": false,
+        "addition_coverage": 0,
+        "baseline_preservation": 0,
+        "total_duration_seconds": 203.234,
+        "done_reason": "length",
+        "eval_count": 700
+      },
+      "en": {
+        "final_response_available": true,
+        "role_contract_pass": true,
+        "addition_coverage": 1,
+        "baseline_preservation": 1,
+        "total_duration_seconds": 153.503,
+        "done_reason": "stop",
+        "eval_count": 562
+      },
+      "en_minus_nl": {
+        "addition_coverage": 1,
+        "baseline_preservation": 1,
+        "total_duration_seconds": -49.731
+      }
+    },
+    {
+      "pair_id": "ml-production",
+      "nl": {
+        "final_response_available": true,
+        "role_contract_pass": true,
+        "addition_coverage": 1,
+        "baseline_preservation": 1,
+        "total_duration_seconds": 187.3,
+        "done_reason": "stop",
+        "eval_count": 666
+      },
+      "en": {
+        "final_response_available": true,
+        "role_contract_pass": true,
+        "addition_coverage": 1,
+        "baseline_preservation": 1,
+        "total_duration_seconds": 141.61,
+        "done_reason": "stop",
+        "eval_count": 554
+      },
+      "en_minus_nl": {
+        "addition_coverage": 0,
+        "baseline_preservation": 0,
+        "total_duration_seconds": -45.69
+      }
+    }
+  ],
+  "cross_run_check": {
+    "comparison_run_id": 37193789532,
+    "comparison_source_head": "cb82306b08acf89f0c5303ade12943e2156f28a0",
+    "same_model_revision": true,
+    "observed_cases": {
+      "industrial-revolution-nl": {
+        "final_response_available": false,
+        "done_reason": "length",
+        "eval_count": 700,
+        "total_duration_seconds": 177.448
+      },
+      "ml-production-en": {
+        "final_response_available": false,
+        "done_reason": "length",
+        "eval_count": 700,
+        "total_duration_seconds": 164.219
+      }
+    },
+    "interpretation": "The paired run shows a clear English advantage, but the separate same-head rerun shows substantial R1 run-to-run reasoning-budget variability. Language is therefore a material factor, not a sufficient explanation by itself."
+  },
+  "conclusion": {
+    "supported": "English reduced token use and duration in both semantic pairs and achieved 2/2 role-contract passes in the paired run. Dutch achieved 1/2.",
+    "not_supported": "Do not infer that switching all internal or UI language to English makes R1 reliable. The same English ML case also truncated in a separate rerun.",
+    "routing_implication": "Treat language as one capability dimension alongside task scope and repeatability. Keep user-facing UI independent from internal model-role routing."
+  },
+  "provenance_note": "The full paired result file was created and verified in the workflow, but its push was rejected by a concurrent branch update. This summary preserves the exact verified metrics printed by the completed verify step; the raw paired file was not persisted."
+}
