@@ -279,7 +279,7 @@ class WebApiService:
         if backend != "openai":
             validate_production_local_backend(backend, embedding_backend)
         if embedding_backend == "ollama":
-            self.controller._validate_ollama_embedding_model(
+            self.controller.validate_ollama_embedding_model(
                 self.controller.default_embedding_model(embedding_backend)
             )
 
