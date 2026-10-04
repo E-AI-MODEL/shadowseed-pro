@@ -182,14 +182,17 @@ class WorkbenchController:
             ) from exc
 
         requested_key = requested.casefold()
-        requested_base = requested_key.split(":", 1)[0]
         available = {
             str(name).strip().casefold()
             for name in installed
             if str(name).strip()
         }
-        available_bases = {name.split(":", 1)[0] for name in available}
-        if requested_key not in available and requested_base not in available_bases:
+        exact_match = requested_key in available
+        latest_match = (
+            ":" not in requested_key
+            and f"{requested_key}:latest" in available
+        )
+        if not exact_match and not latest_match:
             raise ValueError(
                 f"Ollama embedding model {requested!r} is not installed. "
                 f"Run `ollama pull {requested}` in Terminal, then create the chat again."
