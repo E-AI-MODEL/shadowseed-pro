@@ -799,7 +799,7 @@ def build_vnext_app(
         try:
             embedding_backend = ctl.default_embedding_backend(provider)
             if embedding_backend == "ollama":
-                ctl._validate_ollama_embedding_model(
+                ctl.validate_ollama_embedding_model(
                     ctl.default_embedding_model(embedding_backend)
                 )
             session_id = ctl.create_session(
@@ -1581,7 +1581,7 @@ def build_vnext_app(
         settings = dict(_PRESET_SETTINGS.get(preset, _PRESET_SETTINGS["gebalanceerd"]))
         embedding_backend = ctl.default_embedding_backend(provider_value)
         if embedding_backend == "ollama":
-            ctl._validate_ollama_embedding_model(
+            ctl.validate_ollama_embedding_model(
                 ctl.default_embedding_model(embedding_backend)
             )
         session_id = ctl.create_session(
