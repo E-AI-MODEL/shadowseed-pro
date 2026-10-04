@@ -12,10 +12,12 @@ call the local API as same-origin: read sessions and messages, create sessions a
 submit operator-verified evidence as the local operator. The Gate itself was not
 bypassed, but external web content could act as the trusted local operator.
 
-Every request (API, static files, OPTIONS and HEAD) must now present `Host`
-`127.0.0.1:<bound port>` or `localhost:<bound port>`. The bound port is read from
-the running server, so the launcher's fallback port keeps working. The existing
-Origin allowlist remains a second layer. Regression tests cover rebound reads,
+Every request (API, static files, OPTIONS and HEAD) must now present a trusted
+loopback `Host` on the server's actual bound port: `127.0.0.1:<port>`,
+`localhost:<port>`, or the server's own loopback bind address (for example
+`127.0.0.2:<port>`). The bound port is read from the running server, so the
+launcher's fallback port keeps working. The existing Origin allowlist remains a
+second layer. Regression tests cover rebound reads,
 session creation and evidence submission.
 
 ## Release status
