@@ -351,9 +351,13 @@ def score_case(
     expected_hits = 0
     resolved_opportunities = len(resolved) * len(runs)
     resolved_reopens = 0
-    empty_runs = 0
     explicit_none_runs = 0
+    empty_response_runs = 0
+    thinking_only_runs = 0
     parser_empty_non_none_runs = 0
+    candidate_response_runs = 0
+    negative_model_abstentions = 0
+    negative_parser_filtered_runs = 0
     run_details: list[dict[str, Any]] = []
 
     for index, candidates in enumerate(runs, start=1):
@@ -364,12 +368,31 @@ def score_case(
             else {}
         )
         parse_diagnostics = audit.get("parse_diagnostics") or {}
-        if not candidates:
-            empty_runs += 1
-            if parse_diagnostics.get("explicit_none"):
-                explicit_none_runs += 1
-            elif audit.get("raw_output"):
-                parser_empty_non_none_runs += 1
+        raw_output = str(audit.get("raw_output") or "")
+        thinking_output = str(audit.get("thinking_output") or "")
+        explicit_none = bool(parse_diagnostics.get("explicit_none"))
+        empty_response = not raw_output.strip()
+        parser_filtered = bool(raw_output.strip()) and not explicit_none and not candidates
+        output_class = (
+            "explicit_none"
+            if explicit_none
+            else "thinking_only"
+            if empty_response and thinking_output.strip()
+            else "empty_response"
+            if empty_response
+            else "parser_rejected_nonempty"
+            if parser_filtered
+            else "candidates"
+        )
+
+        explicit_none_runs += int(explicit_none)
+        empty_response_runs += int(empty_response)
+        thinking_only_runs += int(empty_response and bool(thinking_output.strip()))
+        parser_empty_non_none_runs += int(parser_filtered)
+        candidate_response_runs += int(bool(candidates))
+        if negative_control:
+            negative_model_abstentions += int(explicit_none)
+            negative_parser_filtered_runs += int(parser_filtered)
 
         expected_detail: list[dict[str, Any]] = []
         for group in expected:
@@ -404,9 +427,12 @@ def score_case(
                 "candidates": candidates,
                 "expected": expected_detail,
                 "resolved": resolved_detail,
-                "detector_raw_output": audit.get("raw_output"),
+                "detector_output_class": output_class,
+                "detector_raw_output": raw_output,
+                "detector_thinking_output": thinking_output,
                 "detector_parse_diagnostics": parse_diagnostics or None,
                 "detector_prompt_metadata": audit.get("prompt_metadata"),
+                "detector_provider_metadata": audit.get("provider_metadata"),
             }
         )
 
@@ -437,15 +463,26 @@ def score_case(
             if resolved_opportunities
             else None
         ),
-        "abstention_successes": empty_runs if negative_control else None,
+        "abstention_successes": negative_model_abstentions if negative_control else None,
         "abstention_opportunities": len(runs) if negative_control else None,
         "abstention_rate": (
-            round(empty_runs / len(runs), 4)
+            round(negative_model_abstentions / len(runs), 4)
+            if negative_control and runs
+            else None
+        ),
+        "negative_parser_filtered_runs": (
+            negative_parser_filtered_runs if negative_control else None
+        ),
+        "negative_parser_filtered_rate": (
+            round(negative_parser_filtered_runs / len(runs), 4)
             if negative_control and runs
             else None
         ),
         "repeatability": round(repeatability, 4),
         "explicit_none_runs": explicit_none_runs,
+        "empty_response_runs": empty_response_runs,
+        "thinking_only_runs": thinking_only_runs,
+        "candidate_response_runs": candidate_response_runs,
         "parser_empty_non_none_runs": parser_empty_non_none_runs,
         "run_details": run_details,
     }
@@ -471,6 +508,18 @@ def summarize(case_reports: list[dict[str, Any]]) -> dict[str, Any]:
     parser_empty_non_none_runs = sum(
         int(item.get("parser_empty_non_none_runs", 0)) for item in case_reports
     )
+    empty_response_runs = sum(
+        int(item.get("empty_response_runs", 0)) for item in case_reports
+    )
+    thinking_only_runs = sum(
+        int(item.get("thinking_only_runs", 0)) for item in case_reports
+    )
+    candidate_response_runs = sum(
+        int(item.get("candidate_response_runs", 0)) for item in case_reports
+    )
+    negative_parser_filtered_runs = sum(
+        int(item.get("negative_parser_filtered_runs") or 0) for item in case_reports
+    )
 
     return {
         "cases": len(case_reports),
@@ -488,6 +537,13 @@ def summarize(case_reports: list[dict[str, Any]]) -> dict[str, Any]:
         ),
         "negative_control_abstention_successes": abstention_successes,
         "negative_control_abstention_opportunities": abstention_opportunities,
+        "negative_control_abstention_definition": "model_explicit_NONE_only",
+        "negative_control_parser_filtered_rate": (
+            round(negative_parser_filtered_runs / abstention_opportunities, 4)
+            if abstention_opportunities
+            else None
+        ),
+        "negative_control_parser_filtered_runs": negative_parser_filtered_runs,
         "resolved_gap_reopen_rate": (
             round(resolved_reopens / resolved_opportunities, 4)
             if resolved_opportunities
@@ -499,6 +555,9 @@ def summarize(case_reports: list[dict[str, Any]]) -> dict[str, Any]:
             round(mean(repeatability), 4) if repeatability else None
         ),
         "explicit_none_runs": explicit_none_runs,
+        "empty_response_runs": empty_response_runs,
+        "thinking_only_runs": thinking_only_runs,
+        "candidate_response_runs": candidate_response_runs,
         "parser_empty_non_none_runs": parser_empty_non_none_runs,
     }
 
@@ -536,10 +595,14 @@ def run_cases(
             audits.append(
                 {
                     "raw_output": getattr(detector, "last_raw_output", None),
+                    "thinking_output": getattr(detector, "last_thinking_output", None),
                     "parse_diagnostics": getattr(
                         detector, "last_parse_diagnostics", None
                     ),
                     "prompt_metadata": getattr(detector, "last_prompt_metadata", None),
+                    "provider_metadata": getattr(
+                        detector, "last_provider_metadata", None
+                    ),
                 }
             )
         reports.append(
