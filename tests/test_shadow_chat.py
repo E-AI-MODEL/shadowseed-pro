@@ -48,6 +48,7 @@ class _Model:
 
 class _NativeChatModel:
     name = "fake-native-chat"
+    native_chat_transport = True
 
     def __init__(self):
         self.chat_calls = []
