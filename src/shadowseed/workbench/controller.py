@@ -258,6 +258,9 @@ class WorkbenchController:
         model_id: str | None = None,
         revision_backend: str | None = None,
         revision_model_id: str | None = None,
+        detection_backend: str | None = None,
+        detection_model_id: str | None = None,
+        detection_max_new_tokens: int | None = None,
         runtime_mode: str = "live",
         authority_profile_id: str = "strict",
         embedding_backend: str | None = None,
@@ -288,6 +291,8 @@ class WorkbenchController:
             model_id=model_id,
             revision_backend=revision_backend,
             revision_model_id=revision_model_id,
+            detection_backend=detection_backend,
+            detection_model_id=detection_model_id,
             runtime_mode=runtime_mode,
             embedding_backend=resolved_embedding,
             allow_toy_embedder=allow_toy_embedder,
@@ -309,6 +314,9 @@ class WorkbenchController:
                 runtime_mode=runtime_mode,
                 revision_backend=revision_backend,
                 revision_model_id=revision_model_id,
+                detection_backend=detection_backend,
+                detection_model_id=detection_model_id,
+                detection_max_new_tokens=detection_max_new_tokens,
                 authority_profile_id=authority_profile.id.value,
                 embedding_backend=resolved_embedding,
                 embedding_model=resolved_embedding_model,
@@ -419,6 +427,8 @@ class WorkbenchController:
         desired_model = desired.get("model_id")
         desired_revision_backend = desired.get("revision_backend")
         desired_revision_model = desired.get("revision_model_id")
+        desired_detection_backend = desired.get("detection_backend")
+        desired_detection_model = desired.get("detection_model_id")
         desired_runtime = str(desired.get("runtime_mode", view.get("runtime_mode") or "live"))
         desired_embedding = str(
             desired.get("embedding_backend", view.get("embedding_backend") or "lexical")
@@ -462,6 +472,16 @@ class WorkbenchController:
                 None
                 if desired_revision_model is None
                 else str(desired_revision_model)
+            ),
+            detection_backend=(
+                None
+                if desired_detection_backend is None
+                else str(desired_detection_backend)
+            ),
+            detection_model_id=(
+                None
+                if desired_detection_model is None
+                else str(desired_detection_model)
             ),
             runtime_mode=desired_runtime,
             embedding_backend=desired_embedding,
@@ -593,6 +613,16 @@ class WorkbenchController:
                 if config.get("revision_model_id") is None
                 else str(config.get("revision_model_id"))
             ),
+            detection_backend=(
+                None
+                if config.get("detection_backend") is None
+                else str(config.get("detection_backend"))
+            ),
+            detection_model_id=(
+                None
+                if config.get("detection_model_id") is None
+                else str(config.get("detection_model_id"))
+            ),
             runtime_mode=str(config.get("runtime_mode", "evaluation")),
             embedding_backend=str(config.get("embedding_backend", "lexical")),
             allow_toy_embedder=bool(config.get("allow_toy_embedder", False)),
@@ -646,6 +676,16 @@ class WorkbenchController:
                 None
                 if config.get("revision_model_id") is None
                 else str(config.get("revision_model_id"))
+            ),
+            detection_backend=(
+                None
+                if config.get("detection_backend") is None
+                else str(config.get("detection_backend"))
+            ),
+            detection_model_id=(
+                None
+                if config.get("detection_model_id") is None
+                else str(config.get("detection_model_id"))
             ),
             runtime_mode=str(config.get("runtime_mode", "evaluation")),
             embedding_backend=str(config.get("embedding_backend", "lexical")),
@@ -903,6 +943,8 @@ class WorkbenchController:
         model_id: str | None,
         revision_backend: str | None = None,
         revision_model_id: str | None = None,
+        detection_backend: str | None = None,
+        detection_model_id: str | None = None,
         runtime_mode: str = "live",
         embedding_backend: str = "lexical",
         allow_toy_embedder: bool = False,
@@ -933,6 +975,23 @@ class WorkbenchController:
             raise ValueError(
                 f"revision backend {effective_revision_backend!r} requires a model id"
             )
+        effective_detection_backend = detection_backend or backend
+        effective_detection_model_id = (
+            detection_model_id
+            if detection_model_id is not None
+            else (model_id if effective_detection_backend == backend else None)
+        )
+        if effective_detection_backend not in BACKENDS:
+            raise ValueError(
+                f"unsupported Workbench detection backend: {effective_detection_backend}"
+            )
+        if (
+            effective_detection_backend != "fixture"
+            and not str(effective_detection_model_id or "").strip()
+        ):
+            raise ValueError(
+                f"detection backend {effective_detection_backend!r} requires a model id"
+            )
         if (
             runtime_mode == "live"
             and backend != "fixture"
@@ -946,6 +1005,7 @@ class WorkbenchController:
         uses_external_provider = (
             backend in _EXTERNAL_PROMPT_BACKENDS
             or effective_revision_backend in _EXTERNAL_PROMPT_BACKENDS
+            or effective_detection_backend in _EXTERNAL_PROMPT_BACKENDS
             or embedding_backend == "openai"
         )
         if uses_external_provider and not external_confirmed:

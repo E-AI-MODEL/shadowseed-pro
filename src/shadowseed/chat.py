@@ -166,6 +166,9 @@ class ShadowChatSession:
         model_id: str | None = None,
         revision_backend: str | None = None,
         revision_model_id: str | None = None,
+        detection_backend: str | None = None,
+        detection_model_id: str | None = None,
+        detection_max_new_tokens: int | None = None,
         max_new_tokens: int = 700,
         embedding_backend: str = "lexical",
         embedding_model: str | None = None,
@@ -202,6 +205,19 @@ class ShadowChatSession:
             if revision_model_id is not None
             else (model_id if self.revision_backend == backend else None)
         )
+        self.detection_backend = detection_backend or backend
+        self.detection_model_id = (
+            detection_model_id
+            if detection_model_id is not None
+            else (model_id if self.detection_backend == backend else None)
+        )
+        self.detection_max_new_tokens = (
+            max_new_tokens
+            if detection_max_new_tokens is None
+            else int(detection_max_new_tokens)
+        )
+        if self.detection_max_new_tokens < 1:
+            raise ValueError("detection_max_new_tokens must be >= 1")
         self.max_new_tokens = max_new_tokens
         self.embedding_backend = embedding_backend
         if embedding_backend == "ollama" and embedding_model is None:
@@ -280,9 +296,9 @@ class ShadowChatSession:
             detector_backend
             if detector_backend is not None
             else make_detector_backend(
-                backend,
-                model_id=model_id,
-                max_new_tokens=max_new_tokens,
+                self.detection_backend,
+                model_id=self.detection_model_id,
+                max_new_tokens=self.detection_max_new_tokens,
                 prompt_variant="current_pair",
             )
         )
@@ -734,14 +750,15 @@ class ShadowChatSession:
             elif runtime_name.startswith("fixture"):
                 backend = "fixture"
             elif self.detector.__class__.__module__.startswith("shadowseed.detection"):
-                backend = self.backend
+                backend = self.detection_backend
             else:
                 backend = "injected"
-        if model_id is None and backend == self.backend:
-            model_id = self.model_id
+        if model_id is None and backend == self.detection_backend:
+            model_id = self.detection_model_id
         return {
             "backend": str(backend),
             "model_id": model_id,
+            "max_new_tokens": self.detection_max_new_tokens,
             "runtime_name": runtime_name,
         }
 
@@ -762,6 +779,9 @@ class ShadowChatSession:
             "model_id": self.model_id,
             "revision_backend": self.revision_backend,
             "revision_model_id": self.revision_model_id,
+            "detection_backend": self.detection_backend,
+            "detection_model_id": self.detection_model_id,
+            "detection_max_new_tokens": self.detection_max_new_tokens,
             "max_new_tokens": self.max_new_tokens,
             "embedding_backend": self.embedding_backend,
             "embedding_model": self.embedding_model,

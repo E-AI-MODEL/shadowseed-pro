@@ -21,6 +21,9 @@ def _behavior_state() -> dict:
             "model_id": None,
             "revision_backend": "fixture",
             "revision_model_id": None,
+            "detection_backend": "fixture",
+            "detection_model_id": None,
+            "detection_max_new_tokens": 96,
             "max_new_tokens": 700,
             "embedding_backend": "lexical",
             "embedding_model": None,
@@ -77,6 +80,7 @@ def _behavior_state() -> dict:
             "detector_role": {
                 "backend": "fixture",
                 "model_id": None,
+                "max_new_tokens": 96,
                 "runtime_name": "fixture-detector",
             },
             "prompt_contracts": {
@@ -103,9 +107,29 @@ def test_behavior_projection_version_keeps_authority_contract_unchanged() -> Non
 
     assert set(authority_projection) == {"session_config", "manager_config"}
     assert "projection_version" not in authority_projection
-    assert behavior_projection["projection_version"] == 2
+    assert behavior_projection["projection_version"] == 3
     assert authority_config_digest(before) == authority_config_digest(after)
     assert behavior_config_digest(before) != behavior_config_digest(after)
+
+
+def test_detection_role_change_changes_behavior_not_authority_digest() -> None:
+    before = _behavior_state()
+    after = deepcopy(before)
+    after["session_config"]["detection_backend"] = "ollama"
+    after["session_config"]["detection_model_id"] = "gemma2:latest"
+    after["session_config"]["detection_max_new_tokens"] = 128
+    after["behavior_runtime"]["detector_role"] = {
+        "backend": "ollama",
+        "model_id": "gemma2:latest",
+        "max_new_tokens": 128,
+        "runtime_name": "ollama:gemma2:latest",
+    }
+
+    assert authority_config_digest(before) == authority_config_digest(after)
+    assert behavior_config_digest(before) != behavior_config_digest(after)
+    projected = behavior_config_projection(after)
+    assert projected["detector_role"]["model_id"] == "gemma2:latest"
+    assert projected["detector_role"]["max_new_tokens"] == 128
 
 
 def test_material_behavior_change_produces_new_digest_and_epoch() -> None:
@@ -156,7 +180,7 @@ def test_turn_keeps_original_behavior_digest_after_reconfigure(tmp_path) -> None
     assert reports[1]["behavior_config_digest"] == view["behavior_config_digest"]
 
     projection = reports[1]["behavior_config"]
-    assert projection["projection_version"] == 2
+    assert projection["projection_version"] == 3
     assert projection["model_roles"]["generation"]["backend"] == "fixture"
     assert projection["model_roles"]["revision"]["backend"] == "fixture"
     assert projection["detector_role"]["backend"] == "fixture"

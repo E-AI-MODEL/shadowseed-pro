@@ -113,6 +113,7 @@ class SessionService:
         validate_session_config(
             max_seeds_per_turn=resolved.max_seeds_per_turn,
             max_new_tokens=resolved.max_new_tokens,
+            detection_max_new_tokens=resolved.detection_max_new_tokens,
         )
         runtime_config = resolved.to_dict()
         core_config = SSLCoreConfig(

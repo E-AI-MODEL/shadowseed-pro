@@ -390,26 +390,43 @@ class WebApiService:
         revision_backend = str(
             view.get("revision_backend") or backend
         ).strip()
+        detection_backend = str(
+            view.get("detection_backend") or backend
+        ).strip()
         embedding_backend = str(
             view.get("embedding_backend") or "lexical"
         ).strip()
         if not (
             backend in _WEB_V1_BACKENDS
             and revision_backend in _WEB_V1_BACKENDS
+            and detection_backend in _WEB_V1_BACKENDS
             and embedding_backend in _WEB_V1_EMBEDDING_BACKENDS
         ):
             return False
         if backend == "fixture":
-            return revision_backend == "fixture" and embedding_backend == "lexical"
+            return (
+                revision_backend == "fixture"
+                and detection_backend == "fixture"
+                and embedding_backend == "lexical"
+            )
         if backend == "openai":
-            return revision_backend == "openai" and embedding_backend == "openai"
+            return (
+                revision_backend == "openai"
+                and detection_backend == "openai"
+                and embedding_backend == "openai"
+            )
         if backend != "ollama":
             return False
-        if revision_backend != "ollama" or embedding_backend != "ollama":
+        if (
+            revision_backend != "ollama"
+            or detection_backend != "ollama"
+            or embedding_backend != "ollama"
+        ):
             return False
         try:
             validate_production_local_backend(backend, embedding_backend)
             validate_production_local_backend(revision_backend, embedding_backend)
+            validate_production_local_backend(detection_backend, embedding_backend)
         except ProviderPolicyError:
             return False
         return True
