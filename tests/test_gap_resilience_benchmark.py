@@ -85,16 +85,34 @@ def test_expected_gap_recall_and_resolved_reopen_are_separate() -> None:
     assert report["resolved_gap_reopen_rate"] == 0.5
 
 
-def test_negative_control_rewards_only_empty_candidate_runs() -> None:
+def test_negative_control_rewards_only_explicit_model_none() -> None:
     case = _case(negative_control=True)
     report = bench.score_case(
         case,
         [[], ["Invented missing detail"], []],
+        run_audits=[
+            {
+                "raw_output": "NONE",
+                "thinking_output": "",
+                "parse_diagnostics": {"explicit_none": True},
+            },
+            {
+                "raw_output": "1. Invented missing detail",
+                "thinking_output": "",
+                "parse_diagnostics": {"explicit_none": False},
+            },
+            {
+                "raw_output": "",
+                "thinking_output": "reasoning without a final answer",
+                "parse_diagnostics": {"explicit_none": False},
+            },
+        ],
     )
 
-    assert report["abstention_successes"] == 2
+    assert report["abstention_successes"] == 1
     assert report["abstention_opportunities"] == 3
-    assert report["abstention_rate"] == 0.6667
+    assert report["abstention_rate"] == 0.3333
+    assert report["thinking_only_runs"] == 1
 
 
 def test_summary_keeps_dimensions_separate_without_overall_score() -> None:
@@ -111,6 +129,13 @@ def test_summary_keeps_dimensions_separate_without_overall_score() -> None:
         bench.score_case(
             _case(case_id="negative", negative_control=True),
             [[]],
+            run_audits=[
+                {
+                    "raw_output": "NONE",
+                    "thinking_output": "",
+                    "parse_diagnostics": {"explicit_none": True},
+                }
+            ],
         ),
     ]
 
@@ -232,10 +257,71 @@ def test_detector_audit_distinguishes_explicit_none_from_parser_empty() -> None:
     )
 
     assert explicit_none["explicit_none_runs"] == 1
+    assert explicit_none["abstention_rate"] is None
     assert explicit_none["parser_empty_non_none_runs"] == 0
+    assert explicit_none["run_details"][0]["detector_output_class"] == "explicit_none"
     assert (
         explicit_none["run_details"][0]["detector_raw_output"]
         == "NONE"
     )
     assert parser_empty["explicit_none_runs"] == 0
     assert parser_empty["parser_empty_non_none_runs"] == 1
+    assert (
+        parser_empty["run_details"][0]["detector_output_class"]
+        == "parser_rejected_nonempty"
+    )
+
+
+
+def test_thinking_only_empty_response_is_not_abstention() -> None:
+    case = _case(case_id="thinking", negative_control=True)
+    report = bench.score_case(
+        case,
+        [[]],
+        run_audits=[
+            {
+                "raw_output": "",
+                "thinking_output": "I am still reasoning about the prompt.",
+                "parse_diagnostics": {"explicit_none": False},
+            }
+        ],
+    )
+
+    assert report["abstention_rate"] == 0.0
+    assert report["empty_response_runs"] == 1
+    assert report["thinking_only_runs"] == 1
+    assert report["run_details"][0]["detector_output_class"] == "thinking_only"
+
+
+def test_rescore_existing_report_uses_strict_model_abstention() -> None:
+    case = _case(case_id="negative", negative_control=True)
+    existing = {
+        "artifact": "shadowseed-gap-resilience-v1",
+        "summary": {"negative_control_abstention_rate": 1.0},
+        "cases": [
+            {
+                "case_id": "negative",
+                "run_details": [
+                    {
+                        "candidates": [],
+                        "detector_raw_output": "1. channel for reset link",
+                        "detector_thinking_output": "",
+                        "detector_parse_diagnostics": {
+                            "explicit_none": False,
+                            "accepted_candidates": 0,
+                        },
+                    }
+                ],
+            }
+        ],
+    }
+
+    rescored = bench.rescore_existing_report(
+        existing,
+        [case],
+        threshold=0.35,
+    )
+
+    assert rescored["summary"]["negative_control_abstention_rate"] == 0.0
+    assert rescored["summary"]["negative_control_parser_filtered_rate"] == 1.0
+    assert rescored["scoring_policy"] == "strict_model_abstention_v2"
