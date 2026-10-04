@@ -21,14 +21,17 @@ import argparse
 import json
 import os
 import re
+import urllib.request
 from datetime import datetime, timezone
 from itertools import combinations
 from pathlib import Path
 from statistics import mean
 from typing import Any, Iterable
 
-from shadowseed.adapters.ollama_client import OllamaClient
+from shadowseed.adapters.ollama_client import ollama_host
 from shadowseed.detection.model_detector import (
+    CURRENT_PAIR_PROMPT_META,
+    build_detection_prompt,
     make_detector_backend,
     parse_numbered_seeds_with_diagnostics,
 )
@@ -114,51 +117,127 @@ OUTPUT:
 }
 
 
-class ExperimentalOllamaDetector:
-    """Benchmark-only prompt arm; never used by the product runtime."""
+class BenchmarkOllamaDetector:
+    """Benchmark-only Ollama arm with explicit thinking capture.
 
-    def __init__(self, model_id: str, profile: str, max_new_tokens: int) -> None:
-        if profile not in EXPERIMENTAL_PROMPTS:
-            raise ValueError(f"unknown experimental prompt profile: {profile}")
-        self.name = f"ollama:{model_id}:{profile}"
+    This never changes the product runtime. It exists so reasoning-model output
+    can be measured without mistaking an empty final response for abstention.
+    """
+
+    def __init__(
+        self,
+        model_id: str,
+        profile: str,
+        max_new_tokens: int,
+        *,
+        thinking_mode: str = "default",
+    ) -> None:
+        if profile not in {"runtime_v06", *EXPERIMENTAL_PROMPTS}:
+            raise ValueError(f"unknown benchmark prompt profile: {profile}")
+        if thinking_mode not in {"default", "on", "off"}:
+            raise ValueError(f"unknown thinking mode: {thinking_mode}")
+        self.name = f"ollama:{model_id}:{profile}:{thinking_mode}"
         self.model_id = model_id
         self.profile = profile
         self.max_new_tokens = max_new_tokens
-        self.client = OllamaClient(model=model_id)
+        self.thinking_mode = thinking_mode
+        self.host = ollama_host()
         self.last_raw_output: str | None = None
+        self.last_thinking_output: str | None = None
         self.last_parse_diagnostics: dict[str, int | bool] | None = None
         self.last_prompt_metadata: dict[str, Any] | None = None
+        self.last_provider_metadata: dict[str, Any] | None = None
 
-    def detect_seeds(self, item: dict[str, Any], max_seeds: int = 5) -> list[str]:
+    def _prompt(self, item: dict[str, Any], max_seeds: int) -> tuple[str, str]:
         question = str(item.get("question") or "").strip()
         answer = str(item.get("text") or item.get("input") or "").strip()
         context = str(item.get("conversation_context") or "NONE").strip() or "NONE"
-        if not question or not answer:
-            self.last_raw_output = "NONE"
-            seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
-                "NONE", max_seeds=max_seeds, source_text=answer
+        if self.profile == "runtime_v06":
+            prompt = build_detection_prompt(
+                answer,
+                max_seeds=max_seeds,
+                variant="current_pair",
+                question=question,
+                conversation_context=context,
             )
-            self.last_parse_diagnostics = diagnostics
-            return seeds
+            self.last_prompt_metadata = dict(CURRENT_PAIR_PROMPT_META)
+        else:
+            prompt = EXPERIMENTAL_PROMPTS[self.profile].format(
+                max_seeds=max_seeds,
+                conversation_context=context,
+                question=question,
+                answer=answer,
+            )
+            self.last_prompt_metadata = {
+                "prompt_id": f"benchmark_gap_resilience_{self.profile}",
+                "prompt_profile": self.profile,
+                "authority": "benchmark_only",
+            }
+        return prompt, answer
 
-        prompt = EXPERIMENTAL_PROMPTS[self.profile].format(
-            max_seeds=max_seeds,
-            conversation_context=context,
-            question=question,
-            answer=answer,
+    def detect_seeds(self, item: dict[str, Any], max_seeds: int = 5) -> list[str]:
+        prompt, answer = self._prompt(item, max_seeds)
+        if not answer:
+            self.last_raw_output = ""
+            self.last_thinking_output = ""
+            self.last_parse_diagnostics = {
+                "explicit_none": False,
+                "nonblank_lines": 0,
+                "numbered_lines": 0,
+                "unnumbered_nonblank_lines": 0,
+                "nested_numbering_prefixes_removed": 0,
+                "dropped_blank_or_placeholder": 0,
+                "dropped_citation_or_stub": 0,
+                "dropped_fewshot_leak": 0,
+                "dropped_duplicate": 0,
+                "accepted_candidates": 0,
+                "truncated_after_max_seeds": False,
+            }
+            return []
+
+        payload: dict[str, Any] = {
+            "model": self.model_id,
+            "prompt": prompt,
+            "stream": False,
+            "options": {
+                "temperature": 0.0,
+                "num_predict": self.max_new_tokens,
+                "seed": 0,
+            },
+        }
+        if self.thinking_mode != "default":
+            payload["think"] = self.thinking_mode == "on"
+
+        request = urllib.request.Request(
+            f"{self.host}/api/generate",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
         )
-        raw = self.client.generate(prompt, max_new_tokens=self.max_new_tokens)
+        with urllib.request.urlopen(request, timeout=600) as response:
+            body = json.loads(response.read().decode("utf-8"))
+
+        raw = str(body.get("response") or "")
+        thinking = str(body.get("thinking") or "")
         seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
             raw, max_seeds=max_seeds, source_text=answer
         )
         self.last_raw_output = raw
+        self.last_thinking_output = thinking
         self.last_parse_diagnostics = diagnostics
-        self.last_prompt_metadata = {
-            "prompt_id": f"benchmark_gap_resilience_{self.profile}",
-            "prompt_profile": self.profile,
-            "authority": "benchmark_only",
+        self.last_provider_metadata = {
+            key: body.get(key)
+            for key in (
+                "done_reason",
+                "total_duration",
+                "load_duration",
+                "prompt_eval_count",
+                "eval_count",
+            )
+            if key in body
         }
         return seeds
+
 
 _STOPWORDS = frozenset(
     {
