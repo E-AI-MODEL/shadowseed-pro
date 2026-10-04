@@ -172,6 +172,7 @@ def score_case(
 
     return {
         "case_id": str(case["case_id"]),
+        "pair_id": case.get("pair_id"),
         "language": case.get("language"),
         "final_response_available": final_response_available,
         "done_reason": done_reason or None,
@@ -243,6 +244,104 @@ def summarize(reports: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def summarize_by_language(reports: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for report in reports:
+        language = str(report.get("language") or "unknown")
+        grouped.setdefault(language, []).append(report)
+
+    result: dict[str, dict[str, Any]] = {}
+    for language, items in sorted(grouped.items()):
+        durations = [
+            float(item["total_duration_seconds"])
+            for item in items
+            if item["total_duration_seconds"] is not None
+        ]
+        additions = [
+            float(item["addition_coverage"])
+            for item in items
+            if item["addition_coverage"] is not None
+        ]
+        preservation = [
+            float(item["baseline_preservation"])
+            for item in items
+            if item["baseline_preservation"] is not None
+        ]
+        result[language] = {
+            "cases": len(items),
+            "final_response_rate": round(
+                sum(bool(item["final_response_available"]) for item in items) / len(items),
+                4,
+            ),
+            "role_contract_pass_rate": round(
+                sum(bool(item["role_contract_pass"]) for item in items) / len(items),
+                4,
+            ),
+            "mean_addition_coverage": round(mean(additions), 4) if additions else None,
+            "mean_baseline_preservation": (
+                round(mean(preservation), 4) if preservation else None
+            ),
+            "mean_total_duration_seconds": (
+                round(mean(durations), 3) if durations else None
+            ),
+        }
+    return result
+
+
+def summarize_pairs(reports: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    grouped: dict[str, dict[str, dict[str, Any]]] = {}
+    for report in reports:
+        pair_id = report.get("pair_id")
+        language = report.get("language")
+        if not pair_id or not language:
+            continue
+        grouped.setdefault(str(pair_id), {})[str(language)] = report
+
+    comparisons: list[dict[str, Any]] = []
+    for pair_id, variants in sorted(grouped.items()):
+        nl = variants.get("nl")
+        en = variants.get("en")
+        if nl is None or en is None:
+            continue
+
+        def delta(field: str) -> float | None:
+            nl_value = nl.get(field)
+            en_value = en.get(field)
+            if nl_value is None or en_value is None:
+                return None
+            return round(float(en_value) - float(nl_value), 4)
+
+        comparisons.append(
+            {
+                "pair_id": pair_id,
+                "nl": {
+                    "final_response_available": nl["final_response_available"],
+                    "role_contract_pass": nl["role_contract_pass"],
+                    "addition_coverage": nl["addition_coverage"],
+                    "baseline_preservation": nl["baseline_preservation"],
+                    "total_duration_seconds": nl["total_duration_seconds"],
+                    "done_reason": nl["done_reason"],
+                    "eval_count": nl["eval_count"],
+                },
+                "en": {
+                    "final_response_available": en["final_response_available"],
+                    "role_contract_pass": en["role_contract_pass"],
+                    "addition_coverage": en["addition_coverage"],
+                    "baseline_preservation": en["baseline_preservation"],
+                    "total_duration_seconds": en["total_duration_seconds"],
+                    "done_reason": en["done_reason"],
+                    "eval_count": en["eval_count"],
+                },
+                "en_minus_nl": {
+                    "addition_coverage": delta("addition_coverage"),
+                    "baseline_preservation": delta("baseline_preservation"),
+                    "total_duration_seconds": delta("total_duration_seconds"),
+                },
+            }
+        )
+    return comparisons
+
+
 def _load_cases(path: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     if int(payload.get("schema_version", 0)) != SCHEMA_VERSION:
@@ -309,6 +408,8 @@ def main(argv: list[str] | None = None) -> int:
             "GitHub-runner latency is not laptop latency."
         ),
         "summary": summarize(reports),
+        "language_summary": summarize_by_language(reports),
+        "pair_comparison": summarize_pairs(reports),
         "cases": reports,
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
