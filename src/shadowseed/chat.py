@@ -903,8 +903,9 @@ class ShadowChatSession:
         prepared = self.prepare_turn(question)
         fixture_answer = f"Fixture echo answer to: {question}"
         native_chat = getattr(self.model, "generate_chat", None)
+        use_native_chat = bool(getattr(self.model, "native_chat_transport", False))
         try:
-            if callable(native_chat):
+            if use_native_chat and callable(native_chat):
                 final_answer = native_chat(
                     self.history,
                     build_chat_user_message(
