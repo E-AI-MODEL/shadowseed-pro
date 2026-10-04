@@ -153,6 +153,16 @@ def test_ollama_embedding_preflight_accepts_latest_tag(monkeypatch) -> None:
     WorkbenchController.validate_ollama_embedding_model("embeddinggemma")
 
 
+def test_ollama_embedding_preflight_rejects_wrong_explicit_tag(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "shadowseed.adapters.ollama_client.list_ollama_models",
+        lambda: ["embeddinggemma:v2"],
+    )
+
+    with pytest.raises(ValueError, match=r"ollama pull embeddinggemma:v1"):
+        WorkbenchController.validate_ollama_embedding_model("embeddinggemma:v1")
+
+
 def test_ollama_embedding_preflight_reports_exact_pull_command(monkeypatch) -> None:
     monkeypatch.setattr(
         "shadowseed.adapters.ollama_client.list_ollama_models",
