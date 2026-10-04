@@ -65,6 +65,8 @@ class HFTransformersBackend:
     models or any local text-generation model available in the HF cache.
     """
 
+    native_chat_transport = True
+
     def __init__(
         self,
         model_id: str,
@@ -146,6 +148,8 @@ class OllamaBackend:
     run at it. Decoding is greedy (temperature 0, fixed seed) for reproducibility.
     """
 
+    native_chat_transport = True
+
     def __init__(self, model_id: str, max_new_tokens: int = 220, host: str | None = None) -> None:
         from shadowseed.adapters.ollama_client import OllamaClient
 
@@ -177,6 +181,8 @@ class OpenAIBackend:
     (temperature 0, fixed seed) for reproducibility. Opt-in: needs the
     ``openai`` extra.
     """
+
+    native_chat_transport = True
 
     def __init__(self, model_id: str, max_new_tokens: int = 220) -> None:
         from shadowseed.adapters.openai_client import OpenAIClient
