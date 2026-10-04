@@ -4,7 +4,7 @@
 
 The repository is **research-ready, locally mass-testable, able to produce structured privacy-minimized tester datasets, and equipped for preregistered evidence-backed paired efficacy studies**. Core mechanics, benchmark harnesses, a broad regression suite, a chat-first local Workbench, standalone build contracts, verifiable exports, support-bundle aggregation, candidate review packets, and influence-opportunity accounting are present. `v0.12.1` is the current published Research Preview. `production-ready/local` promotion and general answer-quality efficacy remain separate evidence targets.
 
-Current package version: **0.12.1**. Published `v0.12.1` is pinned to exact source SHA `ac07f41caf2b169c028670b2a95e4645d32dc55f` and includes verified Windows, macOS and Linux assets, checksums, provenance and an SBOM. The release refines atomic gap detection and adds explicit generation, detection and revision model roles on top of the packaged web client while preserving the separation between observation, evidence, authority and use. Older tags remain immutable historical software references and are not rewritten by later development.
+Current source version: **0.12.1**. Published `v0.12.1` is pinned to exact source SHA `ac07f41caf2b169c028670b2a95e4645d32dc55f` and includes verified Windows, macOS and Linux assets, checksums, provenance and an SBOM. The release refines atomic gap detection and adds explicit generation, detection and revision model roles on top of the packaged web client while preserving the separation between observation, evidence, authority and use. Older tags remain immutable historical software references and are not rewritten by later development.
 
 ## Research access
 
