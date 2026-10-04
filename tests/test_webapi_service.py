@@ -366,7 +366,54 @@ def _capture_web_session_creation(monkeypatch, api: WebApiService) -> dict:
         "shadowseed_webapi.service.validate_production_local_backend",
         lambda backend, embedding_backend: None,
     )
+    monkeypatch.setattr(
+        api.controller,
+        "validate_ollama_embedding_model",
+        lambda model_id: None,
+    )
     return captured
+
+
+def test_web_api_preflights_ollama_embedding_before_persisting(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    calls: list[str | None] = []
+
+    def fail_preflight(model_id):
+        calls.append(model_id)
+        raise ValueError(
+            "Ollama embedding model 'embeddinggemma' is not installed. "
+            "Run `ollama pull embeddinggemma` in Terminal, then create the chat again."
+        )
+
+    monkeypatch.setattr(
+        api.controller,
+        "validate_ollama_embedding_model",
+        fail_preflight,
+    )
+    monkeypatch.setattr(
+        api.controller,
+        "create_session",
+        lambda **kwargs: pytest.fail("session must not persist before preflight"),
+    )
+    monkeypatch.setattr(
+        "shadowseed_webapi.service.validate_production_local_backend",
+        lambda backend, embedding_backend: None,
+    )
+
+    with pytest.raises(ValueError, match=r"ollama pull embeddinggemma"):
+        api.create_session(
+            {
+                "title": "Missing embedding model",
+                "backend": "ollama",
+                "model_id": "llama3.1:latest",
+                "authority_mode": "assisted",
+            }
+        )
+
+    assert calls == ["embeddinggemma"]
 
 
 def test_web_api_auto_splits_r1_detection_and_revision_to_local_gemma2(

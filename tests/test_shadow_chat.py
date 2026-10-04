@@ -48,6 +48,7 @@ class _Model:
 
 class _NativeChatModel:
     name = "fake-native-chat"
+    native_chat_transport = True
 
     def __init__(self):
         self.chat_calls = []
@@ -112,6 +113,32 @@ def session(monkeypatch) -> ShadowChatSession:
 
 def _drive(session: ShadowChatSession, turns: int) -> list[dict]:
     return [session.turn(f"Wat betekent dit voor de omgang met data? (beurt {t})") for t in range(turns)]
+
+
+def test_live_turn_uses_role_structured_history_for_user_correction():
+    embed, _dim = _emb_factory("lexical")
+    model = _NativeChatModel()
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        model_backend=model,
+        detector_backend=_Detector(),
+        embedding_fn=embed,
+        recurrence_mode="cluster",
+    )
+
+    first_question = "wat is overeenkomstig tussen een llm en het geheugen van een mens?"
+    correction = "llm.. ? ! als in language model?"
+    first = session.turn(first_question)
+    second = session.turn(correction)
+
+    assert first["generation_transport"] == "role_structured_chat"
+    assert second["generation_transport"] == "role_structured_chat"
+    assert model.chat_calls[0][0] == []
+    assert first_question in model.chat_calls[0][1]
+    assert model.chat_calls[1][0] == [(first_question, first["answer"])]
+    assert correction in model.chat_calls[1][1]
+    assert "Conversation so far:" not in model.chat_calls[1][1]
 
 
 def test_vanilla_control_history_never_reuses_ssl_visible_answers():

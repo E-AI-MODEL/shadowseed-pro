@@ -129,3 +129,46 @@ def test_workbench_controller_exposes_ollama_discovery(monkeypatch, tmp_path) ->
     assert controller.discover_models("ollama") == ["model-a:latest", "model-b:7b"]
     assert controller.discover_models("fixture") == []
     assert controller.discover_models("openai") == []
+
+
+def test_embedding_backends_hide_uninstalled_optional_runtimes(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "shadowseed.workbench.controller.find_spec",
+        lambda name: object() if name == "openai" else None,
+    )
+
+    assert WorkbenchController.available_embedding_backends() == (
+        "lexical",
+        "ollama",
+        "openai",
+    )
+
+
+def test_ollama_embedding_preflight_accepts_latest_tag(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "shadowseed.adapters.ollama_client.list_ollama_models",
+        lambda: ["llama3.1:latest", "embeddinggemma:latest"],
+    )
+
+    WorkbenchController.validate_ollama_embedding_model("embeddinggemma")
+
+
+def test_ollama_embedding_preflight_rejects_wrong_explicit_tag(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "shadowseed.adapters.ollama_client.list_ollama_models",
+        lambda: ["embeddinggemma:v2"],
+    )
+
+    with pytest.raises(ValueError, match=r"ollama pull embeddinggemma:v1"):
+        WorkbenchController.validate_ollama_embedding_model("embeddinggemma:v1")
+
+
+def test_ollama_embedding_preflight_reports_exact_pull_command(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "shadowseed.adapters.ollama_client.list_ollama_models",
+        lambda: ["llama3.1:latest"],
+    )
+
+    with pytest.raises(ValueError, match=r"ollama pull embeddinggemma"):
+        WorkbenchController.validate_ollama_embedding_model("embeddinggemma")
+

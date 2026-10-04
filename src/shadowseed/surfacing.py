@@ -43,7 +43,7 @@ CANDIDATE_OPEN = "<<<CANDIDATE_PERSPECTIVES data=untrusted>>>"
 CANDIDATE_CLOSE = "<<<END_CANDIDATE_PERSPECTIVES>>>"
 
 ANSWER_GENERATION_PROMPT_ID = "answer_generation_current"
-ANSWER_GENERATION_PROMPT_VERSION = "1.0"
+ANSWER_GENERATION_PROMPT_VERSION = "1.1"
 CANDIDATE_CONTEXT_PROMPT_ID = "candidate_context"
 CANDIDATE_CONTEXT_PROMPT_VERSION = "1.1"
 REVISION_PROMPT_ID = "minimal_revision"
@@ -266,20 +266,17 @@ def _history_block(history: list[tuple[str, str]]) -> str:
     return f"Conversation so far:\n{turns}\n\n"
 
 
-def build_chat_prompt(
-    history: list[tuple[str, str]],
+def build_chat_user_message(
     question: str,
     surfaced: list[str],
     boundary: PromptBoundary = DEFAULT_PROMPT_BOUNDARY,
     response_language: str | None = None,
 ) -> str:
-    """Build the shared baseline or SSL prompt.
+    """Build only the current user turn for provider-native chat transport.
 
-    Both arms receive the same compactness instruction. Only the SSL arm gets
-    optional, previously validated perspectives, and those are enclosed in an
-    explicit candidate-data block (issue #15): bounded in count and length, and
-    framed as quoted data to consider rather than instructions to follow. The
-    question remains leading.
+    Conversation history stays role-structured at the provider boundary. The
+    current question keeps the same answer-generation and candidate-data
+    contract as the compatibility prompt path.
     """
 
     language_instruction = (
@@ -287,10 +284,32 @@ def build_chat_prompt(
     )
     candidate_context, _markers = build_candidate_context(surfaced, boundary)
     return _ANSWER_GENERATION_CONTRACT.format(
-        history_block=_history_block(history),
+        history_block="",
         language_instruction=language_instruction,
         question=question,
         candidate_context=candidate_context,
+    )
+
+
+def build_chat_prompt(
+    history: list[tuple[str, str]],
+    question: str,
+    surfaced: list[str],
+    boundary: PromptBoundary = DEFAULT_PROMPT_BOUNDARY,
+    response_language: str | None = None,
+) -> str:
+    """Build the compatibility flattened prompt.
+
+    Built-in chat-capable providers should use :func:`build_chat_user_message`
+    with role-structured history. This helper remains for research backends and
+    injected compatibility models that only implement completion generation.
+    """
+
+    return _history_block(history) + build_chat_user_message(
+        question,
+        surfaced,
+        boundary=boundary,
+        response_language=response_language,
     )
 
 

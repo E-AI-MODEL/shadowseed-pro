@@ -110,8 +110,32 @@ class WorkbenchController:
         ]
 
     @staticmethod
+    def embedding_backend_available(backend: str) -> bool:
+        """Return whether an embedding runtime is usable in this installation."""
+
+        if backend in {"lexical", "ollama"}:
+            return True
+        if backend == "openai":
+            return find_spec("openai") is not None
+        if backend == "sentence-transformers":
+            return find_spec("sentence_transformers") is not None
+        return False
+
+    @staticmethod
     def embedding_backends() -> tuple[str, ...]:
+        """Return the canonical supported embedding-backend registry."""
+
         return EMBEDDING_BACKENDS
+
+    @staticmethod
+    def available_embedding_backends() -> tuple[str, ...]:
+        """Return embedding backends usable in the current installation."""
+
+        return tuple(
+            backend
+            for backend in EMBEDDING_BACKENDS
+            if WorkbenchController.embedding_backend_available(backend)
+        )
 
     @staticmethod
     def runtime_modes() -> tuple[str, ...]:
@@ -138,6 +162,41 @@ class WorkbenchController:
 
             return DEFAULT_OLLAMA_EMBEDDING_MODEL
         return None
+
+    @staticmethod
+    def validate_ollama_embedding_model(model_id: str | None) -> None:
+        """Fail early with an actionable setup message when the embedding model is absent."""
+
+        from shadowseed.adapters.ollama_client import (
+            DEFAULT_OLLAMA_EMBEDDING_MODEL,
+            list_ollama_models,
+        )
+
+        requested = str(model_id or DEFAULT_OLLAMA_EMBEDDING_MODEL).strip()
+        try:
+            installed = list_ollama_models()
+        except RuntimeError as exc:
+            raise ValueError(
+                "Ollama is not reachable at the configured local endpoint. "
+                "Start Ollama and try again."
+            ) from exc
+
+        requested_key = requested.casefold()
+        available = {
+            str(name).strip().casefold()
+            for name in installed
+            if str(name).strip()
+        }
+        exact_match = requested_key in available
+        latest_match = (
+            ":" not in requested_key
+            and f"{requested_key}:latest" in available
+        )
+        if not exact_match and not latest_match:
+            raise ValueError(
+                f"Ollama embedding model {requested!r} is not installed. "
+                f"Run `ollama pull {requested}` in Terminal, then create the chat again."
+            )
 
     @staticmethod
     def ssl_intensity_settings(percent: int | float) -> dict[str, float | int]:
