@@ -1,6 +1,6 @@
 [project]
 name = "shadowseed"
-version = "0.12.0"
+version = "0.12.1"
 description = "Model-independent Shadow Seed Learning engine and local Workbench"
 readme = "README.md"
 license = {file = "LICENSE"}

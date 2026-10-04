@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.12.1 - Gap detection and local model roles
+
+- Refined detector-born atomic gaps, unspecified candidate metadata and bounded
+  clean conversation context; removed the hard 18-word intake boundary.
+- Preserved useful two-word gap labels while retaining proper-name and copied-text
+  parser guards.
+- Added explicit generation, detection and revision roles with a separate
+  detection budget and visible role assignments in the web client.
+- Added a local web profile using installed Gemma2 for detection and revision
+  alongside a user-selected R1 or Llama 3.1 generation model.
+- Added gap-resilience and R1 revision/language research evidence without changing
+  Gate, evidence, authority or point-of-use semantics.
+- Kept Research Preview status; production-local assurance remains separate.
+
 ## 0.12.0 - Packaged local web product
 
 Version 0.12.0 adds a browser client and one-process packaged launcher while
