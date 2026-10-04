@@ -13,7 +13,7 @@ from typing import Any, Iterable, Mapping
 GENESIS_HASH = "0" * 64
 EVENT_FORMAT_VERSION = 1
 ANCHOR_FORMAT_VERSION = 1
-BEHAVIOR_CONFIG_PROJECTION_VERSION = 2
+BEHAVIOR_CONFIG_PROJECTION_VERSION = 3
 
 
 def canonical_json(value: Any) -> str:
@@ -111,6 +111,9 @@ _BEHAVIOR_SESSION_CONFIG_KEYS = (
     "model_id",
     "revision_backend",
     "revision_model_id",
+    "detection_backend",
+    "detection_model_id",
+    "detection_max_new_tokens",
     "max_new_tokens",
     "embedding_backend",
     "embedding_model",
@@ -216,6 +219,7 @@ def behavior_config_projection(state: Mapping[str, Any]) -> dict[str, Any]:
         "detector_role": {
             "backend": detector_role.get("backend"),
             "model_id": detector_role.get("model_id"),
+            "max_new_tokens": detector_role.get("max_new_tokens"),
             "runtime_name": detector_role.get("runtime_name"),
         },
         "prompt_contracts": _project_prompt_contracts(
