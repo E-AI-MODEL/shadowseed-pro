@@ -52,6 +52,21 @@ SETTING_METADATA: dict[str, dict[str, str]] = {
         STATEFUL,
         "A revision model change affects only future revision calls and does not rewrite prior turns.",
     ),
+    "detection_backend": _meta(
+        "detection",
+        STATEFUL,
+        "A detection provider change affects future candidate-gap detection without rewriting prior observations.",
+    ),
+    "detection_model_id": _meta(
+        "detection",
+        STATEFUL,
+        "A detection model change affects future candidate-gap detection without changing authority.",
+    ),
+    "detection_max_new_tokens": _meta(
+        "detection",
+        IMMEDIATE,
+        "The detector generation budget is consumed only by future detection calls.",
+    ),
     "max_new_tokens": _meta(
         "answer_generation",
         IMMEDIATE,
