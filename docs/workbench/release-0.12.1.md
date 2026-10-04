@@ -28,7 +28,8 @@ is preserved. Existing sessions retain their saved configuration.
 
 ## Research findings
 
-The research package adds gap-resilience measurements and records R1 revision-role
+The research package adds a gap-resilience benchmark harness and case set (no live-model
+gap-resilience result is committed yet) and records R1 revision-role
 and paired Dutch/English results. Those small screens do not establish general
 answer-quality improvement or laptop latency. English is not a reliability
 guarantee, and UI language is independent of model-role routing.

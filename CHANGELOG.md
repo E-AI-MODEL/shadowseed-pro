@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.12.2 - Loopback web API host hardening
+
+- Fixed a DNS-rebinding exposure in the local web API. The server bound to
+  loopback but accepted any `Host` header and treated `Origin == http://<Host>`
+  as same-origin, so a web page that re-resolved its own hostname to 127.0.0.1
+  could read sessions and submit operator-verified evidence as the local
+  operator. Every request now requires a trusted loopback `Host` on the
+  server's actual bound port: `127.0.0.1:<port>`, `localhost:<port>`, or the
+  server's own loopback bind address (for example `127.0.0.2:<port>`). The
+  Origin allowlist remains a second layer.
+- Published `v0.12.1` remains a Research Preview but is not eligible for
+  production-local promotion because of this finding. 0.12.2 is the next
+  production-local assurance candidate.
+- Corrected the 0.12.1 notes: 0.12.1 added a gap-resilience benchmark harness
+  and case set, not live-model gap-resilience evidence.
+- Gate, evidence, authority and point-of-use semantics are unchanged.
+
 ## 0.12.1 - Gap detection and local model roles
 
 - Refined detector-born atomic gaps, unspecified candidate metadata and bounded
@@ -10,8 +27,9 @@
   detection budget and visible role assignments in the web client.
 - Added a local web profile using installed Gemma2 for detection and revision
   alongside a user-selected R1 or Llama 3.1 generation model.
-- Added gap-resilience and R1 revision/language research evidence without changing
-  Gate, evidence, authority or point-of-use semantics.
+- Added a gap-resilience benchmark harness and case set (no live-model result
+  committed yet) and R1 revision/language screens, without changing Gate,
+  evidence, authority or point-of-use semantics.
 - Kept Research Preview status; production-local assurance remains separate.
 
 ## 0.12.0 - Packaged local web product
