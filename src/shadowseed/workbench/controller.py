@@ -110,8 +110,24 @@ class WorkbenchController:
         ]
 
     @staticmethod
+    def embedding_backend_available(backend: str) -> bool:
+        """Return whether an embedding runtime is usable in this installation."""
+
+        if backend in {"lexical", "ollama"}:
+            return True
+        if backend == "openai":
+            return find_spec("openai") is not None
+        if backend == "sentence-transformers":
+            return find_spec("sentence_transformers") is not None
+        return False
+
+    @staticmethod
     def embedding_backends() -> tuple[str, ...]:
-        return EMBEDDING_BACKENDS
+        return tuple(
+            backend
+            for backend in EMBEDDING_BACKENDS
+            if WorkbenchController.embedding_backend_available(backend)
+        )
 
     @staticmethod
     def runtime_modes() -> tuple[str, ...]:
@@ -138,6 +154,38 @@ class WorkbenchController:
 
             return DEFAULT_OLLAMA_EMBEDDING_MODEL
         return None
+
+    @staticmethod
+    def _validate_ollama_embedding_model(model_id: str | None) -> None:
+        """Fail early with an actionable setup message when the embedding model is absent."""
+
+        from shadowseed.adapters.ollama_client import (
+            DEFAULT_OLLAMA_EMBEDDING_MODEL,
+            list_ollama_models,
+        )
+
+        requested = str(model_id or DEFAULT_OLLAMA_EMBEDDING_MODEL).strip()
+        try:
+            installed = list_ollama_models()
+        except RuntimeError as exc:
+            raise ValueError(
+                "Ollama is not reachable at the configured local endpoint. "
+                "Start Ollama and try again."
+            ) from exc
+
+        requested_key = requested.casefold()
+        requested_base = requested_key.split(":", 1)[0]
+        available = {
+            str(name).strip().casefold()
+            for name in installed
+            if str(name).strip()
+        }
+        available_bases = {name.split(":", 1)[0] for name in available}
+        if requested_key not in available and requested_base not in available_bases:
+            raise ValueError(
+                f"Ollama embedding model {requested!r} is not installed. "
+                f"Run `ollama pull {requested}` in Terminal, then create the chat again."
+            )
 
     @staticmethod
     def ssl_intensity_settings(percent: int | float) -> dict[str, float | int]:
@@ -298,6 +346,8 @@ class WorkbenchController:
             allow_toy_embedder=allow_toy_embedder,
             external_confirmed=external_confirmed,
         )
+        if resolved_embedding == "ollama":
+            self._validate_ollama_embedding_model(resolved_embedding_model)
         effective_same_turn_revision = (
             bool(allow_self_reinforcement)
             if allow_same_turn_revision is None
