@@ -76,6 +76,7 @@ from shadowseed.surfacing import (
     apply_prompt_boundary,
     build_candidate_context,
     build_chat_prompt,
+    build_chat_user_message,
     build_revision_prompt,
     collect_eligible_promoted_seeds,
     mark_surfaced,
@@ -898,25 +899,44 @@ class ShadowChatSession:
         return [], list(candidates)
 
     def _turn_live(self, question: str) -> dict[str, Any]:
-        """Production-oriented one-generation loop with visible-history continuity."""
+        """Production-oriented one-generation loop with native chat continuity."""
         prepared = self.prepare_turn(question)
         fixture_answer = f"Fixture echo answer to: {question}"
+        native_chat = getattr(self.model, "generate_chat", None)
         try:
-            final_answer = self.model.generate(
-                build_chat_prompt(
+            if callable(native_chat):
+                final_answer = native_chat(
                     self.history,
-                    question,
+                    build_chat_user_message(
+                        question,
+                        list(prepared.surfaced_seeds),
+                        response_language="the same language as the user's current question",
+                    ),
+                )
+                generation_transport = "role_structured_chat"
+            else:
+                final_answer = self.model.generate(
+                    build_chat_prompt(
+                        self.history,
+                        question,
+                        list(prepared.surfaced_seeds),
+                        response_language="the same language as the user's current question",
+                    ),
+                    {
+                        "question": question,
+                        "turn": prepared.turn,
+                        "baseline_answer": fixture_answer,
+                    },
+                    "ssl" if prepared.surfaced_seeds else "baseline",
                     list(prepared.surfaced_seeds),
-                    response_language="the same language as the user's current question",
-                ),
-                {"question": question, "turn": prepared.turn, "baseline_answer": fixture_answer},
-                "ssl" if prepared.surfaced_seeds else "baseline",
-                list(prepared.surfaced_seeds),
-            )
+                )
+                generation_transport = "compat_prompt_fallback"
         except Exception:
             self.abort_turn(prepared)
             raise
-        return self.observe_turn(prepared, final_answer)
+        report = self.observe_turn(prepared, final_answer)
+        report["generation_transport"] = generation_transport
+        return report
 
     def _capture_prepared_turn_rollback(self) -> _PreparedTurnRollback:
         """Capture all mutable live state before preparation starts."""
