@@ -102,7 +102,12 @@ def validate_contradiction_resolution(
     return normalized_basis, normalized_id
 
 
-def validate_session_config(*, max_seeds_per_turn: int, max_new_tokens: int) -> None:
+def validate_session_config(
+    *,
+    max_seeds_per_turn: int,
+    max_new_tokens: int,
+    detection_max_new_tokens: int | None = None,
+) -> None:
     if not 1 <= int(max_seeds_per_turn) <= MAX_PRODUCTION_SEEDS_PER_TURN:
         raise ResourceLimitError(
             "max_seeds_per_turn exceeds the production-local bound "
@@ -111,6 +116,11 @@ def validate_session_config(*, max_seeds_per_turn: int, max_new_tokens: int) -> 
     if not 1 <= int(max_new_tokens) <= MAX_NEW_TOKENS:
         raise ResourceLimitError(
             f"max_new_tokens exceeds the production-local bound of {MAX_NEW_TOKENS}"
+        )
+    if detection_max_new_tokens is not None and not 1 <= int(detection_max_new_tokens) <= MAX_NEW_TOKENS:
+        raise ResourceLimitError(
+            "detection_max_new_tokens exceeds the production-local bound "
+            f"of {MAX_NEW_TOKENS}"
         )
 
 
