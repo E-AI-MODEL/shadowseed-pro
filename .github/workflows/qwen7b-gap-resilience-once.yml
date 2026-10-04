@@ -82,13 +82,14 @@ jobs:
           print("resolved model digest", match["digest"])
           PY
 
-      - name: Run DeepSeek thinking on and off
+      - name: Probe DeepSeek thinking on and off
         run: |
           mkdir -p "$RUN_DIR"
           for thinking in on off; do
             for profile in runtime_v06 candidate_v1; do
-              output="$RUN_DIR/${MODEL_SLUG}_${profile}_think_${thinking}_controlled.json"
+              output="$RUN_DIR/${MODEL_SLUG}_${profile}_think_${thinking}_probe.json"
               GITHUB_SHA="$(git rev-parse HEAD)" python scripts/run_gap_resilience_benchmark.py \
+                --cases benchmarks/gap_resilience/deepseek_thinking_probe_cases.json \
                 --backend ollama \
                 --model-id "$MODEL_ID" \
                 --model-revision "$MODEL_DIGEST" \
@@ -96,9 +97,25 @@ jobs:
                 --thinking-mode "$thinking" \
                 --repeats 1 \
                 --max-seeds 3 \
-                --max-new-tokens 512 \
+                --max-new-tokens 384 \
                 --output "$output"
             done
+          done
+
+      - name: Run full controlled DeepSeek screen with thinking off
+        run: |
+          for profile in runtime_v06 candidate_v1; do
+            output="$RUN_DIR/${MODEL_SLUG}_${profile}_think_off_controlled.json"
+            GITHUB_SHA="$(git rev-parse HEAD)" python scripts/run_gap_resilience_benchmark.py \
+              --backend ollama \
+              --model-id "$MODEL_ID" \
+              --model-revision "$MODEL_DIGEST" \
+              --prompt-profile "$profile" \
+              --thinking-mode off \
+              --repeats 1 \
+              --max-seeds 3 \
+              --max-new-tokens 220 \
+              --output "$output"
           done
 
       - name: Strictly rescore stored Gemma and Llama results
@@ -135,7 +152,7 @@ jobs:
           for thinking in ("on", "off"):
               for profile in ("runtime_v06", "candidate_v1"):
                   path = run_dir / (
-                      f"{os.environ['MODEL_SLUG']}_{profile}_think_{thinking}_controlled.json"
+                      f"{os.environ['MODEL_SLUG']}_{profile}_think_{thinking}_probe.json"
                   )
                   deepseek_paths.append(path)
                   report = json.loads(path.read_text(encoding="utf-8"))
@@ -146,8 +163,8 @@ jobs:
                   assert report["model_revision"] == os.environ["MODEL_DIGEST"]
                   assert report["thinking_mode"] == thinking
                   assert report["scoring_policy"] == "strict_model_abstention_v2"
-                  assert report["summary"]["cases"] == 8
-                  assert sum(len(case["run_details"]) for case in report["cases"]) == 8
+                  assert report["summary"]["cases"] == 2
+                  assert sum(len(case["run_details"]) for case in report["cases"]) == 2
                   assert all(
                       detail["detector_raw_output"] is not None
                       and detail["detector_thinking_output"] is not None
@@ -162,14 +179,41 @@ jobs:
                       "ollama_version": os.environ["OLLAMA_VERSION"],
                       "model_digest": os.environ["MODEL_DIGEST"],
                       "execution_note": (
-                          "Quality screening on GitHub Linux runner; latency is not "
-                          "representative of the user's laptop."
+                          "Two-case thinking-mode probe on GitHub Linux runner; "
+                          "latency is not representative of the user's laptop."
                       ),
                   }
                   path.write_text(
                       json.dumps(report, indent=2, ensure_ascii=False) + "\n",
                       encoding="utf-8",
                   )
+
+          for profile in ("runtime_v06", "candidate_v1"):
+              path = run_dir / (
+                  f"{os.environ['MODEL_SLUG']}_{profile}_think_off_controlled.json"
+              )
+              deepseek_paths.append(path)
+              report = json.loads(path.read_text(encoding="utf-8"))
+              assert report["summary"]["cases"] == 8
+              assert report["thinking_mode"] == "off"
+              assert report["scoring_policy"] == "strict_model_abstention_v2"
+              assert sum(len(case["run_details"]) for case in report["cases"]) == 8
+              report["runtime_provenance"] = {
+                  "github_run_id": os.environ["GITHUB_RUN_ID"],
+                  "github_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                  "runner_os": os.environ.get("RUNNER_OS"),
+                  "runner_arch": os.environ.get("RUNNER_ARCH"),
+                  "ollama_version": os.environ["OLLAMA_VERSION"],
+                  "model_digest": os.environ["MODEL_DIGEST"],
+                  "execution_note": (
+                      "Full controlled quality screen with thinking disabled; "
+                      "latency is not representative of the user's laptop."
+                  ),
+              }
+              path.write_text(
+                  json.dumps(report, indent=2, ensure_ascii=False) + "\n",
+                  encoding="utf-8",
+              )
 
           for path in (
               run_dir / "gemma2_latest_runtime_v06_controlled_screen.json",
@@ -184,7 +228,7 @@ jobs:
                   == "model_explicit_NONE_only"
               )
 
-          print("verified", len(deepseek_paths), "DeepSeek arms plus strict Gemma/Llama rescoring")
+          print("verified", len(deepseek_paths), "DeepSeek probe/full-off arms plus strict Gemma/Llama rescoring")
           PY
 
       - name: Commit corrected benchmark results to this branch
