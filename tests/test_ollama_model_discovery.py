@@ -137,7 +137,7 @@ def test_embedding_backends_hide_uninstalled_optional_runtimes(monkeypatch) -> N
         lambda name: object() if name == "openai" else None,
     )
 
-    assert WorkbenchController.embedding_backends() == (
+    assert WorkbenchController.available_embedding_backends() == (
         "lexical",
         "ollama",
         "openai",
