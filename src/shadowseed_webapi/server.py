@@ -64,8 +64,8 @@ def _origin_is_allowed(
     return origin is None or origin in allowed_origins
 
 
-def _host_is_allowed(host: str | None, port: int) -> bool:
-    """Accept only the loopback names of the port this server is bound to.
+def _host_is_allowed(host: str | None, port: int, bound_host: str = "") -> bool:
+    """Accept only the loopback names of the address and port this server is bound to.
 
     The bind address alone does not stop DNS rebinding: a browser that resolves
     an attacker hostname to 127.0.0.1 still sends that hostname in ``Host`` and
@@ -74,8 +74,11 @@ def _host_is_allowed(host: str | None, port: int) -> bool:
 
     if not host:
         return False
+    names = set(_LOOPBACK_HOST_NAMES)
+    if bound_host and _is_loopback(bound_host):
+        names.add(str(bound_host).strip().lower())
     normalized = host.strip().lower()
-    return normalized in {f"{name}:{port}" for name in _LOOPBACK_HOST_NAMES}
+    return normalized in {f"{name}:{port}" for name in names}
 
 
 def _is_json_content_type(content_type: str | None) -> bool:
@@ -114,6 +117,7 @@ def make_handler(
             return _host_is_allowed(
                 self.headers.get("Host"),
                 int(self.server.server_address[1]),
+                str(self.server.server_address[0]),
             )
 
         def _origin_allowed(self) -> bool:

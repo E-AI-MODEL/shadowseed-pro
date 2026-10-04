@@ -10,7 +10,7 @@ from http.server import ThreadingHTTPServer
 from typing import Any
 
 from shadowseed.adapters.openai_client import clear_process_openai_api_key
-from shadowseed_webapi.server import make_handler, serve
+from shadowseed_webapi.server import _host_is_allowed, make_handler, serve
 from shadowseed_webapi.service import WebApiService
 
 
@@ -688,3 +688,12 @@ def test_valid_host_still_rejects_foreign_origin() -> None:
     assert status == 403
     assert payload == {"error": "origin_not_allowed"}
     assert service.created == []
+
+
+def test_alternate_loopback_bind_address_is_an_accepted_host() -> None:
+    assert _host_is_allowed("127.0.0.2:8765", 8765, "127.0.0.2")
+    assert _host_is_allowed("localhost:8765", 8765, "127.0.0.2")
+    assert not _host_is_allowed("127.0.0.2:8765", 8765, "127.0.0.1")
+    assert not _host_is_allowed("127.0.0.2:8766", 8765, "127.0.0.2")
+    assert not _host_is_allowed("attacker.example:8765", 8765, "127.0.0.2")
+    assert not _host_is_allowed("0.0.0.0:8765", 8765, "0.0.0.0")
