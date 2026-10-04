@@ -1,0 +1,161 @@
+{
+  "artifact": "shadowseed-revision-role-screen-v1",
+  "schema_version": 1,
+  "generated_at": "2026-10-04T09:18:40.197179+00:00",
+  "shadowseed_source_ref": "bcf2b77905991f7032171371d26792145c1854a4",
+  "case_set": "revision_role_screen",
+  "case_set_version": "1.0",
+  "model_id": "gemma2:latest",
+  "model_revision": "ff02c3702f322b9e075e9568332d96c0a7028002f1a5a056e0a6784320a4db0b",
+  "max_new_tokens": 700,
+  "provider_timeout_seconds_current_product": 120.0,
+  "benchmark_timeout_seconds": 300.0,
+  "match_threshold": 0.6,
+  "prompt_contract": {
+    "prompt_id": "minimal_revision",
+    "prompt_version": "1.0",
+    "component": "same_turn_revision",
+    "input_contract": [
+      "current_question",
+      "existing_draft",
+      "authorized_candidate_context"
+    ],
+    "output_contract": "revised_answer_or_unchanged_draft",
+    "template_sha256": "b63b7d781a677ed9cd0b58f09f5d5eddaf808753a58fec0f1b9da2f8327c8028"
+  },
+  "disclaimer": "This benchmark isolates revision only. Fixed baselines and reviewer-supplied candidate perspectives are evaluation inputs, not runtime evidence or authority. GitHub-runner latency is not laptop latency.",
+  "summary": {
+    "cases": 2,
+    "final_response_rate": 1.0,
+    "role_contract_pass_rate": 0.5,
+    "mean_addition_coverage": 0.75,
+    "mean_baseline_preservation": 1.0,
+    "visible_contract_violation_cases": 0,
+    "within_current_product_timeout_rate": 1.0,
+    "mean_total_duration_seconds": 55.161
+  },
+  "cases": [
+    {
+      "case_id": "industrial-revolution-nl",
+      "language": "nl",
+      "final_response_available": true,
+      "done_reason": "stop",
+      "eval_count": 140,
+      "prompt_eval_count": 564,
+      "total_duration_seconds": 65.496,
+      "within_current_product_timeout": true,
+      "response_word_count": 71,
+      "addition_coverage": 1.0,
+      "addition_details": [
+        {
+          "id": "colonial-capital",
+          "hit": true,
+          "best_token_recall": 1.0,
+          "best_alias": "koloniaal kapitaal als financieringsbron voor fabrieksinvesteringen"
+        },
+        {
+          "id": "colonial-raw-materials",
+          "hit": true,
+          "best_token_recall": 1.0,
+          "best_alias": "goedkope koloniale grondstoffen maakten schaalvergroting mogelijk"
+        }
+      ],
+      "baseline_preservation": 1.0,
+      "baseline_preservation_details": [
+        {
+          "id": "steam-engine",
+          "hit": true,
+          "best_token_recall": 1.0,
+          "best_alias": "verbeteringen van James Watt aan de stoommachine"
+        },
+        {
+          "id": "textile-innovation",
+          "hit": true,
+          "best_token_recall": 1.0,
+          "best_alias": "de textielindustrie groeide door uitvindingen zoals de spinning jenny"
+        },
+        {
+          "id": "urbanisation",
+          "hit": true,
+          "best_token_recall": 0.8,
+          "best_alias": "dit leidde tot urbanisatie en fabrieksarbeid"
+        }
+      ],
+      "visible_contract_violations": [],
+      "role_contract_pass": true,
+      "response": "De Industriële Revolutie in het 18e-eeuwse Groot-Brittannië werd gekenmerkt door een ongekende versnelling van technologische innovatie. De verbeteringen van James Watt aan de stoommachine maakten het mogelijk om fabrieken los te koppelen van waterbronnen. De textielindustrie groeide door uitvindingen zoals de spinning jenny. Dat leidde tot urbanisatie en fabrieksarbeid.  Koloniaal kapitaal fungeerde als financieringsbron voor Britse fabrieksinvesteringen, en goedkope koloniale grondstoffen waren een voorwaarde voor schaalvergroting van de productie.",
+      "thinking": ""
+    },
+    {
+      "case_id": "ml-production-en",
+      "language": "en",
+      "final_response_available": true,
+      "done_reason": "stop",
+      "eval_count": 68,
+      "prompt_eval_count": 516,
+      "total_duration_seconds": 44.826,
+      "within_current_product_timeout": true,
+      "response_word_count": 57,
+      "addition_coverage": 0.5,
+      "addition_details": [
+        {
+          "id": "data-drift",
+          "hit": true,
+          "best_token_recall": 1.0,
+          "best_alias": "monitor data drift after deployment"
+        },
+        {
+          "id": "fairness",
+          "hit": true,
+          "best_token_recall": 1.0,
+          "best_alias": "audit bias and fairness across protected groups"
+        },
+        {
+          "id": "label-leakage",
+          "hit": false,
+          "best_token_recall": 0.2857,
+          "best_alias": "check for label leakage between training and test data"
+        },
+        {
+          "id": "calibration",
+          "hit": false,
+          "best_token_recall": 0.0,
+          "best_alias": "calibrate predicted probabilities"
+        }
+      ],
+      "baseline_preservation": 1.0,
+      "baseline_preservation_details": [
+        {
+          "id": "representative-data",
+          "hit": true,
+          "best_token_recall": 1.0,
+          "best_alias": "model is trained on representative data"
+        },
+        {
+          "id": "test-metrics",
+          "hit": true,
+          "best_token_recall": 1.0,
+          "best_alias": "evaluate on a separate test set using accuracy precision and recall"
+        },
+        {
+          "id": "api-logging-versioning",
+          "hit": true,
+          "best_token_recall": 1.0,
+          "best_alias": "put it behind an API log predictions and version the model and data"
+        }
+      ],
+      "visible_contract_violations": [],
+      "role_contract_pass": false,
+      "response": "Make sure the model is trained on representative data and evaluate it on a separate test set using metrics such as accuracy, precision and recall. Put it behind an API, log predictions, and version both the model and the data so results can be reproduced. Monitor data drift after deployment.  Audit bias and fairness across protected groups.",
+      "thinking": ""
+    }
+  ],
+  "runtime_provenance": {
+    "github_run_id": "37191288783",
+    "github_run_attempt": "1",
+    "runner_os": "Linux",
+    "runner_arch": "X64",
+    "ollama_version": "ollama version is 0.35.1 ",
+    "execution_note": "Role-quality screen on GitHub Linux CPU. Absolute latency is not representative of the user's laptop; the current product 120-second provider timeout is reported separately."
+  }
+}
