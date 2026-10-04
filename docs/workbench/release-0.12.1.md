@@ -11,7 +11,7 @@ merged after 0.12.0. It remains a Research Preview.
   count as evidence. SSL-influenced live answers are excluded from that context.
 - The parser accepts useful two-word labels such as “Authentication mechanism”
   while retaining filters for bare proper names, copied text and few-shot leaks.
-- Detector prompt contracts are version 0.6 and the behavior projection is v2.
+- Detector prompt contracts are version 0.6 and the behavior projection is v3.
 
 ## Local model roles
 
