@@ -94,6 +94,66 @@ def _seed_state(stored: dict) -> list[tuple[str, int, float, float, str]]:
     )
 
 
+def test_ollama_live_ab_uses_native_chat_for_both_control_and_treatment(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    chat_calls: list[list[dict[str, str]]] = []
+
+    monkeypatch.setattr(
+        "shadowseed.adapters.ollama_client.OllamaClient.embed",
+        lambda self, text: [[1.0, 0.0, 0.0]],
+    )
+
+    def fake_generate_chat(
+        self,
+        messages,
+        *,
+        max_new_tokens=220,
+        temperature=0.0,
+        seed=0,
+    ):
+        chat_calls.append([dict(message) for message in messages])
+        return "Native chat answer"
+
+    monkeypatch.setattr(
+        "shadowseed.adapters.ollama_client.OllamaClient.generate_chat",
+        fake_generate_chat,
+    )
+    monkeypatch.setattr(
+        "shadowseed.adapters.ollama_client.OllamaClient.generate",
+        lambda self, prompt, **kwargs: "NONE",
+    )
+
+    sessions = service_for_workspace(tmp_path / "workspace")
+    session_id = sessions.create_session(
+        title="Native paired control",
+        profile_id="balanced",
+        backend="ollama",
+        model_id="llama3.1:latest",
+        config=SessionConfig(
+            backend="ollama",
+            model_id="llama3.1:latest",
+            runtime_mode="live",
+            embedding_backend="ollama",
+            embedding_model="embeddinggemma",
+        ),
+    )
+
+    report = sessions.run_turn(
+        session_id,
+        "llm.. ? ! als in language model?",
+        compare_without_ssl=True,
+    )
+
+    assert report["generation_transport"] == "role_structured_chat"
+    assert report["comparison_control_transport"] == "role_structured_chat"
+    assert len(chat_calls) == 2
+    assert chat_calls[0] == chat_calls[1]
+    assert chat_calls[0][-1]["role"] == "user"
+    assert "llm.. ? ! als in language model?" in chat_calls[0][-1]["content"]
+
+
 def test_live_chat_can_generate_no_ssl_control_without_authored_baseline(tmp_path) -> None:
     sessions = service_for_workspace(tmp_path / "workspace")
     paired_id = sessions.create_session(title="Paired control", profile_id="demo")
