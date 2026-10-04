@@ -28,6 +28,9 @@ _AUTHORITY_MODE_TO_PROFILE = {
 _MISSING = object()
 _WEB_V1_BACKENDS = frozenset({"fixture", "ollama", "openai"})
 _WEB_V1_EMBEDDING_BACKENDS = frozenset({"lexical", "ollama", "openai"})
+_LOCAL_BALANCED_PRIMARY_PREFIXES = ("deepseek-r1", "llama3.1")
+_LOCAL_BALANCED_BROAD_ROLE_PREFIX = "gemma2"
+_LOCAL_DETECTION_MAX_NEW_TOKENS = 220
 
 
 def _optional_json_bool(
@@ -160,6 +163,47 @@ class WebApiService:
             ]
         }
 
+    @staticmethod
+    def _ollama_model_matches_prefix(model_id: str | None, prefix: str) -> bool:
+        value = str(model_id or "").strip().casefold()
+        wanted = prefix.strip().casefold()
+        return value == wanted or value.startswith(wanted + ":")
+
+    @classmethod
+    def _preferred_broad_local_model(cls, models: list[str]) -> str | None:
+        normalized = [str(model).strip() for model in models if str(model).strip()]
+        for exact in ("gemma2:latest", "gemma2"):
+            for model in normalized:
+                if model.casefold() == exact:
+                    return model
+        for model in normalized:
+            if cls._ollama_model_matches_prefix(
+                model, _LOCAL_BALANCED_BROAD_ROLE_PREFIX
+            ):
+                return model
+        return None
+
+    def _balanced_local_model_roles(self, primary_model_id: str | None) -> dict[str, Any]:
+        if not any(
+            self._ollama_model_matches_prefix(primary_model_id, prefix)
+            for prefix in _LOCAL_BALANCED_PRIMARY_PREFIXES
+        ):
+            return {}
+        try:
+            available = self.controller.discover_models("ollama")
+        except Exception:
+            return {}
+        broad_model = self._preferred_broad_local_model(available)
+        if broad_model is None:
+            return {}
+        return {
+            "revision_backend": "ollama",
+            "revision_model_id": broad_model,
+            "detection_backend": "ollama",
+            "detection_model_id": broad_model,
+            "detection_max_new_tokens": _LOCAL_DETECTION_MAX_NEW_TOKENS,
+        }
+
     def configure_openai(self, payload: dict[str, Any]) -> dict[str, Any]:
         api_key = _required_json_string(payload, "api_key")
         configure_process_openai_api_key(api_key)
@@ -235,11 +279,22 @@ class WebApiService:
         if backend != "openai":
             validate_production_local_backend(backend, embedding_backend)
 
+        local_roles = (
+            self._balanced_local_model_roles(model_id)
+            if backend == "ollama"
+            else {}
+        )
+
         session_id = self.controller.create_session(
             title=title,
             profile_id="balanced",
             backend=backend,
             model_id=model_id,
+            revision_backend=local_roles.get("revision_backend"),
+            revision_model_id=local_roles.get("revision_model_id"),
+            detection_backend=local_roles.get("detection_backend"),
+            detection_model_id=local_roles.get("detection_model_id"),
+            detection_max_new_tokens=local_roles.get("detection_max_new_tokens"),
             runtime_mode="live",
             authority_profile_id=authority_profile_id,
             embedding_backend=embedding_backend,
@@ -440,8 +495,37 @@ class WebApiService:
         return view
 
     def _session_payload(self, view: dict[str, Any]) -> dict[str, Any]:
+        backend = str(view.get("backend") or "").strip()
+        primary_model = view.get("model_id")
+        revision_backend = str(view.get("revision_backend") or backend).strip()
+        revision_model = (
+            view.get("revision_model_id")
+            if view.get("revision_model_id") is not None
+            else (primary_model if revision_backend == backend else None)
+        )
+        detection_backend = str(view.get("detection_backend") or backend).strip()
+        detection_model = (
+            view.get("detection_model_id")
+            if view.get("detection_model_id") is not None
+            else (primary_model if detection_backend == backend else None)
+        )
         return {
             **view,
             "provider_ready": self._provider_ready_for_view(view),
+            "model_roles": {
+                "generation": {
+                    "backend": backend,
+                    "model_id": primary_model,
+                },
+                "revision": {
+                    "backend": revision_backend,
+                    "model_id": revision_model,
+                },
+                "detection": {
+                    "backend": detection_backend,
+                    "model_id": detection_model,
+                    "max_new_tokens": view.get("detection_max_new_tokens"),
+                },
+            },
             "messages": self.controller.chat_messages(view),
         }

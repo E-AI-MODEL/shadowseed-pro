@@ -349,6 +349,175 @@ def test_web_api_uses_production_local_controller_by_default(tmp_path) -> None:
     assert isinstance(api.controller, ProductionLocalWorkbenchController)
 
 
+def _capture_web_session_creation(monkeypatch, api: WebApiService) -> dict:
+    captured: dict = {}
+
+    def fake_create_session(**kwargs):
+        captured.update(kwargs)
+        return "session::captured"
+
+    monkeypatch.setattr(api.controller, "create_session", fake_create_session)
+    monkeypatch.setattr(
+        api,
+        "get_session",
+        lambda session_id: {"session_id": session_id},
+    )
+    monkeypatch.setattr(
+        "shadowseed_webapi.service.validate_production_local_backend",
+        lambda backend, embedding_backend: None,
+    )
+    return captured
+
+
+def test_web_api_auto_splits_r1_detection_and_revision_to_local_gemma2(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    captured = _capture_web_session_creation(monkeypatch, api)
+    monkeypatch.setattr(
+        api.controller,
+        "discover_models",
+        lambda backend: ["deepseek-r1:latest", "gemma2:latest", "llama3.1:latest"]
+        if backend == "ollama"
+        else [],
+    )
+
+    api.create_session(
+        {
+            "title": "Local balanced roles",
+            "backend": "ollama",
+            "model_id": "deepseek-r1:latest",
+            "authority_mode": "assisted",
+        }
+    )
+
+    assert captured["model_id"] == "deepseek-r1:latest"
+    assert captured["revision_backend"] == "ollama"
+    assert captured["revision_model_id"] == "gemma2:latest"
+    assert captured["detection_backend"] == "ollama"
+    assert captured["detection_model_id"] == "gemma2:latest"
+    assert captured["detection_max_new_tokens"] == 220
+
+
+def test_web_api_auto_splits_llama_detection_and_revision_to_local_gemma2(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    captured = _capture_web_session_creation(monkeypatch, api)
+    monkeypatch.setattr(
+        api.controller,
+        "discover_models",
+        lambda backend: ["llama3.1:latest", "gemma2:9b"]
+        if backend == "ollama"
+        else [],
+    )
+
+    api.create_session(
+        {
+            "title": "Local balanced llama roles",
+            "backend": "ollama",
+            "model_id": "llama3.1:latest",
+            "authority_mode": "assisted",
+        }
+    )
+
+    assert captured["model_id"] == "llama3.1:latest"
+    assert captured["revision_model_id"] == "gemma2:9b"
+    assert captured["detection_model_id"] == "gemma2:9b"
+
+
+def test_web_api_keeps_single_model_when_local_gemma2_is_unavailable(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    captured = _capture_web_session_creation(monkeypatch, api)
+    monkeypatch.setattr(
+        api.controller,
+        "discover_models",
+        lambda backend: ["deepseek-r1:latest"] if backend == "ollama" else [],
+    )
+
+    api.create_session(
+        {
+            "title": "Local single model fallback",
+            "backend": "ollama",
+            "model_id": "deepseek-r1:latest",
+            "authority_mode": "assisted",
+        }
+    )
+
+    assert captured["revision_backend"] is None
+    assert captured["revision_model_id"] is None
+    assert captured["detection_backend"] is None
+    assert captured["detection_model_id"] is None
+    assert captured["detection_max_new_tokens"] is None
+
+
+def test_web_api_does_not_auto_split_unbenchmarked_primary_model(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    captured = _capture_web_session_creation(monkeypatch, api)
+    monkeypatch.setattr(
+        api.controller,
+        "discover_models",
+        lambda backend: ["qwen2.5:7b", "gemma2:latest"]
+        if backend == "ollama"
+        else [],
+    )
+
+    api.create_session(
+        {
+            "title": "No unsupported automatic split",
+            "backend": "ollama",
+            "model_id": "qwen2.5:7b",
+            "authority_mode": "assisted",
+        }
+    )
+
+    assert captured["revision_backend"] is None
+    assert captured["revision_model_id"] is None
+    assert captured["detection_backend"] is None
+    assert captured["detection_model_id"] is None
+
+
+def test_web_session_payload_exposes_effective_model_roles(tmp_path) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    view = {
+        "backend": "ollama",
+        "model_id": "deepseek-r1:latest",
+        "revision_backend": "ollama",
+        "revision_model_id": "gemma2:latest",
+        "detection_backend": "ollama",
+        "detection_model_id": "gemma2:latest",
+        "detection_max_new_tokens": 220,
+    }
+    api._provider_ready_for_view = lambda current: True  # type: ignore[method-assign]
+    api.controller.chat_messages = lambda current: []  # type: ignore[method-assign]
+
+    payload = api._session_payload(view)
+
+    assert payload["model_roles"] == {
+        "generation": {
+            "backend": "ollama",
+            "model_id": "deepseek-r1:latest",
+        },
+        "revision": {
+            "backend": "ollama",
+            "model_id": "gemma2:latest",
+        },
+        "detection": {
+            "backend": "ollama",
+            "model_id": "gemma2:latest",
+            "max_new_tokens": 220,
+        },
+    }
+
+
 def test_web_api_rejects_remote_ollama_before_creation_even_with_generic_controller(
     monkeypatch,
     tmp_path,

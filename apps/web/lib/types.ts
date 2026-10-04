@@ -59,11 +59,22 @@ export type SeedDetail = Seed & {
   timeline: SeedTimelineEvent[];
 };
 
+export type ModelRole = {
+  backend: string;
+  model_id: string | null;
+  max_new_tokens?: number | null;
+};
+
 export type SessionView = {
   session_id: string;
   title: string;
   backend: string;
   model_id: string | null;
+  model_roles?: {
+    generation: ModelRole;
+    revision: ModelRole;
+    detection: ModelRole;
+  };
   authority_profile_id: string;
   effective_gate_policy_id: string;
   behavior_config_digest: string;
