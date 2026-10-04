@@ -286,16 +286,25 @@ def test_web_api_lists_hosted_session_read_only_when_provider_not_ready(
 
 
 @pytest.mark.parametrize(
-    ("revision_backend", "revision_model_id", "embedding_backend"),
+    (
+        "revision_backend",
+        "revision_model_id",
+        "detection_backend",
+        "detection_model_id",
+        "embedding_backend",
+    ),
     [
-        ("openai", "gpt-4o-mini", "lexical"),
-        (None, None, "openai"),
+        ("openai", "gpt-4o-mini", None, None, "lexical"),
+        (None, None, "openai", "gpt-4o-mini", "lexical"),
+        (None, None, None, None, "openai"),
     ],
 )
 def test_web_api_hides_sessions_with_unsupported_secondary_providers(
     tmp_path,
     revision_backend,
     revision_model_id,
+    detection_backend,
+    detection_model_id,
     embedding_backend,
 ) -> None:
     api = WebApiService(tmp_path / "workspace")
@@ -306,6 +315,8 @@ def test_web_api_hides_sessions_with_unsupported_secondary_providers(
         model_id=None,
         revision_backend=revision_backend,
         revision_model_id=revision_model_id,
+        detection_backend=detection_backend,
+        detection_model_id=detection_model_id,
         runtime_mode="live",
         authority_profile_id="assisted",
         embedding_backend=embedding_backend,
