@@ -71,6 +71,7 @@ Adds authenticated tenant users, evidence verifiers, tenant administrators, serv
 | Provider semantic fallback | outage silently changes model/policy | explicit failure; no silent model/Gate/evidence fallback |
 | Resource exhaustion | huge prompt/export/seed flood | bounded sizes/counts/concurrency/timeouts with atomic failure |
 | Local remote exposure | production launcher binds LAN/WAN | loopback enforcement for production-local profile |
+| DNS rebinding of the local web API | a web page re-resolves its own hostname to 127.0.0.1 and calls the loopback API as same-origin, reading sessions or submitting operator-verified evidence | every request must present `Host` `127.0.0.1:<bound port>` or `localhost:<bound port>`; browser `Origin` must additionally be the same loopback origin or an explicit development origin |
 | Export/archive attack | traversal, bomb, symlink | retain defensive ZIP verification and size/compression limits |
 | Dependency compromise | mutable Actions/dependency drift | immutable Action SHAs, lock/constraints, scanning, SBOM, artifact signing/provenance |
 | Repository bypass | direct push or force push to main | issue #66 ruleset/branch protection and break-glass policy |

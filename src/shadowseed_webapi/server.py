@@ -23,6 +23,7 @@ DEFAULT_WEB_ORIGINS = frozenset(
     {"http://127.0.0.1:3000", "http://localhost:3000"}
 )
 _MAX_BODY_BYTES = 1_000_000
+_LOOPBACK_HOST_NAMES = ("127.0.0.1", "localhost")
 
 
 def _is_loopback(host: str) -> bool:
@@ -63,6 +64,23 @@ def _origin_is_allowed(
     return origin is None or origin in allowed_origins
 
 
+def _host_is_allowed(host: str | None, port: int, bound_host: str = "") -> bool:
+    """Accept only the loopback names of the address and port this server is bound to.
+
+    The bind address alone does not stop DNS rebinding: a browser that resolves
+    an attacker hostname to 127.0.0.1 still sends that hostname in ``Host`` and
+    treats the attacker page as same-origin.
+    """
+
+    if not host:
+        return False
+    names = set(_LOOPBACK_HOST_NAMES)
+    if bound_host and _is_loopback(bound_host):
+        names.add(str(bound_host).strip().lower())
+    normalized = host.strip().lower()
+    return normalized in {f"{name}:{port}" for name in names}
+
+
 def _is_json_content_type(content_type: str | None) -> bool:
     if content_type is None:
         return False
@@ -95,20 +113,35 @@ def make_handler(
     class Handler(BaseHTTPRequestHandler):
         server_version = "ShadowseedWebApi/1"
 
+        def _host_allowed(self) -> bool:
+            return _host_is_allowed(
+                self.headers.get("Host"),
+                int(self.server.server_address[1]),
+                str(self.server.server_address[0]),
+            )
+
         def _origin_allowed(self) -> bool:
+            if not self._host_allowed():
+                return False
             origin = self.headers.get("Origin")
             if _origin_is_allowed(origin, allowed_origins):
                 return True
             if not origin:
                 return True
-            host = self.headers.get("Host", "").strip()
-            return bool(host and origin == f"http://{host}")
+            host = self.headers.get("Host", "").strip().lower()
+            return origin == f"http://{host}"
 
         def _cors_origin(self) -> str | None:
             origin = self.headers.get("Origin")
             return origin if origin and self._origin_allowed() else None
 
         def _reject_unapproved_origin(self) -> bool:
+            if not self._host_allowed():
+                self._write_json(
+                    HTTPStatus.FORBIDDEN,
+                    {"error": "host_not_allowed"},
+                )
+                return True
             if self._origin_allowed():
                 return False
             self._write_json(
