@@ -1,0 +1,127 @@
+{
+  "artifact": "shadowseed-gap-resilience-v1",
+  "schema_version": 1,
+  "run_type": "live_benchmark",
+  "disclaimer": "Benchmark measurements are diagnostic, not evidence or authority. The fixture backend is a harness smoke test only. No aggregate metric is an overall Shadowseed quality score.",
+  "generated_at": "2026-10-04T08:41:30.893915+00:00",
+  "shadowseed_source_ref": "83799337dcdf7c1c037ca41270403d53a7a85dd6",
+  "case_set": "deepseek_thinking_probe",
+  "case_set_version": "1.0",
+  "backend": "ollama",
+  "model_id": "deepseek-r1:latest",
+  "model_revision": "6995872bfe4c521a67b32da386cd21d5c6e819b6e0d62f79f64ec83be99f5763",
+  "prompt_variant": "current_pair",
+  "prompt_profile": "runtime_v06",
+  "thinking_mode": "on",
+  "scoring_policy": "strict_model_abstention_v2",
+  "repeats": 1,
+  "max_seeds": 3,
+  "match_threshold": 0.35,
+  "summary": {
+    "cases": 1,
+    "expected_gap_recall": 0.0,
+    "expected_gap_hits": 0,
+    "expected_gap_opportunities": 1,
+    "negative_control_abstention_rate": null,
+    "negative_control_abstention_successes": 0,
+    "negative_control_abstention_opportunities": 0,
+    "negative_control_abstention_definition": "model_explicit_NONE_only",
+    "negative_control_parser_filtered_rate": null,
+    "negative_control_parser_filtered_runs": 0,
+    "resolved_gap_reopen_rate": null,
+    "resolved_gap_reopens": 0,
+    "resolved_gap_opportunities": 0,
+    "repeatability_mean": 1.0,
+    "explicit_none_runs": 0,
+    "empty_response_runs": 1,
+    "thinking_only_runs": 1,
+    "candidate_response_runs": 0,
+    "parser_empty_non_none_runs": 0
+  },
+  "cases": [
+    {
+      "case_id": "api-auth-controlled",
+      "negative_control": false,
+      "runs": 1,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 1,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 0,
+      "resolved_gap_reopen_rate": null,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "empty_response_runs": 1,
+      "thinking_only_runs": 1,
+      "candidate_response_runs": 0,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "client-authentication-method",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [],
+          "detector_output_class": "thinking_only",
+          "detector_raw_output": "",
+          "detector_thinking_output": "Okay, let me start by understanding the user's question. They're asking about API requirements where clients must authenticate before calling endpoints, and they want to know what remains unspecified regarding authentication.\n\nFirst, the draft answer provided some technical details about the API endpoint, request rate, and response format. But the user is specifically focusing on authentication. So I need to figure out what aspects of authentication aren't covered in the draft.\n\nLooking at the draft, it mentions the endpoint, rate limiting, and JSON responses. None of these directly address how authentication works. The endpoint URL doesn't tell us anything about the authentication method. The rate limiting is about usage, not security. The JSON format is generic and doesn't specify authentication details.\n\nSo the gaps here are about the authentication mechanism. The user probably wants to know the exact method (like OAuth, API keys, JWT) because that's crucial for implementation. Without knowing the method, developers can't properly secure their clients. Also, the process of authentication—how the client gets the token, how it's included in requests—isn't specified. And the validation part: how the server checks the authentication, which is essential for ensuring security.\n\nThe bounded context says there's no prior conversation, so I can't refer back to",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 0,
+            "numbered_lines": 0,
+            "unnumbered_nonblank_lines": 0,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 45241404986,
+            "load_duration": 3559132154,
+            "prompt_eval_count": 393,
+            "eval_count": 256
+          }
+        }
+      ]
+    }
+  ],
+  "runtime_provenance": {
+    "github_run_id": "37189629407",
+    "github_run_attempt": "1",
+    "runner_os": "Linux",
+    "runner_arch": "X64",
+    "ollama_version": "ollama version is 0.35.1 ",
+    "model_digest": "6995872bfe4c521a67b32da386cd21d5c6e819b6e0d62f79f64ec83be99f5763",
+    "execution_note": "Single-case thinking-mode probe on GitHub Linux runner; latency is not representative of the user's laptop."
+  }
+}

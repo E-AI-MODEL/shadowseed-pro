@@ -1,0 +1,617 @@
+{
+  "artifact": "shadowseed-gap-resilience-v1",
+  "schema_version": 1,
+  "run_type": "live_benchmark",
+  "disclaimer": "Benchmark measurements are diagnostic, not evidence or authority. The fixture backend is a harness smoke test only. No aggregate metric is an overall Shadowseed quality score.",
+  "generated_at": "2026-10-04T08:50:16.123786+00:00",
+  "shadowseed_source_ref": "83799337dcdf7c1c037ca41270403d53a7a85dd6",
+  "case_set": "gap_resilience_controlled",
+  "case_set_version": "1.1",
+  "backend": "ollama",
+  "model_id": "deepseek-r1:latest",
+  "model_revision": "6995872bfe4c521a67b32da386cd21d5c6e819b6e0d62f79f64ec83be99f5763",
+  "prompt_variant": "current_pair",
+  "prompt_profile": "candidate_v1",
+  "thinking_mode": "off",
+  "scoring_policy": "strict_model_abstention_v2",
+  "repeats": 1,
+  "max_seeds": 3,
+  "match_threshold": 0.35,
+  "summary": {
+    "cases": 8,
+    "expected_gap_recall": 0.0,
+    "expected_gap_hits": 0,
+    "expected_gap_opportunities": 5,
+    "negative_control_abstention_rate": 0.0,
+    "negative_control_abstention_successes": 0,
+    "negative_control_abstention_opportunities": 3,
+    "negative_control_abstention_definition": "model_explicit_NONE_only",
+    "negative_control_parser_filtered_rate": 1.0,
+    "negative_control_parser_filtered_runs": 3,
+    "resolved_gap_reopen_rate": 0.0,
+    "resolved_gap_reopens": 0,
+    "resolved_gap_opportunities": 7,
+    "repeatability_mean": 1.0,
+    "explicit_none_runs": 0,
+    "empty_response_runs": 0,
+    "thinking_only_runs": 0,
+    "candidate_response_runs": 1,
+    "parser_empty_non_none_runs": 7
+  },
+  "cases": [
+    {
+      "case_id": "api-auth-controlled",
+      "negative_control": false,
+      "runs": 1,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 1,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 0,
+      "resolved_gap_reopen_rate": null,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
+      "parser_empty_non_none_runs": 1,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "client-authentication-method",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [],
+          "detector_output_class": "parser_rejected_nonempty",
+          "detector_raw_output": "<think>\nOkay, let me start by understanding what the user is asking. They want to analyze the current question about API authentication requirements and identify any unresolved information gaps. The draft answer provided some details about the API endpoint, request limits, and JSON responses, but the main focus here is on authentication.\n\nFirst, the user mentioned that clients must authenticate before calling endpoints. So the question is specifically about authentication. The draft answer doesn't talk about authentication at all, just other aspects. That means the authentication part is the only thing being considered here. \n\nNow, I need to think about what aspects of authentication might not be specified. The draft answer doesn't mention anything related to auth, so the gaps would be in that area. Let me break down the possible dimensions. \n\nAuthentication methods: The draft doesn't say how clients should authenticate. It could be API keys, OAuth, JWT, etc. So that's one gap. \n\nHandling of authentication credentials: How should the credentials be provided? Maybe in headers, query parameters, or body. The draft doesn't specify, so that's another.",
+          "detector_thinking_output": "",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 6,
+            "numbered_lines": 0,
+            "unnumbered_nonblank_lines": 6,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 36678635516,
+            "load_duration": 965221,
+            "prompt_eval_count": 315,
+            "eval_count": 220
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "retention-backups-controlled",
+      "negative_control": false,
+      "runs": 1,
+      "mean_candidates_per_run": 1,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 1,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 1,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 1,
+      "parser_empty_non_none_runs": 0,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 1,
+          "candidates": [
+            "The draft does not specify what happens to backup copies. The question requires that the retention policy state what happens to both. So one gap is the handling of"
+          ],
+          "expected": [
+            {
+              "gap_id": "backup-deletion",
+              "hit": false,
+              "best_similarity": 0.2632,
+              "best_candidate": "The draft does not specify what happens to backup copies. The question requires that the retention policy state what happens to both. So one gap is the handling of"
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "retention-period",
+              "reopened": false,
+              "best_similarity": 0.0526,
+              "best_candidate": "The draft does not specify what happens to backup copies. The question requires that the retention policy state what happens to both. So one gap is the handling of"
+            }
+          ],
+          "detector_output_class": "candidates",
+          "detector_raw_output": "<think>\nWe are given:\n- BOUNDED PRIOR CONTEXT: The old 30-day policy was replaced. The current retention period is 14 days.\n- CURRENT QUESTION: The retention policy must state what happens to both primary-store data and backup copies. What part is still unspecified?\n- DRAFT ANSWER: Customer event data is retained for 14 days. After that period the deletion job removes it from the primary store.\n\nThe draft answer specifies that primary-store data is removed after 14 days. However, the question asks about both primary-store data and backup copies.\n\nWe need to identify up to 3 plausible unresolved information gaps that may still deserve checking.\n\nLet's break down the question and the draft:\n\nThe question is about the retention policy, which must specify what happens to both primary-store data and backup copies. The draft only mentions the primary store.\n\nUnresolved dimensions (without inventing facts):\n\n1. The draft does not specify what happens to backup copies. The question requires that the retention policy state what happens to both. So one gap is the handling of",
+          "detector_thinking_output": "",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 11,
+            "numbered_lines": 1,
+            "unnumbered_nonblank_lines": 10,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 1,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 30892748592,
+            "load_duration": 1898608,
+            "prompt_eval_count": 352,
+            "eval_count": 220
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "support-response-target-controlled",
+      "negative_control": false,
+      "runs": 1,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 1,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 1,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
+      "parser_empty_non_none_runs": 1,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "severity-response-target",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_output_class": "parser_rejected_nonempty",
+          "detector_raw_output": "<think>\nHmm, the user is asking me to analyze a question about support policy specifications and identify up to 3 plausible unresolved information gaps. They've provided bounded prior context showing that support is now 24/7 for production incidents, and they've given a draft answer about the queue and severity escalation.\n\nLooking at the current question, they're asking what remains unspecified in the support policy regarding coverage hours and response targets for each severity. The draft answer mentions the 24/7 coverage but doesn't specify exact hours or minutes, and it doesn't detail the response targets for different severities.\n\nI need to identify information gaps that aren't explicitly addressed. The first gap is about the exact timing of the 24/7 coverage - is it truly 24 hours every day, or are there exceptions? This is a concrete condition that needs clarification.\n\nThe second gap relates to the ownership of support requests - who is responsible for handling them outside of the defined coverage period? The draft mentions a shared queue but doesn't specify ownership.\n\nThe third gap concerns the specific response targets for each",
+          "detector_thinking_output": "",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 6,
+            "numbered_lines": 0,
+            "unnumbered_nonblank_lines": 6,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 30741649920,
+            "load_duration": 849264,
+            "prompt_eval_count": 360,
+            "eval_count": 220
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "alice-failover-controlled",
+      "negative_control": false,
+      "runs": 1,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 1,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 1,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
+      "parser_empty_non_none_runs": 1,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "alice-failover",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_output_class": "parser_rejected_nonempty",
+          "detector_raw_output": "<think>\nOkay, let me start by understanding the user's question. They want to know what remains unspecified for Alice's service regarding deployment standards. The deployment standard includes region, number of availability zones, and failover behavior between zones. The draft answer mentions that Alice's service is in the EU region and uses two availability zones. But the failover behavior isn't addressed.\n\nFirst, I need to identify the information gaps. The user mentioned three components: region, AZ count, and failover behavior. The draft covers the first two but not the third. So the main gap here is the failover behavior. But maybe there are other aspects they didn't mention.\n\nThe bounded prior context says Bob's service was moved to the US later. But that's about Bob, not Alice. So that's already established and shouldn't be revisited. The current question is specifically about Alice's service. \n\nThe deployment standard requires region, AZs, and failover. The draft specifies region and AZ count but not failover. So the first gap is definitely the failover behavior. But the user",
+          "detector_thinking_output": "",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 5,
+            "numbered_lines": 0,
+            "unnumbered_nonblank_lines": 5,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 29808951546,
+            "load_duration": 945815,
+            "prompt_eval_count": 348,
+            "eval_count": 220
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "rollbackcriteria-nl-controlled",
+      "negative_control": false,
+      "runs": 1,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 1,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 0,
+      "resolved_gap_reopen_rate": null,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
+      "parser_empty_non_none_runs": 1,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "rollbackcriteria",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [],
+          "detector_output_class": "parser_rejected_nonempty",
+          "detector_raw_output": "<think>\nHmm, the user is asking about what hasn't been specified regarding the rollback criteria for a migration. They've provided a draft answer that mentions the start time and order of migration, but not the rollback criteria. \n\nThe user seems to be in a planning phase for a migration, likely a technical or organizational migration. They're probably a project manager or IT professional who needs to ensure all aspects are covered before proceeding. The fact that they're specifically asking about rollback criteria suggests they're risk-averse and want to be thorough in their planning.\n\nLooking at the draft answer, it specifies the start time (Monday 18:00) and the order of migration (accounts first, then shared files). The rollback part is mentioned but vague - just says \"the team can roll back to the old environment\" without details. \n\nThere are definitely some gaps here that need clarification. First, who actually owns and executes the rollback process? The draft mentions a \"team\" but doesn't specify which team or who makes the decision. Second, what exactly triggers the rollback? The draft says \"",
+          "detector_thinking_output": "",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 5,
+            "numbered_lines": 0,
+            "unnumbered_nonblank_lines": 5,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 29849263988,
+            "load_duration": 851249,
+            "prompt_eval_count": 355,
+            "eval_count": 220
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "password-reset-bounded-negative",
+      "negative_control": true,
+      "runs": 1,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 0,
+      "expected_gap_recall": null,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 2,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": 0,
+      "abstention_opportunities": 1,
+      "abstention_rate": 0.0,
+      "negative_parser_filtered_runs": 1,
+      "negative_parser_filtered_rate": 1.0,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
+      "parser_empty_non_none_runs": 1,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "reset-link-channel",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            },
+            {
+              "gap_id": "reset-link-validity",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_output_class": "parser_rejected_nonempty",
+          "detector_raw_output": "<think>\nHmm, the user is asking me to analyze a question about password reset links, a draft answer, and identify up to three plausible unresolved information gaps. This seems to be about evaluating two specific points regarding password reset functionality.\n\nThe user wants me to identify potential gaps in information that aren't explicitly addressed in the draft answer or bounded prior context. They're specifically interested in two aspects: the channel through which reset links are sent and their validity duration.\n\nLooking at the bounded prior context, I see that in the previous interaction the user asked \"Via welk kanaal wordt de resetlink verstuurd?\" (Which channel is used to send the reset link?) and the assistant responded that it's exclusively sent via email.\n\nNow the draft answer states that the reset link is valid for 20 minutes, can be used once, makes all older reset links invalid, and sends a confirmation email after successful reset.\n\nBased on this information, I need to identify plausible unresolved dimensions. The first gap is clear - the channel isn't mentioned in the draft answer, but we already know from the prior",
+          "detector_thinking_output": "",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 6,
+            "numbered_lines": 0,
+            "unnumbered_nonblank_lines": 6,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 31358899670,
+            "load_duration": 898080,
+            "prompt_eval_count": 392,
+            "eval_count": 220
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "support-hours-superseded-negative",
+      "negative_control": true,
+      "runs": 1,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 0,
+      "expected_gap_recall": null,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 1,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": 0,
+      "abstention_opportunities": 1,
+      "abstention_rate": 0.0,
+      "negative_parser_filtered_runs": 1,
+      "negative_parser_filtered_rate": 1.0,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
+      "parser_empty_non_none_runs": 1,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "support-hours",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_output_class": "parser_rejected_nonempty",
+          "detector_raw_output": "<think>\nOkay, let's start by understanding the user's question. They want to know if the support coverage hours for production incidents are still unspecified. The draft answer says it's 24/7, but the user is asking to assess whether it's still unspecified.\n\nFirst, I need to identify the information gaps. The user mentioned that the prior context already clarified the hours changed to 24/7. So the draft answer claims it's 24/7. But maybe there are other aspects to consider.\n\nWhat does 24/7 actually mean? The draft doesn't specify the exact start and end dates of this coverage. Maybe the hours are 24/7 but only since a certain date. That's a gap because the user might need to know when this change took effect.\n\nAnother thing: the draft says 24/7, but does that include all days of the week? Weekends and holidays are part of 24/7, but maybe the answer should confirm if there are any exceptions. The prior context didn't mention exceptions, so",
+          "detector_thinking_output": "",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 5,
+            "numbered_lines": 0,
+            "unnumbered_nonblank_lines": 5,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 29796100173,
+            "load_duration": 867362,
+            "prompt_eval_count": 346,
+            "eval_count": 220
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "alice-region-other-subject-negative",
+      "negative_control": true,
+      "runs": 1,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 0,
+      "expected_gap_recall": null,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 1,
+      "resolved_gap_reopen_rate": 0.0,
+      "abstention_successes": 0,
+      "abstention_opportunities": 1,
+      "abstention_rate": 0.0,
+      "negative_parser_filtered_runs": 1,
+      "negative_parser_filtered_rate": 1.0,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
+      "parser_empty_non_none_runs": 1,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [],
+          "resolved": [
+            {
+              "gap_id": "alice-region",
+              "reopened": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "detector_output_class": "parser_rejected_nonempty",
+          "detector_raw_output": "<think>\nHmm, the user wants me to analyze a question about Alice's service deployment region and identify up to 3 plausible unresolved information gaps. They've provided bounded prior context and a draft answer.\n\nLet me break this down. The user is asking about Alice's service deployment region, specifically whether it's still unspecified. From the prior context, I know that Alice's service is in the EU region, and Bob's service was moved to the US region later. The draft answer states that Alice's service is deployed in the EU region and uses two availability zones.\n\nFor information gaps, I need to think about what might still be unclear or missing despite this information. The draft answer mentions the region (EU) and the number of availability zones (two), but there are several other aspects that could be gaps.\n\nOne gap is the specific dates or timing of the deployment. We know the service is in the EU, but we don't know when it was deployed or if there have been any changes to the region over time.\n\nAnother gap is the ownership or responsibility for the deployment. While we know Alice",
+          "detector_thinking_output": "",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 6,
+            "numbered_lines": 0,
+            "unnumbered_nonblank_lines": 6,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "benchmark_gap_resilience_candidate_v1",
+            "prompt_profile": "candidate_v1",
+            "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 29095900707,
+            "load_duration": 925420,
+            "prompt_eval_count": 335,
+            "eval_count": 220
+          }
+        }
+      ]
+    }
+  ],
+  "runtime_provenance": {
+    "github_run_id": "37189629407",
+    "github_run_attempt": "1",
+    "runner_os": "Linux",
+    "runner_arch": "X64",
+    "ollama_version": "ollama version is 0.35.1 ",
+    "model_digest": "6995872bfe4c521a67b32da386cd21d5c6e819b6e0d62f79f64ec83be99f5763",
+    "execution_note": "Full controlled quality screen with thinking disabled; latency is not representative of the user's laptop."
+  }
+}

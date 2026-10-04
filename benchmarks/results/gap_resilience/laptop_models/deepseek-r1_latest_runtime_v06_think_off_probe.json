@@ -1,0 +1,127 @@
+{
+  "artifact": "shadowseed-gap-resilience-v1",
+  "schema_version": 1,
+  "run_type": "live_benchmark",
+  "disclaimer": "Benchmark measurements are diagnostic, not evidence or authority. The fixture backend is a harness smoke test only. No aggregate metric is an overall Shadowseed quality score.",
+  "generated_at": "2026-10-04T08:42:02.589265+00:00",
+  "shadowseed_source_ref": "83799337dcdf7c1c037ca41270403d53a7a85dd6",
+  "case_set": "deepseek_thinking_probe",
+  "case_set_version": "1.0",
+  "backend": "ollama",
+  "model_id": "deepseek-r1:latest",
+  "model_revision": "6995872bfe4c521a67b32da386cd21d5c6e819b6e0d62f79f64ec83be99f5763",
+  "prompt_variant": "current_pair",
+  "prompt_profile": "runtime_v06",
+  "thinking_mode": "off",
+  "scoring_policy": "strict_model_abstention_v2",
+  "repeats": 1,
+  "max_seeds": 3,
+  "match_threshold": 0.35,
+  "summary": {
+    "cases": 1,
+    "expected_gap_recall": 0.0,
+    "expected_gap_hits": 0,
+    "expected_gap_opportunities": 1,
+    "negative_control_abstention_rate": null,
+    "negative_control_abstention_successes": 0,
+    "negative_control_abstention_opportunities": 0,
+    "negative_control_abstention_definition": "model_explicit_NONE_only",
+    "negative_control_parser_filtered_rate": null,
+    "negative_control_parser_filtered_runs": 0,
+    "resolved_gap_reopen_rate": null,
+    "resolved_gap_reopens": 0,
+    "resolved_gap_opportunities": 0,
+    "repeatability_mean": 1.0,
+    "explicit_none_runs": 0,
+    "empty_response_runs": 0,
+    "thinking_only_runs": 0,
+    "candidate_response_runs": 0,
+    "parser_empty_non_none_runs": 1
+  },
+  "cases": [
+    {
+      "case_id": "api-auth-controlled",
+      "negative_control": false,
+      "runs": 1,
+      "mean_candidates_per_run": 0,
+      "expected_gap_hits": 0,
+      "expected_gap_opportunities": 1,
+      "expected_gap_recall": 0.0,
+      "resolved_gap_reopens": 0,
+      "resolved_gap_opportunities": 0,
+      "resolved_gap_reopen_rate": null,
+      "abstention_successes": null,
+      "abstention_opportunities": null,
+      "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
+      "repeatability": 1.0,
+      "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
+      "parser_empty_non_none_runs": 1,
+      "run_details": [
+        {
+          "run": 1,
+          "candidate_count": 0,
+          "candidates": [],
+          "expected": [
+            {
+              "gap_id": "client-authentication-method",
+              "hit": false,
+              "best_similarity": 0.0,
+              "best_candidate": null
+            }
+          ],
+          "resolved": [],
+          "detector_output_class": "parser_rejected_nonempty",
+          "detector_raw_output": "<think>\nOkay, let me start by understanding the user's question. They're asking about API requirements where clients must authenticate before calling endpoints, and they want to know what remains unspecified regarding authentication. The draft answer provided some technical details about the endpoint, request rate, and JSON responses, but it doesn't address authentication at all.\n\nFirst, I need to identify gaps in the draft answer related to authentication. The user mentioned authentication, so the draft's lack of any authentication-related info is a big red flag. But maybe there are more specific things missing.\n\nThe draft says clients must authenticate, but it doesn't specify how. So the method of authentication is a gap. Also, the draft doesn't mention what happens after authentication fails. That's another point. And the authentication mechanism might require specific data formats or structures in the request, which isn't covered.\n\nWait, the bounded context says there's no prior conversation. So I can't refer to previous exchanges. The user's question is about authentication being unspecified, but the draft answer doesn't touch on that. The main gaps are the absence of authentication method, failure handling, and possibly the structure of authentication data. But the user specifically asked about authentication, so the draft's omission is a clear gap. The other points are",
+          "detector_thinking_output": "",
+          "detector_parse_diagnostics": {
+            "explicit_none": false,
+            "nonblank_lines": 5,
+            "numbered_lines": 0,
+            "unnumbered_nonblank_lines": 5,
+            "nested_numbering_prefixes_removed": 0,
+            "dropped_blank_or_placeholder": 0,
+            "dropped_citation_or_stub": 0,
+            "dropped_fewshot_leak": 0,
+            "dropped_duplicate": 0,
+            "accepted_candidates": 0,
+            "truncated_after_max_seeds": false
+          },
+          "detector_prompt_metadata": {
+            "prompt_id": "detector_current_pair",
+            "prompt_version": "0.6",
+            "component": "chat_detection",
+            "input_contract": [
+              "bounded_clean_conversation_context",
+              "current_question",
+              "draft_answer",
+              "max_seeds"
+            ],
+            "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+            "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "length",
+            "total_duration": 31492249227,
+            "load_duration": 1189628,
+            "prompt_eval_count": 393,
+            "eval_count": 256
+          }
+        }
+      ]
+    }
+  ],
+  "runtime_provenance": {
+    "github_run_id": "37189629407",
+    "github_run_attempt": "1",
+    "runner_os": "Linux",
+    "runner_arch": "X64",
+    "ollama_version": "ollama version is 0.35.1 ",
+    "model_digest": "6995872bfe4c521a67b32da386cd21d5c6e819b6e0d62f79f64ec83be99f5763",
+    "execution_note": "Single-case thinking-mode probe on GitHub Linux runner; latency is not representative of the user's laptop."
+  }
+}

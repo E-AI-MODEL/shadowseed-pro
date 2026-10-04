@@ -1038,5 +1038,6 @@
     "runner_arch": "X64",
     "ollama_version": "ollama version is 0.35.1 ",
     "model_digest": "46e0c10c039e019119339687c3c1757cc81b9da49709a3b3924863ba87ca666e"
-  }
+  },
+  "rescored_at": "2026-10-04T08:50:16.814280+00:00"
 }
