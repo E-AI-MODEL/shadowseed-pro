@@ -22,15 +22,19 @@ class WebWorkbenchController(ProductionLocalWorkbenchController):
         model_id: str | None,
         revision_backend: str | None = None,
         revision_model_id: str | None = None,
+        detection_backend: str | None = None,
+        detection_model_id: str | None = None,
         runtime_mode: str = "live",
         embedding_backend: str = "lexical",
         allow_toy_embedder: bool = False,
         external_confirmed: bool,
     ) -> None:
         effective_revision_backend = revision_backend or backend
+        effective_detection_backend = detection_backend or backend
         uses_openai = (
             backend == "openai"
             or effective_revision_backend == "openai"
+            or effective_detection_backend == "openai"
             or embedding_backend == "openai"
         )
 
@@ -40,6 +44,8 @@ class WebWorkbenchController(ProductionLocalWorkbenchController):
                 model_id=model_id,
                 revision_backend=revision_backend,
                 revision_model_id=revision_model_id,
+                detection_backend=detection_backend,
+                detection_model_id=detection_model_id,
                 runtime_mode=runtime_mode,
                 embedding_backend=embedding_backend,
                 allow_toy_embedder=allow_toy_embedder,
@@ -52,6 +58,8 @@ class WebWorkbenchController(ProductionLocalWorkbenchController):
             validate_production_local_backend("ollama", "lexical")
         if effective_revision_backend == "ollama":
             validate_production_local_backend("ollama", "lexical")
+        if effective_detection_backend == "ollama":
+            validate_production_local_backend("ollama", "lexical")
         if embedding_backend == "ollama":
             validate_production_local_backend("fixture", "ollama")
 
@@ -60,6 +68,8 @@ class WebWorkbenchController(ProductionLocalWorkbenchController):
             model_id=model_id,
             revision_backend=revision_backend,
             revision_model_id=revision_model_id,
+            detection_backend=detection_backend,
+            detection_model_id=detection_model_id,
             runtime_mode=runtime_mode,
             embedding_backend=embedding_backend,
             allow_toy_embedder=allow_toy_embedder,
