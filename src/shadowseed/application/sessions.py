@@ -31,7 +31,7 @@ from shadowseed.core_config import SSLCoreConfig
 from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal
 from shadowseed.manager import SeedStatus
 from shadowseed.storage.sqlite import SQLiteWorkspaceRepository, WorkspaceStorageError
-from shadowseed.surfacing import build_chat_prompt
+from shadowseed.surfacing import build_chat_prompt, build_chat_user_message
 
 
 class SessionService:
@@ -183,17 +183,31 @@ class SessionService:
     def _generate_live_no_ssl_control(
         session: ShadowChatSession,
         question: str,
-    ) -> str:
+    ) -> tuple[str, str]:
         """Generate a same-history, non-mutating control for one live turn.
 
-        This deliberately uses the same visible pre-turn history and the same
-        prompt/generation path as the live SSL answer, with only the surfaced
-        Shadow Seed context removed. The control never enters detection,
-        recurrence, Gate state, or later conversation history.
+        The control must use the exact transport family used by the real live
+        answer. Otherwise an A/B result would confound SSL context with provider
+        chat transport.
         """
 
+        native_chat = getattr(session.model, "generate_chat", None)
+        use_native_chat = bool(
+            getattr(session.model, "native_chat_transport", False)
+        )
+        if use_native_chat and callable(native_chat):
+            answer = native_chat(
+                session.history,
+                build_chat_user_message(
+                    question,
+                    [],
+                    response_language="the same language as the user's current question",
+                ),
+            )
+            return str(answer), "role_structured_chat"
+
         fixture_answer = f"Fixture echo answer to: {question}"
-        return session.model.generate(
+        answer = session.model.generate(
             build_chat_prompt(
                 session.history,
                 question,
@@ -208,6 +222,7 @@ class SessionService:
             "baseline",
             [],
         )
+        return str(answer), "same_prompt_path"
 
     @staticmethod
     def _experimental_shadow_pressure(
@@ -295,23 +310,37 @@ class SessionService:
             )
             for item in candidates
         ]
-        answer = session.model.generate(
-            build_chat_prompt(
-                session.history,
-                question,
-                shadow_context,
-                response_language="the same language as the user's current question",
-            ),
-            {
-                "question": question,
-                "turn": session._turn,
-                "baseline_answer": baseline_answer,
-                "shadow_pressure": True,
-            },
-            "ssl",
-            shadow_context,
+        native_chat = getattr(session.model, "generate_chat", None)
+        use_native_chat = bool(
+            getattr(session.model, "native_chat_transport", False)
         )
-        return answer, candidates
+        if use_native_chat and callable(native_chat):
+            answer = native_chat(
+                session.history,
+                build_chat_user_message(
+                    question,
+                    shadow_context,
+                    response_language="the same language as the user's current question",
+                ),
+            )
+        else:
+            answer = session.model.generate(
+                build_chat_prompt(
+                    session.history,
+                    question,
+                    shadow_context,
+                    response_language="the same language as the user's current question",
+                ),
+                {
+                    "question": question,
+                    "turn": session._turn,
+                    "baseline_answer": baseline_answer,
+                    "shadow_pressure": True,
+                },
+                "ssl",
+                shadow_context,
+            )
+        return str(answer), candidates
 
     def run_turn(
         self,
@@ -388,12 +417,15 @@ class SessionService:
                     )
                     control_answer = str(control_metadata["answer"])
                 else:
-                    control_answer = self._generate_live_no_ssl_control(
+                    (
+                        control_answer,
+                        control_transport,
+                    ) = self._generate_live_no_ssl_control(
                         session,
                         normalized_question,
                     )
                     control_metadata = {
-                        "transport": "same_prompt_path",
+                        "transport": control_transport,
                         "replayed_turns": 0,
                         "history_turns_before": len(session.history),
                     }
