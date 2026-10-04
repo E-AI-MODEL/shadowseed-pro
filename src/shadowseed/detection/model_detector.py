@@ -143,6 +143,9 @@ _NUMBERED_LINE = re.compile(r"^\s*\d+[.)]\s*(.+?)\s*$")
 # (#36;) that survives when the source already stripped the leading ampersand.
 _HTML_ENTITY = re.compile(r"&(?:[a-zA-Z]+|#\d+);?|#\d+;")
 _ACRONYM_ONLY = re.compile(r"^[A-Z][A-Z0-9.&;<>\-]{1,8}$")
+_TWO_WORD_PROPER_NAME = re.compile(
+    r"^[A-ZÀ-Þ][A-Za-zÀ-ÿ\'-]+\s+[A-ZÀ-Þ][A-Za-zÀ-ÿ\'-]+$"
+)
 
 
 def _normalize_for_match(text: str) -> str:
@@ -187,10 +190,11 @@ def _looks_like_fewshot_leak(seed: str, threshold: float = 0.7) -> bool:
 def _looks_like_citation_fragment(seed: str, source_text: str) -> bool:
     """Heuristic filter for clearly non-seed output from small models.
 
-    Drops candidates that are too short, that are obvious HTML/garbage, that
-    are bare acronyms, or that appear as a literal long substring of the
-    source text. These all indicate the model copied from the input rather
-    than naming a gap.
+    Drops single-token stubs, obvious HTML/garbage, bare acronyms, short copied
+    proper names, or candidates that appear as a literal long substring of the
+    source text. Two-word gap labels are otherwise allowed: detector v0.6
+    explicitly permits concise atomic labels, and semantic suitability belongs
+    to intake rather than this syntactic parser filter.
     """
     stripped = seed.strip()
     if not stripped:
@@ -198,14 +202,20 @@ def _looks_like_citation_fragment(seed: str, source_text: str) -> bool:
     if _HTML_ENTITY.search(stripped):
         return True
     word_count = len(stripped.split())
-    if word_count <= 2:
+    if word_count <= 1:
         return True
     if _ACRONYM_ONLY.match(stripped):
         return True
-    # Long literal substring of input → almost certainly a citation
     if source_text and word_count <= 16:
         normalized_seed = re.sub(r"\s+", " ", stripped).strip(" .,:;-").lower()
         normalized_source = re.sub(r"\s+", " ", source_text).lower()
+        if (
+            word_count == 2
+            and _TWO_WORD_PROPER_NAME.match(stripped)
+            and normalized_seed in normalized_source
+        ):
+            return True
+        # Long literal substring of input → almost certainly a citation.
         if len(normalized_seed) >= 20 and normalized_seed in normalized_source:
             return True
     return False
