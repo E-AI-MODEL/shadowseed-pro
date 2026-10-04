@@ -3,8 +3,8 @@
   "schema_version": 1,
   "run_type": "live_benchmark",
   "disclaimer": "Benchmark measurements are diagnostic, not evidence or authority. The fixture backend is a harness smoke test only. No aggregate metric is an overall Shadowseed quality score.",
-  "generated_at": "2026-10-03T21:30:11.417170+00:00",
-  "shadowseed_source_ref": "eba041faa04bf4a4f72120265b4a54b90fa3ac94",
+  "generated_at": "2026-10-04T08:27:40.682338+00:00",
+  "shadowseed_source_ref": "4d5a16e16c3c3b1554d7c62efde56a6de11e09c1",
   "case_set": "gap_resilience_controlled",
   "case_set_version": "1.1",
   "backend": "ollama",
@@ -12,6 +12,8 @@
   "model_revision": "ff02c3702f322b9e075e9568332d96c0a7028002f1a5a056e0a6784320a4db0b",
   "prompt_variant": "current_pair",
   "prompt_profile": "runtime_v06",
+  "thinking_mode": "default",
+  "scoring_policy": "strict_model_abstention_v2",
   "repeats": 2,
   "max_seeds": 3,
   "match_threshold": 0.35,
@@ -20,14 +22,20 @@
     "expected_gap_recall": 0.8,
     "expected_gap_hits": 8,
     "expected_gap_opportunities": 10,
-    "negative_control_abstention_rate": 1.0,
-    "negative_control_abstention_successes": 6,
+    "negative_control_abstention_rate": 0.3333,
+    "negative_control_abstention_successes": 2,
     "negative_control_abstention_opportunities": 6,
+    "negative_control_abstention_definition": "model_explicit_NONE_only",
+    "negative_control_parser_filtered_rate": 0.6667,
+    "negative_control_parser_filtered_runs": 4,
     "resolved_gap_reopen_rate": 0.0,
     "resolved_gap_reopens": 0,
     "resolved_gap_opportunities": 14,
     "repeatability_mean": 1.0,
     "explicit_none_runs": 2,
+    "empty_response_runs": 0,
+    "thinking_only_runs": 0,
+    "candidate_response_runs": 10,
     "parser_empty_non_none_runs": 4
   },
   "cases": [
@@ -45,8 +53,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -64,7 +77,9 @@
             }
           ],
           "resolved": [],
+          "detector_output_class": "candidates",
           "detector_raw_output": "1. Authentication mechanism \n2.  Authentication credentials format",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 2,
@@ -90,7 +105,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -107,7 +123,9 @@
             }
           ],
           "resolved": [],
+          "detector_output_class": "candidates",
           "detector_raw_output": "1. Authentication mechanism \n2.  Authentication credentials format",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 2,
@@ -133,7 +151,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -151,8 +170,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -177,7 +201,9 @@
               "best_candidate": "What happens to backup copies of customer event data after 14 days?"
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "1.  What happens to backup copies of customer event data after 14 days?",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -203,7 +229,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -227,7 +254,9 @@
               "best_candidate": "What happens to backup copies of customer event data after 14 days?"
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "1.  What happens to backup copies of customer event data after 14 days?",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -253,7 +282,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -271,8 +301,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -297,7 +332,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "1. response target for each severity",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -323,7 +360,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -347,7 +385,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "1. response target for each severity",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -373,7 +413,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -391,8 +432,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -417,7 +463,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "1. failover behavior between zones",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -443,7 +491,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -467,7 +516,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "1. failover behavior between zones",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -493,7 +544,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -511,8 +563,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -531,7 +588,9 @@
             }
           ],
           "resolved": [],
+          "detector_output_class": "candidates",
           "detector_raw_output": "1. criteria voor terugrollen \n2. volgorde van terugrollen",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 2,
@@ -557,7 +616,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -575,7 +635,9 @@
             }
           ],
           "resolved": [],
+          "detector_output_class": "candidates",
           "detector_raw_output": "1. criteria voor terugrollen \n2. volgorde van terugrollen",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 2,
@@ -601,7 +663,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -616,11 +679,16 @@
       "resolved_gap_reopens": 0,
       "resolved_gap_opportunities": 4,
       "resolved_gap_reopen_rate": 0.0,
-      "abstention_successes": 2,
+      "abstention_successes": 0,
       "abstention_opportunities": 2,
-      "abstention_rate": 1.0,
+      "abstention_rate": 0.0,
+      "negative_parser_filtered_runs": 2,
+      "negative_parser_filtered_rate": 1.0,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 2,
       "run_details": [
         {
@@ -642,7 +710,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "parser_rejected_nonempty",
           "detector_raw_output": "1.  kanaal resetlink\n2.  duur resetlink",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 2,
@@ -668,7 +738,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -689,7 +760,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "parser_rejected_nonempty",
           "detector_raw_output": "1.  kanaal resetlink\n2.  duur resetlink",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 2,
@@ -715,7 +788,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -733,8 +807,13 @@
       "abstention_successes": 2,
       "abstention_opportunities": 2,
       "abstention_rate": 1.0,
+      "negative_parser_filtered_runs": 0,
+      "negative_parser_filtered_rate": 0.0,
       "repeatability": 1.0,
       "explicit_none_runs": 2,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -750,7 +829,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "explicit_none",
           "detector_raw_output": "NONE",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": true,
             "nonblank_lines": 1,
@@ -776,7 +857,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -791,7 +873,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "explicit_none",
           "detector_raw_output": "NONE",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": true,
             "nonblank_lines": 1,
@@ -817,7 +901,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -832,11 +917,16 @@
       "resolved_gap_reopens": 0,
       "resolved_gap_opportunities": 2,
       "resolved_gap_reopen_rate": 0.0,
-      "abstention_successes": 2,
+      "abstention_successes": 0,
       "abstention_opportunities": 2,
-      "abstention_rate": 1.0,
+      "abstention_rate": 0.0,
+      "negative_parser_filtered_runs": 2,
+      "negative_parser_filtered_rate": 1.0,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 0,
       "parser_empty_non_none_runs": 2,
       "run_details": [
         {
@@ -852,7 +942,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "parser_rejected_nonempty",
           "detector_raw_output": "1. availability zones",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -878,7 +970,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -893,7 +986,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "parser_rejected_nonempty",
           "detector_raw_output": "1. availability zones",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -919,13 +1014,14 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     }
   ],
   "runtime_provenance": {
-    "github_run_id": "37154929960",
+    "github_run_id": "37188525722",
     "execution_note": "Quality screening on GitHub Linux runner; latency is not representative of the user's laptop.",
     "github_run_attempt": "1",
     "runner_os": "Linux",

@@ -3,8 +3,8 @@
   "schema_version": 1,
   "run_type": "live_benchmark",
   "disclaimer": "Benchmark measurements are diagnostic, not evidence or authority. The fixture backend is a harness smoke test only. No aggregate metric is an overall Shadowseed quality score.",
-  "generated_at": "2026-10-03T21:34:02.841854+00:00",
-  "shadowseed_source_ref": "eba041faa04bf4a4f72120265b4a54b90fa3ac94",
+  "generated_at": "2026-10-04T08:33:56.931637+00:00",
+  "shadowseed_source_ref": "4d5a16e16c3c3b1554d7c62efde56a6de11e09c1",
   "case_set": "gap_resilience_controlled",
   "case_set_version": "1.1",
   "backend": "ollama",
@@ -12,6 +12,8 @@
   "model_revision": "ff02c3702f322b9e075e9568332d96c0a7028002f1a5a056e0a6784320a4db0b",
   "prompt_variant": "current_pair",
   "prompt_profile": "candidate_v1",
+  "thinking_mode": "default",
+  "scoring_policy": "strict_model_abstention_v2",
   "repeats": 2,
   "max_seeds": 3,
   "match_threshold": 0.35,
@@ -23,11 +25,17 @@
     "negative_control_abstention_rate": 0.0,
     "negative_control_abstention_successes": 0,
     "negative_control_abstention_opportunities": 6,
-    "resolved_gap_reopen_rate": 0.2857,
-    "resolved_gap_reopens": 4,
+    "negative_control_abstention_definition": "model_explicit_NONE_only",
+    "negative_control_parser_filtered_rate": 0.0,
+    "negative_control_parser_filtered_runs": 0,
+    "resolved_gap_reopen_rate": 0.3571,
+    "resolved_gap_reopens": 5,
     "resolved_gap_opportunities": 14,
-    "repeatability_mean": 1.0,
+    "repeatability_mean": 0.7982,
     "explicit_none_runs": 0,
+    "empty_response_runs": 0,
+    "thinking_only_runs": 0,
+    "candidate_response_runs": 16,
     "parser_empty_non_none_runs": 0
   },
   "cases": [
@@ -45,8 +53,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
-      "repeatability": 1.0,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
+      "repeatability": 0.1357,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -65,7 +78,9 @@
             }
           ],
           "resolved": [],
-          "detector_raw_output": "1. Authentication mechanisms\n2.  Consequences of unauthorized access\n3.  Format of authentication data",
+          "detector_output_class": "candidates",
+          "detector_raw_output": "1. Authentication mechanisms\n2.  Consequences of unauthorized access\n3.  Format of authentication data \n",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 3,
@@ -83,25 +98,34 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "stop",
+            "total_duration": 40769406395,
+            "load_duration": 1638821,
+            "prompt_eval_count": 339,
+            "eval_count": 23
           }
         },
         {
           "run": 2,
           "candidate_count": 2,
           "candidates": [
-            "Consequences of unauthorized access",
-            "Format of authentication data"
+            "Authentication failure response",
+            "Scope or permission levels associated with authentication"
           ],
           "expected": [
             {
               "gap_id": "client-authentication-method",
               "hit": false,
               "best_similarity": 0.2,
-              "best_candidate": "Format of authentication data"
+              "best_candidate": "Authentication failure response"
             }
           ],
           "resolved": [],
-          "detector_raw_output": "1. Authentication mechanisms\n2.  Consequences of unauthorized access\n3.  Format of authentication data",
+          "detector_output_class": "candidates",
+          "detector_raw_output": "1. Authentication mechanisms\n2.  Authentication failure response\n3.  Scope or permission levels associated with authentication \n",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 3,
@@ -119,6 +143,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "stop",
+            "total_duration": 6054910587,
+            "load_duration": 814089,
+            "prompt_eval_count": 339,
+            "eval_count": 25
           }
         }
       ]
@@ -137,8 +168,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -163,7 +199,9 @@
               "best_candidate": null
             }
           ],
-          "detector_raw_output": "1. What happens to backup copies after 14 days?",
+          "detector_output_class": "candidates",
+          "detector_raw_output": "1. What happens to backup copies after 14 days? \n",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -181,6 +219,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "stop",
+            "total_duration": 42722243290,
+            "load_duration": 961346,
+            "prompt_eval_count": 375,
+            "eval_count": 16
           }
         },
         {
@@ -205,7 +250,9 @@
               "best_candidate": null
             }
           ],
-          "detector_raw_output": "1. What happens to backup copies after 14 days?",
+          "detector_output_class": "candidates",
+          "detector_raw_output": "1. What happens to backup copies after 14 days? \n",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -223,6 +270,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "stop",
+            "total_duration": 4124224363,
+            "load_duration": 880561,
+            "prompt_eval_count": 375,
+            "eval_count": 16
           }
         }
       ]
@@ -241,8 +295,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -267,7 +326,9 @@
               "best_candidate": null
             }
           ],
-          "detector_raw_output": "1. Response target for each severity level",
+          "detector_output_class": "candidates",
+          "detector_raw_output": "1. Response target for each severity level \n",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -285,6 +346,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "stop",
+            "total_duration": 42212466633,
+            "load_duration": 999497,
+            "prompt_eval_count": 380,
+            "eval_count": 11
           }
         },
         {
@@ -309,7 +377,9 @@
               "best_candidate": null
             }
           ],
-          "detector_raw_output": "1. Response target for each severity level",
+          "detector_output_class": "candidates",
+          "detector_raw_output": "1. Response target for each severity level \n",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -327,6 +397,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "stop",
+            "total_duration": 3006693260,
+            "load_duration": 813052,
+            "prompt_eval_count": 380,
+            "eval_count": 11
           }
         }
       ]
@@ -345,8 +422,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -371,7 +453,9 @@
               "best_candidate": null
             }
           ],
-          "detector_raw_output": "1. failover behavior between zones",
+          "detector_output_class": "candidates",
+          "detector_raw_output": "1. failover behavior between zones \n",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -389,6 +473,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "stop",
+            "total_duration": 41200205245,
+            "load_duration": 940761,
+            "prompt_eval_count": 374,
+            "eval_count": 10
           }
         },
         {
@@ -413,7 +504,9 @@
               "best_candidate": null
             }
           ],
-          "detector_raw_output": "1. failover behavior between zones",
+          "detector_output_class": "candidates",
+          "detector_raw_output": "1. failover behavior between zones \n",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -431,6 +524,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "stop",
+            "total_duration": 2786897213,
+            "load_duration": 1088748,
+            "prompt_eval_count": 374,
+            "eval_count": 10
           }
         }
       ]
@@ -449,8 +549,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -470,7 +575,9 @@
             }
           ],
           "resolved": [],
-          "detector_raw_output": "1. criteria voor terugrollen\n2. volgorde van terugrollen\n3. starttijd voor terugrollen",
+          "detector_output_class": "candidates",
+          "detector_raw_output": "1. criteria voor terugrollen\n2. volgorde van terugrollen\n3. starttijd voor terugrollen \n",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 3,
@@ -488,6 +595,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "stop",
+            "total_duration": 43777472224,
+            "load_duration": 968968,
+            "prompt_eval_count": 363,
+            "eval_count": 26
           }
         },
         {
@@ -507,7 +621,9 @@
             }
           ],
           "resolved": [],
-          "detector_raw_output": "1. criteria voor terugrollen\n2. volgorde van terugrollen\n3. starttijd voor terugrollen",
+          "detector_output_class": "candidates",
+          "detector_raw_output": "1. criteria voor terugrollen\n2. volgorde van terugrollen\n3. starttijd voor terugrollen \n",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 3,
@@ -525,6 +641,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "stop",
+            "total_duration": 6310328602,
+            "load_duration": 844751,
+            "prompt_eval_count": 363,
+            "eval_count": 26
           }
         }
       ]
@@ -543,8 +666,13 @@
       "abstention_successes": 0,
       "abstention_opportunities": 2,
       "abstention_rate": 0.0,
+      "negative_parser_filtered_runs": 0,
+      "negative_parser_filtered_rate": 0.0,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -568,7 +696,9 @@
               "best_candidate": "Hoe lang is de resetlink geldig?"
             }
           ],
-          "detector_raw_output": "1.  Hoe lang is de resetlink geldig?",
+          "detector_output_class": "candidates",
+          "detector_raw_output": "1.  Hoe lang is de resetlink geldig? \n",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -586,6 +716,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "stop",
+            "total_duration": 44856939288,
+            "load_duration": 1786323,
+            "prompt_eval_count": 397,
+            "eval_count": 14
           }
         },
         {
@@ -609,7 +746,9 @@
               "best_candidate": "Hoe lang is de resetlink geldig?"
             }
           ],
-          "detector_raw_output": "1.  Hoe lang is de resetlink geldig?",
+          "detector_output_class": "candidates",
+          "detector_raw_output": "1.  Hoe lang is de resetlink geldig? \n",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -627,6 +766,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "stop",
+            "total_duration": 3683805553,
+            "load_duration": 994498,
+            "prompt_eval_count": 397,
+            "eval_count": 14
           }
         }
       ]
@@ -645,8 +791,13 @@
       "abstention_successes": 0,
       "abstention_opportunities": 2,
       "abstention_rate": 0.0,
+      "negative_parser_filtered_runs": 0,
+      "negative_parser_filtered_rate": 0.0,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -664,7 +815,9 @@
               "best_candidate": "Are there any exceptions or limitations to the 24/7 coverage?"
             }
           ],
-          "detector_raw_output": "1.  Are there any exceptions or limitations to the 24/7 coverage?",
+          "detector_output_class": "candidates",
+          "detector_raw_output": "1.  Are there any exceptions or limitations to the 24/7 coverage? \n",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -682,6 +835,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "stop",
+            "total_duration": 42862500754,
+            "load_duration": 942952,
+            "prompt_eval_count": 365,
+            "eval_count": 21
           }
         },
         {
@@ -699,7 +859,9 @@
               "best_candidate": "Are there any exceptions or limitations to the 24/7 coverage?"
             }
           ],
-          "detector_raw_output": "1.  Are there any exceptions or limitations to the 24/7 coverage?",
+          "detector_output_class": "candidates",
+          "detector_raw_output": "1.  Are there any exceptions or limitations to the 24/7 coverage? \n",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -717,6 +879,13 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "stop",
+            "total_duration": 5257059348,
+            "load_duration": 870249,
+            "prompt_eval_count": 365,
+            "eval_count": 21
           }
         }
       ]
@@ -729,14 +898,19 @@
       "expected_gap_hits": 0,
       "expected_gap_opportunities": 0,
       "expected_gap_recall": null,
-      "resolved_gap_reopens": 0,
+      "resolved_gap_reopens": 1,
       "resolved_gap_opportunities": 2,
-      "resolved_gap_reopen_rate": 0.0,
+      "resolved_gap_reopen_rate": 0.5,
       "abstention_successes": 0,
       "abstention_opportunities": 2,
       "abstention_rate": 0.0,
-      "repeatability": 1.0,
+      "negative_parser_filtered_runs": 0,
+      "negative_parser_filtered_rate": 0.0,
+      "repeatability": 0.25,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -754,7 +928,9 @@
               "best_candidate": "What criteria determine the selection of availability zones within the EU region?"
             }
           ],
-          "detector_raw_output": "1.  What criteria determine the selection of availability zones within the EU region?",
+          "detector_output_class": "candidates",
+          "detector_raw_output": "1.  What criteria determine the selection of availability zones within the EU region? \n",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -772,24 +948,33 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "stop",
+            "total_duration": 41631516243,
+            "load_duration": 928835,
+            "prompt_eval_count": 360,
+            "eval_count": 19
           }
         },
         {
           "run": 2,
           "candidate_count": 1,
           "candidates": [
-            "What criteria determine the selection of availability zones within the EU region?"
+            "What criteria determined the EU region for Alice's service deployment?"
           ],
           "expected": [],
           "resolved": [
             {
               "gap_id": "alice-region",
-              "reopened": false,
-              "best_similarity": 0.1111,
-              "best_candidate": "What criteria determine the selection of availability zones within the EU region?"
+              "reopened": true,
+              "best_similarity": 0.4286,
+              "best_candidate": "What criteria determined the EU region for Alice's service deployment?"
             }
           ],
-          "detector_raw_output": "1.  What criteria determine the selection of availability zones within the EU region?",
+          "detector_output_class": "candidates",
+          "detector_raw_output": "1.  What criteria determined the EU region for Alice's service deployment? \n",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 1,
@@ -807,13 +992,20 @@
             "prompt_id": "benchmark_gap_resilience_candidate_v1",
             "prompt_profile": "candidate_v1",
             "authority": "benchmark_only"
+          },
+          "detector_provider_metadata": {
+            "done_reason": "stop",
+            "total_duration": 4675193900,
+            "load_duration": 842359,
+            "prompt_eval_count": 360,
+            "eval_count": 19
           }
         }
       ]
     }
   ],
   "runtime_provenance": {
-    "github_run_id": "37154929960",
+    "github_run_id": "37188525722",
     "execution_note": "Quality screening on GitHub Linux runner; latency is not representative of the user's laptop.",
     "github_run_attempt": "1",
     "runner_os": "Linux",
