@@ -229,6 +229,27 @@ class InspectionService:
                 if session_config.get("revision_model_id") is not None
                 else persisted_config.get("revision_model_id", stored["model_id"])
             ),
+            "detection_backend": (
+                session_config.get("detection_backend")
+                or persisted_config.get("detection_backend")
+                or stored["backend"]
+            ),
+            "detection_model_id": (
+                session_config.get("detection_model_id")
+                if session_config.get("detection_model_id") is not None
+                else persisted_config.get("detection_model_id", stored["model_id"])
+            ),
+            "detection_max_new_tokens": (
+                session_config.get("detection_max_new_tokens")
+                if session_config.get("detection_max_new_tokens") is not None
+                else persisted_config.get(
+                    "detection_max_new_tokens",
+                    session_config.get(
+                        "max_new_tokens",
+                        persisted_config.get("max_new_tokens", 700),
+                    ),
+                )
+            ),
             "runtime_mode": runtime_mode,
             "authority_profile_id": authority_profile_id,
             "profile_default_gate_policy_id": profile_default_gate_policy_id,
