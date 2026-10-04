@@ -6,8 +6,10 @@
   loopback but accepted any `Host` header and treated `Origin == http://<Host>`
   as same-origin, so a web page that re-resolved its own hostname to 127.0.0.1
   could read sessions and submit operator-verified evidence as the local
-  operator. Every request now requires `Host` `127.0.0.1:<bound port>` or
-  `localhost:<bound port>`; the Origin allowlist remains a second layer.
+  operator. Every request now requires a trusted loopback `Host` on the
+  server's actual bound port: `127.0.0.1:<port>`, `localhost:<port>`, or the
+  server's own loopback bind address (for example `127.0.0.2:<port>`). The
+  Origin allowlist remains a second layer.
 - Published `v0.12.1` remains a Research Preview but is not eligible for
   production-local promotion because of this finding. 0.12.2 is the next
   production-local assurance candidate.
