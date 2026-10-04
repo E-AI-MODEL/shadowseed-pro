@@ -12,7 +12,7 @@
   alongside a user-selected R1 or Llama 3.1 generation model.
 - Added gap-resilience and R1 revision/language research evidence without changing
   Gate, evidence, authority or point-of-use semantics.
-- Kept Research Preview status; production-local assurance remains separate.
+- Published as a Research Preview with verified exact-SHA release assets; production-local promotion remains separate.
 
 ## 0.12.0 - Packaged local web product
 

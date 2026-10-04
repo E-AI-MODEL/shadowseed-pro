@@ -1,6 +1,6 @@
 # Shadowseed Tester Workbench
 
-The Workbench is the local-first product surface for testing Shadow Seed Learning in an ordinary LLM conversation. Version 0.12.1 is the current Research Preview release candidate; `v0.12.0` remains the latest published Research Preview until the exact-SHA release workflow succeeds. The 0.12 line adds a packaged web client, canonical seed-detail and authority actions, explicit OpenAI provider setup, and a one-process loopback launcher while retaining the legacy Gradio Workbench. It is not `production-ready/local` until the exact-SHA release-assurance and unchanged-candidate soak requirements are complete.
+The Workbench is the local-first product surface for testing Shadow Seed Learning in an ordinary LLM conversation. Version 0.12.1 is the current published Research Preview. The 0.12 line adds a packaged web client, canonical seed-detail and authority actions, explicit OpenAI provider setup, and a one-process loopback launcher while retaining the legacy Gradio Workbench. Exact-SHA release assurance is complete; `production-ready/local` promotion still requires the unchanged-candidate soak and no unresolved P0/P1 production findings.
 
 ```text
 download -> extract/open -> choose model -> create chat -> chat with SSL -> optionally compare the current answer with SSL off
@@ -152,6 +152,6 @@ Do not expose this preview directly to an untrusted network.
 
 ## Claim boundary
 
-Version 0.12.1 is the current Research Preview release candidate and production-local assurance candidate. Packaging, licensing, tester observations, support-dataset aggregation, release hardening and the existence of an efficacy runner do not establish general answer-quality benefit, semantic truth, hostile-network production security or high-impact deployment readiness. The `production-ready/local` claim remains gated on exact protected-main release evidence and the unchanged-candidate soak defined by the production acceptance contract.
+Version 0.12.1 is the current published Research Preview and production-local assurance candidate. Exact protected-main release evidence is complete. The remaining production-local promotion gate is the unchanged-candidate soak plus no unresolved P0/P1 findings. General answer-quality efficacy, hostile-network security and high-impact deployment remain separate evidence and product targets.
 
 The scientific/authority constraints remain in the canonical runtime. Historical evaluation sessions, benchmark artifacts and compatibility surfaces remain research/provenance material rather than product prerequisites.

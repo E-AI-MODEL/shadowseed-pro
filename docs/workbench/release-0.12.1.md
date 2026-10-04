@@ -39,6 +39,7 @@ The packaged web client and existing Gradio Workbench remain available. The thin
 standalone uses local Ollama; hosted OpenAI still requires its explicit provider
 extra. Gate, evidence, authority and point-of-use rules are unchanged.
 
-Publication requires the normal exact-SHA Release Workbench checks and verified
-Windows, macOS and Linux assets. This release does not by itself complete the
-separate production-ready/local assurance and 24-hour candidate use period.
+Publication completed through the normal exact-SHA Release Workbench path with
+verified Windows, macOS and Linux assets, checksums, provenance and an SBOM.
+Production-ready/local promotion remains separate and still requires the documented
+24-hour unchanged-candidate use period and no unresolved P0/P1 findings.

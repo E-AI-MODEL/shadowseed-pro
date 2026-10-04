@@ -2,9 +2,9 @@
 
 ## Defensible status
 
-The repository is **research-ready, locally mass-testable, able to produce structured privacy-minimized tester datasets, and equipped for preregistered evidence-backed paired efficacy studies**. Core mechanics, benchmark harnesses, a broad regression suite, a chat-first local Workbench, standalone build contracts, verifiable exports, support-bundle aggregation, candidate review packets, and influence-opportunity accounting are present. This status does not by itself imply `production-ready/local` or general answer-quality benefit.
+The repository is **research-ready, locally mass-testable, able to produce structured privacy-minimized tester datasets, and equipped for preregistered evidence-backed paired efficacy studies**. Core mechanics, benchmark harnesses, a broad regression suite, a chat-first local Workbench, standalone build contracts, verifiable exports, support-bundle aggregation, candidate review packets, and influence-opportunity accounting are present. `v0.12.1` is the current published Research Preview. `production-ready/local` promotion and general answer-quality efficacy remain separate evidence targets.
 
-Current source version: **0.12.1**. This source state is the Research Preview release candidate for `v0.12.1`; publication is a separate fact established only after the exact-SHA release workflow succeeds. Until then, `v0.12.0` remains the latest published Research Preview with verified release assets. The 0.12.1 candidate refines atomic gap detection and adds explicit generation, detection and revision model roles on top of the packaged web client without changing the core doctrine that observation, evidence, authority and use remain distinct. Older tags remain immutable historical software references and are not rewritten by later development.
+Current package version: **0.12.1**. Published `v0.12.1` is pinned to exact source SHA `ac07f41caf2b169c028670b2a95e4645d32dc55f` and includes verified Windows, macOS and Linux assets, checksums, provenance and an SBOM. The release refines atomic gap detection and adds explicit generation, detection and revision model roles on top of the packaged web client while preserving the separation between observation, evidence, authority and use. Older tags remain immutable historical software references and are not rewritten by later development.
 
 ## Research access
 
@@ -80,10 +80,10 @@ Issue #63 remains the natural home for high-end capability/evidence follow-up. C
 
 ## Remaining production work
 
-The first production target remains `production-ready/local`. Published `v0.12.0` has immutable release provenance for its own exact source state, but 0.12.1 must establish fresh exact-SHA CI, web-client, portability, standalone, provenance, checksum and SBOM evidence of its own. Those release facts do not complete production promotion: the candidate still requires the documented unchanged-candidate soak and no unresolved P0/P1 production findings.
+The first production target remains `production-ready/local`. Published `v0.12.1` now has exact-SHA CI, web-client, portability, standalone, provenance, checksum and SBOM evidence. The remaining promotion gates are the documented unchanged-candidate soak and no unresolved P0/P1 production findings.
 
 Protected-main quality gates are active. Hosted production remains a separate target and still requires its own authentication, tenancy, hostile-network, abuse-control, managed-secret, and service-operation controls. Native Apple notarization/Developer ID signing, Windows Authenticode signing, and broader real-world usability/safety evaluation also remain outside the current local production claim.
 
 ## Appropriate use today
 
-Appropriate uses include local tester studies, mechanism inspection, controlled experiments, benchmark development, structured support-data collection, candidate-quality review, and preregistered evidence-backed paired studies. Published `v0.12.0` remains the latest Research Preview until 0.12.1 publication succeeds and must be judged on its own exact-SHA evidence; neither release has been promoted to a stronger production claim. Do not treat Shadowseed Pro as a certified safety layer for healthcare, finance, employment, law, public administration, education decisions, or autonomous high-impact action.
+Appropriate uses include local tester studies, mechanism inspection, controlled experiments, benchmark development, structured support-data collection, candidate-quality review, and preregistered evidence-backed paired studies. Published `v0.12.1` is the current Research Preview and is backed by its exact-SHA release evidence. It has not been promoted to `production-ready/local`. Do not treat Shadowseed Pro as a certified safety layer for healthcare, finance, employment, law, public administration, education decisions, or autonomous high-impact action.
