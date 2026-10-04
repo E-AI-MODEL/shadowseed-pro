@@ -627,6 +627,49 @@ def _load_cases(path: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     return payload, cases
 
 
+def rescore_existing_report(
+    report: dict[str, Any],
+    cases: list[dict[str, Any]],
+    *,
+    threshold: float,
+) -> dict[str, Any]:
+    """Recompute metrics from preserved run details without rerunning a model."""
+
+    by_id = {str(case["case_id"]): case for case in cases}
+    rescored: list[dict[str, Any]] = []
+    for old_case in report.get("cases", []):
+        case_id = str(old_case["case_id"])
+        if case_id not in by_id:
+            raise ValueError(f"result contains unknown case_id: {case_id}")
+        details = list(old_case.get("run_details") or [])
+        runs = [list(detail.get("candidates") or []) for detail in details]
+        audits = [
+            {
+                "raw_output": detail.get("detector_raw_output"),
+                "thinking_output": detail.get("detector_thinking_output"),
+                "parse_diagnostics": detail.get("detector_parse_diagnostics"),
+                "prompt_metadata": detail.get("detector_prompt_metadata"),
+                "provider_metadata": detail.get("detector_provider_metadata"),
+            }
+            for detail in details
+        ]
+        rescored.append(
+            score_case(
+                by_id[case_id],
+                runs,
+                threshold=threshold,
+                run_audits=audits,
+            )
+        )
+
+    updated = dict(report)
+    updated["summary"] = summarize(rescored)
+    updated["cases"] = rescored
+    updated["scoring_policy"] = "strict_model_abstention_v2"
+    updated["rescored_at"] = datetime.now(timezone.utc).isoformat()
+    return updated
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -642,6 +685,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--model-id", default=None)
     parser.add_argument("--model-revision", default=None)
     parser.add_argument(
+        "--thinking-mode",
+        choices=("default", "on", "off"),
+        default="default",
+    )
+    parser.add_argument(
+        "--rescore-input",
+        type=Path,
+        default=None,
+        help="Recompute metrics from an existing result JSON without rerunning a model.",
+    )
+    parser.add_argument(
         "--prompt-profile",
         choices=("runtime_v06", "candidate_v1", "candidate_v2"),
         default="runtime_v06",
@@ -654,7 +708,33 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     case_payload, cases = _load_cases(args.cases)
-    if args.prompt_profile == "runtime_v06":
+
+    if args.rescore_input is not None:
+        existing = json.loads(args.rescore_input.read_text(encoding="utf-8"))
+        report = rescore_existing_report(
+            existing,
+            cases,
+            threshold=args.match_threshold,
+        )
+        rendered = json.dumps(report, indent=2, ensure_ascii=False) + "\n"
+        output = args.output or args.rescore_input
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(rendered, encoding="utf-8")
+        print(f"Wrote {output}")
+        return 0
+
+    if args.backend == "ollama" and (
+        args.thinking_mode != "default" or args.prompt_profile != "runtime_v06"
+    ):
+        if not args.model_id:
+            raise ValueError("Ollama benchmark arms require --model-id")
+        detector = BenchmarkOllamaDetector(
+            model_id=args.model_id,
+            profile=args.prompt_profile,
+            max_new_tokens=args.max_new_tokens,
+            thinking_mode=args.thinking_mode,
+        )
+    elif args.prompt_profile == "runtime_v06":
         detector = make_detector_backend(
             args.backend,
             model_id=args.model_id,
@@ -663,15 +743,8 @@ def main(argv: list[str] | None = None) -> int:
             model_revision=args.model_revision,
         )
     else:
-        if args.backend != "ollama":
-            raise ValueError("experimental prompt profiles currently require --backend ollama")
-        if not args.model_id:
-            raise ValueError("experimental prompt profiles require --model-id")
-        detector = ExperimentalOllamaDetector(
-            model_id=args.model_id,
-            profile=args.prompt_profile,
-            max_new_tokens=args.max_new_tokens,
-        )
+        raise ValueError("experimental prompt profiles currently require --backend ollama")
+
     scored = run_cases(
         cases,
         detector,
@@ -698,6 +771,8 @@ def main(argv: list[str] | None = None) -> int:
         "model_revision": args.model_revision,
         "prompt_variant": "current_pair",
         "prompt_profile": args.prompt_profile,
+        "thinking_mode": args.thinking_mode,
+        "scoring_policy": "strict_model_abstention_v2",
         "repeats": args.repeats,
         "max_seeds": args.max_seeds,
         "match_threshold": args.match_threshold,
