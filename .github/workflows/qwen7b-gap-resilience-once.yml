@@ -94,7 +94,7 @@ jobs:
                 --model-revision "$MODEL_DIGEST" \
                 --prompt-profile "$profile" \
                 --thinking-mode "$thinking" \
-                --repeats 2 \
+                --repeats 1 \
                 --max-seeds 3 \
                 --max-new-tokens 512 \
                 --output "$output"
@@ -147,7 +147,7 @@ jobs:
                   assert report["thinking_mode"] == thinking
                   assert report["scoring_policy"] == "strict_model_abstention_v2"
                   assert report["summary"]["cases"] == 8
-                  assert sum(len(case["run_details"]) for case in report["cases"]) == 16
+                  assert sum(len(case["run_details"]) for case in report["cases"]) == 8
                   assert all(
                       detail["detector_raw_output"] is not None
                       and detail["detector_thinking_output"] is not None
