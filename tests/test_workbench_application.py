@@ -69,6 +69,48 @@ def test_hosted_revision_backend_requires_explicit_confirmation(tmp_path) -> Non
         )
 
 
+def test_hosted_detection_backend_requires_explicit_confirmation(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+
+    with pytest.raises(ValueError, match="external provider"):
+        controller.create_session(
+            title="Hosted detection",
+            profile_id="demo",
+            backend="fixture",
+            detection_backend="openai",
+            detection_model_id="example-detection-model",
+            runtime_mode="live",
+            embedding_backend="lexical",
+            external_confirmed=False,
+        )
+
+
+def test_dedicated_detection_role_is_persisted_and_audited(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Role split",
+        profile_id="demo",
+        backend="fixture",
+        detection_backend="ollama",
+        detection_model_id="gemma2:latest",
+        detection_max_new_tokens=96,
+        runtime_mode="evaluation",
+    )
+
+    stored = controller.sessions.load(session_id)
+    view = controller.session_view(session_id)
+
+    assert stored["config"]["detection_backend"] == "ollama"
+    assert stored["config"]["detection_model_id"] == "gemma2:latest"
+    assert stored["config"]["detection_max_new_tokens"] == 96
+    assert view["detection_backend"] == "ollama"
+    assert view["detection_model_id"] == "gemma2:latest"
+    assert view["detection_max_new_tokens"] == 96
+    assert view["behavior_config"]["detector_role"]["backend"] == "ollama"
+    assert view["behavior_config"]["detector_role"]["model_id"] == "gemma2:latest"
+    assert view["behavior_config"]["detector_role"]["max_new_tokens"] == 96
+
+
 def test_advanced_revision_backend_change_requires_explicit_confirmation(tmp_path) -> None:
     controller = WorkbenchController(tmp_path / "workspace")
     session_id = controller.create_session(
@@ -720,3 +762,6 @@ def test_revision_model_settings_have_separate_component_metadata() -> None:
 
     assert metadata["revision_backend"]["component"] == "same_turn_revision"
     assert metadata["revision_model_id"]["component"] == "same_turn_revision"
+    assert metadata["detection_backend"]["component"] == "detection"
+    assert metadata["detection_model_id"]["component"] == "detection"
+    assert metadata["detection_max_new_tokens"]["component"] == "detection"
