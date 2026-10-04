@@ -164,7 +164,7 @@ class WorkbenchController:
         return None
 
     @staticmethod
-    def _validate_ollama_embedding_model(model_id: str | None) -> None:
+    def validate_ollama_embedding_model(model_id: str | None) -> None:
         """Fail early with an actionable setup message when the embedding model is absent."""
 
         from shadowseed.adapters.ollama_client import (
