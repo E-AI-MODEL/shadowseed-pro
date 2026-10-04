@@ -3,8 +3,8 @@
   "schema_version": 1,
   "run_type": "live_benchmark",
   "disclaimer": "Benchmark measurements are diagnostic, not evidence or authority. The fixture backend is a harness smoke test only. No aggregate metric is an overall Shadowseed quality score.",
-  "generated_at": "2026-10-03T21:31:28.727606+00:00",
-  "shadowseed_source_ref": "eba041faa04bf4a4f72120265b4a54b90fa3ac94",
+  "generated_at": "2026-10-04T08:27:23.373528+00:00",
+  "shadowseed_source_ref": "4d5a16e16c3c3b1554d7c62efde56a6de11e09c1",
   "case_set": "gap_resilience_controlled",
   "case_set_version": "1.1",
   "backend": "ollama",
@@ -12,6 +12,8 @@
   "model_revision": "46e0c10c039e019119339687c3c1757cc81b9da49709a3b3924863ba87ca666e",
   "prompt_variant": "current_pair",
   "prompt_profile": "runtime_v06",
+  "thinking_mode": "default",
+  "scoring_policy": "strict_model_abstention_v2",
   "repeats": 2,
   "max_seeds": 3,
   "match_threshold": 0.35,
@@ -23,11 +25,17 @@
     "negative_control_abstention_rate": 0.0,
     "negative_control_abstention_successes": 0,
     "negative_control_abstention_opportunities": 6,
+    "negative_control_abstention_definition": "model_explicit_NONE_only",
+    "negative_control_parser_filtered_rate": 0.0,
+    "negative_control_parser_filtered_runs": 0,
     "resolved_gap_reopen_rate": 0.0,
     "resolved_gap_reopens": 0,
     "resolved_gap_opportunities": 14,
     "repeatability_mean": 0.6437,
     "explicit_none_runs": 0,
+    "empty_response_runs": 0,
+    "thinking_only_runs": 0,
+    "candidate_response_runs": 16,
     "parser_empty_non_none_runs": 0
   },
   "cases": [
@@ -45,8 +53,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 0.1997,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -66,7 +79,9 @@
             }
           ],
           "resolved": [],
+          "detector_output_class": "candidates",
           "detector_raw_output": "After analyzing the user question and the draft answer, I have identified the following atomic candidate gaps that may still be open in this specific exchange:\n\n1. **How clients must authenticate**: The draft answer mentions that clients must authenticate, but it does not specify what authentication method(s) are required or supported by the API.\n2. **What authentication credentials are needed**: The draft answer does not mention what authentication credentials (e.g., username, password, API key, etc.) are required for clients to authenticate with the API.\n3. **What happens if authentication fails**: The draft answer does not specify what",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 4,
@@ -92,7 +107,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -109,7 +125,9 @@
             }
           ],
           "resolved": [],
+          "detector_output_class": "candidates",
           "detector_raw_output": "After analyzing the user question and the draft answer, I have identified one atomic candidate gap that may still be open in this specific exchange:\n\n1. What specific authentication methods are supported by the API, and what are the requirements for client-side authentication (e.g. username/password, OAuth, API keys, etc.)?\n\nThis candidate gap names one relation, specifically the relation between the API requirements and the authentication methods supported by the API.",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 3,
@@ -135,7 +153,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -153,8 +172,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 1.0,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -181,7 +205,9 @@
               "best_candidate": "Are there any exceptions or special cases for data retention?"
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "After analyzing the user question and the draft answer, I have identified the following atomic candidate gaps:\n\n1. What happens to backup copies after the 14-day period?\nThis gap names one relation, specifically the fate of backup copies, which is not mentioned in the draft answer.\n\n2. Is the deletion job automated or manual?\nThis gap names one assumption, specifically the process of deleting data from the primary store, which is not specified in the draft answer.\n\n3. Are there any exceptions or special cases for data retention?\nThis gap names one distinction, specifically the possibility of exceptions or special cases that may",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 6,
@@ -207,7 +233,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -233,7 +260,9 @@
               "best_candidate": "Are there any exceptions or special cases for data retention?"
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "After analyzing the user question and the draft answer, I have identified the following atomic candidate gaps:\n\n1. What happens to backup copies after the 14-day period?\nThis gap names one relation, specifically the fate of backup copies, which is not mentioned in the draft answer.\n\n2. Is the deletion job automated or manual?\nThis gap names one assumption, specifically the process of deleting data from the primary store, which is not specified in the draft answer.\n\n3. Are there any exceptions or special cases for data retention?\nThis gap names one distinction, specifically the possibility of exceptions or special cases that may",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 6,
@@ -259,7 +288,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -277,8 +307,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 0.6125,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -304,7 +339,9 @@
               "best_candidate": null
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "After analyzing the current question and the draft answer, I have identified the following atomic candidate gaps:\n\n1. **Response target for each severity**: The draft answer mentions that severity determines escalation, but it does not specify what the response target is for each severity level. What is the expected response time for each severity level (e.g., critical, major, minor)?\n2. **Shared queue handling**: The draft answer states that requests enter one shared queue, but it does not clarify how the shared queue is managed, prioritized, or monitored. How are requests in the shared queue handled, and what is",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 3,
@@ -330,7 +367,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -355,7 +393,9 @@
               "best_candidate": "**Shared queue processing capacity**: The draft answer states that requests enter one shared queue, but it does not address the capacity of this queue. What happens when the queue is full or when there are multiple requests with the same"
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "After analyzing the current question and the draft answer, I have identified the following atomic candidate gaps:\n\n1. **Response target for each severity**: The draft answer mentions that severity determines escalation, but it does not specify what the response target is for each severity level. What is the expected response time for each severity level (e.g., critical, high, medium, low)?\n2. **Shared queue processing capacity**: The draft answer states that requests enter one shared queue, but it does not address the capacity of this queue. What happens when the queue is full or when there are multiple requests with the same",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 3,
@@ -381,7 +421,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -399,8 +440,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 0.4072,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -427,7 +473,9 @@
               "best_candidate": "The deployment standard requires the region where"
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "After analyzing the current question and the draft answer, I have identified the following atomic candidate gaps:\n\n1. The number of availability zones for Alice's service is specified as two, but the deployment standard requires this information to be specified. What is the source of this information, and is it explicitly mentioned in the deployment standard?\n2. The deployment standard requires failover behavior between zones, but the draft answer does not mention how Alice's service handles failover. What is the failover behavior for Alice's service, and is it compliant with the deployment standard?\n3. The deployment standard requires the region where",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 4,
@@ -453,7 +501,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -479,7 +528,9 @@
               "best_candidate": "**Specific region (EU)**: While the draft answer mentions that"
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "After analyzing the current question and the draft answer, I have identified the following atomic candidate gaps:\n\n1. **Number of availability zones**: The draft answer states that Alice's service uses two availability zones, but the deployment standard requires this information to be specified. However, the current question does not mention whether this requirement is met for Alice's service.\n2. **Failover behavior between zones**: The deployment standard requires failover behavior between zones to be specified, but the draft answer does not mention this aspect for Alice's service.\n3. **Specific region (EU)**: While the draft answer mentions that",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 4,
@@ -505,7 +556,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -523,8 +575,13 @@
       "abstention_successes": null,
       "abstention_opportunities": null,
       "abstention_rate": null,
+      "negative_parser_filtered_runs": null,
+      "negative_parser_filtered_rate": null,
       "repeatability": 0.6111,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -543,7 +600,9 @@
             }
           ],
           "resolved": [],
+          "detector_output_class": "candidates",
           "detector_raw_output": "Based on the current question and draft answer, I have identified the following atomic candidate gaps:\n\n1. Wat is nog niet gespecificeerd? (What is not specified yet?)\n\t* This gap refers to the fact that the question asks what is not specified, but the draft answer does not address this question directly. It seems that the draft answer is providing a specific plan for the migration, but it does not answer the question about what is not specified.\n2. Hoe worden de criteria voor terugrollen vastgelegd? (How are the criteria for rollback specified?)\n\t* This gap",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 5,
@@ -569,7 +628,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -587,7 +647,9 @@
             }
           ],
           "resolved": [],
+          "detector_output_class": "candidates",
           "detector_raw_output": "Based on the current question and draft answer, I have identified the following atomic candidate gaps:\n\n1. Wat is nog niet gespecificeerd? (What is not specified yet?)\n\t* This gap refers to the fact that the question asks what is not specified, but the draft answer does not address this question directly. It seems that the draft answer is providing a specific plan for the migration, but it does not answer the question about what is not specified.\n2. Criteria voor terugrollen (Criteria for rolling back)\n\t* The question mentions that criteria for rolling back should be specified, but",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 5,
@@ -613,7 +675,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -631,8 +694,13 @@
       "abstention_successes": 0,
       "abstention_opportunities": 2,
       "abstention_rate": 0.0,
+      "negative_parser_filtered_runs": 0,
+      "negative_parser_filtered_rate": 0.0,
       "repeatability": 0.8799,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -657,7 +725,9 @@
               "best_candidate": "Hoe lang de resetlink geldig is: The draft answer mentions that the resetlink is valid for 20 minutes, but the question asks to evaluate two points: the channel and"
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "Based on the given question and draft answer, I have identified the following atomic candidate gaps:\n\n1. Via welk kanaal de resetlink wordt verstuurd: The draft answer only mentions that the resetlink is sent via e-mail, but the question asks to evaluate two points: the channel and the validity period. The draft answer does not explicitly mention the channel, so this gap is still open.\n2. Hoe lang de resetlink geldig is: The draft answer mentions that the resetlink is valid for 20 minutes, but the question asks to evaluate two points: the channel and",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 3,
@@ -683,7 +753,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -707,7 +778,9 @@
               "best_candidate": "Hoe lang de resetlink geldig is: The draft answer states that the resetlink is valid for 20 minutes, but the question asks to evaluate two points: the channel and the"
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "Based on the current question and draft answer, I have identified the following atomic candidate gaps:\n\n1. Via welk kanaal de resetlink wordt verstuurd: The draft answer only mentions that the resetlink is sent via email, but the question asks to evaluate two points: the channel and the validity period. The draft answer does not explicitly state the channel, so this gap is still open.\n2. Hoe lang de resetlink geldig is: The draft answer states that the resetlink is valid for 20 minutes, but the question asks to evaluate two points: the channel and the",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 3,
@@ -733,7 +806,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -751,8 +825,13 @@
       "abstention_successes": 0,
       "abstention_opportunities": 2,
       "abstention_rate": 0.0,
+      "negative_parser_filtered_runs": 0,
+      "negative_parser_filtered_rate": 0.0,
       "repeatability": 0.7727,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -770,7 +849,9 @@
               "best_candidate": "Are the current support coverage hours for production incidents still unspecified, or has the draft answer inadvertently assumed a fact that was not explicitly stated in the bounded context?"
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "After analyzing the current question and the draft answer, I have identified one atomic candidate gap that may still be open in this specific exchange:\n\n1. Are the current support coverage hours for production incidents still unspecified, or has the draft answer inadvertently assumed a fact that was not explicitly stated in the bounded context?\n\nThis candidate gap names one relation, specifically the relation between the current support coverage hours and their specification. The draft answer assumes that the support coverage hours are specified, but the current question asks if they are still unspecified, leaving this relation undetermined.",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 3,
@@ -796,7 +877,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -813,7 +895,9 @@
               "best_candidate": "Are the current support coverage hours for production incidents still unspecified, or has the draft answer inadvertently assumed a fact not present in the bounded context?"
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "After analyzing the current question and the draft answer, I have identified one atomic candidate gap that may still be open in this specific exchange:\n\n1. Are the current support coverage hours for production incidents still unspecified, or has the draft answer inadvertently assumed a fact not present in the bounded context?\n\nThis candidate gap names one relation, specifically the relation between the current support coverage hours and their specification. The draft answer assumes that the support coverage hours are specified, but the current question asks if they are still unspecified. This gap is epistemically undetermined, and detection does not establish that the gap is real,",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 3,
@@ -839,7 +923,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     },
@@ -857,8 +942,13 @@
       "abstention_successes": 0,
       "abstention_opportunities": 2,
       "abstention_rate": 0.0,
+      "negative_parser_filtered_runs": 0,
+      "negative_parser_filtered_rate": 0.0,
       "repeatability": 0.6667,
       "explicit_none_runs": 0,
+      "empty_response_runs": 0,
+      "thinking_only_runs": 0,
+      "candidate_response_runs": 2,
       "parser_empty_non_none_runs": 0,
       "run_details": [
         {
@@ -876,7 +966,9 @@
               "best_candidate": "Is it still unspecified that Alice's service is deployed in the EU region, or was this already established in a previous conversation turn?"
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "After analyzing the user question and the draft answer, I have identified one atomic candidate gap that may still be open in this specific exchange:\n\n1. Is it still unspecified that Alice's service is deployed in the EU region, or was this already established in a previous conversation turn?\n\nThis candidate gap names one relation, specifically the relation between the current question and the prior conversation turns, and suggests that the deployment region of Alice's service may not be explicitly stated in the current context.",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 3,
@@ -902,7 +994,8 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         },
         {
           "run": 2,
@@ -919,7 +1012,9 @@
               "best_candidate": "Is it still unspecified that Alice's service is deployed in the EU region, or was it already established in a prior conversation turn that its deployment region is indeed the EU region?"
             }
           ],
+          "detector_output_class": "candidates",
           "detector_raw_output": "After analyzing the user question and the draft answer, I have identified one atomic candidate gap that may still be open in this specific exchange:\n\n1. Is it still unspecified that Alice's service is deployed in the EU region, or was it already established in a prior conversation turn that its deployment region is indeed the EU region?\n\nThis candidate gap names one relation, specifically the relation between the current question and the prior conversation turns, and highlights the uncertainty about whether the deployment region is still unspecified.",
+          "detector_thinking_output": "",
           "detector_parse_diagnostics": {
             "explicit_none": false,
             "nonblank_lines": 3,
@@ -945,13 +1040,14 @@
             ],
             "output_contract": "zero_or_more_numbered_atomic_gap_candidates_or_NONE",
             "template_sha256": "4174d5b51a121ce9ed770467a26a09522d2a790dd55dcdd7d6312fa9210038ac"
-          }
+          },
+          "detector_provider_metadata": null
         }
       ]
     }
   ],
   "runtime_provenance": {
-    "github_run_id": "37154929960",
+    "github_run_id": "37188525722",
     "execution_note": "Quality screening on GitHub Linux runner; latency is not representative of the user's laptop.",
     "github_run_attempt": "1",
     "runner_os": "Linux",
