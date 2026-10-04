@@ -123,6 +123,14 @@ class WorkbenchController:
 
     @staticmethod
     def embedding_backends() -> tuple[str, ...]:
+        """Return the canonical supported embedding-backend registry."""
+
+        return EMBEDDING_BACKENDS
+
+    @staticmethod
+    def available_embedding_backends() -> tuple[str, ...]:
+        """Return embedding backends usable in the current installation."""
+
         return tuple(
             backend
             for backend in EMBEDDING_BACKENDS
@@ -346,8 +354,6 @@ class WorkbenchController:
             allow_toy_embedder=allow_toy_embedder,
             external_confirmed=external_confirmed,
         )
-        if resolved_embedding == "ollama":
-            self._validate_ollama_embedding_model(resolved_embedding_model)
         effective_same_turn_revision = (
             bool(allow_self_reinforcement)
             if allow_same_turn_revision is None
