@@ -488,3 +488,203 @@ def test_same_origin_packaged_client_can_mutate_api() -> None:
         server.shutdown()
         server.server_close()
         thread.join(timeout=3)
+
+
+class _RecordingService(_FakeService):
+    def __init__(self) -> None:
+        super().__init__()
+        self.reads: list[str] = []
+        self.evidence: list[tuple[str, str, dict[str, Any]]] = []
+
+    def list_sessions(self) -> dict[str, Any]:
+        self.reads.append("sessions")
+        return {"sessions": [{"session_id": "session::private"}]}
+
+    def get_session(self, session_id: str) -> dict[str, Any]:
+        self.reads.append(session_id)
+        return {"session_id": session_id, "messages": ["private"]}
+
+    def submit_evidence(
+        self,
+        session_id: str,
+        seed_id: str,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        self.evidence.append((session_id, seed_id, dict(payload)))
+        return {"session_id": session_id}
+
+
+def _request_with_host(
+    service: Any,
+    *,
+    method: str,
+    path: str,
+    host: str | None,
+    origin: str | None = None,
+    body: str = "",
+) -> tuple[int, dict[str, Any]]:
+    """Send one request with an explicit Host, as a rebinding browser would."""
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), make_handler(service))
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        port = int(server.server_address[1])
+        headers: dict[str, str] = {}
+        if host is not None:
+            headers["Host"] = host.format(port=port)
+        if origin is not None:
+            headers["Origin"] = origin.format(port=port)
+        if body:
+            headers["Content-Type"] = "application/json"
+        connection = http.client.HTTPConnection("127.0.0.1", port, timeout=3)
+        connection.putrequest(method, path, skip_host=True)
+        for name, value in headers.items():
+            connection.putheader(name, value)
+        encoded = body.encode("utf-8")
+        if body:
+            connection.putheader("Content-Length", str(len(encoded)))
+        connection.endheaders(encoded or None)
+        response = connection.getresponse()
+        raw = response.read()
+        payload = json.loads(raw.decode("utf-8")) if raw else {}
+        connection.close()
+        return response.status, payload
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=3)
+
+
+_REBOUND_HOST = "attacker.example:{port}"
+_REBOUND_ORIGIN = "http://attacker.example:{port}"
+
+
+def test_rebound_host_with_matching_origin_cannot_create_session() -> None:
+    service = _RecordingService()
+    status, payload = _request_with_host(
+        service,
+        method="POST",
+        path="/api/v1/sessions",
+        host=_REBOUND_HOST,
+        origin=_REBOUND_ORIGIN,
+        body='{"title":"attack"}',
+    )
+
+    assert status == 403
+    assert payload == {"error": "host_not_allowed"}
+    assert service.created == []
+
+
+@pytest.mark.parametrize(
+    "path",
+    ["/api/v1/sessions", "/api/v1/sessions/session::private"],
+)
+def test_rebound_host_without_origin_cannot_read_sessions(path: str) -> None:
+    service = _RecordingService()
+    status, payload = _request_with_host(
+        service,
+        method="GET",
+        path=path,
+        host=_REBOUND_HOST,
+    )
+
+    assert status == 403
+    assert payload == {"error": "host_not_allowed"}
+    assert service.reads == []
+
+
+def test_rebound_host_cannot_submit_verified_evidence() -> None:
+    service = _RecordingService()
+    status, payload = _request_with_host(
+        service,
+        method="POST",
+        path="/api/v1/sessions/session::private/seeds/seed::1/evidence",
+        host=_REBOUND_HOST,
+        origin=_REBOUND_ORIGIN,
+        body='{"source_ref":"https://attacker.example","operator_verified":true}',
+    )
+
+    assert status == 403
+    assert payload == {"error": "host_not_allowed"}
+    assert service.evidence == []
+
+
+@pytest.mark.parametrize(
+    "host",
+    [
+        None,
+        "",
+        "127.0.0.1",
+        "localhost",
+        "127.0.0.1:1",
+        "127.0.0.2:{port}",
+        "0.0.0.0:{port}",
+        "[::1]:{port}",
+        "localhost.attacker.example:{port}",
+    ],
+)
+def test_non_loopback_or_wrong_port_host_is_rejected(host: str | None) -> None:
+    service = _RecordingService()
+    status, payload = _request_with_host(
+        service,
+        method="GET",
+        path="/api/v1/sessions",
+        host=host,
+    )
+
+    assert status == 403
+    assert payload == {"error": "host_not_allowed"}
+    assert service.reads == []
+
+
+@pytest.mark.parametrize("host_name", ["127.0.0.1", "localhost", "LOCALHOST"])
+def test_packaged_same_origin_client_works_on_loopback_hosts(host_name: str) -> None:
+    service = _RecordingService()
+    host = host_name + ":{port}"
+    status, payload = _request_with_host(
+        service,
+        method="POST",
+        path="/api/v1/sessions",
+        host=host,
+        origin="http://" + host.lower(),
+        body='{"title":"packaged"}',
+    )
+
+    assert status == 201
+    assert payload == {"session_id": "session::fake"}
+    assert service.created == [{"title": "packaged"}]
+
+
+@pytest.mark.parametrize(
+    "dev_origin",
+    ["http://127.0.0.1:3000", "http://localhost:3000"],
+)
+def test_development_client_origin_still_reaches_api(dev_origin: str) -> None:
+    service = _RecordingService()
+    status, payload = _request_with_host(
+        service,
+        method="GET",
+        path="/api/v1/sessions",
+        host="127.0.0.1:{port}",
+        origin=dev_origin,
+    )
+
+    assert status == 200
+    assert payload == {"sessions": [{"session_id": "session::private"}]}
+
+
+def test_valid_host_still_rejects_foreign_origin() -> None:
+    service = _RecordingService()
+    status, payload = _request_with_host(
+        service,
+        method="POST",
+        path="/api/v1/sessions",
+        host="127.0.0.1:{port}",
+        origin=_REBOUND_ORIGIN,
+        body='{"title":"attack"}',
+    )
+
+    assert status == 403
+    assert payload == {"error": "origin_not_allowed"}
+    assert service.created == []
