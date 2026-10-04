@@ -100,3 +100,28 @@ This ADR does not:
 - grant an LLM authority over Gate promotion or evidence;
 - introduce automatic model switching based only on model name or size;
 - make benchmark results a product-quality score.
+
+
+## Local balanced web profile
+
+The local web client may apply a conservative evidence-backed role split when
+the required models are already installed locally.
+
+For the currently benchmarked local setup:
+
+- a primary `deepseek-r1*` or `llama3.1*` model may remain the user-selected
+  generation model;
+- when a local `gemma2*` model is discoverable, same-turn revision and
+  candidate-gap detection are assigned to that Gemma2 model;
+- detection receives its own bounded generation budget;
+- when Gemma2 is unavailable, Shadowseed preserves the existing single-model
+  behaviour rather than downloading a model or silently switching providers.
+
+The profile is intentionally narrow. It does not auto-route arbitrary models
+and it does not infer capability from parameter count alone.
+
+The paired R1 NL/EN revision screen showed that language is a material
+capability dimension for the tested R1 build, but a separate same-head rerun
+also showed substantial reasoning-budget variability. Therefore language is not
+yet used as an automatic production routing rule. User-interface language
+remains independent from internal model-role assignment.
