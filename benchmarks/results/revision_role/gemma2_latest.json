@@ -1,8 +1,8 @@
 {
   "artifact": "shadowseed-revision-role-screen-v1",
   "schema_version": 1,
-  "generated_at": "2026-10-04T09:18:40.197179+00:00",
-  "shadowseed_source_ref": "bcf2b77905991f7032171371d26792145c1854a4",
+  "generated_at": "2026-10-04T10:08:17.428159+00:00",
+  "shadowseed_source_ref": "cb82306b08acf89f0c5303ade12943e2156f28a0",
   "case_set": "revision_role_screen",
   "case_set_version": "1.0",
   "model_id": "gemma2:latest",
@@ -32,19 +32,39 @@
     "mean_baseline_preservation": 1.0,
     "visible_contract_violation_cases": 0,
     "within_current_product_timeout_rate": 1.0,
-    "mean_total_duration_seconds": 55.161
+    "mean_total_duration_seconds": 82.486
   },
+  "language_summary": {
+    "en": {
+      "cases": 1,
+      "final_response_rate": 1.0,
+      "role_contract_pass_rate": 0.0,
+      "mean_addition_coverage": 0.5,
+      "mean_baseline_preservation": 1.0,
+      "mean_total_duration_seconds": 69.741
+    },
+    "nl": {
+      "cases": 1,
+      "final_response_rate": 1.0,
+      "role_contract_pass_rate": 1.0,
+      "mean_addition_coverage": 1.0,
+      "mean_baseline_preservation": 1.0,
+      "mean_total_duration_seconds": 95.231
+    }
+  },
+  "pair_comparison": [],
   "cases": [
     {
       "case_id": "industrial-revolution-nl",
+      "pair_id": null,
       "language": "nl",
       "final_response_available": true,
       "done_reason": "stop",
-      "eval_count": 140,
+      "eval_count": 139,
       "prompt_eval_count": 564,
-      "total_duration_seconds": 65.496,
+      "total_duration_seconds": 95.231,
       "within_current_product_timeout": true,
-      "response_word_count": 71,
+      "response_word_count": 70,
       "addition_coverage": 1.0,
       "addition_details": [
         {
@@ -83,17 +103,18 @@
       ],
       "visible_contract_violations": [],
       "role_contract_pass": true,
-      "response": "De Industriële Revolutie in het 18e-eeuwse Groot-Brittannië werd gekenmerkt door een ongekende versnelling van technologische innovatie. De verbeteringen van James Watt aan de stoommachine maakten het mogelijk om fabrieken los te koppelen van waterbronnen. De textielindustrie groeide door uitvindingen zoals de spinning jenny. Dat leidde tot urbanisatie en fabrieksarbeid.  Koloniaal kapitaal fungeerde als financieringsbron voor Britse fabrieksinvesteringen, en goedkope koloniale grondstoffen waren een voorwaarde voor schaalvergroting van de productie.",
+      "response": "De Industriële Revolutie in het 18e-eeuwse Groot-Brittannië werd gekenmerkt door een ongekende versnelling van technologische innovatie. De verbeteringen van James Watt aan de stoommachine maakten het mogelijk om fabrieken los te koppelen van waterbronnen. De textielindustrie groeide door uitvindingen zoals de spinning jenny. Dat leidde tot urbanisatie en fabrieksarbeid.  Koloniaal kapitaal fungeerde als financieringsbron voor Britse fabrieksinvesteringen, terwijl goedkope koloniale grondstoffen de schaalvergroting van de productie mogelijk maakten.",
       "thinking": ""
     },
     {
       "case_id": "ml-production-en",
+      "pair_id": null,
       "language": "en",
       "final_response_available": true,
       "done_reason": "stop",
       "eval_count": 68,
       "prompt_eval_count": 516,
-      "total_duration_seconds": 44.826,
+      "total_duration_seconds": 69.741,
       "within_current_product_timeout": true,
       "response_word_count": 57,
       "addition_coverage": 0.5,
@@ -151,7 +172,7 @@
     }
   ],
   "runtime_provenance": {
-    "github_run_id": "37191288783",
+    "github_run_id": "37193789532",
     "github_run_attempt": "1",
     "runner_os": "Linux",
     "runner_arch": "X64",

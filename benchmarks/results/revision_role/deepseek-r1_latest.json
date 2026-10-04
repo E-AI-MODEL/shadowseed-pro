@@ -1,8 +1,8 @@
 {
   "artifact": "shadowseed-revision-role-screen-v1",
   "schema_version": 1,
-  "generated_at": "2026-10-04T09:16:27.720191+00:00",
-  "shadowseed_source_ref": "bcf2b77905991f7032171371d26792145c1854a4",
+  "generated_at": "2026-10-04T10:05:14.302743+00:00",
+  "shadowseed_source_ref": "cb82306b08acf89f0c5303ade12943e2156f28a0",
   "case_set": "revision_role_screen",
   "case_set_version": "1.0",
   "model_id": "deepseek-r1:latest",
@@ -26,132 +26,153 @@
   "disclaimer": "This benchmark isolates revision only. Fixed baselines and reviewer-supplied candidate perspectives are evaluation inputs, not runtime evidence or authority. GitHub-runner latency is not laptop latency.",
   "summary": {
     "cases": 2,
-    "final_response_rate": 0.5,
-    "role_contract_pass_rate": 0.5,
-    "mean_addition_coverage": 0.5,
-    "mean_baseline_preservation": 0.8334,
+    "final_response_rate": 0.0,
+    "role_contract_pass_rate": 0.0,
+    "mean_addition_coverage": 0.0,
+    "mean_baseline_preservation": 0.0,
     "visible_contract_violation_cases": 0,
-    "within_current_product_timeout_rate": 0.5,
-    "mean_total_duration_seconds": 132.308
+    "within_current_product_timeout_rate": 0.0,
+    "mean_total_duration_seconds": 170.834
   },
+  "language_summary": {
+    "en": {
+      "cases": 1,
+      "final_response_rate": 0.0,
+      "role_contract_pass_rate": 0.0,
+      "mean_addition_coverage": 0.0,
+      "mean_baseline_preservation": 0.0,
+      "mean_total_duration_seconds": 164.219
+    },
+    "nl": {
+      "cases": 1,
+      "final_response_rate": 0.0,
+      "role_contract_pass_rate": 0.0,
+      "mean_addition_coverage": 0.0,
+      "mean_baseline_preservation": 0.0,
+      "mean_total_duration_seconds": 177.448
+    }
+  },
+  "pair_comparison": [],
   "cases": [
     {
       "case_id": "industrial-revolution-nl",
+      "pair_id": null,
       "language": "nl",
       "final_response_available": false,
       "done_reason": "length",
       "eval_count": 700,
       "prompt_eval_count": 560,
-      "total_duration_seconds": 151.361,
+      "total_duration_seconds": 177.448,
       "within_current_product_timeout": false,
-      "response_word_count": 56,
+      "response_word_count": 0,
       "addition_coverage": 0.0,
       "addition_details": [
         {
           "id": "colonial-capital",
           "hit": false,
-          "best_token_recall": 0.1667,
-          "best_alias": "kapitaal uit koloniën financierde Britse fabrieken"
+          "best_token_recall": 0.0,
+          "best_alias": "koloniaal kapitaal financierde Britse fabrieksinvesteringen"
         },
         {
           "id": "colonial-raw-materials",
           "hit": false,
-          "best_token_recall": 0.3333,
+          "best_token_recall": 0.0,
           "best_alias": "goedkope koloniale grondstoffen maakten schaalvergroting mogelijk"
         }
       ],
-      "baseline_preservation": 0.6667,
+      "baseline_preservation": 0.0,
       "baseline_preservation_details": [
         {
           "id": "steam-engine",
-          "hit": true,
-          "best_token_recall": 1.0,
-          "best_alias": "verbeteringen van James Watt aan de stoommachine"
+          "hit": false,
+          "best_token_recall": 0.0,
+          "best_alias": "James Watt verbeterde de stoommachine"
         },
         {
           "id": "textile-innovation",
-          "hit": true,
-          "best_token_recall": 1.0,
+          "hit": false,
+          "best_token_recall": 0.0,
           "best_alias": "de textielindustrie groeide door uitvindingen zoals de spinning jenny"
         },
         {
           "id": "urbanisation",
           "hit": false,
-          "best_token_recall": 0.2,
+          "best_token_recall": 0.0,
           "best_alias": "dit leidde tot urbanisatie en fabrieksarbeid"
         }
       ],
       "visible_contract_violations": [],
       "role_contract_pass": false,
-      "response": "De Industriële Revolutie in het 18e-eeuwse Groot-Brittannië werd gekenmerkt door een ongekende versnelling van technologische innovatie. De verbeteringen van James Watt aan de stoommachine maakten het mogelijk om fabrieken los te koppelen van waterbronnen. De textielindustrie groeide door uitvindingen zoals de spinning jenny. Dit alles vond plaats op een moment dat Groot-Brittannië de",
-      "thinking": "Hmm, de gebruiker vraagt hoe de Industriële Revolutie in Groot-Brittannië kon ontstaan. Ik moet mijn antwoord in het Nederlands geven en de bestaande conceptie herschrijven. De conceptie is het standaardantwoord, dus ik begin daar met.\n\nDe conceptie zegt dat er technologische innovaties zoals de verbeterde stoommachine van Watt en de spinning jenny in de textielindustrie plaatsvonden, wat leidde tot urbanisatie en fabrieksarbeid. Dat klopt, maar ik moet kijken of de aangevraagde perspectieven iets relevant en nuttigs toevoegen.\n\nDe eerste perspectief is over koloniaal kapitaal als financieringsbron. Dat is waar, maar de conceptie noemt geen specifieke reden voor de financiering. Als ik dit toevoeg, kan ik een betere verklaring geven voor de opkomst van de revolutie. Het helpt om te begrijpen hoe kapitalen beschikbaar kwamen.\n\nDe tweede perspectief is over goedkope koloniale grondstoffen voor schaalvergroting. De conceptie noemt geen grondstoffen, dus dit is relevant. Het laat zien dat lagere productiekosten mogelijk waren, wat essentieel is voor groei.\n\nIk moet elk perspectief maar één keer gebruiken en ze niet herhalen. De gebruiker wilde geen veranderingen in het onderwerp, dus ik past ze aan zonder te verongelijken.\n\nDe conceptie heeft al kernpunten, dus ik verfijn het. Ik begin met de technologische aspecten, maar voeg financiële en economische factoren toe. Het is het minste veranderingen maken.\n\nHet eindantwoord moet alleen de verbeterde conceptie bevatten, geen uitleg. Dus ik herschrij het in het Nederlands, kijk naar de regels.\n\nDe gebruiker is waarschijnlijk een student of iemand met interesse in geschiedenis. Zijn vraag is over oorzaken, dus een diepgaande verklaring is goed. Hij wilde mogelijk een betere begrip, dus ik geef een uitgebreider antwoord.\n\nIk verfijn het antwoord door kapitaal en grondstoffen toe te voegen, maar houd het oorspronkelijke kernpunt. Het is een kleine aanpassing, niet een grote herschaling.\n\nGoed, ik herschrij het antwoord in het Nederlands, zorg dat het logisch is en de regels van de gebruiker volgt."
+      "response": "",
+      "thinking": "Oké, laten we de gebruikersquery goed bekijken. De gebruiker vraagt om de oorzaak van de Industriële Revolutie in Groot-Brittannië te begrijpen, dus de hoofddelten moeten diepgaand historische analyses bieden. De bestaande ontwerp is beknopt en geeft technologische innovaties en specifieke uitvindingen aan, maar misschien niet voldoende context.\n\nHet gaat erom om de aangevraagde kandidaten te integreren. Kijk maar naar [1] en [2]: koloniaal kapitaal en goedkope grondstoffen. Deze zijn relevant omdat de opname van Groot-Brittannië zijn unieke koloniale handelsvoordelen had. De gebruiker wil waarschijnlijk weten hoe de koloniale economie dit proces ondersteunde, dus diepunten moeten toegevoegd worden zonder de hoofddelten te storen.\n\nDe gebruiker is mogelijk een student of iemand met interesse in geschiedenis. Zijn werkelijke behoefte is een grondige uitleg die niet alleen technologie maar ook economische factoren beslaat. Diepgaandere kandidaten zouden nuttig zijn, maar [1] en [2] lijken direct te verbanden met de vraag.\n\nDe regelstelling moet de meest gebruikte bron van kapitaal benadrukken en hoe goedkopere grondstoffen de productie mogelijk maakten. Dit verduidelijkt waarom Groot-Brittannië anders was dan andere landen. De technologische aspecten moeten gehandhaafd blijven, maar de economische context moet worden uitgebreid.\n\nDe gebruiker heeft mogelijk een diepgaande analyse nodig voor een paper of presentatie. Door de koloniale factoren toe te voegen, wordt het antwoord relevant en completer. Het is belangrijk om niet te overbeheerden met details, maar wel om diepere oorzaken aan te geven.\n\nDe opname van de koloniale economie moet gerelateerd worden aan de bestaande technologische innovaties. Bijvoorbeeld, hoe kapitaal beschikbaarheid de investeringen in machines mogelijk maakte. En hoe goedkopere grondstoffen de schaalvergroting in de textielindustrie ondersteunde.\n\nHet antwoord moet in het Nederlands blijven, dus de termen moeten vertaald worden naar het Nederlands. Koloniaal kapitaal en koloniale grondstoffen zijn de sleuteltermen. De structuur moet logisch blijven, dus de koloniale factoren kunnen apart worden genoemd, maar niet de hoofddelten overspannen.\n\nDe gebruiker wil waarschijnlijk een evenwichtig antwoord dat niet alleen technologie maar ook economische en geopolitieke factoren combineert. Door de koloniale perspectieven toe te voegen, wordt het antwoord rijkder en helpt het om de vraag te beantwoorden.\n\nDus de definitieve opname zou de technologische innovaties moeten"
     },
     {
       "case_id": "ml-production-en",
+      "pair_id": null,
       "language": "en",
-      "final_response_available": true,
-      "done_reason": "stop",
-      "eval_count": 535,
+      "final_response_available": false,
+      "done_reason": "length",
+      "eval_count": 700,
       "prompt_eval_count": 479,
-      "total_duration_seconds": 113.255,
-      "within_current_product_timeout": true,
-      "response_word_count": 72,
-      "addition_coverage": 1.0,
+      "total_duration_seconds": 164.219,
+      "within_current_product_timeout": false,
+      "response_word_count": 0,
+      "addition_coverage": 0.0,
       "addition_details": [
         {
           "id": "data-drift",
-          "hit": true,
-          "best_token_recall": 1.0,
+          "hit": false,
+          "best_token_recall": 0.0,
           "best_alias": "monitor data drift after deployment"
         },
         {
           "id": "fairness",
-          "hit": true,
-          "best_token_recall": 1.0,
+          "hit": false,
+          "best_token_recall": 0.0,
           "best_alias": "audit bias and fairness across protected groups"
         },
         {
           "id": "label-leakage",
-          "hit": true,
-          "best_token_recall": 1.0,
+          "hit": false,
+          "best_token_recall": 0.0,
           "best_alias": "check for label leakage between training and test data"
         },
         {
           "id": "calibration",
-          "hit": true,
-          "best_token_recall": 1.0,
+          "hit": false,
+          "best_token_recall": 0.0,
           "best_alias": "calibrate predicted probabilities"
         }
       ],
-      "baseline_preservation": 1.0,
+      "baseline_preservation": 0.0,
       "baseline_preservation_details": [
         {
           "id": "representative-data",
-          "hit": true,
-          "best_token_recall": 1.0,
-          "best_alias": "model is trained on representative data"
+          "hit": false,
+          "best_token_recall": 0.0,
+          "best_alias": "train on representative data"
         },
         {
           "id": "test-metrics",
-          "hit": true,
-          "best_token_recall": 1.0,
+          "hit": false,
+          "best_token_recall": 0.0,
           "best_alias": "evaluate on a separate test set using accuracy precision and recall"
         },
         {
           "id": "api-logging-versioning",
-          "hit": true,
-          "best_token_recall": 1.0,
+          "hit": false,
+          "best_token_recall": 0.0,
           "best_alias": "put it behind an API log predictions and version the model and data"
         }
       ],
       "visible_contract_violations": [],
-      "role_contract_pass": true,
-      "response": "Make sure the model is trained on representative data and evaluate it on a separate test set using metrics such as accuracy, precision and recall. Put it behind an API, log predictions, and version both the model and the data so results can be reproduced. Monitor for data drift after deployment, audit for bias and fairness across protected groups, check for label leakage between training and test data, and calibrate predicted probabilities.",
-      "thinking": "Okay, let me start by understanding the user's question. They want to know what to pay attention to when deploying a classification model. The existing draft mentions training on representative data, evaluating with metrics, logging predictions, and versioning model and data. Now, there are four candidate perspectives provided.\n\nFirst, I need to check each candidate to see if they add value without repeating or increasing certainty. Candidate 1 is about monitoring data drift. That's important because data changes over time, affecting model performance. The draft already talks about evaluating on a test set, but doesn't mention ongoing monitoring. Adding this would help ensure the model stays effective post-deployment.\n\nCandidate 2 is about auditing bias and fairness. The draft doesn't mention fairness, so this is a new point. Including it addresses ethical concerns, which are crucial in production models to avoid discrimination. It's a distinct improvement because the original answer doesn't cover this aspect.\n\nCandidate 3 is checking for label leakage. The draft already evaluates on a separate test set, but doesn't specify label leakage. This is a technical consideration during training, so adding it clarifies a potential pitfall that the draft doesn't address.\n\nCandidate 4 is calibrating predicted probabilities. The draft mentions logging predictions but not calibration. Calibration ensures probability outputs are reliable, which is important for decision-making. This adds useful information without overlapping with the existing points.\n\nNow, considering the user's deeper needs. They might be a developer or data scientist deploying a model for the first time. They need practical steps to ensure reliability and fairness. The original draft is solid but misses some key aspects like ongoing monitoring, bias checks, and probability calibration. These additions provide a more comprehensive guide, helping them avoid common pitfalls and meet stakeholder expectations for robust and ethical AI systems.\n\nI should integrate these points smoothly. The draft already covers initial training and evaluation. Adding monitoring, fairness, label leakage, and calibration as separate considerations makes the answer more thorough. Each candidate adds a unique angle without redundancy. The revised answer now includes all four, maintaining the original structure while enhancing it with these new elements. This approach ensures the answer remains focused on the user's question while addressing deeper concerns about model sustainability and ethics."
+      "role_contract_pass": false,
+      "response": "",
+      "thinking": "Okay, let me start by understanding the user's question. They want to know what to pay attention to when deploying a classification model. The existing draft mentions data representativeness, evaluation metrics, API deployment, logging, and versioning. Now, I need to consider the candidate perspectives provided.\n\nFirst, candidate [1] is about monitoring data drift. That's important because if the input data changes after training, the model's performance can degrade. The draft doesn't mention this, so adding it would be a useful addition. But I should check if it's necessary to integrate it smoothly without reorganizing the answer.\n\nNext, candidate [2] talks about auditing bias and fairness. This is crucial for ethical AI deployment. The user might be concerned about fairness, especially if the model is used in sensitive areas. However, the draft doesn't address this, so including it could add value. But I need to make sure it's not redundant and fits naturally.\n\nCandidate [3] is about label leakage. This is a technical issue during training that could affect model validity. The draft already mentions evaluating on a separate test set, but maybe not explicitly about label leakage. Including this could help ensure the model's reliability, but I should see if it's distinct enough to warrant mention.\n\nCandidate [4] is probability calibration. The draft uses metrics like accuracy, but doesn't mention calibration. This is important for models that need reliable probability estimates, like in risk assessment. Adding it might be useful, but I need to determine if it's a key point for the user.\n\nNow, considering the user's deeper needs. They might be a developer or data scientist preparing to deploy a model. Their main concerns are likely model reliability, performance monitoring, and ethical considerations. They might not explicitly mention fairness, but it's implied by the need for a robust production system. \n\nThe draft is concise but misses some critical aspects. Adding data drift monitoring and fairness auditing would address potential long-term issues. Label leakage is more of a training consideration, but it's still relevant to ensure the model isn't overfitting due to improper data handling. Probability calibration is important for certain applications but might not be necessary for all, so it could be optional.\n\nI need to integrate these points without making the answer too long. The original draft focuses on data and evaluation. Adding drift and fairness would enhance it. Label leakage is already partially covered by the test set evaluation, so maybe it's not needed separately. Calibration can be added as a separate point.\n\nSo, the revised answer should include monitoring data drift, auditing bias, versioning, logging, API deployment, and possibly calibration. Label leakage might be redundant with the existing test set evaluation, so maybe omit that. The key is to add distinct improvements without repeating candidates. Each candidate should be mentioned once if they add value. \n\nAlso, the user might not be aware of these aspects, so the answer should guide them through both technical and ethical considerations. Ensuring that the model is fair and unbiased is becoming increasingly important, especially with regulations around AI. \n\nI should structure the answer to flow naturally. Start with data considerations, then move to deployment and monitoring, and end with fairness and calibration. But the draft's order is data, then deployment. Maybe keep that structure and add the new points where they fit best. \n\nData drift should be mentioned after deployment since it's a post-deployment issue. Fairness auditing can be part of the"
     }
   ],
   "runtime_provenance": {
-    "github_run_id": "37191288783",
+    "github_run_id": "37193789532",
     "github_run_attempt": "1",
     "runner_os": "Linux",
     "runner_arch": "X64",
