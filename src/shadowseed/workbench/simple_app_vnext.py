@@ -797,6 +797,11 @@ def build_vnext_app(
         hosted_confirmed: bool,
     ):
         try:
+            embedding_backend = ctl.default_embedding_backend(provider)
+            if embedding_backend == "ollama":
+                ctl._validate_ollama_embedding_model(
+                    ctl.default_embedding_model(embedding_backend)
+                )
             session_id = ctl.create_session(
                 title=(title or "").strip() or "Nieuwe chat",
                 profile_id="balanced",
@@ -1574,6 +1579,11 @@ def build_vnext_app(
         preset: str,
     ):
         settings = dict(_PRESET_SETTINGS.get(preset, _PRESET_SETTINGS["gebalanceerd"]))
+        embedding_backend = ctl.default_embedding_backend(provider_value)
+        if embedding_backend == "ollama":
+            ctl._validate_ollama_embedding_model(
+                ctl.default_embedding_model(embedding_backend)
+            )
         session_id = ctl.create_session(
             title=(title or "").strip() or "Nieuwe chat",
             profile_id="balanced",
