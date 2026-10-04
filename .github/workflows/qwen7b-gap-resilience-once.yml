@@ -1,4 +1,4 @@
-name: Research - Laptop-model gap resilience matrix
+name: Research - Laptop-model gap resilience follow-up
 
 on:
   pull_request:
@@ -11,22 +11,17 @@ permissions:
   contents: write
 
 concurrency:
-  group: qwen7b-gap-resilience-live1
+  group: laptop-gap-resilience-follow-up
   cancel-in-progress: true
+
+env:
+  MODEL_ID: deepseek-r1:latest
+  MODEL_SLUG: deepseek-r1_latest
+  RUN_DIR: benchmarks/results/gap_resilience/laptop_models
 
 jobs:
   gap-resilience:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - model_id: deepseek-r1:latest
-            slug: deepseek-r1_latest
-          - model_id: gemma2:latest
-            slug: gemma2_latest
-          - model_id: llama3.1:latest
-            slug: llama3.1_latest
     timeout-minutes: 330
 
     steps:
@@ -59,12 +54,9 @@ jobs:
           curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
           echo "OLLAMA_VERSION=$(ollama --version 2>&1 | tr '\n' ' ')" >> "$GITHUB_ENV"
 
-      - name: Pull and fingerprint selected laptop model
-        env:
-          MODEL_ID: ${{ matrix.model_id }}
+      - name: Pull and fingerprint DeepSeek R1
         run: |
-          ollama pull "${{ matrix.model_id }}"
-          ollama list
+          ollama pull "$MODEL_ID"
           python - <<'PY'
           import json
           import os
@@ -90,30 +82,40 @@ jobs:
           print("resolved model digest", match["digest"])
           PY
 
-      - name: Run controlled baseline and candidate arm
-        env:
-          MODEL_ID: ${{ matrix.model_id }}
-          MODEL_SLUG: ${{ matrix.slug }}
+      - name: Run DeepSeek thinking on and off
         run: |
-          run_dir="benchmarks/results/gap_resilience/laptop_models"
-          mkdir -p "$run_dir"
-          for profile in runtime_v06 candidate_v1; do
-            output="$run_dir/${MODEL_SLUG}_${profile}_controlled_screen.json"
-            GITHUB_SHA="$(git rev-parse HEAD)" python scripts/run_gap_resilience_benchmark.py \
-              --backend ollama \
-              --model-id "$MODEL_ID" \
-              --model-revision "$MODEL_DIGEST" \
-              --prompt-profile "$profile" \
-              --repeats 2 \
-              --max-seeds 3 \
-              --max-new-tokens 120 \
-              --output "$output"
+          mkdir -p "$RUN_DIR"
+          for thinking in on off; do
+            for profile in runtime_v06 candidate_v1; do
+              output="$RUN_DIR/${MODEL_SLUG}_${profile}_think_${thinking}_controlled.json"
+              GITHUB_SHA="$(git rev-parse HEAD)" python scripts/run_gap_resilience_benchmark.py \
+                --backend ollama \
+                --model-id "$MODEL_ID" \
+                --model-revision "$MODEL_DIGEST" \
+                --prompt-profile "$profile" \
+                --thinking-mode "$thinking" \
+                --repeats 2 \
+                --max-seeds 3 \
+                --max-new-tokens 512 \
+                --output "$output"
+            done
           done
 
-      - name: Add runtime provenance and verify result
-        env:
-          MODEL_ID: ${{ matrix.model_id }}
-          MODEL_SLUG: ${{ matrix.slug }}
+      - name: Strictly rescore stored Gemma and Llama results
+        run: |
+          for file in \
+            "$RUN_DIR/gemma2_latest_runtime_v06_controlled_screen.json" \
+            "$RUN_DIR/gemma2_latest_candidate_v1_controlled_screen.json" \
+            "$RUN_DIR/llama3.1_latest_runtime_v06_controlled_screen.json" \
+            "$RUN_DIR/llama3.1_latest_candidate_v1_controlled_screen.json"
+          do
+            python scripts/run_gap_resilience_benchmark.py \
+              --cases benchmarks/gap_resilience/cases.json \
+              --rescore-input "$file" \
+              --output "$file"
+          done
+
+      - name: Verify result semantics and add runtime provenance
         run: |
           python - <<'PY'
           import json
@@ -121,6 +123,7 @@ jobs:
           import subprocess
           from pathlib import Path
 
+          run_dir = Path(os.environ["RUN_DIR"])
           expected_head = subprocess.run(
               ["git", "rev-parse", "HEAD"],
               check=True,
@@ -128,57 +131,74 @@ jobs:
               text=True,
           ).stdout.strip()
 
-          model_slug = os.environ["MODEL_SLUG"]
-          model_id = os.environ["MODEL_ID"]
-          run_dir = Path("benchmarks/results/gap_resilience/laptop_models")
-          for profile in ("runtime_v06", "candidate_v1"):
-              path = run_dir / f"{model_slug}_{profile}_controlled_screen.json"
+          deepseek_paths = []
+          for thinking in ("on", "off"):
+              for profile in ("runtime_v06", "candidate_v1"):
+                  path = run_dir / (
+                      f"{os.environ['MODEL_SLUG']}_{profile}_think_{thinking}_controlled.json"
+                  )
+                  deepseek_paths.append(path)
+                  report = json.loads(path.read_text(encoding="utf-8"))
+                  assert report["artifact"] == "shadowseed-gap-resilience-v1"
+                  assert report["run_type"] == "live_benchmark"
+                  assert report["shadowseed_source_ref"] == expected_head
+                  assert report["model_id"] == os.environ["MODEL_ID"]
+                  assert report["model_revision"] == os.environ["MODEL_DIGEST"]
+                  assert report["thinking_mode"] == thinking
+                  assert report["scoring_policy"] == "strict_model_abstention_v2"
+                  assert report["summary"]["cases"] == 8
+                  assert sum(len(case["run_details"]) for case in report["cases"]) == 16
+                  assert all(
+                      detail["detector_raw_output"] is not None
+                      and detail["detector_thinking_output"] is not None
+                      for case in report["cases"]
+                      for detail in case["run_details"]
+                  )
+                  report["runtime_provenance"] = {
+                      "github_run_id": os.environ["GITHUB_RUN_ID"],
+                      "github_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                      "runner_os": os.environ.get("RUNNER_OS"),
+                      "runner_arch": os.environ.get("RUNNER_ARCH"),
+                      "ollama_version": os.environ["OLLAMA_VERSION"],
+                      "model_digest": os.environ["MODEL_DIGEST"],
+                      "execution_note": (
+                          "Quality screening on GitHub Linux runner; latency is not "
+                          "representative of the user's laptop."
+                      ),
+                  }
+                  path.write_text(
+                      json.dumps(report, indent=2, ensure_ascii=False) + "\n",
+                      encoding="utf-8",
+                  )
+
+          for path in (
+              run_dir / "gemma2_latest_runtime_v06_controlled_screen.json",
+              run_dir / "gemma2_latest_candidate_v1_controlled_screen.json",
+              run_dir / "llama3.1_latest_runtime_v06_controlled_screen.json",
+              run_dir / "llama3.1_latest_candidate_v1_controlled_screen.json",
+          ):
               report = json.loads(path.read_text(encoding="utf-8"))
-              assert report["artifact"] == "shadowseed-gap-resilience-v1"
-              assert report["run_type"] == "live_benchmark"
-              assert report["shadowseed_source_ref"] == expected_head
-              assert report["backend"] == "ollama"
-              assert report["model_id"] == model_id
-              assert report["model_revision"] == os.environ["MODEL_DIGEST"]
-              assert report["prompt_profile"] == profile
-              assert report["repeats"] == 2
-              assert report["summary"]["cases"] == 8
-              assert sum(len(case["run_details"]) for case in report["cases"]) == 16
-              assert all(
-                  detail["detector_raw_output"] is not None
-                  for case in report["cases"]
-                  for detail in case["run_details"]
+              assert report["scoring_policy"] == "strict_model_abstention_v2"
+              assert (
+                  report["summary"]["negative_control_abstention_definition"]
+                  == "model_explicit_NONE_only"
               )
-              assert "score" not in report["summary"]
-              assert "winner" not in report["summary"]
-              report["runtime_provenance"] = {
-                  "github_run_id": os.environ["GITHUB_RUN_ID"],
-                  "execution_note": "Quality screening on GitHub Linux runner; latency is not representative of the user's laptop.",
-                  "github_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
-                  "runner_os": os.environ.get("RUNNER_OS"),
-                  "runner_arch": os.environ.get("RUNNER_ARCH"),
-                  "ollama_version": os.environ["OLLAMA_VERSION"],
-                  "model_digest": os.environ["MODEL_DIGEST"],
-              }
-              path.write_text(
-                  json.dumps(report, indent=2, ensure_ascii=False) + "\n",
-                  encoding="utf-8",
-              )
-              print(profile, json.dumps(report["summary"], indent=2))
+
+          print("verified", len(deepseek_paths), "DeepSeek arms plus strict Gemma/Llama rescoring")
           PY
 
-      - name: Commit live benchmark result to this branch
+      - name: Commit corrected benchmark results to this branch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add benchmarks/results/gap_resilience/laptop_models/
+          git add "$RUN_DIR"
           git diff --cached --check
-          git commit -m "Record ${{ matrix.model_id }} controlled gap resilience screening"
+          git commit -m "Record strict laptop-model gap resilience follow-up"
           git pull --rebase origin "${{ github.event.pull_request.head.ref }}"
           git push origin HEAD:"${{ github.event.pull_request.head.ref }}"
 
-      - name: Upload live benchmark result
+      - name: Upload corrected benchmark results
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: gap-resilience-${{ matrix.slug }}
-          path: benchmarks/results/gap_resilience/laptop_models/${{ matrix.slug }}_*_controlled_screen.json
+          name: laptop-gap-resilience-follow-up
+          path: ${{ env.RUN_DIR }}/*.json
