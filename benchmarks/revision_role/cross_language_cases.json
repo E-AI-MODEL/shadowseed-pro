@@ -1,0 +1,244 @@
+{
+  "schema_version": 1,
+  "case_set": "revision_role_cross_language",
+  "case_set_version": "1.0",
+  "description": "Paired NL/EN revision cases. Each pair keeps topic, baseline content and supplied additions semantically equivalent while changing only the language.",
+  "cases": [
+    {
+      "case_id": "industrial-revolution-nl",
+      "pair_id": "industrial-revolution",
+      "language": "nl",
+      "question": "Leg uit waarom de Industriële Revolutie in Groot-Brittannië kon ontstaan.",
+      "baseline_answer": "De Industriële Revolutie in het 18e-eeuwse Groot-Brittannië werd gekenmerkt door een ongekende versnelling van technologische innovatie. De verbeteringen van James Watt aan de stoommachine maakten het mogelijk om fabrieken los te koppelen van waterbronnen. De textielindustrie groeide door uitvindingen zoals de spinning jenny. Dat leidde tot urbanisatie en fabrieksarbeid.",
+      "points_to_integrate": [
+        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+        "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie."
+      ],
+      "expected_addition_groups": [
+        {
+          "id": "colonial-capital",
+          "aliases": [
+            "koloniaal kapitaal financierde Britse fabrieksinvesteringen",
+            "koloniaal kapitaal als financieringsbron voor fabrieksinvesteringen",
+            "kapitaal uit koloniën financierde Britse fabrieken"
+          ]
+        },
+        {
+          "id": "colonial-raw-materials",
+          "aliases": [
+            "goedkope koloniale grondstoffen maakten schaalvergroting mogelijk",
+            "goedkope grondstoffen uit koloniën als voorwaarde voor schaalvergroting",
+            "koloniale grondstoffen ondersteunden grootschalige productie"
+          ]
+        }
+      ],
+      "baseline_preservation_groups": [
+        {
+          "id": "steam-engine",
+          "aliases": [
+            "James Watt verbeterde de stoommachine",
+            "verbeteringen van James Watt aan de stoommachine"
+          ]
+        },
+        {
+          "id": "textile-innovation",
+          "aliases": [
+            "de textielindustrie groeide door uitvindingen zoals de spinning jenny",
+            "spinning jenny stimuleerde de textielindustrie"
+          ]
+        },
+        {
+          "id": "urbanisation",
+          "aliases": [
+            "dit leidde tot urbanisatie en fabrieksarbeid",
+            "industrialisatie leidde tot urbanisatie en fabrieksarbeid"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "industrial-revolution-en",
+      "pair_id": "industrial-revolution",
+      "language": "en",
+      "question": "Explain why the Industrial Revolution could emerge in Great Britain.",
+      "baseline_answer": "The Industrial Revolution in eighteenth-century Great Britain was marked by an unprecedented acceleration of technological innovation. James Watt's improvements to the steam engine allowed factories to operate away from water sources. The textile industry expanded through inventions such as the spinning jenny. This led to urbanisation and factory labour.",
+      "points_to_integrate": [
+        "Colonial capital as a source of finance for British factory investment.",
+        "Cheap colonial raw materials as a condition for scaling up production."
+      ],
+      "expected_addition_groups": [
+        {
+          "id": "colonial-capital",
+          "aliases": [
+            "colonial capital financed British factory investment",
+            "colonial capital as a source of finance for factory investment",
+            "capital from colonies financed British factories"
+          ]
+        },
+        {
+          "id": "colonial-raw-materials",
+          "aliases": [
+            "cheap colonial raw materials enabled production to scale",
+            "cheap raw materials from colonies supported scaling production",
+            "colonial raw materials supported large scale production"
+          ]
+        }
+      ],
+      "baseline_preservation_groups": [
+        {
+          "id": "steam-engine",
+          "aliases": [
+            "James Watt improved the steam engine",
+            "James Watt's improvements to the steam engine"
+          ]
+        },
+        {
+          "id": "textile-innovation",
+          "aliases": [
+            "the textile industry expanded through inventions such as the spinning jenny",
+            "the spinning jenny helped expand the textile industry"
+          ]
+        },
+        {
+          "id": "urbanisation",
+          "aliases": [
+            "this led to urbanisation and factory labour",
+            "industrialisation led to urbanisation and factory labour"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ml-production-en",
+      "pair_id": "ml-production",
+      "language": "en",
+      "question": "What should I pay attention to when putting a classification model into production?",
+      "baseline_answer": "Make sure the model is trained on representative data and evaluate it on a separate test set using metrics such as accuracy, precision and recall. Put it behind an API, log predictions, and version both the model and the data so results can be reproduced.",
+      "points_to_integrate": [
+        "Monitor data drift after deployment.",
+        "Audit bias and fairness across protected groups.",
+        "Check for label leakage between training and test data.",
+        "Calibrate predicted probabilities."
+      ],
+      "expected_addition_groups": [
+        {
+          "id": "data-drift",
+          "aliases": [
+            "monitor data drift after deployment",
+            "monitor for data drift in production"
+          ]
+        },
+        {
+          "id": "fairness",
+          "aliases": [
+            "audit bias and fairness across protected groups",
+            "perform bias and fairness audits on protected groups"
+          ]
+        },
+        {
+          "id": "label-leakage",
+          "aliases": [
+            "check for label leakage between training and test data",
+            "prevent label leakage between train and test data"
+          ]
+        },
+        {
+          "id": "calibration",
+          "aliases": [
+            "calibrate predicted probabilities",
+            "check calibration of predicted probabilities"
+          ]
+        }
+      ],
+      "baseline_preservation_groups": [
+        {
+          "id": "representative-data",
+          "aliases": [
+            "train on representative data",
+            "model is trained on representative data"
+          ]
+        },
+        {
+          "id": "test-metrics",
+          "aliases": [
+            "evaluate on a separate test set using accuracy precision and recall",
+            "separate test set with accuracy precision and recall"
+          ]
+        },
+        {
+          "id": "api-logging-versioning",
+          "aliases": [
+            "put it behind an API log predictions and version the model and data",
+            "API logging and versioning of model and data"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ml-production-nl",
+      "pair_id": "ml-production",
+      "language": "nl",
+      "question": "Waar moet ik op letten als ik een classificatiemodel naar productie breng?",
+      "baseline_answer": "Zorg dat het model is getraind op representatieve data en evalueer het op een aparte testset met metrics zoals accuracy, precision en recall. Plaats het achter een API, log de voorspellingen en versieer zowel het model als de data zodat resultaten reproduceerbaar zijn.",
+      "points_to_integrate": [
+        "Monitor datadrift na deployment.",
+        "Voer een bias- en fairness-audit uit voor beschermde groepen.",
+        "Controleer op labellekkage tussen trainings- en testdata.",
+        "Kalibreer voorspelde waarschijnlijkheden."
+      ],
+      "expected_addition_groups": [
+        {
+          "id": "data-drift",
+          "aliases": [
+            "monitor datadrift na deployment",
+            "monitor datadrift in productie"
+          ]
+        },
+        {
+          "id": "fairness",
+          "aliases": [
+            "voer een bias en fairness audit uit voor beschermde groepen",
+            "audit bias en fairness bij beschermde groepen"
+          ]
+        },
+        {
+          "id": "label-leakage",
+          "aliases": [
+            "controleer op labellekkage tussen trainings en testdata",
+            "voorkom labellekkage tussen training en testdata"
+          ]
+        },
+        {
+          "id": "calibration",
+          "aliases": [
+            "kalibreer voorspelde waarschijnlijkheden",
+            "controleer de kalibratie van voorspelde waarschijnlijkheden"
+          ]
+        }
+      ],
+      "baseline_preservation_groups": [
+        {
+          "id": "representative-data",
+          "aliases": [
+            "train op representatieve data",
+            "model is getraind op representatieve data"
+          ]
+        },
+        {
+          "id": "test-metrics",
+          "aliases": [
+            "evalueer op een aparte testset met accuracy precision en recall",
+            "aparte testset met accuracy precision en recall"
+          ]
+        },
+        {
+          "id": "api-logging-versioning",
+          "aliases": [
+            "plaats het achter een API log voorspellingen en versieer model en data",
+            "API logging en versionering van model en data"
+          ]
+        }
+      ]
+    }
+  ]
+}

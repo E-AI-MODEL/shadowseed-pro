@@ -1,0 +1,182 @@
+{
+  "artifact": "shadowseed-revision-role-screen-v1",
+  "schema_version": 1,
+  "generated_at": "2026-10-04T10:05:14.302743+00:00",
+  "shadowseed_source_ref": "cb82306b08acf89f0c5303ade12943e2156f28a0",
+  "case_set": "revision_role_screen",
+  "case_set_version": "1.0",
+  "model_id": "deepseek-r1:latest",
+  "model_revision": "6995872bfe4c521a67b32da386cd21d5c6e819b6e0d62f79f64ec83be99f5763",
+  "max_new_tokens": 700,
+  "provider_timeout_seconds_current_product": 120.0,
+  "benchmark_timeout_seconds": 300.0,
+  "match_threshold": 0.6,
+  "prompt_contract": {
+    "prompt_id": "minimal_revision",
+    "prompt_version": "1.0",
+    "component": "same_turn_revision",
+    "input_contract": [
+      "current_question",
+      "existing_draft",
+      "authorized_candidate_context"
+    ],
+    "output_contract": "revised_answer_or_unchanged_draft",
+    "template_sha256": "b63b7d781a677ed9cd0b58f09f5d5eddaf808753a58fec0f1b9da2f8327c8028"
+  },
+  "disclaimer": "This benchmark isolates revision only. Fixed baselines and reviewer-supplied candidate perspectives are evaluation inputs, not runtime evidence or authority. GitHub-runner latency is not laptop latency.",
+  "summary": {
+    "cases": 2,
+    "final_response_rate": 0.0,
+    "role_contract_pass_rate": 0.0,
+    "mean_addition_coverage": 0.0,
+    "mean_baseline_preservation": 0.0,
+    "visible_contract_violation_cases": 0,
+    "within_current_product_timeout_rate": 0.0,
+    "mean_total_duration_seconds": 170.834
+  },
+  "language_summary": {
+    "en": {
+      "cases": 1,
+      "final_response_rate": 0.0,
+      "role_contract_pass_rate": 0.0,
+      "mean_addition_coverage": 0.0,
+      "mean_baseline_preservation": 0.0,
+      "mean_total_duration_seconds": 164.219
+    },
+    "nl": {
+      "cases": 1,
+      "final_response_rate": 0.0,
+      "role_contract_pass_rate": 0.0,
+      "mean_addition_coverage": 0.0,
+      "mean_baseline_preservation": 0.0,
+      "mean_total_duration_seconds": 177.448
+    }
+  },
+  "pair_comparison": [],
+  "cases": [
+    {
+      "case_id": "industrial-revolution-nl",
+      "pair_id": null,
+      "language": "nl",
+      "final_response_available": false,
+      "done_reason": "length",
+      "eval_count": 700,
+      "prompt_eval_count": 560,
+      "total_duration_seconds": 177.448,
+      "within_current_product_timeout": false,
+      "response_word_count": 0,
+      "addition_coverage": 0.0,
+      "addition_details": [
+        {
+          "id": "colonial-capital",
+          "hit": false,
+          "best_token_recall": 0.0,
+          "best_alias": "koloniaal kapitaal financierde Britse fabrieksinvesteringen"
+        },
+        {
+          "id": "colonial-raw-materials",
+          "hit": false,
+          "best_token_recall": 0.0,
+          "best_alias": "goedkope koloniale grondstoffen maakten schaalvergroting mogelijk"
+        }
+      ],
+      "baseline_preservation": 0.0,
+      "baseline_preservation_details": [
+        {
+          "id": "steam-engine",
+          "hit": false,
+          "best_token_recall": 0.0,
+          "best_alias": "James Watt verbeterde de stoommachine"
+        },
+        {
+          "id": "textile-innovation",
+          "hit": false,
+          "best_token_recall": 0.0,
+          "best_alias": "de textielindustrie groeide door uitvindingen zoals de spinning jenny"
+        },
+        {
+          "id": "urbanisation",
+          "hit": false,
+          "best_token_recall": 0.0,
+          "best_alias": "dit leidde tot urbanisatie en fabrieksarbeid"
+        }
+      ],
+      "visible_contract_violations": [],
+      "role_contract_pass": false,
+      "response": "",
+      "thinking": "Oké, laten we de gebruikersquery goed bekijken. De gebruiker vraagt om de oorzaak van de Industriële Revolutie in Groot-Brittannië te begrijpen, dus de hoofddelten moeten diepgaand historische analyses bieden. De bestaande ontwerp is beknopt en geeft technologische innovaties en specifieke uitvindingen aan, maar misschien niet voldoende context.\n\nHet gaat erom om de aangevraagde kandidaten te integreren. Kijk maar naar [1] en [2]: koloniaal kapitaal en goedkope grondstoffen. Deze zijn relevant omdat de opname van Groot-Brittannië zijn unieke koloniale handelsvoordelen had. De gebruiker wil waarschijnlijk weten hoe de koloniale economie dit proces ondersteunde, dus diepunten moeten toegevoegd worden zonder de hoofddelten te storen.\n\nDe gebruiker is mogelijk een student of iemand met interesse in geschiedenis. Zijn werkelijke behoefte is een grondige uitleg die niet alleen technologie maar ook economische factoren beslaat. Diepgaandere kandidaten zouden nuttig zijn, maar [1] en [2] lijken direct te verbanden met de vraag.\n\nDe regelstelling moet de meest gebruikte bron van kapitaal benadrukken en hoe goedkopere grondstoffen de productie mogelijk maakten. Dit verduidelijkt waarom Groot-Brittannië anders was dan andere landen. De technologische aspecten moeten gehandhaafd blijven, maar de economische context moet worden uitgebreid.\n\nDe gebruiker heeft mogelijk een diepgaande analyse nodig voor een paper of presentatie. Door de koloniale factoren toe te voegen, wordt het antwoord relevant en completer. Het is belangrijk om niet te overbeheerden met details, maar wel om diepere oorzaken aan te geven.\n\nDe opname van de koloniale economie moet gerelateerd worden aan de bestaande technologische innovaties. Bijvoorbeeld, hoe kapitaal beschikbaarheid de investeringen in machines mogelijk maakte. En hoe goedkopere grondstoffen de schaalvergroting in de textielindustrie ondersteunde.\n\nHet antwoord moet in het Nederlands blijven, dus de termen moeten vertaald worden naar het Nederlands. Koloniaal kapitaal en koloniale grondstoffen zijn de sleuteltermen. De structuur moet logisch blijven, dus de koloniale factoren kunnen apart worden genoemd, maar niet de hoofddelten overspannen.\n\nDe gebruiker wil waarschijnlijk een evenwichtig antwoord dat niet alleen technologie maar ook economische en geopolitieke factoren combineert. Door de koloniale perspectieven toe te voegen, wordt het antwoord rijkder en helpt het om de vraag te beantwoorden.\n\nDus de definitieve opname zou de technologische innovaties moeten"
+    },
+    {
+      "case_id": "ml-production-en",
+      "pair_id": null,
+      "language": "en",
+      "final_response_available": false,
+      "done_reason": "length",
+      "eval_count": 700,
+      "prompt_eval_count": 479,
+      "total_duration_seconds": 164.219,
+      "within_current_product_timeout": false,
+      "response_word_count": 0,
+      "addition_coverage": 0.0,
+      "addition_details": [
+        {
+          "id": "data-drift",
+          "hit": false,
+          "best_token_recall": 0.0,
+          "best_alias": "monitor data drift after deployment"
+        },
+        {
+          "id": "fairness",
+          "hit": false,
+          "best_token_recall": 0.0,
+          "best_alias": "audit bias and fairness across protected groups"
+        },
+        {
+          "id": "label-leakage",
+          "hit": false,
+          "best_token_recall": 0.0,
+          "best_alias": "check for label leakage between training and test data"
+        },
+        {
+          "id": "calibration",
+          "hit": false,
+          "best_token_recall": 0.0,
+          "best_alias": "calibrate predicted probabilities"
+        }
+      ],
+      "baseline_preservation": 0.0,
+      "baseline_preservation_details": [
+        {
+          "id": "representative-data",
+          "hit": false,
+          "best_token_recall": 0.0,
+          "best_alias": "train on representative data"
+        },
+        {
+          "id": "test-metrics",
+          "hit": false,
+          "best_token_recall": 0.0,
+          "best_alias": "evaluate on a separate test set using accuracy precision and recall"
+        },
+        {
+          "id": "api-logging-versioning",
+          "hit": false,
+          "best_token_recall": 0.0,
+          "best_alias": "put it behind an API log predictions and version the model and data"
+        }
+      ],
+      "visible_contract_violations": [],
+      "role_contract_pass": false,
+      "response": "",
+      "thinking": "Okay, let me start by understanding the user's question. They want to know what to pay attention to when deploying a classification model. The existing draft mentions data representativeness, evaluation metrics, API deployment, logging, and versioning. Now, I need to consider the candidate perspectives provided.\n\nFirst, candidate [1] is about monitoring data drift. That's important because if the input data changes after training, the model's performance can degrade. The draft doesn't mention this, so adding it would be a useful addition. But I should check if it's necessary to integrate it smoothly without reorganizing the answer.\n\nNext, candidate [2] talks about auditing bias and fairness. This is crucial for ethical AI deployment. The user might be concerned about fairness, especially if the model is used in sensitive areas. However, the draft doesn't address this, so including it could add value. But I need to make sure it's not redundant and fits naturally.\n\nCandidate [3] is about label leakage. This is a technical issue during training that could affect model validity. The draft already mentions evaluating on a separate test set, but maybe not explicitly about label leakage. Including this could help ensure the model's reliability, but I should see if it's distinct enough to warrant mention.\n\nCandidate [4] is probability calibration. The draft uses metrics like accuracy, but doesn't mention calibration. This is important for models that need reliable probability estimates, like in risk assessment. Adding it might be useful, but I need to determine if it's a key point for the user.\n\nNow, considering the user's deeper needs. They might be a developer or data scientist preparing to deploy a model. Their main concerns are likely model reliability, performance monitoring, and ethical considerations. They might not explicitly mention fairness, but it's implied by the need for a robust production system. \n\nThe draft is concise but misses some critical aspects. Adding data drift monitoring and fairness auditing would address potential long-term issues. Label leakage is more of a training consideration, but it's still relevant to ensure the model isn't overfitting due to improper data handling. Probability calibration is important for certain applications but might not be necessary for all, so it could be optional.\n\nI need to integrate these points without making the answer too long. The original draft focuses on data and evaluation. Adding drift and fairness would enhance it. Label leakage is already partially covered by the test set evaluation, so maybe it's not needed separately. Calibration can be added as a separate point.\n\nSo, the revised answer should include monitoring data drift, auditing bias, versioning, logging, API deployment, and possibly calibration. Label leakage might be redundant with the existing test set evaluation, so maybe omit that. The key is to add distinct improvements without repeating candidates. Each candidate should be mentioned once if they add value. \n\nAlso, the user might not be aware of these aspects, so the answer should guide them through both technical and ethical considerations. Ensuring that the model is fair and unbiased is becoming increasingly important, especially with regulations around AI. \n\nI should structure the answer to flow naturally. Start with data considerations, then move to deployment and monitoring, and end with fairness and calibration. But the draft's order is data, then deployment. Maybe keep that structure and add the new points where they fit best. \n\nData drift should be mentioned after deployment since it's a post-deployment issue. Fairness auditing can be part of the"
+    }
+  ],
+  "runtime_provenance": {
+    "github_run_id": "37193789532",
+    "github_run_attempt": "1",
+    "runner_os": "Linux",
+    "runner_arch": "X64",
+    "ollama_version": "ollama version is 0.35.1 ",
+    "execution_note": "Role-quality screen on GitHub Linux CPU. Absolute latency is not representative of the user's laptop; the current product 120-second provider timeout is reported separately."
+  }
+}

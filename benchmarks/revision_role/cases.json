@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "case_set": "revision_role_screen",
+  "case_set_version": "1.0",
+  "description": "Fixed-baseline revision screen. The model receives a correct initial answer plus reviewer-supplied points to integrate. No baseline generation, gap detection, recurrence, Gate mutation, or authority decision is part of this benchmark.",
+  "cases": [
+    {
+      "case_id": "industrial-revolution-nl",
+      "language": "nl",
+      "question": "Leg uit waarom de Industriële Revolutie in Groot-Brittannië kon ontstaan.",
+      "baseline_answer": "De Industriële Revolutie in het 18e-eeuwse Groot-Brittannië werd gekenmerkt door een ongekende versnelling van technologische innovatie. De verbeteringen van James Watt aan de stoommachine maakten het mogelijk om fabrieken los te koppelen van waterbronnen. De textielindustrie groeide door uitvindingen zoals de spinning jenny. Dat leidde tot urbanisatie en fabrieksarbeid.",
+      "points_to_integrate": [
+        "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
+        "Goedkope koloniale grondstoffen als voorwaarde voor schaalvergroting van productie."
+      ],
+      "expected_addition_groups": [
+        {
+          "id": "colonial-capital",
+          "aliases": [
+            "koloniaal kapitaal financierde Britse fabrieksinvesteringen",
+            "koloniaal kapitaal als financieringsbron voor fabrieksinvesteringen",
+            "kapitaal uit koloniën financierde Britse fabrieken"
+          ]
+        },
+        {
+          "id": "colonial-raw-materials",
+          "aliases": [
+            "goedkope koloniale grondstoffen maakten schaalvergroting mogelijk",
+            "goedkope grondstoffen uit koloniën als voorwaarde voor schaalvergroting",
+            "koloniale grondstoffen ondersteunden grootschalige productie"
+          ]
+        }
+      ],
+      "baseline_preservation_groups": [
+        {
+          "id": "steam-engine",
+          "aliases": [
+            "James Watt verbeterde de stoommachine",
+            "verbeteringen van James Watt aan de stoommachine"
+          ]
+        },
+        {
+          "id": "textile-innovation",
+          "aliases": [
+            "de textielindustrie groeide door uitvindingen zoals de spinning jenny",
+            "spinning jenny stimuleerde de textielindustrie"
+          ]
+        },
+        {
+          "id": "urbanisation",
+          "aliases": [
+            "dit leidde tot urbanisatie en fabrieksarbeid",
+            "industrialisatie leidde tot urbanisatie en fabrieksarbeid"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ml-production-en",
+      "language": "en",
+      "question": "What should I pay attention to when putting a classification model into production?",
+      "baseline_answer": "Make sure the model is trained on representative data and evaluate it on a separate test set using metrics such as accuracy, precision and recall. Put it behind an API, log predictions, and version both the model and the data so results can be reproduced.",
+      "points_to_integrate": [
+        "Monitor data drift after deployment.",
+        "Audit bias and fairness across protected groups.",
+        "Check for label leakage between training and test data.",
+        "Calibrate predicted probabilities."
+      ],
+      "expected_addition_groups": [
+        {
+          "id": "data-drift",
+          "aliases": [
+            "monitor data drift after deployment",
+            "monitor for data drift in production"
+          ]
+        },
+        {
+          "id": "fairness",
+          "aliases": [
+            "audit bias and fairness across protected groups",
+            "perform bias and fairness audits on protected groups"
+          ]
+        },
+        {
+          "id": "label-leakage",
+          "aliases": [
+            "check for label leakage between training and test data",
+            "prevent label leakage between train and test data"
+          ]
+        },
+        {
+          "id": "calibration",
+          "aliases": [
+            "calibrate predicted probabilities",
+            "check calibration of predicted probabilities"
+          ]
+        }
+      ],
+      "baseline_preservation_groups": [
+        {
+          "id": "representative-data",
+          "aliases": [
+            "train on representative data",
+            "model is trained on representative data"
+          ]
+        },
+        {
+          "id": "test-metrics",
+          "aliases": [
+            "evaluate on a separate test set using accuracy precision and recall",
+            "separate test set with accuracy precision and recall"
+          ]
+        },
+        {
+          "id": "api-logging-versioning",
+          "aliases": [
+            "put it behind an API log predictions and version the model and data",
+            "API logging and versioning of model and data"
+          ]
+        }
+      ]
+    }
+  ]
+}
