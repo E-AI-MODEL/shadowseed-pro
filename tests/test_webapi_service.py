@@ -370,6 +370,16 @@ def test_web_api_auto_splits_r1_detection_and_revision_to_local_gemma2(
         "_validate_backend",
         lambda *args, **kwargs: None,
     )
+    monkeypatch.setattr(
+        api.controller,
+        "default_embedding_backend",
+        lambda backend: "lexical",
+    )
+    monkeypatch.setattr(
+        api.controller,
+        "default_embedding_model",
+        lambda embedding_backend: None,
+    )
 
     created = api.create_session(
         {
@@ -407,6 +417,16 @@ def test_web_api_auto_splits_llama_detection_and_revision_to_local_gemma2(
         "_validate_backend",
         lambda *args, **kwargs: None,
     )
+    monkeypatch.setattr(
+        api.controller,
+        "default_embedding_backend",
+        lambda backend: "lexical",
+    )
+    monkeypatch.setattr(
+        api.controller,
+        "default_embedding_model",
+        lambda embedding_backend: None,
+    )
 
     created = api.create_session(
         {
@@ -440,6 +460,16 @@ def test_web_api_keeps_single_model_when_local_gemma2_is_unavailable(
         api.controller,
         "_validate_backend",
         lambda *args, **kwargs: None,
+    )
+    monkeypatch.setattr(
+        api.controller,
+        "default_embedding_backend",
+        lambda backend: "lexical",
+    )
+    monkeypatch.setattr(
+        api.controller,
+        "default_embedding_model",
+        lambda embedding_backend: None,
     )
 
     created = api.create_session(
@@ -476,6 +506,16 @@ def test_web_api_does_not_auto_split_unbenchmarked_primary_model(
         api.controller,
         "_validate_backend",
         lambda *args, **kwargs: None,
+    )
+    monkeypatch.setattr(
+        api.controller,
+        "default_embedding_backend",
+        lambda backend: "lexical",
+    )
+    monkeypatch.setattr(
+        api.controller,
+        "default_embedding_model",
+        lambda embedding_backend: None,
     )
 
     created = api.create_session(
