@@ -129,3 +129,46 @@ def test_summary_keeps_quality_and_runtime_dimensions_separate() -> None:
     assert summary["within_current_product_timeout_rate"] == 0.5
     assert "score" not in summary
     assert "winner" not in summary
+
+
+
+def test_language_summary_and_pair_comparison_keep_languages_separate() -> None:
+    nl_case = _case()
+    nl_case["case_id"] = "same-nl"
+    nl_case["pair_id"] = "same"
+    nl_case["language"] = "nl"
+    en_case = _case()
+    en_case["case_id"] = "same-en"
+    en_case["pair_id"] = "same"
+    en_case["language"] = "en"
+
+    nl = bench.score_case(
+        nl_case,
+        {
+            "response": "Evaluate on a separate test set.",
+            "done_reason": "length",
+            "total_duration": 150_000_000_000,
+            "eval_count": 700,
+        },
+    )
+    en = bench.score_case(
+        en_case,
+        {
+            "response": (
+                "Evaluate on a separate test set. After deployment, monitor data drift."
+            ),
+            "done_reason": "stop",
+            "total_duration": 90_000_000_000,
+            "eval_count": 400,
+        },
+    )
+
+    language = bench.summarize_by_language([nl, en])
+    pairs = bench.summarize_pairs([nl, en])
+
+    assert language["nl"]["final_response_rate"] == 0.0
+    assert language["en"]["final_response_rate"] == 1.0
+    assert pairs[0]["pair_id"] == "same"
+    assert pairs[0]["nl"]["done_reason"] == "length"
+    assert pairs[0]["en"]["done_reason"] == "stop"
+    assert pairs[0]["en_minus_nl"]["total_duration_seconds"] == -60.0
