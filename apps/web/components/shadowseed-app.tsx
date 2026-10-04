@@ -38,6 +38,35 @@ function authorityLabel(profile: string) {
   return "Gecontroleerd";
 }
 
+function compactModelLabel(modelId?: string | null) {
+  if (!modelId) return "standaard";
+  return modelId.replace(":latest", "");
+}
+
+function modelRoleSummary(session: SessionView) {
+  const roles = session.model_roles;
+  if (!roles) return null;
+
+  const generation = compactModelLabel(roles.generation.model_id);
+  const revision = compactModelLabel(roles.revision.model_id);
+  const detection = compactModelLabel(roles.detection.model_id);
+
+  if (generation === revision && generation === detection) {
+    return "alle rollen " + generation;
+  }
+  if (revision === detection) {
+    return "antwoord " + generation + " · detectie/revisie " + revision;
+  }
+  return (
+    "antwoord " +
+    generation +
+    " · detectie " +
+    detection +
+    " · revisie " +
+    revision
+  );
+}
+
 function orchestrationLabel(state?: string) {
   if (state === "human_turn") return "Jij bent aan zet";
   if (state === "ssl_turn") return "Shadowseed is aan zet";
@@ -961,7 +990,12 @@ export function ShadowseedApp() {
               <h1>{session?.title ?? "Shadowseed"}</h1>
               <p>
                 {session
-                  ? authorityLabel(session.authority_profile_id) + " · " + session.backend
+                  ? authorityLabel(session.authority_profile_id) +
+                    " · " +
+                    session.backend +
+                    (modelRoleSummary(session)
+                      ? " · " + modelRoleSummary(session)
+                      : "")
                   : "Maak een gesprek om te beginnen."}
               </p>
             </div>
