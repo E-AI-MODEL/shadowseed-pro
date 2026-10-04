@@ -164,12 +164,11 @@ def test_parser_preserves_two_word_gap_labels_but_drops_single_token_stubs() -> 
     assert diagnostics["dropped_citation_or_stub"] == 1
 
 
-def test_parser_drops_short_copied_proper_name_but_not_title_case_gap_label() -> None:
+def test_parser_drops_bare_two_word_proper_names() -> None:
     seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
         "1. Alice Smith\n"
-        "2. Data Drift",
-        source_text="Alice Smith deployed the classifier yesterday.",
+        "2. Data Drift"
     )
 
-    assert seeds == ["Data Drift"]
-    assert diagnostics["dropped_citation_or_stub"] == 1
+    assert seeds == []
+    assert diagnostics["dropped_citation_or_stub"] == 2
