@@ -1,0 +1,157 @@
+name: Research - Revision role screen
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/revision-role-screen-once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: revision-role-screen
+  cancel-in-progress: true
+
+env:
+  RUN_DIR: benchmarks/results/revision_role
+
+jobs:
+  revision-role:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.11"
+
+      - name: Install Shadowseed
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Install and start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve > /tmp/ollama.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then
+              break
+            fi
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
+          echo "OLLAMA_VERSION=$(ollama --version 2>&1 | tr '\n' ' ')" >> "$GITHUB_ENV"
+
+      - name: Run isolated revision role on actual laptop models
+        run: |
+          mkdir -p "$RUN_DIR"
+
+          run_model () {
+            model_id="$1"
+            slug="$2"
+
+            ollama pull "$model_id"
+            model_digest="$(MODEL_ID="$model_id" python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          requested = os.environ["MODEL_ID"]
+          with urllib.request.urlopen("http://127.0.0.1:11434/api/tags", timeout=30) as response:
+              payload = json.load(response)
+          match = next(
+              (
+                  model
+                  for model in payload.get("models", [])
+                  if model.get("name") == requested
+                  or model.get("model") == requested
+              ),
+              None,
+          )
+          if match is None or not match.get("digest"):
+              raise SystemExit(f"unable to resolve digest for {requested}: {payload}")
+          print(match["digest"])
+          PY
+          )"
+
+            GITHUB_SHA="$(git rev-parse HEAD)" python scripts/run_revision_role_benchmark.py \
+              --model-id "$model_id" \
+              --model-revision "$model_digest" \
+              --max-new-tokens 700 \
+              --timeout 300 \
+              --output "$RUN_DIR/${slug}.json"
+
+            ollama rm "$model_id"
+          }
+
+          run_model "deepseek-r1:latest" "deepseek-r1_latest"
+          run_model "gemma2:latest" "gemma2_latest"
+
+      - name: Add run provenance and verify outputs
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          run_dir = Path(os.environ["RUN_DIR"])
+          expected_head = subprocess.run(
+              ["git", "rev-parse", "HEAD"],
+              check=True,
+              capture_output=True,
+              text=True,
+          ).stdout.strip()
+
+          for path in sorted(run_dir.glob("*.json")):
+              report = json.loads(path.read_text(encoding="utf-8"))
+              assert report["artifact"] == "shadowseed-revision-role-screen-v1"
+              assert report["shadowseed_source_ref"] == expected_head
+              assert report["summary"]["cases"] == 2
+              assert report["max_new_tokens"] == 700
+              assert report["prompt_contract"]["prompt_id"] == "minimal_revision"
+              assert report["prompt_contract"]["prompt_version"] == "1.0"
+              assert len(report["cases"]) == 2
+              report["runtime_provenance"] = {
+                  "github_run_id": os.environ["GITHUB_RUN_ID"],
+                  "github_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                  "runner_os": os.environ.get("RUNNER_OS"),
+                  "runner_arch": os.environ.get("RUNNER_ARCH"),
+                  "ollama_version": os.environ["OLLAMA_VERSION"],
+                  "execution_note": (
+                      "Role-quality screen on GitHub Linux CPU. Absolute latency is "
+                      "not representative of the user's laptop; the current product "
+                      "120-second provider timeout is reported separately."
+                  ),
+              }
+              path.write_text(
+                  json.dumps(report, indent=2, ensure_ascii=False) + "\n",
+                  encoding="utf-8",
+              )
+              print(path.name, json.dumps(report["summary"], indent=2))
+          PY
+
+      - name: Commit benchmark results to this branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$RUN_DIR"
+          git diff --cached --check
+          git commit -m "Record R1 and Gemma2 revision role screen"
+          git push origin HEAD:"${{ github.event.pull_request.head.ref }}"
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: revision-role-screen
+          path: ${{ env.RUN_DIR }}/*.json
