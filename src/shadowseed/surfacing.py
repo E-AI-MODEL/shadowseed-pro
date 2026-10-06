@@ -150,7 +150,7 @@ ANSWER_GENERATION_PROMPT_META = prompt_contract_metadata(
     prompt_id=ANSWER_GENERATION_PROMPT_ID,
     prompt_version=ANSWER_GENERATION_PROMPT_VERSION,
     component="answer_generation",
-    template=_ANSWER_GENERATION_PROMPT_TEMPLATE,
+    template=_ANSWER_GENERATION_SYSTEM_CONTRACT + "\n\n" + _ANSWER_GENERATION_PROMPT_TEMPLATE,
     input_contract=(
         "bounded_role_structured_history",
         "current_question",
