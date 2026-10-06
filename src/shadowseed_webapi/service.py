@@ -28,8 +28,10 @@ _AUTHORITY_MODE_TO_PROFILE = {
 _MISSING = object()
 _WEB_V1_BACKENDS = frozenset({"fixture", "ollama", "openai"})
 _WEB_V1_EMBEDDING_BACKENDS = frozenset({"lexical", "ollama", "openai"})
-_LOCAL_BALANCED_PRIMARY_PREFIXES = ("deepseek-r1", "llama3.1")
-_LOCAL_BALANCED_BROAD_ROLE_PREFIX = "gemma2"
+# Exact local model IDs may be added here only after a committed role-specific
+# benchmark establishes that the model meets the acceptance criteria for that role.
+# Keep this registry empty rather than inferring capability from model family names.
+_LOCAL_ROLE_CAPABILITIES: dict[str, frozenset[str]] = {}
 _LOCAL_DETECTION_MAX_NEW_TOKENS = 220
 
 
@@ -164,45 +166,60 @@ class WebApiService:
         }
 
     @staticmethod
-    def _ollama_model_matches_prefix(model_id: str | None, prefix: str) -> bool:
-        value = str(model_id or "").strip().casefold()
-        wanted = prefix.strip().casefold()
-        return value == wanted or value.startswith(wanted + ":")
+    def _local_role_capabilities(model_id: str | None) -> frozenset[str]:
+        normalized = str(model_id or "").strip().casefold()
+        if not normalized:
+            return frozenset()
+        return _LOCAL_ROLE_CAPABILITIES.get(normalized, frozenset())
 
     @classmethod
-    def _preferred_broad_local_model(cls, models: list[str]) -> str | None:
-        normalized = [str(model).strip() for model in models if str(model).strip()]
-        for exact in ("gemma2:latest", "gemma2"):
-            for model in normalized:
-                if model.casefold() == exact:
-                    return model
-        for model in normalized:
-            if cls._ollama_model_matches_prefix(
-                model, _LOCAL_BALANCED_BROAD_ROLE_PREFIX
-            ):
-                return model
+    def _evidence_backed_local_model_for_role(
+        cls,
+        models: list[str],
+        role: str,
+    ) -> str | None:
+        for model in models:
+            normalized = str(model).strip()
+            if normalized and role in cls._local_role_capabilities(normalized):
+                return normalized
         return None
 
-    def _balanced_local_model_roles(self, primary_model_id: str | None) -> dict[str, Any]:
-        if not any(
-            self._ollama_model_matches_prefix(primary_model_id, prefix)
-            for prefix in _LOCAL_BALANCED_PRIMARY_PREFIXES
-        ):
-            return {}
+    def _evidence_backed_local_model_roles(
+        self,
+        primary_model_id: str | None,
+    ) -> dict[str, Any]:
         try:
             available = self.controller.discover_models("ollama")
         except Exception:
             return {}
-        broad_model = self._preferred_broad_local_model(available)
-        if broad_model is None:
-            return {}
-        return {
-            "revision_backend": "ollama",
-            "revision_model_id": broad_model,
-            "detection_backend": "ollama",
-            "detection_model_id": broad_model,
-            "detection_max_new_tokens": _LOCAL_DETECTION_MAX_NEW_TOKENS,
-        }
+
+        roles: dict[str, Any] = {}
+        revision_model = self._evidence_backed_local_model_for_role(
+            available,
+            "revision",
+        )
+        detection_model = self._evidence_backed_local_model_for_role(
+            available,
+            "detection",
+        )
+
+        primary = str(primary_model_id or "").strip().casefold()
+        if revision_model and revision_model.casefold() != primary:
+            roles.update(
+                {
+                    "revision_backend": "ollama",
+                    "revision_model_id": revision_model,
+                }
+            )
+        if detection_model and detection_model.casefold() != primary:
+            roles.update(
+                {
+                    "detection_backend": "ollama",
+                    "detection_model_id": detection_model,
+                    "detection_max_new_tokens": _LOCAL_DETECTION_MAX_NEW_TOKENS,
+                }
+            )
+        return roles
 
     def configure_openai(self, payload: dict[str, Any]) -> dict[str, Any]:
         api_key = _required_json_string(payload, "api_key")
@@ -280,7 +297,7 @@ class WebApiService:
             validate_production_local_backend(backend, embedding_backend)
 
         local_roles = (
-            self._balanced_local_model_roles(model_id)
+            self._evidence_backed_local_model_roles(model_id)
             if backend == "ollama"
             else {}
         )

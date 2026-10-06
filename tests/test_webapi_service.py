@@ -369,7 +369,7 @@ def _capture_web_session_creation(monkeypatch, api: WebApiService) -> dict:
     return captured
 
 
-def test_web_api_auto_splits_r1_detection_and_revision_to_local_gemma2(
+def test_web_api_does_not_route_local_roles_by_model_family_name(
     monkeypatch,
     tmp_path,
 ) -> None:
@@ -385,7 +385,7 @@ def test_web_api_auto_splits_r1_detection_and_revision_to_local_gemma2(
 
     api.create_session(
         {
-            "title": "Local balanced roles",
+            "title": "No name-based local routing",
             "backend": "ollama",
             "model_id": "deepseek-r1:latest",
             "authority_mode": "assisted",
@@ -393,6 +393,40 @@ def test_web_api_auto_splits_r1_detection_and_revision_to_local_gemma2(
     )
 
     assert captured["model_id"] == "deepseek-r1:latest"
+    assert captured["revision_backend"] is None
+    assert captured["revision_model_id"] is None
+    assert captured["detection_backend"] is None
+    assert captured["detection_model_id"] is None
+    assert captured["detection_max_new_tokens"] is None
+
+
+def test_web_api_routes_only_roles_with_explicit_capability_evidence(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    captured = _capture_web_session_creation(monkeypatch, api)
+    monkeypatch.setattr(
+        "shadowseed_webapi.service._LOCAL_ROLE_CAPABILITIES",
+        {"gemma2:latest": frozenset({"revision", "detection"})},
+    )
+    monkeypatch.setattr(
+        api.controller,
+        "discover_models",
+        lambda backend: ["deepseek-r1:latest", "gemma2:latest"]
+        if backend == "ollama"
+        else [],
+    )
+
+    api.create_session(
+        {
+            "title": "Evidence-backed local roles",
+            "backend": "ollama",
+            "model_id": "deepseek-r1:latest",
+            "authority_mode": "assisted",
+        }
+    )
+
     assert captured["revision_backend"] == "ollama"
     assert captured["revision_model_id"] == "gemma2:latest"
     assert captured["detection_backend"] == "ollama"
@@ -400,49 +434,27 @@ def test_web_api_auto_splits_r1_detection_and_revision_to_local_gemma2(
     assert captured["detection_max_new_tokens"] == 220
 
 
-def test_web_api_auto_splits_llama_detection_and_revision_to_local_gemma2(
+def test_web_api_role_capability_is_specific_to_exact_model_id(
     monkeypatch,
     tmp_path,
 ) -> None:
     api = WebApiService(tmp_path / "workspace")
     captured = _capture_web_session_creation(monkeypatch, api)
     monkeypatch.setattr(
+        "shadowseed_webapi.service._LOCAL_ROLE_CAPABILITIES",
+        {"gemma2:9b": frozenset({"revision", "detection"})},
+    )
+    monkeypatch.setattr(
         api.controller,
         "discover_models",
-        lambda backend: ["llama3.1:latest", "gemma2:9b"]
+        lambda backend: ["deepseek-r1:latest", "gemma2:latest"]
         if backend == "ollama"
         else [],
     )
 
     api.create_session(
         {
-            "title": "Local balanced llama roles",
-            "backend": "ollama",
-            "model_id": "llama3.1:latest",
-            "authority_mode": "assisted",
-        }
-    )
-
-    assert captured["model_id"] == "llama3.1:latest"
-    assert captured["revision_model_id"] == "gemma2:9b"
-    assert captured["detection_model_id"] == "gemma2:9b"
-
-
-def test_web_api_keeps_single_model_when_local_gemma2_is_unavailable(
-    monkeypatch,
-    tmp_path,
-) -> None:
-    api = WebApiService(tmp_path / "workspace")
-    captured = _capture_web_session_creation(monkeypatch, api)
-    monkeypatch.setattr(
-        api.controller,
-        "discover_models",
-        lambda backend: ["deepseek-r1:latest"] if backend == "ollama" else [],
-    )
-
-    api.create_session(
-        {
-            "title": "Local single model fallback",
+            "title": "Exact model evidence only",
             "backend": "ollama",
             "model_id": "deepseek-r1:latest",
             "authority_mode": "assisted",
@@ -456,33 +468,38 @@ def test_web_api_keeps_single_model_when_local_gemma2_is_unavailable(
     assert captured["detection_max_new_tokens"] is None
 
 
-def test_web_api_does_not_auto_split_unbenchmarked_primary_model(
+def test_web_api_capability_evidence_is_role_specific(
     monkeypatch,
     tmp_path,
 ) -> None:
     api = WebApiService(tmp_path / "workspace")
     captured = _capture_web_session_creation(monkeypatch, api)
     monkeypatch.setattr(
+        "shadowseed_webapi.service._LOCAL_ROLE_CAPABILITIES",
+        {"gemma2:latest": frozenset({"detection"})},
+    )
+    monkeypatch.setattr(
         api.controller,
         "discover_models",
-        lambda backend: ["qwen2.5:7b", "gemma2:latest"]
+        lambda backend: ["llama3.1:latest", "gemma2:latest"]
         if backend == "ollama"
         else [],
     )
 
     api.create_session(
         {
-            "title": "No unsupported automatic split",
+            "title": "Role-specific local evidence",
             "backend": "ollama",
-            "model_id": "qwen2.5:7b",
+            "model_id": "llama3.1:latest",
             "authority_mode": "assisted",
         }
     )
 
     assert captured["revision_backend"] is None
     assert captured["revision_model_id"] is None
-    assert captured["detection_backend"] is None
-    assert captured["detection_model_id"] is None
+    assert captured["detection_backend"] == "ollama"
+    assert captured["detection_model_id"] == "gemma2:latest"
+    assert captured["detection_max_new_tokens"] == 220
 
 
 def test_web_session_payload_exposes_effective_model_roles(tmp_path) -> None:

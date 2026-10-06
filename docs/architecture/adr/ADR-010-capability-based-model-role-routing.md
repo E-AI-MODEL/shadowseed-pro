@@ -102,26 +102,21 @@ This ADR does not:
 - make benchmark results a product-quality score.
 
 
-## Local balanced web profile
 
-The local web client may apply a conservative evidence-backed role split when
-the required models are already installed locally.
+## Local web routing policy
 
-For the currently benchmarked local setup:
+The local web client must not infer role capability from a model family name,
+parameter count, or the mere presence of another installed model.
 
-- a primary `deepseek-r1*` or `llama3.1*` model may remain the user-selected
-  generation model;
-- when a local `gemma2*` model is discoverable, same-turn revision and
-  candidate-gap detection are assigned to that Gemma2 model;
-- detection receives its own bounded generation budget;
-- when Gemma2 is unavailable, Shadowseed preserves the existing single-model
-  behaviour rather than downloading a model or silently switching providers.
+Automatic assignment of a secondary local model is allowed only when the exact
+model identifier has explicit role-specific capability evidence recorded by the
+product. Evidence for one role does not imply eligibility for another role.
 
-The profile is intentionally narrow. It does not auto-route arbitrary models
-and it does not infer capability from parameter count alone.
+If no such evidence exists, the web client preserves single-model behaviour:
+generation, detection and revision inherit the user-selected model through the
+existing fallback rules.
 
-The paired R1 NL/EN revision screen showed that language is a material
-capability dimension for the tested R1 build, but a separate same-head rerun
-also showed substantial reasoning-budget variability. Therefore language is not
-yet used as an automatic production routing rule. User-interface language
-remains independent from internal model-role assignment.
+This keeps automatic routing subordinate to the eligibility policy above.
+Adding an entry to the capability registry is therefore a behaviour change that
+must be justified by a committed role-specific benchmark result and reviewed as
+such.
