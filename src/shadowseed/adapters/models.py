@@ -66,9 +66,26 @@ class FixtureBackend:
             for message in messages
             if message.get("role") == "user"
         ]
-        question = user_messages[-1] if user_messages else ""
-        question = question.split("\n\n<<<CANDIDATE_PERSPECTIVES", 1)[0]
-        return f"Fixture echo answer to: {question}"
+        current = user_messages[-1] if user_messages else ""
+        open_marker = "<<<CANDIDATE_PERSPECTIVES data=untrusted>>>"
+        close_marker = "<<<END_CANDIDATE_PERSPECTIVES>>>"
+        question = current.split("\n\n" + open_marker, 1)[0]
+        baseline = f"Fixture echo answer to: {question}"
+        if open_marker not in current or close_marker not in current:
+            return baseline
+        candidate_block = current.split(open_marker, 1)[1].split(close_marker, 1)[0]
+        candidates = []
+        for line in candidate_block.splitlines():
+            text = line.strip()
+            if not text:
+                continue
+            if text.startswith("[") and "]" in text:
+                text = text.split("]", 1)[1].strip()
+            if text:
+                candidates.append(text)
+        if not candidates:
+            return baseline
+        return f"{baseline}\n\nSSL-guided revision: {' '.join(candidates)}"
 
 
 class HFTransformersBackend:
