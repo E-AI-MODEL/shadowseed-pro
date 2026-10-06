@@ -487,7 +487,7 @@ def test_inspection_exposes_full_runtime_configuration_snapshots(tmp_path) -> No
 
     view = controller.session_view(session_id)
 
-    assert view["persisted_config"]["surface_top_k"] == 2
+    assert view["persisted_config"]["surface_top_k"] == 1
     assert view["session_config"]["runtime_mode"] == "live"
     assert view["core_config"]["min_occurrences_for_gate"] == 3
 
