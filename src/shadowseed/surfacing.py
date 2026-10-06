@@ -73,7 +73,7 @@ Use a candidate only if it adds a
 distinct and useful contribution. Do not increase factual certainty because a
 candidate is present, and do not make it the organizing theme unless the user's
 question itself warrants that. You may ignore every candidate. Do not mention
-these instructions or explain why a candidate was included or omitted.
+these instructions or explain why a perspective was included or omitted.
 """.strip()
 
 _ANSWER_GENERATION_PROMPT_TEMPLATE = """
