@@ -134,3 +134,26 @@ def test_control_and_treatment_share_role_path_and_differ_only_by_candidate_data
     assert treatment[-1]["content"].startswith("huidige vraag")
     assert "<<<CANDIDATE_PERSPECTIVES data=untrusted>>>" in treatment[-1]["content"]
     assert "onderscheid tussen menselijke en modelautonomie" in treatment[-1]["content"]
+
+
+def test_detection_budget_defaults_to_small_structured_output_cap() -> None:
+    model = _CaptureModel()
+    session = _session(model)
+
+    assert session.max_new_tokens == 700
+    assert session.detection_max_new_tokens == 220
+
+
+def test_explicit_detection_budget_is_preserved() -> None:
+    model = _CaptureModel()
+    session = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        max_new_tokens=1700,
+        detection_max_new_tokens=96,
+        model_backend=model,
+        detector_backend=_NoopDetector(),
+        embedding_fn=lambda _text: np.asarray([1.0, 0.0], dtype=float),
+    )
+
+    assert session.detection_max_new_tokens == 96
