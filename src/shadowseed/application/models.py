@@ -31,7 +31,7 @@ class SessionConfig:
     embedding_backend: str = "lexical"
     embedding_model: str | None = None
     surface_threshold: float = 0.30
-    surface_top_k: int = 2
+    surface_top_k: int = 1
     early_turn_margin: float = 0.10
     early_turn_history: int = 5
     resurface_margin: float = 0.15
