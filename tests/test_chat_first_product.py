@@ -582,6 +582,14 @@ def test_persisted_assisted_exploratory_gate_does_not_show_review_request() -> N
 
 
 
+def test_default_ssl_intensity_keeps_single_seed_surface_cap() -> None:
+    assert WorkbenchController.ssl_intensity_settings(50)["surface_top_k"] == 1
+    assert WorkbenchController.ssl_intensity_settings(60)["surface_top_k"] == 1
+    assert WorkbenchController.ssl_intensity_settings(61)["surface_top_k"] == 2
+    assert WorkbenchController.ssl_intensity_settings(90)["surface_top_k"] == 2
+    assert WorkbenchController.ssl_intensity_settings(91)["surface_top_k"] == 3
+
+
 def test_product_sliders_are_independent_and_persisted(tmp_path) -> None:
     controller = WorkbenchController(tmp_path / "workspace")
 
