@@ -33,6 +33,10 @@ class ModelBackend(Protocol):
         """Generate one vanilla turn from role-structured conversation history."""
         ...
 
+    def generate_messages(self, messages: list[dict[str, str]]) -> str:
+        """Generate from an already prepared role-structured message sequence."""
+        ...
+
 
 class FixtureBackend:
     """Deterministic CI backend.
@@ -54,6 +58,16 @@ class FixtureBackend:
         history: list[tuple[str, str]],
         question: str,
     ) -> str:
+        return f"Fixture echo answer to: {question}"
+
+    def generate_messages(self, messages: list[dict[str, str]]) -> str:
+        user_messages = [
+            str(message.get("content", ""))
+            for message in messages
+            if message.get("role") == "user"
+        ]
+        question = user_messages[-1] if user_messages else ""
+        question = question.split("\n\n<<<CANDIDATE_PERSPECTIVES", 1)[0]
         return f"Fixture echo answer to: {question}"
 
 
@@ -110,12 +124,7 @@ class HFTransformersBackend:
         )
         return output[0]["generated_text"].strip()
 
-    def generate_chat(
-        self,
-        history: list[tuple[str, str]],
-        question: str,
-    ) -> str:
-        messages = chat_messages(history, question)
+    def generate_messages(self, messages: list[dict[str, str]]) -> str:
         chat_template = getattr(self.tokenizer, "apply_chat_template", None)
         if callable(chat_template):
             prompt = chat_template(
@@ -135,6 +144,13 @@ class HFTransformersBackend:
             return_full_text=False,
         )
         return output[0]["generated_text"].strip()
+
+    def generate_chat(
+        self,
+        history: list[tuple[str, str]],
+        question: str,
+    ) -> str:
+        return self.generate_messages(chat_messages(history, question))
 
 
 class OllamaBackend:
@@ -157,15 +173,18 @@ class OllamaBackend:
     def generate(self, prompt: str, scenario: dict, mode: str, ssl_seeds: list[str]) -> str:
         return self.client.generate(prompt, max_new_tokens=self.max_new_tokens)
 
+    def generate_messages(self, messages: list[dict[str, str]]) -> str:
+        return self.client.generate_chat(
+            messages,
+            max_new_tokens=self.max_new_tokens,
+        )
+
     def generate_chat(
         self,
         history: list[tuple[str, str]],
         question: str,
     ) -> str:
-        return self.client.generate_chat(
-            chat_messages(history, question),
-            max_new_tokens=self.max_new_tokens,
-        )
+        return self.generate_messages(chat_messages(history, question))
 
 
 class OpenAIBackend:
@@ -189,15 +208,18 @@ class OpenAIBackend:
     def generate(self, prompt: str, scenario: dict, mode: str, ssl_seeds: list[str]) -> str:
         return self.client.generate(prompt, max_new_tokens=self.max_new_tokens)
 
+    def generate_messages(self, messages: list[dict[str, str]]) -> str:
+        return self.client.generate_chat(
+            messages,
+            max_new_tokens=self.max_new_tokens,
+        )
+
     def generate_chat(
         self,
         history: list[tuple[str, str]],
         question: str,
     ) -> str:
-        return self.client.generate_chat(
-            chat_messages(history, question),
-            max_new_tokens=self.max_new_tokens,
-        )
+        return self.generate_messages(chat_messages(history, question))
 
 
 def make_backend(
