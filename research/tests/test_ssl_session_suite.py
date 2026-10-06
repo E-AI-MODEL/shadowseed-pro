@@ -367,8 +367,11 @@ def test_resurface_margin_damps_consecutive_steering(tmp_path: Path, monkeypatch
 
 
 def test_chat_prompt_keeps_question_leading():
-    # Round 029: de gestelde vraag blijft leidend — de weave-instructie verbiedt
-    # onderwerp-/focusverschuiving expliciet (alleen in de SSL-arm aanwezig).
+    # Native product A/B keeps the same safety/system contract in both arms.
+    # The treatment differs only by the bounded candidate-data block.
+    baseline = build_chat_prompt([("Q1", "A1")], "Q2", [])
     ssl = build_chat_prompt([("Q1", "A1")], "Q2", ["Perspective."])
-    assert "question remains leading" in ssl and "never shift" in ssl
-    assert "question remains leading" not in build_chat_prompt([("Q1", "A1")], "Q2", [])
+    for prompt in (baseline, ssl):
+        assert "question remains leading" in prompt and "never shift" in prompt
+    assert "<<<CANDIDATE_PERSPECTIVES data=untrusted>>>" not in baseline
+    assert "<<<CANDIDATE_PERSPECTIVES data=untrusted>>>" in ssl
