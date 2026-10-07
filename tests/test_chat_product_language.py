@@ -4,6 +4,7 @@ import numpy as np
 
 from shadowseed.application.sessions import SessionService
 from shadowseed.chat import ShadowChatSession
+from shadowseed.adapters.models import HFTransformersBackend
 
 
 class _CaptureModel:
@@ -157,3 +158,45 @@ def test_explicit_detection_budget_is_preserved() -> None:
     )
 
     assert session.detection_max_new_tokens == 96
+
+
+def test_hf_role_transport_folds_system_for_strict_chat_template() -> None:
+    class _StrictTokenizer:
+        def __init__(self) -> None:
+            self.calls = []
+
+        def apply_chat_template(self, messages, **_kwargs):
+            snapshot = [dict(message) for message in messages]
+            self.calls.append(snapshot)
+            if any(message.get("role") == "system" for message in snapshot):
+                raise ValueError("system role unsupported")
+            return "\n".join(
+                f"{message['role']}: {message['content']}"
+                for message in snapshot
+            )
+
+    tokenizer = _StrictTokenizer()
+    backend = HFTransformersBackend.__new__(HFTransformersBackend)
+    backend.tokenizer = tokenizer
+    backend.max_new_tokens = 64
+    backend.generator = lambda prompt, **_kwargs: [
+        {"generated_text": "antwoord"}
+    ]
+
+    result = backend.generate_messages(
+        [
+            {"role": "system", "content": "Beantwoord compact."},
+            {"role": "user", "content": "Vraag een"},
+            {"role": "assistant", "content": "Antwoord een"},
+            {"role": "user", "content": "Vraag twee"},
+        ]
+    )
+
+    assert result == "antwoord"
+    assert len(tokenizer.calls) == 2
+    retry = tokenizer.calls[1]
+    assert all(message["role"] != "system" for message in retry)
+    assert retry[0]["role"] == "user"
+    assert retry[0]["content"].startswith("Beantwoord compact.")
+    assert "Vraag een" in retry[0]["content"]
+    assert retry[-1] == {"role": "user", "content": "Vraag twee"}
