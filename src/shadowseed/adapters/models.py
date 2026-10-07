@@ -141,14 +141,55 @@ class HFTransformersBackend:
         )
         return output[0]["generated_text"].strip()
 
+    @staticmethod
+    def _fold_system_for_chat_template(
+        messages: list[dict[str, str]],
+    ) -> list[dict[str, str]]:
+        """Fold system guidance into the first user turn for strict templates.
+
+        Some supported Hugging Face instruct templates accept only user and
+        assistant roles. Preserve the product contract without flattening the
+        entire conversation when such a template rejects an explicit system role.
+        """
+
+        if not messages or messages[0].get("role") != "system":
+            return [dict(message) for message in messages]
+
+        system_content = str(messages[0].get("content", "")).strip()
+        folded = [dict(message) for message in messages[1:]]
+        if not folded:
+            return [{"role": "user", "content": system_content}]
+        if folded[0].get("role") == "user":
+            user_content = str(folded[0].get("content", ""))
+            folded[0] = {
+                **folded[0],
+                "content": (
+                    f"{system_content}\n\nUSER MESSAGE:\n{user_content}"
+                    if system_content
+                    else user_content
+                ),
+            }
+            return folded
+        return [
+            {"role": "user", "content": system_content},
+            *folded,
+        ]
+
     def generate_messages(self, messages: list[dict[str, str]]) -> str:
         chat_template = getattr(self.tokenizer, "apply_chat_template", None)
         if callable(chat_template):
-            prompt = chat_template(
-                messages,
-                tokenize=False,
-                add_generation_prompt=True,
-            )
+            try:
+                prompt = chat_template(
+                    messages,
+                    tokenize=False,
+                    add_generation_prompt=True,
+                )
+            except Exception:
+                prompt = chat_template(
+                    self._fold_system_for_chat_template(messages),
+                    tokenize=False,
+                    add_generation_prompt=True,
+                )
         else:
             prompt = "\n".join(
                 f"{message['role'].capitalize()}: {message['content']}"
