@@ -509,7 +509,7 @@ def build_parser() -> argparse.ArgumentParser:
     chat.add_argument(
         "--surface-top-k",
         type=int,
-        default=2,
+        default=1,
         help="Maximum number of validated seeds that may influence one turn.",
     )
     chat.add_argument(
