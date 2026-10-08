@@ -200,3 +200,85 @@ def test_hf_role_transport_folds_system_for_strict_chat_template() -> None:
     assert retry[0]["content"].startswith("Beantwoord compact.")
     assert "Vraag een" in retry[0]["content"]
     assert retry[-1] == {"role": "user", "content": "Vraag twee"}
+
+
+
+def test_hf_role_transport_falls_back_when_no_chat_template_is_configured() -> None:
+    class _MissingTemplateTokenizer:
+        def __init__(self) -> None:
+            self.calls = 0
+            self.chat_template = None
+
+        def apply_chat_template(self, _messages, **_kwargs):
+            self.calls += 1
+            raise ValueError("tokenizer.chat_template is not set")
+
+    captured = {}
+    tokenizer = _MissingTemplateTokenizer()
+    backend = HFTransformersBackend.__new__(HFTransformersBackend)
+    backend.tokenizer = tokenizer
+    backend.max_new_tokens = 64
+
+    def _generate(prompt, **_kwargs):
+        captured["prompt"] = prompt
+        return [{"generated_text": "antwoord"}]
+
+    backend.generator = _generate
+
+    result = backend.generate_messages(
+        [
+            {"role": "system", "content": "Beantwoord compact."},
+            {"role": "user", "content": "Vraag een"},
+            {"role": "assistant", "content": "Antwoord een"},
+            {"role": "user", "content": "Vraag twee"},
+        ]
+    )
+
+    assert result == "antwoord"
+    assert tokenizer.calls == 2
+    assert "System: Beantwoord compact." in captured["prompt"]
+    assert "User: Vraag een" in captured["prompt"]
+    assert "Assistant: Antwoord een" in captured["prompt"]
+    assert captured["prompt"].endswith("User: Vraag twee\nAssistant:")
+
+
+def test_hf_role_transport_falls_back_when_only_named_chat_templates_exist() -> None:
+    class _NamedTemplatesOnlyTokenizer:
+        def __init__(self) -> None:
+            self.calls = 0
+            self.chat_template = {
+                "chatml": "{{ messages }}",
+                "tool_use": "{{ messages }}",
+            }
+
+        def apply_chat_template(self, _messages, **kwargs):
+            self.calls += 1
+            assert "chat_template" not in kwargs
+            raise ValueError("multiple chat templates with no default selected")
+
+    captured = {}
+    tokenizer = _NamedTemplatesOnlyTokenizer()
+    backend = HFTransformersBackend.__new__(HFTransformersBackend)
+    backend.tokenizer = tokenizer
+    backend.max_new_tokens = 64
+
+    def _generate(prompt, **_kwargs):
+        captured["prompt"] = prompt
+        return [{"generated_text": "antwoord"}]
+
+    backend.generator = _generate
+
+    result = backend.generate_messages(
+        [
+            {"role": "system", "content": "Volg de productregels."},
+            {"role": "user", "content": "Huidige vraag"},
+        ]
+    )
+
+    assert result == "antwoord"
+    assert tokenizer.calls == 2
+    assert captured["prompt"] == (
+        "System: Volg de productregels.\n"
+        "User: Huidige vraag\n"
+        "Assistant:"
+    )
