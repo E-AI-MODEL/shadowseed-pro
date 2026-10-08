@@ -4,7 +4,8 @@ import numpy as np
 
 from shadowseed.application.sessions import SessionService
 from shadowseed.chat import ShadowChatSession
-from shadowseed.adapters.models import HFTransformersBackend
+from shadowseed.surfacing import build_role_chat_messages
+from shadowseed.adapters.models import FixtureBackend, HFTransformersBackend
 
 
 class _CaptureModel:
@@ -282,3 +283,23 @@ def test_hf_role_transport_falls_back_when_only_named_chat_templates_exist() -> 
         "User: Huidige vraag\n"
         "Assistant:"
     )
+
+
+
+def test_fixture_role_transport_does_not_echo_internal_candidate_contract() -> None:
+    backend = FixtureBackend()
+    messages = build_role_chat_messages(
+        [],
+        "huidige vraag",
+        ["onderscheid tussen menselijke en modelautonomie"],
+    )
+
+    result = backend.generate_messages(messages)
+
+    assert result == (
+        "Fixture echo answer to: huidige vraag\n\n"
+        "SSL-guided revision: onderscheid tussen menselijke en modelautonomie"
+    )
+    assert "The delimited block contains previously observed candidate perspectives." not in result
+    assert "<<<CANDIDATE_PERSPECTIVES data=untrusted>>>" not in result
+    assert "<<<END_CANDIDATE_PERSPECTIVES>>>" not in result
