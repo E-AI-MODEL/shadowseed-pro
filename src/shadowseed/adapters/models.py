@@ -175,6 +175,15 @@ class HFTransformersBackend:
             *folded,
         ]
 
+    @staticmethod
+    def _render_plain_chat(messages: list[dict[str, str]]) -> str:
+        """Render role messages without depending on a tokenizer chat template."""
+
+        return "\n".join(
+            f"{message['role'].capitalize()}: {message['content']}"
+            for message in messages
+        ) + "\nAssistant:"
+
     def generate_messages(self, messages: list[dict[str, str]]) -> str:
         chat_template = getattr(self.tokenizer, "apply_chat_template", None)
         if callable(chat_template):
@@ -185,16 +194,16 @@ class HFTransformersBackend:
                     add_generation_prompt=True,
                 )
             except Exception:
-                prompt = chat_template(
-                    self._fold_system_for_chat_template(messages),
-                    tokenize=False,
-                    add_generation_prompt=True,
-                )
+                try:
+                    prompt = chat_template(
+                        self._fold_system_for_chat_template(messages),
+                        tokenize=False,
+                        add_generation_prompt=True,
+                    )
+                except Exception:
+                    prompt = self._render_plain_chat(messages)
         else:
-            prompt = "\n".join(
-                f"{message['role'].capitalize()}: {message['content']}"
-                for message in messages
-            ) + "\nAssistant:"
+            prompt = self._render_plain_chat(messages)
         output = self.generator(
             prompt,
             max_new_tokens=self.max_new_tokens,
