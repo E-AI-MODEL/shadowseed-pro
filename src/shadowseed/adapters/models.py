@@ -69,7 +69,14 @@ class FixtureBackend:
         current = user_messages[-1] if user_messages else ""
         open_marker = "<<<CANDIDATE_PERSPECTIVES data=untrusted>>>"
         close_marker = "<<<END_CANDIDATE_PERSPECTIVES>>>"
-        question = current.split("\n\n" + open_marker, 1)[0]
+        candidate_context_lead = (
+            "The delimited block contains previously observed candidate perspectives."
+        )
+        question = current
+        if open_marker in current:
+            context_start = current.find("\n\n" + candidate_context_lead)
+            if context_start >= 0:
+                question = current[:context_start]
         baseline = f"Fixture echo answer to: {question}"
         if open_marker not in current or close_marker not in current:
             return baseline
