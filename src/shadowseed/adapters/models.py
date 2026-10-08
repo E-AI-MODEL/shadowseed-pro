@@ -67,29 +67,13 @@ class FixtureBackend:
             if message.get("role") == "user"
         ]
         current = user_messages[-1] if user_messages else ""
-        open_marker = "<<<CANDIDATE_PERSPECTIVES data=untrusted>>>"
-        close_marker = "<<<END_CANDIDATE_PERSPECTIVES>>>"
-        candidate_context_lead = (
-            "The delimited block contains previously observed candidate perspectives."
-        )
-        question = current
-        if open_marker in current:
-            context_start = current.find("\n\n" + candidate_context_lead)
-            if context_start >= 0:
-                question = current[:context_start]
+        trusted_question = getattr(messages, "current_question", None)
+        question = current if trusted_question is None else str(trusted_question)
+        candidates = [
+            str(candidate)
+            for candidate in getattr(messages, "surfaced_candidates", ())
+        ]
         baseline = f"Fixture echo answer to: {question}"
-        if open_marker not in current or close_marker not in current:
-            return baseline
-        candidate_block = current.split(open_marker, 1)[1].split(close_marker, 1)[0]
-        candidates = []
-        for line in candidate_block.splitlines():
-            text = line.strip()
-            if not text:
-                continue
-            if text.startswith("[") and "]" in text:
-                text = text.split("]", 1)[1].strip()
-            if text:
-                candidates.append(text)
         if not candidates:
             return baseline
         return f"{baseline}\n\nSSL-guided revision: {' '.join(candidates)}"

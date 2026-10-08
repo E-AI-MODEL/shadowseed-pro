@@ -7,6 +7,7 @@ from shadowseed.workbench.simple_app_vnext import (
     _audit_summary,
     _authority_gate_summary,
     _orchestration_panel,
+    _PRESET_SETTINGS,
     _provider_choices,
     _ollama_note,
     _seed_action_flags,
@@ -335,3 +336,7 @@ def test_live_audit_shows_behavior_epoch() -> None:
 
     assert "Behavior epoch" in rendered
     assert "behavior-sha256::0123456789abcdef01234567" in rendered
+
+
+def test_vnext_balanced_preset_keeps_k1_product_default() -> None:
+    assert _PRESET_SETTINGS["gebalanceerd"]["surface_top_k"] == 1

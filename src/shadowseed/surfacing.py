@@ -19,6 +19,23 @@ from shadowseed.prompt_contracts import prompt_contract_metadata
 SurfacingCandidate = tuple[float, str, str]
 
 
+class RoleChatMessages(list[dict[str, str]]):
+    """Provider messages with trusted metadata for deterministic fixture behavior."""
+
+    def __init__(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        current_question: str,
+        surfaced_candidates: list[str] | tuple[str, ...],
+    ) -> None:
+        super().__init__(messages)
+        self.current_question = str(current_question)
+        self.surfaced_candidates = tuple(
+            str(candidate) for candidate in surfaced_candidates
+        )
+
+
 @dataclass(frozen=True)
 class PromptBoundary:
     """Bounds for the surfaced-seed candidate-data block (issue #15).
@@ -343,7 +360,7 @@ def build_role_chat_messages(
     surfaced: list[str],
     boundary: PromptBoundary = DEFAULT_PROMPT_BOUNDARY,
     response_language: str | None = None,
-) -> list[dict[str, str]]:
+) -> RoleChatMessages:
     """Build provider-native role messages for the product answer path.
 
     Control and treatment use the same system contract and role-structured
@@ -362,11 +379,16 @@ def build_role_chat_messages(
         messages.append({"role": "assistant", "content": str(assistant_text)})
 
     current_user = str(question)
-    candidate_data = _candidate_data_block(surfaced, boundary)
+    bounded_candidates, _markers = apply_prompt_boundary(surfaced, boundary)
+    candidate_data = _candidate_data_block(bounded_candidates, boundary)
     if candidate_data:
         current_user = f"{current_user}\n\n{candidate_data}"
     messages.append({"role": "user", "content": current_user})
-    return messages
+    return RoleChatMessages(
+        messages,
+        current_question=question,
+        surfaced_candidates=bounded_candidates,
+    )
 
 
 def _history_block(history: list[tuple[str, str]]) -> str:
