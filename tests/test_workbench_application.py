@@ -263,6 +263,28 @@ def test_inspection_defaults_legacy_session_view_to_evaluation(tmp_path, monkeyp
     assert view["runtime_mode"] == "evaluation"
 
 
+def test_inspection_caps_legacy_detector_budget_like_runtime(tmp_path, monkeypatch) -> None:
+    sessions = service_for_workspace(tmp_path / "legacy-detector-budget")
+    session_id = sessions.create_session(title="Legacy detector budget", profile_id="demo")
+    stored = sessions.load(session_id)
+
+    state = dict(stored["state"])
+    state_config = dict(state["session_config"])
+    state_config.pop("detection_max_new_tokens", None)
+    state_config["max_new_tokens"] = 700
+    state["session_config"] = state_config
+
+    persisted_config = dict(stored["config"])
+    persisted_config.pop("detection_max_new_tokens", None)
+    persisted_config["max_new_tokens"] = 700
+    stored = {**stored, "state": state, "config": persisted_config}
+    monkeypatch.setattr(sessions, "load", lambda _session_id: stored)
+
+    view = InspectionService(sessions).session_view(session_id)
+
+    assert view["detection_max_new_tokens"] == 220
+
+
 def test_inspection_normalizes_invalid_persisted_runtime_mode(tmp_path, monkeypatch) -> None:
     sessions = service_for_workspace(tmp_path / "invalid-mode")
     session_id = sessions.create_session(title="Invalid mode", profile_id="demo")
