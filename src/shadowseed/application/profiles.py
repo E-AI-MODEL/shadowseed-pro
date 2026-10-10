@@ -30,7 +30,7 @@ _PROFILES: dict[str, WorkbenchProfile] = {
         settings={
             "backend": "fixture",
             "surface_threshold": 0.30,
-            "surface_top_k": 2,
+            "surface_top_k": 1,
             "early_turn_margin": 0.10,
             "resurface_margin": 0.15,
             "recurrence_mode": "cluster",
@@ -42,7 +42,7 @@ _PROFILES: dict[str, WorkbenchProfile] = {
         description="Default practical profile with bounded cross-turn influence.",
         settings={
             "surface_threshold": 0.30,
-            "surface_top_k": 2,
+            "surface_top_k": 1,
             "early_turn_margin": 0.10,
             "resurface_margin": 0.15,
             "recurrence_mode": "cluster",

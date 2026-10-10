@@ -213,6 +213,17 @@ class InspectionService:
                 ):
                     review_seed_ids.append(seed_id)
 
+        detection_max_new_tokens = session_config.get("detection_max_new_tokens")
+        if detection_max_new_tokens is None:
+            detection_max_new_tokens = persisted_config.get("detection_max_new_tokens")
+        if detection_max_new_tokens is None:
+            generation_max_new_tokens = session_config.get("max_new_tokens")
+            if generation_max_new_tokens is None:
+                generation_max_new_tokens = persisted_config.get("max_new_tokens", 700)
+            if generation_max_new_tokens is None:
+                generation_max_new_tokens = 700
+            detection_max_new_tokens = min(int(generation_max_new_tokens), 220)
+
         return {
             "session_id": stored["session_id"],
             "title": stored["title"],
@@ -239,17 +250,7 @@ class InspectionService:
                 if session_config.get("detection_model_id") is not None
                 else persisted_config.get("detection_model_id", stored["model_id"])
             ),
-            "detection_max_new_tokens": (
-                session_config.get("detection_max_new_tokens")
-                if session_config.get("detection_max_new_tokens") is not None
-                else persisted_config.get(
-                    "detection_max_new_tokens",
-                    session_config.get(
-                        "max_new_tokens",
-                        persisted_config.get("max_new_tokens", 700),
-                    ),
-                )
-            ),
+            "detection_max_new_tokens": int(detection_max_new_tokens),
             "runtime_mode": runtime_mode,
             "authority_profile_id": authority_profile_id,
             "profile_default_gate_policy_id": profile_default_gate_policy_id,

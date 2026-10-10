@@ -71,7 +71,7 @@ def test_provider_failure_does_not_advance_persisted_state_or_ledger(
     def _timeout(*_args, **_kwargs):
         raise TimeoutError("provider timeout")
 
-    monkeypatch.setattr(FixtureBackend, "generate", _timeout)
+    monkeypatch.setattr(FixtureBackend, "generate_messages", _timeout)
 
     with pytest.raises(TimeoutError, match="provider timeout"):
         controller.send_turn(session_id, "What is missing from this plan?")

@@ -57,3 +57,10 @@ def test_execute_command_resolves_alias_before_dispatch(monkeypatch) -> None:
 
     assert result == "prepared.json"
     assert calls == ["prepare-absencebench"]
+
+
+def test_chat_surface_top_k_defaults_to_one() -> None:
+    parser = build_parser()
+    args = parser.parse_args(["chat"])
+
+    assert args.surface_top_k == 1

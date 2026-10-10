@@ -31,7 +31,6 @@ from shadowseed.core_config import SSLCoreConfig
 from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal
 from shadowseed.manager import SeedStatus
 from shadowseed.storage.sqlite import SQLiteWorkspaceRepository, WorkspaceStorageError
-from shadowseed.surfacing import build_chat_prompt
 
 
 class SessionService:
@@ -186,27 +185,15 @@ class SessionService:
     ) -> str:
         """Generate a same-history, non-mutating control for one live turn.
 
-        This deliberately uses the same visible pre-turn history and the same
-        prompt/generation path as the live SSL answer, with only the surfaced
-        Shadow Seed context removed. The control never enters detection,
-        recurrence, Gate state, or later conversation history.
+        Control and treatment share the exact product answer transport. The
+        control differs only by receiving no surfaced Shadow Seed context.
         """
 
-        fixture_answer = f"Fixture echo answer to: {question}"
-        return session.model.generate(
-            build_chat_prompt(
-                session.history,
-                question,
-                [],
-                response_language="the same language as the user's current question",
-            ),
-            {
-                "question": question,
-                "turn": session._turn,
-                "baseline_answer": fixture_answer,
-            },
-            "baseline",
+        return session.generate_product_answer(
+            question,
             [],
+            turn=session._turn,
+            baseline_answer=f"Fixture echo answer to: {question}",
         )
 
     @staticmethod
@@ -295,21 +282,11 @@ class SessionService:
             )
             for item in candidates
         ]
-        answer = session.model.generate(
-            build_chat_prompt(
-                session.history,
-                question,
-                shadow_context,
-                response_language="the same language as the user's current question",
-            ),
-            {
-                "question": question,
-                "turn": session._turn,
-                "baseline_answer": baseline_answer,
-                "shadow_pressure": True,
-            },
-            "ssl",
+        answer = session.generate_product_answer(
+            question,
             shadow_context,
+            turn=session._turn,
+            baseline_answer=baseline_answer,
         )
         return answer, candidates
 
@@ -393,7 +370,7 @@ class SessionService:
                         normalized_question,
                     )
                     control_metadata = {
-                        "transport": "same_prompt_path",
+                        "transport": session.generation_transport(),
                         "replayed_turns": 0,
                         "history_turns_before": len(session.history),
                     }

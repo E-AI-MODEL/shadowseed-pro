@@ -33,6 +33,10 @@ class ModelBackend(Protocol):
         """Generate one vanilla turn from role-structured conversation history."""
         ...
 
+    def generate_messages(self, messages: list[dict[str, str]]) -> str:
+        """Generate from an already prepared role-structured message sequence."""
+        ...
+
 
 class FixtureBackend:
     """Deterministic CI backend.
@@ -55,6 +59,24 @@ class FixtureBackend:
         question: str,
     ) -> str:
         return f"Fixture echo answer to: {question}"
+
+    def generate_messages(self, messages: list[dict[str, str]]) -> str:
+        user_messages = [
+            str(message.get("content", ""))
+            for message in messages
+            if message.get("role") == "user"
+        ]
+        current = user_messages[-1] if user_messages else ""
+        trusted_question = getattr(messages, "current_question", None)
+        question = current if trusted_question is None else str(trusted_question)
+        candidates = [
+            str(candidate)
+            for candidate in getattr(messages, "surfaced_candidates", ())
+        ]
+        baseline = f"Fixture echo answer to: {question}"
+        if not candidates:
+            return baseline
+        return f"{baseline}\n\nSSL-guided revision: {' '.join(candidates)}"
 
 
 class HFTransformersBackend:
@@ -110,24 +132,69 @@ class HFTransformersBackend:
         )
         return output[0]["generated_text"].strip()
 
-    def generate_chat(
-        self,
-        history: list[tuple[str, str]],
-        question: str,
-    ) -> str:
-        messages = chat_messages(history, question)
+    @staticmethod
+    def _fold_system_for_chat_template(
+        messages: list[dict[str, str]],
+    ) -> list[dict[str, str]]:
+        """Fold system guidance into the first user turn for strict templates.
+
+        Some supported Hugging Face instruct templates accept only user and
+        assistant roles. Preserve the product contract without flattening the
+        entire conversation when such a template rejects an explicit system role.
+        """
+
+        if not messages or messages[0].get("role") != "system":
+            return [dict(message) for message in messages]
+
+        system_content = str(messages[0].get("content", "")).strip()
+        folded = [dict(message) for message in messages[1:]]
+        if not folded:
+            return [{"role": "user", "content": system_content}]
+        if folded[0].get("role") == "user":
+            user_content = str(folded[0].get("content", ""))
+            folded[0] = {
+                **folded[0],
+                "content": (
+                    f"{system_content}\n\nUSER MESSAGE:\n{user_content}"
+                    if system_content
+                    else user_content
+                ),
+            }
+            return folded
+        return [
+            {"role": "user", "content": system_content},
+            *folded,
+        ]
+
+    @staticmethod
+    def _render_plain_chat(messages: list[dict[str, str]]) -> str:
+        """Render role messages without depending on a tokenizer chat template."""
+
+        return "\n".join(
+            f"{message['role'].capitalize()}: {message['content']}"
+            for message in messages
+        ) + "\nAssistant:"
+
+    def generate_messages(self, messages: list[dict[str, str]]) -> str:
         chat_template = getattr(self.tokenizer, "apply_chat_template", None)
         if callable(chat_template):
-            prompt = chat_template(
-                messages,
-                tokenize=False,
-                add_generation_prompt=True,
-            )
+            try:
+                prompt = chat_template(
+                    messages,
+                    tokenize=False,
+                    add_generation_prompt=True,
+                )
+            except Exception:
+                try:
+                    prompt = chat_template(
+                        self._fold_system_for_chat_template(messages),
+                        tokenize=False,
+                        add_generation_prompt=True,
+                    )
+                except Exception:
+                    prompt = self._render_plain_chat(messages)
         else:
-            prompt = "\n".join(
-                f"{message['role'].capitalize()}: {message['content']}"
-                for message in messages
-            ) + "\nAssistant:"
+            prompt = self._render_plain_chat(messages)
         output = self.generator(
             prompt,
             max_new_tokens=self.max_new_tokens,
@@ -135,6 +202,13 @@ class HFTransformersBackend:
             return_full_text=False,
         )
         return output[0]["generated_text"].strip()
+
+    def generate_chat(
+        self,
+        history: list[tuple[str, str]],
+        question: str,
+    ) -> str:
+        return self.generate_messages(chat_messages(history, question))
 
 
 class OllamaBackend:
@@ -157,15 +231,18 @@ class OllamaBackend:
     def generate(self, prompt: str, scenario: dict, mode: str, ssl_seeds: list[str]) -> str:
         return self.client.generate(prompt, max_new_tokens=self.max_new_tokens)
 
+    def generate_messages(self, messages: list[dict[str, str]]) -> str:
+        return self.client.generate_chat(
+            messages,
+            max_new_tokens=self.max_new_tokens,
+        )
+
     def generate_chat(
         self,
         history: list[tuple[str, str]],
         question: str,
     ) -> str:
-        return self.client.generate_chat(
-            chat_messages(history, question),
-            max_new_tokens=self.max_new_tokens,
-        )
+        return self.generate_messages(chat_messages(history, question))
 
 
 class OpenAIBackend:
@@ -189,15 +266,18 @@ class OpenAIBackend:
     def generate(self, prompt: str, scenario: dict, mode: str, ssl_seeds: list[str]) -> str:
         return self.client.generate(prompt, max_new_tokens=self.max_new_tokens)
 
+    def generate_messages(self, messages: list[dict[str, str]]) -> str:
+        return self.client.generate_chat(
+            messages,
+            max_new_tokens=self.max_new_tokens,
+        )
+
     def generate_chat(
         self,
         history: list[tuple[str, str]],
         question: str,
     ) -> str:
-        return self.client.generate_chat(
-            chat_messages(history, question),
-            max_new_tokens=self.max_new_tokens,
-        )
+        return self.generate_messages(chat_messages(history, question))
 
 
 def make_backend(

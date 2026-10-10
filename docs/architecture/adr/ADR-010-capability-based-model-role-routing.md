@@ -34,8 +34,10 @@ The persisted session configuration supports:
   `detection_max_new_tokens` for candidate-gap detection.
 
 When no detection role is configured, detection inherits the primary generation
-backend, model and generation budget. Existing sessions therefore retain their
-previous behaviour.
+backend and model. Its output budget is independently bounded for the narrow gap
+contract, defaulting to at most 220 new tokens unless explicitly configured.
+This keeps the semantic role fallback while avoiding generation-sized detector
+budgets for a small structured output.
 
 Role changes are behaviour changes, not authority changes. They are included in
 the behaviour fingerprint and audit projection but do not alter the authority

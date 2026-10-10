@@ -10,7 +10,7 @@ import pytest
 
 from shadowseed_research.benchmark import ssl_session_suite as sess
 from shadowseed_research.benchmark.ssl_session_suite import run_ssl_session
-from shadowseed.surfacing import build_chat_prompt, select_cross_turn_seeds
+from shadowseed.surfacing import build_chat_prompt, build_role_chat_messages, select_cross_turn_seeds
 
 
 def test_select_cross_turn_seeds_ranks_and_caps():
@@ -367,8 +367,14 @@ def test_resurface_margin_damps_consecutive_steering(tmp_path: Path, monkeypatch
 
 
 def test_chat_prompt_keeps_question_leading():
-    # Round 029: de gestelde vraag blijft leidend — de weave-instructie verbiedt
-    # onderwerp-/focusverschuiving expliciet (alleen in de SSL-arm aanwezig).
-    ssl = build_chat_prompt([("Q1", "A1")], "Q2", ["Perspective."])
-    assert "question remains leading" in ssl and "never shift" in ssl
-    assert "question remains leading" not in build_chat_prompt([("Q1", "A1")], "Q2", [])
+    # Native product A/B keeps the same safety/system contract in both arms.
+    # The treatment differs only by the bounded candidate-data block in the
+    # current user message.
+    baseline = build_role_chat_messages([("Q1", "A1")], "Q2", [])
+    ssl = build_role_chat_messages([("Q1", "A1")], "Q2", ["Perspective."])
+    assert baseline[0] == ssl[0]
+    for messages in (baseline, ssl):
+        assert "question remains leading" in messages[0]["content"]
+        assert "never shift" in messages[0]["content"]
+    assert "<<<CANDIDATE_PERSPECTIVES data=untrusted>>>" not in baseline[-1]["content"]
+    assert "<<<CANDIDATE_PERSPECTIVES data=untrusted>>>" in ssl[-1]["content"]

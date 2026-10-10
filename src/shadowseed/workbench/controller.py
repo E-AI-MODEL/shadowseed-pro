@@ -156,7 +156,7 @@ class WorkbenchController:
         return {
             "ssl_intensity": int(round(value)),
             "surface_threshold": round(0.65 - (0.45 * ratio), 3),
-            "surface_top_k": 1 if value <= 40.0 else (2 if value <= 80.0 else 3),
+            "surface_top_k": 1 if value <= 60.0 else (2 if value <= 90.0 else 3),
             "early_turn_margin": round(0.20 - (0.15 * ratio), 3),
             "resurface_margin": round(0.25 - (0.15 * ratio), 3),
         }

@@ -185,7 +185,7 @@ _PRESET_SETTINGS: dict[str, dict[str, Any]] = {
     },
     "gebalanceerd": {
         "surface_threshold": 0.30,
-        "surface_top_k": 2,
+        "surface_top_k": 1,
         "early_turn_margin": 0.10,
         "resurface_margin": 0.15,
         "authority_profile_id": "strict",

@@ -118,7 +118,7 @@ The components have non-overlapping ownership:
 
 | Component | Primary input | Owns | May mutate | Must not decide |
 | --- | --- | --- | --- | --- |
-| Answer generation | history + current question | ordinary draft | draft text | seed authority |
+| Answer generation | bounded role-structured history + current question | ordinary draft | draft text | seed authority |
 | Detection context | question/draft or source observation | detector context package | context metadata | truth or authority |
 | Detector | detection context | candidate directions | candidate observations | evidence, validation, promotion |
 | Observation ledger + intake | candidate + provenance | atomicity, provenance, dedup | observation records, seed creation/dedup | truth, authority |
@@ -509,7 +509,7 @@ The ordinary same-turn comparison keeps:
 
 - the same model configuration;
 - the same current user message;
-- the same visible pre-turn history;
+- the same bounded role-structured projection of visible pre-turn history;
 - no SSL candidate context in the control;
 - no control output in detection, recurrence, Gate state or later conversation history;
 - at most one extra current-turn generation.

@@ -32,7 +32,7 @@ The default tester experience is a persistent multi-turn chat session using the 
 - `runtime_mode = live`;
 - Gate policy = `evidence_backed` unless an explicit research mode says otherwise;
 - one visible answer per normal chat turn;
-- normal conversation history;
+- normal conversation history, presented to the answer model through a bounded role-structured window;
 - detected candidates begin weightless;
 - only Gate-authorized, point-of-use-allowed seeds may influence a later answer.
 
@@ -45,7 +45,7 @@ A tester may request a paired no-SSL control for their own message. The tester d
 For an ordinary live chat turn the product comparison is generated as follows:
 
 1. restore the persisted pre-turn conversation state;
-2. generate a control answer with the same model configuration and visible history, but with no surfaced Shadow Seeds;
+2. generate a control answer with the same model configuration and the same bounded role-structured projection of visible history, but with no surfaced Shadow Seeds;
 3. do **not** submit the control answer to candidate detection, recurrence, the Validation Gate, or conversation history;
 4. execute the real live turn normally;
 5. persist the control as comparison data beside the real turn report.

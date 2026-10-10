@@ -76,6 +76,7 @@ from shadowseed.surfacing import (
     apply_prompt_boundary,
     build_candidate_context,
     build_chat_prompt,
+    build_role_chat_messages,
     build_revision_prompt,
     collect_eligible_promoted_seeds,
     mark_surfaced,
@@ -173,7 +174,7 @@ class ShadowChatSession:
         embedding_backend: str = "lexical",
         embedding_model: str | None = None,
         surface_threshold: float = 0.30,
-        surface_top_k: int = 2,
+        surface_top_k: int = 1,
         early_turn_margin: float = 0.10,
         early_turn_history: int = 5,
         resurface_margin: float = 0.15,
@@ -212,7 +213,7 @@ class ShadowChatSession:
             else (model_id if self.detection_backend == backend else None)
         )
         self.detection_max_new_tokens = (
-            max_new_tokens
+            min(int(max_new_tokens), 220)
             if detection_max_new_tokens is None
             else int(detection_max_new_tokens)
         )
@@ -897,21 +898,79 @@ class ShadowChatSession:
             return list(candidates), []
         return [], list(candidates)
 
+    def generation_transport(self) -> str:
+        """Describe the product answer transport without making a provider call."""
+
+        return (
+            "role_structured_chat"
+            if callable(getattr(self.model, "generate_messages", None))
+            else "compat_prompt_fallback"
+        )
+
+    def generate_product_answer(
+        self,
+        question: str,
+        surfaced_seeds: list[str] | tuple[str, ...] = (),
+        *,
+        turn: int | None = None,
+        baseline_answer: str | None = None,
+    ) -> str:
+        """Generate one non-mutating product answer from current visible history.
+
+        Built-in backends use provider-native role messages. Legacy or research
+        backends that expose only generate retain a bounded flat compatibility
+        path. The live answer and no-SSL control share this helper.
+        """
+
+        surfaced = [str(seed) for seed in surfaced_seeds]
+        generate_messages = getattr(self.model, "generate_messages", None)
+        if callable(generate_messages):
+            return str(
+                generate_messages(
+                    build_role_chat_messages(
+                        self.history,
+                        question,
+                        surfaced,
+                        response_language=(
+                            "the same language as the user\'s current question"
+                        ),
+                    )
+                )
+            )
+
+        fallback_answer = (
+            baseline_answer
+            if baseline_answer is not None
+            else f"Fixture echo answer to: {question}"
+        )
+        return str(
+            self.model.generate(
+                build_chat_prompt(
+                    self.history,
+                    question,
+                    surfaced,
+                    response_language="the same language as the user\'s current question",
+                ),
+                {
+                    "question": question,
+                    "turn": self._turn if turn is None else int(turn),
+                    "baseline_answer": fallback_answer,
+                },
+                "ssl" if surfaced else "baseline",
+                surfaced,
+            )
+        )
+
     def _turn_live(self, question: str) -> dict[str, Any]:
         """Production-oriented one-generation loop with visible-history continuity."""
         prepared = self.prepare_turn(question)
         fixture_answer = f"Fixture echo answer to: {question}"
         try:
-            final_answer = self.model.generate(
-                build_chat_prompt(
-                    self.history,
-                    question,
-                    list(prepared.surfaced_seeds),
-                    response_language="the same language as the user's current question",
-                ),
-                {"question": question, "turn": prepared.turn, "baseline_answer": fixture_answer},
-                "ssl" if prepared.surfaced_seeds else "baseline",
+            final_answer = self.generate_product_answer(
+                question,
                 list(prepared.surfaced_seeds),
+                turn=prepared.turn,
+                baseline_answer=fixture_answer,
             )
         except Exception:
             self.abort_turn(prepared)
@@ -2136,7 +2195,7 @@ def run_chat(
     embedding_backend: str = "lexical",
     embedding_model: str | None = None,
     surface_threshold: float = 0.30,
-    surface_top_k: int = 2,
+    surface_top_k: int = 1,
     early_turn_margin: float = 0.10,
     early_turn_history: int = 5,
     resurface_margin: float = 0.15,

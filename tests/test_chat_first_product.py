@@ -148,7 +148,7 @@ def test_controller_returns_ready_to_render_ssl_on_off_comparison(tmp_path) -> N
     }
     assert comparison["control_history_isolated"] is False
     assert comparison["control_state_isolated"] is True
-    assert comparison["control_transport"] == "same_prompt_path"
+    assert comparison["control_transport"] == "role_structured_chat"
     assert comparison["question"] == "What should I consider next?"
 
 
@@ -168,7 +168,7 @@ def test_default_live_ab_started_late_does_not_replay_history(tmp_path) -> None:
     assert report["comparison_kind"] == "same_history_no_ssl_vs_ssl"
     assert report["comparison_control_replayed_turns"] == 0
     assert report["comparison_control_history_turns_before"] == 2
-    assert report["comparison_control_transport"] == "same_prompt_path"
+    assert report["comparison_control_transport"] == "role_structured_chat"
     assert stored["state"]["vanilla_history"] == []
 
 
@@ -580,6 +580,14 @@ def test_persisted_assisted_exploratory_gate_does_not_show_review_request() -> N
     assert view["effective_gate_policy_id"] == "exploratory"
     assert view["authority_review_seed_ids"] == []
 
+
+
+def test_default_ssl_intensity_keeps_single_seed_surface_cap() -> None:
+    assert WorkbenchController.ssl_intensity_settings(50)["surface_top_k"] == 1
+    assert WorkbenchController.ssl_intensity_settings(60)["surface_top_k"] == 1
+    assert WorkbenchController.ssl_intensity_settings(61)["surface_top_k"] == 2
+    assert WorkbenchController.ssl_intensity_settings(90)["surface_top_k"] == 2
+    assert WorkbenchController.ssl_intensity_settings(91)["surface_top_k"] == 3
 
 
 def test_product_sliders_are_independent_and_persisted(tmp_path) -> None:
