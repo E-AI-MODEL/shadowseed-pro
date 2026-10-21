@@ -118,7 +118,7 @@ jobs:
             "workbench-ci.yml"
             "workbench-portability.yml"
             "research-package-ci.yml"
-            "standalone-workbench.yml"
+            "web-only-distribution-candidate.yml"
             "web-client-ci.yml"
           )
           dispatch_started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -133,7 +133,7 @@ jobs:
             gh workflow run "$workflow" --ref main
           done
 
-          standalone_run_id=""
+          web_run_id=""
           for workflow in "${release_workflows[@]}"; do
             run_id=""
             for _attempt in $(seq 1 120); do
@@ -176,12 +176,12 @@ jobs:
               exit 1
             fi
 
-            if [ "$workflow" = "standalone-workbench.yml" ]; then
-              standalone_run_id="$run_id"
+            if [ "$workflow" = "web-only-distribution-candidate.yml" ]; then
+              web_run_id="$run_id"
             fi
           done
 
-          test -n "$standalone_run_id"
+          test -n "$web_run_id"
 
           git fetch origin main --force
           if [ "$(git rev-parse origin/main)" != "$release_sha" ]; then
@@ -194,13 +194,13 @@ jobs:
           echo "release_version=$release_version" >> "$GITHUB_OUTPUT"
           echo "release_tag=$release_tag" >> "$GITHUB_OUTPUT"
           echo "notes_file=$notes_file" >> "$GITHUB_OUTPUT"
-          echo "standalone_run_id=$standalone_run_id" >> "$GITHUB_OUTPUT"
+          echo "web_run_id=$web_run_id" >> "$GITHUB_OUTPUT"
 
       - name: Generate locked release SBOM
         if: steps.preflight.outputs.should_release == 'true'
         run: |
           mkdir -p release-assets
-          uv export --locked --extra workbench --extra build --extra standalone-build             --no-emit-project --no-hashes --format requirements.txt             --output-file "${RUNNER_TEMP}/release-sbom.txt"
+          uv export --locked --extra build --extra standalone-build             --no-emit-project --no-hashes --format requirements.txt             --output-file "${RUNNER_TEMP}/release-sbom.txt"
           python - <<'PY'
           import json
           import os
@@ -249,7 +249,8 @@ jobs:
               str(item["name"]).lower().replace("_", "-")
               for item in checked["components"]
           }
-          forbidden = {"torch", "transformers", "sentence-transformers", "openai"}
+          forbidden = {"gradio", "gradio-client", "pillow", "torch",
+                       "transformers", "sentence-transformers", "openai"}
           unexpected = sorted(component_names & forbidden)
           if unexpected:
               raise SystemExit(
@@ -261,17 +262,17 @@ jobs:
         if: steps.preflight.outputs.should_release == 'true'
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          run-id: ${{ steps.preflight.outputs.standalone_run_id }}
+          run-id: ${{ steps.preflight.outputs.web_run_id }}
           github-token: ${{ github.token }}
-          pattern: standalone-*
+          pattern: web-candidate-*
           merge-multiple: true
-          path: standalone-assets
+          path: web-assets
 
       - name: Validate standalone provenance and collect assets
         if: steps.preflight.outputs.should_release == 'true'
         env:
           RELEASE_SHA: ${{ steps.preflight.outputs.release_sha }}
-          SOURCE_RUN_ID: ${{ steps.preflight.outputs.standalone_run_id }}
+          SOURCE_RUN_ID: ${{ steps.preflight.outputs.web_run_id }}
           RELEASE_VERSION: ${{ steps.preflight.outputs.release_version }}
         shell: python
         run: |
@@ -281,7 +282,7 @@ jobs:
           from hashlib import sha256
           from pathlib import Path
 
-          source = Path("standalone-assets")
+          source = Path("web-assets")
           release = Path("release-assets")
           release.mkdir(exist_ok=True)
           expected_license_sha = sha256(Path("LICENSE").read_bytes()).hexdigest()
@@ -364,7 +365,7 @@ jobs:
         run: |
           set -euo pipefail
           wheel="$(ls dist/*.whl)"
-          uv export --locked --extra workbench --no-emit-project --no-hashes \
+          uv export --locked --no-emit-project --no-hashes \
             --format requirements.txt --output-file "${RUNNER_TEMP}/release-workbench-locked.txt"
           python - <<'PY'
           import os
@@ -377,7 +378,8 @@ jobs:
               for line in lines
               if "==" in line and not line.lstrip().startswith("#")
           }
-          forbidden = {"torch", "transformers", "sentence-transformers", "openai"}
+          forbidden = {"gradio", "gradio-client", "pillow", "torch",
+                       "transformers", "sentence-transformers", "openai"}
           unexpected = sorted(names & forbidden)
           if unexpected:
               raise SystemExit(f"thin Workbench lock contains optional providers: {unexpected}")
@@ -442,7 +444,7 @@ jobs:
           cd release-assets
           sha256sum -c SHA256SUMS
           test "$(find . -maxdepth 1 -name '*.manifest.json' | wc -l)" -eq 3
-          test "$(find . -maxdepth 1 -name 'shadowseed-workbench-*' ! -name '*.manifest.json' | wc -l)" -eq 3
+          test "$(find . -maxdepth 1 -name 'shadowseed-web-*' ! -name '*.manifest.json' | wc -l)" -eq 3
           test "$(find . -maxdepth 1 -name 'shadowseed-*.whl' | wc -l)" -eq 1
           test "$(find . -maxdepth 1 -name 'shadowseed-[0-9]*.tar.gz' | wc -l)" -eq 1
           test -f PROVENANCE.json
@@ -500,7 +502,7 @@ jobs:
           cd "${RUNNER_TEMP}/published"
           sha256sum -c SHA256SUMS
           test "$(find . -maxdepth 1 -name '*.manifest.json' | wc -l)" -eq 3
-          test "$(find . -maxdepth 1 -name 'shadowseed-workbench-*' ! -name '*.manifest.json' | wc -l)" -eq 3
+          test "$(find . -maxdepth 1 -name 'shadowseed-web-*' ! -name '*.manifest.json' | wc -l)" -eq 3
           test -f PROVENANCE.json
           test -f SBOM.cdx.json
           test -f uv.lock
