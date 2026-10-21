@@ -47,7 +47,7 @@ def _web_pyinstaller_command(root: Path, dist: Path, work: Path) -> list[str]:
         "--collect-data", "shadowseed",
         "--collect-data", "shadowseed_webapi",
     ]
-    for package in sorted(EXCLUDED_DISTRIBUTIONS | {"sentence_transformers", "gradio_client"}):
+    for package in sorted(EXCLUDED_DISTRIBUTIONS | {"sentence_transformers", "gradio_client", "PIL"}):
         command.extend(["--exclude-module", package.replace("-", "_")])
     for package in ("shadowseed", "numpy"):
         command.extend(["--copy-metadata", package])
@@ -60,6 +60,8 @@ def _assert_no_legacy_runtime(bundle: Path) -> None:
     found: list[str] = []
     for path in bundle.rglob("*"):
         name = path.name.lower().replace("_", "-")
+        if name == "pil" or name.startswith("pil.") or name.startswith("pil-"):
+            found.append(str(path.relative_to(bundle)))
         if (
             any(
                 name == package
