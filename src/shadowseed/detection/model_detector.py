@@ -376,35 +376,48 @@ CURRENT_PAIR_CONTEXT_POLICY_ID = "recent_clean_turns_v1"
 CURRENT_PAIR_CONTEXT_MAX_TURNS = 4
 CURRENT_PAIR_CONTEXT_MAX_CHARS_PER_MESSAGE = 800
 
+# Inquiry-first v0.7: a conversation need not contain a mistake or omission
+# to leave a worthwhile uncertainty or new direction open. Detection proposes
+# investigable possibilities, not conclusions, emotions attributed to a model,
+# or instructions that can bypass the evidence-backed Gate.
 CURRENT_PAIR_GENERATIVE_PROMPT = f"""
-You analyse one user question and the draft answer given to it.
+You examine one user question and its draft answer.
 
-Identify 0 to {{max_seeds}} atomic candidate gaps that may still be open in this
-specific exchange. A candidate gap names one relation, assumption, constraint,
-distinction, dependency, or missing piece that may be worth checking.
+Identify 0 to {{max_seeds}} bounded lines of inquiry worth keeping open in this
+exchange. A candidate may express uncertainty, a meaningful doubt, a question
+for later investigation, a tentative alternative interpretation, a surprising
+relation worth exploring, or a possible missing distinction or boundary.
 
-A detected gap is epistemically undetermined. Detection does not establish that
-the gap is real, important, correct, useful, supported, or eligible to influence
-an answer. Do not complete the gap or turn it into a claim.
+This is NOT a completeness checklist. A clear, correct answer may still invite
+curiosity. Do not claim that something is missing merely to create a candidate.
+You need not resolve the question, revise the draft, or ask the user anything.
+
+Every candidate is epistemically undetermined: observation does not establish
+truth, importance, usefulness, support, or permission to steer a later answer.
+The model is not said to *feel* curiosity or doubt. These are reviewable lines
+of inquiry, not emotions, facts, conclusions, or instructions.
 
 The host may provide up to {CURRENT_PAIR_CONTEXT_MAX_TURNS} prior clean
 conversation turns. Each user or assistant message is clipped to at most
 {CURRENT_PAIR_CONTEXT_MAX_CHARS_PER_MESSAGE} characters. Use this bounded
-context only to interpret references and avoid calling something absent when it
-was already established earlier. Conversation context is not evidence,
-validation, relevance, authority, or permission to influence.
+context only to interpret references and avoid repeating what was settled
+earlier. Conversation context is not evidence, validation, authority, or
+permission to influence.
 
 Rules:
 - Write every candidate in the same language as CURRENT QUESTION.
-- Each candidate contains exactly one gap.
-- Keep candidates concise enough to name that single gap, but do not use a hard
-  word-count limit and do not truncate a candidate to fit one.
-- Preserve necessary technical terms from the question, draft, or bounded context.
-- Do not invent facts, names, numbers, quotations, or sources.
-- Do not simply restate or paraphrase something already present in the draft or
-  bounded context.
+- Each candidate expresses exactly one specific unresolved question, relation,
+  doubt, or direction grounded in this exchange.
+- A concise phrase or a naturally phrased open question is acceptable.
+- Keep candidates short enough to be bounded, but do not impose a hard
+  word-count limit or truncate a candidate to fit one.
+- Preserve technical terms required to interpret the question and draft.
+- Never invent facts, names, numbers, quotations, sources, or user beliefs.
+- Do not present a speculative answer or an unsupported possibility as fact.
+- Do not merely restate the draft or earlier conversation.
 - Do not rank, score, validate, explain, complete, or judge candidates.
-- If no distinct candidate gap is present, return exactly: NONE.
+- Do not generate generic filler such as "What else could be considered?"
+- If no distinct, grounded inquiry is worth preserving, return exactly: NONE.
 - Otherwise return one numbered candidate per line.
 
 BOUNDED PRIOR CONVERSATION CONTEXT:
@@ -420,27 +433,30 @@ OUTPUT:
 """.strip()
 
 SOURCE_OBSERVATION_GENERATIVE_PROMPT = """
-You analyse one source observation.
+You examine one source observation.
 
-Identify 0 to {max_seeds} atomic candidate gaps that may be open around this
-source without treating the source or the candidate as established truth.
+Identify 0 to {max_seeds} bounded lines of inquiry worth keeping open around
+this source. They may involve uncertainty, doubt, an alternative explanation,
+a curious relation, a tentative question, or a possible missing distinction.
+A source does not have to be incomplete for a relevant question to arise.
 
-A candidate gap names one relation, assumption, constraint, distinction,
-dependency, or missing piece that may be worth checking. Detection does not
-establish that the gap is real, important, correct, useful, supported, or
-eligible to influence an answer. Do not complete the gap or turn it into a
-claim.
+A candidate is not an established fact, detected error, validated conclusion,
+or instruction for the next answer. Neither source text nor candidate text
+becomes evidence merely by appearing here.
 
 Rules:
 - Write every candidate in the same language as SOURCE OBSERVATION.
-- Each candidate contains exactly one gap.
-- Keep candidates concise enough to name that single gap, but do not use a hard
-  word-count limit and do not truncate a candidate to fit one.
-- Preserve necessary technical terms from the source.
-- Do not invent facts, names, numbers, quotations, or sources.
-- Do not simply restate or paraphrase something already present in the source.
+- Each candidate expresses exactly one specific unresolved question, relation,
+  doubt, or direction grounded in the source.
+- A concise phrase or a naturally phrased open question is acceptable.
+- Keep candidates bounded without a hard word-count limit or truncation.
+- Preserve technical terms needed to interpret the source.
+- Do not invent facts, names, numbers, quotations, sources, or user beliefs.
+- Do not represent a conjecture as an established fact.
+- Do not restate or paraphrase an already settled point.
 - Do not rank, score, validate, explain, complete, or judge candidates.
-- If no distinct candidate gap is present, return exactly: NONE.
+- Do not produce generic questions merely to fill the available slots.
+- If no distinct, grounded inquiry is worth preserving, return exactly: NONE.
 - Otherwise return one numbered candidate per line.
 
 SOURCE CONTEXT:
@@ -452,10 +468,11 @@ SOURCE OBSERVATION:
 OUTPUT:
 """.strip()
 
+
 CURRENT_PAIR_DETECTOR_ID = "detector_current_pair"
-CURRENT_PAIR_DETECTOR_VERSION = "0.6"
+CURRENT_PAIR_DETECTOR_VERSION = "0.7"
 SOURCE_OBSERVATION_DETECTOR_ID = "detector_source_observation"
-SOURCE_OBSERVATION_DETECTOR_VERSION = "0.6"
+SOURCE_OBSERVATION_DETECTOR_VERSION = "0.7"
 
 CURRENT_PAIR_PROMPT_META = prompt_contract_metadata(
     prompt_id=CURRENT_PAIR_DETECTOR_ID,
@@ -468,7 +485,7 @@ CURRENT_PAIR_PROMPT_META = prompt_contract_metadata(
         "draft_answer",
         "max_seeds",
     ),
-    output_contract="zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+    output_contract="zero_or_more_numbered_bounded_inquiry_candidates_or_NONE",
 )
 SOURCE_OBSERVATION_PROMPT_META = prompt_contract_metadata(
     prompt_id=SOURCE_OBSERVATION_DETECTOR_ID,
@@ -476,7 +493,7 @@ SOURCE_OBSERVATION_PROMPT_META = prompt_contract_metadata(
     component="source_detection",
     template=SOURCE_OBSERVATION_GENERATIVE_PROMPT,
     input_contract=("source_observation", "source_context", "max_seeds"),
-    output_contract="zero_or_more_numbered_atomic_gap_candidates_or_NONE",
+    output_contract="zero_or_more_numbered_bounded_inquiry_candidates_or_NONE",
 )
 
 PROMPT_VARIANTS: tuple[str, ...] = ("absence", "generative", "current_pair")
