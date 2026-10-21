@@ -1,16 +1,38 @@
-# Shadowseed Workbench 0.12.3
+# Shadowseed Web 0.12.3
 
-0.12.3 is a Research Preview candidate. The published download remains
-`v0.12.2` until the exact-SHA Release Workbench workflow publishes this version.
+Release notes for the Research Preview candidate. These notes do not claim that
+v0.12.3 has already been published. The latest published archive remains
+v0.12.2 until the exact-SHA release workflow completes successfully.
 
-**Publication blocked as of 2026-10-21.** The strict dependency audit found
-eight Pillow vulnerabilities in the legacy Gradio Workbench dependency tree.
-Gradio 6.25.0 requires Pillow <13; the fixed Pillow 13.0.0 requires Python
->=3.11 while the engine still supports Python >=3.10. Do not bypass the audit
-or publish a misleading clean release. See [issue #200](https://github.com/E-AI-MODEL/shadowseed-pro/issues/200)
-for the exact packaging/compatibility resolution and acceptance checks.
-The separately vulnerable certifi pin was advanced to 2026.10.19 with
-PyPI-verified distribution checksums; this does not clear the Pillow blocker.
+## Distribution change
+
+The downloadable 0.12.3 application is now a **local, self-contained browser
+app**, using the existing static client and the canonical Python Shadow Seed
+engine over a loopback-only HTTP server. No remote server or hosted provider
+is required for deterministic fixture testing. Native Ollama chat requires
+a separately installed, running Ollama and local model weights.
+
+The earlier bundled Gradio Workbench is *not* included in these archives.
+The legacy Gradio interface remains an opt-in source/development route, **not
+an audited production download**. Gradio's Pillow <13 constraint prevents
+resolving the published Pillow security advisories in that legacy closure.
+The security gate instead strictly audits the **actual web-only shipping
+dependency closure**, requiring Gradio and Pillow to be absent rather than
+ignoring any vulnerability. The full repository lock still includes legacy
+optional extras; do not treat a green web distribution audit as proof that
+every optional extra is secure. See
+[issue #200](https://github.com/E-AI-MODEL/shadowseed-pro/issues/200).
+
+## Required release evidence
+
+The release must preserve a passing full Python test matrix (3.10/3.12),
+a strict locked web-only dependency audit and SBOM, clean wheel installation,
+and verified Windows/macOS/Linux frozen downloads. Each archive includes
+verified static assets and a frozen fixture-turn self-test; macOS must pass
+the sealed bundle archive round-trip. The release workflow verifies exact
+source SHA, manifests, provenance, licensing and checksum inventory.
+A live Ollama conversation remains a separate hands-on check, not supplied
+by fixture testing.
 
 ## Changes since the download
 
@@ -73,7 +95,9 @@ EmbeddingGemma; the thin client does not download models automatically.
 
 ## Local use after publication
 
-Start Ollama and install a chat model of your choice plus the embedding model:
+Start the Shadowseed desktop launcher: it serves the packaged web interface
+only on your computer's loopback interface and opens it in your browser.
+Then start Ollama and install a chat model of your choice plus the embedding model:
 
 ```bash
 ollama pull embeddinggemma
