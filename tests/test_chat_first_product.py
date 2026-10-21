@@ -67,6 +67,10 @@ def test_ollama_workbench_session_persists_resolved_embedding_identity(
         lambda: ["qwen3:8b", "embeddinggemma:latest"],
     )
     monkeypatch.setattr(
+        "shadowseed.adapters.ollama_client.ollama_version",
+        lambda: "0.12.0",
+    )
+    monkeypatch.setattr(
         "shadowseed.adapters.ollama_client.OllamaClient.embed",
         lambda self, text: [[1.0, 0.0, 0.0]],
     )
