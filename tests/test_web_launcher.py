@@ -27,9 +27,11 @@ def test_packaged_static_root_uses_package_directory_not_entrypoint(
     import shadowseed_webapi
 
     package = tmp_path / "shadowseed_webapi"
-    package.mkdir()
+    static = package / "static"
+    static.mkdir(parents=True)
+    (static / "index.html").write_text("<!doctype html>", encoding="utf-8")
     monkeypatch.setattr(shadowseed_webapi, "__file__", str(package / "__init__.py"))
-    assert packaged_static_root() == package / "static"
+    assert packaged_static_root() == static
 
 
 def _write_static_fixture(root: Path) -> None:
