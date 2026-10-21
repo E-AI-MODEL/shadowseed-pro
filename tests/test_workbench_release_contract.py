@@ -98,6 +98,8 @@ def test_release_assurance_rejects_optional_provider_stacks_in_thin_artifacts() 
     assert "thin production SBOM contains optional provider stacks" in ci
     assert "Strict security audit of web dependency closure" in candidate
     assert '"http_server_smoke"' in candidate
+    assert '"api_chat_roundtrip"' in candidate
+    assert '"api_chat_roundtrip"' in workflow
     assert "web-only shipping inventory" in ci
     assert "download.pytorch.org" not in release
     assert "download.pytorch.org" not in workbench_ci
