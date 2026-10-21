@@ -1,0 +1,56 @@
+name: Temporary 0.12.3 Lock Refresh
+
+on:
+  push:
+    branches:
+      - fix/0.12.3-complete-local-startup
+    paths:
+      - .github/workflows/temporary-lock-refresh.yml
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: true
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
+      - name: Re-resolve vulnerable production dependencies
+        run: |
+          uv lock --upgrade-package certifi --upgrade-package pillow
+          uv lock --check
+      - name: Assert dependency floor and thin production inventory
+        run: |
+          uv export --locked --extra workbench --extra build --extra standalone-build --no-emit-project --no-hashes --format requirements.txt --output-file /tmp/production.txt
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          reqs = {}
+          for line in Path("/tmp/production.txt").read_text().splitlines():
+              match = re.match(r"^([A-Za-z0-9_.-]+)==([^ ;]+)", line)
+              if match:
+                  reqs[match.group(1).lower()] = match.group(2)
+          for pkg, minimum in (("certifi", (2026, 10, 19)), ("pillow", (13, 0, 0))):
+              raw = reqs.get(pkg)
+              if not raw or tuple(int(part) for part in raw.split(".")[:3]) < minimum:
+                  raise SystemExit(f"{pkg} is not pinned at the required patched version: {raw}")
+          assert not {"torch", "transformers", "sentence-transformers", "openai"} & reqs.keys()
+          PY
+      - name: Commit resolved lockfile to release branch
+        run: |
+          if git diff --quiet -- uv.lock; then
+            echo "Lockfile unchanged"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add uv.lock
+          git commit -m "build: regenerate secure locked product dependencies"
+          git push origin HEAD:fix/0.12.3-complete-local-startup
