@@ -115,6 +115,7 @@ jobs:
           assert m["http_server_smoke"]["http_healthy"] is True
           assert m["http_server_smoke"]["static_homepage"] is True
           assert m["http_server_smoke"]["host_rebinding_guard"] is True
+          assert m["http_server_smoke"]["api_chat_roundtrip"] is True
           archive = root / m["archive"]
           assert archive.is_file()
           assert hashlib.sha256(archive.read_bytes()).hexdigest() == m["archive_sha256"]
