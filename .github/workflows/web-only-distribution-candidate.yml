@@ -108,6 +108,7 @@ jobs:
           assert m["release_approved"] is False
           assert m["gradio_source_files_bundled"] is False
           assert m["web_static_assets_bundled"] is True
+          assert m["self_test"]["frozen"] is True
           assert m["self_test"]["static_assets_verified"] is True
           assert m["self_test"]["loopback_only"] is True
           assert m["self_test"]["turn"] == 1
