@@ -67,6 +67,28 @@ def test_convincing_origin_must_leave_weight_at_zero() -> None:
     assert seed.status != SeedStatus.PROMOTED
 
 
+def test_question_shaped_seed_is_not_automatically_a_trusted_finding() -> None:
+    """An open question can be remembered without claiming an omission or truth."""
+    manager = SSLManager(embedding_fn=fake_embedding, promotion_threshold=0.4)
+    question = "Could feedback timing change how pupils explain their reasoning?"
+    seed_id = manager.add_or_update_seed(
+        question,
+        origin=SeedOrigin(
+            candidate_type=CandidateType.UNSPECIFIED,
+            detection_basis="tentative inquiry, not a proven gap",
+        ),
+    )
+    seed = manager.seeds[seed_id]
+    assert seed.text == question
+    assert seed.trace > 0
+    assert seed.weight == 0.0
+    assert seed.evidence_count == 0
+    assert seed.status is SeedStatus.NEW
+    assert manager.run_validation_gate(seed_id) is not True
+    assert seed.weight == 0.0
+    assert seed.status is not SeedStatus.PROMOTED
+
+
 def test_origin_serializes_and_is_json_safe() -> None:
     manager = SSLManager(embedding_fn=fake_embedding)
     seed_id = manager.add_or_update_seed(SEED_TEXT, origin=_convincing_origin())
