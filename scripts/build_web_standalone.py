@@ -147,6 +147,8 @@ def build(output_dir: Path) -> dict[str, object]:
         "archive_sha256": _sha256(archive),
         "license_file": str(license_path.relative_to(bundle)),
         "license_sha256": _sha256(license_path),
+        "license_identifier": "PolyForm-Noncommercial-1.0.0",
+        "model_weights_bundled": False,
         "self_contained_python_runtime": True,
         "loopback_only_default": True,
         "web_static_assets_bundled": True,
@@ -154,6 +156,9 @@ def build(output_dir: Path) -> dict[str, object]:
         "legacy_packages_excluded": sorted(EXCLUDED_DISTRIBUTIONS),
         "macos_signature_mode": macos_signature,
         "macos_archive_roundtrip_verified": roundtrip_bundle is not None if system == "darwin" else None,
+        "macos_first_launch_helper": roundtrip_bundle is not None if system == "darwin" else None,
+        "macos_notarized": False if system == "darwin" else None,
+        "macos_gatekeeper_assessed": False if system == "darwin" else None,
         "self_test": smoke,
         "archive_roundtrip_web_self_test": roundtrip_smoke,
     }
