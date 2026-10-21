@@ -1,4 +1,10 @@
-"""English prompt library for Shadow Seed Learning."""
+"""Legacy absence-oriented research prompt library, retained for compatibility.
+
+The normal live chat detector uses the versioned inquiry-first contracts in
+`shadowseed.detection.model_detector`, not `DETECTION_PASS` in this module.
+These historically omission-focused templates remain stable for replay and
+comparisons. Do not mistake them for the current product definition of a seed.
+"""
 
 DETECTION_PASS = """
 You are an epistemic analyst.
