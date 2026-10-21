@@ -18,22 +18,22 @@ canonical Python SSL engine, weakening the Gate, or waiting for the legacy Gradi
 | Backport / maintain a local Pillow fork | Native image parser and all packaged builds | Expensive review and platform build burden, beyond product purpose | Reject |
 | Replace browser client with a new framework | UI and delivery layer | Duplicates an already working static-export client and loopback API | Reject |
 | Container-only distribution | Installation method | Useful optional channel, but unsuitable as a simple desktop download | Supplement |
-| **Separate packaged browser product** | Bundling and CI closure only | Existing \`shadowseed-web\` uses a loopback stdlib server, existing Next static export and canonical Python services | **Prototype this** |
+| **Separate packaged browser product** | Bundling and CI closure only | Existing `shadowseed-web` uses a loopback stdlib server, existing Next static export and canonical Python services | **Prototype this** |
 
-The active legacy \`workbench\` extra remains available as an **explicitly
+The active legacy `workbench` extra remains available as an **explicitly
 unsupported-for-secure-release** research surface until Gradio resolves Pillow 13.
 The accepted shipping dependency inventory MUST exclude Gradio and Pillow; omitting
 them in prose or excluding merely their import paths is insufficient.
 
 ## Convergent implementation
 
-1. Keep \`shadowseed-web\` as the entry point. Avoid changing SSL, persistence,
+1. Keep `shadowseed-web` as the entry point. Avoid changing SSL, persistence,
    authority, evidence, contradiction and point-of-use behavior.
 2. Assemble a PyInstaller web-only bundle from that entry point. Collect hashed
    static assets, preserve the existing macOS sealing/roundtrip process, and
    prove a real fixture turn via a frozen self-test.
 3. Before any publication, audit the **exported exact shipped** dependency closure
-   with strict \`pip-audit\`, a lock check and an SBOM. Assert Gradio, Pillow,
+   with strict `pip-audit`, a lock check and an SBOM. Assert Gradio, Pillow,
    heavy model providers and other excluded optional stacks are absent.
 4. Run cross-platform clean install/build, checksums, artifact provenance, and
    user-start tests. Later change the *canonical release* workflow to use these
@@ -46,9 +46,9 @@ them in prose or excluding merely their import paths is insufficient.
 
 * Python 3.10 remains supported by the **engine**. The standalone build may use
   Python 3.12; support of an individual frozen binary is based on its platform.
-* Source \`uv.lock\` still represents **all** optional extras, including the
-  vulnerable legacy UI. A strict shipped-closure audit must work from \`uv export\`
-  without \`--extra workbench\`. Do not silently relabel a full-lock audit as safe.
+* Source `uv.lock` still represents **all** optional extras, including the
+  vulnerable legacy UI. A strict shipped-closure audit must work from `uv export`
+  without `--extra workbench`. Do not silently relabel a full-lock audit as safe.
 * Gradio-dependent CI and tests remain a separate legacy-health signal; any
   required check and release assurance change needs an explicit, reviewed edit.
 * Keep license/provenance files as integrity material. Ownership of the
