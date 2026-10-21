@@ -7,10 +7,10 @@ that may become useful later.
 
 The shortest description is:
 
-> **SSL watches what a model and its information environment may be missing,
-> stores promising missing perspectives as shadow seeds, lets those seeds earn
-> or lose authority over time, and may bring an authorized seed back when it is
-> relevant later.**
+> **SSL gives an open question, doubt, unexpected connection or tentative
+> alternative a place in a conversation. It remembers that possibility without
+> making it true, lets the question develop a history, and allows bounded
+> influence only after the relevant Validation Gate and point-of-use checks.**
 
 That makes SSL closer to an inspectable experience layer than to classic model
 training.
@@ -27,12 +27,16 @@ A language model normally answers from three main things:
 
 Once a conversation, document or retrieved context disappears from the active
 window, the model does not automatically maintain a structured, inspectable
-record of what was repeatedly absent, contradicted, useful or worth revisiting.
+record of what remains uncertain, what invited curiosity, or which possibility
+might be worth revisiting. A complete answer may still leave a worthwhile
+question open. Nothing needs to be wrong or missing.
 
-SSL adds a separate shadow process beside the model. The shadow process can
-observe candidate omissions or alternative frames, track whether they recur,
-record evidence and contradictions, and decide whether a seed has earned enough
-authority to become eligible for later use.
+SSL adds a separate observation and memory process beside the model. It can
+record grounded questions, doubts, possible connections, alternative frames,
+and sometimes omissions. These are *candidate lines of inquiry*, not a diagnosis
+that an answer is incomplete. They may recur, fade, be challenged or receive
+independently checked support. Only the Gate determines eligibility for
+possible later influence.
 
 The LLM remains the language model. SSL is the memory, authority and surfacing
 layer around it.
@@ -50,17 +54,25 @@ Those stages are deliberately separate.
 
 ### Observe
 
-SSL looks at a chat turn or source-text chunk and asks what useful perspective,
-missing explanation, assumption or alternative frame might be absent.
+SSL considers whether a chat turn or source observation gives rise to a
+specific open question, uncertainty, relevant what-if, or alternative
+interpretation worth keeping. One possible outcome is a suspected omission,
+but finding an omission is not the primary goal. The detector may also return
+`NONE`, rather than manufacture a question.
 
-Observation is not authority. It is only detection.
+Observation is not authority. The recorded inquiry may remain open without
+being answered, corrected or presented to the user.
 
 ### Seed
 
 A detected candidate becomes a **shadow seed**.
 
-A seed is a hypothesis or candidate perspective. It is not automatically a
-fact, instruction or truth claim.
+A seed is one bounded and context-bound *line of inquiry*: a question,
+uncertainty, possible relation, tentative alternative, or suspected omission.
+It does not imply that its source answer was wrong or incomplete. A question
+may be worth remembering even when there is not enough evidence to answer it.
+A seed is not automatically a fact, instruction, truth claim or request for the
+language model to take action.
 
 ### Recur / gather evidence
 
@@ -101,8 +113,8 @@ This is the moment at which SSL can actually affect a response.
 
 A useful mental model is:
 
-> A shadow seed is a small, traceable piece of possible missing context that can
-> develop a history.
+> A shadow seed is one traceable, still-open possibility that can develop a
+> history without first becoming a conclusion.
 
 A seed can have:
 
@@ -339,10 +351,12 @@ silently granting authority.
 
 ### Autonomous
 
-Live sessions default to the existing exploratory Validation Gate. Recurrence is
-submitted as recurrence, never relabeled as external evidence, and may therefore
-raise authority automatically under that Gate. Promotion and later use still
-require the canonical Gate, relevance selection and point-of-use safety checks.
+When the `exploratory` research profile is explicitly selected, recurrence
+can contribute to authority under that named policy. Recurrence is never
+relabeled as external evidence. Ordinary new product conversations use the
+`evidence_backed` Gate by default and do not grant authority through
+recurrence alone. Promotion and later use still require the canonical Gate,
+relevance selection and point-of-use checks.
 
 ### Open research
 
@@ -485,7 +499,9 @@ choice.
 ## 18. Glossary
 
 **Shadow seed**  
-A traceable candidate perspective or missing-context hypothesis.
+A bounded, context-bound and still-open question, doubt, alternative
+interpretation, possible relation or suspected omission. A seed is not a
+conclusion or automatically a prompt to ask the user.
 
 **Shadow memory**  
 The persistent collection of seeds and their lifecycle state.
@@ -521,7 +537,7 @@ assisted or automated.
 
 ## 19. One-sentence summary
 
-**Shadow Seed Learning is an inspectable experience layer around an LLM that
-observes possible missing perspectives, lets them earn or lose authority over
-time, and selectively reintroduces authorized perspectives when they become
-relevant later.**
+**Shadow Seed Learning is an inspectable memory and validation layer around
+an LLM. It preserves worthwhile curiosity, uncertainty, doubt, and possible
+directions without treating them as established knowledge; it may later offer
+an authorized and relevant possibility as bounded, untrusted context.**
