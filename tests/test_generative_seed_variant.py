@@ -67,6 +67,48 @@ def test_current_pair_variant_falls_back_to_source_observation_context():
     assert "word-count limit" in p
 
 
+
+
+
+def test_default_chat_detector_preserves_curiosity_without_inventing_an_error() -> None:
+    prompt = build_detection_prompt(
+        "De conclusie is verantwoord en het antwoord is volledig.",
+        variant="current_pair",
+        question="Hoe helpen leerlingen elkaar om iets te begrijpen?",
+    )
+    assert "This is NOT a completeness checklist" in prompt
+    assert "A clear, correct answer may still invite" in prompt
+    for term in ("uncertainty", "doubt", "curiosity", "alternative interpretation"):
+        assert term in prompt
+    assert "Do not claim that something is missing merely to create a candidate" in prompt
+    assert "The model is not said to *feel* curiosity or doubt" in prompt
+    assert "Never invent facts" in prompt
+    assert "return exactly: NONE" in prompt
+
+
+def test_source_observation_detector_allows_an_open_question() -> None:
+    prompt = build_detection_prompt(
+        "Twee groepen leerlingen geven verschillende redenen.",
+        variant="current_pair",
+        source_context="classroom-observation-1",
+    )
+    assert "A source does not have to be incomplete" in prompt
+    assert "uncertainty, doubt, an alternative explanation" in prompt
+    assert "A concise phrase or a naturally phrased open question is acceptable" in prompt
+    assert "do not produce generic questions".lower() in prompt.lower()
+
+
+def test_inquiry_question_and_tentative_frame_survive_parser_without_becoming_facts() -> None:
+    question = "Could the same feedback mean something different in another classroom?"
+    frame = "Feedback timing as a possible factor in learner independence"
+    seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
+        f"1. {question}\n2. {frame}",
+        source_text="Pupils compared two examples of feedback.",
+    )
+    assert seeds == [question, frame]
+    assert diagnostics["accepted_candidates"] == 2
+
+
 def test_explicit_none_is_a_valid_zero_candidate_result():
     seeds, diagnostics = parse_numbered_seeds_with_diagnostics("NONE")
     assert seeds == []
@@ -105,13 +147,13 @@ def test_prompt_metadata_declares_detector_input_and_output_contracts() -> None:
         "max_seeds",
     ]
     assert CURRENT_PAIR_PROMPT_META["output_contract"] == (
-        "zero_or_more_numbered_atomic_gap_candidates_or_NONE"
+        "zero_or_more_numbered_bounded_inquiry_candidates_or_NONE"
     )
     assert SOURCE_OBSERVATION_PROMPT_META["output_contract"] == (
-        "zero_or_more_numbered_atomic_gap_candidates_or_NONE"
+        "zero_or_more_numbered_bounded_inquiry_candidates_or_NONE"
     )
-    assert CURRENT_PAIR_PROMPT_META["prompt_version"] == "0.6"
-    assert SOURCE_OBSERVATION_PROMPT_META["prompt_version"] == "0.6"
+    assert CURRENT_PAIR_PROMPT_META["prompt_version"] == "0.7"
+    assert SOURCE_OBSERVATION_PROMPT_META["prompt_version"] == "0.7"
 
 
 def test_fixture_detector_exposes_raw_and_parser_audit() -> None:
