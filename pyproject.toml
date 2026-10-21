@@ -38,8 +38,6 @@ vector = [
 workbench = [
   "gradio>=6.0,<7",
   "httpx[socks]>=0.28.0,<1",
-  # Minimum secure CA bundle version, tracked by the locked PyPI release.
-  "certifi>=2026.10.19",
   # The normal local Workbench is Ollama-first. Heavy Hugging Face model
   # dependencies and the hosted OpenAI SDK remain explicit provider extras.
 ]
