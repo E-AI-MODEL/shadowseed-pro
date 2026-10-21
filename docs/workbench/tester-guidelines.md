@@ -17,6 +17,10 @@ Useful tester questions include:
 - Is **Vergelijk dit antwoord zonder SSL** understandable as a same-turn control without implying one answer is automatically better?
 - Is it clear when a comparison difference can actually be attributed to SSL?
 - Are seed status and plain-language explanations understandable in the Shadow view?
+- Can a worthwhile uncertainty or new line of inquiry be preserved even after a complete, correct answer, without claiming a missing fact?
+- Is an open question shown as unverified memory rather than automatically as evidence, advice, a forced follow-up or a mistake?
+- Does a candidate question keep its original wording, including its question mark, through normalization, storage and retrieval?
+- Can `NONE` be a legitimate result when no grounded candidate is worth preserving?
 - Is record-only feedback easy to enter and clearly non-authorizing?
 - Are errors actionable when a backend, model, credential, workspace or export is unavailable?
 - Can a privacy-minimized support bundle be produced without conversation content?
