@@ -11,6 +11,15 @@ from shadowseed_webapi.service import WebApiService
 
 @pytest.fixture(autouse=True)
 def compatible_ollama_version(monkeypatch):
+    """Existing installed-model tests use a compatible server version."""
+    monkeypatch.setattr(
+        "shadowseed.adapters.ollama_client.ollama_version",
+        lambda: "0.12.0",
+    )
+
+
+@pytest.fixture(autouse=True)
+def compatible_ollama_version(monkeypatch):
     """Simulated model inventory also simulates a supported server version."""
     monkeypatch.setattr(
         "shadowseed.adapters.ollama_client.ollama_version",
@@ -184,5 +193,60 @@ def test_other_embedding_models_do_not_require_embeddinggemma_version(monkeypatc
     monkeypatch.setattr(
         "shadowseed.adapters.ollama_client.ollama_version",
         lambda: pytest.fail("not required for other models"),
+    )
+    WorkbenchController.validate_ollama_embedding_model("nomic-embed-text")
+
+
+@pytest.mark.parametrize("version", ["0.11.9", "v0.10.8", "development"])
+def test_installed_embeddinggemma_requires_compatible_ollama_version(
+    monkeypatch, tmp_path, version,
+):
+    monkeypatch.setattr(
+        "shadowseed.adapters.ollama_client.list_ollama_models",
+        lambda: ["embeddinggemma:latest", "qwen3:8b"],
+    )
+    monkeypatch.setattr(
+        "shadowseed.adapters.ollama_client.ollama_version",
+        lambda: version,
+    )
+    controller = WorkbenchController(tmp_path / "workspace")
+    with pytest.raises(ValueError, match="Update and restart Ollama"):
+        controller.create_session(
+            title="Outdated local server", profile_id="balanced",
+            backend="ollama", model_id="qwen3:8b",
+        )
+    assert controller.list_sessions() == []
+
+
+def test_ollama_version_check_failure_is_actionable(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        "shadowseed.adapters.ollama_client.list_ollama_models",
+        lambda: ["embeddinggemma:latest"],
+    )
+
+    def unavailable():
+        raise RuntimeError("version endpoint refused")
+
+    monkeypatch.setattr(
+        "shadowseed.adapters.ollama_client.ollama_version",
+        unavailable,
+    )
+    controller = WorkbenchController(tmp_path / "workspace")
+    with pytest.raises(ValueError, match="Could not verify the Ollama server version"):
+        controller.create_session(
+            title="Unknown local version", profile_id="balanced",
+            backend="ollama", model_id="qwen3:8b",
+        )
+    assert controller.list_sessions() == []
+
+
+def test_other_embedding_models_skip_embeddinggemma_version_check(monkeypatch):
+    monkeypatch.setattr(
+        "shadowseed.adapters.ollama_client.list_ollama_models",
+        lambda: ["nomic-embed-text:latest"],
+    )
+    monkeypatch.setattr(
+        "shadowseed.adapters.ollama_client.ollama_version",
+        lambda: pytest.fail("Unrelated model should not check EmbeddingGemma version"),
     )
     WorkbenchController.validate_ollama_embedding_model("nomic-embed-text")
