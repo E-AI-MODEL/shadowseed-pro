@@ -76,7 +76,8 @@ def test_user_interface_keeps_unresolved_questions_visible_without_authorizing_t
     assert 'seed.current_gate_authorized ? 1 : 0' in source
     assert "Wat blijft open?" in source
     assert "Nieuwe geheugenpunten hebben geen gezag" in source
-    assert "De engine bewaakt de regels" in source
+    assert "Ook een volledig antwoord kan een nieuwe vraag of twijfel" in source
+    assert "dat het meteen een feit, advies of opdracht wordt." in source
 
 
 def test_canonical_ui_help_does_not_call_every_unanswered_question_an_error():
