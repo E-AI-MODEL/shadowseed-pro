@@ -6,6 +6,7 @@ quality. A fixture cannot prove that an actual model asks worthwhile questions.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import numpy as np
@@ -83,3 +84,23 @@ def test_canonical_ui_help_does_not_call_every_unanswered_question_an_error():
     assert "een open vraag, twijfel of mogelijke nieuwe richting" in source
     assert "Dwingt geen nieuwe vraag af" in source
     assert "Het onthouden van zo'n mogelijkheid maakt er geen feit" in source
+
+
+
+def test_inquiry_comparison_cases_are_reproducible_and_not_claimed_as_results():
+    path = Path("benchmarks/inquiry_first/cases.json")
+    material = json.loads(path.read_text(encoding="utf-8"))
+    assert material["version"] == 1
+    assert material["status"] == "test_design_only_no_live_results"
+    assert material["baseline"]["detector_prompt_version"] == "0.6"
+    assert material["candidate"]["detector_prompt_version"] == "0.7"
+    cases = material["cases"]
+    assert len(cases) >= 10
+    assert len({case["id"] for case in cases}) == len(cases)
+    assert {"nl", "en"} <= {case["language"] for case in cases}
+    assert {"current_pair", "source_observation"} <= {
+        case["mode"] for case in cases
+    }
+    assert "forced_curiosity" in {case["risk"] for case in cases}
+    assert "anthropomorphism" in {case["risk"] for case in cases}
+    assert "prompt_injection" in {case["risk"] for case in cases}
