@@ -100,7 +100,8 @@ def run_doctor(workspace: str | Path | None = None) -> DoctorReport:
             "live_embedding",
             "warning",
             "lexical hashing is demo/CI-only for live non-fixture sessions",
-            "Use sentence-transformers locally or OpenAI embeddings for live sessions.",
+            "Use Ollama with `ollama pull embeddinggemma` for the normal local setup. "
+            "Sentence Transformers and OpenAI embeddings are optional alternatives.",
         )
     )
     checks.append(

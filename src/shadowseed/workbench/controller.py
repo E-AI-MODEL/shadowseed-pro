@@ -140,6 +140,38 @@ class WorkbenchController:
         return None
 
     @staticmethod
+    def validate_ollama_embedding_model(model_id: str | None) -> None:
+        """Check the installed model before creating any persistent chat state."""
+
+        from shadowseed.adapters.ollama_client import (
+            DEFAULT_OLLAMA_EMBEDDING_MODEL,
+            list_ollama_models,
+        )
+
+        requested = str(model_id or DEFAULT_OLLAMA_EMBEDDING_MODEL).strip()
+        try:
+            installed = list_ollama_models()
+        except RuntimeError as exc:
+            raise ValueError(
+                "Could not read the installed Ollama models. "
+                "Start Ollama, check its local endpoint, and try again."
+            ) from exc
+
+        # Ollama resolves an omitted tag to :latest, not to any installed tag.
+        # Inspect only the final path component: registry names may contain a port.
+        name = requested.rsplit("/", 1)[-1]
+        resolved = requested if ":" in name else f"{requested}:latest"
+        available = {
+            model if ":" in model.rsplit("/", 1)[-1] else f"{model}:latest"
+            for model in installed
+        }
+        if resolved not in available:
+            raise ValueError(
+                f"Ollama embedding model {requested!r} is not installed. "
+                f"Run `ollama pull {requested}` in Terminal, then create the chat again."
+            )
+
+    @staticmethod
     def ssl_intensity_settings(percent: int | float) -> dict[str, float | int]:
         """Map 0-100% SSL influence to surfacing settings without weakening authority."""
 
@@ -298,6 +330,10 @@ class WorkbenchController:
             allow_toy_embedder=allow_toy_embedder,
             external_confirmed=external_confirmed,
         )
+        # Validate consent and endpoint policy first. All web and Gradio entry
+        # points share this check; a failed setup must not leave an empty chat.
+        if resolved_embedding == "ollama":
+            self.validate_ollama_embedding_model(resolved_embedding_model)
         effective_same_turn_revision = (
             bool(allow_self_reinforcement)
             if allow_same_turn_revision is None
