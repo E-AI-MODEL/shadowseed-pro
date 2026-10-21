@@ -297,8 +297,27 @@ jobs:
                   raise SystemExit(f"wrong source sha in {path.name}")
               if payload["version"] != os.environ["RELEASE_VERSION"]:
                   raise SystemExit(f"wrong version in {path.name}")
-              if payload["self_test"]["frozen"] is not True:
-                  raise SystemExit(f"frozen self-test missing in {path.name}")
+              if payload.get("artifact") != "shadowseed_web_only_candidate":
+                  raise SystemExit(f"not a web-only frozen artifact: {path.name}")
+              if payload.get("release_approved") is not False:
+                  raise SystemExit(f"candidate status missing: {path.name}")
+              if payload.get("gradio_source_files_bundled") is not False:
+                  raise SystemExit(f"legacy Gradio included in candidate: {path.name}")
+              if payload.get("web_static_assets_bundled") is not True:
+                  raise SystemExit(f"web assets missing from candidate: {path.name}")
+              if payload.get("self_contained_python_runtime") is not True:
+                  raise SystemExit(f"self-contained runtime missing: {path.name}")
+              if payload.get("loopback_only_default") is not True:
+                  raise SystemExit(f"loopback guard missing: {path.name}")
+              smoke = payload.get("self_test") or {}
+              if (smoke.get("static_assets_verified") is not True
+                  or smoke.get("loopback_only") is not True
+                  or smoke.get("runtime_mode") != "live"
+                  or smoke.get("turn") != 1):
+                  raise SystemExit(f"web frozen self-test missing: {path.name}")
+              excluded = set(payload.get("legacy_packages_excluded") or [])
+              if not {"gradio", "gradio-client", "pillow"} <= excluded:
+                  raise SystemExit(f"legacy exclusion evidence missing: {path.name}")
               if payload.get("license_identifier") != "PolyForm-Noncommercial-1.0.0":
                   raise SystemExit(f"wrong or missing license identifier in {path.name}")
               if payload.get("license_sha256") != expected_license_sha:
@@ -308,14 +327,13 @@ jobs:
               if payload.get("system") == "darwin":
                   if payload.get("macos_signature_mode") != "adhoc":
                       raise SystemExit(f"macOS artifact is not ad-hoc sealed: {path.name}")
-                  if payload.get("macos_notarized") is not False:
-                      raise SystemExit(f"macOS artifact unexpectedly claims notarization: {path.name}")
-                  if payload.get("macos_gatekeeper_assessed") is not False:
-                      raise SystemExit(f"macOS artifact unexpectedly claims Gatekeeper acceptance: {path.name}")
-                  if payload.get("macos_first_launch_helper") is not True:
-                      raise SystemExit(f"macOS artifact is missing first-launch helper evidence: {path.name}")
                   if payload.get("macos_archive_roundtrip_verified") is not True:
-                      raise SystemExit(f"macOS artifact did not pass archive round-trip verification: {path.name}")
+                      raise SystemExit(f"macOS archive round-trip not verified: {path.name}")
+                  roundtrip = payload.get("archive_roundtrip_web_self_test") or {}
+                  if (roundtrip.get("static_assets_verified") is not True
+                      or roundtrip.get("loopback_only") is not True
+                      or roundtrip.get("turn") != 1):
+                      raise SystemExit(f"macOS archive round-trip smoke failed: {path.name}")
               archive = source / payload["archive"]
               if not archive.is_file():
                   raise SystemExit(f"missing standalone archive {archive}")
