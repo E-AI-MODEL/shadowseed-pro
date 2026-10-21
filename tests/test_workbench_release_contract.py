@@ -71,21 +71,35 @@ def test_workbench_extra_is_thin_and_provider_extras_are_explicit() -> None:
 
 
 def test_release_assurance_rejects_optional_provider_stacks_in_thin_artifacts() -> None:
+    """The released web product has a strict inventory separate from legacy Gradio."""
     release = Path(".github/workflows/release-workbench.yml").read_text(encoding="utf-8")
-    workbench_ci = Path(".github/workflows/workbench-ci.yml").read_text(encoding="utf-8")
+    candidate = Path(".github/workflows/web-only-distribution-candidate.yml").read_text(
+        encoding="utf-8"
+    )
+    workbench_ci = Path(".github/workflows/workbench-ci.yml").read_text(
+        encoding="utf-8"
+    )
     ci = Path(".github/workflows/ci.yml").read_text(encoding="utf-8")
 
-    for name in ("torch", "transformers", "sentence-transformers", "openai"):
+    excluded = ("torch", "transformers", "sentence-transformers", "openai")
+    for name in excluded:
         assert name in release
         assert name in workbench_ci
+        assert name in candidate
+        assert name in ci
+    for name in ("gradio", "pillow"):
+        assert name in release
+        assert name in candidate
+        assert name in ci
     assert "thin release SBOM contains optional provider stacks" in release
-    assert "thin Workbench lock contains optional providers" in release
+    assert "web wheel requirements contain legacy or optional modules" in release
     assert "thin Workbench lock contains optional providers" in workbench_ci
     assert "thin production dependency inventory contains optional providers" in ci
     assert "thin production SBOM contains optional provider stacks" in ci
+    assert "Strict security audit of web dependency closure" in candidate
+    assert "web-only shipping inventory" in ci
     assert "download.pytorch.org" not in release
     assert "download.pytorch.org" not in workbench_ci
-
 
 def test_heavy_release_evidence_is_pr_scoped_or_explicitly_dispatched() -> None:
     for path in (
@@ -124,7 +138,7 @@ def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -
         "workbench-ci.yml",
         "workbench-portability.yml",
         "research-package-ci.yml",
-        "standalone-workbench.yml",
+        "web-only-distribution-candidate.yml",
         "web-client-ci.yml",
     ):
         assert required in workflow
@@ -137,13 +151,18 @@ def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -
     assert 'gh run watch "$run_id" --exit-status' in workflow
     assert 'if [ "$conclusion" != "success" ]; then' in workflow
     assert "main advanced while release assurance was running" in workflow
-    assert "standalone_run_id" in workflow
-    assert "steps.preflight.outputs.standalone_run_id" in workflow
+    assert "web_run_id" in workflow
+    assert "steps.preflight.outputs.web_run_id" in workflow
+    assert "standalone-workbench.yml" not in workflow
+    assert '"artifact") != "shadowseed_web_only_candidate"' in workflow
+    assert "gradio_source_files_bundled" in workflow
+    assert "legacy_packages_excluded" in workflow
+    assert '"frozen") is not True' in workflow
     assert 'release_tag="v${release_version}"' in workflow
     assert 'notes_file="docs/workbench/release-${release_version}.md"' in workflow
     assert DOWNLOAD_ARTIFACT_PIN.search(workflow) is not None
     assert not re.search(r"actions/download-artifact@v\d", workflow)
-    assert "pattern: standalone-*" in workflow
+    assert "pattern: web-candidate-*" in workflow
     assert "PROVENANCE.json" in workflow
     assert "SBOM.cdx.json" in workflow
     assert "uv.lock" in workflow
