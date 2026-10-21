@@ -91,12 +91,21 @@ def is_atomic_seed(text: str, max_seed_words: int | None = None) -> bool:
     del max_seed_words
     has_many_separators = sum(separator in lowered for separator in separators) >= 2
     broad_matches = sum(term in lowered for term in broad_terms)
-    # The historical broad-word veto must not reject a specific open question
-    # merely because it contains "perspectieven" or another broad-looking word.
-    # Keep broad lists and multi-frame question stacks rejected.
-    has_broad_terms = broad_matches > 0 and not (
-        lowered.endswith("?") and broad_matches == 1 and not has_many_separators
+    # A single question about a relation (e.g. "Hoe hangen oorzaken en
+    # gevolgen samen?") is not a shopping list of absent items. Preserve it
+    # even when several historical broad-category words occur. An interrogative
+    # alone does not prove semantic atomicity; these remain tested heuristics.
+    relational_question = (
+        lowered.endswith("?")
+        and not has_many_separators
+        and (
+            lowered.startswith(("hoe ", "waarom ", "waardoor ", "in hoeverre ", "wat als "))
+            or " samen" in lowered
+            or " verband " in lowered
+            or " relatie " in lowered
+        )
     )
+    has_broad_terms = broad_matches > 0 and not relational_question
     word_count = len(re.findall(r"\w+", text))
     if (
         word_count <= 3
