@@ -350,8 +350,8 @@ jobs:
               "sbom_file": "SBOM.cdx.json",
               "license_identifier": "PolyForm-Noncommercial-1.0.0",
               "license_sha256": expected_license_sha,
-              "standalone_workflow_run_id": int(os.environ["SOURCE_RUN_ID"]),
-              "standalone_bundles": bundles,
+              "web_workflow_run_id": int(os.environ["SOURCE_RUN_ID"]),
+              "web_bundles": bundles,
           }
           (release / "PROVENANCE.json").write_text(
               json.dumps(provenance, indent=2, sort_keys=True) + "\n",
@@ -377,19 +377,19 @@ jobs:
           uv run --no-sync python scripts/verify_distribution_license.py --dist-dir dist --license LICENSE
           cp dist/* release-assets/
 
-      - name: Installed wheel smoke against locked thin Workbench dependencies
+      - name: Installed web wheel smoke without Gradio or Pillow
         if: steps.preflight.outputs.should_release == 'true'
         shell: bash
         run: |
           set -euo pipefail
           wheel="$(ls dist/*.whl)"
           uv export --locked --no-emit-project --no-hashes \
-            --format requirements.txt --output-file "${RUNNER_TEMP}/release-workbench-locked.txt"
+            --format requirements.txt --output-file "${RUNNER_TEMP}/release-web-locked.txt"
           python - <<'PY'
           import os
           from pathlib import Path
 
-          source = Path(os.environ["RUNNER_TEMP"]) / "release-workbench-locked.txt"
+          source = Path(os.environ["RUNNER_TEMP"]) / "release-web-locked.txt"
           lines = source.read_text(encoding="utf-8").splitlines()
           names = {
               line.split("==", 1)[0].strip().lower().replace("_", "-")
@@ -400,19 +400,15 @@ jobs:
                        "transformers", "sentence-transformers", "openai"}
           unexpected = sorted(names & forbidden)
           if unexpected:
-              raise SystemExit(f"thin Workbench lock contains optional providers: {unexpected}")
+              raise SystemExit(f"web wheel requirements contain legacy or optional modules: {unexpected}")
+          assert "numpy" in names
           PY
           uv venv "${RUNNER_TEMP}/release-venv" --python 3.12
           uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python" \
-            --no-deps --index-url https://pypi.org/simple \
-            -r "${RUNNER_TEMP}/release-workbench-locked.txt"
+            --no-deps -r "${RUNNER_TEMP}/release-web-locked.txt"
           uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python" \
-            --no-deps "${wheel}[workbench]"
+            --no-deps "$wheel"
           cd "${RUNNER_TEMP}"
-          "${RUNNER_TEMP}/release-venv/bin/shadowseed" workbench --help
-          "${RUNNER_TEMP}/release-venv/bin/shadowseed-workbench" --self-test \
-            --workspace "${RUNNER_TEMP}/wheel-workspace" \
-            --self-test-output "${RUNNER_TEMP}/wheel-self-test.json"
           "${RUNNER_TEMP}/release-venv/bin/shadowseed-web" --self-test \
             --workspace "${RUNNER_TEMP}/web-wheel-workspace" \
             --self-test-output "${RUNNER_TEMP}/web-wheel-self-test.json"
@@ -421,22 +417,15 @@ jobs:
           from importlib.util import find_spec
           from pathlib import Path
 
-          payload = json.loads(Path("wheel-self-test.json").read_text(encoding="utf-8"))
-          assert payload["runtime_mode"] == "live"
-          assert payload["comparison_generated"] is True
-          assert payload["report_verified"] is True
-          assert payload["support_verified"] is True
-          assert payload["production_resolution_ui"] is True
-          web_payload = json.loads(
-              Path("web-wheel-self-test.json").read_text(encoding="utf-8")
-          )
-          assert web_payload["static_assets_verified"] is True
-          assert web_payload["loopback_only"] is True
-          assert web_payload["runtime_mode"] == "live"
-          assert web_payload["turn"] == 1
-          for module in ("torch", "transformers", "sentence_transformers", "openai"):
-              assert find_spec(module) is None, module
-          print("installed thin wheel Workbench smoke OK")
+          web = json.loads(Path("web-wheel-self-test.json").read_text(encoding="utf-8"))
+          assert web["static_assets_verified"] is True
+          assert web["loopback_only"] is True
+          assert web["runtime_mode"] == "live"
+          assert web["turn"] == 1
+          for package in ("gradio", "PIL", "torch", "transformers",
+                          "sentence_transformers", "openai"):
+              assert find_spec(package) is None, package
+          print("installed audited web-only wheel smoke OK")
           PY
 
       - name: Generate SHA256SUMS
@@ -495,7 +484,7 @@ jobs:
           set -euo pipefail
           git fetch origin main --force
           test "$(git rev-parse origin/main)" = "$RELEASE_SHA"
-          gh release create "$RELEASE_TAG"             release-assets/*             --target "$RELEASE_SHA"             --prerelease             --latest=false             --title "Shadowseed Workbench ${RELEASE_VERSION} Research Preview"             --notes-file "$NOTES_FILE"
+          gh release create "$RELEASE_TAG"             release-assets/*             --target "$RELEASE_SHA"             --prerelease             --latest=false             --title "Shadowseed Web ${RELEASE_VERSION} Research Preview"             --notes-file "$NOTES_FILE"
 
           git fetch origin main --force
           if [ "$(git rev-parse origin/main)" != "$RELEASE_SHA" ]; then
