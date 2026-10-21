@@ -46,6 +46,11 @@ def _web_pyinstaller_command(root: Path, dist: Path, work: Path) -> list[str]:
         "--specpath", str(work / "spec"),
         "--collect-data", "shadowseed",
         "--collect-data", "shadowseed_webapi",
+        # Never depend on editable-install package-data discovery for the
+        # freshly generated Next export. PyInstaller 6 uses SOURCE:DEST
+        # on Windows, macOS and Linux.
+        "--add-data",
+        f"{root / 'src' / 'shadowseed_webapi' / 'static'}:shadowseed_webapi/static",
     ]
     for package in sorted(EXCLUDED_DISTRIBUTIONS | {"sentence_transformers", "gradio_client", "PIL"}):
         command.extend(["--exclude-module", package.replace("-", "_")])
