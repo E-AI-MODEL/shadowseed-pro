@@ -145,7 +145,11 @@ class WorkbenchController:
 
         from shadowseed.adapters.ollama_client import (
             DEFAULT_OLLAMA_EMBEDDING_MODEL,
+            MIN_OLLAMA_EMBEDDINGGEMMA_VERSION,
+            _is_embeddinggemma,
+            _version_tuple,
             list_ollama_models,
+            ollama_version,
         )
 
         requested = str(model_id or DEFAULT_OLLAMA_EMBEDDING_MODEL).strip()
@@ -170,6 +174,26 @@ class WorkbenchController:
                 f"Ollama embedding model {requested!r} is not installed. "
                 f"Run `ollama pull {requested}` in Terminal, then create the chat again."
             )
+
+        # EmbeddingGemma is installed, but older Ollama servers cannot embed it.
+        # Check compatibility before writing the new session to disk.
+        if _is_embeddinggemma(resolved):
+            minimum = ".".join(str(part) for part in MIN_OLLAMA_EMBEDDINGGEMMA_VERSION)
+            try:
+                server_version = ollama_version()
+            except RuntimeError as exc:
+                raise ValueError(
+                    f"Could not verify the Ollama server version. EmbeddingGemma "
+                    f"requires Ollama v{minimum} or later. Start or update Ollama "
+                    "and try creating the chat again."
+                ) from exc
+            parsed = _version_tuple(server_version)
+            if parsed is None or parsed < MIN_OLLAMA_EMBEDDINGGEMMA_VERSION:
+                raise ValueError(
+                    f"EmbeddingGemma requires Ollama v{minimum} or later; "
+                    f"the local server reports {server_version!r}. "
+                    "Update and restart Ollama before creating the chat."
+                )
 
     @staticmethod
     def ssl_intensity_settings(percent: int | float) -> dict[str, float | int]:
