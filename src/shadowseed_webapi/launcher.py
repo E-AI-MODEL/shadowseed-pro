@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 import threading
 import webbrowser
 from pathlib import Path
@@ -117,6 +118,7 @@ def run_web_self_test(
     )
     payload: dict[str, Any] = {
         "artifact": "shadowseed_web_launcher_self_test",
+        "frozen": bool(getattr(sys, "frozen", False)),
         "static_assets_verified": True,
         "static_asset_count": len(manifest["files"]),
         "api_version": api.health()["api_version"],
