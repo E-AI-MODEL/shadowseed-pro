@@ -348,9 +348,14 @@ export function ShadowseedApp() {
 
   const sortedSeeds = useMemo(
     () =>
-      [...(session?.seeds ?? [])].sort(
-        (a, b) => Number(b.weight ?? 0) - Number(a.weight ?? 0),
-      ),
+      [...(session?.seeds ?? [])].sort((a, b) => {
+        // Preserve open questions as the primary Shadow view. Gate-authorized
+        // items remain visible but cannot overwrite the memory-first order.
+        // Expired items appear last; original order is preserved within groups.
+        const rank = (seed: Seed) =>
+          seed.status === "EXPIRED" ? 2 : seed.current_gate_authorized ? 1 : 0;
+        return rank(a) - rank(b);
+      }),
     [session],
   );
 
@@ -1027,18 +1032,20 @@ export function ShadowseedApp() {
         <div className="messages">
           {!session ? (
             <div className="empty-state">
-              <strong>De engine blijft de enige waarheid.</strong>
+              <strong>Ruimte voor wat nog open is.</strong>
               <p>
-                Deze webclient presenteert Shadowseed. Hij implementeert geen
-                eigen Gate, recurrence of authority.
+                Shadowseed bewaart mogelijke vragen en gedachten zonder ze
+                als feiten te behandelen. De engine bewaakt de regels voor
+                geheugen, bewijs en eventuele invloed.
               </p>
             </div>
           ) : session.messages.length === 0 ? (
             <div className="empty-state">
               <strong>Waar wil je over praten?</strong>
               <p>
-                Shadowseed observeert op de achtergrond en houdt authority
-                gescheiden van gewone modeloutput.
+                Ook een helder antwoord kan een vraag, twijfel of nieuw
+                verband oproepen. Shadowseed kan zoiets bewaren zonder het
+                meteen als waarheid of opdracht te gebruiken.
               </p>
             </div>
           ) : (
@@ -1129,7 +1136,7 @@ export function ShadowseedApp() {
         <div className="shadow-heading">
           <div>
             <span className="eyebrow">SHADOW</span>
-            <h2>Wat speelt mee?</h2>
+            <h2>Wat blijft open?</h2>
           </div>
           <div className="shadow-heading__actions">
             <span className="shadow-count">{sortedSeeds.length}</span>
@@ -1347,7 +1354,8 @@ export function ShadowseedApp() {
                   <div className="shadow-empty">
                     <strong>Nog geen geheugenpunten</strong>
                     <p>
-                      Nieuwe kandidaten starten zonder steering authority.
+                      Een vraag of gedachte hoeft niet meteen een antwoord te
+                      worden. Nieuwe geheugenpunten hebben geen gezag.
                     </p>
                   </div>
                 )}
