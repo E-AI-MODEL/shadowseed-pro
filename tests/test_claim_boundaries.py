@@ -35,19 +35,18 @@ def test_atomicity_is_never_presented_as_a_semantic_guarantee() -> None:
 
 
 def test_readme_defines_the_general_bounded_candidate_contract() -> None:
-    assert "bounded epistemic candidates for investigation" in README
+    # Ordinary inquiry is not limited to a detected omission or error.
+    assert "gives curiosity, uncertainty, doubt, and unresolved possibilities" in README
+    assert "A complete, defensible answer can still invite a new question" in README
+    assert "not necessarily a detected error or something missing" in README
+    assert "bounded possibility worth remembering" in README
+    assert "The ordinary chat detector therefore looks for grounded open inquiries" in README
+    # Retaining an observation is distinct from allowing it to steer an answer.
+    assert "trace above zero and steering weight zero" in README
+    assert "Recurrence is not independent proof" in README
+    assert "Validation Gate" in README
+    assert "point-of-use authorization" in README
     assert "records a possible omission as a **candidate for investigation**" not in README
-    for candidate_kind in (
-        "suspected gap",
-        "doubt",
-        "missing relation or boundary",
-        "dependency",
-        "unstated assumption",
-        "alternative hypothesis",
-        "contradiction to investigate",
-        "relevant what-if direction",
-    ):
-        assert candidate_kind in README
 
 
 def test_non_bypassable_claim_is_scoped_to_supported_runtime_decisions() -> None:
