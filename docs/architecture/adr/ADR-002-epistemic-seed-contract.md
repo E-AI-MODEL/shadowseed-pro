@@ -16,6 +16,10 @@ At the same time, merely making arbitrary model output weightless is not enough.
 ## Decision
 
 A Shadow Seed is **one atomic epistemic candidate** tied to a specific context.
+The candidate may be a worthwhile question arising from a fully adequate
+answer. SSL does not require a detected mistake, incompleteness or deficit to
+justify remembering a question. Remembering it is not an instruction to ask the
+user, revise the prior answer, or promote the question to fact.
 
 Canonical rule:
 
@@ -23,7 +27,8 @@ Canonical rule:
 
 The minimum semantic contract is:
 
-1. **Atomic.** One seed represents one epistemic uncertainty or missing relation.
+1. **Atomic.** One seed represents one bounded, independently investigable
+   question, uncertainty, relation or possible direction.
 2. **Context-bound.** The candidate is connected to the source question, answer, document, or task that produced it.
 3. **Investigable.** It is possible in principle to seek recurrence, evidence, falsification, or another bounded test of that same candidate.
 4. **Non-assertive at birth.** A generated possibility is not accepted as true merely because the detector produced plausible prose.
@@ -39,6 +44,8 @@ The following can all be valid atomic seeds when they satisfy the semantic contr
 - **Gap:** a relevant relation, boundary, factor, owner, dependency, or condition is absent.
 - **Doubt:** the current framing leaves a specific uncertainty unresolved.
 - **What-if / alternative direction:** one relevant explanatory frame or relation could change the interpretation and is worth testing.
+- **Inquiry after a complete answer:** a specific question or new connection
+  can be worth preserving even when nothing was omitted or incorrect.
 
 A what-if must still name a direction to investigate rather than assert an invented fact. This is why the current generative detector can be doctrine-compatible: it asks for one angle, frame, relation, or dimension and explicitly forbids treating that direction as established truth.
 
