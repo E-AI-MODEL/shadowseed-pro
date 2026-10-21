@@ -2,6 +2,13 @@
 
 Product-facing web client for the canonical Shadowseed engine.
 
+Shadowseed gives a place to grounded curiosity, uncertainty, doubt, open
+questions and tentative connections. An otherwise complete answer may invite
+another question without being considered defective. The Shadow inspector
+presents still-open seeds before authorized and expired entries. This is a
+read-only presentation choice, not permission to change authority, ask a user
+an unsolicited question, or influence the next answer.
+
 This client deliberately does not reimplement Gate, recurrence, evidence,
 lifecycle, authority or point-of-use semantics in TypeScript. Those remain in
 the Python runtime/application layer.
