@@ -11,7 +11,7 @@
 | Default experience | Live chat with the `evidence_backed` Gate policy |
 | Product status | Research-ready; production-local assurance candidate |
 
-Shadowseed Pro is a chat application for testing a different kind of model memory. It lets a model record a possible omission, uncertainty, dependency, contradiction, or missing question without treating that observation as truth. The user can inspect what was remembered, add independently checked support, challenge a candidate, compare one answer with Shadowseed switched off, and export an auditable record.
+Shadowseed Pro is a chat application for testing a different kind of model memory. It gives uncertainty, doubt, curiosity, and tentative possibilities a place without demanding that every open question be settled. The answer need not be wrong or incomplete: an unexpected connection, alternative explanation, or new question can remain open for later investigation. A seed is a record, not proof and not permission to steer the model. The user can inspect what was remembered, add independently checked support, challenge a candidate, compare one answer with Shadowseed switched off, and export an auditable record.
 
 The product should feel like a normal chatbot first. The shadow layer is available when the user wants to understand or test what happened.
 
@@ -19,7 +19,7 @@ The reusable integration boundary is `ShadowseedEngine`: a model-independent two
 
 ## 1. The end product in one sentence
 
-> Shadowseed Pro is a local chat application that remembers possible missing angles without silently trusting them, and lets a tester see whether validated memory improves a later answer.
+> Shadowseed Pro is a local chat application that can remember worthwhile open questions, doubts, and possible new directions without treating them as true, and lets a tester investigate when, and whether, validated memory changes a later answer.
 
 The product is built for a tester or researcher who wants to answer five practical questions:
 
@@ -75,7 +75,7 @@ The user sees one normal answer. Behind it, Shadowseed runs a separate observati
 flowchart TD
     A[User message] --> B[Visible model answer]
     B --> C[Candidate detector]
-    C --> D[Possible missing angle]
+    C --> D[Open question, doubt, or possible direction]
     D --> E[Shadow memory: trace above 0]
     E --> F[Authority remains weight 0]
 ```
@@ -95,9 +95,11 @@ Imagine this message in the Chat tab:
 
 > Should an organisation use an AI detector score as proof that somebody used generative AI?
 
-The model produces a plausible answer. The detector notices that the answer may omit a relevant boundary:
+The model produces a plausible answer. Even if the answer is complete, the exchange can invite a further question:
 
-> The answer may omit that people can adopt AI-like writing patterns, which weakens authorship inference from style alone.
+> Could changes in people's writing habits affect how a style-based detector score is interpreted?
+
+The question is a tentative direction to investigate, not an allegation that the answer was defective or that any particular explanation is already supported.
 
 Shadowseed stores this as a candidate:
 
@@ -111,7 +113,7 @@ Shadowseed stores this as a candidate:
 
 The first answer is not retroactively changed. The seed is visible in the Shadow tab, but it has no influence.
 
-This is the main product difference: ordinary memory often stores something because it was said. Shadowseed can store that something may be missing while withholding permission to use it.
+This is the main product difference: ordinary memory often stores something because it was said. Shadowseed can preserve a meaningful *not yet decided* question without turning it into established knowledge or a demand that the model immediately answer it.
 
 ## 5. A seed can earn bounded authority
 
@@ -229,7 +231,7 @@ A fresh tester can download the application, select a model, start chatting, ins
 
 ### What the product does not promise
 
-- It does not automatically discover every missing fact or question.
+- It does not automatically discover every worthwhile question, uncertainty, or missing fact.
 - It does not turn recurrence or fluent model output into truth.
 - It does not guarantee that every promoted seed improves an answer.
 - It is not a conventional document-knowledge RAG system.
