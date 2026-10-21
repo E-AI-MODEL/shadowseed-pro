@@ -1,10 +1,10 @@
 # Architecture Overview
 
-Shadow Seed Learning separates detection, storage, validation, and influence. A plausible model-generated gap may be remembered without silently becoming truth or steering authority.
+Shadow Seed Learning separates observation, memory, validation, and influence. Its purpose is to give curiosity, uncertainty, doubt, and tentative possibilities a place in a conversation. A possible missing element is one case, not the definition of a seed. A complete answer can still leave a meaningful question open. No recorded possibility silently becomes truth or steering authority.
 
 ## Runtime flow
 
-1. A detector proposes a candidate intended to represent one bounded epistemic absence or uncertainty. Normalization uses tested heuristics and can still produce a compound, vague, or weak candidate; redundancy and other defects remain possible.
+1. A detector proposes one bounded line of inquiry: an unresolved question, doubt, alternative interpretation, possible connection, or suspected omission. It may also return no candidate. Normalization uses tested heuristics and can still produce a compound, vague, or weak candidate; redundancy and other defects remain possible.
 2. `SSLManager` stores the candidate with trace above zero and weight exactly zero.
 3. TTL reduces trace when the seed is not reinforced.
 4. TrTL can reactivate a dormant seed through a trigger or semantic match.
