@@ -55,13 +55,17 @@ def maybe_expand_fragment(fragment: str, expand_short_fragments: bool = True) ->
     human-written categories like "kolonialisme" become "kolonialisme
     ontbreekt." When it is False — appropriate for output coming from a
     real language-model detector — short fragments are returned as-is, because
-    a language model is expected to deliver whole-sentence gaps. Appending
+    a language model may deliver a question, a direction, or an uncertainty. Appending
     "ontbreekt" to a model-emitted fragment usually disguises garbage as a
     well-formed seed.
     """
     fragment = clean_candidate_text(fragment)
     if not fragment:
         return ""
+    # A model-generated open question is already a complete candidate.
+    # Do not turn its question mark into the malformed suffix "?.".
+    if fragment.endswith(("?", "!")):
+        return fragment
     lowered = fragment.lower()
     if lowered.endswith(" ontbreken"):
         stem = fragment[: -len(" ontbreken")].strip()
@@ -138,7 +142,7 @@ def normalize_detection_candidates(
     Set ``split_broad=False`` for real language-model output. The comma /
     semicolon / "en" / "of" splitting exists to break up broad human-written
     category stacks (for example the Dutch "Security, privacy en schaalbaarheid
-    ontbreken."). A language model already emits one gap per line, and natural
+    ontbreken."). A language model already emits one bounded inquiry per line, and natural
     sentences contain commas, so splitting them only shreds whole sentences into
     fragments.
     """
