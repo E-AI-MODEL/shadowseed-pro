@@ -154,10 +154,41 @@ def _smoke_local_http_server(executable: Path, workspace: Path) -> dict[str, boo
         else:
             raise RuntimeError("Frozen web server accepted a non-loopback Host")
 
+        # Go through the same JSON API that the packaged browser UI uses.
+        # This validates persistence and a complete fixture turn in the actual
+        # frozen HTTP process, not just direct calls into the service.
+        def post(path: str, payload: dict[str, str]) -> dict:
+            request = urllib.request.Request(
+                f"{base_url}{path}",
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            with opener.open(request, timeout=15) as response:
+                return json.load(response)
+
+        created = post("/api/v1/sessions", {
+            "title": "Frozen HTTP smoke", "backend": "fixture",
+        })
+        session_id = str(created["session_id"])
+        result = post(f"/api/v1/sessions/{session_id}/turns", {
+            "question": "What is still uncertain?",
+            "request_id": "frozen-web-smoke:one",
+        })
+        if result.get("session", {}).get("turn") != 1:
+            raise RuntimeError("Frozen web API did not execute the first fixture turn")
+        with opener.open(
+            f"{base_url}/api/v1/sessions/{session_id}", timeout=5
+        ) as response:
+            persisted = json.load(response)
+        if persisted.get("turn") != 1:
+            raise RuntimeError("Frozen web API did not persist the first turn")
+
         return {
             "http_healthy": True,
             "static_homepage": True,
             "host_rebinding_guard": True,
+            "api_chat_roundtrip": True,
         }
     finally:
         if process.poll() is None:
