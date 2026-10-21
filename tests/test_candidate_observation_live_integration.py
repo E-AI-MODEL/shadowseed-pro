@@ -66,6 +66,27 @@ def _promote(session: ShadowChatSession, seed_id: str) -> None:
     assert session.manager.seeds[seed_id].status is SeedStatus.PROMOTED
 
 
+def test_live_inquiry_is_preserved_as_weightless_memory(monkeypatch):
+    """Open curiosity passes the full live observation pipeline unchanged."""
+    question = "Hoe hangen oorzaken en gevolgen samen?"
+    session = _session(
+        monkeypatch,
+        detector_seed=question,
+        answer="This is a sufficient answer; no correction is required.",
+    )
+    report = session.turn("What can we learn from a sufficient answer?")
+    assert report["detected_candidates"] == [question]
+    assert len(report["seeds_born_weightless"]) == 1
+    seed_id = report["seeds_born_weightless"][0]
+    seed = session.manager.seeds[seed_id]
+    assert seed.text == question
+    assert seed.trace > 0
+    assert seed.weight == 0.0
+    assert seed.evidence_count == 0
+    assert seed.status is SeedStatus.NEW
+    assert session.observation_ledger.observations[0].raw_text == question
+
+
 def test_live_contaminated_candidate_is_first_class_observation_without_recurrence(monkeypatch):
     candidate = "A downstream fairness implication."
     session = _session(
