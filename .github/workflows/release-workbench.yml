@@ -318,7 +318,8 @@ jobs:
                   raise SystemExit(f"web frozen self-test missing: {path.name}")
               http_smoke = payload.get("http_server_smoke") or {}
               if any(http_smoke.get(key) is not True for key in (
-                  "http_healthy", "static_homepage", "host_rebinding_guard"
+                  "http_healthy", "static_homepage", "host_rebinding_guard",
+                  "api_chat_roundtrip"
               )):
                   raise SystemExit(f"frozen HTTP startup smoke failed: {path.name}")
               excluded = set(payload.get("legacy_packages_excluded") or [])
