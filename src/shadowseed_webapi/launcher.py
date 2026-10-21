@@ -17,7 +17,11 @@ from shadowseed_webapi.service import WebApiService
 def packaged_static_root() -> Path:
     """Return the generated static export bundled with the Python package."""
 
-    root = Path(__file__).resolve().with_name("static")
+    # The frozen entrypoint is __main__, whose __file__ is at bundle root.
+    # Resolve via the package instead: this works in source, wheels and freezes.
+    import shadowseed_webapi
+
+    root = Path(shadowseed_webapi.__file__).resolve().parent / "static"
     if not (root / "index.html").is_file():
         raise RuntimeError(
             "Shadowseed web assets are missing from this installation. "
