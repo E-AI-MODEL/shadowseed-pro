@@ -1,6 +1,8 @@
 """Tests for the generative detector variant."""
 from __future__ import annotations
 
+import pytest
+
 from shadowseed.detection.model_detector import (
     CURRENT_PAIR_PROMPT_META,
     PROMPT_VARIANTS,
@@ -9,6 +11,41 @@ from shadowseed.detection.model_detector import (
     make_detector_backend,
     parse_numbered_seeds_with_diagnostics,
 )
+
+
+@pytest.mark.parametrize("wrapper", ["**", "__", "`", "*", "_", "**`", "`**"])
+def test_parser_removes_whole_candidate_markdown(wrapper):
+    text = "The relation between LLM memory and human memory"
+    seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
+        f"1. {wrapper}{text}{wrapper[::-1]}\n2. {text}"
+    )
+    assert seeds == [text]
+    assert diagnostics["markdown_wrappers_removed"] >= 1
+    assert diagnostics["dropped_duplicate"] == 1
+
+
+@pytest.mark.parametrize("text", [
+    "**LLM memory** compared with **human memory**",
+    "`context_window` compared with `working_memory`",
+    "*LLM memory* compared with *human memory*",
+    "_left_boundary and right_boundary_ within a graph",
+    "**Unclosed formatting around a gap",
+])
+def test_parser_preserves_internal_or_unclosed_markdown(text):
+    seeds, diagnostics = parse_numbered_seeds_with_diagnostics(f"1. {text}")
+    assert seeds == [text]
+    assert diagnostics["markdown_wrappers_removed"] == 0
+
+
+def test_markdown_cleanup_cannot_bypass_placeholder_and_copied_text_filters():
+    text = "The relation between LLM memory and human memory"
+    seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
+        f"1. **[seed]**\n2. `{text}`",
+        source_text=text,
+    )
+    assert seeds == []
+    assert diagnostics["dropped_blank_or_placeholder"] == 1
+    assert diagnostics["dropped_citation_or_stub"] == 1
 
 
 def test_variants_registered():

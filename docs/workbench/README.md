@@ -1,27 +1,48 @@
-# Shadowseed Tester Workbench
+# Shadowseed Web and legacy Workbench
 
-The Workbench is the local-first product surface for testing Shadow Seed Learning in an ordinary LLM conversation. Version 0.12.2 is the current Research Preview release candidate; `v0.12.1` remains the latest published Research Preview until the exact-SHA release workflow succeeds. The 0.12 line adds a packaged web client, canonical seed-detail and authority actions, explicit OpenAI provider setup, and a one-process loopback launcher while retaining the legacy Gradio Workbench. It is not `production-ready/local` until the exact-SHA release-assurance and unchanged-candidate soak requirements are complete.
+The 0.12.3 Research Preview candidate packages the existing browser client
+with its local, loopback-only Python backend. It uses the canonical Shadow Seed
+runtime. The old Gradio Workbench stays in the repository for opt-in
+development/research, but **is not part of the audited 0.12.3 download**
+because the legacy Gradio dependency pins a vulnerable Pillow version.
+See [release notes](release-0.12.3.md) and
+[security issue #200](https://github.com/E-AI-MODEL/shadowseed-pro/issues/200).
+Until an exact-SHA release completes, v0.12.2 remains the latest published
+download. No claim of production-ready/local follows from a successful
+Research Preview build.
+
+The normal tester flow is:
 
 ```text
-download -> extract/open -> choose model -> create chat -> chat with SSL -> optionally compare the current answer with SSL off
+download -> extract/open -> browser opens local Shadowseed -> choose model -> create chat -> talk with SSL -> optionally compare SSL off
 ```
 
-Research scenarios, baseline-isolated evaluation mode, evidence-efficacy studies, raw diagnostics and benchmark tools remain separate. They are not prerequisites for ordinary testing.
+Research scenarios, baseline-isolated experiments and evidence-efficacy work
+remain separate from ordinary testing.
 
-## Standalone tester
+## Standalone web tester
 
-Use the download/open route only when a verified GitHub release for the version you want to test and its assets are present. A normal tester then does not need Git, `pip`, system Python, benchmark JSON or an authored baseline.
+A published release provides Windows, macOS and Linux archives. They contain
+their own Python runtime and verified static web assets. Testers do not need
+Git, pip or a system Python.
 
-1. Download the archive for the operating system/architecture.
-2. Verify it against `SHA256SUMS` when practical.
-3. Extract **Shadowseed**.
-4. On Windows/Linux, open the normal launcher. On macOS, use `Open Shadowseed.command` once if browser quarantine blocks the first app launch; Control-click → **Open** the helper if Finder blocks it too.
-5. The app creates/opens the local `~/.shadowseed` workspace and binds the UI to loopback.
-6. Choose a model, create a chat and start talking.
+1. Download the appropriate archive and check `SHA256SUMS` when practical.
+2. Extract and start **Shadowseed**. On macOS, the included first-launch
+   helper can address browser quarantine for the ad-hoc signed application.
+3. Shadowseed opens the interface in a browser on your own computer only.
+4. Create a fixture conversation to inspect the mechanism without Ollama.
+5. For real local chat, install and start Ollama and your chosen chat model,
+   and pull `embeddinggemma`. EmbeddingGemma requires Ollama v0.11.10 or later.
 
-Model weights are intentionally separate. Fixture works offline for mechanics. The normal Workbench and standalone are Ollama-first: Ollama uses locally installed chat models plus `embeddinggemma` for semantic matching. EmbeddingGemma requires Ollama v0.11.10 or later. Hugging Face/Sentence Transformers require the separate `models` extra, and hosted OpenAI requires the separate `openai` extra. Those optional provider stacks are not bundled into the normal standalone.
+Provider model weights are not bundled. Hugging Face and OpenAI runtimes are
+optional separate extras, not part of the downloadable application. A bundled
+self-test proves packaging and deterministic fixture behavior; it does not
+prove live-model quality or a complete Ollama conversation.
 
-A valid 0.12.2 release contains three standalone archives and manifests, `PROVENANCE.json`, `SHA256SUMS`, a Python wheel, source distribution, and `LICENSE`. The Python wheel must also contain the packaged static web client and pass `shadowseed-web --self-test` after clean installation. Frozen bundles must pass their packaged product self-test and carry the exact repository license hash before upload. The macOS archive must additionally preserve a valid final application seal after every bundle mutation, contain the first-launch helper and README, survive archive extraction, and pass the frozen self-test from the round-tripped app before release. Apple Developer ID signing and notarization are not required or claimed.
+The exact-SHA release gate verifies source SHA, three platform manifests,
+audited web-only requirements, SBOM, frozen asset checks, checksums, wheel
+installation, macOS sealing and archive round trip, and provenance. It
+explicitly rejects Gradio/Pillow in the shipped dependency closure.
 
 ## Research access
 
@@ -120,20 +141,19 @@ See [evidence efficacy](../research/evidence-efficacy.md), [privacy guidance](pr
 
 ## Developer install
 
+The normal web product needs only the core Python runtime plus generated
+static assets. The command is `shadowseed-web`. To run from source, build
+`apps/web` and synchronize assets with `scripts/sync_web_assets.py`.
+
+The previous Gradio interface remains explicitly opt-in and **not approved
+as a secure downloadable 0.12.3 bundle** while issue #200 is unresolved.
+
 ```bash
 python -m pip install "shadowseed[workbench]"
-
-# Optional provider runtimes:
-python -m pip install "shadowseed[workbench,models]"
-python -m pip install "shadowseed[workbench,openai]"
-shadowseed doctor
-shadowseed workbench
-```
-
-or:
-
-```bash
 shadowseed-workbench
+
+# Optional local model providers:
+python -m pip install "shadowseed[workbench,models]"
 ```
 
 ## Docker
@@ -141,17 +161,17 @@ shadowseed-workbench
 The optional container route remains available for development/testing:
 
 ```bash
-docker build -f Dockerfile.workbench -t shadowseed-workbench:0.12.2 .
+docker build -f Dockerfile.workbench -t shadowseed-workbench:0.12.3 .
 docker run --rm \
   -p 127.0.0.1:7860:7860 \
   -v shadowseed-data:/data \
-  shadowseed-workbench:0.12.2
+  shadowseed-workbench:0.12.3
 ```
 
 Do not expose this preview directly to an untrusted network.
 
 ## Claim boundary
 
-Version 0.12.2 is the current Research Preview release candidate and production-local assurance candidate; published `v0.12.1` is not eligible for production-local promotion. Packaging, licensing, tester observations, support-dataset aggregation, release hardening and the existence of an efficacy runner do not establish general answer-quality benefit, semantic truth, hostile-network production security or high-impact deployment readiness. The `production-ready/local` claim remains gated on exact protected-main release evidence and the unchanged-candidate soak defined by the production acceptance contract.
+Version 0.12.3 is the current Research Preview release candidate and production-local assurance candidate; published `v0.12.1` is not eligible for production-local promotion. Packaging, licensing, tester observations, support-dataset aggregation, release hardening and the existence of an efficacy runner do not establish general answer-quality benefit, semantic truth, hostile-network production security or high-impact deployment readiness. The `production-ready/local` claim remains gated on exact protected-main release evidence and the unchanged-candidate soak defined by the production acceptance contract.
 
 The scientific/authority constraints remain in the canonical runtime. Historical evaluation sessions, benchmark artifacts and compatibility surfaces remain research/provenance material rather than product prerequisites.

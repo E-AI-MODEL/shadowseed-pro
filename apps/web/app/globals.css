@@ -128,6 +128,23 @@ button { cursor: pointer; }
   padding-top: 10px;
 }
 
+.setup-help,
+.setup-error {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.setup-help { color: var(--muted); }
+.setup-help code { font-size: 11px; }
+.setup-error {
+  padding: 10px;
+  border-radius: 8px;
+  background: #fbe9e6;
+  color: #812e26;
+}
+
 .provider-status-row {
   display: flex;
   align-items: center;

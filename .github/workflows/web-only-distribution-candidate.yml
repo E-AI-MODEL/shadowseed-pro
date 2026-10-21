@@ -1,0 +1,132 @@
+name: Web-only Distribution Candidate
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - scripts/build_web_standalone.py
+      - src/shadowseed_webapi/**
+      - pyproject.toml
+      - uv.lock
+      - .github/workflows/web-only-distribution-candidate.yml
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Audited web-only shipping closure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
+      - name: Verify complete lock
+        run: uv lock --check
+      - name: Export web and frozen build closure
+        run: >-
+          uv export --locked --extra standalone-build
+          --no-emit-project --no-hashes --format requirements.txt
+          --output-file /tmp/shadowseed-web-locked.txt
+      - name: Assert legacy and optional providers absent
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          lines = Path("/tmp/shadowseed-web-locked.txt").read_text().splitlines()
+          names = {
+              match.group(1).lower().replace("_", "-")
+              for line in lines
+              if (match := re.match(r"^([A-Za-z0-9_.-]+)==", line))
+          }
+          forbidden = {
+              "gradio", "gradio-client", "pillow", "torch", "transformers",
+              "sentence-transformers", "openai",
+          }
+          unexpected = sorted(names & forbidden)
+          if unexpected:
+              raise SystemExit(f"Forbidden dependencies: {unexpected}")
+          if not {"numpy", "pyinstaller"} <= names:
+              raise SystemExit("Missing mandatory web build/runtime components")
+      - name: Strict security audit of web dependency closure
+        run: >-
+          uvx --from pip-audit==2.10.1 pip-audit
+          -r /tmp/shadowseed-web-locked.txt
+          --no-deps --disable-pip --strict --progress-spinner off
+
+  freeze:
+    name: ${{ matrix.os }} web-only frozen candidate
+    needs: audit
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
+      - name: Build static web assets
+        working-directory: apps/web
+        run: |
+          npm install --ignore-scripts
+          npm run build
+      - name: Synchronize static assets
+        run: python scripts/sync_web_assets.py
+      - name: Install web-only runtime plus frozen build tools
+        run: uv sync --locked --extra standalone-build
+      - name: Build and smoke-test frozen web-only product
+        env:
+          SHADOWSEED_SOURCE_SHA: ${{ github.sha }}
+        run: uv run --no-sync python scripts/build_web_standalone.py --output-dir web-candidate-assets
+      - name: Verify archive, SHA and manifest
+        shell: python
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          root = Path("web-candidate-assets")
+          manifests = list(root.glob("*.manifest.json"))
+          assert len(manifests) == 1
+          m = json.loads(manifests[0].read_text())
+          assert m["artifact"] == "shadowseed_web_only_candidate"
+          assert m["source_sha"] == os.environ["EXPECTED_SHA"]
+          assert m["release_approved"] is False
+          assert m["gradio_source_files_bundled"] is False
+          assert m["web_static_assets_bundled"] is True
+          assert m["self_test"]["frozen"] is True
+          assert m["self_test"]["static_assets_verified"] is True
+          assert m["self_test"]["loopback_only"] is True
+          assert m["self_test"]["turn"] == 1
+          assert m["http_server_smoke"]["http_healthy"] is True
+          assert m["http_server_smoke"]["static_homepage"] is True
+          assert m["http_server_smoke"]["host_rebinding_guard"] is True
+          assert m["http_server_smoke"]["api_chat_roundtrip"] is True
+          archive = root / m["archive"]
+          assert archive.is_file()
+          assert hashlib.sha256(archive.read_bytes()).hexdigest() == m["archive_sha256"]
+          if m["system"] == "darwin":
+              assert m["macos_signature_mode"] == "adhoc"
+              assert m["macos_archive_roundtrip_verified"] is True
+              assert m["archive_roundtrip_web_self_test"]["turn"] == 1
+              assert m["archive_roundtrip_http_server_smoke"]["http_healthy"] is True
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: web-candidate-${{ matrix.os }}
+          path: web-candidate-assets/*
+          if-no-files-found: error
+          retention-days: 7

@@ -12,8 +12,8 @@ LIFECYCLE = (ROOT / "docs/architecture/lifecycle-and-gate.md").read_text(
     encoding="utf-8"
 )
 CI = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
-STANDALONE_WORKFLOW = (
-    ROOT / ".github/workflows/standalone-workbench.yml"
+WEB_DISTRIBUTION_WORKFLOW = (
+    ROOT / ".github/workflows/web-only-distribution-candidate.yml"
 ).read_text(encoding="utf-8")
 RELEASE_WORKFLOW = (ROOT / ".github/workflows/release-workbench.yml").read_text(
     encoding="utf-8"
@@ -181,17 +181,21 @@ def test_readme_paper_section_names_the_current_software_version() -> None:
 
 def test_release_candidate_uses_main_ci_and_explicit_heavy_assurance() -> None:
     ci_trigger = CI.split("on:\n", 1)[1].split("\n\npermissions:", 1)[0]
-    standalone_trigger = STANDALONE_WORKFLOW.split("on:\n", 1)[1].split(
+    web_trigger = WEB_DISTRIBUTION_WORKFLOW.split("on:\n", 1)[1].split(
         "\n\npermissions:", 1
     )[0]
 
     assert "push:\n    branches: [main]" in ci_trigger
-    assert "workflow_dispatch:" in standalone_trigger
-    assert "push:" not in standalone_trigger
+    assert "workflow_dispatch:" in web_trigger
+    assert "pull_request:" in web_trigger
+    assert "push:" not in web_trigger
     assert 'gh workflow run "$workflow" --ref main' in RELEASE_WORKFLOW
-    assert "standalone-workbench.yml" in RELEASE_WORKFLOW
+    assert "web-only-distribution-candidate.yml" in RELEASE_WORKFLOW
+    assert "standalone-workbench.yml" not in RELEASE_WORKFLOW
     assert "workflow_dispatch&branch=main" in RELEASE_WORKFLOW
-
+    assert "Audited web-only shipping closure" in WEB_DISTRIBUTION_WORKFLOW
+    for package in ("gradio", "pillow"):
+        assert package in WEB_DISTRIBUTION_WORKFLOW
 
 def test_release_revalidates_main_at_the_publication_boundary() -> None:
     publish_step = RELEASE_WORKFLOW.split(

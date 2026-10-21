@@ -196,6 +196,7 @@ export function ShadowseedApp() {
     requestId: string;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const sessionRequestId = useRef(0);
   const refreshRequestId = useRef(0);
@@ -449,13 +450,14 @@ export function ShadowseedApp() {
       draft.backend === "openai" &&
       (!openaiStatus?.ready || !draft.external_confirmed)
     ) {
-      setError(
+      setCreateError(
         "Configureer OpenAI en bevestig externe verwerking voordat je deze sessie maakt.",
       );
       return;
     }
     setCreating(true);
     setError(null);
+    setCreateError(null);
     setNotice(null);
 
     try {
@@ -481,7 +483,7 @@ export function ShadowseedApp() {
         );
       }
     } catch (cause) {
-      setError(
+      setCreateError(
         cause instanceof Error ? cause.message : "Gesprek kon niet worden gemaakt",
       );
     } finally {
@@ -811,15 +813,23 @@ export function ShadowseedApp() {
             </option>
           </select>
           {draft.backend === "ollama" ? (
-            <input
-              aria-label="Ollama model"
-              disabled={sending || creating || loadingSession || seedActionBusy}
-              placeholder="bijv. qwen2.5:7b"
-              value={draft.model_id ?? ""}
-              onChange={(event) =>
-                setDraft({ ...draft, model_id: event.target.value })
-              }
-            />
+            <>
+              <input
+                aria-label="Ollama model"
+                aria-describedby="ollama-setup-help"
+                disabled={sending || creating || loadingSession || seedActionBusy}
+                placeholder="bijv. qwen2.5:7b"
+                value={draft.model_id ?? ""}
+                onChange={(event) =>
+                  setDraft({ ...draft, model_id: event.target.value })
+                }
+              />
+              <p className="setup-help" id="ollama-setup-help">
+                Start Ollama en vul de naam van een geïnstalleerd chatmodel in.
+                Shadowseed gebruikt ook <code>embeddinggemma</code>. Eenmalig
+                installeren: <code>ollama pull embeddinggemma</code>.
+              </p>
+            </>
           ) : null}
           {draft.backend === "openai" ? (
             <>
@@ -865,6 +875,7 @@ export function ShadowseedApp() {
               loadingSession ||
               seedActionBusy ||
               providerBusy ||
+              (draft.backend === "ollama" && !draft.model_id?.trim()) ||
               (draft.backend === "openai" &&
                 (!openaiStatus?.ready ||
                   !draft.external_confirmed ||
@@ -873,6 +884,9 @@ export function ShadowseedApp() {
           >
             {creating ? "Maken..." : "+ Nieuw gesprek"}
           </button>
+          {createError ? (
+            <div className="setup-error" role="alert">{createError}</div>
+          ) : null}
         </form>
 
         <details className="provider-settings">
@@ -1032,20 +1046,20 @@ export function ShadowseedApp() {
         <div className="messages">
           {!session ? (
             <div className="empty-state">
-              <strong>Ruimte voor wat nog open is.</strong>
+              <strong>Begin met een gesprek.</strong>
               <p>
-                Shadowseed bewaart mogelijke vragen en gedachten zonder ze
-                als feiten te behandelen. De engine bewaakt de regels voor
-                geheugen, bewijs en eventuele invloed.
+                Kies een model en begin een gesprek. Bij Shadow zie je welke
+                vragen, twijfels of nieuwe richtingen bewaard blijven en
+                welke geautoriseerde punten aan een antwoord zijn aangeboden.
               </p>
             </div>
           ) : session.messages.length === 0 ? (
             <div className="empty-state">
               <strong>Waar wil je over praten?</strong>
               <p>
-                Ook een helder antwoord kan een vraag, twijfel of nieuw
-                verband oproepen. Shadowseed kan zoiets bewaren zonder het
-                meteen als waarheid of opdracht te gebruiken.
+                Ook een volledig antwoord kan een nieuwe vraag of twijfel
+                oproepen. Bij Shadow blijft die mogelijkheid zichtbaar, zonder
+                dat het meteen een feit, advies of opdracht wordt.
               </p>
             </div>
           ) : (
