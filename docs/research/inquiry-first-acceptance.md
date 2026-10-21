@@ -40,6 +40,30 @@ grounded question is worth preserving.
 | Seed generated after earlier SSL influence | Preserve contamination audit and ordinary fail-closed policy | Feed a self-derived seed back in as external evidence |
 | Independently verified evidence and later relevant turn | Allow the existing Gate and point-of-use rules to decide | Promote solely because the candidate is interesting |
 
+## Review material and provenance
+
+The bilingual frozen comparison set is
+[`benchmarks/inquiry_first/cases.json`](../../benchmarks/inquiry_first/cases.json).
+It declares twelve situations, including sufficient answers, worthwhile
+uncertainty, settled context, untrusted source instructions, anthropomorphic
+language, and cases where `NONE` is appropriate. These are **review prompts**,
+not scored ground truth or results.
+
+The v0.6 baseline can be reconstructed at source commit
+`3cbadf550f5f9eea6af78cd2611f188a1f1e87aa`. The proposed current-pair
+v0.7 and source-observation v0.7 templates carry new prompt hashes in the
+runtime audit. A model-backed comparison must run both templates explicitly,
+with the same role, model, decoding settings and bounded history, and retain
+the raw generated text, parser diagnostics, model identity, prompt contract
+version and blinded human ratings.
+
+An open question is not a factual proposition. Source evidence can support a
+bounded claim related to that question or motivate its relevance, but should
+not be described as *proving the question*. The memory/authority distinction
+and current point-of-use policy remain unchanged. More generated candidates
+can increase noise or distract reviewers, even if they begin weightless.
+Evaluate candidate relevance and quality, not just quantity.
+
 ## Minimum evaluation protocol
 
 1. Freeze a set of ordinary conversations, including complete answers, uncertain
