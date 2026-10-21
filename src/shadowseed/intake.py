@@ -86,11 +86,17 @@ def is_atomic_seed(text: str, max_seed_words: int | None = None) -> bool:
         "context",
     }
     # max_seed_words is retained as a compatibility argument for callers
-    # and persisted 0.12-era configs. Atomicity is semantic: one gap, not a
-    # fixed number of words.
+    # and persisted 0.12-era configs. Atomicity is about one bounded inquiry,
+    # not a fixed number of words or a compulsory missing element.
     del max_seed_words
     has_many_separators = sum(separator in lowered for separator in separators) >= 2
-    has_broad_terms = any(term in lowered for term in broad_terms)
+    broad_matches = sum(term in lowered for term in broad_terms)
+    # The historical broad-word veto must not reject a specific open question
+    # merely because it contains "perspectieven" or another broad-looking word.
+    # Keep broad lists and multi-frame question stacks rejected.
+    has_broad_terms = broad_matches > 0 and not (
+        lowered.endswith("?") and broad_matches == 1 and not has_many_separators
+    )
     word_count = len(re.findall(r"\w+", text))
     if (
         word_count <= 3
