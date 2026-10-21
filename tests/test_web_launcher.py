@@ -13,9 +13,23 @@ from scripts.sync_web_assets import sync_web_assets
 from shadowseed_webapi.launcher import (
     _create_server_with_fallback,
     _verify_static_assets,
+    packaged_static_root,
     build_parser,
     run_web_self_test,
 )
+
+
+def test_packaged_static_root_uses_package_directory_not_entrypoint(
+    monkeypatch, tmp_path: Path,
+) -> None:
+    # PyInstaller places the __main__ entrypoint at bundle root while
+    # imported package data lives inside shadowseed_webapi/static.
+    import shadowseed_webapi
+
+    package = tmp_path / "shadowseed_webapi"
+    package.mkdir()
+    monkeypatch.setattr(shadowseed_webapi, "__file__", str(package / "__init__.py"))
+    assert packaged_static_root() == package / "static"
 
 
 def _write_static_fixture(root: Path) -> None:
