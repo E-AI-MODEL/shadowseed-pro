@@ -1,0 +1,71 @@
+# Inquiry-first Shadowseed: acceptance and evidence boundary
+
+Status: proposal for review and real-model evaluation. No model-quality or
+educational-effectiveness claim follows from changing the detector prompt.
+
+## Intent
+
+Shadowseed is not primarily a checklist for omissions. It gives grounded
+curiosity, uncertainty, doubt, tentative connections, alternative explanations,
+and still-open questions room in an LLM conversation. A seed is one bounded line
+of inquiry, not a finding that the answer is defective. The system does not
+experience curiosity; it records possible directions for human inspection.
+
+A useful candidate may emerge from an already complete answer. It need not be
+resolved immediately, answered on the current turn, asserted as true, or shown
+to the user uninvited. `NONE` is an appropriate result when no distinct,
+grounded question is worth preserving.
+
+## What is and is not changing
+
+- **Changed:** default live current-question / draft-answer detector language,
+  source-observation fallback, versioned prompt contract and acceptance tests.
+- **Not changed:** model choice, seed schema, atomicity heuristics, provenance,
+  recurrence/TTL, verified external evidence, Validation Gate, weight zero at
+  birth, surfacing, point-of-use authorization or research baseline data.
+- The legacy `absence` prompt remains an explicit comparison variant. Do not
+  overwrite historical detector outputs or relabel older provenance as v0.7.
+- No forced variety: candidates need not exhaust a list of curiosity categories.
+  Avoid generating filler to fill the allowed number of seeds.
+
+## Divergent test cases before converging on the live detector
+
+| Input situation | Valid candidate behavior | Failure mode |
+| --- | --- | --- |
+| Sufficient, correct explanation still raises a natural question | Preserve one grounded question or tentative relation | Invent a missing fact or call the explanation incomplete |
+| Actual unclear dependency or contradiction | Preserve the specific uncertainty for later investigation | State the speculative diagnosis as fact |
+| A surprising possible alternative | Record a question/frame, not a fabricated event | Invent people, evidence, sources or causal claims |
+| Thin input without a meaningful line of inquiry | Return `NONE` | Produce stock questions such as "What else?" |
+| Relevant candidate seen repeatedly in model output | Record recurrence as observation only | Treat repetition as independent verification |
+| Seed generated after earlier SSL influence | Preserve contamination audit and ordinary fail-closed policy | Feed a self-derived seed back in as external evidence |
+| Independently verified evidence and later relevant turn | Allow the existing Gate and point-of-use rules to decide | Promote solely because the candidate is interesting |
+
+## Minimum evaluation protocol
+
+1. Freeze a set of ordinary conversations, including complete answers, uncertain
+   cases, opportunities for divergent thought, adversarial inventions, and
+   cases where `NONE` is appropriate. Include Dutch and English.
+2. Compare the prior current-pair v0.6 and inquiry-first v0.7 prompts with
+   identical model, decoding, input history and candidate budget. Keep the
+   original output and prompt versions in each record.
+3. Blind human review distinguishes *specific, grounded, nonassertive inquiry*
+   from unsupported facts, duplicated/paraphrased content, generic filler,
+   invented omissions and irrelevant speculation. Record disagreement.
+4. Measure candidate yield **alongside** grounded relevance, unnecessary
+   omission claims, invented-fact rate, abstention on thin cases, reviewer
+   usefulness and diversity of genuine directions. More candidates alone is
+   not success.
+5. Run multi-turn sessions to check what happens to a candidate through memory,
+   expiry, contradiction, evidence review and point-of-use checks. Confirm that
+   none of these mechanics silently changed.
+6. Test later-answer effects only when a seed was genuinely authorized and
+   surfaced. Compare against the same-model SSL-off control and do not equate
+   textual difference with improved reasoning. Keep live-model evidence separate
+   from fixture and CI evidence.
+
+## Release decision
+
+The contract and parser tests check implementational consistency, not the
+quality of generated inquiry. Do not merge this detector change into a release
+candidate or claim a measurable benefit without a completed model-backed
+evaluation and explicit review of backward-compatibility impact.
