@@ -3,6 +3,15 @@
 0.12.3 is a Research Preview candidate. The published download remains
 `v0.12.2` until the exact-SHA Release Workbench workflow publishes this version.
 
+**Publication blocked as of 2026-10-21.** The strict dependency audit found
+eight Pillow vulnerabilities in the legacy Gradio Workbench dependency tree.
+Gradio 6.25.0 requires Pillow <13; the fixed Pillow 13.0.0 requires Python
+>=3.11 while the engine still supports Python >=3.10. Do not bypass the audit
+or publish a misleading clean release. See [issue #200](https://github.com/E-AI-MODEL/shadowseed-pro/issues/200)
+for the exact packaging/compatibility resolution and acceptance checks.
+The separately vulnerable certifi pin was advanced to 2026.10.19 with
+PyPI-verified distribution checksums; this does not clear the Pillow blocker.
+
 ## Changes since the download
 
 - Native role-structured chat for supported backends, with the same transport
@@ -18,6 +27,8 @@
 - All new web and Gradio chats check the selected Ollama embedding model
   before persistence. A missing model returns `ollama pull <model>`; an
   unreachable server returns startup guidance. Explicit model tags must match.
+  EmbeddingGemma additionally rejects an incompatible Ollama server version
+  before saving a new session.
   Endpoint and consent validation happen before this read-only preflight.
 - The chat form shows local setup instructions and keeps creation errors visible
   inside the mobile conversation drawer. Doctor guidance includes the normal
