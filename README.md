@@ -14,7 +14,9 @@
 
 <p align="center"><code>trace &gt; 0</code> means remembered. <code>weight = 0</code> means no steering authority.</p>
 
-Shadow Seed Learning (SSL) records **bounded epistemic candidates for investigation**, not hidden truth. A candidate may be a suspected gap, doubt, missing relation or boundary, dependency, unstated assumption, alternative hypothesis, contradiction to investigate, or relevant what-if direction. A new seed starts powerless. It may be remembered, recur, be contradicted, receive independently verified support, and only influence a later answer after the configured Validation Gate and a current point-of-use authorization both allow it.
+**Shadow Seed Learning (SSL) gives curiosity, uncertainty, doubt, and unresolved possibilities a place in an AI conversation.** A complete, defensible answer can still invite a new question, an alternative interpretation, or a connection worth exploring. A seed is not necessarily a detected error or something missing from an answer. It is a bounded possibility worth remembering without having to settle it immediately. This describes the *epistemic status of a recorded inquiry*, not a claim that a language model experiences human curiosity or doubt.
+
+A seed starts with **trace above zero and steering weight zero**. It can be revisited, connected, challenged, or allowed to decay. Recurrence is not independent proof. Only externally verified support, the configured Validation Gate, and a current point-of-use authorization can permit bounded influence on a later answer. The ordinary chat detector therefore looks for grounded open inquiries as well as possible omissions; a legacy absence-only variant remains available for comparisons. Generated possibilities are not automatically facts, recommendations, or questions to impose on the user.
 
 The product now has an explicit split. `ShadowseedEngine` is the reusable SSL
 pipeline and never calls a language model. The local Workbench is the first
