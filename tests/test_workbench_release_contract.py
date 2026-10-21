@@ -97,6 +97,7 @@ def test_release_assurance_rejects_optional_provider_stacks_in_thin_artifacts() 
     assert "thin production dependency inventory contains optional providers" in ci
     assert "thin production SBOM contains optional provider stacks" in ci
     assert "Strict security audit of web dependency closure" in candidate
+    assert '"http_server_smoke"' in candidate
     assert "web-only shipping inventory" in ci
     assert "download.pytorch.org" not in release
     assert "download.pytorch.org" not in workbench_ci
@@ -157,6 +158,8 @@ def test_release_workflow_is_main_gated_version_driven_and_standalone_backed() -
     assert '"artifact") != "shadowseed_web_only_candidate"' in workflow
     assert "gradio_source_files_bundled" in workflow
     assert "legacy_packages_excluded" in workflow
+    assert "http_server_smoke" in workflow
+    assert 'approved["release_approved"] = True' in workflow
     assert '"frozen") is not True' in workflow
     assert 'release_tag="v${release_version}"' in workflow
     assert 'notes_file="docs/workbench/release-${release_version}.md"' in workflow

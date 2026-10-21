@@ -112,6 +112,9 @@ jobs:
           assert m["self_test"]["static_assets_verified"] is True
           assert m["self_test"]["loopback_only"] is True
           assert m["self_test"]["turn"] == 1
+          assert m["http_server_smoke"]["http_healthy"] is True
+          assert m["http_server_smoke"]["static_homepage"] is True
+          assert m["http_server_smoke"]["host_rebinding_guard"] is True
           archive = root / m["archive"]
           assert archive.is_file()
           assert hashlib.sha256(archive.read_bytes()).hexdigest() == m["archive_sha256"]
@@ -119,6 +122,7 @@ jobs:
               assert m["macos_signature_mode"] == "adhoc"
               assert m["macos_archive_roundtrip_verified"] is True
               assert m["archive_roundtrip_web_self_test"]["turn"] == 1
+              assert m["archive_roundtrip_http_server_smoke"]["http_healthy"] is True
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: web-candidate-${{ matrix.os }}

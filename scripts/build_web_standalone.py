@@ -97,6 +97,78 @@ def _smoke(executable: Path, workspace: Path) -> dict[str, object]:
     return payload
 
 
+
+def _smoke_local_http_server(executable: Path, workspace: Path) -> dict[str, bool]:
+    """Launch the frozen product and verify HTTP, static UI and Host policy."""
+    import socket
+    import time
+    import urllib.error
+    import urllib.request
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as port_probe:
+        port_probe.bind(("127.0.0.1", 0))
+        port = int(port_probe.getsockname()[1])
+
+    process = subprocess.Popen(
+        [
+            str(executable), "--no-browser", "--port", str(port),
+            "--workspace", str(workspace),
+        ],
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    base_url = f"http://127.0.0.1:{port}"
+    try:
+        deadline = time.monotonic() + 60
+        while True:
+            if process.poll() is not None:
+                raise RuntimeError(
+                    f"Frozen web server exited before HTTP readiness: {process.returncode}"
+                )
+            try:
+                with opener.open(f"{base_url}/api/v1/health", timeout=2) as response:
+                    health = json.load(response)
+                    if response.status != 200 or health.get("api_version") != "v1":
+                        raise RuntimeError("Frozen server returned an invalid health payload")
+                break
+            except (urllib.error.URLError, TimeoutError, ConnectionError) as exc:
+                if time.monotonic() >= deadline:
+                    raise RuntimeError("Frozen web server did not become ready") from exc
+                time.sleep(0.4)
+
+        with opener.open(f"{base_url}/", timeout=5) as response:
+            if response.status != 200 or b"<html" not in response.read(4096).lower():
+                raise RuntimeError("Frozen web server did not serve the static homepage")
+
+        forbidden_host = urllib.request.Request(
+            f"{base_url}/api/v1/health", headers={"Host": "external.invalid"}
+        )
+        try:
+            with opener.open(forbidden_host, timeout=5):
+                pass
+        except urllib.error.HTTPError as exc:
+            if exc.code != 403:
+                raise RuntimeError("Frozen web server rejected Host with wrong status") from exc
+        else:
+            raise RuntimeError("Frozen web server accepted a non-loopback Host")
+
+        return {
+            "http_healthy": True,
+            "static_homepage": True,
+            "host_rebinding_guard": True,
+        }
+    finally:
+        if process.poll() is None:
+            process.terminate()
+        try:
+            process.wait(timeout=12)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=12)
+
+
 def build(output_dir: Path) -> dict[str, object]:
     root = Path(__file__).resolve().parents[1]
     output_dir = output_dir.resolve()
@@ -119,6 +191,9 @@ def build(output_dir: Path) -> dict[str, object]:
     _assert_no_legacy_runtime(bundle)
     license_path = _install_license(root, bundle)
     smoke = _smoke(executable, work / "first-smoke" / "workspace")
+    http_smoke = _smoke_local_http_server(
+        executable, work / "http-smoke" / "workspace"
+    )
 
     macos_signature = _seal_macos_bundle(bundle)
     system = platform.system().lower() or sys.platform
@@ -127,11 +202,17 @@ def build(output_dir: Path) -> dict[str, object]:
     archive = _archive_bundle(bundle, output_dir, stem)
     roundtrip_bundle = _verify_macos_archive_round_trip(archive, work)
     roundtrip_smoke = None
+    roundtrip_http_smoke = None
     if roundtrip_bundle is not None:
         _assert_no_legacy_runtime(roundtrip_bundle)
+        roundtrip_executable = roundtrip_bundle / "Contents" / "MacOS" / "Shadowseed"
         roundtrip_smoke = _smoke(
-            roundtrip_bundle / "Contents" / "MacOS" / "Shadowseed",
+            roundtrip_executable,
             work / "roundtrip-smoke" / "workspace",
+        )
+        roundtrip_http_smoke = _smoke_local_http_server(
+            roundtrip_executable,
+            work / "roundtrip-http-smoke" / "workspace",
         )
 
     manifest: dict[str, object] = {
@@ -160,7 +241,9 @@ def build(output_dir: Path) -> dict[str, object]:
         "macos_notarized": False if system == "darwin" else None,
         "macos_gatekeeper_assessed": False if system == "darwin" else None,
         "self_test": smoke,
+        "http_server_smoke": http_smoke,
         "archive_roundtrip_web_self_test": roundtrip_smoke,
+        "archive_roundtrip_http_server_smoke": roundtrip_http_smoke,
     }
     (output_dir / f"{stem}.manifest.json").write_text(
         json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
