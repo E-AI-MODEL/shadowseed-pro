@@ -55,6 +55,8 @@ ALLOWED_LITERALS = {
         "zoals", "bijvoorbeeld", "analysekader", "oorzaken", "gevolgen",
         "contexten", "perspectieven", "meerdere", "schaalbaarheid",
         "kolonialisme", "ontbreekt", "ontbreken",
+        # Dutch input-language interrogative for inquiry-first normalization.
+        "waardoor",
     },
     "shadowseed/seed_normalization.py": {
         "ontbreekt", "ontbreken", "ontbrekende", "voeg", "aandacht",
