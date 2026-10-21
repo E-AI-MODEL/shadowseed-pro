@@ -64,15 +64,19 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
     "send": {
         "title": "Bericht versturen",
         "eli8": (
-            "Je stelt een vraag. Eerst kijkt Shadowseed of een oud geheugenpunt nu relevant én "
-            "toegestaan is. Daarna schrijft het model het antwoord. Vervolgens kijkt Shadowseed "
-            "of er nieuwe mogelijke geheugenpunten zijn."
+            "Je stelt een vraag. Eerst wordt gekeken of een eerder geheugenpunt relevant én "
+            "toegestaan is. Daarna genereert het model een antwoord. Shadowseed kan vervolgens "
+            "een open vraag, twijfel of mogelijke nieuwe richting bewaren, zelfs als het antwoord "
+            "op zichzelf volledig is."
         ),
         "does": (
             "Voert één normale live beurt uit via prepare-turn, point-of-use, generatie en "
             "post-generation observatie."
         ),
-        "does_not": "Promoveert niet automatisch elk nieuw geheugenpunt en behandelt herhaling niet als waarheid.",
+        "does_not": (
+            "Dwingt geen nieuwe vraag af, beoordeelt een volledig antwoord niet automatisch "
+            "als onvolledig en geeft nieuwe gedachten niet vanzelf gezag."
+        ),
         "relations": (
             "Als same-turn vergelijking aan staat: er komt één extra, niet-mutating no-SSL generatie bij.",
             "Als self-reinforcement uit staat: kandidaten uit een antwoord dat SSL-context kreeg worden niet teruggevoerd in recurrence/authority.",
@@ -101,8 +105,8 @@ _FEATURES: dict[str, dict[str, str | tuple[str, ...]]] = {
     "shadow": {
         "title": "Shadow",
         "eli8": (
-            "Shadow is de lade met briefjes die misschien later nuttig zijn. Een briefje in de lade "
-            "is nog niet hetzelfde als: dit is waar."
+            "Shadow is een plaats voor een vraag, twijfel of gedachte die nog open mag blijven. "
+            "Het onthouden van zo'n mogelijkheid maakt er geen feit of opdracht van."
         ),
         "does": "Toont persistente seeds en hun actuele lifecycle-, Gate- en gebruiksstatus.",
         "does_not": "Wijzigt niets zolang je alleen kijkt.",
