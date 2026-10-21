@@ -26,11 +26,14 @@ class SeedStatus(str, Enum):
 
 
 class CandidateType(str, Enum):
-    """Why a candidate absence was proposed.
+    """Optional origin label for one bounded line of inquiry.
 
-    This is observability metadata only. It records what kind of gap the
-    detector believed it found; it never affects trace, weight, evidence, or
-    the Validation Gate. Closed vocabulary so audit logs stay legible.
+    Historical enum values emphasize omissions. They also include alternative
+    hypotheses, possible completions and UNSPECIFIED: the enum is *not* a
+    completeness checklist or a mandatory classifier. The current chat
+    detector records UNSPECIFIED instead of pretending to know the nature of
+    each open question. This metadata cannot affect trace, weight, evidence,
+    or Validation Gate authority.
     """
 
     MISSING_RELATION = "missing_relation"
@@ -45,7 +48,7 @@ class CandidateType(str, Enum):
 
 @dataclass
 class SeedOrigin:
-    """Optional, audit-only record of *why* a seed was generated.
+    """Optional, audit-only record of where an inquiry candidate came from.
 
     Purely descriptive provenance. It makes the conceptual origin of a seed
     visible in the created-event and export, but carries no epistemic force:
