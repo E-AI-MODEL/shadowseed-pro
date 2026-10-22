@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.util
 import json
 from pathlib import Path
+import sys
 
 import pytest
 
@@ -19,6 +20,8 @@ WORKFLOW = ROOT / ".github/workflows/deploy-layer-g-zerogpu.yml"
 
 
 def _script(path: Path, name: str):
+    if str(path.parent) not in sys.path:
+        sys.path.insert(0, str(path.parent))
     spec = importlib.util.spec_from_file_location(name, str(path))
     module = importlib.util.module_from_spec(spec)
     assert spec and spec.loader
