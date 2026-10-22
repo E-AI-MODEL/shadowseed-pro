@@ -30,7 +30,18 @@ def status_after_decay(manager: Any, seed: ShadowSeed) -> SeedStatus:
 
 
 def decay_traces(manager: Any, turns_passed: int = 1) -> None:
-    """Decay trace and run the dormant TTL clock for every live seed."""
+    """Advance the trace/TTL clock by non-negative, whole turns only.
+
+    A negative or fractional count silently reverses decay or corrupts the
+    dormancy clock. Zero is a genuine no-op with no fabricated audit events.
+    """
+
+    if isinstance(turns_passed, bool) or not isinstance(turns_passed, int):
+        raise TypeError("turns_passed must be an integer turn count")
+    if turns_passed < 0:
+        raise ValueError("turns_passed must be >= 0")
+    if turns_passed == 0:
+        return
 
     for seed_id, seed in manager._seeds.items():
         if seed.status == SeedStatus.EXPIRED:

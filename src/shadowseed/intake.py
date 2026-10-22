@@ -85,12 +85,23 @@ def is_atomic_seed(text: str, max_seed_words: int | None = None) -> bool:
         "kolonialisme",
         "context",
     }
-    # max_seed_words is retained as a compatibility argument for callers
-    # and persisted 0.12-era configs. Atomicity is semantic: one gap, not a
-    # fixed number of words.
+    # max_seed_words is retained for compatibility; structural atomicity is
+    # a single investigable direction, not a pre-birth judgement of value.
     del max_seed_words
     has_many_separators = sum(separator in lowered for separator in separators) >= 2
-    has_broad_terms = any(term in lowered for term in broad_terms)
+    # A relation question can contain historical category words without being
+    # a checklist of omissions. Category stacks still fail the atomicity test.
+    relational_question = (
+        lowered.endswith("?")
+        and not has_many_separators
+        and (
+            lowered.startswith(("hoe ", "waarom ", "waardoor ", "in hoeverre ", "wat als "))
+            or " samen" in lowered
+            or " verband " in lowered
+            or " relatie " in lowered
+        )
+    )
+    has_broad_terms = any(term in lowered for term in broad_terms) and not relational_question
     word_count = len(re.findall(r"\w+", text))
     if (
         word_count <= 3

@@ -62,6 +62,10 @@ def maybe_expand_fragment(fragment: str, expand_short_fragments: bool = True) ->
     fragment = clean_candidate_text(fragment)
     if not fragment:
         return ""
+    # An atomic question is already a complete candidate; its punctuation
+    # must not become "?.", nor should it be rewritten as "ontbreekt".
+    if fragment.endswith(("?", "!")):
+        return fragment
     lowered = fragment.lower()
     if lowered.endswith(" ontbreken"):
         stem = fragment[: -len(" ontbreken")].strip()
