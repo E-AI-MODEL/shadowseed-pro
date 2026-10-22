@@ -178,3 +178,32 @@ the captured vector count matches output token count, arrays are finite and
 reproducible under a pinned revision/environment, and no candidate or label
 entered capture. A model-specific hook mismatch is a failed preflight, not a
 negative finding about internal possibility representation.
+
+## P2: no-payment 14B route (quantized instrument pilot)
+
+The freely downloadable **Qwen/Qwen2.5-14B-Instruct** weights can be
+run on a free NVIDIA T4 or P100 with 14+ GiB of available VRAM via
+[the Colab/Kaggle notebook](../../research/notebooks/layer_g_14b_free_gpu.ipynb).
+Use the one-click
+[Open in Colab](https://colab.research.google.com/github/E-AI-MODEL/shadowseed-pro/blob/feat/layer-g-vnext-preflight/research/notebooks/layer_g_14b_free_gpu.ipynb)
+link (select a free GPU first), or import the notebook into a Kaggle GPU
+notebook. Both platforms have availability/quota limits; **no paid cloud
+jobs or billing tokens are used**.
+
+This route loads the 14B model in bitsandbytes NF4 **4-bit**, double quant,
+float16 arithmetic. It *changes the actual representation* compared to
+the unquantized 14B source and the original H-Neurons setup. Therefore its
+activations are evidence about the quantized model/instrument ONLY.
+Do not pool NF4 feature measurements with BF16/FP16 or make
+full-precision-neuron identity claims.
+
+The notebook uses the existing generation-time hook reader from this PR;
+real model weights are downloaded only **after** CUDA and disk preflight.
+It refuses a smaller-model fallback or use of hosted paid APIs. Model Hub
+revision, Git source commit, GPU and package versions are recorded, and
+the zip output is limited to fictional synthetic input. The notebook
+intentionally does not have unattended GitHub access to publish results.
+
+**Execution status:** notebook syntax and boundary tests run in CI.
+No free-GPU model execution has yet been verified through this notebook,
+and passing these tests is NOT evidence that 14B features have been captured.
