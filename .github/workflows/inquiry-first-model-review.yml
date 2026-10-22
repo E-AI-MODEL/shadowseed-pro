@@ -38,13 +38,13 @@ jobs:
             sleep 2
           done
           curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
-          ollama pull qwen2.5:0.5b-instruct
+          ollama pull qwen2.5:3b-instruct
       - name: Pair real model prompts on frozen NL/EN cases
         run: |
           python scripts/inquiry_first_live_comparison.py \
-            --model qwen2.5:0.5b-instruct \
+            --model qwen2.5:3b-instruct \
             --output-dir /tmp/shadowseed-inquiry-first \
-            --max-seeds 2 --max-new-tokens 240
+            --max-seeds 2 --max-new-tokens 420
       - name: Validate paired records without scoring usefulness
         run: |
           python - <<'PY'
@@ -55,6 +55,8 @@ jobs:
           records = json.loads((d / "raw_model_observations.json").read_text())
           reviews = json.loads((d / "blind_review_packet.json").read_text())
           assert m["review_status"] == "pending"
+          assert m["blinding_assessment"]["status"] in ("masked_not_proven_blind", "compromised_by_arm_wide_abstention")
+          assert not (d / "allocation_key_RESTRICT_REVIEWERS.json").exists()
           assert len(records) == 24 and len(reviews) == 12
           assert len({(x["case_id"], x["arm"]) for x in records}) == 24
           assert all(not any("arm" in v for v in item["candidates"]) for item in reviews)
@@ -65,6 +67,13 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: inquiry-first-v06-v07-live-comparison
+          name: inquiry-first-v06-v07-review-and-raw
           path: /tmp/shadowseed-inquiry-first/
+          if-no-files-found: warn
+      - name: Upload separate restricted allocation key for study custodian
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: inquiry-first-v06-v07-allocation-DO-NOT-SHARE-WITH-REVIEWERS
+          path: /tmp/shadowseed-inquiry-first-allocation-restricted/
           if-no-files-found: warn

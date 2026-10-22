@@ -87,6 +87,27 @@ Evaluate candidate relevance and quality, not just quantity.
    textual difference with improved reasoning. Keep live-model evidence separate
    from fixture and CI evidence.
 
+## Limits discovered by the first 0.5B run
+
+The initial 12-case Qwen2.5 0.5B smoke run produced no accepted
+candidates in the v0.6 arm, while v0.7 produced numerous low-quality candidates.
+That makes the A/B labels inferable and prevents a genuinely blind model-quality
+claim. The earlier bundle remains immutable historical evidence, not evidence
+of v0.7 superiority. A smoke success means that the execution and audit trail
+worked, not that inquiry quality improved.
+
+The follow-up adds parser checks for malformed long output, echoes of draft or
+prompt text, zero-based numbered candidates, and a short explicit prompt-injection
+source case. The numerical limits are syntactic safety checks, not a semantic
+judgement that short answers are useful or long ones unimportant. Question
+quality, fabricated claims, and new understanding still need independent review.
+
+The next comparison runs on Qwen2.5 3B as an intermediate model-capacity check.
+It does not prove generality. The study must disclose if an arm's behavior
+reveals the allocation despite A/B labels, and the allocation key must be
+held separately by a study custodian. GitHub Action artifacts in the same
+repository do **not** provide reviewer-specific access control.
+
 ## Release decision
 
 The contract and parser tests check implementational consistency, not the

@@ -195,6 +195,36 @@ def make_review_packet(
     return packet, allocation
 
 
+
+def assess_blinding(records: list[dict[str, Any]], cases: list[dict[str, Any]]) -> dict[str, Any]:
+    """Detect obvious allocation clues; alphabetic A/B masks are not true blinding."""
+    by_case = {(record["case_id"], record["arm"]): record for record in records}
+    all_cases = [case["id"] for case in cases]
+    zero_arms = [
+        arm for arm in ("v0.6", "v0.7")
+        if all(not by_case[(case_id, arm)]["accepted_candidates"] for case_id in all_cases)
+    ]
+    any_yield = any(record["accepted_candidates"] for record in records)
+    if len(zero_arms) == 1 and any_yield:
+        return {
+            "status": "compromised_by_arm_wide_abstention",
+            "release_gate": "hold",
+            "warning": (
+                "One arm returned no accepted candidates in every case. "
+                "A/B assignment is trivially inferable, even without the key. "
+                "Do not call this packet a blinded quality comparison."
+            ),
+        }
+    return {
+        "status": "masked_not_proven_blind",
+        "release_gate": "human_review_required",
+        "warning": (
+            "Labels A/B are masked, but recognisable content may reveal the arm. "
+            "Assess whether reviewers remained blind before drawing conclusions."
+        ),
+    }
+
+
 def compare(repo_root: Path, cases_path: Path, output_dir: Path, *,
             endpoint: str, model: str, budget: int, token_limit: int) -> dict[str, Any]:
     if budget < 1 or token_limit < 1:
@@ -255,9 +285,18 @@ def compare(repo_root: Path, cases_path: Path, output_dir: Path, *,
             prompt = render_prompt(template, case, budget)
             # Both arms use the same fixed per-case seed and clean source context.
             result = generate(local, model, prompt, token_limit=token_limit, seed=81273 + index)
-            accepted, diagnostics = parse_numbered_seeds_with_diagnostics(
-                result["raw_output"], max_seeds=budget, source_text=case["draft_answer"]
+            compared_text = "\n".join(
+                part for part in (case.get("question", ""), case["draft_answer"])
+                if part
             )
+            accepted, diagnostics = parse_numbered_seeds_with_diagnostics(
+                result["raw_output"], max_seeds=budget,
+                source_text=compared_text, prompt_text=prompt,
+            )
+            if result["done_reason"] == "length":
+                diagnostics["discarded_truncated_generation"] = len(accepted)
+                accepted = []
+                diagnostics["accepted_candidates"] = 0
             records.append({
                 "case_id": case["id"],
                 "arm": arm,
@@ -270,6 +309,7 @@ def compare(repo_root: Path, cases_path: Path, output_dir: Path, *,
                 "eval_count": result["eval_count"],
             })
     packet, allocation = make_review_packet(cases, records, head)
+    manifest["blinding_assessment"] = assess_blinding(records, cases)
     if len(records) != 24 or len(packet) != 12 or len(allocation) != 24:
         raise AssertionError("paired case completeness violation")
     counts = {
@@ -290,13 +330,20 @@ def compare(repo_root: Path, cases_path: Path, output_dir: Path, *,
     write_json("manifest.json", manifest)
     write_json("raw_model_observations.json", records)
     write_json("blind_review_packet.json", packet)
-    write_json("allocation_key_RESTRICT_REVIEWERS.json", allocation)
+    # Export this key separately. Reviewers must not receive the allocation file.
+    allocation_dir = output_dir.parent / (output_dir.name + "-allocation-restricted")
+    allocation_dir.mkdir(parents=True, exist_ok=True)
+    (allocation_dir / "allocation_key_RESTRICT_REVIEWERS.json").write_text(
+        json.dumps(allocation, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
     write_json("automatic_counts_NOT_QUALITY_SCORES.json", {
         "automatic_counts": counts,
         "interpretation": "Quantity and parsing only. Human blinded review required.",
     })
     return {"status": manifest["status"], "model": model, "model_digest": digest,
-            "case_count": len(cases), "observations": len(records), "counts": counts}
+            "case_count": len(cases), "observations": len(records), "counts": counts,
+            "blinding_assessment": manifest["blinding_assessment"]}
 
 
 def main() -> None:

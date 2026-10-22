@@ -20,6 +20,8 @@ before they can influence an answer or action.
 from __future__ import annotations
 
 import re
+import unicodedata
+from difflib import SequenceMatcher
 from typing import Any, Protocol
 
 from shadowseed.prompt_contracts import prompt_contract_metadata
@@ -138,7 +140,7 @@ class DetectorBackend(Protocol):
         ...
 
 
-_NUMBERED_LINE = re.compile(r"^\s*\d+[.)]\s*(.+?)\s*$")
+_NUMBERED_LINE = re.compile(r"^\s*\d+[.):]\s*(.+?)\s*$")
 # Catches both proper entities (&amp; &gt; &#36;) and the bare numeric remnant
 # (#36;) that survives when the source already stripped the leading ampersand.
 _HTML_ENTITY = re.compile(r"&(?:[a-zA-Z]+|#\d+);?|#\d+;")
@@ -239,10 +241,86 @@ def _looks_like_citation_fragment(seed: str, source_text: str) -> bool:
     return False
 
 
+
+# These guards reject malformed text, not epistemic hypotheses. They do not
+# establish factual accuracy, relevance or authorization to steer an answer.
+MAX_DETECTOR_CANDIDATE_CHARS = 320
+MAX_DETECTOR_CANDIDATE_WORDS = 48
+_PROMPT_ECHO_FINGERPRINTS = (
+    "you examine one user question and its draft answer",
+    "identify 0 to",
+    "bounded prior conversation context",
+    "the host may provide up to",
+    "each user or assistant message is clipped",
+    "source observation generative prompt",
+    "source context",
+    "draft answer",
+    "the model is not said to",
+)
+
+
+def _comparison_tokens(value: str) -> list[str]:
+    """Compare without differences in Markdown, case or Unicode width."""
+    return re.findall(
+        r"[^\W_]+", unicodedata.normalize("NFKC", value).casefold(),
+        flags=re.UNICODE,
+    )
+
+
+def _is_near_source_echo(candidate: str, source_text: str) -> bool:
+    """Block substantial verbatim or lightly altered repetition of the input."""
+    if not source_text.strip():
+        return False
+    words = _comparison_tokens(candidate)
+    if len(words) < 2:
+        return False
+    for part in (source_text, *re.split(r"[.!?;\n]+", source_text)):
+        original = _comparison_tokens(part)
+        if not original:
+            continue
+        if words == original:
+            return True
+        matcher = SequenceMatcher(None, words, original, autojunk=False)
+        common = matcher.find_longest_match(0, len(words), 0, len(original)).size
+        if common >= 5 and common / len(words) >= 0.65:
+            return True
+        if len(words) >= 7 and len(original) >= 7 and matcher.ratio() >= 0.88:
+            return True
+    return False
+
+
+def _is_prompt_echo(candidate: str, prompt_text: str) -> bool:
+    normalized = " ".join(_comparison_tokens(candidate))
+    if any(fragment in normalized for fragment in _PROMPT_ECHO_FINGERPRINTS):
+        return True
+    if prompt_text:
+        comparison = " ".join(_comparison_tokens(prompt_text))
+        if len(normalized) >= 45 and normalized in comparison:
+            return True
+    return False
+
+
+def _untrusted_instruction_only_source(source_text: str) -> bool:
+    """Reject short documents consisting of an instruction-override attempt.
+
+    This handles an explicit adversarial fixture, not all possible injections.
+    """
+    if len(source_text) > 300:
+        return False
+    return bool(
+        re.match(
+            r"^\s*(?:ignore|disregard|forget|override)\b.{0,100}"
+            r"\b(?:instructions?|system|rules|policies|prompts?)\b",
+            source_text, flags=re.IGNORECASE | re.DOTALL,
+        )
+    )
+
+
 def parse_numbered_seeds_with_diagnostics(
     raw_output: str,
     max_seeds: int = 5,
     source_text: str = "",
+    prompt_text: str = "",
 ) -> tuple[list[str], dict[str, int | bool]]:
     """Parse detector output and retain non-authority parser diagnostics.
 
@@ -266,6 +344,10 @@ def parse_numbered_seeds_with_diagnostics(
         "dropped_citation_or_stub": 0,
         "dropped_fewshot_leak": 0,
         "dropped_duplicate": 0,
+        "dropped_source_echo": 0,
+        "dropped_prompt_echo": 0,
+        "dropped_oversized": 0,
+        "dropped_untrusted_instruction_source": 0,
         "accepted_candidates": 0,
         "truncated_after_max_seeds": False,
     }
@@ -275,6 +357,7 @@ def parse_numbered_seeds_with_diagnostics(
         diagnostics["nonblank_lines"] = 1
         return [], diagnostics
 
+    instruction_only = _untrusted_instruction_only_source(source_text)
     for line in raw_output.splitlines():
         if line.strip():
             diagnostics["nonblank_lines"] = int(diagnostics["nonblank_lines"]) + 1
@@ -304,18 +387,33 @@ def parse_numbered_seeds_with_diagnostics(
                 int(diagnostics["dropped_blank_or_placeholder"]) + 1
             )
             continue
+        if len(seed) > MAX_DETECTOR_CANDIDATE_CHARS or len(seed.split()) > MAX_DETECTOR_CANDIDATE_WORDS:
+            diagnostics["dropped_oversized"] = int(diagnostics["dropped_oversized"]) + 1
+            continue
+        if instruction_only:
+            diagnostics["dropped_untrusted_instruction_source"] = (
+                int(diagnostics["dropped_untrusted_instruction_source"]) + 1
+            )
+            continue
+        if _is_prompt_echo(seed, prompt_text):
+            diagnostics["dropped_prompt_echo"] = int(diagnostics["dropped_prompt_echo"]) + 1
+            continue
         if _looks_like_citation_fragment(seed, source_text):
             diagnostics["dropped_citation_or_stub"] = (
                 int(diagnostics["dropped_citation_or_stub"]) + 1
             )
             continue
+        if _is_near_source_echo(seed, source_text):
+            diagnostics["dropped_source_echo"] = int(diagnostics["dropped_source_echo"]) + 1
+            continue
         if _looks_like_fewshot_leak(seed):
             diagnostics["dropped_fewshot_leak"] = int(diagnostics["dropped_fewshot_leak"]) + 1
             continue
-        if seed in seen:
+        normalized_seed = " ".join(_comparison_tokens(seed))
+        if normalized_seed in seen:
             diagnostics["dropped_duplicate"] = int(diagnostics["dropped_duplicate"]) + 1
             continue
-        seen.add(seed)
+        seen.add(normalized_seed)
         seeds.append(seed)
         if len(seeds) >= max_seeds:
             diagnostics["truncated_after_max_seeds"] = True
@@ -328,6 +426,7 @@ def parse_numbered_seeds(
     raw_output: str,
     max_seeds: int = 5,
     source_text: str = "",
+    prompt_text: str = "",
 ) -> list[str]:
     """Parse ``1. seed`` style lines while preserving the legacy list API."""
 
@@ -335,6 +434,7 @@ def parse_numbered_seeds(
         raw_output,
         max_seeds=max_seeds,
         source_text=source_text,
+        prompt_text=prompt_text,
     )
     return seeds
 
@@ -709,7 +809,9 @@ class HFTransformersDetectorBackend:
         raw = output[0]["generated_text"]
         parse_input = raw if self.prompt_variant == "current_pair" else "1. " + raw
         seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
-            parse_input, max_seeds=max_seeds, source_text=text
+            parse_input, max_seeds=max_seeds,
+            source_text="\n".join(part for part in (question or "", text) if part),
+            prompt_text=prompt,
         )
         self.last_raw_output = raw
         self.last_parse_diagnostics = diagnostics
@@ -766,7 +868,9 @@ class OllamaDetectorBackend:
         raw = self.client.generate(prompt, max_new_tokens=self.max_new_tokens)
         parse_input = raw if self.prompt_variant == "current_pair" else "1. " + raw
         seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
-            parse_input, max_seeds=max_seeds, source_text=text
+            parse_input, max_seeds=max_seeds,
+            source_text="\n".join(part for part in (question or "", text) if part),
+            prompt_text=prompt,
         )
         self.last_raw_output = raw
         self.last_parse_diagnostics = diagnostics
@@ -822,7 +926,9 @@ class OpenAIDetectorBackend:
         raw = self.client.generate(prompt, max_new_tokens=self.max_new_tokens)
         parse_input = raw if self.prompt_variant == "current_pair" else "1. " + raw
         seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
-            parse_input, max_seeds=max_seeds, source_text=text
+            parse_input, max_seeds=max_seeds,
+            source_text="\n".join(part for part in (question or "", text) if part),
+            prompt_text=prompt,
         )
         self.last_raw_output = raw
         self.last_parse_diagnostics = diagnostics
