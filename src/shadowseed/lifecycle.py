@@ -30,10 +30,12 @@ def status_after_decay(manager: Any, seed: ShadowSeed) -> SeedStatus:
 
 
 def decay_traces(manager: Any, turns_passed: int = 1) -> None:
-    """Advance the trace/TTL clock by non-negative, whole turns only.
+    """Advance trace over non-negative finite elapsed turn-equivalents.
 
-    A negative or fractional count silently reverses decay or corrupts the
-    dormancy clock. Zero is a genuine no-op with no fabricated audit events.
+    Fractional durations remain supported for historical half-life calibration.
+    Real dialogue turns normally advance the discrete dormant TTL clock in
+    whole steps. Negative and non-finite values are never safe; zero is a
+    genuine no-op with no fabricated audit events.
     """
 
     # Preserve fractional elapsed-time calibration (e.g. one half-life).

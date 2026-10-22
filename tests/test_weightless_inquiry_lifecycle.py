@@ -5,8 +5,6 @@ are controlled fixtures; no LLM model performance or learning is measured.
 """
 from __future__ import annotations
 
-import math
-
 import numpy as np
 import pytest
 
@@ -17,7 +15,6 @@ from shadowseed.seed_normalization import normalize_detection_candidates
 
 
 QUESTION = "Hoe hangen oorzaken en gevolgen samen?"
-OTHER = "Wat als de aannames niet kloppen?"
 
 
 def _embed(text: str) -> np.ndarray:
