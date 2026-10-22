@@ -26,11 +26,13 @@ class SeedStatus(str, Enum):
 
 
 class CandidateType(str, Enum):
-    """Why a candidate absence was proposed.
+    """Optional, audit-only category for one investigable direction.
 
-    This is observability metadata only. It records what kind of gap the
-    detector believed it found; it never affects trace, weight, evidence, or
-    the Validation Gate. Closed vocabulary so audit logs stay legible.
+    Historical values emphasize omissions but also permit alternate
+    hypotheses and UNSPECIFIED. The category is not a generation whitelist,
+    proof of truth or value, and never affects trace, weight, evidence or
+    Validation Gate authority. The closed vocabulary remains backward
+    compatible with historical persisted records.
     """
 
     MISSING_RELATION = "missing_relation"
@@ -45,7 +47,7 @@ class CandidateType(str, Enum):
 
 @dataclass
 class SeedOrigin:
-    """Optional, audit-only record of *why* a seed was generated.
+    """Optional, audit-only record of where a candidate was proposed.
 
     Purely descriptive provenance. It makes the conceptual origin of a seed
     visible in the created-event and export, but carries no epistemic force:

@@ -30,7 +30,23 @@ def status_after_decay(manager: Any, seed: ShadowSeed) -> SeedStatus:
 
 
 def decay_traces(manager: Any, turns_passed: int = 1) -> None:
-    """Decay trace and run the dormant TTL clock for every live seed."""
+    """Advance trace over non-negative finite elapsed turn-equivalents.
+
+    Fractional durations remain supported for historical half-life calibration.
+    Real dialogue turns normally advance the discrete dormant TTL clock in
+    whole steps. Negative and non-finite values are never safe; zero is a
+    genuine no-op with no fabricated audit events.
+    """
+
+    # Preserve fractional elapsed-time calibration (e.g. one half-life).
+    # User conversation turns remain integer; non-finite/negative values
+    # must never amplify trace or corrupt the dormant TTL clock.
+    if isinstance(turns_passed, bool) or not isinstance(turns_passed, (int, float)):
+        raise TypeError("turns_passed must be a real elapsed-time count")
+    if not math.isfinite(float(turns_passed)) or turns_passed < 0:
+        raise ValueError("turns_passed must be finite and >= 0")
+    if turns_passed == 0:
+        return
 
     for seed_id, seed in manager._seeds.items():
         if seed.status == SeedStatus.EXPIRED:
