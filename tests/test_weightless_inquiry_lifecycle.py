@@ -143,11 +143,17 @@ def test_recurrence_has_policy_specific_authority_but_never_becomes_truth():
     signal = recurrence_signal(3, threshold=2, source_ref="test:synthetic:repeat")
     gate = manager.submit_signals(sid, [signal], policy_id="exploratory")
     assert gate.policy_id == "exploratory"
-    assert gate.decision is GateDecision.PROMOTED
-    assert manager.seeds[sid].weight > 0.0
+    # One exploratory signal can grant limited weight while still failing the
+    # separate promotion/point-of-use threshold.
+    assert gate.decision is GateDecision.VALIDATED
+    assert manager.seeds[sid].status is SeedStatus.ACTIVE
+    assert 0.0 < manager.seeds[sid].weight < manager.promotion_threshold
+    assert not manager.current_gate_authorizes(
+        sid, policy_id="exploratory", enforce_current_gate=True,
+    )
     assert manager.seeds[sid].evidence_count == 0
     assert signal.is_external_evidence is False
-    # Policy-specific allowance is not a finding of factual correctness.
+    # Neither recurrent recognition nor positive weight is proof of truth.
 
 
 @pytest.mark.parametrize("invalid", [-1, -5])
@@ -162,12 +168,29 @@ def test_negative_turn_count_cannot_reverse_trace_time(invalid: int):
     assert len(manager.event_log) == before_log
 
 
-@pytest.mark.parametrize("invalid", [True, 1.5, "2"])
-def test_noninteger_turn_counts_fail_closed(invalid):
+@pytest.mark.parametrize("invalid", [True, "2"])
+def test_nonnumeric_turn_counts_fail_closed(invalid):
     manager = _manager()
     _birth(manager)
     with pytest.raises(TypeError, match="turns_passed"):
         manager.decay_traces(turns_passed=invalid)
+
+
+@pytest.mark.parametrize("invalid", [float("nan"), float("inf"), float("-inf")])
+def test_nonfinite_elapsed_time_is_rejected(invalid):
+    manager = _manager()
+    _birth(manager)
+    with pytest.raises(ValueError, match="turns_passed"):
+        manager.decay_traces(turns_passed=invalid)
+
+
+def test_fractional_half_life_remains_supported_for_calibration():
+    manager = _manager()
+    sid = _birth(manager)
+    before = manager.seeds[sid].trace
+    manager.decay_traces(turns_passed=manager.half_life_turns)
+    assert manager.seeds[sid].trace == pytest.approx(before / 2)
+    assert manager.seeds[sid].weight == 0.0
 
 
 def test_zero_turns_are_genuine_noop_without_audit_noise():

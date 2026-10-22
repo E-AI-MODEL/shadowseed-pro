@@ -29,8 +29,10 @@ Dit is de SSL Level 1-kern. Modelinterne activaties (H-Neurons/Laag G) zijn
    als bevoegdheidssignaal, **niet** als externe verificatie of bewijs.
    De huidige live `evidence_backed`-standaard mag er niet door worden
    veranderd.
-7. **Foutbestendigheid:** negatieve of fractionele beurtstappen mogen de
-   tijd, trace, TTL en audit niet omkeren/vervuilen. Nul stappen is noop.
+7. **Foutbestendigheid:** negatieve of niet-eindige tijdstappen mogen de
+   tijd, trace, TTL en audit niet omkeren/vervuilen. Fractionele positieve
+   tijd blijft mogelijk voor reproduceerbare half-life-calibratie;
+   nul stappen is noop.
 
 Deze acceptatie draait echte bestaande `SSLManager`, `lifecycle`,
 `Gate` en normalisatiecode, maar gebruikt **vaste fictieve data** en een

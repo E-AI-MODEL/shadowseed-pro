@@ -95,7 +95,7 @@ def is_atomic_seed(text: str, max_seed_words: int | None = None) -> bool:
         lowered.endswith("?")
         and not has_many_separators
         and (
-            lowered.startswith(("hoe ", "waarom ", "waardoor ", "in hoeverre ", "wat als "))
+            lowered.startswith(("hoe ", "waarom ", "in hoeverre ", "wat als "))
             or " samen" in lowered
             or " verband " in lowered
             or " relatie " in lowered

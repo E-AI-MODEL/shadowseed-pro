@@ -36,10 +36,13 @@ def decay_traces(manager: Any, turns_passed: int = 1) -> None:
     dormancy clock. Zero is a genuine no-op with no fabricated audit events.
     """
 
-    if isinstance(turns_passed, bool) or not isinstance(turns_passed, int):
-        raise TypeError("turns_passed must be an integer turn count")
-    if turns_passed < 0:
-        raise ValueError("turns_passed must be >= 0")
+    # Preserve fractional elapsed-time calibration (e.g. one half-life).
+    # User conversation turns remain integer; non-finite/negative values
+    # must never amplify trace or corrupt the dormant TTL clock.
+    if isinstance(turns_passed, bool) or not isinstance(turns_passed, (int, float)):
+        raise TypeError("turns_passed must be a real elapsed-time count")
+    if not math.isfinite(float(turns_passed)) or turns_passed < 0:
+        raise ValueError("turns_passed must be finite and >= 0")
     if turns_passed == 0:
         return
 
