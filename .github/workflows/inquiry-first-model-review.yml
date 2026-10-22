@@ -1,4 +1,4 @@
-name: Research - Inquiry-first paired live-model review
+name: Research - detector v0.6/v0.7 prompt smoke (not SSL efficacy)
 
 on:
   workflow_dispatch:
@@ -51,7 +51,7 @@ jobs:
           done
           curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
           ollama pull "${{ matrix.model }}"
-      - name: Pair real model prompts on frozen NL/EN cases
+      - name: Smoke two frozen prompt variants, not full SSL mechanisms
         run: |
           python scripts/inquiry_first_live_comparison.py \
             --model "${{ matrix.model }}" \
@@ -83,7 +83,7 @@ jobs:
           assert all("arm" not in item and "blind_label" not in item for item in reviews)
           assert set(p.name for p in reviewer_dir.iterdir()) == {"independent_masked_review_units.json"}
           assert all(x["raw_output"] is not None for x in records)
-          print("Paired model outputs collected. No human-quality claim.")
+          print("Detector prompt/format smoke only. Not SSL efficacy, not latent knowledge discovery, not blinded model-quality evidence.")
           PY
       - name: Upload audit traces and blind review material
         if: always()

@@ -38,8 +38,10 @@ that an answer is incomplete. They may recur, fade, be challenged or receive
 independently checked support. Only the Gate determines eligibility for
 possible later influence.
 
-The LLM remains the language model. SSL is the memory, authority and surfacing
-layer around it.
+The LLM remains the language model. SSL is the observation, lifecycle,
+authority and surfacing layer around it. A second prompted model pass is
+not a readout of hidden neural activations; model-internal probing is an
+independent research level, not an implied feature of the external engine.
 
 ---
 
@@ -54,11 +56,15 @@ Those stages are deliberately separate.
 
 ### Observe
 
-SSL considers whether a chat turn or source observation gives rise to a
-specific open question, uncertainty, relevant what-if, or alternative
-interpretation worth keeping. One possible outcome is a suspected omission,
-but finding an omission is not the primary goal. The detector may also return
-`NONE`, rather than manufacture a question.
+SSL uses the model's completion and relation-building capacity for a
+different task than answering: to propose what *could* have been expressed
+but was not, as a context-bound open question, doubt, counterfactual
+relation or alternative interpretation. One outcome is a suspected
+omission, but a checklist of what *should* have been present is not
+the research goal. The detector may return `NONE` rather than
+manufacture a candidate. An admissible candidate is not yet judged
+important, true or useful. Those judgements cannot precede its weightless
+birth. See [the research rationale](../research/epistemic-possibility-and-h-neurons.md).
 
 Observation is not authority. The recorded inquiry may remain open without
 being answered, corrected or presented to the user.

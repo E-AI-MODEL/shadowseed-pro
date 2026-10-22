@@ -1,5 +1,11 @@
 # Inquiry-first Shadowseed: acceptance and evidence boundary
 
+> **Research hierarchy:** The core SSL construct and H-Neurons claim
+> boundary are specified in [epistemic possibility and H-Neurons](epistemic-possibility-and-h-neurons.md).
+> The 12-case v0.6/v0.7 work on this page is **detector smoke/regression**, not
+> SSL acceptance evidence, not a blind proof of v0.7 superiority and not a
+> proxy for discovering the model's latent knowledge.
+
 Status: proposal for review and real-model evaluation. No model-quality or
 educational-effectiveness claim follows from changing the detector prompt.
 
@@ -11,10 +17,11 @@ and still-open questions room in an LLM conversation. A seed is one bounded line
 of inquiry, not a finding that the answer is defective. The system does not
 experience curiosity; it records possible directions for human inspection.
 
-A useful candidate may emerge from an already complete answer. It need not be
+A candidate may emerge from an already complete answer. It need not be
 resolved immediately, answered on the current turn, asserted as true, or shown
-to the user uninvited. `NONE` is an appropriate result when no distinct,
-grounded question is worth preserving.
+to the user uninvited. `NONE` is appropriate when no distinct, context-bound,
+atomic, investigable candidate can be formulated. Whether a candidate will
+prove valuable is **not** an admission decision at birth.
 
 ## What is and is not changing
 
@@ -40,6 +47,20 @@ grounded question is worth preserving.
 | Seed generated after earlier SSL influence | Preserve contamination audit and ordinary fail-closed policy | Feed a self-derived seed back in as external evidence |
 | Independently verified evidence and later relevant turn | Allow the existing Gate and point-of-use rules to decide | Promote solely because the candidate is interesting |
 
+## Scope: why the frozen detector comparison is not an SSL baseline
+
+The historical v0.6 detector pursues missing elements; v0.7 also invites
+unspoken possibilities. A change in candidate count conflates different
+research targets. Stronger detector models do not solve that mismatch.
+The same-model SSL-off control used for later **authorized influence** is
+separate from either detector version, as is comparison to a basic open-question
+memory. Neither control is needed just to inspect the internal lifecycle.
+
+The current v0.7 prompts still contain phrases such as *worth keeping open*.
+Those risk a premature usefulness filter. Keep v0.7 immutable for historical
+comparability; revise that question in a separately versioned vNext study,
+without silently changing existing prompt hashes or user-facing guarantees.
+
 ## Review material and provenance
 
 The bilingual frozen comparison set is
@@ -64,7 +85,7 @@ and current point-of-use policy remain unchanged. More generated candidates
 can increase noise or distract reviewers, even if they begin weightless.
 Evaluate candidate relevance and quality, not just quantity.
 
-## Minimum evaluation protocol
+## Frozen 12-case smoke protocol (not main acceptance)
 
 1. Freeze a set of ordinary conversations, including complete answers, uncertain
    cases, opportunities for divergent thought, adversarial inventions, and
@@ -86,6 +107,32 @@ Evaluate candidate relevance and quality, not just quantity.
    surfaced. Compare against the same-model SSL-off control and do not equate
    textual difference with improved reasoning. Keep live-model evidence separate
    from fixture and CI evidence.
+
+## Main SSL evaluation: what an unspoken possibility does over time
+
+1. On capable real-world NL/EN conversation models, collect natural,
+   independently sampled multi-turn material. The model's original answer
+   and an open-set alternative proposal are different observations; do not
+   preselect the "right" missing question.
+2. Record the earliest atomic candidate and its context, timestamp, origin,
+   model revision, trace and zero steering authority. Structural
+   admissibility is not a judgement of usefulness or truth.
+3. Trace clean re-recognition, TrTL reactivation and TTL decay (including
+   nonevents), related constellations, contradictions and source/probe
+   provenance. Distinguish independent recurrence from self-derived output.
+4. Compare Gate decisions and attempted influence against declared policy
+   without allowing weightless material to change responses. Review
+   provenance and point-of-use authorization separately from semantic fit.
+5. Human reviewers subsequently evaluate which candidates opened a coherent
+   adjacent path and when later behavior was helpful, neutral, intrusive or
+   misleading. Avoid winner-only scores and report null/no-op cases.
+6. For any *causal answer benefit* claim, use the same capable generation
+   model and clean pre-turn context with/without authorized SSL. Do not
+   treat v0.6 detector output, an auto-generated label or prior prompts
+   as a substitute for the actual SSL-off counterfactual.
+7. Treat neural activation analysis as a **separate preregistered Layer G**
+   question. The H-Neurons precedent supports studying latent signals,
+   not inferring "what an LLM does not know" from text alone.
 
 ## Limits discovered by the first 0.5B run
 
@@ -124,6 +171,9 @@ arm remains inferable even with the key kept closed.
 ## Release decision
 
 The contract and parser tests check implementational consistency, not the
-quality of generated inquiry. Do not merge this detector change into a release
-candidate or claim a measurable benefit without a completed model-backed
-evaluation and explicit review of backward-compatibility impact.
+quality of generated inquiry. The twelve cases remain mechanical smoke tests;
+a green 3B/7B detector comparison cannot clear PR #202. Do not merge this
+detector change or assert a model-quality improvement without representative
+open-set model evaluation, independent review of epistemic candidate quality,
+compatibility checks and Gate/lifecycle invariants. The Layer G activation
+hypothesis requires its **own** preregistration, not this PR's approval.
