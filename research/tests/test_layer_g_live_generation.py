@@ -180,7 +180,9 @@ def test_full_generation_hook_path_and_artifact_without_real_torch(monkeypatch, 
     assert manifest["research_claim"] == "none"
     assert manifest["model_revision"] == REVISION
     assert manifest["forward_token_counts"] == [4, 1, 1]
-    assert "original_prompt" not in json.dumps(manifest)
+    # The manifest documents prompt hashes, but never stores its actual text.
+    assert "An ordinary unlabelled prompt" not in json.dumps(manifest)
+    assert manifest["original_prompt_stored"] is False
     assert (tmp_path / "run1" / "decision_activations.npz").is_file()
     with np.load(tmp_path / "run1" / "decision_activations.npz") as features:
         assert features[L0].shape == (3, 4)
