@@ -39,7 +39,8 @@ def test_readme_defines_the_general_bounded_candidate_contract() -> None:
     assert "gives curiosity, uncertainty, doubt, and unresolved possibilities" in README
     assert "A complete, defensible answer can still invite a new question" in README
     assert "not necessarily a detected error or something missing" in README
-    assert "bounded possibility worth remembering" in README
+    assert "one bounded epistemic possibility" in README
+    assert "without first deciding whether it will be useful, true or influential" in README
     assert "The ordinary chat detector therefore looks for grounded open inquiries" in README
     # Retaining an observation is distinct from allowing it to steer an answer.
     assert "trace above zero and steering weight zero" in README
