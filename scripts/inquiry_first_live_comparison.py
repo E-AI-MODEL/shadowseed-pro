@@ -41,6 +41,9 @@ def sha256(data: bytes) -> str:
 
 def _expression_value(node: ast.expr, constants: dict[str, Any]) -> Any:
     """Read only literal strings/ints and their simple f-string substitutions."""
+    if (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "strip" and not node.args and not node.keywords):
+        return str(_expression_value(node.func.value, constants)).strip()
     if isinstance(node, ast.Constant) and isinstance(node.value, (str, int)):
         return node.value
     if isinstance(node, ast.JoinedStr):
@@ -205,6 +208,8 @@ def compare(repo_root: Path, cases_path: Path, output_dir: Path, *,
     if (CURRENT_PAIR_DETECTOR_VERSION, SOURCE_OBSERVATION_DETECTOR_VERSION) != ("0.7", "0.7"):
         raise ValueError("candidate versions changed; protocol must be reviewed")
     cases = cases_data["cases"]
+    if cases_data["candidate"]["detector_prompt_version"] != "0.7":
+        raise ValueError("case set candidate protocol does not match v0.7")
     if len(cases) != 12 or len({case["id"] for case in cases}) != 12:
         raise ValueError("comparison requires all 12 unique, preregistered cases")
     baseline, baseline_source_hash = historical_prompts(repo_root)
