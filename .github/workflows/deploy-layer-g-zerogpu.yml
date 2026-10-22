@@ -20,36 +20,54 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  free-zerogpu-deploy:
+  package:
     runs-on: ubuntu-latest
+    outputs:
+      has_hf_token: ${{ steps.check.outputs.available }}
     steps:
       - name: Check out exact source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
-
       - name: Package canonical instrument without model downloads
         run: |
           python research/scripts/build_layer_g_zerogpu_space.py \
             --output-dir /tmp/shadowseed-zerogpu-bundle
           python -m compileall -q /tmp/shadowseed-zerogpu-bundle
-
-      - name: Publish only if the owner's Hugging Face write token is set
+      - name: Check deployment authorization (never log the secret)
+        id: check
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           if [ -z "$HF_TOKEN" ]; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
             echo "NOT_DEPLOYED: HF_TOKEN is not configured in GitHub Actions Secrets." \
               >> "$GITHUB_STEP_SUMMARY"
-            echo "No Hugging Face Space, paid GPU or inference API was started." \
+            echo "Source-only check passed. No HF Space or GPU was started." \
               >> "$GITHUB_STEP_SUMMARY"
-            exit 0
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
           fi
+
+  publish:
+    needs: package
+    if: needs.package.outputs.has_hf_token == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+      - name: Deploy to confirmed ZeroGPU hardware only
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
           python -m pip install -q huggingface_hub==0.36.0
           python research/scripts/deploy_layer_g_zerogpu_space.py
           echo "Source uploaded to verified ZeroGPU Space." >> "$GITHUB_STEP_SUMMARY"
-          echo "Model activation runtime has NOT yet been independently verified." \
+          echo "Model activation runtime is NOT yet independently verified." \
             >> "$GITHUB_STEP_SUMMARY"
