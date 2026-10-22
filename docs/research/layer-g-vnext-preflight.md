@@ -207,3 +207,45 @@ intentionally does not have unattended GitHub access to publish results.
 **Execution status:** notebook syntax and boundary tests run in CI.
 No free-GPU model execution has yet been verified through this notebook,
 and passing these tests is NOT evidence that 14B features have been captured.
+
+
+## Mobile-first free ZeroGPU Space (provisioning preparation)
+
+A separate [Gradio Space source tree](../../research/spaces/layer-g-zerogpu/)
+wraps the *canonical* generation-time instrument from this PR. The public
+UI has a single button with a fixed fictional prompt; no user input, real
+conversation data, OpenAI API or seeded answer influence is accepted.
+
+The build script [build_layer_g_zerogpu_space.py](../../research/scripts/build_layer_g_zerogpu_space.py)
+copies exactly the two canonical L2 Python modules into a temporary package
+without maintaining a second implementation. Every output contains its source
+commit. The deployment script
+[deploy_layer_g_zerogpu_space.py](../../research/scripts/deploy_layer_g_zerogpu_space.py)
+can only create or update the designated owner's free ZeroGPU Space and
+aborts when hardware is not confirmed as zero-a10g. It never downgrades to
+paid hardware.
+
+**Verified provider rules as of 23 October 2026:**
+- Free personal accounts older than 30 days with verified email and in good
+  standing may host up to two ZeroGPU Spaces.
+- The default ZeroGPU worker has 48GB VRAM and 5 minutes of included daily
+  usage on a free account. The Space is only compatible with Gradio, and the
+  GPU function must be decorated directly with @spaces.GPU.
+- The model is loaded in NF4 4-bit at module import, using ZeroGPU-aware
+  bitsandbytes device placement. This is still a different neural model
+  representation from unquantized 14B.
+- Source: https://huggingface.co/docs/hub/spaces-zerogpu
+- Packaging reference: https://github.com/huggingface/skills/blob/main/skills/huggingface-spaces/references/zerogpu.md
+
+**Publishing constraint:** the currently connected Hugging Face tools allow
+model searches and paid Jobs attempts but do *not* expose a write action to
+create or update a Space. GitHub Actions can publish once the user provides a
+write-scoped Hugging Face token as a GitHub Actions secret named HF_TOKEN.
+The deployment workflow will show **NOT_DEPLOYED** and make no external
+changes if that secret is absent. Never paste credentials into a public
+repository or a chat message. The HF token owner is checked against
+EAImodelserie5 before any Space creation or update.
+
+A successful GitHub source upload is still **not** a verified GPU run.
+Capture artifacts and model startup must be separately inspected. Do not
+report a live Space URL until successful publication has been confirmed.

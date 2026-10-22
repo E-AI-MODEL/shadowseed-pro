@@ -1,0 +1,55 @@
+name: Research - Deploy Layer G free ZeroGPU Space
+
+on:
+  push:
+    branches: [feat/layer-g-vnext-preflight]
+    paths:
+      - "research/spaces/layer-g-zerogpu/**"
+      - "research/scripts/build_layer_g_zerogpu_space.py"
+      - "research/scripts/deploy_layer_g_zerogpu_space.py"
+      - "research/src/shadowseed_research/benchmark/layer_g_vnext.py"
+      - "research/src/shadowseed_research/benchmark/layer_g_live_generation.py"
+      - ".github/workflows/deploy-layer-g-zerogpu.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: zerogpu-free-shadowseed
+  cancel-in-progress: false
+
+jobs:
+  free-zerogpu-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+
+      - name: Package canonical instrument without model downloads
+        run: |
+          python research/scripts/build_layer_g_zerogpu_space.py \
+            --output-dir /tmp/shadowseed-zerogpu-bundle
+          python -m compileall -q /tmp/shadowseed-zerogpu-bundle
+
+      - name: Publish only if the owner's Hugging Face write token is set
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          if [ -z "$HF_TOKEN" ]; then
+            echo "NOT_DEPLOYED: HF_TOKEN is not configured in GitHub Actions Secrets." \
+              >> "$GITHUB_STEP_SUMMARY"
+            echo "No Hugging Face Space, paid GPU or inference API was started." \
+              >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          python -m pip install -q huggingface_hub==0.36.0
+          python research/scripts/deploy_layer_g_zerogpu_space.py
+          echo "Source uploaded to verified ZeroGPU Space." >> "$GITHUB_STEP_SUMMARY"
+          echo "Model activation runtime has NOT yet been independently verified." \
+            >> "$GITHUB_STEP_SUMMARY"
