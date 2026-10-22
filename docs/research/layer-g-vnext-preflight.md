@@ -122,3 +122,59 @@ defaults. PR #202 can be independently assessed for Level 1 safety.
 
 **Read this correctly:** a green CI means the instrument and its
 negative controls behave as specified. It is not model-internal evidence.
+
+
+## P2: synchronous original-generation decision-feature capture (code ready)
+
+[Implementation](../../research/src/shadowseed_research/benchmark/layer_g_live_generation.py),
+[CLI](../../research/scripts/layer_g_live_generation.py) and
+[mechanical tests](../../research/tests/test_layer_g_live_generation.py) add
+a distinct generation-time reader.
+
+- It hooks chosen **down_proj inputs while the original model.generate() call
+  is running**. The first vector comes from the final prompt input token,
+  which predicts the first generated token. Cached forwards then use the
+  preceding generated token to predict the next. These are **prefix-decision
+  features**, not activations of the generated token itself. The number and
+  ordering of hook calls must match generated token IDs exactly.
+- Only a frozen original prompt, its digest, an immutable 40-character model
+  revision, explicitly chosen layers and bounded greedy decoding enter
+  capture. Candidate text and evaluation labels have no route into the
+  reader. Synthetic tests deliberately fake PyTorch/model.forward hooks,
+  without downloading weights or claiming neuroscience.
+- Raw token-aligned arrays are saved into an isolated new directory as
+  compressed NPZ, with artifact SHA-256s, model/runtime provenance and a
+  manifest marked **unlabelled_mechanistic_pilot / research_claim: none**.
+  Original prompt text is not copied into the artifact; generated responses
+  and activations still require careful privacy and access controls.
+- The GPU runner refuses absent CUDA, GPU memory below the configured 40 GiB
+  floor, multiple visible GPUs, mutable revisions, reused output directories
+  and inputs not explicitly identified as synthetic. It never silently falls
+  back to 0.5B CPU as if that answered the SSL hypothesis.
+
+The proposed first *engineering* pilot uses a capable open-weight model such
+as **Qwen/Qwen2.5-14B-Instruct** on a dedicated >=40-GiB CUDA GPU. Obtain its
+exact revision from the model Hub and pin torch/transformers/tokenizer
+libraries before capture. The test-only input is
+[synthetic prompt](../../research/fixtures/layer_g_vnext_synthetic_prompt.txt).
+Example:
+
+    python research/scripts/layer_g_live_generation.py \
+      --model-id Qwen/Qwen2.5-14B-Instruct \
+      --model-revision <resolved-40-hex-model-sha> \
+      --prompt-file research/fixtures/layer_g_vnext_synthetic_prompt.txt \
+      --read-layers model.layers.12.mlp.down_proj,model.layers.36.mlp.down_proj \
+      --max-new-tokens 80 \
+      --output-dir /private/layer-g/first-pilot
+
+**Not yet shown by passing unit tests:** that a real Qwen release has precisely
+the assumed hook order, that its cached decoding takes a single input token
+per step under pinned packages, or that any recovered activation feature
+encodes an unexpressed relation. A live-model pilot must establish the first
+two *before* anything is called neural SSL evidence.
+
+P2 is successful as an **instrument** only if the real generation completes,
+the captured vector count matches output token count, arrays are finite and
+reproducible under a pinned revision/environment, and no candidate or label
+entered capture. A model-specific hook mismatch is a failed preflight, not a
+negative finding about internal possibility representation.
