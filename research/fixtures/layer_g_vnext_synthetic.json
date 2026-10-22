@@ -1,0 +1,106 @@
+{
+  "version": "layer-g-vnext-p1-v1",
+  "status": "synthetic_preflight_only",
+  "note": "All material is invented for code-path validation, never model-internal evidence.",
+  "cases": [
+    {
+      "case_id": "d01",
+      "source_id": "fictional-s1",
+      "topic_id": "water-pumps",
+      "split": "discovery",
+      "language": "en",
+      "original_prompt": "Describe the fictional water pump schedule.",
+      "original_answer": "The pumps run twice daily.",
+      "candidate_text": "What if changing rainfall affects pump reliability?",
+      "label": "unspoken_coherent"
+    },
+    {
+      "case_id": "d02",
+      "source_id": "fictional-s2",
+      "topic_id": "lighting",
+      "split": "discovery",
+      "language": "nl",
+      "original_prompt": "Beschrijf de verlichting van het lokaal.",
+      "original_answer": "De lampen gaan om acht uur aan.",
+      "candidate_text": "De lampen gaan om acht uur aan.",
+      "label": "already_expressed"
+    },
+    {
+      "case_id": "d03",
+      "source_id": "fictional-s3",
+      "topic_id": "library",
+      "split": "discovery",
+      "language": "en",
+      "original_prompt": "Give the fictional library opening hours.",
+      "original_answer": "The library opens at noon.",
+      "candidate_text": "The library is located inside the Moon.",
+      "label": "unsupported_alternative"
+    },
+    {
+      "case_id": "v01",
+      "source_id": "fictional-s4",
+      "topic_id": "train",
+      "split": "validation",
+      "language": "en",
+      "original_prompt": "Describe the train interchange plan.",
+      "original_answer": "Passengers transfer at the central platform.",
+      "candidate_text": "Could a service interruption change the transfer logic?",
+      "label": "unspoken_coherent"
+    },
+    {
+      "case_id": "v02",
+      "source_id": "fictional-s5",
+      "topic_id": "gym",
+      "split": "validation",
+      "language": "nl",
+      "original_prompt": "Wat is het rooster van de gymzaal?",
+      "original_answer": "Maandag en donderdag zijn gereserveerd.",
+      "candidate_text": "Maandag en donderdag zijn gereserveerd.",
+      "label": "already_expressed"
+    },
+    {
+      "case_id": "v03",
+      "source_id": "fictional-s6",
+      "topic_id": "garden",
+      "split": "validation",
+      "language": "en",
+      "original_prompt": "Summarize the park's fictional garden design.",
+      "original_answer": "The garden uses three planting zones.",
+      "candidate_text": "All plants have learned to operate calculators.",
+      "label": "unsupported_alternative"
+    },
+    {
+      "case_id": "t01",
+      "source_id": "fictional-s7",
+      "topic_id": "school",
+      "split": "test",
+      "language": "nl",
+      "original_prompt": "Beschrijf hoe het fictieve experiment is ingericht.",
+      "original_answer": "Twee klassen maken opgaven volgens hetzelfde rooster.",
+      "candidate_text": "Kunnen verschillen in voorkennis de resultaten beïnvloeden?",
+      "label": "unspoken_coherent"
+    },
+    {
+      "case_id": "t02",
+      "source_id": "fictional-s8",
+      "topic_id": "harbor",
+      "split": "test",
+      "language": "en",
+      "original_prompt": "Describe the port loading sequence.",
+      "original_answer": "The crane starts before the vessel departs.",
+      "candidate_text": "The crane starts before the vessel departs.",
+      "label": "already_expressed"
+    },
+    {
+      "case_id": "t03",
+      "source_id": "fictional-s9",
+      "topic_id": "paper",
+      "split": "test",
+      "language": "en",
+      "original_prompt": "Explain the fictional paper inventory.",
+      "original_answer": "The storeroom contains sixty sheets.",
+      "candidate_text": "Paper can autonomously invent new galaxies.",
+      "label": "unsupported_alternative"
+    }
+  ]
+}

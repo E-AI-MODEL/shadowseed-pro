@@ -10,3 +10,12 @@ During the migration, the canonical benchmark implementation is mirrored here
 while the historical `shadowseed.benchmark` namespace remains available.
 Research workflows will move to `shadowseed_research.benchmark` before the
 evaluation implementation is removed from the product distribution.
+
+
+## Layer G vNext (issue #203)
+
+The [preflight protocol](../docs/research/layer-g-vnext-preflight.md) and
+`benchmark/layer_g_vnext.py` isolate original-answer activations from candidate
+and label metadata. This is a **synthetic instrument preflight**, not a
+reproduction of H-Neurons or evidence for internal unspoken-possibility
+signals. It does not change the SSL runtime or Gate.

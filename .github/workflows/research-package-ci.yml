@@ -140,6 +140,24 @@ jobs:
       - name: Run research tests
         run: uv run --no-sync python -m pytest -q research/tests
 
+      - name: Layer G vNext synthetic-only leakage preflight
+        run: |
+          uv run --no-sync python research/scripts/layer_g_vnext_preflight.py \
+            --fixture research/fixtures/layer_g_vnext_synthetic.json \
+            --output /tmp/layer-g-vnext-preflight.json
+          uv run --no-sync python - <<'PY'
+          import json
+          from pathlib import Path
+          result = json.loads(Path("/tmp/layer-g-vnext-preflight.json").read_text())
+          assert result["status"] == "synthetic_preflight_only"
+          assert result["research_claim"] == "none"
+          assert result["capture_mode"] == "synthetic_hash_not_real_activations"
+          assert len(result["cases"]) == 9
+          assert all("candidate" not in case and "label" not in case
+                     for case in result["cases"])
+          print("Synthetic capture isolation verified. No neural evidence claimed.")
+          PY
+
       - name: Verify legacy evaluation implementation is absent
         run: |
           uv run --no-sync python - <<'PY'
