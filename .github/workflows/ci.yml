@@ -21,7 +21,7 @@ name: CI
 #     only through deterministic fixtures here; live-backend integration needs
 #     network/credentials and stays out of the default matrix by design.
 #   - The production dependency audit covers the production-ready/local candidate
-#     closure (core + Workbench + build/standalone tooling). Optional vector backends
+#     closure (core web runtime + build/standalone tooling). Legacy Gradio and optional vector backends
 #     remain outside that claim until separately cleared by the production policy.
 
 on:

@@ -2,16 +2,16 @@ name: Web-only Distribution Candidate
 
 on:
   workflow_dispatch:
+  # Every PR head needs its own packaged-product evidence, including changes
+  # to the engine, static client, shared build helpers or release validation.
   pull_request:
-    paths:
-      - scripts/build_web_standalone.py
-      - src/shadowseed_webapi/**
-      - pyproject.toml
-      - uv.lock
-      - .github/workflows/web-only-distribution-candidate.yml
 
 permissions:
   contents: read
+
+concurrency:
+  group: web-distribution-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
 
 jobs:
   audit:

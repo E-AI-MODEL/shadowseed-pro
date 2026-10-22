@@ -31,6 +31,11 @@ and verified Windows/macOS/Linux frozen downloads. Each archive includes
 verified static assets and a frozen fixture-turn self-test; macOS must pass
 the sealed bundle archive round-trip. The release workflow verifies exact
 source SHA, manifests, provenance, licensing and checksum inventory.
+Every pull-request head now runs the web-only frozen package checks, including
+changes to the engine and static client. Release collection rechecks downloaded
+archive hashes and requires exactly one bundle for each supported platform.
+Published-release assurance validates the web archive names, approved manifests,
+lock hash and matching provenance rather than looking for legacy Gradio bundles.
 A live Ollama conversation remains a separate hands-on check, not supplied
 by fixture testing.
 

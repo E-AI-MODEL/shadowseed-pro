@@ -88,6 +88,8 @@ def test_production_release_assurance_only_verifies_trusted_build_attestations()
     assert "sha256sum -c SHA256SUMS" in workflow
     assert 'gh attestation verify "verified-release/$filename"' in workflow
     assert "$GITHUB_REPOSITORY/.github/workflows/release-workbench.yml" in workflow
+    assert "-name 'shadowseed-web-*'" in workflow
+    assert "-name 'shadowseed-workbench-*'" not in workflow
     assert 'test "$(git rev-parse origin/main)" = "$release_sha"' in workflow
     assert 'test "$(git rev-parse origin/main)" = "$RELEASE_SHA"' in workflow
 
