@@ -338,6 +338,7 @@ def parse_numbered_seeds_with_diagnostics(
         "nonblank_lines": 0,
         "numbered_lines": 0,
         "unnumbered_nonblank_lines": 0,
+        "recovered_single_unnumbered_question": 0,
         "nested_numbering_prefixes_removed": 0,
         "markdown_wrappers_removed": 0,
         "dropped_blank_or_placeholder": 0,
@@ -358,18 +359,39 @@ def parse_numbered_seeds_with_diagnostics(
         return [], diagnostics
 
     instruction_only = _untrusted_instruction_only_source(source_text)
+    # Some real models return one short standalone question despite being asked
+    # to number it. Recover ONLY that unambiguous shape. Free-form paragraphs,
+    # multiple lines and truncated generations are not silently reinterpreted.
+    single_question = (
+        len(nonblank) == 1
+        and not _NUMBERED_LINE.match(nonblank[0])
+        and nonblank[0].endswith("?")
+        and nonblank[0].count("?") == 1
+        and bool(re.match(r"^\w", nonblank[0], flags=re.UNICODE))
+        and 5 <= len(_comparison_tokens(nonblank[0])) <= MAX_DETECTOR_CANDIDATE_WORDS
+        and len(nonblank[0]) <= MAX_DETECTOR_CANDIDATE_CHARS
+    )
     for line in raw_output.splitlines():
         if line.strip():
             diagnostics["nonblank_lines"] = int(diagnostics["nonblank_lines"]) + 1
         match = _NUMBERED_LINE.match(line)
-        if not match:
+        if match:
+            diagnostics["numbered_lines"] = int(diagnostics["numbered_lines"]) + 1
+            seed = match.group(1).strip().strip("-•").strip()
+        elif single_question:
+            diagnostics["unnumbered_nonblank_lines"] = (
+                int(diagnostics["unnumbered_nonblank_lines"]) + 1
+            )
+            diagnostics["recovered_single_unnumbered_question"] = (
+                int(diagnostics["recovered_single_unnumbered_question"]) + 1
+            )
+            seed = line.strip()
+        else:
             if line.strip():
                 diagnostics["unnumbered_nonblank_lines"] = (
                     int(diagnostics["unnumbered_nonblank_lines"]) + 1
                 )
             continue
-        diagnostics["numbered_lines"] = int(diagnostics["numbered_lines"]) + 1
-        seed = match.group(1).strip().strip("-•").strip()
         while seed:
             nested = _NUMBERED_LINE.match(seed)
             if nested is None:

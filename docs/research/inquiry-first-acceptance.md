@@ -102,11 +102,24 @@ source case. The numerical limits are syntactic safety checks, not a semantic
 judgement that short answers are useful or long ones unimportant. Question
 quality, fabricated claims, and new understanding still need independent review.
 
-The next comparison runs on Qwen2.5 3B as an intermediate model-capacity check.
-It does not prove generality. The study must disclose if an arm's behavior
-reveals the allocation despite A/B labels, and the allocation key must be
-held separately by a study custodian. GitHub Action artifacts in the same
-repository do **not** provide reviewer-specific access control.
+The 3B comparison exposed a second parser limitation: four one-line,
+unnumbered questions were present in raw v0.7 output but all were discarded.
+Both arms consequently had zero accepted candidates. One arm still returned
+raw NONE in all twelve cases. The output was not a blinded or informative
+quality comparison. Raw measurements are preserved.
+
+The next comparison explicitly records narrow recovery of a single bare
+question, keeps the prompt versions unchanged, and runs both 3B and 7B for
+model-capacity sensitivity. It records both raw NONE and accepted-candidate
+counts. Every run starts with a release gate on hold until independent review.
+Neither recovered question count nor a larger model establishes efficacy.
+
+Reviewer files now contain *individually shuffled* cases, not A/B side-by-side
+pairs, and are packaged separately from the arm-labelled raw observations,
+manifest, and the allocation key. The separation prevents accidental exposure
+through the review ZIP. It is **not** access control: GitHub repository
+collaborators may still access all three artifacts. A consistently abstaining
+arm remains inferable even with the key kept closed.
 
 ## Release decision
 

@@ -108,3 +108,78 @@ def test_blinding_detection_does_not_call_a_mask_a_blind_study():
     result = audit(records, cases)
     assert result["status"] == "compromised_by_arm_wide_abstention"
     assert result["release_gate"] == "hold"
+
+
+def test_one_raw_unnumbered_question_recovers_without_normalising_semantics():
+    question = "Why not consider temporal precedence as a possible explanation?"
+    candidates, diagnostic = parse_numbered_seeds_with_diagnostics(question)
+    assert candidates == [question]
+    assert diagnostic["recovered_single_unnumbered_question"] == 1
+    assert diagnostic["unnumbered_nonblank_lines"] == 1
+    assert diagnostic["numbered_lines"] == 0
+
+
+def test_multiple_unnumbered_lines_remain_unparsed():
+    candidates, diagnostic = parse_numbered_seeds_with_diagnostics(
+        "What might be missing in the explanation?\n"
+        "What would another example show?"
+    )
+    assert candidates == []
+    assert diagnostic["recovered_single_unnumbered_question"] == 0
+    assert diagnostic["unnumbered_nonblank_lines"] == 2
+
+
+def test_single_unnumbered_prompt_echo_still_blocked():
+    text = "You examine one user question and its draft answer?"
+    candidates, diagnostic = parse_numbered_seeds_with_diagnostics(text)
+    assert candidates == []
+    assert diagnostic["dropped_prompt_echo"] == 1
+
+
+def test_blinding_blocks_raw_none_control_even_when_parser_accepts_nothing():
+    namespace = runpy.run_path(str(Path("scripts/inquiry_first_live_comparison.py")))
+    cases = [{"id": "a"}, {"id": "b"}]
+    records = [
+        {"case_id": case["id"], "arm": "v0.6", "accepted_candidates": [], "raw_output": "NONE"}
+        for case in cases
+    ] + [
+        {"case_id": case["id"], "arm": "v0.7", "accepted_candidates": [],
+         "raw_output": "A nonnumbered output question?"}
+        for case in cases
+    ]
+    result = namespace["assess_blinding"](records, cases)
+    assert result["status"] == "compromised_by_arm_wide_abstention"
+    assert result["release_gate"] == "hold"
+
+
+def test_zero_candidates_both_arms_produces_uninformative_flag():
+    namespace = runpy.run_path(str(Path("scripts/inquiry_first_live_comparison.py")))
+    cases = [{"id": "a"}, {"id": "b"}]
+    records = [
+        {"case_id": case["id"], "arm": arm, "accepted_candidates": [], "raw_output": "NONE"}
+        for case in cases for arm in ("v0.6", "v0.7")
+    ]
+    result = namespace["assess_blinding"](records, cases)
+    assert result["status"] == "uninformative_zero_accepted_candidates"
+    assert result["release_gate"] == "hold"
+
+
+def test_reviewer_items_are_isolated_and_individually_shuffled():
+    namespace = runpy.run_path(str(Path("scripts/inquiry_first_live_comparison.py")))
+    cases = [
+        {"id": "a", "language": "en", "mode": "current_pair", "question": "Why?",
+         "draft_answer": "The draft", "prior_context": ""},
+        {"id": "b", "language": "nl", "mode": "source_observation", "question": "",
+         "draft_answer": "De tekst", "prior_context": ""},
+    ]
+    records = [
+        {"case_id": case["id"], "arm": arm, "accepted_candidates": [],
+         "raw_output": "NONE" if arm == "v0.6" else "A worthwhile question?"}
+        for case in cases for arm in ("v0.6", "v0.7")
+    ]
+    packet, allocation = namespace["make_review_packet"](cases, records, "synthetic-head")
+    assert len(packet) == len(allocation) == 4
+    assert len({item["review_id"] for item in packet}) == 4
+    assert all("arm" not in item for item in packet)
+    assert all("blind_label" not in item for item in packet)
+    assert {entry["arm"] for entry in allocation} == {"v0.6", "v0.7"}

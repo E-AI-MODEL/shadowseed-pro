@@ -156,18 +156,24 @@ def generate(endpoint: str, model: str, prompt: str, *, token_limit: int, seed: 
 def make_review_packet(
     cases: list[dict[str, Any]], records: list[dict[str, Any]], shuffle_seed: str
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Shuffle *individual* output reviews, not identifiable side-by-side pairs.
+
+    Do not put the mapping, arm names or provenance into the reviewer artifact.
+    A model that always returns NONE can still make content recognisable: this
+    improves masking but cannot guarantee blindness.
+    """
     by_case = {(r["case_id"], r["arm"]): r for r in records}
-    packet: list[dict[str, Any]] = []
-    allocation: list[dict[str, Any]] = []
+    units: list[tuple[dict[str, Any], str]] = []
     for case in cases:
-        case_id = case["id"]
-        arms = ["v0.6", "v0.7"]
-        random.Random(sha256(f"{shuffle_seed}:{case_id}".encode("utf-8"))).shuffle(arms)
-        displayed = []
-        for blind_label, arm in zip(("A", "B"), arms):
-            record = by_case[(case_id, arm)]
-            displayed.append({
-                "blind_label": blind_label,
+        for arm in ("v0.6", "v0.7"):
+            record = by_case[(case["id"], arm)]
+            units.append(({
+                "case_id": case["id"],
+                "language": case["language"],
+                "mode": case["mode"],
+                "question": case.get("question", ""),
+                "draft_answer": case["draft_answer"],
+                "prior_context": case.get("prior_context", ""),
                 "raw_output": record["raw_output"],
                 "accepted_candidates": record["accepted_candidates"],
                 "ratings": {
@@ -181,46 +187,69 @@ def make_review_packet(
                     "abstention_appropriate_yes_no": None,
                     "reviewer_notes": "",
                 },
-            })
-            allocation.append({"case_id": case_id, "blind_label": blind_label, "arm": arm})
-        packet.append({
-            "case_id": case_id,
-            "language": case["language"],
-            "mode": case["mode"],
-            "question": case.get("question", ""),
-            "draft_answer": case["draft_answer"],
-            "prior_context": case.get("prior_context", ""),
-            "candidates": displayed,
-        })
+            }, arm))
+    random.Random(sha256(f"masked-items:{shuffle_seed}".encode("utf-8"))).shuffle(units)
+    packet: list[dict[str, Any]] = []
+    allocation: list[dict[str, Any]] = []
+    for index, (entry, arm) in enumerate(units, start=1):
+        review_id = f"R{index:03d}"
+        packet.append({"review_id": review_id, **entry})
+        allocation.append({"review_id": review_id, "case_id": entry["case_id"], "arm": arm})
     return packet, allocation
 
 
 
 def assess_blinding(records: list[dict[str, Any]], cases: list[dict[str, Any]]) -> dict[str, Any]:
-    """Detect obvious allocation clues; alphabetic A/B masks are not true blinding."""
+    """Fail closed when raw behavior or zero yield makes allocation obvious."""
     by_case = {(record["case_id"], record["arm"]): record for record in records}
     all_cases = [case["id"] for case in cases]
-    zero_arms = [
-        arm for arm in ("v0.6", "v0.7")
-        if all(not by_case[(case_id, arm)]["accepted_candidates"] for case_id in all_cases)
+    arm_stats = {
+        arm: {
+            "raw_none_cases": sum(
+                str(by_case[(case_id, arm)].get("raw_output", "")).strip().upper() == "NONE"
+                for case_id in all_cases
+            ),
+            "accepted_candidate_count": sum(
+                len(by_case[(case_id, arm)]["accepted_candidates"]) for case_id in all_cases
+            ),
+        }
+        for arm in ("v0.6", "v0.7")
+    }
+    raw_none_arm = [
+        arm for arm in arm_stats if arm_stats[arm]["raw_none_cases"] == len(all_cases)
     ]
-    any_yield = any(record["accepted_candidates"] for record in records)
-    if len(zero_arms) == 1 and any_yield:
+    zero_arms = [
+        arm for arm in arm_stats if arm_stats[arm]["accepted_candidate_count"] == 0
+    ]
+    if len(raw_none_arm) == 1 or len(zero_arms) == 1:
         return {
             "status": "compromised_by_arm_wide_abstention",
             "release_gate": "hold",
+            "arm_diagnostics": arm_stats,
             "warning": (
-                "One arm returned no accepted candidates in every case. "
-                "A/B assignment is trivially inferable, even without the key. "
-                "Do not call this packet a blinded quality comparison."
+                "One arm consistently abstains or yields no accepted candidates. "
+                "Its allocation is inferable even without an allocation key. "
+                "Do not claim the comparison was blinded."
+            ),
+        }
+    if len(zero_arms) == 2:
+        return {
+            "status": "uninformative_zero_accepted_candidates",
+            "release_gate": "hold",
+            "arm_diagnostics": arm_stats,
+            "warning": (
+                "Neither arm produced accepted candidates. No candidate-quality "
+                "comparison is possible. Review raw output and parser behavior."
             ),
         }
     return {
         "status": "masked_not_proven_blind",
-        "release_gate": "human_review_required",
+        "release_gate": "hold",
+        "arm_diagnostics": arm_stats,
         "warning": (
-            "Labels A/B are masked, but recognisable content may reveal the arm. "
-            "Assess whether reviewers remained blind before drawing conclusions."
+            "Outputs are shuffled as independent review units, but recognizable "
+            "content can still reveal the arm. Independent reviewers must verify "
+            "the masking and score quality before release."
         ),
     }
 
@@ -310,7 +339,7 @@ def compare(repo_root: Path, cases_path: Path, output_dir: Path, *,
             })
     packet, allocation = make_review_packet(cases, records, head)
     manifest["blinding_assessment"] = assess_blinding(records, cases)
-    if len(records) != 24 or len(packet) != 12 or len(allocation) != 24:
+    if len(records) != 24 or len(packet) != 24 or len(allocation) != 24:
         raise AssertionError("paired case completeness violation")
     counts = {
         arm: {
@@ -318,6 +347,11 @@ def compare(repo_root: Path, cases_path: Path, output_dir: Path, *,
             "accepted_candidates": sum(len(r["accepted_candidates"]) for r in records if r["arm"] == arm),
             "empty_candidate_cases": sum(not r["accepted_candidates"] for r in records if r["arm"] == arm),
             "truncated_generations": sum(r["done_reason"] == "length" for r in records if r["arm"] == arm),
+            "raw_none_cases": sum(str(r["raw_output"]).strip().upper() == "NONE" for r in records if r["arm"] == arm),
+            "recovered_single_questions": sum(
+                int(r["parser_diagnostics"].get("recovered_single_unnumbered_question", 0))
+                for r in records if r["arm"] == arm
+            ),
         }
         for arm in ("v0.6", "v0.7")
     }
@@ -329,7 +363,13 @@ def compare(repo_root: Path, cases_path: Path, output_dir: Path, *,
         )
     write_json("manifest.json", manifest)
     write_json("raw_model_observations.json", records)
-    write_json("blind_review_packet.json", packet)
+    # Reviewer packet cannot live beside arm-labelled raw records or manifest.
+    reviewer_dir = output_dir.parent / (output_dir.name + "-reviewer-only")
+    reviewer_dir.mkdir(parents=True, exist_ok=True)
+    (reviewer_dir / "independent_masked_review_units.json").write_text(
+        json.dumps(packet, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
     # Export this key separately. Reviewers must not receive the allocation file.
     allocation_dir = output_dir.parent / (output_dir.name + "-allocation-restricted")
     allocation_dir.mkdir(parents=True, exist_ok=True)

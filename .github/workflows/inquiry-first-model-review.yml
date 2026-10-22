@@ -14,13 +14,25 @@ permissions:
 
 jobs:
   compare:
+    name: compare (${{ matrix.label }})
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - model: qwen2.5:3b-instruct
+            label: qwen3b
+          - model: qwen2.5:7b-instruct
+            label: qwen7b
+    env:
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - name: Checkout exact review head with history
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
@@ -38,28 +50,38 @@ jobs:
             sleep 2
           done
           curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
-          ollama pull qwen2.5:3b-instruct
+          ollama pull "${{ matrix.model }}"
       - name: Pair real model prompts on frozen NL/EN cases
         run: |
           python scripts/inquiry_first_live_comparison.py \
-            --model qwen2.5:3b-instruct \
+            --model "${{ matrix.model }}" \
             --output-dir /tmp/shadowseed-inquiry-first \
             --max-seeds 2 --max-new-tokens 420
       - name: Validate paired records without scoring usefulness
         run: |
           python - <<'PY'
           import json
+          import os
           from pathlib import Path
           d = Path("/tmp/shadowseed-inquiry-first")
           m = json.loads((d / "manifest.json").read_text())
           records = json.loads((d / "raw_model_observations.json").read_text())
-          reviews = json.loads((d / "blind_review_packet.json").read_text())
+          reviewer_dir = Path("/tmp/shadowseed-inquiry-first-reviewer-only")
+          reviews = json.loads((reviewer_dir / "independent_masked_review_units.json").read_text())
           assert m["review_status"] == "pending"
-          assert m["blinding_assessment"]["status"] in ("masked_not_proven_blind", "compromised_by_arm_wide_abstention")
+          assert m["source_sha"] == os.environ["EXPECTED_HEAD"]
+          assert m["blinding_assessment"]["release_gate"] == "hold"
+          assert m["blinding_assessment"]["status"] in (
+              "masked_not_proven_blind",
+              "compromised_by_arm_wide_abstention",
+              "uninformative_zero_accepted_candidates",
+          )
           assert not (d / "allocation_key_RESTRICT_REVIEWERS.json").exists()
-          assert len(records) == 24 and len(reviews) == 12
+          assert len(records) == 24 and len(reviews) == 24
           assert len({(x["case_id"], x["arm"]) for x in records}) == 24
-          assert all(not any("arm" in v for v in item["candidates"]) for item in reviews)
+          assert len({item["review_id"] for item in reviews}) == 24
+          assert all("arm" not in item and "blind_label" not in item for item in reviews)
+          assert set(p.name for p in reviewer_dir.iterdir()) == {"independent_masked_review_units.json"}
           assert all(x["raw_output"] is not None for x in records)
           print("Paired model outputs collected. No human-quality claim.")
           PY
@@ -67,13 +89,20 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: inquiry-first-v06-v07-review-and-raw
+          name: inquiry-first-v06-v07-audit-${{ matrix.label }}-DO-NOT-SHARE-WITH-REVIEWERS
           path: /tmp/shadowseed-inquiry-first/
+          if-no-files-found: warn
+      - name: Upload isolated reviewer packet
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: inquiry-first-v06-v07-reviewer-only-${{ matrix.label }}
+          path: /tmp/shadowseed-inquiry-first-reviewer-only/
           if-no-files-found: warn
       - name: Upload separate restricted allocation key for study custodian
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: inquiry-first-v06-v07-allocation-DO-NOT-SHARE-WITH-REVIEWERS
+          name: inquiry-first-v06-v07-allocation-${{ matrix.label }}-DO-NOT-SHARE-WITH-REVIEWERS
           path: /tmp/shadowseed-inquiry-first-allocation-restricted/
           if-no-files-found: warn
