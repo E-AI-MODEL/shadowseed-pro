@@ -187,6 +187,28 @@ def _looks_like_fewshot_leak(seed: str, threshold: float = 0.7) -> bool:
     return False
 
 
+def _strip_markdown_wrappers(text: str) -> tuple[str, int]:
+    """Remove whole-candidate formatting while preserving internal markup."""
+
+    value = text.strip()
+    removed = 0
+    while True:
+        for marker in ("**", "__", "`", "*", "_"):
+            if (
+                len(value) > 2 * len(marker)
+                and value.startswith(marker)
+                and value.endswith(marker)
+            ):
+                inner = value[len(marker) : -len(marker)]
+                # Separate formatted spans are not a whole-candidate wrapper.
+                if inner.strip() and marker not in inner:
+                    value = inner.strip()
+                    removed += 1
+                    break
+        else:
+            return value, removed
+
+
 def _looks_like_citation_fragment(seed: str, source_text: str) -> bool:
     """Heuristic filter for clearly non-seed output from small models.
 
@@ -239,6 +261,7 @@ def parse_numbered_seeds_with_diagnostics(
         "numbered_lines": 0,
         "unnumbered_nonblank_lines": 0,
         "nested_numbering_prefixes_removed": 0,
+        "markdown_wrappers_removed": 0,
         "dropped_blank_or_placeholder": 0,
         "dropped_citation_or_stub": 0,
         "dropped_fewshot_leak": 0,
@@ -272,6 +295,10 @@ def parse_numbered_seeds_with_diagnostics(
             diagnostics["nested_numbering_prefixes_removed"] = (
                 int(diagnostics["nested_numbering_prefixes_removed"]) + 1
             )
+        seed, wrappers_removed = _strip_markdown_wrappers(seed)
+        diagnostics["markdown_wrappers_removed"] = (
+            int(diagnostics["markdown_wrappers_removed"]) + wrappers_removed
+        )
         if not seed or seed.lower() == "[seed]":
             diagnostics["dropped_blank_or_placeholder"] = (
                 int(diagnostics["dropped_blank_or_placeholder"]) + 1

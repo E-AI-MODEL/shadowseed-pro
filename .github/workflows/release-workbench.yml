@@ -118,7 +118,7 @@ jobs:
             "workbench-ci.yml"
             "workbench-portability.yml"
             "research-package-ci.yml"
-            "standalone-workbench.yml"
+            "web-only-distribution-candidate.yml"
             "web-client-ci.yml"
           )
           dispatch_started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -133,7 +133,7 @@ jobs:
             gh workflow run "$workflow" --ref main
           done
 
-          standalone_run_id=""
+          web_run_id=""
           for workflow in "${release_workflows[@]}"; do
             run_id=""
             for _attempt in $(seq 1 120); do
@@ -176,12 +176,12 @@ jobs:
               exit 1
             fi
 
-            if [ "$workflow" = "standalone-workbench.yml" ]; then
-              standalone_run_id="$run_id"
+            if [ "$workflow" = "web-only-distribution-candidate.yml" ]; then
+              web_run_id="$run_id"
             fi
           done
 
-          test -n "$standalone_run_id"
+          test -n "$web_run_id"
 
           git fetch origin main --force
           if [ "$(git rev-parse origin/main)" != "$release_sha" ]; then
@@ -194,13 +194,13 @@ jobs:
           echo "release_version=$release_version" >> "$GITHUB_OUTPUT"
           echo "release_tag=$release_tag" >> "$GITHUB_OUTPUT"
           echo "notes_file=$notes_file" >> "$GITHUB_OUTPUT"
-          echo "standalone_run_id=$standalone_run_id" >> "$GITHUB_OUTPUT"
+          echo "web_run_id=$web_run_id" >> "$GITHUB_OUTPUT"
 
       - name: Generate locked release SBOM
         if: steps.preflight.outputs.should_release == 'true'
         run: |
           mkdir -p release-assets
-          uv export --locked --extra workbench --extra build --extra standalone-build             --no-emit-project --no-hashes --format requirements.txt             --output-file "${RUNNER_TEMP}/release-sbom.txt"
+          uv export --locked --extra build --extra standalone-build             --no-emit-project --no-hashes --format requirements.txt             --output-file "${RUNNER_TEMP}/release-sbom.txt"
           python - <<'PY'
           import json
           import os
@@ -249,7 +249,8 @@ jobs:
               str(item["name"]).lower().replace("_", "-")
               for item in checked["components"]
           }
-          forbidden = {"torch", "transformers", "sentence-transformers", "openai"}
+          forbidden = {"gradio", "gradio-client", "pillow", "torch",
+                       "transformers", "sentence-transformers", "openai"}
           unexpected = sorted(component_names & forbidden)
           if unexpected:
               raise SystemExit(
@@ -261,17 +262,17 @@ jobs:
         if: steps.preflight.outputs.should_release == 'true'
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          run-id: ${{ steps.preflight.outputs.standalone_run_id }}
+          run-id: ${{ steps.preflight.outputs.web_run_id }}
           github-token: ${{ github.token }}
-          pattern: standalone-*
+          pattern: web-candidate-*
           merge-multiple: true
-          path: standalone-assets
+          path: web-assets
 
       - name: Validate standalone provenance and collect assets
         if: steps.preflight.outputs.should_release == 'true'
         env:
           RELEASE_SHA: ${{ steps.preflight.outputs.release_sha }}
-          SOURCE_RUN_ID: ${{ steps.preflight.outputs.standalone_run_id }}
+          SOURCE_RUN_ID: ${{ steps.preflight.outputs.web_run_id }}
           RELEASE_VERSION: ${{ steps.preflight.outputs.release_version }}
         shell: python
         run: |
@@ -281,7 +282,7 @@ jobs:
           from hashlib import sha256
           from pathlib import Path
 
-          source = Path("standalone-assets")
+          source = Path("web-assets")
           release = Path("release-assets")
           release.mkdir(exist_ok=True)
           expected_license_sha = sha256(Path("LICENSE").read_bytes()).hexdigest()
@@ -289,15 +290,47 @@ jobs:
           manifests = sorted(source.glob("*.manifest.json"))
           if len(manifests) != 3:
               raise SystemExit(f"expected 3 standalone manifests, found {len(manifests)}")
+          expected_systems = {"linux", "windows", "darwin"}
+          seen_systems = set()
           bundles = []
           for path in manifests:
               payload = json.loads(path.read_text(encoding="utf-8"))
+              system = payload.get("system")
+              if system not in expected_systems or system in seen_systems:
+                  raise SystemExit(f"unexpected or duplicate platform in {path.name}")
+              seen_systems.add(system)
               if payload["source_sha"] != os.environ["RELEASE_SHA"]:
                   raise SystemExit(f"wrong source sha in {path.name}")
               if payload["version"] != os.environ["RELEASE_VERSION"]:
                   raise SystemExit(f"wrong version in {path.name}")
-              if payload["self_test"]["frozen"] is not True:
-                  raise SystemExit(f"frozen self-test missing in {path.name}")
+              if payload.get("artifact") != "shadowseed_web_only_candidate":
+                  raise SystemExit(f"not a web-only frozen artifact: {path.name}")
+              if payload.get("release_approved") is not False:
+                  raise SystemExit(f"candidate status missing: {path.name}")
+              if payload.get("gradio_source_files_bundled") is not False:
+                  raise SystemExit(f"legacy Gradio included in candidate: {path.name}")
+              if payload.get("web_static_assets_bundled") is not True:
+                  raise SystemExit(f"web assets missing from candidate: {path.name}")
+              if payload.get("self_contained_python_runtime") is not True:
+                  raise SystemExit(f"self-contained runtime missing: {path.name}")
+              if payload.get("loopback_only_default") is not True:
+                  raise SystemExit(f"loopback guard missing: {path.name}")
+              smoke = payload.get("self_test") or {}
+              if (smoke.get("frozen") is not True
+                  or smoke.get("static_assets_verified") is not True
+                  or smoke.get("loopback_only") is not True
+                  or smoke.get("runtime_mode") != "live"
+                  or smoke.get("turn") != 1):
+                  raise SystemExit(f"web frozen self-test missing: {path.name}")
+              http_smoke = payload.get("http_server_smoke") or {}
+              if any(http_smoke.get(key) is not True for key in (
+                  "http_healthy", "static_homepage", "host_rebinding_guard",
+                  "api_chat_roundtrip"
+              )):
+                  raise SystemExit(f"frozen HTTP startup smoke failed: {path.name}")
+              excluded = set(payload.get("legacy_packages_excluded") or [])
+              if not {"gradio", "gradio-client", "pillow"} <= excluded:
+                  raise SystemExit(f"legacy exclusion evidence missing: {path.name}")
               if payload.get("license_identifier") != "PolyForm-Noncommercial-1.0.0":
                   raise SystemExit(f"wrong or missing license identifier in {path.name}")
               if payload.get("license_sha256") != expected_license_sha:
@@ -307,20 +340,44 @@ jobs:
               if payload.get("system") == "darwin":
                   if payload.get("macos_signature_mode") != "adhoc":
                       raise SystemExit(f"macOS artifact is not ad-hoc sealed: {path.name}")
-                  if payload.get("macos_notarized") is not False:
-                      raise SystemExit(f"macOS artifact unexpectedly claims notarization: {path.name}")
-                  if payload.get("macos_gatekeeper_assessed") is not False:
-                      raise SystemExit(f"macOS artifact unexpectedly claims Gatekeeper acceptance: {path.name}")
-                  if payload.get("macos_first_launch_helper") is not True:
-                      raise SystemExit(f"macOS artifact is missing first-launch helper evidence: {path.name}")
                   if payload.get("macos_archive_roundtrip_verified") is not True:
-                      raise SystemExit(f"macOS artifact did not pass archive round-trip verification: {path.name}")
-              archive = source / payload["archive"]
+                      raise SystemExit(f"macOS archive round-trip not verified: {path.name}")
+                  roundtrip_http = payload.get("archive_roundtrip_http_server_smoke") or {}
+                  if any(roundtrip_http.get(key) is not True for key in (
+                      "http_healthy", "static_homepage", "host_rebinding_guard",
+                      "api_chat_roundtrip"
+                  )):
+                      raise SystemExit(f"macOS archive HTTP smoke failed: {path.name}")
+                  roundtrip = payload.get("archive_roundtrip_web_self_test") or {}
+                  if (roundtrip.get("frozen") is not True
+                      or roundtrip.get("runtime_mode") != "live"
+                      or roundtrip.get("static_assets_verified") is not True
+                      or roundtrip.get("loopback_only") is not True
+                      or roundtrip.get("turn") != 1):
+                      raise SystemExit(f"macOS archive round-trip smoke failed: {path.name}")
+              archive_name = payload.get("archive")
+              if (not isinstance(archive_name, str) or not archive_name
+                  or "/" in archive_name or "\\" in archive_name):
+                  raise SystemExit(f"invalid archive filename in {path.name}")
+              archive = source / archive_name
               if not archive.is_file():
                   raise SystemExit(f"missing standalone archive {archive}")
-              shutil.copy2(path, release / path.name)
+              if sha256(archive.read_bytes()).hexdigest() != payload.get("archive_sha256"):
+                  raise SystemExit(f"archive checksum mismatch in {path.name}")
+              # The downloadable manifest records the successfully validated
+              # release candidate, not the original unapproved CI artifact.
+              approved = dict(payload)
+              approved["release_approved"] = True
+              approved["approval_scope"] = "research-preview"
+              approved["approved_source_sha"] = os.environ["RELEASE_SHA"]
+              (release / path.name).write_text(
+                  json.dumps(approved, indent=2, sort_keys=True) + "\n",
+                  encoding="utf-8",
+              )
               shutil.copy2(archive, release / archive.name)
-              bundles.append(payload)
+              bundles.append(approved)
+          if seen_systems != expected_systems:
+              raise SystemExit("release does not cover Linux, Windows and macOS")
           shutil.copy2("LICENSE", release / "LICENSE")
           shutil.copy2("uv.lock", release / "uv.lock")
           provenance = {
@@ -331,8 +388,8 @@ jobs:
               "sbom_file": "SBOM.cdx.json",
               "license_identifier": "PolyForm-Noncommercial-1.0.0",
               "license_sha256": expected_license_sha,
-              "standalone_workflow_run_id": int(os.environ["SOURCE_RUN_ID"]),
-              "standalone_bundles": bundles,
+              "web_workflow_run_id": int(os.environ["SOURCE_RUN_ID"]),
+              "web_bundles": bundles,
           }
           (release / "PROVENANCE.json").write_text(
               json.dumps(provenance, indent=2, sort_keys=True) + "\n",
@@ -358,41 +415,38 @@ jobs:
           uv run --no-sync python scripts/verify_distribution_license.py --dist-dir dist --license LICENSE
           cp dist/* release-assets/
 
-      - name: Installed wheel smoke against locked thin Workbench dependencies
+      - name: Installed web wheel smoke without Gradio or Pillow
         if: steps.preflight.outputs.should_release == 'true'
         shell: bash
         run: |
           set -euo pipefail
           wheel="$(ls dist/*.whl)"
-          uv export --locked --extra workbench --no-emit-project --no-hashes \
-            --format requirements.txt --output-file "${RUNNER_TEMP}/release-workbench-locked.txt"
+          uv export --locked --no-emit-project --no-hashes \
+            --format requirements.txt --output-file "${RUNNER_TEMP}/release-web-locked.txt"
           python - <<'PY'
           import os
           from pathlib import Path
 
-          source = Path(os.environ["RUNNER_TEMP"]) / "release-workbench-locked.txt"
+          source = Path(os.environ["RUNNER_TEMP"]) / "release-web-locked.txt"
           lines = source.read_text(encoding="utf-8").splitlines()
           names = {
               line.split("==", 1)[0].strip().lower().replace("_", "-")
               for line in lines
               if "==" in line and not line.lstrip().startswith("#")
           }
-          forbidden = {"torch", "transformers", "sentence-transformers", "openai"}
+          forbidden = {"gradio", "gradio-client", "pillow", "torch",
+                       "transformers", "sentence-transformers", "openai"}
           unexpected = sorted(names & forbidden)
           if unexpected:
-              raise SystemExit(f"thin Workbench lock contains optional providers: {unexpected}")
+              raise SystemExit(f"web wheel requirements contain legacy or optional modules: {unexpected}")
+          assert "numpy" in names
           PY
           uv venv "${RUNNER_TEMP}/release-venv" --python 3.12
           uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python" \
-            --no-deps --index-url https://pypi.org/simple \
-            -r "${RUNNER_TEMP}/release-workbench-locked.txt"
+            --no-deps -r "${RUNNER_TEMP}/release-web-locked.txt"
           uv pip install --python "${RUNNER_TEMP}/release-venv/bin/python" \
-            --no-deps "${wheel}[workbench]"
+            --no-deps "$wheel"
           cd "${RUNNER_TEMP}"
-          "${RUNNER_TEMP}/release-venv/bin/shadowseed" workbench --help
-          "${RUNNER_TEMP}/release-venv/bin/shadowseed-workbench" --self-test \
-            --workspace "${RUNNER_TEMP}/wheel-workspace" \
-            --self-test-output "${RUNNER_TEMP}/wheel-self-test.json"
           "${RUNNER_TEMP}/release-venv/bin/shadowseed-web" --self-test \
             --workspace "${RUNNER_TEMP}/web-wheel-workspace" \
             --self-test-output "${RUNNER_TEMP}/web-wheel-self-test.json"
@@ -401,22 +455,15 @@ jobs:
           from importlib.util import find_spec
           from pathlib import Path
 
-          payload = json.loads(Path("wheel-self-test.json").read_text(encoding="utf-8"))
-          assert payload["runtime_mode"] == "live"
-          assert payload["comparison_generated"] is True
-          assert payload["report_verified"] is True
-          assert payload["support_verified"] is True
-          assert payload["production_resolution_ui"] is True
-          web_payload = json.loads(
-              Path("web-wheel-self-test.json").read_text(encoding="utf-8")
-          )
-          assert web_payload["static_assets_verified"] is True
-          assert web_payload["loopback_only"] is True
-          assert web_payload["runtime_mode"] == "live"
-          assert web_payload["turn"] == 1
-          for module in ("torch", "transformers", "sentence_transformers", "openai"):
-              assert find_spec(module) is None, module
-          print("installed thin wheel Workbench smoke OK")
+          web = json.loads(Path("web-wheel-self-test.json").read_text(encoding="utf-8"))
+          assert web["static_assets_verified"] is True
+          assert web["loopback_only"] is True
+          assert web["runtime_mode"] == "live"
+          assert web["turn"] == 1
+          for package in ("gradio", "PIL", "torch", "transformers",
+                          "sentence_transformers", "openai"):
+              assert find_spec(package) is None, package
+          print("installed audited web-only wheel smoke OK")
           PY
 
       - name: Generate SHA256SUMS
@@ -442,7 +489,7 @@ jobs:
           cd release-assets
           sha256sum -c SHA256SUMS
           test "$(find . -maxdepth 1 -name '*.manifest.json' | wc -l)" -eq 3
-          test "$(find . -maxdepth 1 -name 'shadowseed-workbench-*' ! -name '*.manifest.json' | wc -l)" -eq 3
+          test "$(find . -maxdepth 1 -name 'shadowseed-web-*' ! -name '*.manifest.json' | wc -l)" -eq 3
           test "$(find . -maxdepth 1 -name 'shadowseed-*.whl' | wc -l)" -eq 1
           test "$(find . -maxdepth 1 -name 'shadowseed-[0-9]*.tar.gz' | wc -l)" -eq 1
           test -f PROVENANCE.json
@@ -475,7 +522,7 @@ jobs:
           set -euo pipefail
           git fetch origin main --force
           test "$(git rev-parse origin/main)" = "$RELEASE_SHA"
-          gh release create "$RELEASE_TAG"             release-assets/*             --target "$RELEASE_SHA"             --prerelease             --latest=false             --title "Shadowseed Workbench ${RELEASE_VERSION} Research Preview"             --notes-file "$NOTES_FILE"
+          gh release create "$RELEASE_TAG"             release-assets/*             --target "$RELEASE_SHA"             --prerelease             --latest=false             --title "Shadowseed Web ${RELEASE_VERSION} Research Preview"             --notes-file "$NOTES_FILE"
 
           git fetch origin main --force
           if [ "$(git rev-parse origin/main)" != "$RELEASE_SHA" ]; then
@@ -500,7 +547,7 @@ jobs:
           cd "${RUNNER_TEMP}/published"
           sha256sum -c SHA256SUMS
           test "$(find . -maxdepth 1 -name '*.manifest.json' | wc -l)" -eq 3
-          test "$(find . -maxdepth 1 -name 'shadowseed-workbench-*' ! -name '*.manifest.json' | wc -l)" -eq 3
+          test "$(find . -maxdepth 1 -name 'shadowseed-web-*' ! -name '*.manifest.json' | wc -l)" -eq 3
           test -f PROVENANCE.json
           test -f SBOM.cdx.json
           test -f uv.lock

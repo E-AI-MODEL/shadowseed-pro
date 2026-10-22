@@ -21,7 +21,7 @@ name: CI
 #     only through deterministic fixtures here; live-backend integration needs
 #     network/credentials and stays out of the default matrix by design.
 #   - The production dependency audit covers the production-ready/local candidate
-#     closure (core + Workbench + build/standalone tooling). Optional vector backends
+#     closure (core web runtime + build/standalone tooling). Legacy Gradio and optional vector backends
 #     remain outside that claim until separately cleared by the production policy.
 
 on:
@@ -136,9 +136,11 @@ jobs:
         run: python scripts/sync_web_assets.py
       - name: Verify lock is current
         run: uv lock --check
+      # Product distribution is web-only. Legacy Gradio remains opt-in,
+      # with its Pillow finding disclosed separately in issue #200.
       - name: Export production dependency inventory
         run: >-
-          uv export --locked --extra workbench --extra build --extra standalone-build
+          uv export --locked --extra build --extra standalone-build
           --no-emit-project --no-hashes --format requirements.txt
           --output-file /tmp/shadowseed-production-locked.txt
       - name: Assert thin production dependency inventory
@@ -152,21 +154,26 @@ jobs:
               for line in path.read_text(encoding="utf-8").splitlines()
               if "==" in line and not line.lstrip().startswith("#")
           }
-          forbidden = {"torch", "transformers", "sentence-transformers", "openai"}
+          # Audit the actual web-first shipping closure, not the opt-in
+          # legacy Gradio extra tracked separately in issue #200.
+          forbidden = {
+              "gradio", "gradio-client", "pillow",
+              "torch", "transformers", "sentence-transformers", "openai",
+          }
           unexpected = sorted(names & forbidden)
           if unexpected:
               raise SystemExit(
                   f"thin production dependency inventory contains optional providers: {unexpected}"
               )
           PY
-      - name: Audit production dependency inventory
+      - name: Strict audit of web-only shipping inventory
         run: |
           uv sync --locked --extra security
           uv run --no-sync pip-audit -r /tmp/shadowseed-production-locked.txt \
             --no-deps --disable-pip --strict --progress-spinner off
       - name: Generate and validate CycloneDX SBOM
         run: |
-          uv export --locked --extra workbench --extra build --extra standalone-build \
+          uv export --locked --extra build --extra standalone-build \
             --no-emit-project --no-hashes --format requirements.txt \
             --output-file /tmp/shadowseed-production-sbom.txt
           python - <<'PY'
@@ -228,7 +235,12 @@ jobs:
               str(item["name"]).lower().replace("_", "-")
               for item in checked["components"]
           }
-          forbidden = {"torch", "transformers", "sentence-transformers", "openai"}
+          # Audit the actual web-first shipping closure, not the opt-in
+          # legacy Gradio extra tracked separately in issue #200.
+          forbidden = {
+              "gradio", "gradio-client", "pillow",
+              "torch", "transformers", "sentence-transformers", "openai",
+          }
           unexpected = sorted(component_names & forbidden)
           if unexpected:
               raise SystemExit(

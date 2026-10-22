@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.12.3 - Native chat and reliable local startup
+
+- Use role-structured chat for supported backends, with matching transport for
+  the same-turn SSL-off control and bounded conversation history.
+- Default new product sessions to at most one surfaced seed. Preserve explicit
+  settings and all Gate, evidence and point-of-use contracts.
+- Require exact model-role capability evidence instead of routing by family name.
+- Check the selected Ollama embedding model before creating a chat in the web
+  client or either Gradio surface. Missing models show the exact pull command;
+  failed setup leaves no persisted chat. Explicit tags never match another tag.
+- Remove whole-candidate Markdown wrappers before detector filtering and dedup;
+  retain internal formatting, code identifiers and raw detector output.
+- Align source metadata and current documentation with the new candidate.
+  v0.12.2 remains the published download until verified release publication.
+- Remain a Research Preview. Real Ollama use and production-local assurance
+  are separate acceptance steps, not inferred from deterministic tests.
+
 ## 0.12.2 - Loopback web API host hardening
 
 - Fixed a DNS-rebinding exposure in the local web API. The server bound to
