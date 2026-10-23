@@ -1,0 +1,482 @@
+{
+  "schema": "ssl-recurrence-pair-sample-v1",
+  "pairs": [
+    {
+      "conversation": "gpt-6.1-sol/CONV_STARTUP",
+      "turn_a": 2,
+      "turn_b": 3,
+      "text_a": "How invitation cycle time affects the pace of viral growth.",
+      "text_b": "How the users\u2019 age range and launch countries constrain the available monetization models.",
+      "similarity": 0.1362,
+      "pair_id": "800ef33d9efd5aeb"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 1,
+      "turn_b": 8,
+      "text_a": "How rising commercial rents could affect existing businesses as downtown attracts new tenants.",
+      "text_b": "What evidence supports describing these failures as the ones that occur most often?",
+      "similarity": 0.1381,
+      "pair_id": "83db876e186a7c44"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_STARTUP",
+      "turn_a": 1,
+      "turn_b": 8,
+      "text_a": "How retention is defined for the app\u2019s intended frequency of use.",
+      "text_b": "How dependence on app stores or other distribution platforms affects the app\u2019s long-term viability.",
+      "similarity": 0.5179,
+      "pair_id": "24c635831cd068d6"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_STARTUP",
+      "turn_a": 1,
+      "turn_b": 2,
+      "text_a": "How retention is defined for the app\u2019s intended frequency of use.",
+      "text_b": "Which shared activity fits the app\u2019s core use case well enough to motivate voluntary friend invitations.",
+      "similarity": 0.4055,
+      "pair_id": "b3cb827c55af9680"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 1,
+      "turn_b": 3,
+      "text_a": "How rising commercial rents could affect existing businesses as downtown attracts new tenants.",
+      "text_b": "Which visitor segments have unmet demand that downtown\u2019s existing attractions could serve?",
+      "similarity": 0.5134,
+      "pair_id": "7e36247e66d83b35"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_IR_SHORT",
+      "turn_a": 1,
+      "turn_b": 2,
+      "text_a": "What constrained industrialization in parts of southern and eastern Europe compared with earlier-industrializing regions.",
+      "text_b": "How regions\u2019 specialization in different industries affected the pace of industrialization.",
+      "similarity": 0.7234,
+      "pair_id": "3898d96314803740"
+    },
+    {
+      "conversation": "gpt-5/CONV_STARTUP",
+      "turn_a": 2,
+      "turn_b": 4,
+      "text_a": "Compliance for teen-specific regulations on invites (COPPA/GDPR\u2011K, parental consent, contact uploads, SMS/email outreach to minors) is not addressed.",
+      "text_b": "Age assurance/verification approach to reliably apply minor-specific data policies and consent flows.",
+      "similarity": 0.5029,
+      "pair_id": "0b930cb8260433a8"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 0,
+      "turn_b": 2,
+      "text_a": "Whether available funding and staff capacity can support the proposed 60-day diagnostic and 90-day improvement program.",
+      "text_b": "What funding and staffing constraints would shape the sequence of accessibility and traffic improvements.",
+      "similarity": 0.4209,
+      "pair_id": "25b1f8549f4c00fc"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 7,
+      "turn_b": 8,
+      "text_a": "Which financing tools are legally available in the municipality\u2019s jurisdiction?",
+      "text_b": "How downtown investment affects businesses and services in other municipal neighborhoods.",
+      "similarity": 0.2608,
+      "pair_id": "f7931b6ee866dc5c"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 7,
+      "turn_b": 8,
+      "text_a": "What role could reallocating existing municipal spending play in financing the downtown plan?",
+      "text_b": "Whether zoning and permitting requirements obstruct the proposed mix of downtown uses.",
+      "similarity": 0.6364,
+      "pair_id": "a61cc60551127931"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_IR_SHORT",
+      "turn_a": 1,
+      "turn_b": 2,
+      "text_a": "What constrained industrialization in parts of southern and eastern Europe compared with earlier-industrializing regions.",
+      "text_b": "Whether competition from already-industrialized regions constrained industrial development elsewhere.",
+      "similarity": 0.6443,
+      "pair_id": "01904ed2be126619"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_STARTUP",
+      "turn_a": 0,
+      "turn_b": 1,
+      "text_a": "Whether the app\u2019s core activity requires existing friends or can provide value among unfamiliar peers.",
+      "text_b": "Whether users leave because too few of their existing friends are active on the app.",
+      "similarity": 0.6812,
+      "pair_id": "3f38da74c8b4d629"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_STARTUP",
+      "turn_a": 1,
+      "turn_b": 8,
+      "text_a": "How retention is defined for the app\u2019s intended frequency of use.",
+      "text_b": "Whether moderation and safety costs remain financially sustainable as the app grows.",
+      "similarity": 0.4682,
+      "pair_id": "b99bfe9e3f6ee269"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 6,
+      "turn_b": 8,
+      "text_a": "Whether pilot evaluation would distinguish changes in incident counts from changes in risk as evening attendance grows.",
+      "text_b": "Whether zoning and permitting requirements obstruct the proposed mix of downtown uses.",
+      "similarity": 0.2242,
+      "pair_id": "38dbde24433c6b99"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_STARTUP",
+      "turn_a": 1,
+      "turn_b": 3,
+      "text_a": "How retention is defined for the app\u2019s intended frequency of use.",
+      "text_b": "Whether the app\u2019s specific use case creates recurring premium value sufficient to support a subscription.",
+      "similarity": 0.5629,
+      "pair_id": "9d7039a8dbe69018"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 1,
+      "turn_b": 8,
+      "text_a": "Whether prospective operators can recruit and retain the staff needed to operate downtown.",
+      "text_b": "How downtown investment affects businesses and services in other municipal neighborhoods.",
+      "similarity": 0.5291,
+      "pair_id": "629cb6a8c0fdd1e3"
+    },
+    {
+      "conversation": "gpt-5/CONV_STARTUP",
+      "turn_a": 6,
+      "turn_b": 8,
+      "text_a": "Privacy/compliance safeguards when sharing data with investors (PII anonymization, aggregation, data room controls) are not covered.",
+      "text_b": "Security/privacy breach risk (data leaks, account takeovers) not addressed as distinct from content safety harms.",
+      "similarity": 0.5055,
+      "pair_id": "80aecfff08d1ce90"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_STARTUP",
+      "turn_a": 1,
+      "turn_b": 8,
+      "text_a": "How retention is defined for the app\u2019s intended frequency of use.",
+      "text_b": "Whether the app offers durable differentiation that prevents communities from moving to larger competitors.",
+      "similarity": 0.4001,
+      "pair_id": "6f5f73ecdf381863"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 0,
+      "turn_b": 1,
+      "text_a": "How the city\u2019s size and downtown\u2019s current economic role affect the recommended starting point.",
+      "text_b": "How rising commercial rents could affect existing businesses as downtown attracts new tenants.",
+      "similarity": 0.6018,
+      "pair_id": "5ecc7f357e18ce7e"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 3,
+      "turn_b": 4,
+      "text_a": "Which visitor segments have unmet demand that downtown\u2019s existing attractions could serve?",
+      "text_b": "How environmental hazards and site contamination affect the suitability of downtown sites for housing.",
+      "similarity": 0.4617,
+      "pair_id": "c723bd177f199667"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 6,
+      "turn_b": 8,
+      "text_a": "How would ongoing evening programming, maintenance, transit, and response services be funded?",
+      "text_b": "Whether zoning and permitting requirements obstruct the proposed mix of downtown uses.",
+      "similarity": 0.3257,
+      "pair_id": "65fc2ea1a3cc8839"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 4,
+      "turn_b": 7,
+      "text_a": "How housing development should balance historic preservation with redevelopment needs.",
+      "text_b": "What fiscal capacity remains after existing debt obligations and essential service commitments?",
+      "similarity": 0.1346,
+      "pair_id": "f59e830b842b9093"
+    },
+    {
+      "conversation": "gpt-5/CONV_IR_SHORT",
+      "turn_a": 0,
+      "turn_b": 3,
+      "text_a": "The specific role and magnitude of Atlantic slavery and plantation profits in financing industrial takeoff versus broader imperial trade.",
+      "text_b": "Dependency on imperial trade and slavery: how access to slave-grown cotton and global markets conditioned the profitability attributed to relative prices.",
+      "similarity": 0.6366,
+      "pair_id": "042b3f3c973a1608"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 1,
+      "turn_b": 5,
+      "text_a": "How rising commercial rents could affect existing businesses as downtown attracts new tenants.",
+      "text_b": "How planting choices and connections between green spaces should support native biodiversity.",
+      "similarity": 0.1152,
+      "pair_id": "89932b2711d1fb75"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 0,
+      "turn_b": 7,
+      "text_a": "How the city\u2019s size and downtown\u2019s current economic role affect the recommended starting point.",
+      "text_b": "What role could reallocating existing municipal spending play in financing the downtown plan?",
+      "similarity": 0.6228,
+      "pair_id": "49ecba8d2997631e"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_STARTUP",
+      "turn_a": 0,
+      "turn_b": 8,
+      "text_a": "Whether the app is ready for a live pilot or still requires product development before recruitment.",
+      "text_b": "How dependence on app stores or other distribution platforms affects the app\u2019s long-term viability.",
+      "similarity": 0.4038,
+      "pair_id": "85fd4acdc2ef80c3"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 0,
+      "turn_b": 4,
+      "text_a": "How the city\u2019s size and downtown\u2019s current economic role affect the recommended starting point.",
+      "text_b": "How local housing demand should determine the scale and pace of city-center development.",
+      "similarity": 0.6057,
+      "pair_id": "355cc5192e09b429"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 0,
+      "turn_b": 8,
+      "text_a": "How the city\u2019s size and downtown\u2019s current economic role affect the recommended starting point.",
+      "text_b": "Whether zoning and permitting requirements obstruct the proposed mix of downtown uses.",
+      "similarity": 0.5848,
+      "pair_id": "2cefa493d03249be"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 0,
+      "turn_b": 8,
+      "text_a": "How the city\u2019s size and downtown\u2019s current economic role affect the recommended starting point.",
+      "text_b": "How downtown investment affects businesses and services in other municipal neighborhoods.",
+      "similarity": 0.7117,
+      "pair_id": "9fdcf7ffd4ab1159"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_IR_SHORT",
+      "turn_a": 0,
+      "turn_b": 1,
+      "text_a": "How Britain\u2019s combination of advantages differed from those of other potential early industrializers.",
+      "text_b": "What constrained industrialization in parts of southern and eastern Europe compared with earlier-industrializing regions.",
+      "similarity": 0.5551,
+      "pair_id": "2fe10b22fd32d641"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_IR_SHORT",
+      "turn_a": 0,
+      "turn_b": 2,
+      "text_a": "The role of the textile industry in initiating mechanized factory production.",
+      "text_b": "How regions\u2019 specialization in different industries affected the pace of industrialization.",
+      "similarity": 0.4154,
+      "pair_id": "37c31bfdfa3e6a88"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_STARTUP",
+      "turn_a": 2,
+      "turn_b": 6,
+      "text_a": "How experiments distinguish incremental referral growth from signups that would have happened without an invitation.",
+      "text_b": "How invitation-driven growth is measured through invite conversion and retention of referred users.",
+      "similarity": 0.6899,
+      "pair_id": "cad62c783d449cf9"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 4,
+      "turn_b": 8,
+      "text_a": "Whether zoning and permitting processes create barriers to the proposed housing mix.",
+      "text_b": "Whether zoning and permitting requirements obstruct the proposed mix of downtown uses.",
+      "similarity": 0.7163,
+      "pair_id": "102bcd50bb781b89"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_STARTUP",
+      "turn_a": 2,
+      "turn_b": 6,
+      "text_a": "How age eligibility is checked when newcomers join through invitation links.",
+      "text_b": "What evidence supports attributing improved cohort retention to specific product changes.",
+      "similarity": 0.2106,
+      "pair_id": "af99fb993bcea862"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_STARTUP",
+      "turn_a": 1,
+      "turn_b": 2,
+      "text_a": "Whether users leave because too few of their existing friends are active on the app.",
+      "text_b": "Which shared activity fits the app\u2019s core use case well enough to motivate voluntary friend invitations.",
+      "similarity": 0.606,
+      "pair_id": "1d1a8ee8e7255df9"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 3,
+      "turn_b": 6,
+      "text_a": "How will responsibility and funding for coordinating the visitor experience be assigned?",
+      "text_b": "How would ongoing evening programming, maintenance, transit, and response services be funded?",
+      "similarity": 0.476,
+      "pair_id": "088edb4e268f6cbf"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 6,
+      "turn_b": 7,
+      "text_a": "How would ongoing evening programming, maintenance, transit, and response services be funded?",
+      "text_b": "How would funding be bridged if project expenditures precede grant payments or new revenues?",
+      "similarity": 0.5915,
+      "pair_id": "21c4ce3ab1d69b04"
+    },
+    {
+      "conversation": "gpt-5/CONV_STARTUP",
+      "turn_a": 0,
+      "turn_b": 4,
+      "text_a": "Robust age verification and parental consent flows across jurisdictions (beyond simple age gating) given COPPA and varying GDPR-K ages.",
+      "text_b": "Age assurance/verification approach to reliably apply minor-specific data policies and consent flows.",
+      "similarity": 0.7364,
+      "pair_id": "f924ac2d635a7b49"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_STARTUP",
+      "turn_a": 0,
+      "turn_b": 2,
+      "text_a": "Whether the app\u2019s core activity requires existing friends or can provide value among unfamiliar peers.",
+      "text_b": "Which shared activity fits the app\u2019s core use case well enough to motivate voluntary friend invitations.",
+      "similarity": 0.6832,
+      "pair_id": "ceb73ff4a1fb71f9"
+    },
+    {
+      "conversation": "gpt-5/CONV_STARTUP",
+      "turn_a": 0,
+      "turn_b": 2,
+      "text_a": "Robust age verification and parental consent flows across jurisdictions (beyond simple age gating) given COPPA and varying GDPR-K ages.",
+      "text_b": "The tradeoff between ultra-fast onboarding and required safety/age verification steps for teenagers is undetermined.",
+      "similarity": 0.4309,
+      "pair_id": "feb779638aeebede"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 5,
+      "turn_b": 7,
+      "text_a": "How planting choices and connections between green spaces should support native biodiversity.",
+      "text_b": "How would the proposed funding mix distribute costs among residents, businesses, developers, and visitors?",
+      "similarity": 0.2078,
+      "pair_id": "dc4695129df06d56"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 0,
+      "turn_b": 8,
+      "text_a": "Which proposed actions require approvals or cooperation beyond the downtown lead\u2019s authority.",
+      "text_b": "Whether zoning and permitting requirements obstruct the proposed mix of downtown uses.",
+      "similarity": 0.5169,
+      "pair_id": "592ae40a58f4cb0c"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 6,
+      "turn_b": 7,
+      "text_a": "How would ongoing evening programming, maintenance, transit, and response services be funded?",
+      "text_b": "How would the proposed funding mix distribute costs among residents, businesses, developers, and visitors?",
+      "similarity": 0.5654,
+      "pair_id": "a9e11064302fe3dd"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 1,
+      "turn_b": 8,
+      "text_a": "How rising commercial rents could affect existing businesses as downtown attracts new tenants.",
+      "text_b": "How downtown investment affects businesses and services in other municipal neighborhoods.",
+      "similarity": 0.7056,
+      "pair_id": "211109cac36ac834"
+    },
+    {
+      "conversation": "gpt-5/CONV_CITY",
+      "turn_a": 4,
+      "turn_b": 8,
+      "text_a": "Financial feasibility and market absorption analysis for proposed housing types and office-to-residential conversions is not addressed.",
+      "text_b": "Market absorption and demand uncertainty for ground\u2011floor retail and new housing amid economic cycles and remote\u2011work shifts.",
+      "similarity": 0.6143,
+      "pair_id": "5a0dfe4c5ff0b50b"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_STARTUP",
+      "turn_a": 0,
+      "turn_b": 6,
+      "text_a": "Whether the founder already has permission-based access to a suitable teenage community.",
+      "text_b": "What evidence supports attributing improved cohort retention to specific product changes.",
+      "similarity": 0.0487,
+      "pair_id": "f8f264281d92cb2b"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_STARTUP",
+      "turn_a": 0,
+      "turn_b": 1,
+      "text_a": "Whether the app\u2019s core activity requires existing friends or can provide value among unfamiliar peers.",
+      "text_b": "How retention is defined for the app\u2019s intended frequency of use.",
+      "similarity": 0.4066,
+      "pair_id": "0c995cef1614440a"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 7,
+      "turn_b": 8,
+      "text_a": "What role could reallocating existing municipal spending play in financing the downtown plan?",
+      "text_b": "How downtown investment affects businesses and services in other municipal neighborhoods.",
+      "similarity": 0.6516,
+      "pair_id": "7b58326b8b9ee6b5"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 1,
+      "turn_b": 4,
+      "text_a": "Whether prospective operators can recruit and retain the staff needed to operate downtown.",
+      "text_b": "How environmental hazards and site contamination affect the suitability of downtown sites for housing.",
+      "similarity": 0.4078,
+      "pair_id": "4234d6d3e2d6c52c"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 2,
+      "turn_b": 8,
+      "text_a": "What funding and staffing constraints would shape the sequence of accessibility and traffic improvements.",
+      "text_b": "Whether zoning and permitting requirements obstruct the proposed mix of downtown uses.",
+      "similarity": 0.5032,
+      "pair_id": "15b5dac5370b290c"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 3,
+      "turn_b": 6,
+      "text_a": "How will responsibility and funding for coordinating the visitor experience be assigned?",
+      "text_b": "Who would coordinate the evening plan across venues, transport providers, public-space managers, and emergency services?",
+      "similarity": 0.4329,
+      "pair_id": "3168b313e8767531"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_CITY",
+      "turn_a": 1,
+      "turn_b": 6,
+      "text_a": "How rising commercial rents could affect existing businesses as downtown attracts new tenants.",
+      "text_b": "How businesses and venues would make harassment reporting accessible to people who need immediate help.",
+      "similarity": 0.1821,
+      "pair_id": "1bb1f66127ea2efe"
+    },
+    {
+      "conversation": "gpt-6.1-sol/CONV_STARTUP",
+      "turn_a": 2,
+      "turn_b": 4,
+      "text_a": "How age eligibility is checked when newcomers join through invitation links.",
+      "text_b": "Whether third-party recommendation providers receive user data and under what restrictions.",
+      "similarity": 0.2327,
+      "pair_id": "3a8a6dfc80ef7a86"
+    }
+  ]
+}

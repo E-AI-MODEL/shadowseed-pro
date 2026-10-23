@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Intake: English declarative candidates are admitted unless they are a bare
+  category stack. In a blind review of 60 fixed22 candidates, 22 of the 24 the
+  separator guard rejected were useful gaps. See
+  `docs/research/seed-calibration.md`.
+- Research: seed usefulness and recurrence calibration on the fixed22
+  candidates. Embedding similarity does not separate "same gap" from
+  "different gap" at any threshold; a model-based recurrence judge is measured
+  next.
 - Web client: English interface with factual wording and the canonical terms
   from the product documentation: Controlled, Assisted and Autonomous modes,
   "seed", and the seed statuses Found, Recurring, Supported, Validated,
