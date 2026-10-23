@@ -552,3 +552,18 @@ jobs:
           test -f SBOM.cdx.json
           test -f uv.lock
           test -f LICENSE
+
+      - name: Dispatch read-only Production Release Assurance for the new tag
+        if: steps.preflight.outputs.should_release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_SHA: ${{ steps.preflight.outputs.release_sha }}
+          RELEASE_TAG: ${{ steps.preflight.outputs.release_tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Starting assurance here removes the manual post-publication step
+          # that let earlier candidates lapse. The verifier runs from the
+          # published tag so a later main cannot change its semantics.
+          gh workflow run production-release-assurance.yml --ref "$RELEASE_TAG" -f release_tag="$RELEASE_TAG"
+          echo "Dispatched Production Release Assurance for $RELEASE_TAG ($RELEASE_SHA)."

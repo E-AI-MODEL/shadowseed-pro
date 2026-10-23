@@ -90,8 +90,8 @@ def test_production_release_assurance_only_verifies_trusted_build_attestations()
     assert "$GITHUB_REPOSITORY/.github/workflows/release-workbench.yml" in workflow
     assert "-name 'shadowseed-web-*'" in workflow
     assert "-name 'shadowseed-workbench-*'" not in workflow
-    assert 'test "$(git rev-parse origin/main)" = "$release_sha"' in workflow
-    assert 'test "$(git rev-parse origin/main)" = "$RELEASE_SHA"' in workflow
+    assert 'test "$(git rev-parse HEAD)" = "$release_sha"' in workflow
+    assert "origin/main" not in workflow
 
 
 def test_release_runbook_keeps_native_signing_claims_explicitly_bounded() -> None:
@@ -110,3 +110,18 @@ def test_release_runbook_keeps_native_signing_claims_explicitly_bounded() -> Non
     assert "at least 24 hours" in runbook
     assert "#95" in runbook
     assert "#97" in runbook
+
+
+def test_release_publication_dispatches_production_release_assurance() -> None:
+    workflow = _text(".github/workflows/release-workbench.yml")
+
+    step = "Dispatch read-only Production Release Assurance for the new tag"
+    assert step in workflow
+    assert workflow.index("Publish GitHub prerelease and exact source tag") < workflow.index(step)
+    assert workflow.index("Verify published tag and downloadable assets") < workflow.index(step)
+    assert (
+        'gh workflow run production-release-assurance.yml --ref "$RELEASE_TAG" -f release_tag="$RELEASE_TAG"'
+        in workflow
+    )
+    assert "actions: write" in workflow
+
