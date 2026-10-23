@@ -36,17 +36,29 @@ from shadowseed_research.benchmark.capability_scaling import (
 )
 from shadowseed_research.benchmark.ssl45_model_benefit_suite import blind_order
 from shadowseed.chat import ShadowChatSession
+from shadowseed.core_config import SSLCoreConfig
 from shadowseed.detection.model_detector import (
     OPEN_SET_GENERATIVE_DETECTOR_ID,
     OPEN_SET_GENERATIVE_PROMPT,
     make_detector_backend,
 )
 from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal
+from shadowseed.surfacing import build_chat_prompt
 
 
 BUNDLE_SCHEMA = "ssl-evidence-efficacy-bundle-v1"
 SUITE_SCHEMA = "ssl-evidence-efficacy-suite-v1"
 PREREG_SCHEMA = "ssl-evidence-efficacy-preregistration-v1"
+SELF_CRITIQUE_ARM = "self_critique"
+_KNOWN_ARMS = {SELF_CRITIQUE_ARM}
+# The only calibration fields a preregistration may set. Everything else keeps
+# the canonical SSLCoreConfig defaults.
+_CALIBRATION_FIELDS = {"promotion_threshold", "min_evidence_for_gate"}
+SELF_CRITIQUE_INSTRUCTION = (
+    "Review the draft answer below. Identify what is missing, uncertain or overlooked "
+    "that matters for the question. Then write only the improved final answer, "
+    "without the review."
+)
 _EXTERNAL_KINDS = {SignalKind.SSOT, SignalKind.HUMAN_FEEDBACK, SignalKind.RETRIEVAL}
 
 
@@ -58,6 +70,7 @@ class EvidenceSelector:
     seed_index: int | None = None
     seed_id: str | None = None
     text_contains: str | None = None
+    text_contains_any: tuple[str, ...] | None = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "EvidenceSelector":
@@ -68,18 +81,24 @@ class EvidenceSelector:
             text_contains=(
                 None if data.get("text_contains") is None else str(data["text_contains"]).strip()
             ),
+            text_contains_any=(
+                None
+                if data.get("text_contains_any") is None
+                else tuple(str(term).strip() for term in data["text_contains_any"])
+            ),
         )
         methods = sum(
             (
                 selector.seed_id is not None,
                 selector.text_contains is not None,
+                selector.text_contains_any is not None,
                 selector.born_turn is not None or selector.seed_index is not None,
             )
         )
         if methods != 1:
             raise ValueError(
                 "evidence selector must use exactly one of seed_id, text_contains, "
-                "or born_turn+seed_index"
+                "text_contains_any, or born_turn+seed_index"
             )
         if (selector.born_turn is None) != (selector.seed_index is None):
             raise ValueError("born_turn and seed_index must be supplied together")
@@ -89,6 +108,10 @@ class EvidenceSelector:
             raise ValueError("seed_index must be >= 0")
         if selector.text_contains is not None and not selector.text_contains:
             raise ValueError("text_contains must not be blank")
+        if selector.text_contains_any is not None and (
+            not selector.text_contains_any or not all(selector.text_contains_any)
+        ):
+            raise ValueError("text_contains_any must list non-blank terms")
         return selector
 
     def to_dict(self) -> dict[str, Any]:
@@ -97,6 +120,9 @@ class EvidenceSelector:
             "seed_index": self.seed_index,
             "seed_id": self.seed_id,
             "text_contains": self.text_contains,
+            "text_contains_any": (
+                None if self.text_contains_any is None else list(self.text_contains_any)
+            ),
         }
         return {key: value for key, value in values.items() if value is not None}
 
@@ -180,6 +206,48 @@ def validate_preregistration(data: dict[str, Any]) -> None:
     review = data["review_contract"]
     if not isinstance(review, dict) or review.get("blind_answer_preference") is not True:
         raise ValueError("protocol must require blind answer preference review")
+    arms = data.get("comparison_arms", [])
+    if not isinstance(arms, list) or not set(arms) <= _KNOWN_ARMS:
+        raise ValueError(f"comparison_arms may only contain {sorted(_KNOWN_ARMS)}")
+    calibration = data.get("calibration", {})
+    if not isinstance(calibration, dict) or not set(calibration) <= _CALIBRATION_FIELDS:
+        raise ValueError(f"calibration may only set {sorted(_CALIBRATION_FIELDS)}")
+
+
+def _core_config(prereg: dict[str, Any]) -> SSLCoreConfig | None:
+    calibration = prereg.get("calibration") or {}
+    if not calibration:
+        return None
+    return SSLCoreConfig(
+        promotion_threshold=float(
+            calibration.get("promotion_threshold", SSLCoreConfig.promotion_threshold)
+        ),
+        min_evidence_for_gate=int(
+            calibration.get("min_evidence_for_gate", SSLCoreConfig.min_evidence_for_gate)
+        ),
+    )
+
+
+def _self_critique_answer(
+    model: Any,
+    history: list[tuple[str, str]],
+    question: str,
+    baseline_answer: str,
+    turn_index: int,
+) -> str:
+    """One extra pass in which the model reviews and revises its own baseline."""
+
+    prompt_question = (
+        f"{SELF_CRITIQUE_INSTRUCTION}\n\nQuestion: {question}\n\nDraft answer:\n{baseline_answer}"
+    )
+    return str(
+        model.generate(
+            build_chat_prompt(history, prompt_question, []),
+            {"question": question, "turn": turn_index, "baseline_answer": baseline_answer},
+            "baseline",
+            [],
+        )
+    )
 
 
 def validate_suite(data: dict[str, Any]) -> list[dict[str, Any]]:
@@ -259,12 +327,16 @@ def _select_seed(
         if selector.seed_id in session.manager.seeds:
             return selector.seed_id, "matched_seed_id"
         return None, "seed_id_not_observed"
-    if selector.text_contains is not None:
-        needle = selector.text_contains.casefold()
+    if selector.text_contains is not None or selector.text_contains_any is not None:
+        needles = (
+            [selector.text_contains.casefold()]
+            if selector.text_contains is not None
+            else [term.casefold() for term in selector.text_contains_any or ()]
+        )
         matches = [
             seed_id
             for seed_id, seed in session.manager.seeds.items()
-            if needle in seed.text.casefold()
+            if any(needle in seed.text.casefold() for needle in needles)
         ]
         if len(matches) == 1:
             return matches[0], "matched_text_contains"
@@ -303,9 +375,11 @@ def _record_answer_pair(
     turn_index: int,
     report: dict[str, Any],
     reviewers: tuple[str, ...],
+    comparison: str = "baseline",
+    comparison_answer: str | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     rid = _review_id(
-        "evidence_answer",
+        "evidence_answer" if comparison == "baseline" else f"evidence_answer_{comparison}",
         suite_id,
         conversation_id,
         turn_index,
@@ -313,9 +387,12 @@ def _record_answer_pair(
     )
     first, second = blind_order(rid)
     answers = {
-        "baseline": str(report.get("baseline_answer", "")),
+        "baseline": str(
+            report.get("baseline_answer", "") if comparison_answer is None else comparison_answer
+        ),
         "ssl": str(report.get("ssl_answer", "")),
     }
+    labels = {"baseline": comparison, "ssl": "ssl"}
     packet = {
         "review_id": rid,
         "domain": domain,
@@ -337,8 +414,9 @@ def _record_answer_pair(
         "conversation_id": conversation_id,
         "turn": turn_index,
         "surfaced_seed_ids": list(report.get("surfaced_seed_ids", [])),
-        "option_a_source": first,
-        "option_b_source": second,
+        "comparison": comparison,
+        "option_a_source": labels[first],
+        "option_b_source": labels[second],
     }
     return packet, key
 
@@ -473,10 +551,14 @@ def run_evidence_efficacy(
         model_revision=model_revision,
     )
 
+    core_config = _core_config(prereg)
+    self_critique = SELF_CRITIQUE_ARM in prereg.get("comparison_arms", [])
     raw_conversations: list[dict[str, Any]] = []
     opportunities: list[dict[str, Any]] = []
     answer_packets: list[dict[str, Any]] = []
     answer_keys: list[dict[str, Any]] = []
+    critique_packets: list[dict[str, Any]] = []
+    critique_keys: list[dict[str, Any]] = []
 
     for conversation in conversations:
         conversation_id = str(conversation.get("id", "conversation"))
@@ -501,6 +583,7 @@ def run_evidence_efficacy(
             ),
             runtime_mode="evaluation",
             gate_policy_id="evidence_backed",
+            core_config=core_config,
             model_backend=model,
             detector_backend=detector,
             embedding_fn=embed_fn,
@@ -515,6 +598,7 @@ def run_evidence_efficacy(
         conversation_opportunities: list[dict[str, Any]] = []
 
         for turn_index, turn in enumerate(conversation["turns"]):
+            history_before = list(session.history)
             report = session.turn(str(turn["question"]))
             turn_reports.append(report)
             if report.get("surfaced_seed_ids"):
@@ -528,6 +612,27 @@ def run_evidence_efficacy(
                 )
                 answer_packets.append(packet)
                 answer_keys.append(key)
+                if self_critique:
+                    critique = _self_critique_answer(
+                        model,
+                        history_before,
+                        str(report["question"]),
+                        str(report.get("baseline_answer", "")),
+                        turn_index,
+                    )
+                    report["self_critique_answer"] = critique
+                    packet, key = _record_answer_pair(
+                        suite_id=str(suite.get("version", "suite")),
+                        conversation_id=conversation_id,
+                        domain=domain,
+                        turn_index=turn_index,
+                        report=report,
+                        reviewers=reviewers,
+                        comparison=SELF_CRITIQUE_ARM,
+                        comparison_answer=critique,
+                    )
+                    critique_packets.append(packet)
+                    critique_keys.append(key)
 
             for item in by_turn.get(turn_index, []):
                 seed_id, selector_result = _select_seed(session, item.selector, turn_reports)
@@ -629,6 +734,18 @@ def run_evidence_efficacy(
         review_dir / "answer_review_key.json",
         {"schema": REVIEW_SCHEMA, "review_type": "answer_key", "items": answer_keys},
     )
+    critique_paths: list[Path] = []
+    if self_critique:
+        critique_paths = [
+            _write_json(
+                review_dir / "answer_review_packet_self_critique.json",
+                {"schema": REVIEW_SCHEMA, "review_type": "answer", "items": critique_packets},
+            ),
+            _write_json(
+                review_dir / "answer_review_key_self_critique.json",
+                {"schema": REVIEW_SCHEMA, "review_type": "answer_key", "items": critique_keys},
+            ),
+        ]
 
     reason_counts: dict[str, int] = {}
     for item in opportunities:
@@ -652,6 +769,9 @@ def run_evidence_efficacy(
                 bool(item.get("later_surfaced_turns")) for item in opportunities
             ),
             "answer_review_item_count": len(answer_packets),
+            "self_critique_review_item_count": len(critique_packets),
+            "comparison_arms": ["baseline", *prereg.get("comparison_arms", [])],
+            "calibration": dict(prereg.get("calibration") or {}),
             "terminal_reason_counts": dict(sorted(reason_counts.items())),
             "review_status": "pending" if answer_packets else "not_applicable",
             "claim_boundary": prereg["claim_boundary"],
@@ -669,6 +789,7 @@ def run_evidence_efficacy(
         environment_path,
         copied_prereg,
         copied_suite,
+        *critique_paths,
     ]
     detector_prompt_hash = sha256(OPEN_SET_GENERATIVE_PROMPT.encode("utf-8")).hexdigest()
     manifest = {
@@ -704,6 +825,8 @@ def run_evidence_efficacy(
             "baseline_history_isolated": True,
             "evidence_submission_api": "ShadowChatSession.submit_evidence",
             "generated_model_output_is_evidence": False,
+            "calibration": dict(prereg.get("calibration") or {}),
+            "comparison_arms": ["baseline", *prereg.get("comparison_arms", [])],
         },
         "preregistration": {
             "path": "inputs/preregistration.json",

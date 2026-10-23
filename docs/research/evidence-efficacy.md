@@ -172,3 +172,15 @@ It cannot support:
 - the system is production-ready.
 
 Report unmatched selectors, blocked Gate events, point-of-use denials, and no-opportunity conversations alongside successful A/B items. Negative and null results are part of the protocol rather than errors to hide.
+
+## Study 1 (protocol v2)
+
+`src/shadowseed/data/evidence_efficacy_preregistration_v2.json` amends v1 before any v2 result exists:
+
+- **Product calibration (ADR-011):** one verified source promotes (`promotion_threshold = 0.2`, `min_evidence_for_gate = 1`), so the study measures the product's default behavior.
+- **Self-critique arm:** on every surfaced turn the model also gets one extra pass that reviews and revises its own SSL-off answer. Reviewers compare SSL with SSL off and SSL with self-critique in separate blind packets (`review/answer_review_packet.json` and `review/answer_review_packet_self_critique.json`).
+- **Decision rule:** fixed in the preregistration before results.
+
+The suite `benchmarks/evidence_efficacy/study-1-suite.json` has twelve cases across twelve domains. Each case has one documented external source and a `text_contains_any` selector. The selector lists the terms that name the consideration the source supports. A selector that matches no candidate or more than one is a null opportunity and is reported.
+
+`.github/workflows/evidence-efficacy-study.yml` runs the study on Qwen 2.5 7B (q4_K_M, Ollama) with a pinned digest and embedding revision, verifies the bundle, and commits it under `benchmarks/results/evidence_efficacy/`.

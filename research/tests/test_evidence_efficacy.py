@@ -241,3 +241,69 @@ def test_verify_evidence_bundle_detects_tampering(tmp_path: Path) -> None:
     summary.write_text("{}\n", encoding="utf-8")
     with pytest.raises(ValueError, match="hash mismatch"):
         verify_evidence_efficacy_bundle(tmp_path / "bundle")
+
+
+def test_single_source_calibration_and_self_critique_arm(tmp_path: Path) -> None:
+    prereg = json.loads(_prereg(tmp_path / "prereg.json").read_text(encoding="utf-8"))
+    prereg["calibration"] = {"promotion_threshold": 0.2, "min_evidence_for_gate": 1}
+    prereg["comparison_arms"] = ["self_critique"]
+    (tmp_path / "prereg.json").write_text(json.dumps(prereg), encoding="utf-8")
+    suite = json.loads(_suite(tmp_path / "suite.json").read_text(encoding="utf-8"))
+    suite["conversations"][0]["evidence_plan"] = suite["conversations"][0]["evidence_plan"][:1]
+    (tmp_path / "suite.json").write_text(json.dumps(suite), encoding="utf-8")
+
+    run_evidence_efficacy(
+        suite_path=tmp_path / "suite.json",
+        preregistration_path=tmp_path / "prereg.json",
+        output_dir=tmp_path / "bundle",
+        backend="fixture",
+        model_id="fixture",
+        model_reference="fixture",
+        model_revision=None,
+        model_digest=None,
+        max_new_tokens=64,
+        embedding_backend="lexical",
+        embedding_model=None,
+        embedding_reference="lexical-test",
+        embedding_revision=None,
+        surface_threshold=-1.0,
+        surface_top_k=2,
+        reviewers=("reviewer_a",),
+        run_id="fixture-single-source",
+    )
+
+    bundle = tmp_path / "bundle"
+    assert verify_evidence_efficacy_bundle(bundle)["verified"] is True
+    summary = json.loads((bundle / "summary.json").read_text(encoding="utf-8"))
+    assert summary["authority_granted_count"] == 1
+    assert summary["comparison_arms"] == ["baseline", "self_critique"]
+    assert summary["self_critique_review_item_count"] == summary["answer_review_item_count"] > 0
+    keys = json.loads(
+        (bundle / "review" / "answer_review_key_self_critique.json").read_text(encoding="utf-8")
+    )["items"]
+    assert {key["comparison"] for key in keys} == {"self_critique"}
+    assert all(
+        {key["option_a_source"], key["option_b_source"]} == {"ssl", "self_critique"}
+        for key in keys
+    )
+    manifest = json.loads((bundle / "manifest.json").read_text(encoding="utf-8"))
+    assert "review/answer_review_packet_self_critique.json" in manifest["artifacts"]
+
+
+def test_text_contains_any_selector_requires_a_unique_match() -> None:
+    from shadowseed_research.benchmark.evidence_efficacy import EvidenceSelector
+
+    selector = EvidenceSelector.from_dict({"text_contains_any": ["kidney", "renal"]})
+    assert selector.to_dict() == {"text_contains_any": ["kidney", "renal"]}
+    with pytest.raises(ValueError):
+        EvidenceSelector.from_dict({"text_contains_any": ["kidney", " "]})
+    with pytest.raises(ValueError):
+        EvidenceSelector.from_dict({"text_contains_any": ["x"], "text_contains": "y"})
+
+
+def test_preregistration_rejects_unknown_arms_and_calibration(tmp_path: Path) -> None:
+    prereg = json.loads(_prereg(tmp_path / "prereg.json").read_text(encoding="utf-8"))
+    with pytest.raises(ValueError):
+        validate_preregistration({**prereg, "comparison_arms": ["rag"]})
+    with pytest.raises(ValueError):
+        validate_preregistration({**prereg, "calibration": {"validation_increment": 1.0}})

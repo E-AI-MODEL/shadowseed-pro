@@ -1,0 +1,159 @@
+name: Research - Evidence efficacy study 1
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/evidence-efficacy-study.yml
+      - benchmarks/evidence_efficacy/study-1-suite.json
+      - src/shadowseed/data/evidence_efficacy_preregistration_v2.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: evidence-efficacy-study-1-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MODEL_ID: qwen2.5:7b-instruct-q4_K_M
+  EMBEDDING_REFERENCE: sentence-transformers/all-MiniLM-L6-v2
+  SUITE: benchmarks/evidence_efficacy/study-1-suite.json
+  PREREG: src/shadowseed/data/evidence_efficacy_preregistration_v2.json
+  RUN_DIR: benchmarks/results/evidence_efficacy/study-1_qwen2.5_7b_q4km
+  RUN_ID: evidence-efficacy-study-1-qwen2.5-7b-q4km
+
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+
+    steps:
+      - name: Check out exact head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.11"
+
+      - name: Install Shadowseed and semantic model dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[models]"
+          pip install --no-deps -e ./research
+
+      - name: Install and start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve > /tmp/ollama.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then
+              break
+            fi
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
+          OLLAMA_BIN="$(command -v ollama)"
+          echo "OLLAMA_VERSION=$(ollama --version 2>&1 | tr '\n' ' ')" >> "$GITHUB_ENV"
+          echo "OLLAMA_BINARY_SHA256=$(sha256sum "$OLLAMA_BIN" | cut -d' ' -f1)" >> "$GITHUB_ENV"
+
+      - name: Pull and fingerprint the model
+        run: |
+          ollama pull "$MODEL_ID"
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          with urllib.request.urlopen("http://127.0.0.1:11434/api/tags", timeout=30) as response:
+              models = json.load(response).get("models", [])
+          requested = os.environ["MODEL_ID"]
+          match = next(
+              (m for m in models if requested in {m.get("name"), m.get("model")}),
+              None,
+          )
+          if match is None or not match.get("digest"):
+              raise SystemExit(f"unable to resolve Ollama digest for {requested}: {models}")
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as handle:
+              handle.write(f"MODEL_DIGEST={match['digest']}\n")
+          print("resolved model digest", match["digest"])
+          PY
+
+      - name: Pin and materialize the embedding snapshot
+        run: |
+          python - <<'PY'
+          import os
+          from huggingface_hub import model_info, snapshot_download
+
+          reference = os.environ["EMBEDDING_REFERENCE"]
+          revision = model_info(reference).sha
+          if not revision:
+              raise SystemExit(f"unable to resolve embedding revision for {reference}")
+          path = snapshot_download(reference, revision=revision)
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as handle:
+              handle.write(f"EMBEDDING_REVISION={revision}\n")
+              handle.write(f"EMBEDDING_PATH={path}\n")
+          PY
+
+      - name: Run preregistered study
+        run: |
+          rm -rf "$RUN_DIR"
+          GITHUB_SHA="$(git rev-parse HEAD)" python -m shadowseed_research.benchmark.evidence_efficacy run \
+            --backend ollama \
+            --model-id "$MODEL_ID" \
+            --model-reference "$MODEL_ID" \
+            --model-digest "$MODEL_DIGEST" \
+            --quantization q4_K_M \
+            --max-new-tokens 320 \
+            --embedding-backend sentence-transformers \
+            --embedding-model "$EMBEDDING_PATH" \
+            --embedding-reference "$EMBEDDING_REFERENCE" \
+            --embedding-revision "$EMBEDDING_REVISION" \
+            --suite "$SUITE" \
+            --preregistration "$PREREG" \
+            --reviewer-id reviewer_1 \
+            --output-dir "$RUN_DIR" \
+            --run-id "$RUN_ID"
+
+      - name: Verify bundle and authority invariants
+        run: |
+          python -m shadowseed_research.benchmark.evidence_efficacy verify "$RUN_DIR"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          bundle = Path(os.environ["RUN_DIR"])
+          summary = json.loads((bundle / "summary.json").read_text(encoding="utf-8"))
+          manifest = json.loads((bundle / "manifest.json").read_text(encoding="utf-8"))
+          assert summary["evidence_opportunity_count"] == 12, summary
+          assert summary["comparison_arms"] == ["baseline", "self_critique"], summary
+          assert manifest["preregistration"]["protocol_id"] == "ssl-evidence-efficacy-v2"
+          assert manifest["research_runtime"]["generated_model_output_is_evidence"] is False
+          assert manifest["model"]["digest"] == os.environ["MODEL_DIGEST"]
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - name: Upload bundle
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: evidence-efficacy-study-1
+          path: ${{ env.RUN_DIR }}
+          if-no-files-found: ignore
+
+      - name: Commit immutable bundle to the branch
+        if: github.event_name == 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$RUN_DIR"
+          git diff --cached --check
+          git commit -m "Record evidence efficacy study 1 (Qwen 2.5 7B)"
+          git push origin "HEAD:${{ github.head_ref }}"

@@ -19,6 +19,9 @@
 - `shadowseed-workbench` and frozen bundles open the web client by default. The
   legacy Gradio Workbench starts only with `--legacy-gradio`; `--web` is still
   accepted.
+- Research: evidence efficacy protocol v2 with a self-critique comparison arm,
+  the ADR-011 single-source calibration and a `text_contains_any` selector;
+  study 1 suite (twelve cases with documented sources) and its model workflow.
 
 ## 0.12.3 - Native chat and reliable local startup
 
