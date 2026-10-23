@@ -6,7 +6,7 @@ This document describes the bounded single-user `production-ready/local` target 
 
 The packaged web product uses `shadowseed-web`, which serves the static browser client and `/api/v1` from one Python process on IPv4 loopback. Its host is fixed to `127.0.0.1`; there is no remote-bind option. If the preferred port is occupied, the launcher may choose another loopback port but may not widen the host boundary. The browser and API use the same local origin in packaged mode.
 
-The existing frozen Gradio launcher remains supported and uses `shadowseed.workbench.production_local.launch_production_local_workbench`; frozen bundles can explicitly select the packaged web surface with `Shadowseed --web`. The generic source command `shadowseed workbench --host ... --allow-remote` remains a trusted-environment/development preview surface. It has no multi-user authentication layer and is outside the `production-ready/local` claim.
+Frozen bundles and `shadowseed-workbench` open the packaged web client by default. The legacy Gradio launcher (`shadowseed.workbench.production_local.launch_production_local_workbench`) is only started with `--legacy-gradio`; `--web` is still accepted and has no effect. The generic source command `shadowseed workbench --host ... --allow-remote` remains a trusted-environment/development preview surface. It has no multi-user authentication layer and is outside the `production-ready/local` claim.
 
 ## Container boundary
 

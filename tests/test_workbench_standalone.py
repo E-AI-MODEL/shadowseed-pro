@@ -9,6 +9,7 @@ import pytest
 from shadowseed.workbench.standalone import (
     _choose_loopback_port,
     build_parser,
+    main,
     run_standalone_self_test,
 )
 
@@ -17,12 +18,29 @@ def test_standalone_parser_has_no_remote_bind_option() -> None:
     parser = build_parser()
     help_text = parser.format_help()
     assert "--allow-remote" not in help_text
-    assert "--web" in help_text
+    assert "--legacy-gradio" in help_text
     args = parser.parse_args([])
     assert args.port == 7860
     assert args.workspace is None
     assert args.self_test is False
-    assert args.web is False
+    assert args.legacy_gradio is False
+    assert parser.parse_args(["--web"]).web is True
+
+
+def test_standalone_defaults_to_web_client(tmp_path: Path, monkeypatch) -> None:
+    import shadowseed_webapi.launcher as launcher
+
+    calls: list[list[str]] = []
+    monkeypatch.setattr(launcher, "main", lambda argv: calls.append(argv) or 0)
+
+    assert main(["--workspace", str(tmp_path), "--no-browser", "--self-test"]) == 0
+    assert main(["--workspace", str(tmp_path), "--web", "--port", "9000"]) == 0
+    assert calls[0][-2:] == ["--no-browser", "--self-test"]
+    assert calls[1][2:] == ["--port", "9000"]
+
+
+def test_standalone_rejects_web_with_legacy_gradio(tmp_path: Path) -> None:
+    assert main(["--workspace", str(tmp_path), "--web", "--legacy-gradio"]) == 1
 
 
 def test_standalone_port_falls_back_to_another_loopback_port() -> None:

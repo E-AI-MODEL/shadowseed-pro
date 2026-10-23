@@ -303,6 +303,7 @@ def _verify_frozen(executable: Path, root: Path, work_dir: Path) -> dict[str, ob
     result_file = work_dir / "standalone-self-test.json"
     command = [
         str(executable),
+        "--legacy-gradio",
         "--self-test",
         "--workspace",
         str(workspace),
@@ -359,7 +360,6 @@ def _verify_frozen_web(
     result_file = work_dir / "web-standalone-self-test.json"
     command = [
         str(executable),
-        "--web",
         "--self-test",
         "--workspace",
         str(workspace),

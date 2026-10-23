@@ -185,10 +185,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--port", type=int, default=7860, help="Preferred local UI port.")
     parser.add_argument("--no-browser", action="store_true", help="Do not open the browser.")
     parser.add_argument(
-        "--web",
+        "--legacy-gradio",
         action="store_true",
-        help="Launch the packaged web client instead of the legacy Gradio Workbench.",
+        help="Launch the legacy Gradio Workbench instead of the web client.",
     )
+    # Accepted for compatibility: the web client is the default.
+    parser.add_argument("--web", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument(
         "--self-test",
         action="store_true",
@@ -206,7 +208,9 @@ def main(argv: list[str] | None = None) -> int:
     service = WorkspaceService(args.workspace)
     try:
         paths = service.initialize()
-        if args.web:
+        if args.web and args.legacy_gradio:
+            raise ValueError("--web and --legacy-gradio cannot be combined")
+        if not args.legacy_gradio:
             from shadowseed_webapi.launcher import main as web_main
 
             web_args = [

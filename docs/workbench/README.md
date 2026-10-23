@@ -150,7 +150,7 @@ as a secure downloadable 0.12.3 bundle** while issue #200 is unresolved.
 
 ```bash
 python -m pip install "shadowseed[workbench]"
-shadowseed-workbench
+shadowseed-workbench --legacy-gradio
 
 # Optional local model providers:
 python -m pip install "shadowseed[workbench,models]"

@@ -114,7 +114,9 @@ function seedStatus(seed: Seed): { label: string; tone: Tone } {
   if (status === "expired") return { label: "Expired", tone: "muted" };
   if (status === "dormant") return { label: "Dormant", tone: "muted" };
   if (seed.current_gate_authorized || status === "promoted") {
-    return { label: "Promoted", tone: "success" };
+    return (seed.used_count ?? 0) > 0
+      ? { label: "Used", tone: "success" }
+      : { label: "Promoted", tone: "success" };
   }
   if (Number(seed.weight ?? 0) > 0) return { label: "Validated", tone: "neutral" };
   if ((seed.evidence_count ?? 0) > 0) return { label: "Supported", tone: "neutral" };
@@ -235,6 +237,7 @@ function SeedCard({
       <span className="seed-meta">
         <span>Seen {seen}×</span>
         <span>{plural(evidence, "source", "sources")}</span>
+        {(seed.used_count ?? 0) > 0 ? <span>Used {seed.used_count}×</span> : null}
         <span>{seed.blocking ? "Contradiction open" : "No contradiction"}</span>
       </span>
     </button>
@@ -1401,6 +1404,16 @@ export function ShadowseedApp() {
                     <dt>Weight</dt>
                     <dd className="mono">
                       {Number(selectedSeed.weight ?? 0).toFixed(2)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Used in answers</dt>
+                    <dd>{selectedSeed.used_count ?? 0}×</dd>
+                  </div>
+                  <div>
+                    <dt>Trace</dt>
+                    <dd className="mono">
+                      {Number(selectedSeed.trace ?? 0).toFixed(2)}
                     </dd>
                   </div>
                 </dl>

@@ -47,6 +47,7 @@ export type Seed = {
   evidence_count: number;
   blocking?: boolean;
   current_gate_authorized?: boolean;
+  used_count?: number;
   plain_explanation?: string;
   orchestration?: Orchestration;
 };

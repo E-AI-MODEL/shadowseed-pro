@@ -197,3 +197,15 @@ def test_one_process_server_serves_web_and_api_on_same_port(tmp_path: Path) -> N
         server.shutdown()
         server.server_close()
         thread.join(timeout=3)
+
+
+def test_web_launcher_self_test_can_rerun_on_the_same_workspace(tmp_path: Path) -> None:
+    static_root = tmp_path / "static"
+    _write_static_fixture(static_root)
+    workspace = tmp_path / "workspace"
+
+    first = run_web_self_test(workspace, static_root=static_root)
+    second = run_web_self_test(workspace, static_root=static_root)
+
+    assert first["turn"] == 1
+    assert second["turn"] == 1

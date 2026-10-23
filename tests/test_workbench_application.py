@@ -851,3 +851,30 @@ def test_single_source_calibration_leaves_recurrence_and_evaluation_unchanged(tm
     assert threshold(autonomous) == 0.5
     assert threshold(evaluation) == 0.5
     assert threshold(explicit) == 0.6
+
+
+def test_session_view_counts_only_allowed_influence_as_use(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Used count",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+    )
+    first = controller.send_turn(session_id, "What is missing from this privacy plan?")
+    seed = first["session"]["seeds"][0]
+
+    def used() -> int:
+        view = controller.session_view(session_id)
+        return next(item for item in view["seeds"] if item["id"] == seed["id"])["used_count"]
+
+    assert used() == 0
+    controller.submit_verified_evidence(
+        session_id, seed["id"], source_ref="reviewer:only", operator_verified=True
+    )
+    assert used() == 0
+
+    later = controller.send_turn(session_id, seed["text"])
+    assert seed["id"] in later["report"]["surfaced_seed_ids"]
+    assert used() == 1
+    assert controller.seed_view(session_id, seed["id"])["used_count"] == 1
