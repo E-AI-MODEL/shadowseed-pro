@@ -1,0 +1,75 @@
+name: Research - Live recurrence probe
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/recurrence-live-probe.yml
+      - scripts/recurrence_live_probe.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: recurrence-live-probe-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MODEL_ID: qwen2.5:7b-instruct-q4_K_M
+  EMBEDDING_MODEL: embeddinggemma
+  SUITE: benchmarks/evidence_efficacy/study-1-suite.json
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        recognizer: [model, embedding]
+        shard:
+          - EE01 EE04 EE07 EE10
+          - EE02 EE05 EE08 EE11
+          - EE03 EE06 EE09 EE12
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.11"
+
+      - name: Install Shadowseed
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Install and start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve > /tmp/ollama.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then break; fi
+            sleep 2
+          done
+          ollama pull "$MODEL_ID"
+          ollama pull "$EMBEDDING_MODEL"
+          curl -fsS http://127.0.0.1:11434/api/tags
+
+      - name: Run live sessions
+        run: |
+          selected=()
+          for id in ${{ matrix.shard }}; do selected+=(--conversation "$id"); done
+          python scripts/recurrence_live_probe.py \
+            --suite "$SUITE" \
+            --model "$MODEL_ID" \
+            --recognizer "${{ matrix.recognizer }}" \
+            --embedding-backend ollama --embedding-model "$EMBEDDING_MODEL" \
+            "${selected[@]}" \
+            --output probe/probe.json
+          echo "::group::probe.json"
+          cat probe/probe.json
+          echo "::endgroup::"
