@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Intake: English declarative candidates are admitted unless they are a bare
+  category stack. In a blind review of 60 fixed22 candidates, 22 of the 24 the
+  separator guard rejected were useful gaps. See
+  `docs/research/seed-calibration.md`.
+- Research: seed usefulness and recurrence calibration on the fixed22
+  candidates. Embedding similarity does not separate "same gap" from
+  "different gap" at any threshold. Qwen 2.5 7B asked "same open question?"
+  recognized 7 of 8 same-gap pairs with 1 of 44 wrong merges, against 10 of 44
+  for the embedding threshold.
 - Web client: English interface with factual wording and the canonical terms
   from the product documentation: Controlled, Assisted and Autonomous modes,
   "seed", and the seed statuses Found, Recurring, Supported, Validated,

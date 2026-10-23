@@ -59,3 +59,15 @@ def test_english_of_is_not_a_separator():
 
 def test_dutch_of_still_separates_dutch_text():
     assert not SSLManager.is_atomic_seed("Kosten of baten en risico's ontbreken.")
+
+
+def test_english_declarative_candidates_are_structural_only():
+    # Rejected as not_atomic in the fixed22 runs, rated useful gaps in review.
+    for text in (
+        "Possible endogeneity: whether high wages and cheap energy were antecedent causes or partly outcomes of early industrialization.",
+        "Controls against incentive abuse (fake accounts, self-invites, emulator farms) for double-sided rewards are unspecified.",
+        "Trade-offs with traffic, freight/loading, emergency access, and curb management when converting lanes/curbs to green space.",
+    ):
+        assert SSLManager.is_atomic_seed(text)
+    # Visibly separate sentences are still not one candidate.
+    assert not SSLManager.is_atomic_seed("Funding is unclear. Staffing is also unclear.")

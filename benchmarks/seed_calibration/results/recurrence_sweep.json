@@ -1,0 +1,437 @@
+{
+  "schema": "ssl-recurrence-calibration-v1",
+  "input": "benchmarks/seed_calibration/fixed22_candidates.json",
+  "input_sha256": "eee625bb3ada5d90c5f45435455ded3068a872de3be203c567f2c57ef8418169",
+  "embedding": {
+    "backend": "sentence-transformers",
+    "model": "/home/runner/.cache/huggingface/hub/models--sentence-transformers--all-MiniLM-L6-v2/snapshots/1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+  },
+  "admitted_candidates": 189,
+  "conversations": 6,
+  "sweep": [
+    {
+      "threshold": 0.45,
+      "is_product_default": false,
+      "totals": {
+        "clusters": 104,
+        "recurring_2plus": 22,
+        "recurring_3plus": 13
+      },
+      "per_conversation": {
+        "gpt-5/CONV_IR_SHORT": {
+          "clusters": 12,
+          "recurring_2plus": 3,
+          "recurring_3plus": 2,
+          "largest_cluster_members": 5
+        },
+        "gpt-5/CONV_STARTUP": {
+          "clusters": 30,
+          "recurring_2plus": 4,
+          "recurring_3plus": 3,
+          "largest_cluster_members": 8
+        },
+        "gpt-5/CONV_CITY": {
+          "clusters": 20,
+          "recurring_2plus": 7,
+          "recurring_3plus": 3,
+          "largest_cluster_members": 7
+        },
+        "gpt-6.1-sol/CONV_IR_SHORT": {
+          "clusters": 6,
+          "recurring_2plus": 1,
+          "recurring_3plus": 1,
+          "largest_cluster_members": 4
+        },
+        "gpt-6.1-sol/CONV_STARTUP": {
+          "clusters": 20,
+          "recurring_2plus": 4,
+          "recurring_3plus": 2,
+          "largest_cluster_members": 11
+        },
+        "gpt-6.1-sol/CONV_CITY": {
+          "clusters": 16,
+          "recurring_2plus": 3,
+          "recurring_3plus": 2,
+          "largest_cluster_members": 14
+        }
+      }
+    },
+    {
+      "threshold": 0.5,
+      "is_product_default": false,
+      "totals": {
+        "clusters": 123,
+        "recurring_2plus": 25,
+        "recurring_3plus": 11
+      },
+      "per_conversation": {
+        "gpt-5/CONV_IR_SHORT": {
+          "clusters": 14,
+          "recurring_2plus": 4,
+          "recurring_3plus": 2,
+          "largest_cluster_members": 3
+        },
+        "gpt-5/CONV_STARTUP": {
+          "clusters": 34,
+          "recurring_2plus": 3,
+          "recurring_3plus": 1,
+          "largest_cluster_members": 7
+        },
+        "gpt-5/CONV_CITY": {
+          "clusters": 25,
+          "recurring_2plus": 9,
+          "recurring_3plus": 3,
+          "largest_cluster_members": 5
+        },
+        "gpt-6.1-sol/CONV_IR_SHORT": {
+          "clusters": 6,
+          "recurring_2plus": 1,
+          "recurring_3plus": 1,
+          "largest_cluster_members": 4
+        },
+        "gpt-6.1-sol/CONV_STARTUP": {
+          "clusters": 26,
+          "recurring_2plus": 5,
+          "recurring_3plus": 2,
+          "largest_cluster_members": 7
+        },
+        "gpt-6.1-sol/CONV_CITY": {
+          "clusters": 18,
+          "recurring_2plus": 3,
+          "recurring_3plus": 2,
+          "largest_cluster_members": 13
+        }
+      }
+    },
+    {
+      "threshold": 0.55,
+      "is_product_default": false,
+      "totals": {
+        "clusters": 143,
+        "recurring_2plus": 22,
+        "recurring_3plus": 6
+      },
+      "per_conversation": {
+        "gpt-5/CONV_IR_SHORT": {
+          "clusters": 16,
+          "recurring_2plus": 3,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 3
+        },
+        "gpt-5/CONV_STARTUP": {
+          "clusters": 37,
+          "recurring_2plus": 3,
+          "recurring_3plus": 1,
+          "largest_cluster_members": 3
+        },
+        "gpt-5/CONV_CITY": {
+          "clusters": 31,
+          "recurring_2plus": 8,
+          "recurring_3plus": 1,
+          "largest_cluster_members": 3
+        },
+        "gpt-6.1-sol/CONV_IR_SHORT": {
+          "clusters": 6,
+          "recurring_2plus": 1,
+          "recurring_3plus": 1,
+          "largest_cluster_members": 4
+        },
+        "gpt-6.1-sol/CONV_STARTUP": {
+          "clusters": 30,
+          "recurring_2plus": 4,
+          "recurring_3plus": 2,
+          "largest_cluster_members": 4
+        },
+        "gpt-6.1-sol/CONV_CITY": {
+          "clusters": 23,
+          "recurring_2plus": 3,
+          "recurring_3plus": 1,
+          "largest_cluster_members": 12
+        }
+      }
+    },
+    {
+      "threshold": 0.6,
+      "is_product_default": true,
+      "totals": {
+        "clusters": 161,
+        "recurring_2plus": 12,
+        "recurring_3plus": 3
+      },
+      "per_conversation": {
+        "gpt-5/CONV_IR_SHORT": {
+          "clusters": 17,
+          "recurring_2plus": 2,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 2
+        },
+        "gpt-5/CONV_STARTUP": {
+          "clusters": 39,
+          "recurring_2plus": 2,
+          "recurring_3plus": 1,
+          "largest_cluster_members": 3
+        },
+        "gpt-5/CONV_CITY": {
+          "clusters": 36,
+          "recurring_2plus": 4,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 2
+        },
+        "gpt-6.1-sol/CONV_IR_SHORT": {
+          "clusters": 7,
+          "recurring_2plus": 1,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 3
+        },
+        "gpt-6.1-sol/CONV_STARTUP": {
+          "clusters": 36,
+          "recurring_2plus": 2,
+          "recurring_3plus": 1,
+          "largest_cluster_members": 3
+        },
+        "gpt-6.1-sol/CONV_CITY": {
+          "clusters": 26,
+          "recurring_2plus": 1,
+          "recurring_3plus": 1,
+          "largest_cluster_members": 11
+        }
+      }
+    },
+    {
+      "threshold": 0.65,
+      "is_product_default": false,
+      "totals": {
+        "clusters": 174,
+        "recurring_2plus": 9,
+        "recurring_3plus": 2
+      },
+      "per_conversation": {
+        "gpt-5/CONV_IR_SHORT": {
+          "clusters": 19,
+          "recurring_2plus": 1,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 2
+        },
+        "gpt-5/CONV_STARTUP": {
+          "clusters": 40,
+          "recurring_2plus": 2,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 2
+        },
+        "gpt-5/CONV_CITY": {
+          "clusters": 39,
+          "recurring_2plus": 1,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 2
+        },
+        "gpt-6.1-sol/CONV_IR_SHORT": {
+          "clusters": 7,
+          "recurring_2plus": 1,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 3
+        },
+        "gpt-6.1-sol/CONV_STARTUP": {
+          "clusters": 36,
+          "recurring_2plus": 2,
+          "recurring_3plus": 1,
+          "largest_cluster_members": 3
+        },
+        "gpt-6.1-sol/CONV_CITY": {
+          "clusters": 33,
+          "recurring_2plus": 2,
+          "recurring_3plus": 1,
+          "largest_cluster_members": 5
+        }
+      }
+    },
+    {
+      "threshold": 0.7,
+      "is_product_default": false,
+      "totals": {
+        "clusters": 182,
+        "recurring_2plus": 6,
+        "recurring_3plus": 0
+      },
+      "per_conversation": {
+        "gpt-5/CONV_IR_SHORT": {
+          "clusters": 19,
+          "recurring_2plus": 1,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 2
+        },
+        "gpt-5/CONV_STARTUP": {
+          "clusters": 40,
+          "recurring_2plus": 2,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 2
+        },
+        "gpt-5/CONV_CITY": {
+          "clusters": 40,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        },
+        "gpt-6.1-sol/CONV_IR_SHORT": {
+          "clusters": 7,
+          "recurring_2plus": 1,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 3
+        },
+        "gpt-6.1-sol/CONV_STARTUP": {
+          "clusters": 40,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        },
+        "gpt-6.1-sol/CONV_CITY": {
+          "clusters": 36,
+          "recurring_2plus": 2,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 2
+        }
+      }
+    },
+    {
+      "threshold": 0.75,
+      "is_product_default": false,
+      "totals": {
+        "clusters": 189,
+        "recurring_2plus": 0,
+        "recurring_3plus": 0
+      },
+      "per_conversation": {
+        "gpt-5/CONV_IR_SHORT": {
+          "clusters": 20,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        },
+        "gpt-5/CONV_STARTUP": {
+          "clusters": 42,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        },
+        "gpt-5/CONV_CITY": {
+          "clusters": 40,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        },
+        "gpt-6.1-sol/CONV_IR_SHORT": {
+          "clusters": 9,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        },
+        "gpt-6.1-sol/CONV_STARTUP": {
+          "clusters": 40,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        },
+        "gpt-6.1-sol/CONV_CITY": {
+          "clusters": 38,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        }
+      }
+    },
+    {
+      "threshold": 0.8,
+      "is_product_default": false,
+      "totals": {
+        "clusters": 189,
+        "recurring_2plus": 0,
+        "recurring_3plus": 0
+      },
+      "per_conversation": {
+        "gpt-5/CONV_IR_SHORT": {
+          "clusters": 20,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        },
+        "gpt-5/CONV_STARTUP": {
+          "clusters": 42,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        },
+        "gpt-5/CONV_CITY": {
+          "clusters": 40,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        },
+        "gpt-6.1-sol/CONV_IR_SHORT": {
+          "clusters": 9,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        },
+        "gpt-6.1-sol/CONV_STARTUP": {
+          "clusters": 40,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        },
+        "gpt-6.1-sol/CONV_CITY": {
+          "clusters": 38,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        }
+      }
+    },
+    {
+      "threshold": 0.85,
+      "is_product_default": false,
+      "totals": {
+        "clusters": 189,
+        "recurring_2plus": 0,
+        "recurring_3plus": 0
+      },
+      "per_conversation": {
+        "gpt-5/CONV_IR_SHORT": {
+          "clusters": 20,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        },
+        "gpt-5/CONV_STARTUP": {
+          "clusters": 42,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        },
+        "gpt-5/CONV_CITY": {
+          "clusters": 40,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        },
+        "gpt-6.1-sol/CONV_IR_SHORT": {
+          "clusters": 9,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        },
+        "gpt-6.1-sol/CONV_STARTUP": {
+          "clusters": 40,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        },
+        "gpt-6.1-sol/CONV_CITY": {
+          "clusters": 38,
+          "recurring_2plus": 0,
+          "recurring_3plus": 0,
+          "largest_cluster_members": 1
+        }
+      }
+    }
+  ]
+}

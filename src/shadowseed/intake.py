@@ -58,8 +58,10 @@ def normalize_embedding(embedding: np.ndarray) -> np.ndarray:
 
 
 _ENGLISH_MARKERS = frozenset(
-    {"the", "a", "is", "are", "to", "for", "with", "in", "by", "from", "how", "whether",
-     "what", "which", "does", "can", "be", "this", "that"}
+    {"the", "a", "an", "is", "are", "were", "to", "for", "with", "in", "on", "at", "by",
+     "from", "into", "about", "between", "than", "and", "not", "as", "its", "their", "how",
+     "whether", "what", "which", "who", "why", "when", "if", "does", "do", "has", "have",
+     "been", "can", "could", "should", "would", "be", "this", "that"}
 )
 
 
@@ -91,12 +93,16 @@ def is_atomic_seed(text: str, max_seed_words: int | None = None) -> bool:
     question_verdict = is_single_question(text)
     if question_verdict is not None:
         return question_verdict
-    separators = [",", ";", " and ", " or "]
-    # The Dutch separators are kept for the historical corpus but never apply
-    # to English text: " of " is "or" in Dutch and the commonest English
-    # preposition, which split nothing.
-    if not _looks_english(lowered):
-        separators += [" en ", " of ", "zoals", "bijvoorbeeld"]
+    # English declarative candidates are admitted unless they are a bare
+    # category stack ("Security, privacy and scalability are missing."). In a
+    # blind review of 60 fixed22 candidates, 22 of the 24 that the broader
+    # separator guard rejected were useful gaps: a relation with examples in
+    # it is one direction, not a list. The broader guard stays for the
+    # historical Dutch corpus only.
+    if _looks_english(lowered):
+        list_marks = lowered.count(",") + lowered.count(";") + len(re.findall(r"\b(?:and|or)\b", lowered))
+        return not (list_marks >= 2 and len(re.findall(r"\w+", text)) <= 8)
+    separators = [",", ";", " and ", " or ", " en ", " of ", "zoals", "bijvoorbeeld"]
     broad_terms = [
         "analysekader",
         "complete",

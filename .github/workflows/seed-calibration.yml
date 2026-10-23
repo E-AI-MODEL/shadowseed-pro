@@ -7,7 +7,9 @@ on:
     paths:
       - .github/workflows/seed-calibration.yml
       - scripts/recurrence_calibration.py
+      - scripts/recurrence_judge.py
       - benchmarks/seed_calibration/*.json
+      - benchmarks/seed_calibration/results/*.json
   workflow_dispatch:
 
 permissions:
@@ -77,3 +79,45 @@ jobs:
         with:
           name: seed-recurrence-calibration
           path: ${{ env.OUTPUT_DIR }}
+
+  judge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      MODEL_ID: qwen2.5:7b-instruct-q4_K_M
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.11"
+
+      - name: Install Shadowseed
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Install and start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve > /tmp/ollama.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then break; fi
+            sleep 2
+          done
+          ollama pull "$MODEL_ID"
+          DIGEST="$(curl -fsS http://127.0.0.1:11434/api/tags | python -c 'import json,os,sys; m=[x for x in json.load(sys.stdin)["models"] if x["name"]==os.environ["MODEL_ID"]]; print(m[0]["digest"])')"
+          echo "MODEL_DIGEST=$DIGEST" >> "$GITHUB_ENV"
+
+      - name: Judge the calibration pairs
+        run: |
+          python scripts/recurrence_judge.py \
+            --pairs benchmarks/seed_calibration/results/pair_sample.json \
+            --labels benchmarks/seed_calibration/results/claude_pair_labels.json \
+            --model "$MODEL_ID" --model-digest "$MODEL_DIGEST" \
+            --output judge/recurrence_judge_qwen2.5_7b.json
+          echo "::group::recurrence_judge_qwen2.5_7b.json"
+          cat judge/recurrence_judge_qwen2.5_7b.json
+          echo "::endgroup::"
