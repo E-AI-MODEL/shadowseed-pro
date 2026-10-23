@@ -18,6 +18,8 @@ import re
 from dataclasses import dataclass
 from typing import Callable
 
+from shadowseed.prompt_contracts import prompt_contract_metadata
+
 RECURRENCE_FLOOR = 0.3
 MAX_OPEN_QUESTIONS = 12
 RECOGNIZER_ID = "recurrence_recognition_v1"
@@ -38,6 +40,15 @@ Answer with one line per new note, in this form:
 a: 3
 b: NONE
 """
+
+RECOGNITION_PROMPT_META = prompt_contract_metadata(
+    prompt_id=RECOGNIZER_ID,
+    prompt_version="1",
+    component="recurrence_recognition",
+    template=PROMPT,
+    input_contract=("open_questions", "new_notes"),
+    output_contract="one_line_per_new_note_with_open_question_number_or_NONE",
+)
 
 _LINE = re.compile(r"^\s*([a-z])\s*[:.)-]\s*(none|\d+)\b", re.IGNORECASE)
 
@@ -60,7 +71,7 @@ def parse_answer(raw: str, new_count: int, open_count: int) -> dict[int, int | N
     """Map new-note index to an open-question number, or None for a new question.
 
     Returns None when no line could be read, so the caller can fall back.
-    Out-of-range numbers count as a new question.
+    Out-of-range numbers count as a new question. Unmentioned notes are absent.
     """
 
     mapping: dict[int, int | None] = {}
@@ -74,11 +85,9 @@ def parse_answer(raw: str, new_count: int, open_count: int) -> dict[int, int | N
         value = match.group(2).lower()
         number = None if value == "none" else int(value)
         mapping[index] = number if number is not None and 1 <= number <= open_count else None
-    if not mapping:
-        return None
-    for index in range(new_count):
-        mapping.setdefault(index, None)
-    return mapping
+    # Notes the answer does not mention stay absent, so the caller keeps
+    # embedding clustering for them (for example after a truncated answer).
+    return mapping or None
 
 
 def recognize(

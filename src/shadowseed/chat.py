@@ -52,6 +52,7 @@ from shadowseed.detection.model_detector import (
 )
 from shadowseed.recurrence_recognition import (
     MAX_OPEN_QUESTIONS,
+    RECOGNITION_PROMPT_META,
     RECOGNIZER_ID,
     RECURRENCE_FLOOR,
     OpenQuestion,
@@ -502,7 +503,9 @@ class ShadowChatSession:
                 OpenQuestion(len(open_questions) + 1, cluster_id, representative.text)
             )
         if not open_questions:
-            return {seed_id: None for seed_id in new_ids}
+            # No live representative to ask about (for example only expired
+            # ones): keep embedding clustering, which can replace them.
+            return {}
         notes = [self.manager.seeds[seed_id].text for seed_id in new_ids]
         try:
             mapping, raw = recognize(
@@ -529,7 +532,9 @@ class ShadowChatSession:
             return {}
         decisions: dict[str, int | None] = {}
         for index, seed_id in enumerate(new_ids):
-            number = mapping.get(index)
+            if index not in mapping:
+                continue
+            number = mapping[index]
             cluster_id = None if number is None else open_questions[number - 1].cluster_id
             similarity = (
                 None
@@ -557,20 +562,38 @@ class ShadowChatSession:
         *,
         observation_ref: str,
     ) -> None:
+        assert self.clusterer is not None
         decisions = (
             self._recognize_recurrence(seed_ids) if self._uses_model_recognition() else {}
         )
+        created_now: set[int] = set()
         for seed_id in seed_ids:
-            if seed_id in decisions:
-                target = decisions[seed_id]
-                self._register_cluster_observation(
-                    seed_id,
-                    observation_ref=observation_ref,
-                    cluster_id=target,
-                    new_cluster=target is None,
-                )
-            else:
+            if seed_id not in decisions:
                 self._register_cluster_observation(seed_id, observation_ref=observation_ref)
+                continue
+            target = decisions[seed_id]
+            if target is None and seed_id in self.manager.seeds:
+                # Not a repeat of an earlier open question. Paraphrases within
+                # this same observation may still share one new cluster.
+                same_observation = [
+                    cluster_id
+                    for cluster_id, _similarity in self.clusterer.nearest(
+                        self.manager.seeds[seed_id].embedding,
+                        floor=self.clusterer.threshold,
+                        limit=len(self.clusterer.centroids),
+                    )
+                    if cluster_id in created_now
+                ]
+                target = same_observation[0] if same_observation else None
+            before = len(self.clusterer.centroids)
+            self._register_cluster_observation(
+                seed_id,
+                observation_ref=observation_ref,
+                cluster_id=target,
+                new_cluster=target is None,
+            )
+            if len(self.clusterer.centroids) > before:
+                created_now.add(len(self.clusterer.centroids) - 1)
 
     def _register_cluster_observation(
         self,
@@ -897,6 +920,7 @@ class ShadowChatSession:
             "detector_current_pair": dict(CURRENT_PAIR_PROMPT_META),
             "detector_source_observation": dict(SOURCE_OBSERVATION_PROMPT_META),
             "same_turn_revision": dict(REVISION_PROMPT_META),
+            "recurrence_recognition": dict(RECOGNITION_PROMPT_META),
         }
 
     def _session_config_snapshot(self) -> dict[str, Any]:

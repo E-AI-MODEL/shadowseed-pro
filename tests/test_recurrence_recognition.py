@@ -162,4 +162,45 @@ def test_auto_uses_embedding_for_fixture_and_restored_sessions_keep_embedding() 
 def test_parse_answer() -> None:
     assert parse_answer("a: 2\nb: NONE\nc) 9", 3, 3) == {0: 2, 1: None, 2: None}
     assert parse_answer("no idea", 2, 2) is None
-    assert parse_answer("b: 1", 2, 1) == {0: None, 1: 1}
+    # Unmentioned notes stay absent so they keep embedding clustering.
+    assert parse_answer("b: 1", 2, 1) == {1: 1}
+
+
+# Both notes are near enough to FUNDING (0.35) to be offered to the model, and
+# 0.74 similar to each other: same gap, but below the dedup threshold.
+_VECTORS["New gap phrased once."] = [0.35, 0.0, math.sqrt(1 - 0.1225), 0.0]
+_VECTORS["New gap phrased twice."] = [0.35, 0.0, 0.656, math.sqrt(1 - 0.1225 - 0.656**2)]
+
+
+def test_same_observation_paraphrases_of_a_new_gap_share_one_cluster() -> None:
+    session = _session(
+        _Model(lambda prompt: "a: NONE\nb: NONE"),
+        [(FUNDING,), ("New gap phrased once.", "New gap phrased twice.")],
+    )
+    session.turn("First question")
+    session.turn("Second question")
+    once = _cluster_of(session, "New gap phrased once.")
+    assert _cluster_of(session, "New gap phrased twice.") == once
+    assert session.clusterer.recurrence(once) == 1
+
+
+def test_notes_missing_from_the_answer_keep_embedding_clustering() -> None:
+    # Only note b is answered; note a (PARAPHRASE) falls back to the threshold.
+    session = _session(
+        _Model(lambda prompt: f"b: {_number_of(prompt, RENTS)}"),
+        [(FUNDING, RENTS), (PARAPHRASE, UNRELATED)],
+    )
+    session.turn("First question")
+    session.turn("Second question")
+    assert _cluster_of(session, PARAPHRASE) == _cluster_of(session, RENTS)
+
+
+def test_recognizer_setting_and_prompt_are_part_of_the_behavior_fingerprint() -> None:
+    from shadowseed.storage.integrity import behavior_config_digest
+
+    model_session = _session(_Model(), [(FUNDING,)], recognizer="model")
+    embedding_session = _session(_Model(), [(FUNDING,)], recognizer="embedding")
+    assert "recurrence_recognition" in model_session._prompt_registry_audit()
+    assert behavior_config_digest(model_session.to_state()) != behavior_config_digest(
+        embedding_session.to_state()
+    )

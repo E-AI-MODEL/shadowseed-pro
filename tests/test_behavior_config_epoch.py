@@ -107,7 +107,7 @@ def test_behavior_projection_version_keeps_authority_contract_unchanged() -> Non
 
     assert set(authority_projection) == {"session_config", "manager_config"}
     assert "projection_version" not in authority_projection
-    assert behavior_projection["projection_version"] == 3
+    assert behavior_projection["projection_version"] == 4
     assert authority_config_digest(before) == authority_config_digest(after)
     assert behavior_config_digest(before) != behavior_config_digest(after)
 
@@ -180,7 +180,7 @@ def test_turn_keeps_original_behavior_digest_after_reconfigure(tmp_path) -> None
     assert reports[1]["behavior_config_digest"] == view["behavior_config_digest"]
 
     projection = reports[1]["behavior_config"]
-    assert projection["projection_version"] == 3
+    assert projection["projection_version"] == 4
     assert projection["model_roles"]["generation"]["backend"] == "fixture"
     assert projection["model_roles"]["revision"]["backend"] == "fixture"
     assert projection["detector_role"]["backend"] == "fixture"
