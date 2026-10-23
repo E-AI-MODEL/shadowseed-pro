@@ -75,7 +75,7 @@ _WORD = re.compile(r"[\w-]+")
 # investigation. No word/character cap or allowed-predicate vocabulary is
 # needed: the exception applies only to the detected list's own first item.
 _MEASUREMENT_LEVELS = re.compile(
-    r"\b(?:across|among|at|by|per|under|between|"
+    r"\b(?:across|among|at|by|per|under|over|between|"
     r"op|bij|tussen|onder|langs)\s+[^,;?!]+,",
     re.IGNORECASE,
 )
