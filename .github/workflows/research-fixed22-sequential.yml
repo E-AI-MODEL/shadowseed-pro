@@ -1,0 +1,77 @@
+name: Research - Fixed 22 questions (sequential zero / SSL)
+
+# Research-only. Baseline and treatment are separate push-triggered runs.
+# A new run is triggered only by the protocol workflow or the explicit SSL marker.
+on:
+  push:
+    branches:
+      - research/fixed22-zero-20261023
+      - research/fixed22-ssl-20261023
+    paths:
+      - .github/workflows/research-fixed22-sequential.yml
+      - research/fixed22-trigger.md
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fixed22-20261023-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  fixed22:
+    name: ${{ github.ref_name }} / ${{ matrix.model }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    environment: nesy
+    strategy:
+      fail-fast: false
+      matrix:
+        model: [gpt-5, gpt-6.1-sol]
+    env:
+      ARM: ${{ github.ref_name == 'research/fixed22-zero-20261023' && 'zero' || 'ssl' }}
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - name: Checkout exact research branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
+      - name: Install model and research dependencies
+        run: uv sync --locked --extra openai --extra test
+      - name: Record pinned suite and protocol
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          sha256sum src/shadowseed/data/ssl_session_suite.json
+          sha256sum scripts/research_controlled_pair_run.py
+          uv run --no-sync python -m py_compile scripts/research_controlled_pair_run.py
+      - name: Run the isolated research arm
+        shell: bash
+        env:
+          OPENAI_API_KEY: ${{ secrets.nesy || secrets.OPENAI_API_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p results/fixed22
+          if [ -z "${OPENAI_API_KEY}" ]; then
+            echo "::error::No API secret found (environment nesy secret nesy or repository OPENAI_API_KEY). No provider calls made."
+            exit 1
+          fi
+          uv run --no-sync python scripts/research_controlled_pair_run.py \
+            --arm "$ARM" \
+            --model "${{ matrix.model }}" \
+            --suite src/shadowseed/data/ssl_session_suite.json \
+            --out "results/fixed22/${ARM}_${{ matrix.model }}.json"
+      - name: Upload each arm as its own immutable run artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: fixed22-${{ env.ARM }}-${{ matrix.model }}-${{ github.run_id }}
+          path: results/fixed22/*.json
+          if-no-files-found: warn
