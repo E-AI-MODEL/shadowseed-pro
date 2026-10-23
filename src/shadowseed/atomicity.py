@@ -11,7 +11,6 @@ from __future__ import annotations
 import re
 
 _SHORT_ITEM_WORDS = 4
-_MAX_QUESTION_WORDS = 60
 
 # Leading words that normally make a comma segment a dependent clause, not
 # an independently enumerated short category.
@@ -34,9 +33,9 @@ _SECOND_WH_CLAUSE = re.compile(
     re.IGNORECASE,
 )
 _SECOND_YES_NO_CLAUSE = re.compile(
-    r"[,;]\s*(?:(?:en|and)\s+)?"
+    r"(?:(?:[,;]\s*)?(?:en|and)\s+|[,;]\s*)"
     r"(?:is|zijn|kan|kunnen|blijft|blijven|hangt|verandert|verschilt|"
-    r"heeft|hebben|geldt|ligt|wordt|does|do|did|are|was|were|"
+    r"heeft|hebben|geldt|ligt|wordt|werkt|lukt|does|do|did|are|was|were|"
     r"can|could|should|will|would)\s+"
     r"(?:de|het|een|er|dat|die|dit|deze|the|a|an|this|that|"
     r"it|there|we|ze|zij|they)\b",
@@ -44,6 +43,21 @@ _SECOND_YES_NO_CLAUSE = re.compile(
 )
 _MULTIPLE_SENTENCES = re.compile(r"[.!?]\s+[A-ZÀ-Ý]")
 _WORD = re.compile(r"[\w-]+")
+# Lists of values of one measured variable are not separate investigations.
+# Require a concrete comparison/measurement predicate as well as its
+# argument-level preposition; "What about X, Y and Z?" still fails.
+_MEASUREMENT_LEVELS = re.compile(
+    r"\b(?:across|among|at|by|per|under|over|between|"
+    r"op|bij|tussen|onder|langs)\s+[^,;?!]{1,70},",
+    re.IGNORECASE,
+)
+_MEASURED_RELATION = re.compile(
+    r"\b(?:vary|varies|varying|change|changes|changing|differ|differs|"
+    r"measure|measured|compared|compare|varieert|verandert|veranderen|"
+    r"verschilt|vergelijken|meten|gemeten|hangt|hangen|samen|"
+    r"verschillen|toename|afname)\b",
+    re.IGNORECASE,
+)
 
 
 def has_multiple_sentences(text: str) -> bool:
@@ -65,6 +79,8 @@ def looks_like_short_category_list(text: str) -> bool:
     This is intentionally narrower than counting all commas. It cannot settle
     the semantics of borderline three-variable relations.
     """
+    if _MEASUREMENT_LEVELS.search(text) and _MEASURED_RELATION.search(text):
+        return False
     without_decimal_commas = re.sub(r"(?<=\d),(?=\d)", ".", text)
     chunks = [
         _WORD.findall(part.lower())
@@ -102,8 +118,6 @@ def is_single_question(text: str) -> bool | None:
     stripped = text.strip()
     if not stripped.endswith("?"):
         return None
-    if len(_WORD.findall(stripped)) > _MAX_QUESTION_WORDS:
-        return False
     if ";" in stripped or has_multiple_sentences(stripped):
         return False
     # A short noun-phrase inventory has no single relation to investigate.
