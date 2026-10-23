@@ -17,14 +17,20 @@ Decision rule from #63: more than half of the candidates are useful, so the dete
 
 ## B. Is the same gap recognized when it returns?
 
-The admitted candidates were replayed through the product `RecurrenceClusterer` with `all-MiniLM-L6-v2` (revision `1110a243fdf4706b3f48f1d95db1a4f5529b4d41`) across thresholds (`recurrence_sweep.json`). Then 53 cross-turn pairs, stratified by similarity, were labelled "same gap" or "different" (`pair_sample.json`, `claude_pair_labels.json`).
+All results below use the intake as changed in this PR (189 admitted candidates). The admitted candidates were replayed through the product `RecurrenceClusterer` with `all-MiniLM-L6-v2` (revision `1110a243fdf4706b3f48f1d95db1a4f5529b4d41`) across thresholds (`recurrence_sweep.json`). Then 56 cross-turn pairs, stratified by similarity, were labelled "same gap", "different" or "unclear" (`pair_sample.json`, `claude_pair_labels.json`). Thirteen pairs also occurred in an earlier sample drawn before the intake change and keep that label.
 
-| Threshold | Same gap recognized | Different gaps wrongly merged |
-|---|---:|---:|
-| 0.50 | 6 of 8 | 20 of 40 |
-| 0.60 (default) | 5 of 8 | 10 of 40 |
-| 0.70 | 2 of 8 | 3 of 40 |
+| Threshold | Recurring clusters (2+ turns) | Same gap recognized | Different gaps wrongly merged |
+|---|---:|---:|---:|
+| 0.50 | 25 | 8 of 8 | 20 of 44 |
+| 0.55 | 22 | 8 of 8 | 12 of 44 |
+| 0.60 (default) | 12 | 7 of 8 | 10 of 44 |
+| 0.65 | 9 | 6 of 8 | 7 of 44 |
+| 0.70 | 6 | 4 of 8 | 4 of 44 |
 
-Same-gap pairs range from 0.42 to 0.74 similarity. Different-gap pairs reach 0.72. No threshold separates them: embedding similarity measures topic overlap, not whether two candidates are the same open question. The sample is small (8 same-gap pairs) but the overlap is unambiguous.
+Same-gap pairs score 0.59 to 0.75. Different-gap pairs reach 0.72. At the default threshold about one in four different-gap pairs is merged. Raising the threshold removes wrong merges only by losing real recurrences. Embedding similarity measures topic overlap, not whether two candidates are the same open question. The sample is small (8 same-gap pairs), but the overlap is clear.
 
-Next: `scripts/recurrence_judge.py` asks a model the same question on the same pairs (`seed-calibration.yml`, Qwen 2.5 7B). If a model clearly beats the embedding threshold, recurrence recognition moves into the detector: it receives the open seeds of the conversation and reports "new" or "recurs: <seed id>", with similarity kept only as a floor. Recurrence stays an observation and never becomes evidence or weight.
+## Model judge
+
+`scripts/recurrence_judge.py` asks a model "do A and B point at the same open question?" on the labelled pairs (`seed-calibration.yml`). Qwen 2.5 7B on the earlier pre-change sample recognized 4 of 8 same-gap pairs and wrongly merged 1 of 40 different pairs (embedding at 0.60 on that sample: 5 of 8 and 10 of 40). It is far more precise and misses some recurrences. The run on the current sample follows in CI. The same script runs with `--backend openai` for GPT-5 and GPT-6.1-sol, the models that produced the candidates.
+
+If a model clearly beats the embedding threshold, recurrence recognition moves into the detector. The detector then receives the open seeds of the conversation and reports "new" or "recurs: <seed id>", and similarity is kept only as a floor. Recurrence stays an observation and never becomes evidence or weight.
