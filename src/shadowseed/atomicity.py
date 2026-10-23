@@ -106,8 +106,13 @@ def is_single_question(text: str) -> bool | None:
         return False
     if ";" in stripped or has_multiple_sentences(stripped):
         return False
-    if stripped.lower().startswith(
-        ("ontbrekende context:", "ontbrekende onderdelen:", "let op:")
+    # A short noun-phrase inventory has no single relation to investigate.
+    # Example shape: "Which A and B?". Longer relational questions remain free.
+    if re.fullmatch(
+        r"(?:welke|welk|which|what)\s+[\w-]+(?:\s+[\w-]+){0,2}"
+        r"\s+(?:en|of|and|or)\s+[\w-]+\?",
+        stripped,
+        flags=re.IGNORECASE,
     ):
         return False
     if _SECOND_WH_CLAUSE.search(stripped) or _SECOND_YES_NO_CLAUSE.search(stripped):
