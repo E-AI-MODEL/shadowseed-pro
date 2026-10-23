@@ -61,11 +61,6 @@ ALLOWED_LITERALS = {
         "onderdelen", "zoals", "bijvoorbeeld", "analysekader", "schaalbaarheid",
         "kolonialisme",
     },
-    # Grammar tokens are data used to identify Dutch/English question shapes.
-    # Ordinary code, comments and error messages remain English.
-    "shadowseed/atomicity.py": {
-        "zonder", "waardoor", "wordt",
-    },
 }
 
 _WORD = re.compile(r"[A-Za-zÀ-ÿ]+")

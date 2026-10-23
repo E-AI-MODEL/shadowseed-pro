@@ -50,6 +50,14 @@ een relationele vraag is alleen structurele intake. De uitvoer zegt niet
 of die vraag werkelijk nuttig, waar of origineel is. Relevantie,
 betrouwbaarheid en nut worden apart en later onderzocht.
 
+Na de AB5X-evaluatie is de toelating bewust ruimer: een vraag met één zichtbaar
+vraagteken en zonder duidelijk afzonderlijke tweede zin kan als gewichtloze
+kandidaat worden vastgelegd. Komma's, opsommingen, lengte en een tweede
+bijzin zijn geen redenen om die mogelijkheid al vóór opslag weg te gooien.
+Een samengestelde vraag is hiermee niet aantoonbaar één semantische hypothese.
+Het opslaan ervan is geen goedkeuring, geen bewijs, geen systeeminstructie
+en geen vrijbrief om de Gate te omzeilen.
+
 ## Release- en onderzoeksgrens
 
 Deze wijziging bewaart detector v0.6 en zijn promphash op `main`.
