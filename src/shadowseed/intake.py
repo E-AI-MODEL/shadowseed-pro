@@ -68,6 +68,11 @@ def is_atomic_seed(text: str, max_seed_words: int | None = None) -> bool:
     lowered = text.lower().strip()
     if not lowered:
         return False
+    from shadowseed.atomicity import is_single_question
+
+    question_verdict = is_single_question(text)
+    if question_verdict is not None:
+        return question_verdict
     separators = [",", ";", " en ", " of ", "zoals", "bijvoorbeeld"]
     broad_terms = [
         "analysekader",
