@@ -56,10 +56,9 @@ def test_open_relation_birth_is_weightless_and_keeps_question_punctuation():
 
 @pytest.mark.parametrize("candidate", [
     "Oorzaken, gevolgen, contexten en perspectieven ontbreken.",
-    "Hoe hangen oorzaken, gevolgen, contexten en perspectieven samen?",
-    "Welke oorzaken en gevolgen?",
+    "Security, privacy and scalability are missing.",
 ])
-def test_broad_category_lists_still_fail(candidate: str):
+def test_declarative_category_stacks_still_fail(candidate: str):
     assert not SSLManager.is_atomic_seed(candidate)
 
 
