@@ -120,7 +120,7 @@ def test_release_publication_dispatches_production_release_assurance() -> None:
     assert workflow.index("Publish GitHub prerelease and exact source tag") < workflow.index(step)
     assert workflow.index("Verify published tag and downloadable assets") < workflow.index(step)
     assert (
-        'gh workflow run production-release-assurance.yml --ref main -f release_tag="$RELEASE_TAG"'
+        'gh workflow run production-release-assurance.yml --ref "$RELEASE_TAG" -f release_tag="$RELEASE_TAG"'
         in workflow
     )
     assert "actions: write" in workflow

@@ -563,6 +563,7 @@ jobs:
         run: |
           set -euo pipefail
           # Starting assurance here removes the manual post-publication step
-          # that let earlier candidates lapse.
-          gh workflow run production-release-assurance.yml --ref main -f release_tag="$RELEASE_TAG"
+          # that let earlier candidates lapse. The verifier runs from the
+          # published tag so a later main cannot change its semantics.
+          gh workflow run production-release-assurance.yml --ref "$RELEASE_TAG" -f release_tag="$RELEASE_TAG"
           echo "Dispatched Production Release Assurance for $RELEASE_TAG ($RELEASE_SHA)."
