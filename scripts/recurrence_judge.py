@@ -9,6 +9,9 @@ Usage:
     python scripts/recurrence_judge.py --pairs benchmarks/seed_calibration/results/pair_sample.json \\
         --labels benchmarks/seed_calibration/results/claude_pair_labels.json \\
         --model qwen2.5:7b-instruct-q4_K_M --output <file>
+
+    With OPENAI_API_KEY set, judge with the models that produced the candidates:
+    python scripts/recurrence_judge.py --backend openai --model gpt-5 ...
 """
 
 from __future__ import annotations
@@ -63,18 +66,43 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--pairs", required=True, type=Path)
     parser.add_argument("--labels", required=True, type=Path)
+    parser.add_argument("--backend", choices=("ollama", "openai"), default="ollama")
     parser.add_argument("--model", required=True)
     parser.add_argument("--model-digest", default=None)
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args(argv)
 
-    from shadowseed.adapters.ollama_client import OllamaClient
-
     pairs = json.loads(args.pairs.read_text(encoding="utf-8"))["pairs"]
     labels = json.loads(args.labels.read_text(encoding="utf-8"))["labels"]
-    client = OllamaClient(model=args.model)
-    client.timeout = 600.0
-    verdicts = judge(pairs, lambda prompt: client.generate(prompt, max_new_tokens=8))
+    if args.backend == "openai":
+        # The Responses API, as in the fixed22 runs: reasoning models reject the
+        # chat-completions temperature and max_tokens parameters, and spend
+        # output tokens before the one-word answer.
+        from openai import OpenAI
+
+        from shadowseed.adapters.openai_client import openai_api_key
+
+        sdk = OpenAI(api_key=openai_api_key())
+
+        def generate(prompt: str) -> str:
+            response = sdk.responses.create(
+                model=args.model,
+                input=prompt,
+                max_output_tokens=2000,
+                reasoning={"effort": "low"},
+                store=False,
+            )
+            return response.output_text or ""
+    else:
+        from shadowseed.adapters.ollama_client import OllamaClient
+
+        client = OllamaClient(model=args.model)
+        client.timeout = 600.0
+
+        def generate(prompt: str) -> str:
+            return client.generate(prompt, max_new_tokens=8)
+
+    verdicts = judge(pairs, generate)
     model_predictions = {k: v["verdict"] for k, v in verdicts.items()}
     embedding_predictions = {
         p["pair_id"]: "same" if p["similarity"] >= DEFAULT_CLUSTER_THRESHOLD else "different"
@@ -82,6 +110,7 @@ def main(argv: list[str] | None = None) -> int:
     }
     result = {
         "schema": "ssl-recurrence-judge-v1",
+        "backend": args.backend,
         "model": args.model,
         "model_digest": args.model_digest,
         "prompt": PROMPT,
