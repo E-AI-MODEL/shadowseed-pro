@@ -325,6 +325,8 @@ def test_assisted_promoted_seed_does_not_return_to_review(tmp_path) -> None:
         profile_id="demo",
         authority_profile_id="assisted",
         backend="fixture",
+        # Explicit three-source calibration: this test covers partial validation.
+        gate_strictness=90,
     )
 
     for _ in range(3):
@@ -441,6 +443,8 @@ def test_assisted_ingest_summary_keeps_review_after_partial_validation(tmp_path)
         profile_id="demo",
         authority_profile_id="assisted",
         backend="fixture",
+        # Explicit multi-source calibration: this test covers partial validation.
+        gate_strictness=80,
     )
 
     for _ in range(3):

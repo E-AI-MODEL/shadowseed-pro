@@ -35,7 +35,7 @@ import type {
 const emptyDraft: CreateSessionInput = {
   title: "",
   backend: "fixture",
-  authority_mode: "assisted",
+  authority_mode: "controlled",
   external_confirmed: false,
 };
 
@@ -45,15 +45,15 @@ const AUTHORITY_MODES: Record<
 > = {
   controlled: {
     label: "Controlled",
-    help: "Gate policy evidence_backed. Influence requires verified evidence. No review prompts.",
+    help: "Gate policy evidence_backed. One verified source promotes a seed. No review prompts.",
   },
   assisted: {
-    label: "Guided",
-    help: "Gate policy evidence_backed. Influence requires verified evidence. Prompts when a candidate reaches the review threshold.",
+    label: "Assisted",
+    help: "Gate policy evidence_backed. One verified source promotes a seed. Prompts when a seed recurs without evidence.",
   },
   exploratory: {
-    label: "Exploratory",
-    help: "Gate policy exploratory. Recurrence counts as a support signal; no external evidence required.",
+    label: "Autonomous",
+    help: "Gate policy exploratory. Recurrence counts as a support signal; no external evidence required. For research sessions.",
   },
 };
 
@@ -64,7 +64,7 @@ const BACKEND_LABELS: Record<string, string> = {
 };
 
 const GATE_POLICY_LABELS: Record<string, string> = {
-  evidence_backed: "Evidence required",
+  evidence_backed: "Evidence-backed",
   exploratory: "Exploratory",
   legacy_evidence_required: "Legacy evidence rule",
 };
@@ -109,20 +109,22 @@ function modelRoleSummary(session: SessionView) {
 type Tone = "neutral" | "warning" | "success" | "danger" | "muted";
 
 function seedStatus(seed: Seed): { label: string; tone: Tone } {
-  if (seed.blocking) return { label: "Contradicted", tone: "danger" };
-  if (seed.current_gate_authorized) {
-    return { label: "Authorized", tone: "success" };
-  }
   const status = String(seed.status ?? "").toLowerCase();
+  if (seed.blocking) return { label: "Blocked", tone: "danger" };
   if (status === "expired") return { label: "Expired", tone: "muted" };
   if (status === "dormant") return { label: "Dormant", tone: "muted" };
-  if (seed.orchestration?.state === "human_turn") {
-    return { label: "Evidence required", tone: "warning" };
+  if (seed.current_gate_authorized || status === "promoted") {
+    return { label: "Promoted", tone: "success" };
   }
-  if (status === "promoted") {
-    return { label: "Promoted (inactive)", tone: "neutral" };
+  if (Number(seed.weight ?? 0) > 0) return { label: "Validated", tone: "neutral" };
+  if ((seed.evidence_count ?? 0) > 0) return { label: "Supported", tone: "neutral" };
+  if ((seed.occurrence_count ?? 0) > 1) {
+    return {
+      label: "Recurring",
+      tone: seed.orchestration?.state === "human_turn" ? "warning" : "neutral",
+    };
   }
-  return { label: "Observed", tone: "neutral" };
+  return { label: "Found", tone: "neutral" };
 }
 
 function StatusBadge({ seed }: { seed: Seed }) {
@@ -363,7 +365,7 @@ export function ShadowseedApp() {
     } catch (cause) {
       if (seedRequestId.current === requestId) {
         setSeedError(
-          cause instanceof Error ? cause.message : "Could not load this candidate.",
+          cause instanceof Error ? cause.message : "Could not load this seed.",
         );
       }
     } finally {
@@ -784,7 +786,7 @@ export function ShadowseedApp() {
         selectedSeed.id,
       );
       if (refreshed) {
-        setSeedNotice("Contradiction recorded. This candidate is now blocked.");
+        setSeedNotice("Contradiction recorded. This seed is now blocked.");
       }
     } catch (cause) {
       setRetrySeedAction({
@@ -1100,7 +1102,7 @@ export function ShadowseedApp() {
                 <strong>{item.title}</strong>
                 <span>
                   {backendLabel(item.backend)} · {plural(item.turn_count, "turn", "turns")} ·{" "}
-                  {plural(item.seed_count, "candidate", "candidates")}
+                  {plural(item.seed_count, "seed", "seeds")}
                   {item.provider_ready === false ? " · provider needed" : ""}
                 </span>
               </button>
@@ -1237,8 +1239,8 @@ export function ShadowseedApp() {
             <div className="empty-state">
               <h2>No messages</h2>
               <p>
-                Detected candidates are listed in the Shadow panel with
-                weight 0.
+                Detected seeds are listed in the Shadow panel with weight
+                0.
               </p>
             </div>
           ) : (
@@ -1346,7 +1348,7 @@ export function ShadowseedApp() {
         <div className="shadow-heading">
           <div>
             <h2>Shadow memory</h2>
-            <p>{plural(sortedSeeds.length, "candidate", "candidates")}</p>
+            <p>{plural(sortedSeeds.length, "seed", "seeds")}</p>
           </div>
           <button
             aria-label="Close shadow memory"
@@ -1375,7 +1377,7 @@ export function ShadowseedApp() {
                 type="button"
               >
                 <Icon name="back" />
-                All candidates
+                All seeds
               </button>
 
               <section className="panel">
@@ -1413,7 +1415,8 @@ export function ShadowseedApp() {
                 <h3>Add verified evidence</h3>
                 <p className="muted">
                   Submit only a source you have checked yourself. The Gate
-                  records it as operator-verified evidence.
+                  records it as operator-verified evidence; one source
+                  promotes the seed in Controlled and Assisted mode.
                 </p>
                 <form className="stack" onSubmit={onSubmitEvidence}>
                   <label className="field">
@@ -1434,7 +1437,7 @@ export function ShadowseedApp() {
                     <span>Note <em>optional</em></span>
                     <textarea
                       disabled={seedActionBusy}
-                      placeholder="Why does this source support the candidate?"
+                      placeholder="Why does this source support the seed?"
                       rows={3}
                       value={evidenceNote}
                       onChange={(event) => {
@@ -1456,7 +1459,7 @@ export function ShadowseedApp() {
                     />
                     <span>
                       I checked this source and confirm it supports this
-                      candidate.
+                      seed.
                     </span>
                   </label>
                   <button
@@ -1507,7 +1510,7 @@ export function ShadowseedApp() {
                 ) : (
                   <>
                     <p className="muted">
-                      Blocks this candidate from influencing answers until the
+                      Blocks this seed from influencing answers until the
                       contradiction is resolved through the Gate.
                     </p>
                     <button
@@ -1543,7 +1546,7 @@ export function ShadowseedApp() {
 
               {loadingSeed ? (
                 <div className="shadow-empty">
-                  <p>Loading candidate…</p>
+                  <p>Loading seed…</p>
                 </div>
               ) : sortedSeeds.length ? (
                 <div className="seed-list">
@@ -1557,8 +1560,8 @@ export function ShadowseedApp() {
                 </div>
               ) : (
                 <div className="shadow-empty">
-                  <strong>No candidates</strong>
-                  <p>Candidates are created with weight 0.</p>
+                  <strong>No seeds</strong>
+                  <p>Seeds are created with weight 0.</p>
                 </div>
               )}
             </>

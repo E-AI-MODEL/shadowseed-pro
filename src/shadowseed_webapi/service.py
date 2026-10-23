@@ -260,7 +260,7 @@ class WebApiService:
         authority_mode = _defaulted_json_string(
             payload,
             "authority_mode",
-            "assisted",
+            "controlled",
         )
         model_id = _json_string(payload, "model_id", allow_null=True)
         if model_id == "":
