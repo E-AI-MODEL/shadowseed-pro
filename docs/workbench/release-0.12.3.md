@@ -64,6 +64,16 @@ by fixture testing.
   deduplication. Internal formatting and code identifiers are preserved. Raw
   detector output and parser diagnostics remain available in the existing audit.
 
+- One visible question is admitted as a weightless candidate without grammar,
+  enumeration, comma or length preselection. Visibly separate sentences and
+  multiple question marks are still rejected; declarative candidates keep the
+  legacy list filter. Admission creates no weight, evidence or Gate event and
+  says nothing about usefulness or truth. Detector v0.6 remains the default.
+- Trace decay rejects negative or non-finite elapsed time; zero steps are a
+  no-op. A longitudinal acceptance test covers birth, recurrence, TTL, TrTL,
+  expiry and the `evidence_backed` Gate for weightless inquiry seeds. It tests
+  the mechanical contract only, not model quality or SSL benefit.
+
 The remaining setup and parser fixes from PR #196 are carried onto current
 `main`; its older chat implementation must not overwrite the later #198 fixes.
 

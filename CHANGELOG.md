@@ -12,6 +12,17 @@
   failed setup leaves no persisted chat. Explicit tags never match another tag.
 - Remove whole-candidate Markdown wrappers before detector filtering and dedup;
   retain internal formatting, code identifiers and raw detector output.
+- Admit one visible question as a weightless candidate without grammar,
+  enumeration, comma or word-count preselection. Only visibly separate
+  sentences or multiple question marks are rejected structurally; declarative
+  candidates keep the legacy list filter. Admission sets no weight, evidence or
+  Gate state and does not judge usefulness or truth.
+- Reject negative or non-finite elapsed time in trace decay; zero steps are a
+  no-op. Fractional positive time remains supported for half-life calibration.
+- Add a longitudinal acceptance test for weightless inquiry seeds through
+  recurrence, TTL, TrTL, expiry and the `evidence_backed` Gate. It is a
+  mechanical contract, not model-quality or efficacy evidence. Detector v0.6
+  remains the product default.
 - Align source metadata and current documentation with the new candidate.
   v0.12.2 remains the published download until verified release publication.
 - Remain a Research Preview. Real Ollama use and production-local assurance
