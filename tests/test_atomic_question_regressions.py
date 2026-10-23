@@ -87,7 +87,7 @@ def test_measured_levels_do_not_become_category_lists(question):
     "Is the API reachable and does the retry succeed?",
     "Is de API bereikbaar en lukt het opnieuw proberen?",
     "Is de API bereikbaar, en werkt de volgende poging?",
-    "Can we reproduce the failure and is the log format stable?",
+    "Can we reproduce the failure, and is the log format stable?",
     "Does this result hold, and was the sample selected randomly?",
 ])
 def test_conjoined_independent_yes_no_questions_are_not_one_seed(question):
@@ -141,3 +141,31 @@ def test_unrelated_late_checklist_cannot_inherit_measurement_exemption(candidate
 ])
 def test_actual_four_level_measurement_still_passes(question):
     assert SSLManager.is_atomic_seed(question)
+
+
+@pytest.mark.parametrize("candidate", [
+    "Does the result remain stable when the sample is large and is the same size across groups?",
+    "How does latency increase across Android, iOS, and web clients?",
+    "How does latency decrease across Android, iOS, and web clients?",
+])
+def test_shared_predicates_and_unlisted_measurement_verbs_are_admitted(candidate):
+    assert SSLManager.is_atomic_seed(candidate)
+
+
+def test_descriptive_measurement_level_does_not_have_hidden_character_limit():
+    long_level = (
+        "Android clients with extended telemetry settings and a very "
+        "descriptive build configuration used for the repeated load test"
+    )
+    assert len(long_level) > 100
+    question = f"How does latency vary across {long_level}, iOS, and web clients?"
+    assert SSLManager.is_atomic_seed(question)
+
+
+@pytest.mark.parametrize("candidate", [
+    "Is the API reachable and has the retry succeeded?",
+    "Has the sample been collected and had the control group been selected?",
+    "Is de API bereikbaar en heeft de tweede poging gewerkt?",
+])
+def test_conjoined_perfect_tense_questions_are_split_at_intake(candidate):
+    assert not SSLManager.is_atomic_seed(candidate)
