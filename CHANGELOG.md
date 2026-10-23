@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Recurrence: the session model now recognizes a returning gap (ADR-012).
+  New seeds are matched against the open questions of the conversation in one
+  short model call; embedding similarity is a floor (0.3) and the fallback.
+  Recurrence stays observation and never adds weight under the product Gate.
 - Intake: English declarative candidates are admitted unless they are a bare
   category stack. In a blind review of 60 fixed22 candidates, 22 of the 24 the
   separator guard rejected were useful gaps. See

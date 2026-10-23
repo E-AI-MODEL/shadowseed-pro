@@ -82,22 +82,49 @@ class RecurrenceClusterer:
         self.recurrence_counts[cluster_id] += 1
         return True
 
+    def nearest(self, embedding: np.ndarray, *, floor: float, limit: int) -> list[tuple[int, float]]:
+        """Return up to ``limit`` clusters with centroid similarity >= ``floor``, best first."""
+
+        emb = np.asarray(embedding, dtype=float)
+        scored = [
+            (cluster_id, _cosine(emb, centroid))
+            for cluster_id, centroid in enumerate(self.centroids)
+        ]
+        scored = [item for item in scored if item[1] >= floor]
+        scored.sort(key=lambda item: item[1], reverse=True)
+        return scored[:limit]
+
+    def similarity(self, embedding: np.ndarray, cluster_id: int) -> float:
+        return _cosine(np.asarray(embedding, dtype=float), self.centroids[cluster_id])
+
     def add(
         self,
         text: str,
         embedding: np.ndarray,
         *,
         observation_ref: str | None = None,
+        cluster_id: int | None = None,
+        new_cluster: bool = False,
     ) -> int:
+        """Assign a stored candidate to a cluster.
+
+        By default the nearest centroid at or above ``threshold`` is used. A
+        recognizer that has decided membership itself passes ``cluster_id`` (join
+        that cluster) or ``new_cluster=True`` (start a new one).
+        """
+
         emb = np.asarray(embedding, dtype=float)
         normalized_ref = self._normalize_observation_ref(observation_ref)
         best = -1
-        best_sim = self.threshold
-        for i, centroid in enumerate(self.centroids):
-            similarity = _cosine(emb, centroid)
-            if similarity >= best_sim:
-                best_sim = similarity
-                best = i
+        if cluster_id is not None:
+            best = cluster_id
+        elif not new_cluster:
+            best_sim = self.threshold
+            for i, centroid in enumerate(self.centroids):
+                similarity = _cosine(emb, centroid)
+                if similarity >= best_sim:
+                    best_sim = similarity
+                    best = i
         if best < 0:
             self.centroids.append(emb.copy())
             self.centroid_counts.append(1)

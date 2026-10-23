@@ -13,7 +13,7 @@ from typing import Any, Iterable, Mapping
 GENESIS_HASH = "0" * 64
 EVENT_FORMAT_VERSION = 1
 ANCHOR_FORMAT_VERSION = 1
-BEHAVIOR_CONFIG_PROJECTION_VERSION = 3
+BEHAVIOR_CONFIG_PROJECTION_VERSION = 4
 
 
 def canonical_json(value: Any) -> str:
@@ -125,6 +125,7 @@ _BEHAVIOR_SESSION_CONFIG_KEYS = (
     "max_seeds_per_turn",
     "recurrence_mode",
     "cluster_threshold",
+    "recurrence_recognizer",
     "runtime_mode",
     "gate_policy_id",
     "authority_profile_id",
