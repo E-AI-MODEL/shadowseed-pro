@@ -37,7 +37,7 @@ def test_long_question_and_descriptive_measurement_levels_are_admitted():
     long_level = "Android clients with telemetry flags and lengthy deployment configuration notes "
     question = (
         "How does latency vary across "
-        + (long_level * 4)
+        + (long_level * 8)
         + ", iOS, Linux, and web clients?"
     )
     assert len(question.split()) > 60
