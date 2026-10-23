@@ -25,7 +25,7 @@ from typing import Any
 
 DEFAULT_SUITE = "src/shadowseed/data/ssl_session_suite.json"
 MAX_ANSWER_TOKENS = 1400
-MAX_DETECTOR_TOKENS = 500
+MAX_DETECTOR_TOKENS = 2400
 REASONING_EFFORT = "low"
 MAX_HISTORY_TURNS = 6
 MAX_HISTORY_CHARS = 12000
