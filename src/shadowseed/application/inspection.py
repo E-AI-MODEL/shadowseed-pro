@@ -27,6 +27,9 @@ from shadowseed.storage.integrity import (
 
 _STATUS_EXPLANATIONS = {
     "open": "Observed in the shadow layer; not authorized to influence an answer.",
+    "new": "Just observed. Remembered with zero weight; not authorized to influence an answer.",
+    "active": "Remembered and still being observed; not authorized to influence an answer.",
+    "decaying": "Not seen recently and fading from memory; not authorized to influence an answer.",
     "dormant": "Retained for possible later reactivation; not currently authorized to influence.",
     "promoted": (
         "Promoted by the Validation Gate. It may influence only when relevance and "
