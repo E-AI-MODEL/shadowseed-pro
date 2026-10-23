@@ -169,3 +169,22 @@ def test_descriptive_measurement_level_does_not_have_hidden_character_limit():
 ])
 def test_conjoined_perfect_tense_questions_are_split_at_intake(candidate):
     assert not SSLManager.is_atomic_seed(candidate)
+
+
+@pytest.mark.parametrize("candidate", [
+    "Is the API reachable and is it returning data?",
+    "Was the deployment complete and were they notified?",
+    "Is the API reachable and has she received a response?",
+    "Is the API reachable and has he received a response?",
+    "Was the deployment complete and were you notified?",
+    "Is de API bereikbaar en is hij verbonden?",
+    "Is de server beschikbaar en heeft zij een antwoord ontvangen?",
+])
+def test_unpunctuated_second_clause_with_pronoun_subject_is_rejected(candidate):
+    assert not SSLManager.is_atomic_seed(candidate)
+
+
+def test_shared_copular_predicate_with_article_remains_single_question():
+    assert SSLManager.is_atomic_seed(
+        "Does the result remain stable when the sample is large and is the same size across groups?"
+    )
