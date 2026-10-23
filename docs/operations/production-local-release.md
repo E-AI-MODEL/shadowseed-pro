@@ -100,6 +100,8 @@ After the final release-candidate commit reaches protected `main`, keep it uncha
 - record any operational, integrity, provider or packaging anomaly on #103;
 - treat any discovered P0/P1 as a blocker requiring a new protected fix and a new soak window.
 
+Two automated guards support this window. After a successful publication, `Release Workbench` dispatches the read-only `Production Release Assurance` workflow for the new tag while `main` still equals the release SHA. During the first 24 hours after publication, the `candidate-soak-guard` CI job fails pull requests into `main` while the latest release still equals `main`, so the required `build` check blocks the merge. A P0/P1 fix may proceed with the `soak-override` label; merging it ends the candidate. The use cycle, `shadowseed doctor` and the #103 record remain manual.
+
 A code change to the candidate SHA resets the soak clock. Documentation-only evidence records that do not alter the candidate release artifact must still be checked against the exact-SHA publication rule.
 
 ## Final stop condition

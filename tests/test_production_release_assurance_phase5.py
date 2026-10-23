@@ -18,7 +18,7 @@ def test_required_build_propagates_cross_platform_production_acceptance_result()
     assert 'glob.glob("tests/test_workbench_*.py")' in workflow
     assert 'glob.glob("tests/test_production_*_phase4.py")' in workflow
     assert 'glob.glob("tests/test_production_*_phase5.py")' in workflow
-    assert "build:\n    if: ${{ always() }}\n    needs: [production-local]" in workflow
+    assert "build:\n    if: ${{ always() }}\n    needs: [production-local, candidate-soak-guard]" in workflow
     assert "Require production-local acceptance success" in workflow
     assert "PRODUCTION_LOCAL_RESULT: ${{ needs.production-local.result }}" in workflow
     assert 'test "$PRODUCTION_LOCAL_RESULT" = "success"' in workflow
@@ -110,3 +110,30 @@ def test_release_runbook_keeps_native_signing_claims_explicitly_bounded() -> Non
     assert "at least 24 hours" in runbook
     assert "#95" in runbook
     assert "#97" in runbook
+
+
+def test_release_publication_dispatches_production_release_assurance() -> None:
+    workflow = _text(".github/workflows/release-workbench.yml")
+
+    step = "Dispatch read-only Production Release Assurance for the new tag"
+    assert step in workflow
+    assert workflow.index("Publish GitHub prerelease and exact source tag") < workflow.index(step)
+    assert workflow.index("Verify published tag and downloadable assets") < workflow.index(step)
+    assert (
+        'gh workflow run production-release-assurance.yml --ref main -f release_tag="$RELEASE_TAG"'
+        in workflow
+    )
+    assert "actions: write" in workflow
+
+
+def test_ci_build_blocks_merges_during_candidate_soak() -> None:
+    workflow = _text(".github/workflows/ci.yml")
+
+    assert "candidate-soak-guard:" in workflow
+    assert "needs: [production-local, candidate-soak-guard]" in workflow
+    assert 'SOAK_HOURS: "24"' in workflow
+    assert "soak-override" in workflow
+    assert 'test "$SOAK_GUARD_RESULT" = "success" || test "$SOAK_GUARD_RESULT" = "skipped"' in workflow
+    runbook = _text("docs/operations/production-local-release.md")
+    assert "candidate-soak-guard" in runbook
+    assert "soak-override" in runbook

@@ -108,15 +108,68 @@ jobs:
       - name: Production-local CLI contract
         run: uv run --no-sync python -m shadowseed.cli workbench --help
 
+  candidate-soak-guard:
+    # Blocks merges into main while a just-published release still equals main
+    # and its 24-hour unchanged-candidate soak is running. A P0/P1 fix may pass
+    # with the `soak-override` label; that fix ends the candidate.
+    if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOAK_HOURS: "24"
+      SOAK_OVERRIDE: ${{ contains(github.event.pull_request.labels.*.name, 'soak-override') }}
+    steps:
+      - name: Refuse merges during an active candidate soak
+        shell: python
+        run: |
+          import json
+          import os
+          import subprocess
+          from datetime import datetime, timezone
+
+          def api(path):
+              return json.loads(subprocess.run(
+                  ["gh", "api", f"repos/{os.environ['GITHUB_REPOSITORY']}/{path}"],
+                  check=True, capture_output=True, text=True,
+              ).stdout)
+
+          releases = api("releases?per_page=1")
+          if not releases:
+              raise SystemExit(0)
+          release = releases[0]
+          tag = release["tag_name"]
+          ref = api(f"git/ref/tags/{tag}")["object"]
+          if ref["type"] == "tag":
+              ref = api(f"git/tags/{ref['sha']}")["object"]
+          main_sha = api("commits/main")["sha"]
+          published = datetime.fromisoformat(release["published_at"].replace("Z", "+00:00"))
+          age_hours = (datetime.now(timezone.utc) - published).total_seconds() / 3600
+          if ref["sha"] != main_sha or age_hours >= float(os.environ["SOAK_HOURS"]):
+              print(f"No active soak: latest release {tag} is not main or is {age_hours:.1f}h old.")
+              raise SystemExit(0)
+          if os.environ["SOAK_OVERRIDE"] == "true":
+              print(f"::warning::soak-override set; merging ends the {tag} candidate soak.")
+              raise SystemExit(0)
+          remaining = float(os.environ["SOAK_HOURS"]) - age_hours
+          raise SystemExit(
+              f"{tag} ({main_sha}) is in its unchanged-candidate soak for another "
+              f"{remaining:.1f}h. Merging now would break Production Release Assurance "
+              "for this tag. Wait, or add the `soak-override` label for a P0/P1 fix."
+          )
+
   build:
     if: ${{ always() }}
-    needs: [production-local]
+    needs: [production-local, candidate-soak-guard]
     runs-on: ubuntu-latest
     steps:
       - name: Require production-local acceptance success
         env:
           PRODUCTION_LOCAL_RESULT: ${{ needs.production-local.result }}
         run: test "$PRODUCTION_LOCAL_RESULT" = "success"
+      - name: Require no active candidate soak
+        env:
+          SOAK_GUARD_RESULT: ${{ needs.candidate-soak-guard.result }}
+        run: test "$SOAK_GUARD_RESULT" = "success" || test "$SOAK_GUARD_RESULT" = "skipped"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
