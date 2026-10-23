@@ -58,6 +58,14 @@ _MEASURED_RELATION = re.compile(
     r"verschillen|toename|afname)\b",
     re.IGNORECASE,
 )
+# These words begin a new aside about a different checklist; they are not
+# values in the measurement enumeration that precedes them.
+_LIST_SCOPE_BOUNDARIES = {
+    "considering", "including", "regarding", "looking", "taking",
+    "discussing", "checking", "exploring", "given", "besides",
+    "such", "because", "since", "about", "gezien", "waarbij",
+    "bijvoorbeeld", "zoals",
+}
 
 
 def has_multiple_sentences(text: str) -> bool:
@@ -73,19 +81,35 @@ def _short_item(tokens: list[str], limit: int = _SHORT_ITEM_WORDS) -> bool:
     )
 
 
-def looks_like_short_category_list(text: str) -> bool:
-    """Recognize short comma lists, including Oxford commas and repeated commas.
+def _is_measured_list(text: str, segments: list[str], item_index: int) -> bool:
+    """Allow enumerated values only when tied to the list's own measurement.
 
-    This is intentionally narrower than counting all commas. It cannot settle
-    the semantics of borderline three-variable relations.
+    A prior phrase such as 'at night,' cannot exempt a later unrelated
+    checklist introduced by 'considering security, privacy, and scalability'.
     """
-    if _MEASUREMENT_LEVELS.search(text) and _MEASURED_RELATION.search(text):
+    if not _MEASURED_RELATION.search(text):
         return False
+    index = item_index - 1
+    while index > 0:
+        tokens = _WORD.findall(segments[index].lower())
+        if not _short_item(tokens) or _LIST_SCOPE_BOUNDARIES.intersection(tokens):
+            break
+        index -= 1
+    anchor_tokens = _WORD.findall(segments[index].lower())
+    if _LIST_SCOPE_BOUNDARIES.intersection(anchor_tokens):
+        return False
+    return bool(_MEASUREMENT_LEVELS.search(segments[index].strip() + ","))
+
+
+def looks_like_short_category_list(text: str) -> bool:
+    """Reject short category stacks, but admit lists of measured values.
+
+    The exception is tied to the actual list's first comma-separated item,
+    not to an unrelated comparative phrase elsewhere in the candidate.
+    """
     without_decimal_commas = re.sub(r"(?<=\d),(?=\d)", ".", text)
-    chunks = [
-        _WORD.findall(part.lower())
-        for part in without_decimal_commas.split(",")
-    ]
+    segments = without_decimal_commas.split(",")
+    chunks = [_WORD.findall(part.lower()) for part in segments]
     if len(chunks) < 2:
         return False
 
@@ -95,15 +119,15 @@ def looks_like_short_category_list(text: str) -> bool:
             last[:1] in (["en"], ["and"])
             and _short_item(last[1:])
         ):
-            return True
+            return not _is_measured_list(text, segments, len(chunks) - 2)
 
-    for chunk in chunks[1:]:
+    for chunk_index, chunk in enumerate(chunks[1:], start=1):
         for index, token in enumerate(chunk):
             if token in _CONJUNCTIONS and (
                 _short_item(chunk[:index], limit=3)
                 and _short_item(chunk[index + 1 :], limit=3)
             ):
-                return True
+                return not _is_measured_list(text, segments, chunk_index)
 
     return False
 
