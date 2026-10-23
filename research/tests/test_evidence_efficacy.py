@@ -307,3 +307,53 @@ def test_preregistration_rejects_unknown_arms_and_calibration(tmp_path: Path) ->
         validate_preregistration({**prereg, "comparison_arms": ["rag"]})
     with pytest.raises(ValueError):
         validate_preregistration({**prereg, "calibration": {"validation_increment": 1.0}})
+
+
+def test_evidence_window_submits_once_when_the_candidate_appears(tmp_path: Path) -> None:
+    suite = json.loads(_suite(tmp_path / "suite.json").read_text(encoding="utf-8"))
+    conversation = suite["conversations"][0]
+    conversation["turns"].append({"question": "And what about Alpha later on?"})
+    item = dict(conversation["evidence_plan"][0], until_turn=1)
+    conversation["evidence_plan"] = [item]
+    (tmp_path / "suite.json").write_text(json.dumps(suite), encoding="utf-8")
+    plan = validate_suite(suite)[0]["evidence_plan"][0]
+    assert plan["until_turn"] == 1
+
+    with pytest.raises(ValueError):
+        validate_suite(
+            {**suite, "conversations": [{**conversation, "evidence_plan": [dict(item, until_turn=3)]}]}
+        )
+    with pytest.raises(ValueError):
+        validate_suite(
+            {
+                **suite,
+                "conversations": [
+                    {**conversation, "evidence_plan": [dict(item, after_turn=1, until_turn=0)]}
+                ],
+            }
+        )
+
+    run_evidence_efficacy(
+        suite_path=tmp_path / "suite.json",
+        preregistration_path=_prereg(tmp_path / "prereg.json"),
+        output_dir=tmp_path / "bundle",
+        backend="fixture",
+        model_id="fixture",
+        model_reference="fixture",
+        model_revision=None,
+        model_digest=None,
+        max_new_tokens=64,
+        embedding_backend="lexical",
+        embedding_model=None,
+        embedding_reference="lexical-test",
+        embedding_revision=None,
+        surface_threshold=-1.0,
+        surface_top_k=2,
+        reviewers=("reviewer_a",),
+        run_id="fixture-window",
+        conversation_ids=("CONV_EFFICACY",),
+    )
+    audit = json.loads((tmp_path / "bundle" / "opportunity_audit.json").read_text(encoding="utf-8"))
+    assert len(audit["items"]) == 1
+    assert audit["items"][0]["evidence_window"] == [0, 1]
+    assert audit["items"][0]["scheduled_after_turn"] == 0

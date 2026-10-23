@@ -181,6 +181,12 @@ Report unmatched selectors, blocked Gate events, point-of-use denials, and no-op
 - **Self-critique arm:** on every surfaced turn the model also gets one extra pass that reviews and revises its own SSL-off answer. Reviewers compare SSL with SSL off and SSL with self-critique in separate blind packets (`review/answer_review_packet.json` and `review/answer_review_packet_self_critique.json`).
 - **Decision rule:** fixed in the preregistration before results.
 
-The suite `benchmarks/evidence_efficacy/study-1-suite.json` has twelve cases across twelve domains. Each case has one documented external source and a `text_contains_any` selector. The selector lists the terms that name the consideration the source supports. A selector that matches no candidate or more than one is a null opportunity and is reported.
+The suite `benchmarks/evidence_efficacy/study-1-suite.json` has twelve eight-turn conversations across twelve domains. SSL works across a conversation, so each one has:
 
-`.github/workflows/evidence-efficacy-study.yml` runs the study on Qwen 2.5 7B (q4_K_M, Ollama) with a pinned digest and embedding revision, verifies the bundle, and commits it under `benchmarks/results/evidence_efficacy/`.
+- an opening question and two follow-ups (turns 0-2);
+- an unrelated aside (turn 3), where nothing should surface;
+- four later turns where the documented consideration matters (turns 4-7).
+
+Each case has one documented external source and a `text_contains_any` selector listing the terms that name the consideration the source supports. The plan item's evidence window (`after_turn` 0 to `until_turn` 3) means the source is submitted once, after the first turn in which a matching candidate is observed, as an operator would. A selector that matches nothing in the window, or more than one candidate, is a null opportunity and is reported.
+
+`.github/workflows/evidence-efficacy-study.yml` runs the study on Qwen 2.5 7B (q4_K_M, Ollama) with a pinned digest and embedding revision. Three parallel shards of four conversations each produce their own verified bundle (`--conversation`). The bundles are committed under `benchmarks/results/evidence_efficacy/`.

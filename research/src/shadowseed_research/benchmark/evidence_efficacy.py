@@ -137,6 +137,14 @@ class EvidencePlanItem:
     strength: float
     independent: bool
     reason: str
+    # Last turn after which the selector may still match. The evidence is
+    # submitted once, after the first turn in [after_turn, until_turn] where
+    # the predeclared candidate is observed, as an operator would.
+    until_turn: int | None = None
+
+    @property
+    def last_turn(self) -> int:
+        return self.after_turn if self.until_turn is None else self.until_turn
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "EvidencePlanItem":
@@ -155,6 +163,9 @@ class EvidencePlanItem:
         after_turn = int(data.get("after_turn", -1))
         if after_turn < 0:
             raise ValueError("after_turn must be >= 0")
+        until_turn = None if data.get("until_turn") is None else int(data["until_turn"])
+        if until_turn is not None and until_turn < after_turn:
+            raise ValueError("until_turn must be >= after_turn")
         reason = str(data.get("reason", "")).strip()
         if not reason:
             raise ValueError("efficacy evidence requires an operator/research reason")
@@ -170,6 +181,7 @@ class EvidencePlanItem:
             strength=strength,
             independent=bool(data.get("independent", True)),
             reason=reason,
+            until_turn=until_turn,
         )
 
 
@@ -277,7 +289,7 @@ def validate_suite(data: dict[str, Any]) -> list[dict[str, Any]]:
         if len(ids) != len(set(ids)):
             raise ValueError("evidence_id values must be unique within a conversation")
         for item in plans:
-            if item.after_turn >= len(turns) - 1:
+            if item.last_turn >= len(turns) - 1:
                 raise ValueError(
                     "evidence must be scheduled before at least one later turn so surfacing can be measured"
                 )
@@ -495,11 +507,18 @@ def run_evidence_efficacy(
     reviewers: tuple[str, ...],
     run_id: str | None = None,
     quantization: str | None = None,
+    conversation_ids: tuple[str, ...] = (),
 ) -> Path:
     prereg = _load_json(preregistration_path)
     validate_preregistration(prereg)
     suite = _load_json(suite_path)
     conversations = validate_suite(suite)
+    if conversation_ids:
+        known = {str(conversation.get("id")) for conversation in conversations}
+        unknown = sorted(set(conversation_ids) - known)
+        if unknown:
+            raise ValueError(f"unknown conversation ids: {', '.join(unknown)}")
+        conversations = [c for c in conversations if str(c.get("id")) in conversation_ids]
     if not reviewers or len(set(reviewers)) != len(reviewers):
         raise ValueError("reviewer ids must be non-empty and unique")
     _validate_model_provenance(
@@ -591,9 +610,7 @@ def run_evidence_efficacy(
         plans = [
             EvidencePlanItem.from_dict(dict(item)) for item in conversation["evidence_plan"]
         ]
-        by_turn: dict[int, list[EvidencePlanItem]] = {}
-        for item in plans:
-            by_turn.setdefault(item.after_turn, []).append(item)
+        pending = list(plans)
         turn_reports: list[dict[str, Any]] = []
         conversation_opportunities: list[dict[str, Any]] = []
 
@@ -634,15 +651,21 @@ def run_evidence_efficacy(
                     critique_packets.append(packet)
                     critique_keys.append(key)
 
-            for item in by_turn.get(turn_index, []):
+            for item in list(pending):
+                if not item.after_turn <= turn_index <= item.last_turn:
+                    continue
                 seed_id, selector_result = _select_seed(session, item.selector, turn_reports)
+                if seed_id is None and turn_index < item.last_turn:
+                    continue
+                pending.remove(item)
                 seed_text = None
                 if seed_id is not None:
                     seed_text = session.manager.seeds[seed_id].text
                 opportunity: dict[str, Any] = {
                     "evidence_id": item.evidence_id,
                     "conversation_id": conversation_id,
-                    "scheduled_after_turn": item.after_turn,
+                    "scheduled_after_turn": turn_index,
+                    "evidence_window": [item.after_turn, item.last_turn],
                     "selector": item.selector.to_dict(),
                     "selector_result": selector_result,
                     "candidate_observed": seed_id is not None,
@@ -837,6 +860,7 @@ def run_evidence_efficacy(
             "path": "inputs/suite.json",
             "sha256": _sha256_file(copied_suite),
             "version": suite.get("version"),
+            "conversation_ids": [str(c.get("id")) for c in conversations],
         },
         "environment": environment,
         "claim_boundary": prereg["claim_boundary"],
@@ -904,6 +928,12 @@ def _build_parser() -> argparse.ArgumentParser:
     run.add_argument("--surface-top-k", type=int, default=2)
     run.add_argument("--reviewer-id", action="append", default=[])
     run.add_argument("--run-id", default=None)
+    run.add_argument(
+        "--conversation",
+        action="append",
+        default=[],
+        help="Run only these conversation ids from the suite (repeatable).",
+    )
     verify = sub.add_parser("verify")
     verify.add_argument("output_dir", type=Path)
     return parser
@@ -931,6 +961,7 @@ def main(argv: list[str] | None = None) -> int:
             surface_top_k=args.surface_top_k,
             reviewers=tuple(args.reviewer_id or DEFAULT_REVIEWERS),
             run_id=args.run_id,
+            conversation_ids=tuple(args.conversation),
         )
         print(manifest)
         return 0

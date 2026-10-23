@@ -29,6 +29,18 @@ jobs:
   study:
     runs-on: ubuntu-latest
     timeout-minutes: 330
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard: a
+            conversations: EE01 EE04 EE07 EE10
+          - shard: b
+            conversations: EE02 EE05 EE08 EE11
+          - shard: c
+            conversations: EE03 EE06 EE09 EE12
+    env:
+      SHARD_DIR: shard-${{ matrix.shard }}
 
     steps:
       - name: Check out exact head
@@ -103,7 +115,9 @@ jobs:
 
       - name: Run preregistered study
         run: |
-          rm -rf "$RUN_DIR"
+          rm -rf "$SHARD_DIR"
+          selected=()
+          for id in ${{ matrix.conversations }}; do selected+=(--conversation "$id"); done
           GITHUB_SHA="$(git rev-parse HEAD)" python -m shadowseed_research.benchmark.evidence_efficacy run \
             --backend ollama \
             --model-id "$MODEL_ID" \
@@ -118,21 +132,22 @@ jobs:
             --suite "$SUITE" \
             --preregistration "$PREREG" \
             --reviewer-id reviewer_1 \
-            --output-dir "$RUN_DIR" \
-            --run-id "$RUN_ID"
+            "${selected[@]}" \
+            --output-dir "$SHARD_DIR" \
+            --run-id "$RUN_ID-${{ matrix.shard }}"
 
       - name: Verify bundle and authority invariants
         run: |
-          python -m shadowseed_research.benchmark.evidence_efficacy verify "$RUN_DIR"
+          python -m shadowseed_research.benchmark.evidence_efficacy verify "$SHARD_DIR"
           python - <<'PY'
           import json
           import os
           from pathlib import Path
 
-          bundle = Path(os.environ["RUN_DIR"])
+          bundle = Path(os.environ["SHARD_DIR"])
           summary = json.loads((bundle / "summary.json").read_text(encoding="utf-8"))
           manifest = json.loads((bundle / "manifest.json").read_text(encoding="utf-8"))
-          assert summary["evidence_opportunity_count"] == 12, summary
+          assert summary["evidence_opportunity_count"] == 4, summary
           assert summary["comparison_arms"] == ["baseline", "self_critique"], summary
           assert manifest["preregistration"]["protocol_id"] == "ssl-evidence-efficacy-v2"
           assert manifest["research_runtime"]["generated_model_output_is_evidence"] is False
@@ -140,20 +155,34 @@ jobs:
           print(json.dumps(summary, indent=2))
           PY
 
-      - name: Upload bundle
+      - name: Upload shard bundle
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: evidence-efficacy-study-1
-          path: ${{ env.RUN_DIR }}
+          name: evidence-efficacy-study-1-${{ matrix.shard }}
+          path: ${{ env.SHARD_DIR }}
           if-no-files-found: ignore
 
-      - name: Commit immutable bundle to the branch
-        if: github.event_name == 'pull_request'
+  commit:
+    needs: study
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out PR branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Download shard bundles
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: evidence-efficacy-study-1-*
+          path: ${{ env.RUN_DIR }}
+
+      - name: Commit immutable bundles to the branch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$RUN_DIR"
-          git diff --cached --check
           git commit -m "Record evidence efficacy study 1 (Qwen 2.5 7B)"
           git push origin "HEAD:${{ github.head_ref }}"
