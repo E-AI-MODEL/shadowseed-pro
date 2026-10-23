@@ -19,6 +19,10 @@
 - `shadowseed-workbench` and frozen bundles open the web client by default. The
   legacy Gradio Workbench starts only with `--legacy-gradio`; `--web` is still
   accepted.
+- Intake: the Dutch separators (" of " = "or", " en ", "zoals",
+  "bijvoorbeeld") no longer apply to English candidates. English " of " made
+  17 of 97 rejections in the fixed22 GPT-5 and GPT-6.1-sol runs; all
+  previously admitted candidates stay admitted.
 - Research: evidence efficacy protocol v2 with a self-critique comparison arm,
   the ADR-011 single-source calibration, a `text_contains_any` selector, an
   evidence window (`until_turn`) and a `--conversation` filter; study 1 suite
