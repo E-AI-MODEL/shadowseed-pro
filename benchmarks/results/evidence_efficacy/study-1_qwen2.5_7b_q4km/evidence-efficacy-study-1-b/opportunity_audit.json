@@ -1,0 +1,148 @@
+{
+  "schema": "ssl-evidence-efficacy-bundle-v1",
+  "stage_order": [
+    "candidate_observed",
+    "evidence_submitted",
+    "gate_authority_granted",
+    "later_selected",
+    "point_of_use_allowed",
+    "surfaced",
+    "ab_generated"
+  ],
+  "items": [
+    {
+      "evidence_id": "ee02-source-1",
+      "conversation_id": "EE02",
+      "scheduled_after_turn": 3,
+      "evidence_window": [
+        0,
+        3
+      ],
+      "selector": {
+        "text_contains_any": [
+          "rate limit",
+          "rate-limit",
+          "brute"
+        ]
+      },
+      "selector_result": "text_selector_not_observed",
+      "candidate_observed": false,
+      "matched_seed_id": null,
+      "matched_seed_text": null,
+      "evidence_kind": "ssot",
+      "source_ref": "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html",
+      "evidence_strength": 1.0,
+      "evidence_independent": true,
+      "evidence_reason": "OWASP Authentication Cheat Sheet: password storage must be combined with protection against automated and brute-force login attempts.",
+      "evidence_submitted": false,
+      "gate_decision": null,
+      "authority_granted": false,
+      "terminal_reason": "text_selector_not_observed",
+      "later_selected_turns": [],
+      "later_surfaced_turns": [],
+      "point_of_use_allowed_turns": [],
+      "point_of_use_blocks": [],
+      "ab_generated_turns": []
+    },
+    {
+      "evidence_id": "ee05-source-1",
+      "conversation_id": "EE05",
+      "scheduled_after_turn": 3,
+      "evidence_window": [
+        0,
+        3
+      ],
+      "selector": {
+        "text_contains_any": [
+          "emergency",
+          "liquid"
+        ]
+      },
+      "selector_result": "text_selector_not_observed",
+      "candidate_observed": false,
+      "matched_seed_id": null,
+      "matched_seed_text": null,
+      "evidence_kind": "ssot",
+      "source_ref": "https://www.bogleheads.org/wiki/Paying_down_loans_versus_investing",
+      "evidence_strength": 1.0,
+      "evidence_independent": true,
+      "evidence_reason": "Bogleheads wiki, Paying down loans versus investing: an emergency fund and liquidity come before extra loan payments or investing.",
+      "evidence_submitted": false,
+      "gate_decision": null,
+      "authority_granted": false,
+      "terminal_reason": "text_selector_not_observed",
+      "later_selected_turns": [],
+      "later_surfaced_turns": [],
+      "point_of_use_allowed_turns": [],
+      "point_of_use_blocks": [],
+      "ab_generated_turns": []
+    },
+    {
+      "evidence_id": "ee08-source-1",
+      "conversation_id": "EE08",
+      "scheduled_after_turn": 3,
+      "evidence_window": [
+        0,
+        3
+      ],
+      "selector": {
+        "text_contains_any": [
+          "withdraw",
+          "revoke"
+        ]
+      },
+      "selector_result": "text_selector_not_observed",
+      "candidate_observed": false,
+      "matched_seed_id": null,
+      "matched_seed_text": null,
+      "evidence_kind": "ssot",
+      "source_ref": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+      "evidence_strength": 1.0,
+      "evidence_independent": true,
+      "evidence_reason": "GDPR Article 7(3): consent can be withdrawn at any time and withdrawal must be as easy as giving it.",
+      "evidence_submitted": false,
+      "gate_decision": null,
+      "authority_granted": false,
+      "terminal_reason": "text_selector_not_observed",
+      "later_selected_turns": [],
+      "later_surfaced_turns": [],
+      "point_of_use_allowed_turns": [],
+      "point_of_use_blocks": [],
+      "ab_generated_turns": []
+    },
+    {
+      "evidence_id": "ee11-source-1",
+      "conversation_id": "EE11",
+      "scheduled_after_turn": 3,
+      "evidence_window": [
+        0,
+        3
+      ],
+      "selector": {
+        "text_contains_any": [
+          "confound",
+          "reverse",
+          "causal direction"
+        ]
+      },
+      "selector_result": "text_selector_not_observed",
+      "candidate_observed": false,
+      "matched_seed_id": null,
+      "matched_seed_text": null,
+      "evidence_kind": "ssot",
+      "source_ref": "https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/",
+      "evidence_strength": 1.0,
+      "evidence_independent": true,
+      "evidence_reason": "Hernan and Robins, Causal Inference: What If: observational associations can reflect confounding or reverse causation.",
+      "evidence_submitted": false,
+      "gate_decision": null,
+      "authority_granted": false,
+      "terminal_reason": "text_selector_not_observed",
+      "later_selected_turns": [],
+      "later_surfaced_turns": [],
+      "point_of_use_allowed_turns": [],
+      "point_of_use_blocks": [],
+      "ab_generated_turns": []
+    }
+  ]
+}

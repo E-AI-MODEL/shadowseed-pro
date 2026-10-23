@@ -1,0 +1,152 @@
+{
+  "schema": "ssl-evidence-efficacy-bundle-v1",
+  "stage_order": [
+    "candidate_observed",
+    "evidence_submitted",
+    "gate_authority_granted",
+    "later_selected",
+    "point_of_use_allowed",
+    "surfaced",
+    "ab_generated"
+  ],
+  "items": [
+    {
+      "evidence_id": "ee03-source-1",
+      "conversation_id": "EE03",
+      "scheduled_after_turn": 3,
+      "evidence_window": [
+        0,
+        3
+      ],
+      "selector": {
+        "text_contains_any": [
+          "peek",
+          "optional stopping",
+          "sequential",
+          "repeated"
+        ]
+      },
+      "selector_result": "text_selector_not_observed",
+      "candidate_observed": false,
+      "matched_seed_id": null,
+      "matched_seed_text": null,
+      "evidence_kind": "ssot",
+      "source_ref": "https://www.evanmiller.org/how-not-to-run-an-ab-test.html",
+      "evidence_strength": 1.0,
+      "evidence_independent": true,
+      "evidence_reason": "Evan Miller, How Not To Run an A/B Test: repeatedly checking significance inflates the false-positive rate unless the sample size is fixed or a sequential method is used.",
+      "evidence_submitted": false,
+      "gate_decision": null,
+      "authority_granted": false,
+      "terminal_reason": "text_selector_not_observed",
+      "later_selected_turns": [],
+      "later_surfaced_turns": [],
+      "point_of_use_allowed_turns": [],
+      "point_of_use_blocks": [],
+      "ab_generated_turns": []
+    },
+    {
+      "evidence_id": "ee06-source-1",
+      "conversation_id": "EE06",
+      "scheduled_after_turn": 3,
+      "evidence_window": [
+        0,
+        3
+      ],
+      "selector": {
+        "text_contains_any": [
+          "leak"
+        ]
+      },
+      "selector_result": "text_selector_not_observed",
+      "candidate_observed": false,
+      "matched_seed_id": null,
+      "matched_seed_text": null,
+      "evidence_kind": "ssot",
+      "source_ref": "doi:10.1145/2382577.2382579",
+      "evidence_strength": 1.0,
+      "evidence_independent": true,
+      "evidence_reason": "Kaufman et al. (2012), Leakage in Data Mining: information leaking from the target or the future inflates offline accuracy.",
+      "evidence_submitted": false,
+      "gate_decision": null,
+      "authority_granted": false,
+      "terminal_reason": "text_selector_not_observed",
+      "later_selected_turns": [],
+      "later_surfaced_turns": [],
+      "point_of_use_allowed_turns": [],
+      "point_of_use_blocks": [],
+      "ab_generated_turns": []
+    },
+    {
+      "evidence_id": "ee09-source-1",
+      "conversation_id": "EE09",
+      "scheduled_after_turn": 3,
+      "evidence_window": [
+        0,
+        3
+      ],
+      "selector": {
+        "text_contains_any": [
+          "spore",
+          "bacillus",
+          "clostridium",
+          "danger zone",
+          "two hours",
+          "2 hours"
+        ]
+      },
+      "selector_result": "text_selector_not_observed",
+      "candidate_observed": false,
+      "matched_seed_id": null,
+      "matched_seed_text": null,
+      "evidence_kind": "ssot",
+      "source_ref": "https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/leftovers-and-food-safety",
+      "evidence_strength": 1.0,
+      "evidence_independent": true,
+      "evidence_reason": "USDA FSIS, Leftovers and Food Safety: cooked food left in the danger zone for more than two hours should be discarded; large amounts must be divided to cool quickly.",
+      "evidence_submitted": false,
+      "gate_decision": null,
+      "authority_granted": false,
+      "terminal_reason": "text_selector_not_observed",
+      "later_selected_turns": [],
+      "later_surfaced_turns": [],
+      "point_of_use_allowed_turns": [],
+      "point_of_use_blocks": [],
+      "ab_generated_turns": []
+    },
+    {
+      "evidence_id": "ee12-source-1",
+      "conversation_id": "EE12",
+      "scheduled_after_turn": 3,
+      "evidence_window": [
+        0,
+        3
+      ],
+      "selector": {
+        "text_contains_any": [
+          "permanen",
+          "additional",
+          "reversal"
+        ]
+      },
+      "selector_result": "text_selector_not_observed",
+      "candidate_observed": false,
+      "matched_seed_id": null,
+      "matched_seed_text": null,
+      "evidence_kind": "ssot",
+      "source_ref": "https://www.smithschool.ox.ac.uk/research/oxford-offsetting-principles",
+      "evidence_strength": 1.0,
+      "evidence_independent": true,
+      "evidence_reason": "Oxford Principles for Net Zero Aligned Carbon Offsetting: offsets need additionality and permanence, and emission reductions come first.",
+      "evidence_submitted": false,
+      "gate_decision": null,
+      "authority_granted": false,
+      "terminal_reason": "text_selector_not_observed",
+      "later_selected_turns": [],
+      "later_surfaced_turns": [],
+      "point_of_use_allowed_turns": [],
+      "point_of_use_blocks": [],
+      "ab_generated_turns": []
+    }
+  ]
+}

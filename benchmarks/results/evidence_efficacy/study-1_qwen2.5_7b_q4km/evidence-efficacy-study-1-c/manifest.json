@@ -1,0 +1,120 @@
+{
+  "schema": "ssl-evidence-efficacy-bundle-v1",
+  "run_id": "evidence-efficacy-study-1-qwen2.5-7b-q4km-c",
+  "created_at": "2026-10-23T11:33:17.131413+00:00",
+  "source": {
+    "source_revision": "998cf86e8d2b5932bbcd4f19d6ccbcb6718a554b",
+    "source_dirty": false,
+    "package_version": "0.12.3"
+  },
+  "model": {
+    "backend": "ollama",
+    "runtime_id": "qwen2.5:7b-instruct-q4_K_M",
+    "reference": "qwen2.5:7b-instruct-q4_K_M",
+    "revision": null,
+    "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+    "quantization": "q4_K_M",
+    "max_new_tokens": 320,
+    "detector_id": "ssl46_open_set_model_detector_v0.4-gen",
+    "detector_prompt_variant": "generative",
+    "detector_prompt_template_sha256": "f488e70e92d9f996df74b2dca0485e59b128c3955c0f2369442e2da82822f0cd",
+    "authority_effect_of_model_identity": "none"
+  },
+  "embedding": {
+    "backend": "sentence-transformers",
+    "runtime_model": "/home/runner/.cache/huggingface/hub/models--sentence-transformers--all-MiniLM-L6-v2/snapshots/1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "reference": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "revision_applied_at_load": true,
+    "dimension": 384
+  },
+  "research_runtime": {
+    "runtime_mode": "evaluation",
+    "gate_policy_id": "evidence_backed",
+    "production_policy": false,
+    "baseline_history_isolated": true,
+    "evidence_submission_api": "ShadowChatSession.submit_evidence",
+    "generated_model_output_is_evidence": false,
+    "calibration": {
+      "promotion_threshold": 0.2,
+      "min_evidence_for_gate": 1
+    },
+    "comparison_arms": [
+      "baseline",
+      "self_critique"
+    ]
+  },
+  "preregistration": {
+    "path": "inputs/preregistration.json",
+    "sha256": "4d33af9298763306cef485248d02ccf8ced1a1387b3050955c548d75d589a887",
+    "protocol_id": "ssl-evidence-efficacy-v2"
+  },
+  "suite": {
+    "path": "inputs/suite.json",
+    "sha256": "bd43f0ffeed58e5700142260f6935173d89d80c82bf81f1bd7a9ba1d548cdc80",
+    "version": "evidence-efficacy-study-1",
+    "conversation_ids": [
+      "EE03",
+      "EE06",
+      "EE09",
+      "EE12"
+    ]
+  },
+  "environment": {
+    "path": "environment.txt",
+    "sha256": "66e8f3f4c888e1fd1addf238e447432e116bbfe659aa8b9b0c3198114e700152",
+    "python": "3.11.17",
+    "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39"
+  },
+  "claim_boundary": "This protocol can measure blinded answer preference only on later turns where a predeclared, operator-attested external evidence event granted authority through the evidence_backed Gate and the authorized seed actually surfaced. It does not establish candidate truth, general answer-quality improvement, universal safety, or production readiness.",
+  "artifacts": {
+    "raw/evidence_backed_paired.json": {
+      "sha256": "03d68132acd007d67421479ed52a925b1760e38745720fa248e5be958b7e54f2",
+      "size_bytes": 656438
+    },
+    "opportunity_audit.json": {
+      "sha256": "3b5b36a2e052429fe89a0d94c9ba47b4d29fe83cc10b7b1ef60f717a9ac7be49",
+      "size_bytes": 4935
+    },
+    "review/candidate_review_packet.json": {
+      "sha256": "3c1c674c6b3e277d92bdb81cc9d55f1cf105e471434310d589b2cf352ad9b456",
+      "size_bytes": 96
+    },
+    "review/candidate_review_key.json": {
+      "sha256": "359c672a7e16105ebc020e1c62ded27762ede658db93953f0867290a79b0fe81",
+      "size_bytes": 100
+    },
+    "review/answer_review_packet.json": {
+      "sha256": "dbe22022b895e89044c93f6f311d3210f632e9854f385b537b51fc714f9f2f17",
+      "size_bytes": 93
+    },
+    "review/answer_review_key.json": {
+      "sha256": "4946dc1ef604fa23ad22f02b9e4d72018a4c6399f69e18d9ddb7205c1d584c61",
+      "size_bytes": 97
+    },
+    "summary.json": {
+      "sha256": "d4a44324074861b926fa21dd599d8d21da68ee81b5f2b0bd2be1a899d1fe3648",
+      "size_bytes": 1038
+    },
+    "environment.txt": {
+      "sha256": "66e8f3f4c888e1fd1addf238e447432e116bbfe659aa8b9b0c3198114e700152",
+      "size_bytes": 1537
+    },
+    "inputs/preregistration.json": {
+      "sha256": "4d33af9298763306cef485248d02ccf8ced1a1387b3050955c548d75d589a887",
+      "size_bytes": 3146
+    },
+    "inputs/suite.json": {
+      "sha256": "bd43f0ffeed58e5700142260f6935173d89d80c82bf81f1bd7a9ba1d548cdc80",
+      "size_bytes": 19890
+    },
+    "review/answer_review_packet_self_critique.json": {
+      "sha256": "dbe22022b895e89044c93f6f311d3210f632e9854f385b537b51fc714f9f2f17",
+      "size_bytes": 93
+    },
+    "review/answer_review_key_self_critique.json": {
+      "sha256": "4946dc1ef604fa23ad22f02b9e4d72018a4c6399f69e18d9ddb7205c1d584c61",
+      "size_bytes": 97
+    }
+  }
+}
