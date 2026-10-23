@@ -10,6 +10,7 @@ import threading
 import webbrowser
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 from shadowseed_webapi.server import DEFAULT_HOST, DEFAULT_PORT, create_server
 from shadowseed_webapi.service import WebApiService
@@ -113,7 +114,9 @@ def run_web_self_test(
         created["session_id"],
         {
             "question": "Which boundary remains in this packaged web smoke test?",
-            "request_id": "web-launcher:self-test",
+            # A fresh id per run: a reused workspace must not replay an
+            # earlier self-test turn through request idempotency.
+            "request_id": f"web-launcher:self-test:{uuid4()}",
         },
     )
     payload: dict[str, Any] = {
