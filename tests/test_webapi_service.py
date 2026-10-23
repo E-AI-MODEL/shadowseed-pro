@@ -1075,3 +1075,12 @@ def test_web_api_openai_status_distinguishes_key_from_missing_runtime(
     assert status["configured"] is True
     assert status["available"] is False
     assert status["ready"] is False
+
+
+def test_web_api_defaults_to_controlled_authority_profile(tmp_path) -> None:
+    api = WebApiService(tmp_path / "workspace")
+    created = api.create_session({"backend": "fixture"})
+
+    assert created["title"] == "New conversation"
+    assert created["authority_profile_id"] == "strict"
+    assert created["effective_gate_policy_id"] == "evidence_backed"

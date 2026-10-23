@@ -13,7 +13,11 @@ from pathlib import Path
 from typing import Any
 
 from shadowseed.adapters.embedding import SUPPORTED_EMBEDDING_BACKENDS
-from shadowseed.authority_profiles import AUTHORITY_PROFILES, get_authority_profile
+from shadowseed.authority_profiles import (
+    AUTHORITY_PROFILES,
+    AuthorityProfileId,
+    get_authority_profile,
+)
 from shadowseed.core_config import SSLCoreConfig
 from shadowseed.application.ingest import prepare_sources
 from shadowseed.application.comparison import ComparisonService
@@ -26,6 +30,13 @@ from shadowseed.application.profiles import list_profiles
 from shadowseed.application.scenarios import ScenarioService, ScenarioSpec
 from shadowseed.application.sessions import SessionService
 from shadowseed.application.workspace import WorkspaceService
+
+# ADR-011: one operator-verified source (one Gate validation step of 0.2)
+# reaches promotion in evidence-backed live sessions.
+SINGLE_SOURCE_PROMOTION: dict[str, Any] = {
+    "promotion_threshold": 0.2,
+    "min_evidence_for_gate": 1,
+}
 
 
 BACKENDS = ("fixture", "hf-transformers", "ollama", "openai")
@@ -364,6 +375,16 @@ class WorkbenchController:
             else bool(allow_same_turn_revision)
         )
         config_overrides: dict[str, Any] = {}
+        if (
+            runtime_mode == "live"
+            and gate_strictness is None
+            and authority_profile.id
+            in {AuthorityProfileId.STRICT, AuthorityProfileId.ASSISTED}
+        ):
+            # ADR-011: in the evidence-backed live profiles one operator-verified
+            # source is sufficient for promotion. Further distinct sources still
+            # add weight, which orders surfacing among relevant seeds.
+            config_overrides.update(SINGLE_SOURCE_PROMOTION)
         if ssl_intensity is not None:
             config_overrides.update(self.ssl_intensity_settings(ssl_intensity))
         config_overrides.update(gate_settings)

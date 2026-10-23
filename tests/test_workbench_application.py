@@ -449,7 +449,8 @@ def test_live_verified_evidence_persists_and_enables_later_use(tmp_path) -> None
     )
     later = restored.send_turn(session_id, seed["text"])
 
-    assert decisions == ["validated", "validated", "promoted"]
+    # ADR-011: one verified source promotes; further distinct sources add weight.
+    assert decisions == ["promoted", "promoted", "promoted"]
     assert duplicate["decision"] == "blocked"
     assert duplicate["evidence_count"] == 3
     assert promoted["status"] == "PROMOTED"
@@ -787,3 +788,66 @@ def test_revision_model_settings_have_separate_component_metadata() -> None:
     assert metadata["detection_backend"]["component"] == "detection"
     assert metadata["detection_model_id"]["component"] == "detection"
     assert metadata["detection_max_new_tokens"]["component"] == "detection"
+
+
+@pytest.mark.parametrize("authority_profile_id", ["strict", "assisted"])
+def test_one_verified_source_promotes_in_evidence_backed_live_profiles(
+    tmp_path, authority_profile_id
+) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    session_id = controller.create_session(
+        title="Single source",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id=authority_profile_id,
+    )
+    first = controller.send_turn(session_id, "What is missing from this privacy plan?")
+    seed = first["session"]["seeds"][0]
+    assert seed["weight"] == 0.0
+
+    result = controller.submit_verified_evidence(
+        session_id,
+        seed["id"],
+        source_ref="reviewer:only",
+        operator_verified=True,
+    )
+    promoted = controller.seed_view(session_id, seed["id"])
+
+    assert result["decision"] == "promoted"
+    assert promoted["status"] == "PROMOTED"
+    assert promoted["evidence_count"] == 1
+    assert controller.session_view(session_id)["effective_gate_policy_id"] == "evidence_backed"
+
+
+def test_single_source_calibration_leaves_recurrence_and_evaluation_unchanged(tmp_path) -> None:
+    controller = WorkbenchController(tmp_path / "workspace")
+    autonomous = controller.create_session(
+        title="Autonomous",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+        authority_profile_id="autonomous",
+    )
+    evaluation = controller.create_session(
+        title="Evaluation",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="evaluation",
+    )
+    explicit = controller.create_session(
+        title="Explicit strictness",
+        profile_id="demo",
+        backend="fixture",
+        runtime_mode="live",
+        gate_strictness=100,
+    )
+
+    def threshold(session_id: str) -> float:
+        return controller.sessions.load(session_id)["state"]["manager"]["config"][
+            "promotion_threshold"
+        ]
+
+    assert threshold(autonomous) == 0.5
+    assert threshold(evaluation) == 0.5
+    assert threshold(explicit) == 0.6

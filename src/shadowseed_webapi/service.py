@@ -254,13 +254,13 @@ class WebApiService:
         return self.controller.seed_view(session_id, seed_id)
 
     def create_session(self, payload: dict[str, Any]) -> dict[str, Any]:
-        title = _defaulted_json_string(payload, "title", "Nieuw gesprek")
-        title = title or "Nieuw gesprek"
+        title = _defaulted_json_string(payload, "title", "New conversation")
+        title = title or "New conversation"
         backend = _defaulted_json_string(payload, "backend", "fixture")
         authority_mode = _defaulted_json_string(
             payload,
             "authority_mode",
-            "assisted",
+            "controlled",
         )
         model_id = _json_string(payload, "model_id", allow_null=True)
         if model_id == "":

@@ -1,6 +1,13 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import {
+  FormEvent,
+  KeyboardEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import {
   clearOpenAI,
@@ -26,20 +33,59 @@ import type {
 } from "@/lib/types";
 
 const emptyDraft: CreateSessionInput = {
-  title: "Nieuw gesprek",
+  title: "",
   backend: "fixture",
-  authority_mode: "assisted",
+  authority_mode: "controlled",
   external_confirmed: false,
 };
 
+const AUTHORITY_MODES: Record<
+  CreateSessionInput["authority_mode"],
+  { label: string; help: string }
+> = {
+  controlled: {
+    label: "Controlled",
+    help: "Gate policy evidence_backed. One verified source promotes a seed. No review prompts.",
+  },
+  assisted: {
+    label: "Assisted",
+    help: "Gate policy evidence_backed. One verified source promotes a seed. Prompts when a seed recurs without evidence.",
+  },
+  exploratory: {
+    label: "Autonomous",
+    help: "Gate policy exploratory. Recurrence counts as a support signal; no external evidence required. For research sessions.",
+  },
+};
+
+const BACKEND_LABELS: Record<string, string> = {
+  fixture: "Offline demo",
+  ollama: "Ollama",
+  openai: "OpenAI",
+};
+
+const GATE_POLICY_LABELS: Record<string, string> = {
+  evidence_backed: "Evidence-backed",
+  exploratory: "Exploratory",
+  legacy_evidence_required: "Legacy evidence rule",
+};
+
 function authorityLabel(profile: string) {
-  if (profile === "autonomous") return "Verkennen";
-  if (profile === "assisted") return "Onderbouwd";
-  return "Gecontroleerd";
+  if (profile === "autonomous") return AUTHORITY_MODES.exploratory.label;
+  if (profile === "assisted") return AUTHORITY_MODES.assisted.label;
+  return AUTHORITY_MODES.controlled.label;
+}
+
+function backendLabel(backend: string) {
+  return BACKEND_LABELS[backend] ?? backend;
+}
+
+function gatePolicyLabel(policy?: string | null) {
+  if (!policy) return "Unknown";
+  return GATE_POLICY_LABELS[policy] ?? policy;
 }
 
 function compactModelLabel(modelId?: string | null) {
-  if (!modelId) return "standaard";
+  if (!modelId) return "default";
   return modelId.replace(":latest", "");
 }
 
@@ -52,26 +98,125 @@ function modelRoleSummary(session: SessionView) {
   const detection = compactModelLabel(roles.detection.model_id);
 
   if (generation === revision && generation === detection) {
-    return "alle rollen " + generation;
+    return generation === "default" ? null : generation;
   }
   if (revision === detection) {
-    return "antwoord " + generation + " · detectie/revisie " + revision;
+    return generation + " · detection/revision " + revision;
   }
+  return generation + " · detection " + detection + " · revision " + revision;
+}
+
+type Tone = "neutral" | "warning" | "success" | "danger" | "muted";
+
+function seedStatus(seed: Seed): { label: string; tone: Tone } {
+  const status = String(seed.status ?? "").toLowerCase();
+  if (seed.blocking) return { label: "Blocked", tone: "danger" };
+  if (status === "expired") return { label: "Expired", tone: "muted" };
+  if (status === "dormant") return { label: "Dormant", tone: "muted" };
+  if (seed.current_gate_authorized || status === "promoted") {
+    return { label: "Promoted", tone: "success" };
+  }
+  if (Number(seed.weight ?? 0) > 0) return { label: "Validated", tone: "neutral" };
+  if ((seed.evidence_count ?? 0) > 0) return { label: "Supported", tone: "neutral" };
+  if ((seed.occurrence_count ?? 0) > 1) {
+    return {
+      label: "Recurring",
+      tone: seed.orchestration?.state === "human_turn" ? "warning" : "neutral",
+    };
+  }
+  return { label: "Found", tone: "neutral" };
+}
+
+function StatusBadge({ seed }: { seed: Seed }) {
+  const status = seedStatus(seed);
   return (
-    "antwoord " +
-    generation +
-    " · detectie " +
-    detection +
-    " · revisie " +
-    revision
+    <span className={"badge badge--" + status.tone}>{status.label}</span>
   );
 }
 
-function orchestrationLabel(state?: string) {
-  if (state === "human_turn") return "Jij bent aan zet";
-  if (state === "ssl_turn") return "Shadowseed is aan zet";
-  if (state === "blocked") return "Geblokkeerd";
-  return "Geen actie nodig";
+function handoffTitle(state?: string) {
+  if (state === "human_turn") return "Action required";
+  if (state === "blocked") return "Blocked";
+  return null;
+}
+
+function plural(count: number, one: string, many: string) {
+  return count + " " + (count === 1 ? one : many);
+}
+
+function Icon({ name }: { name: "plus" | "menu" | "panel" | "close" | "back" | "send" }) {
+  const paths: Record<string, string> = {
+    plus: "M12 5v14M5 12h14",
+    menu: "M4 7h16M4 12h16M4 17h16",
+    panel: "M4 5h16v14H4zM14 5v14",
+    close: "M6 6l12 12M18 6L6 18",
+    back: "M15 6l-6 6 6 6",
+    send: "M5 12h14M13 6l6 6-6 6",
+  };
+  return (
+    <svg
+      aria-hidden="true"
+      className="icon"
+      fill="none"
+      height="16"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      width="16"
+    >
+      <path d={paths[name]} />
+    </svg>
+  );
+}
+
+function BrandMark() {
+  return (
+    <svg aria-hidden="true" className="brand-mark" viewBox="0 0 32 32">
+      <rect fill="currentColor" height="32" rx="9" width="32" />
+      <circle cx="16" cy="16" fill="none" r="7" stroke="var(--surface)" strokeDasharray="3 3" strokeWidth="2" />
+      <circle cx="16" cy="16" fill="var(--surface)" r="3" />
+    </svg>
+  );
+}
+
+function RawJson({ label, value }: { label: string; value: unknown }) {
+  const text = useMemo(
+    () =>
+      JSON.stringify(value, null, 2).replace(
+        /\[\s*(-?[\d.eE+-]+(?:,\s*-?[\d.eE+-]+)*)\s*\]/g,
+        (_match, items: string) => "[" + items.split(/,\s*/).join(", ") + "]",
+      ),
+    [value],
+  );
+  const [copied, setCopied] = useState(false);
+  return (
+    <details className="raw-json">
+      <summary>
+        <span>{label}</span>
+        <span className="mono">{text.length.toLocaleString()} chars</span>
+      </summary>
+      <div className="raw-json__body">
+        <button
+          className="button button--ghost raw-json__copy"
+          onClick={() => {
+            navigator.clipboard
+              ?.writeText(text)
+              .then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1500);
+              })
+              .catch(() => undefined);
+          }}
+          type="button"
+        >
+          {copied ? "Copied" : "Copy"}
+        </button>
+        <pre>{text}</pre>
+      </div>
+    </details>
+  );
 }
 
 function SeedCard({
@@ -81,60 +226,45 @@ function SeedCard({
   seed: Seed;
   onOpen: () => void;
 }) {
+  const seen = seed.occurrence_count ?? 0;
+  const evidence = seed.evidence_count ?? 0;
   return (
-    <article className="seed-card">
-      <div className="seed-card__top">
-        <span className="seed-state">
-          {seed.current_gate_authorized ? "TOEGESTAAN" : seed.status}
-        </span>
-        <strong>{Number(seed.weight ?? 0).toFixed(2)}</strong>
-      </div>
-      <p className="seed-text">{seed.text}</p>
-      <dl className="seed-facts">
-        <div>
-          <dt>Teruggezien</dt>
-          <dd>{seed.occurrence_count ?? 0}</dd>
-        </div>
-        <div>
-          <dt>Steun</dt>
-          <dd>{seed.evidence_count ?? 0}</dd>
-        </div>
-        <div>
-          <dt>Tegenspraak</dt>
-          <dd>{seed.blocking ? "open" : "geen"}</dd>
-        </div>
-      </dl>
-      {seed.orchestration?.reason_text ? (
-        <p className="seed-note">{seed.orchestration.reason_text}</p>
-      ) : null}
-      <button className="seed-open" onClick={onOpen} type="button">
-        Bekijk details
-      </button>
-    </article>
+    <button className="seed-card" onClick={onOpen} type="button">
+      <StatusBadge seed={seed} />
+      <span className="seed-text">{seed.text}</span>
+      <span className="seed-meta">
+        <span>Seen {seen}×</span>
+        <span>{plural(evidence, "source", "sources")}</span>
+        <span>{seed.blocking ? "Contradiction open" : "No contradiction"}</span>
+      </span>
+    </button>
   );
 }
 
 function timelineLabel(type: string) {
-  if (type === "seed_event") return "Geheugen";
-  if (type === "validation") return "Validatie";
-  if (type === "gate") return "Gate";
-  if (type === "contradiction") return "Tegenspraak";
+  if (type === "seed_event") return "Memory";
+  if (type === "validation") return "Validation";
+  if (type === "gate") return "Gate decision";
+  if (type === "contradiction") return "Contradiction";
   if (type === "probe_feedback") return "Feedback";
-  if (type === "influence") return "Gebruik";
+  if (type === "influence") return "Used in an answer";
   return type;
 }
 
 function timelineTimestamp(event: SeedTimelineEvent) {
-  if (!event.timestamp) return "Geen tijd vastgelegd";
+  if (!event.timestamp) return "No time recorded";
   const value = new Date(event.timestamp);
   return Number.isNaN(value.getTime())
     ? String(event.timestamp)
-    : value.toLocaleString("nl-NL");
+    : value.toLocaleString(undefined, {
+        dateStyle: "medium",
+        timeStyle: "short",
+      });
 }
 
 function SeedTimeline({ events }: { events: SeedTimelineEvent[] }) {
   if (!events.length) {
-    return <p className="seed-detail__muted">Nog geen timeline-events.</p>;
+    return <p className="muted">No events recorded.</p>;
   }
 
   return (
@@ -148,7 +278,7 @@ function SeedTimeline({ events }: { events: SeedTimelineEvent[] }) {
               <span>{timelineTimestamp(event)}</span>
             </div>
             <details>
-              <summary>Canonical record</summary>
+              <summary>Event payload (JSON)</summary>
               <pre>{JSON.stringify(event.payload, null, 2)}</pre>
             </details>
           </div>
@@ -198,6 +328,12 @@ export function ShadowseedApp() {
   const [error, setError] = useState<string | null>(null);
   const [createError, setCreateError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [newChatOpen, setNewChatOpen] = useState(false);
+  const [lastTurn, setLastTurn] = useState<{
+    sessionId: string;
+    report: Record<string, unknown>;
+    comparison: Record<string, unknown> | null;
+  } | null>(null);
   const sessionRequestId = useRef(0);
   const refreshRequestId = useRef(0);
   const seedRequestId = useRef(0);
@@ -229,7 +365,7 @@ export function ShadowseedApp() {
     } catch (cause) {
       if (seedRequestId.current === requestId) {
         setSeedError(
-          cause instanceof Error ? cause.message : "Geheugenpunt kon niet laden",
+          cause instanceof Error ? cause.message : "Could not load this seed.",
         );
       }
     } finally {
@@ -255,7 +391,7 @@ export function ShadowseedApp() {
       if (seedRequestId.current === requestId) {
         setSelectedSeed(null);
         setSeedNotice(
-          "De wijziging is opgeslagen, maar de detailweergave kon niet worden vernieuwd.",
+          "The change was saved, but the detail view could not be refreshed.",
         );
       }
       return false;
@@ -333,11 +469,11 @@ export function ShadowseedApp() {
 
   useEffect(() => {
     refreshSessions().catch((cause: unknown) => {
-      setError(cause instanceof Error ? cause.message : "API niet bereikbaar");
+      setError(cause instanceof Error ? cause.message : "The local Shadowseed service is not reachable.");
     });
     refreshProviderStatus().catch((cause: unknown) => {
       setProviderError(
-        cause instanceof Error ? cause.message : "Providerstatus niet bereikbaar",
+        cause instanceof Error ? cause.message : "Provider status is unavailable.",
       );
     });
   }, []);
@@ -367,7 +503,7 @@ export function ShadowseedApp() {
     try {
       await loadSession(sessionId);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Gesprek kon niet laden");
+      setError(cause instanceof Error ? cause.message : "Could not load this conversation.");
     }
   }
 
@@ -383,11 +519,11 @@ export function ShadowseedApp() {
       setProviders(next);
       setOpenaiKey("");
       setProviderNotice(
-        "OpenAI is voor deze lokale app-sessie geconfigureerd. De sleutel wordt niet in de workspace opgeslagen.",
+        "OpenAI is configured for this app session. The key is not stored in the workspace.",
       );
     } catch (cause) {
       setProviderError(
-        cause instanceof Error ? cause.message : "OpenAI kon niet worden geconfigureerd",
+        cause instanceof Error ? cause.message : "Could not configure OpenAI.",
       );
       setProviderBusy(false);
       return;
@@ -398,7 +534,7 @@ export function ShadowseedApp() {
       await syncSelectedProviderReadiness();
     } catch {
       setProviderNotice(
-        "OpenAI is geconfigureerd, maar de gespreksstatus kon niet worden vernieuwd.",
+        "OpenAI is configured, but the conversation status could not be refreshed.",
       );
     } finally {
       setProviderBusy(false);
@@ -416,11 +552,11 @@ export function ShadowseedApp() {
       setProviders(next);
       setOpenaiKey("");
       setProviderNotice(
-        "De tijdelijke OpenAI-sleutel is uit het procesgeheugen gewist. Een OPENAI_API_KEY uit de omgeving blijft actief.",
+        "The temporary OpenAI key was cleared from memory. An OPENAI_API_KEY from the environment stays active.",
       );
     } catch (cause) {
       setProviderError(
-        cause instanceof Error ? cause.message : "OpenAI-instelling kon niet worden gewist",
+        cause instanceof Error ? cause.message : "Could not clear the OpenAI key.",
       );
       setProviderBusy(false);
       return;
@@ -431,7 +567,7 @@ export function ShadowseedApp() {
       await syncSelectedProviderReadiness();
     } catch {
       setProviderNotice(
-        "De tijdelijke sleutel is gewist, maar de gespreksstatus kon niet worden vernieuwd.",
+        "The temporary key was cleared, but the conversation status could not be refreshed.",
       );
     } finally {
       setProviderBusy(false);
@@ -446,7 +582,7 @@ export function ShadowseedApp() {
       (!openaiStatus?.ready || !draft.external_confirmed)
     ) {
       setCreateError(
-        "Configureer OpenAI en bevestig externe verwerking voordat je deze sessie maakt.",
+        "Configure OpenAI and confirm external processing before starting this conversation.",
       );
       return;
     }
@@ -456,7 +592,7 @@ export function ShadowseedApp() {
     setNotice(null);
 
     try {
-      const created = await createSession(draft);
+      const created = await createSession({ ...draft, title: draft.title.trim() });
 
       refreshRequestId.current += 1;
       sessionRequestId.current += 1;
@@ -469,17 +605,19 @@ export function ShadowseedApp() {
       }
       clearSeedDetail();
       setMobileNavOpen(false);
+      setNewChatOpen(false);
+      setDraft({ ...emptyDraft, backend: draft.backend, model_id: draft.model_id, authority_mode: draft.authority_mode });
 
       try {
         setSessions(await listSessions());
       } catch {
         setNotice(
-          "Het gesprek is gemaakt, maar de gesprekslijst kon niet worden vernieuwd.",
+          "The conversation was created, but the list could not be refreshed.",
         );
       }
     } catch (cause) {
       setCreateError(
-        cause instanceof Error ? cause.message : "Gesprek kon niet worden gemaakt",
+        cause instanceof Error ? cause.message : "Could not start the conversation.",
       );
     } finally {
       setCreating(false);
@@ -493,7 +631,8 @@ export function ShadowseedApp() {
       !question.trim() ||
       sending ||
       loadingSession ||
-      seedActionBusy
+      seedActionBusy ||
+      (session.backend === "openai" && !externalTurnConfirmed)
     ) return;
     const text = question.trim();
     const requestId =
@@ -517,6 +656,11 @@ export function ShadowseedApp() {
       } else {
         setSession(result.session);
       }
+      setLastTurn({
+        sessionId: session.session_id,
+        report: result.report,
+        comparison: result.comparison,
+      });
       setRetryTurn(null);
       if (session.backend === "openai") {
         setExternalTurnConfirmed(false);
@@ -526,7 +670,7 @@ export function ShadowseedApp() {
         setSessions(await listSessions());
       } catch {
         setNotice(
-          "Het bericht is verstuurd, maar de gesprekslijst kon niet worden vernieuwd.",
+          "The message was sent, but the conversation list could not be refreshed.",
         );
       }
     } catch (cause) {
@@ -537,7 +681,7 @@ export function ShadowseedApp() {
         requestId,
       });
       setError(
-        cause instanceof Error ? cause.message : "Bericht kon niet worden verstuurd",
+        cause instanceof Error ? cause.message : "Could not send the message.",
       );
     } finally {
       setSending(false);
@@ -600,7 +744,7 @@ export function ShadowseedApp() {
         selectedSeed.id,
       );
       if (refreshed) {
-        setSeedNotice("Geverifieerde steun is opgeslagen.");
+        setSeedNotice("Verified evidence recorded.");
       }
     } catch (cause) {
       setRetrySeedAction({
@@ -611,7 +755,7 @@ export function ShadowseedApp() {
         requestId,
       });
       setSeedError(
-        cause instanceof Error ? cause.message : "Steun kon niet worden opgeslagen",
+        cause instanceof Error ? cause.message : "Could not record the evidence.",
       );
     } finally {
       setSeedActionBusy(false);
@@ -642,7 +786,7 @@ export function ShadowseedApp() {
         selectedSeed.id,
       );
       if (refreshed) {
-        setSeedNotice("Tegenspraak is vastgelegd. Dit punt is nu geblokkeerd.");
+        setSeedNotice("Contradiction recorded. This seed is now blocked.");
       }
     } catch (cause) {
       setRetrySeedAction({
@@ -653,7 +797,7 @@ export function ShadowseedApp() {
         requestId,
       });
       setSeedError(
-        cause instanceof Error ? cause.message : "Tegenspraak kon niet worden opgeslagen",
+        cause instanceof Error ? cause.message : "Could not record the contradiction.",
       );
     } finally {
       setSeedActionBusy(false);
@@ -690,7 +834,7 @@ export function ShadowseedApp() {
         selectedSeed.id,
       );
       if (refreshed) {
-        setSeedNotice("De tegenspraak is opnieuw door de Gate beoordeeld.");
+        setSeedNotice("The Gate has re-evaluated the contradiction.");
       }
     } catch (cause) {
       setRetrySeedAction({
@@ -701,7 +845,7 @@ export function ShadowseedApp() {
         requestId,
       });
       setSeedError(
-        cause instanceof Error ? cause.message : "Tegenspraak kon niet worden opgelost",
+        cause instanceof Error ? cause.message : "Could not resolve the contradiction.",
       );
     } finally {
       setSeedActionBusy(false);
@@ -709,10 +853,39 @@ export function ShadowseedApp() {
   }
 
 
+  function onComposerKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
+      event.preventDefault();
+      const form = event.currentTarget.form;
+      const submit = form?.querySelector<HTMLButtonElement>(".composer__send");
+      if (form && submit && !submit.disabled) {
+        form.requestSubmit(submit);
+      }
+    }
+  }
+
+  const formBusy = sending || creating || loadingSession || seedActionBusy;
+  const answerAuthor = session
+    ? compactModelLabel(session.model_roles?.generation.model_id ?? session.model_id) === "default"
+      ? backendLabel(session.backend)
+      : compactModelLabel(session.model_roles?.generation.model_id ?? session.model_id)
+    : "";
+  const showNewChat = newChatOpen || sessions.length === 0;
+  const handoff = handoffTitle(session?.orchestration?.state);
+  const sessionMeta = session
+    ? [
+        backendLabel(session.backend),
+        modelRoleSummary(session),
+        authorityLabel(session.authority_profile_id),
+      ]
+        .filter(Boolean)
+        .join(" · ")
+    : null;
+
   return (
     <main className="product-shell">
       <button
-        aria-label="Sluit gesprekken"
+        aria-label="Close conversations"
         className={
           mobileNavOpen
             ? "mobile-nav-backdrop mobile-nav-backdrop--open"
@@ -722,7 +895,7 @@ export function ShadowseedApp() {
         type="button"
       />
       <button
-        aria-label="Sluit Shadow"
+        aria-label="Close shadow memory"
         className={
           shadowOpen
             ? "shadow-backdrop shadow-backdrop--open"
@@ -737,343 +910,368 @@ export function ShadowseedApp() {
         id="session-navigation"
       >
         <div className="brand">
-          <span className="brand-mark">S</span>
-          <div>
+          <BrandMark />
+          <div className="brand__text">
             <strong>Shadowseed</strong>
-            <small>web client</small>
+            <span>Research Preview</span>
           </div>
           <button
-            aria-label="Sluit gesprekken"
-            className="sidebar-close"
+            aria-label="Close conversations"
+            className="icon-button sidebar-close"
             onClick={() => setMobileNavOpen(false)}
             type="button"
           >
-            Sluiten
+            <Icon name="close" />
           </button>
         </div>
 
-        <form className="new-chat" onSubmit={onCreate}>
-          <input
-            aria-label="Titel nieuw gesprek"
-            disabled={sending || creating || loadingSession || seedActionBusy}
-            value={draft.title}
-            onChange={(event) =>
-              setDraft({ ...draft, title: event.target.value })
-            }
-          />
-          <select
-            aria-label="Authority-regime"
-            disabled={sending || creating || loadingSession || seedActionBusy}
-            value={draft.authority_mode}
-            onChange={(event) =>
-              setDraft({
-                ...draft,
-                authority_mode: event.target
-                  .value as CreateSessionInput["authority_mode"],
-              })
-            }
-          >
-            <option value="controlled">Gecontroleerd</option>
-            <option value="assisted">Onderbouwd</option>
-            <option value="exploratory">Verkennen</option>
-          </select>
-          <select
-            aria-label="Modelprovider"
-            disabled={
-              sending ||
-              creating ||
-              loadingSession ||
-              seedActionBusy ||
-              providerBusy
-            }
-            value={draft.backend}
-            onChange={(event) => {
-              const backend =
-                event.target.value as CreateSessionInput["backend"];
-              setDraft({
-                ...draft,
-                backend,
-                model_id:
-                  backend === "openai"
-                    ? openaiStatus?.default_model ?? "gpt-4o-mini"
-                    : undefined,
-                external_confirmed: false,
-              });
-            }}
-          >
-            <option value="fixture">Offline demo</option>
-            <option value="ollama">Ollama lokaal</option>
-            <option disabled={!openaiStatus?.ready} value="openai">
-              OpenAI hosted
-            </option>
-          </select>
-          {draft.backend === "ollama" ? (
-            <>
+        {showNewChat ? (
+          <form className="new-chat" onSubmit={onCreate}>
+            <div className="new-chat__head">
+              <h2>New conversation</h2>
+              {sessions.length ? (
+                <button
+                  aria-label="Cancel new conversation"
+                  className="icon-button"
+                  onClick={() => {
+                    setNewChatOpen(false);
+                    setCreateError(null);
+                  }}
+                  type="button"
+                >
+                  <Icon name="close" />
+                </button>
+              ) : null}
+            </div>
+            <label className="field">
+              <span>Title</span>
               <input
-                aria-label="Ollama model"
-                aria-describedby="ollama-setup-help"
-                disabled={sending || creating || loadingSession || seedActionBusy}
-                placeholder="bijv. qwen2.5:7b"
-                value={draft.model_id ?? ""}
+                disabled={formBusy}
+                placeholder="Untitled conversation"
+                value={draft.title}
                 onChange={(event) =>
-                  setDraft({ ...draft, model_id: event.target.value })
+                  setDraft({ ...draft, title: event.target.value })
                 }
               />
-              <p className="setup-help" id="ollama-setup-help">
-                Start Ollama en vul de naam van een geïnstalleerd chatmodel in.
-                Shadowseed gebruikt ook <code>embeddinggemma</code>. Eenmalig
-                installeren: <code>ollama pull embeddinggemma</code>.
-              </p>
-            </>
-          ) : null}
-          {draft.backend === "openai" ? (
-            <>
-              <input
-                aria-label="OpenAI model"
-                disabled={
-                  sending ||
-                  creating ||
-                  loadingSession ||
-                  seedActionBusy ||
-                  providerBusy
-                }
-                placeholder={openaiStatus?.default_model ?? "gpt-4o-mini"}
-                value={draft.model_id ?? ""}
-                onChange={(event) =>
-                  setDraft({ ...draft, model_id: event.target.value })
-                }
-              />
-              <label className="external-consent">
+            </label>
+            <label className="field">
+              <span>Model</span>
+              <select
+                disabled={formBusy || providerBusy}
+                value={draft.backend}
+                onChange={(event) => {
+                  const backend =
+                    event.target.value as CreateSessionInput["backend"];
+                  setDraft({
+                    ...draft,
+                    backend,
+                    model_id:
+                      backend === "openai"
+                        ? openaiStatus?.default_model ?? "gpt-4o-mini"
+                        : undefined,
+                    external_confirmed: false,
+                  });
+                }}
+              >
+                <option value="fixture">Offline demo (no model)</option>
+                <option value="ollama">Ollama (local)</option>
+                <option disabled={!openaiStatus?.ready} value="openai">
+                  OpenAI (hosted)
+                </option>
+              </select>
+            </label>
+            {draft.backend === "ollama" ? (
+              <label className="field">
+                <span>Ollama model</span>
                 <input
-                  checked={Boolean(draft.external_confirmed)}
-                  disabled={creating || providerBusy || !openaiStatus?.ready}
+                  aria-describedby="ollama-setup-help"
+                  disabled={formBusy}
+                  placeholder="e.g. qwen2.5:7b"
+                  value={draft.model_id ?? ""}
                   onChange={(event) =>
-                    setDraft({
-                      ...draft,
-                      external_confirmed: event.target.checked,
-                    })
+                    setDraft({ ...draft, model_id: event.target.value })
                   }
-                  type="checkbox"
                 />
-                <span>
-                  Ik bevestig dat prompts, Shadow-context en embeddings voor
-                  deze sessie naar OpenAI mogen worden gestuurd.
-                </span>
+                <small className="field-help" id="ollama-setup-help">
+                  Start Ollama and enter an installed chat model. Shadowseed
+                  also needs <code>embeddinggemma</code>: run{" "}
+                  <code>ollama pull embeddinggemma</code> once.
+                </small>
               </label>
-            </>
-          ) : null}
+            ) : null}
+            {draft.backend === "openai" ? (
+              <>
+                <label className="field">
+                  <span>OpenAI model</span>
+                  <input
+                    disabled={formBusy || providerBusy}
+                    placeholder={openaiStatus?.default_model ?? "gpt-4o-mini"}
+                    value={draft.model_id ?? ""}
+                    onChange={(event) =>
+                      setDraft({ ...draft, model_id: event.target.value })
+                    }
+                  />
+                </label>
+                <label className="check">
+                  <input
+                    checked={Boolean(draft.external_confirmed)}
+                    disabled={creating || providerBusy || !openaiStatus?.ready}
+                    onChange={(event) =>
+                      setDraft({
+                        ...draft,
+                        external_confirmed: event.target.checked,
+                      })
+                    }
+                    type="checkbox"
+                  />
+                  <span>
+                    I agree that prompts, shadow context and embeddings for
+                    this conversation are sent to OpenAI.
+                  </span>
+                </label>
+              </>
+            ) : null}
+            <label className="field">
+              <span>Authority mode</span>
+              <select
+                disabled={formBusy}
+                value={draft.authority_mode}
+                onChange={(event) =>
+                  setDraft({
+                    ...draft,
+                    authority_mode: event.target
+                      .value as CreateSessionInput["authority_mode"],
+                  })
+                }
+              >
+                <option value="controlled">{AUTHORITY_MODES.controlled.label}</option>
+                <option value="assisted">{AUTHORITY_MODES.assisted.label}</option>
+                <option value="exploratory">{AUTHORITY_MODES.exploratory.label}</option>
+              </select>
+              <small className="field-help">
+                {AUTHORITY_MODES[draft.authority_mode].help}
+              </small>
+            </label>
+            <button
+              className="button button--primary"
+              type="submit"
+              disabled={
+                formBusy ||
+                providerBusy ||
+                (draft.backend === "ollama" && !draft.model_id?.trim()) ||
+                (draft.backend === "openai" &&
+                  (!openaiStatus?.ready ||
+                    !draft.external_confirmed ||
+                    !draft.model_id?.trim()))
+              }
+            >
+              {creating ? "Starting…" : "Start conversation"}
+            </button>
+            {createError ? (
+              <div className="alert alert--danger" role="alert">{createError}</div>
+            ) : null}
+          </form>
+        ) : (
           <button
-            type="submit"
-            disabled={
-              creating ||
-              sending ||
-              loadingSession ||
-              seedActionBusy ||
-              providerBusy ||
-              (draft.backend === "ollama" && !draft.model_id?.trim()) ||
-              (draft.backend === "openai" &&
-                (!openaiStatus?.ready ||
-                  !draft.external_confirmed ||
-                  !draft.model_id?.trim()))
-            }
+            className="button button--primary button--block"
+            disabled={formBusy}
+            onClick={() => setNewChatOpen(true)}
+            type="button"
           >
-            {creating ? "Maken..." : "+ Nieuw gesprek"}
+            <Icon name="plus" />
+            New conversation
           </button>
-          {createError ? (
-            <div className="setup-error" role="alert">{createError}</div>
-          ) : null}
-        </form>
+        )}
+
+        {sessions.length ? (
+          <nav className="conversation-list" aria-label="Conversations">
+            <h2 className="section-label">Conversations</h2>
+            {sessions.map((item) => (
+              <button
+                aria-current={item.session_id === session?.session_id ? "page" : undefined}
+                className={
+                  item.session_id === session?.session_id
+                    ? "conversation conversation--active"
+                    : "conversation"
+                }
+                disabled={sending || creating || seedActionBusy}
+                key={item.session_id}
+                onClick={() => selectSession(item.session_id)}
+                type="button"
+              >
+                <strong>{item.title}</strong>
+                <span>
+                  {backendLabel(item.backend)} · {plural(item.turn_count, "turn", "turns")} ·{" "}
+                  {plural(item.seed_count, "seed", "seeds")}
+                  {item.provider_ready === false ? " · provider needed" : ""}
+                </span>
+              </button>
+            ))}
+          </nav>
+        ) : (
+          <div className="conversation-list" />
+        )}
 
         <details className="provider-settings">
           <summary>
             <span>Providers</span>
-            <strong>
+            <span
+              className={
+                openaiStatus?.ready ? "dot dot--success" : "dot dot--muted"
+              }
+            >
               {openaiStatus?.ready
-                ? "OpenAI gereed"
+                ? "OpenAI ready"
                 : openaiStatus?.configured
-                  ? "OpenAI mist runtime"
-                  : "OpenAI niet ingesteld"}
-            </strong>
+                  ? "OpenAI runtime missing"
+                  : "OpenAI not configured"}
+            </span>
           </summary>
           <div className="provider-settings__body">
-            <div className="provider-status-row">
-              <div>
-                <strong>OpenAI</strong>
-                <span>Hosted provider</span>
-              </div>
-              <span
-                className={
-                  openaiStatus?.ready
-                    ? "provider-badge provider-badge--ready"
-                    : "provider-badge"
-                }
-              >
-                {openaiStatus?.ready ? "gereed" : "niet gereed"}
-              </span>
-            </div>
             {!openaiStatus?.available ? (
-              <p>
-                De OpenAI-runtime is niet geïnstalleerd. Installeer de
-                <code> shadowseed[openai] </code>
-                extra voordat je deze provider gebruikt.
+              <p className="muted">
+                The OpenAI runtime is not installed. Install the{" "}
+                <code>shadowseed[openai]</code> extra to use this provider.
               </p>
             ) : null}
             <form onSubmit={onConfigureOpenAI}>
-              <label>
-                Tijdelijke API-key
+              <label className="field">
+                <span>Temporary API key</span>
                 <input
-                  aria-label="OpenAI API-key"
                   autoComplete="off"
                   disabled={providerBusy}
                   onChange={(event) => setOpenaiKey(event.target.value)}
-                  placeholder="sk-..."
+                  placeholder="sk-…"
                   type="password"
                   value={openaiKey}
                 />
               </label>
               <button
+                className="button button--secondary"
                 disabled={providerBusy || !openaiKey.trim()}
                 type="submit"
               >
-                {providerBusy ? "Bezig..." : "Configureer"}
+                {providerBusy ? "Working…" : "Configure"}
               </button>
             </form>
             {openaiStatus?.configured ? (
               <button
-                className="provider-clear"
+                className="button button--ghost"
                 disabled={providerBusy}
                 onClick={onClearOpenAI}
                 type="button"
               >
-                Wis tijdelijke sleutel
+                Clear temporary key
               </button>
             ) : null}
-            <p>
-              De sleutel gaat alleen naar de lokale Python-API en wordt niet
-              in de workspace, browseropslag of exports bewaard.
+            <p className="muted">
+              The key goes only to the local Python service. It is never
+              stored in the workspace, browser storage or exports.
             </p>
             {providerNotice ? (
-              <div className="provider-notice">{providerNotice}</div>
+              <div className="alert alert--info">{providerNotice}</div>
             ) : null}
             {providerError ? (
-              <div className="provider-error">{providerError}</div>
+              <div className="alert alert--danger">{providerError}</div>
             ) : null}
           </div>
         </details>
-
-        <nav className="conversation-list" aria-label="Gesprekken">
-          {sessions.map((item) => (
-            <button
-              className={
-                item.session_id === session?.session_id
-                  ? "conversation conversation--active"
-                  : "conversation"
-              }
-              disabled={sending || creating || seedActionBusy}
-              key={item.session_id}
-              onClick={() => selectSession(item.session_id)}
-              type="button"
-            >
-              <strong>{item.title}</strong>
-              <span>
-                {item.turn_count} beurten · {item.seed_count} punten
-                {item.provider_ready === false ? " · provider instellen" : ""}
-              </span>
-            </button>
-          ))}
-        </nav>
       </aside>
 
       <section className="chat-column">
         <header className="chat-header">
+          <button
+            aria-controls="session-navigation"
+            aria-expanded={mobileNavOpen}
+            aria-label="Open conversations"
+            className="icon-button mobile-nav-button"
+            disabled={sending || creating}
+            onClick={() => {
+              setShadowOpen(false);
+              setMobileNavOpen(true);
+            }}
+            type="button"
+          >
+            <Icon name="menu" />
+          </button>
           <div className="chat-header__main">
-            <button
-              aria-controls="session-navigation"
-              aria-expanded={mobileNavOpen}
-              className="mobile-nav-button"
-              disabled={sending || creating}
-              onClick={() => {
-                setShadowOpen(false);
-                setMobileNavOpen(true);
-              }}
-              type="button"
-            >
-              Gesprekken
-            </button>
-            <div>
-              <h1>{session?.title ?? "Shadowseed"}</h1>
-              <p>
-                {session
-                  ? authorityLabel(session.authority_profile_id) +
-                    " · " +
-                    session.backend +
-                    (modelRoleSummary(session)
-                      ? " · " + modelRoleSummary(session)
-                      : "")
-                  : "Maak een gesprek om te beginnen."}
-              </p>
-            </div>
+            <h1>{session?.title ?? "Shadowseed"}</h1>
+            <p>{sessionMeta ?? "Start a conversation to begin."}</p>
           </div>
           <div className="chat-header__actions">
+            {session?.provider_ready === false ? (
+              <span className="badge badge--warning">Provider needed</span>
+            ) : null}
+            {session ? (
+              <span
+                className="badge badge--outline policy-badge"
+                title={"Gate policy: " + session.effective_gate_policy_id}
+              >
+                {gatePolicyLabel(session.effective_gate_policy_id)}
+              </span>
+            ) : null}
             <button
               aria-controls="shadow-inspector"
               aria-expanded={shadowOpen}
-              className="shadow-toggle-button"
+              className="button button--secondary shadow-toggle-button"
               onClick={() => {
                 setMobileNavOpen(false);
                 setShadowOpen(true);
               }}
               type="button"
             >
-              Shadow {sortedSeeds.length}
+              <Icon name="panel" />
+              Shadow
+              {sortedSeeds.length ? (
+                <span className="count">{sortedSeeds.length}</span>
+              ) : null}
             </button>
-            {session?.provider_ready === false ? (
-              <span className="provider-warning-pill">Provider instellen</span>
-            ) : null}
-            {session ? (
-              <span className="policy-pill">
-                {session.effective_gate_policy_id}
-              </span>
-            ) : null}
           </div>
         </header>
 
         <div className="messages">
           {!session ? (
             <div className="empty-state">
-              <strong>Begin met een gesprek.</strong>
-              <p>
-                Kies een model en maak een gesprek. Bij Shadow zie je welke
-                mogelijke open vragen worden onthouden en welke aan een
-                antwoord zijn meegegeven.
-              </p>
+              <h2>No conversation selected</h2>
+              <p>Create a conversation in the sidebar.</p>
             </div>
           ) : session.messages.length === 0 ? (
             <div className="empty-state">
-              <strong>Waar wil je over praten?</strong>
+              <h2>No messages</h2>
               <p>
-                Stel je vraag. Mogelijke open vragen verschijnen bij Shadow.
-                Daar kun je ook ondersteuning of tegenspraak toevoegen.
+                Detected seeds are listed in the Shadow panel with weight
+                0.
               </p>
             </div>
           ) : (
-            session.messages.map((message, index) => (
-              <article
-                className={"message message--" + message.role}
-                key={message.role + "-" + index}
-              >
-                <span>
-                  {message.role === "user" ? "Jij" : "Antwoord"}
-                </span>
-                <p>{message.content}</p>
-              </article>
-            ))
+            <div className="message-stack">
+              {session.messages.map((message, index) => (
+                <article
+                  className={"message message--" + message.role}
+                  key={message.role + "-" + index}
+                >
+                  {message.role === "assistant" ? (
+                    <span className="message__author">{answerAuthor}</span>
+                  ) : null}
+                  <p>{message.content}</p>
+                </article>
+              ))}
+              {sending ? (
+                <article className="message message--assistant message--pending">
+                  <span className="message__author">{answerAuthor}</span>
+                  <p aria-live="polite">Waiting for response…</p>
+                </article>
+              ) : null}
+            </div>
           )}
         </div>
 
+        {notice ? <div className="alert alert--info chat-alert">{notice}</div> : null}
+        {error ? <div className="alert alert--danger chat-alert" role="alert">{error}</div> : null}
+
         <form className="composer" onSubmit={onSend}>
           {session?.backend === "openai" ? (
-            <label className="composer-consent">
+            <label className="check composer-consent">
               <input
                 checked={externalTurnConfirmed}
                 disabled={
@@ -1087,54 +1285,60 @@ export function ShadowseedApp() {
                 type="checkbox"
               />
               <span>
-                Deze invoer en de gebruikte Shadow-context mogen voor deze
-                beurt naar OpenAI worden gestuurd.
+                Send this message and the shadow context it uses to OpenAI for
+                this turn.
               </span>
             </label>
           ) : null}
-          <textarea
-            aria-label="Bericht"
-            disabled={
-              !session ||
-              sending ||
-              loadingSession ||
-              session.provider_ready === false
-            }
-            placeholder={
-              session
-                ? session.provider_ready === false
-                  ? "Configureer eerst de provider..."
-                  : loadingSession
-                    ? "Gesprek laden..."
-                    : "Typ je bericht..."
-                : "Maak eerst een gesprek..."
-            }
-            value={question}
-            onChange={(event) => {
-              const value = event.target.value;
-              setQuestion(value);
-              if (retryTurn && value.trim() !== retryTurn.text) {
-                setRetryTurn(null);
+          <div className="composer__row">
+            <textarea
+              aria-label="Message"
+              disabled={
+                !session ||
+                sending ||
+                loadingSession ||
+                session.provider_ready === false
               }
-            }}
-            rows={2}
-          />
-          <button
-            disabled={
-              !session ||
-              sending ||
-              loadingSession ||
-              seedActionBusy ||
-              session.provider_ready === false ||
-              (session.backend === "openai" && !externalTurnConfirmed) ||
-              !question.trim()
-            }
-          >
-            {sending ? "Bezig..." : "Verstuur"}
-          </button>
+              onKeyDown={onComposerKeyDown}
+              placeholder={
+                session
+                  ? session.provider_ready === false
+                    ? "Configure the provider first…"
+                    : loadingSession
+                      ? "Loading conversation…"
+                      : "Message"
+                  : "No conversation selected"
+              }
+              value={question}
+              onChange={(event) => {
+                const value = event.target.value;
+                setQuestion(value);
+                if (retryTurn && value.trim() !== retryTurn.text) {
+                  setRetryTurn(null);
+                }
+              }}
+              rows={1}
+            />
+            <button
+              aria-label="Send"
+              className="button button--primary composer__send"
+              disabled={
+                !session ||
+                sending ||
+                loadingSession ||
+                seedActionBusy ||
+                session.provider_ready === false ||
+                (session.backend === "openai" && !externalTurnConfirmed) ||
+                !question.trim()
+              }
+            >
+              {sending ? "Sending…" : <><span>Send</span><Icon name="send" /></>}
+            </button>
+          </div>
+          <p className="composer__hint">
+            Enter to send · Shift+Enter for a new line
+          </p>
         </form>
-        {notice ? <div className="notice-banner">{notice}</div> : null}
-        {error ? <div className="error-banner">{error}</div> : null}
       </section>
 
       <aside
@@ -1143,239 +1347,262 @@ export function ShadowseedApp() {
       >
         <div className="shadow-heading">
           <div>
-            <span className="eyebrow">SHADOW</span>
-            <h2>Wat speelt mee?</h2>
+            <h2>Shadow memory</h2>
+            <p>{plural(sortedSeeds.length, "seed", "seeds")}</p>
           </div>
-          <div className="shadow-heading__actions">
-            <span className="shadow-count">{sortedSeeds.length}</span>
-            <button
-              aria-label="Sluit Shadow"
-              className="shadow-close"
-              onClick={() => setShadowOpen(false)}
-              type="button"
-            >
-              Sluiten
-            </button>
-          </div>
+          <button
+            aria-label="Close shadow memory"
+            className="icon-button shadow-close"
+            onClick={() => setShadowOpen(false)}
+            type="button"
+          >
+            <Icon name="close" />
+          </button>
         </div>
 
-        {seedNotice ? (
-          <div className="seed-notice">{seedNotice}</div>
-        ) : null}
-        {seedError ? (
-          <div className="seed-error">{seedError}</div>
-        ) : null}
+        <div className="shadow-body">
+          {seedNotice ? (
+            <div className="alert alert--info">{seedNotice}</div>
+          ) : null}
+          {seedError ? (
+            <div className="alert alert--danger">{seedError}</div>
+          ) : null}
 
-        {selectedSeed ? (
-          <div className="seed-detail">
-            <button
-              className="seed-detail__back"
-              disabled={seedActionBusy}
-              onClick={clearSeedDetail}
-              type="button"
-            >
-              ← Alle geheugenpunten
-            </button>
+          {selectedSeed ? (
+            <div className="seed-detail">
+              <button
+                className="link-button"
+                disabled={seedActionBusy}
+                onClick={clearSeedDetail}
+                type="button"
+              >
+                <Icon name="back" />
+                All seeds
+              </button>
 
-            <section className="seed-detail__summary">
-              <div className="seed-card__top">
-                <span className="seed-state">
-                  {selectedSeed.current_gate_authorized
-                    ? "TOEGESTAAN"
-                    : selectedSeed.status}
-                </span>
-                <strong>{Number(selectedSeed.weight ?? 0).toFixed(2)}</strong>
-              </div>
-              <h3>{selectedSeed.text}</h3>
-              <p>{selectedSeed.plain_explanation}</p>
-              <dl className="seed-detail__facts">
-                <div>
-                  <dt>Teruggezien</dt>
-                  <dd>{selectedSeed.occurrence_count ?? 0}</dd>
-                </div>
-                <div>
-                  <dt>Geverifieerde steun</dt>
-                  <dd>{selectedSeed.evidence_count ?? 0}</dd>
-                </div>
-                <div>
-                  <dt>Tegenspraak</dt>
-                  <dd>{selectedSeed.blocking ? "open" : "geen"}</dd>
-                </div>
-                <div>
-                  <dt>Gate</dt>
-                  <dd>{selectedSeed.effective_gate_policy_id ?? "onbekend"}</dd>
-                </div>
-              </dl>
-              {selectedSeed.review_required ? (
-                <p className="seed-review-flag">
-                  Dit punt vraagt nog om menselijke beoordeling.
+              <section className="panel">
+                <StatusBadge seed={selectedSeed} />
+                <h3 className="seed-detail__text">{selectedSeed.text}</h3>
+                <p className="muted">{selectedSeed.plain_explanation}</p>
+                <dl className="facts">
+                  <div>
+                    <dt>Seen</dt>
+                    <dd>{selectedSeed.occurrence_count ?? 0}×</dd>
+                  </div>
+                  <div>
+                    <dt>Verified sources</dt>
+                    <dd>{selectedSeed.evidence_count ?? 0}</dd>
+                  </div>
+                  <div>
+                    <dt>Contradiction</dt>
+                    <dd>{selectedSeed.blocking ? "Open" : "None"}</dd>
+                  </div>
+                  <div>
+                    <dt>Weight</dt>
+                    <dd className="mono">
+                      {Number(selectedSeed.weight ?? 0).toFixed(2)}
+                    </dd>
+                  </div>
+                </dl>
+                {selectedSeed.review_required ? (
+                  <div className="alert alert--warning">
+                    Review required.
+                  </div>
+                ) : null}
+              </section>
+
+              <section className="panel">
+                <h3>Add verified evidence</h3>
+                <p className="muted">
+                  Submit only a source you have checked yourself. The Gate
+                  records it as operator-verified evidence; one source
+                  promotes the seed in Controlled and Assisted mode.
                 </p>
-              ) : null}
-            </section>
-
-            <section className="seed-action-card">
-              <h3>Geverifieerde steun</h3>
-              <p>
-                Gebruik dit alleen als je de bron zelf hebt gecontroleerd en
-                die dit geheugenpunt daadwerkelijk ondersteunt. Een bron
-                toevoegen is niet automatisch bewijs.
-              </p>
-              <form onSubmit={onSubmitEvidence}>
-                <label>
-                  Bronverwijzing
-                  <input
-                    disabled={seedActionBusy}
-                    placeholder="URL, document-ID of andere stabiele verwijzing"
-                    value={evidenceRef}
-                    onChange={(event) => {
-                      setEvidenceRef(event.target.value);
-                      if (retrySeedAction?.kind === "evidence") {
-                        setRetrySeedAction(null);
-                      }
-                    }}
-                  />
-                </label>
-                <label>
-                  Toelichting
-                  <textarea
-                    disabled={seedActionBusy}
-                    placeholder="Optioneel: waarom ondersteunt deze bron dit punt?"
-                    rows={3}
-                    value={evidenceNote}
-                    onChange={(event) => {
-                      setEvidenceNote(event.target.value);
-                      if (retrySeedAction?.kind === "evidence") {
-                        setRetrySeedAction(null);
-                      }
-                    }}
-                  />
-                </label>
-                <label className="verification-check">
-                  <input
-                    checked={evidenceVerified}
-                    disabled={seedActionBusy}
-                    onChange={(event) =>
-                      setEvidenceVerified(event.target.checked)
-                    }
-                    type="checkbox"
-                  />
-                  <span>
-                    Ik heb deze bron gecontroleerd en bevestig dat deze dit
-                    punt ondersteunt.
-                  </span>
-                </label>
-                <button
-                  disabled={
-                    seedActionBusy ||
-                    !evidenceRef.trim() ||
-                    !evidenceVerified
-                  }
-                  type="submit"
-                >
-                  {seedActionBusy ? "Bezig..." : "Steun vastleggen"}
-                </button>
-              </form>
-            </section>
-
-            <section className="seed-action-card">
-              <h3>Tegenspraak</h3>
-              {selectedSeed.blocking ? (
-                <form onSubmit={onResolveContradiction}>
-                  <p>
-                    Dit geheugenpunt is nu geblokkeerd. Leg vast waarom de
-                    tegenspraak volgens jou kan worden opgelost. De Gate
-                    beoordeelt daarna opnieuw wat er met de authority gebeurt.
-                  </p>
-                  <label>
-                    Basis voor oplossing
-                    <textarea
+                <form className="stack" onSubmit={onSubmitEvidence}>
+                  <label className="field">
+                    <span>Source reference</span>
+                    <input
                       disabled={seedActionBusy}
-                      placeholder="Waarom kan deze blokkade worden opgeheven?"
-                      rows={3}
-                      value={resolutionBasis}
+                      placeholder="URL, DOI or another stable reference"
+                      value={evidenceRef}
                       onChange={(event) => {
-                        setResolutionBasis(event.target.value);
-                        if (retrySeedAction?.kind === "resolve") {
+                        setEvidenceRef(event.target.value);
+                        if (retrySeedAction?.kind === "evidence") {
                           setRetrySeedAction(null);
                         }
                       }}
                     />
                   </label>
+                  <label className="field">
+                    <span>Note <em>optional</em></span>
+                    <textarea
+                      disabled={seedActionBusy}
+                      placeholder="Why does this source support the seed?"
+                      rows={3}
+                      value={evidenceNote}
+                      onChange={(event) => {
+                        setEvidenceNote(event.target.value);
+                        if (retrySeedAction?.kind === "evidence") {
+                          setRetrySeedAction(null);
+                        }
+                      }}
+                    />
+                  </label>
+                  <label className="check">
+                    <input
+                      checked={evidenceVerified}
+                      disabled={seedActionBusy}
+                      onChange={(event) =>
+                        setEvidenceVerified(event.target.checked)
+                      }
+                      type="checkbox"
+                    />
+                    <span>
+                      I checked this source and confirm it supports this
+                      seed.
+                    </span>
+                  </label>
                   <button
-                    disabled={seedActionBusy || !resolutionBasis.trim()}
+                    className="button button--primary"
+                    disabled={
+                      seedActionBusy ||
+                      !evidenceRef.trim() ||
+                      !evidenceVerified
+                    }
                     type="submit"
                   >
-                    {seedActionBusy ? "Bezig..." : "Tegenspraak oplossen"}
+                    {seedActionBusy ? "Working…" : "Record evidence"}
                   </button>
                 </form>
-              ) : (
-                <>
-                  <p>
-                    Gebruik dit als informatie dit geheugenpunt tegenspreekt.
-                    Het punt wordt dan geblokkeerd totdat de tegenspraak via de
-                    bestaande Gate-flow is opgelost.
-                  </p>
-                  <button
-                    className="danger-secondary"
-                    disabled={seedActionBusy}
-                    onClick={onContradictSeed}
-                    type="button"
-                  >
-                    {seedActionBusy ? "Bezig..." : "Markeer als tegengesproken"}
-                  </button>
-                </>
-              )}
-            </section>
-
-            <section className="seed-detail__timeline">
-              <div>
-                <span className="eyebrow">TIMELINE</span>
-                <h3>Wat is er met dit punt gebeurd?</h3>
-              </div>
-              <SeedTimeline events={selectedSeed.timeline} />
-            </section>
-          </div>
-        ) : (
-          <>
-            {session?.orchestration ? (
-              <section className="handoff-card">
-                <span>{orchestrationLabel(session.orchestration.state)}</span>
-                <p>{session.orchestration.reason_text}</p>
               </section>
-            ) : null}
 
-            {loadingSeed ? (
-              <div className="shadow-empty">
-                <strong>Geheugenpunt laden...</strong>
-              </div>
-            ) : (
-              <div className="seed-list">
-                {sortedSeeds.length ? (
-                  sortedSeeds.map((seed) => (
+              <section className="panel">
+                <h3>Contradiction</h3>
+                {selectedSeed.blocking ? (
+                  <form className="stack" onSubmit={onResolveContradiction}>
+                    <p className="muted">
+                      Blocked by an open contradiction. Record the basis for
+                      resolution; the Gate re-evaluates authority.
+                    </p>
+                    <label className="field">
+                      <span>Basis for resolution</span>
+                      <textarea
+                        disabled={seedActionBusy}
+                        placeholder="Why can this block be lifted?"
+                        rows={3}
+                        value={resolutionBasis}
+                        onChange={(event) => {
+                          setResolutionBasis(event.target.value);
+                          if (retrySeedAction?.kind === "resolve") {
+                            setRetrySeedAction(null);
+                          }
+                        }}
+                      />
+                    </label>
+                    <button
+                      className="button button--primary"
+                      disabled={seedActionBusy || !resolutionBasis.trim()}
+                      type="submit"
+                    >
+                      {seedActionBusy ? "Working…" : "Resolve contradiction"}
+                    </button>
+                  </form>
+                ) : (
+                  <>
+                    <p className="muted">
+                      Blocks this seed from influencing answers until the
+                      contradiction is resolved through the Gate.
+                    </p>
+                    <button
+                      className="button button--danger"
+                      disabled={seedActionBusy}
+                      onClick={onContradictSeed}
+                      type="button"
+                    >
+                      {seedActionBusy ? "Working…" : "Mark as contradicted"}
+                    </button>
+                  </>
+                )}
+              </section>
+
+              <section className="panel">
+                <h3>Timeline</h3>
+                <SeedTimeline events={selectedSeed.timeline} />
+              </section>
+
+              <section className="panel">
+                <h3>Raw data</h3>
+                <RawJson label="Seed record" value={selectedSeed} />
+              </section>
+            </div>
+          ) : (
+            <>
+              {session?.orchestration && handoff ? (
+                <section className="alert alert--warning handoff">
+                  <strong>{handoff}</strong>
+                  <p>{session.orchestration.reason_text}</p>
+                </section>
+              ) : null}
+
+              {loadingSeed ? (
+                <div className="shadow-empty">
+                  <p>Loading seed…</p>
+                </div>
+              ) : sortedSeeds.length ? (
+                <div className="seed-list">
+                  {sortedSeeds.map((seed) => (
                     <SeedCard
                       key={seed.id}
                       onOpen={() => openSeed(seed.id)}
                       seed={seed}
                     />
-                  ))
-                ) : (
-                  <div className="shadow-empty">
-                    <strong>Nog geen geheugenpunten</strong>
-                    <p>
-                      Nieuwe kandidaten starten zonder steering authority.
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-          </>
-        )}
+                  ))}
+                </div>
+              ) : (
+                <div className="shadow-empty">
+                  <strong>No seeds</strong>
+                  <p>Seeds are created with weight 0.</p>
+                </div>
+              )}
+            </>
+          )}
+        </div>
 
         {session ? (
-          <footer className="runtime-footer">
-            <span>Behavior</span>
-            <code>{session.behavior_config_digest.slice(0, 10)}</code>
-          </footer>
+          <details className="tech-details">
+            <summary>Technical details and raw data</summary>
+            <dl>
+              <div>
+                <dt>Gate policy</dt>
+                <dd className="mono">{session.effective_gate_policy_id}</dd>
+              </div>
+              <div>
+                <dt>Authority profile</dt>
+                <dd className="mono">{session.authority_profile_id}</dd>
+              </div>
+              <div>
+                <dt>Behavior digest</dt>
+                <dd className="mono">{session.behavior_config_digest.slice(0, 16)}</dd>
+              </div>
+              <div>
+                <dt>Session</dt>
+                <dd className="mono">{session.session_id}</dd>
+              </div>
+            </dl>
+            <div className="raw-stack">
+              <RawJson label="Session" value={session} />
+              {lastTurn && lastTurn.sessionId === session.session_id ? (
+                <>
+                  <RawJson label="Last turn report" value={lastTurn.report} />
+                  {lastTurn.comparison ? (
+                    <RawJson label="Last turn comparison" value={lastTurn.comparison} />
+                  ) : null}
+                </>
+              ) : (
+                <p className="muted">Turn reports appear here after the next message.</p>
+              )}
+            </div>
+          </details>
         ) : null}
       </aside>
     </main>

@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+- Web client: English interface with factual wording and the canonical terms
+  from the product documentation: Controlled, Assisted and Autonomous modes,
+  "seed", and the seed statuses Found, Recurring, Supported, Validated,
+  Promoted, Blocked, Dormant and Expired. Controlled is the default mode.
+- Web client: full raw JSON inspection of the session, the last turn report and
+  each seed record; a light and dark theme; mobile layout fixes; Enter to send
+  respects the same conditions as the send button.
+- ADR-011: in Controlled and Assisted live sessions one operator-verified source
+  promotes a seed (promotion threshold 0.2). Evidence identity, contradiction,
+  relevance and point-of-use rules are unchanged; Autonomous, evaluation and
+  explicit Gate-strictness sessions keep their calibration.
+
 ## 0.12.3 - Native chat and reliable local startup
 
 - Use role-structured chat for supported backends, with matching transport for

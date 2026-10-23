@@ -143,8 +143,8 @@ def derive_seed_orchestration(
             HUMAN_TURN,
             reason_code="verified_support_required",
             reason_text=(
-                "The seed has recurred enough to require attention, but this "
-                "authority route still requires verified support."
+                "Recurrence threshold reached. This authority mode requires "
+                "verified evidence before the candidate can influence answers."
             ),
             required_action="submit_verified_support",
             optional_actions=("inspect_seed",),
