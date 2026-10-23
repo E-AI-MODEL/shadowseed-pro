@@ -38,7 +38,12 @@ _SECOND_WH_CLAUSE = re.compile(
 # coordinated predicate of the same subject and must not be rejected.
 _YES_NO_PREFIX = (
     r"(?:de|het|een|er|dat|die|dit|deze|the|a|an|this|that|"
-    r"it|there|we|ze|zij|they)\b"
+    r"it|there|we|ze|zij|they|i|you|he|she|ik|jij|je|hij|"
+    r"wij|jullie|u)\b"
+)
+_PERSONAL_SUBJECT = (
+    r"(?:it|we|they|i|you|he|she|there|ik|jij|je|hij|"
+    r"wij|zij|ze|jullie|u|het|er|dat|dit)\b"
 )
 _SECOND_YES_NO_CLAUSE = re.compile(
     r"[,;]\s*(?:(?:en|and)\s+)?"
@@ -53,6 +58,15 @@ _UNPUNCTUATED_SECOND_YES_NO = re.compile(
     r"(?:does|do|did|has|have|had|can|could|should|will|would|"
     r"lukt|werkt|kan|kunnen|heeft|hebben)\s+"
     + _YES_NO_PREFIX,
+    re.IGNORECASE,
+)
+# With a personal subject, a coordinated copula is clearly another clause.
+# A definite article is deliberately insufficient: 'and is the same size'
+# can share the preceding subject and must remain admissible.
+_UNPUNCTUATED_SECOND_COPULA = re.compile(
+    r"\b(?:en|and)\s+"
+    r"(?:is|are|was|were|ben|bent|zijn|waren|wordt)\s+"
+    + _PERSONAL_SUBJECT,
     re.IGNORECASE,
 )
 _MULTIPLE_SENTENCES = re.compile(r"[.!?]\s+[A-ZÀ-Ý]")
@@ -162,6 +176,7 @@ def is_single_question(text: str) -> bool | None:
         _SECOND_WH_CLAUSE.search(stripped)
         or _SECOND_YES_NO_CLAUSE.search(stripped)
         or _UNPUNCTUATED_SECOND_YES_NO.search(stripped)
+        or _UNPUNCTUATED_SECOND_COPULA.search(stripped)
     ):
         return False
     return not looks_like_short_category_list(stripped)
