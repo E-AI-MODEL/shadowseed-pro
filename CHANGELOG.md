@@ -13,6 +13,12 @@
   promotes a seed (promotion threshold 0.2). Evidence identity, contradiction,
   relevance and point-of-use rules are unchanged; Autonomous, evaluation and
   explicit Gate-strictness sessions keep their calibration.
+- Web client: a promoted seed that influenced an answer shows as Used; the
+  session view reports `used_count` per seed.
+- `shadowseed-web --self-test` can run again on the same workspace.
+- `shadowseed-workbench` and frozen bundles open the web client by default. The
+  legacy Gradio Workbench starts only with `--legacy-gradio`; `--web` is still
+  accepted.
 
 ## 0.12.3 - Native chat and reliable local startup
 

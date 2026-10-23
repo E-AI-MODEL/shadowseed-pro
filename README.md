@@ -68,7 +68,7 @@ For a verified GitHub release, the intended tester path is:
 download -> extract/open -> choose model -> create chat -> chat with SSL -> optionally compare one message with SSL off
 ```
 
-The 0.12 product line adds a packaged local web client on top of the same canonical Python runtime. `shadowseed-web` serves the static web interface and `/api/v1` from one loopback-only Python process and opens the browser automatically; packaged users do not need a Node runtime or a second terminal. The existing Gradio Workbench remains available separately, and frozen bundles can launch the same packaged web mode through `Shadowseed --web`.
+The 0.12 product line adds a packaged local web client on top of the same canonical Python runtime. `shadowseed-web` serves the static web interface and `/api/v1` from one loopback-only Python process and opens the browser automatically; packaged users do not need a Node runtime or a second terminal. `shadowseed-workbench` and frozen bundles open the same web client by default; the legacy Gradio Workbench is only started with `--legacy-gradio`.
 
 The standalone release contract builds Windows, macOS, and Linux archives with an embedded Python runtime. A normal tester does not need Git, system Python, `pip`, benchmark JSON, or an authored baseline answer. The normal standalone is deliberately thin: the deterministic fixture works immediately and local Ollama provides chat plus semantic embeddings when its models are installed. The default `embeddinggemma` semantic model requires Ollama v0.11.10 or later. Hosted OpenAI is available only when the explicit `openai` provider extra is installed; that SDK is not bundled into the thin frozen standalone.
 
@@ -85,8 +85,8 @@ python -m pytest -q
 python -m ruff check .
 shadowseed --help
 shadowseed-web
-# Legacy Gradio surface remains available:
-shadowseed-workbench
+# shadowseed-workbench opens the same web client; the legacy Gradio surface is opt-in:
+shadowseed-workbench --legacy-gradio
 ```
 
 Deterministic mechanics demo:
