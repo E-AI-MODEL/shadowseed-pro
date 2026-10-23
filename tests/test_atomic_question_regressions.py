@@ -124,3 +124,20 @@ def test_binary_alternative_still_counts_as_one_question():
     assert SSLManager.is_atomic_seed(
         "Is het een meetfout of verandert het echte proces?"
     )
+
+
+@pytest.mark.parametrize("candidate", [
+    "How does the system change at night, considering security, privacy, and scalability?",
+    "How does the system change at night, looking at security, privacy, and scalability?",
+    "Hoe verandert het systeem 's nachts, gezien beveiliging, privacy en betrouwbaarheid?",
+])
+def test_unrelated_late_checklist_cannot_inherit_measurement_exemption(candidate):
+    assert not SSLManager.is_atomic_seed(candidate)
+
+
+@pytest.mark.parametrize("question", [
+    "How does latency vary across Android, iOS, Linux, and web clients?",
+    "How does latency vary across Android, iOS, Linux and web clients?",
+])
+def test_actual_four_level_measurement_still_passes(question):
+    assert SSLManager.is_atomic_seed(question)
