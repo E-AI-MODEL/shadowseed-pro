@@ -1,0 +1,79 @@
+name: Research - Seed recurrence calibration
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/seed-calibration.yml
+      - scripts/recurrence_calibration.py
+      - benchmarks/seed_calibration/*.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seed-calibration-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  EMBEDDING_REFERENCE: sentence-transformers/all-MiniLM-L6-v2
+  INPUT: benchmarks/seed_calibration/fixed22_candidates.json
+  OUTPUT_DIR: benchmarks/seed_calibration/results
+
+jobs:
+  calibrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.11"
+
+      - name: Install Shadowseed with the semantic embedding stack
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[models]"
+
+      - name: Pin and materialize the product embedding model
+        run: |
+          python - <<'PY'
+          import os
+          from huggingface_hub import model_info, snapshot_download
+
+          reference = os.environ["EMBEDDING_REFERENCE"]
+          revision = model_info(reference).sha
+          path = snapshot_download(reference, revision=revision)
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as handle:
+              handle.write(f"EMBEDDING_REVISION={revision}\n")
+              handle.write(f"EMBEDDING_PATH={path}\n")
+          PY
+
+      - name: Replay recorded candidates across cluster thresholds
+        run: |
+          python scripts/recurrence_calibration.py \
+            --input "$INPUT" \
+            --embedding-backend sentence-transformers \
+            --embedding-model "$EMBEDDING_PATH" \
+            --embedding-revision "$EMBEDDING_REVISION" \
+            --output-dir "$OUTPUT_DIR"
+
+      - name: Print results
+        run: |
+          echo "::group::recurrence_sweep.json"
+          cat "$OUTPUT_DIR/recurrence_sweep.json"
+          echo "::endgroup::"
+          echo "::group::pair_sample.json"
+          cat "$OUTPUT_DIR/pair_sample.json"
+          echo "::endgroup::"
+
+      - name: Upload results
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: seed-recurrence-calibration
+          path: ${{ env.OUTPUT_DIR }}

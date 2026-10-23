@@ -45,3 +45,17 @@ def test_atomic_seed_is_not_rejected_only_for_exceeding_legacy_word_limit():
     )
     assert len(candidate.split()) > 18
     assert SSLManager.is_atomic_seed(candidate, max_seed_words=18)
+
+
+def test_english_of_is_not_a_separator():
+    # Real candidates from the fixed22 runs that the Dutch " of " (= "or")
+    # separator rejected as not atomic.
+    for text in (
+        "Whether technical reliability or performance is a significant source of user churn.",
+        "How invitation-driven growth is measured through invite conversion and retention of referred users.",
+    ):
+        assert SSLManager.is_atomic_seed(text)
+
+
+def test_dutch_of_still_separates_dutch_text():
+    assert not SSLManager.is_atomic_seed("Kosten of baten en risico's ontbreken.")

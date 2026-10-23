@@ -57,6 +57,17 @@ def normalize_embedding(embedding: np.ndarray) -> np.ndarray:
     return embedding / norm
 
 
+_ENGLISH_MARKERS = frozenset(
+    {"the", "a", "is", "are", "to", "for", "with", "in", "by", "from", "how", "whether",
+     "what", "which", "does", "can", "be", "this", "that"}
+)
+
+
+def _looks_english(lowered: str) -> bool:
+    words = re.findall(r"[a-z]+", lowered)
+    return sum(word in _ENGLISH_MARKERS for word in words) >= 2
+
+
 def is_atomic_seed(text: str, max_seed_words: int | None = None) -> bool:
     """Heuristic filter for whether a candidate is a single atomic seed.
 
@@ -80,7 +91,12 @@ def is_atomic_seed(text: str, max_seed_words: int | None = None) -> bool:
     question_verdict = is_single_question(text)
     if question_verdict is not None:
         return question_verdict
-    separators = [",", ";", " en ", " of ", " and ", " or ", "zoals", "bijvoorbeeld"]
+    separators = [",", ";", " and ", " or "]
+    # The Dutch separators are kept for the historical corpus but never apply
+    # to English text: " of " is "or" in Dutch and the commonest English
+    # preposition, which split nothing.
+    if not _looks_english(lowered):
+        separators += [" en ", " of ", "zoals", "bijvoorbeeld"]
     broad_terms = [
         "analysekader",
         "complete",

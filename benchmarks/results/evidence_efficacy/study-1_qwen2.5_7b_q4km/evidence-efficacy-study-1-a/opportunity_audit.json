@@ -1,0 +1,151 @@
+{
+  "schema": "ssl-evidence-efficacy-bundle-v1",
+  "stage_order": [
+    "candidate_observed",
+    "evidence_submitted",
+    "gate_authority_granted",
+    "later_selected",
+    "point_of_use_allowed",
+    "surfaced",
+    "ab_generated"
+  ],
+  "items": [
+    {
+      "evidence_id": "ee01-source-1",
+      "conversation_id": "EE01",
+      "scheduled_after_turn": 3,
+      "evidence_window": [
+        0,
+        3
+      ],
+      "selector": {
+        "text_contains_any": [
+          "kidney",
+          "renal"
+        ]
+      },
+      "selector_result": "text_selector_not_observed",
+      "candidate_observed": false,
+      "matched_seed_id": null,
+      "matched_seed_text": null,
+      "evidence_kind": "ssot",
+      "source_ref": "https://www.nhs.uk/medicines/ibuprofen-for-adults/",
+      "evidence_strength": 1.0,
+      "evidence_independent": true,
+      "evidence_reason": "NHS guidance: long-term ibuprofen use in older adults carries kidney and stomach risks and needs medical review.",
+      "evidence_submitted": false,
+      "gate_decision": null,
+      "authority_granted": false,
+      "terminal_reason": "text_selector_not_observed",
+      "later_selected_turns": [],
+      "later_surfaced_turns": [],
+      "point_of_use_allowed_turns": [],
+      "point_of_use_blocks": [],
+      "ab_generated_turns": []
+    },
+    {
+      "evidence_id": "ee04-source-1",
+      "conversation_id": "EE04",
+      "scheduled_after_turn": 3,
+      "evidence_window": [
+        0,
+        3
+      ],
+      "selector": {
+        "text_contains_any": [
+          "spac",
+          "interleav",
+          "distributed"
+        ]
+      },
+      "selector_result": "text_selector_not_observed",
+      "candidate_observed": false,
+      "matched_seed_id": null,
+      "matched_seed_text": null,
+      "evidence_kind": "ssot",
+      "source_ref": "doi:10.1177/1529100612453266",
+      "evidence_strength": 1.0,
+      "evidence_independent": true,
+      "evidence_reason": "Dunlosky et al. (2013), Psychological Science in the Public Interest: practice testing and distributed (spaced) practice both have high utility.",
+      "evidence_submitted": false,
+      "gate_decision": null,
+      "authority_granted": false,
+      "terminal_reason": "text_selector_not_observed",
+      "later_selected_turns": [],
+      "later_surfaced_turns": [],
+      "point_of_use_allowed_turns": [],
+      "point_of_use_blocks": [],
+      "ab_generated_turns": []
+    },
+    {
+      "evidence_id": "ee07-source-1",
+      "conversation_id": "EE07",
+      "scheduled_after_turn": 3,
+      "evidence_window": [
+        0,
+        3
+      ],
+      "selector": {
+        "text_contains_any": [
+          "condensation",
+          "moisture",
+          "vapour",
+          "vapor",
+          "damp"
+        ]
+      },
+      "selector_result": "text_selector_not_observed",
+      "candidate_observed": false,
+      "matched_seed_id": null,
+      "matched_seed_text": null,
+      "evidence_kind": "ssot",
+      "source_ref": "https://historicengland.org.uk/images-books/publications/eehb-insulating-solid-walls/",
+      "evidence_strength": 1.0,
+      "evidence_independent": true,
+      "evidence_reason": "Historic England, Insulating Solid Walls: impermeable internal insulation on solid walls can trap moisture and cause interstitial condensation.",
+      "evidence_submitted": false,
+      "gate_decision": null,
+      "authority_granted": false,
+      "terminal_reason": "text_selector_not_observed",
+      "later_selected_turns": [],
+      "later_surfaced_turns": [],
+      "point_of_use_allowed_turns": [],
+      "point_of_use_blocks": [],
+      "ab_generated_turns": []
+    },
+    {
+      "evidence_id": "ee10-source-1",
+      "conversation_id": "EE10",
+      "scheduled_after_turn": 3,
+      "evidence_window": [
+        0,
+        3
+      ],
+      "selector": {
+        "text_contains_any": [
+          "restore",
+          "recovery test",
+          "test the"
+        ]
+      },
+      "selector_result": "text_selector_not_observed",
+      "candidate_observed": false,
+      "matched_seed_id": null,
+      "matched_seed_text": null,
+      "evidence_kind": "ssot",
+      "source_ref": "https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final",
+      "evidence_strength": 1.0,
+      "evidence_independent": true,
+      "evidence_reason": "NIST SP 800-34 Rev. 1: contingency plans, including restoration from backups, must be tested and exercised.",
+      "evidence_submitted": false,
+      "gate_decision": null,
+      "authority_granted": false,
+      "terminal_reason": "text_selector_not_observed",
+      "later_selected_turns": [],
+      "later_surfaced_turns": [],
+      "point_of_use_allowed_turns": [],
+      "point_of_use_blocks": [],
+      "ab_generated_turns": []
+    }
+  ]
+}

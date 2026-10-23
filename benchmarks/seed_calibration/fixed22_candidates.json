@@ -1,0 +1,1156 @@
+{
+ "schema": "ssl-seed-calibration-input-v1",
+ "source": {
+  "description": "Candidates from the fixed22 SSL arms run in E-AI-MODEL/shadowseed (GitHub Actions run 39938469773) on source commit 2110ededd1e73c6db700c543be3cfeb4c1aafa65 with the current_pair v0.6 detector. Intake verdicts are those recorded by that run.",
+  "files": {
+   "gpt-5_ssl.json": "673d207b16bf27bc6403a40663ea886ca5e994121b7cb219490dbffb44baaa98",
+   "gpt-6.1-sol_ssl.json": "5c7912aba19a48d241c05c473645eb656f14219ee0bd0d0af5cee4df3eb1c440"
+  }
+ },
+ "arms": [
+  {
+   "model": "gpt-5",
+   "resolved_models": [
+    "gpt-5-2025-08-07"
+   ],
+   "conversations": [
+    {
+     "conversation_id": "CONV_IR_SHORT",
+     "domain": "history and economics",
+     "turns": [
+      {
+       "turn": 0,
+       "question": "Briefly explain why the Industrial Revolution began in Great Britain.",
+       "answer": "Several reinforcing advantages made Great Britain the first center of the Industrial Revolution in the late 18th century:\n\n- Natural resources and geography: Britain sat atop abundant, easily mined coal and accessible iron ore, with short distances between pits, furnaces, and ports. Dense networks of navigable rivers, natural harbors, turnpike roads, and later canals cut transport costs and linked regional markets.\n\n- High wages and cheap energy: Relative to continental Europe, British urban and skilled wages were high while coal was unusually cheap. This “high-wage, cheap-energy” mix made labor-saving, coal-powered machinery (steam engines, mechanized spinning) economically attractive to invent and adopt.\n\n- Institutions and finance: After the Glorious Revolution, stronger property rights, patent protections, and predictable courts lowered the risks of investment. The Bank of England, joint-stock companies, and deep capital markets mobilized savings for mines, mills, and canals, while a broad consumer credit culture supported demand.\n\n- Agricultural gains and labor supply: Enclosure, improved crop rotations, and new tools raised farm productivity, released labor to towns, and sustained a growing population—expanding both the workforce and the home market.\n\n- Knowledge culture and skills: A practical, “useful knowledge” ethos—Royal Society networks, dissenting academies, and artisan traditions—linked tinkerers, investors, and scientists. Regions like the Midlands and Lancashire nurtured clusters of skilled mechanics who could build, fix, and diffuse new machines.\n\n- Imperial trade and inputs: A far-reaching commercial empire and naval dominance secured raw materials (notably American and later Indian cotton) and opened global markets for textiles and other manufactures. Protective policies (e.g., against Indian calicoes) also sheltered domestic industry as it scaled.\n\n- Political stability and state capacity: Compared with rivals hit by war or absolutist constraints, Britain enjoyed relative internal stability and could tax, borrow, and enforce contracts efficiently, while tolerating nonconformist communities that often led in enterprise and technical education.\n\n- Path dependence in textiles and steam: Early success in cotton spinning and weaving created profits and know-how that spilled over into iron, machine tools, and steam power, accelerating a self-reinforcing cycle of innovation and factory organization.\n\nIn short, Britain combined cheap energy, costly labor, ready capital, secure markets, and a problem-solving culture, making it the first place where large-scale mechanized industry became both technically feasible and economically compelling.",
+       "candidates": [
+        {
+         "text": "Whether Britain’s advantages were uniquely decisive compared to contemporaries like the Netherlands, France, or Belgium that shared some similar features.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "The specific role and magnitude of Atlantic slavery and plantation profits in financing industrial takeoff versus broader imperial trade.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "How crucial water power and local hydrology were in the earliest factory phases before widespread steam adoption.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "The distinction between “Great Britain” and its internal regional dynamics (England, Scotland, Wales) in explaining where and why industrialization concentrated.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "How labor-market institutions (Poor Laws, Settlement Acts, Combination Acts) affected labor mobility, wages, and factory discipline during early industrialization.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 1,
+       "question": "How did industrialization then spread to continental Europe?",
+       "answer": "Industrialization spread to continental Europe through intertwined channels of technology transfer, state policy, finance, and infrastructure, adapted to local resource endowments and institutions.\n\nChannels of transfer\n- Knowledge and machinery flows: Despite early British bans on exporting machinery and skilled emigrants, designs were copied, parts smuggled, and artisans moved. After liberalization (1820s–1840s), legal imports of machines and British technicians accelerated diffusion.\n- Entrepreneurial enclaves and exhibitions: Industrial colonies (e.g., Cockerill at Seraing in Belgium) transplanted integrated iron, steam, and machine-building. World’s fairs and technical journals circulated “best practice” quickly.\n- Education and skills: Continental states invested in technical schools (École Polytechnique; Prussian Gewerbeschulen), creating engineers capable of adapting foreign designs to local conditions.\n\nState policy and finance\n- Protective tariffs and market integration: Governments used tariffs to shield infant industries (List’s program in German states) while building customs unions like the Zollverein to enlarge home markets and standardize weights, measures, and regulations.\n- Railways as catalyst: State-backed or regulated railways created mass demand for iron, coal, and machinery and lowered transport costs, knitting regional markets and enabling scale.\n- Banking innovation: Universal banks (e.g., Crédit Mobilier in France; Deutsche Bank; Darmstädter) mobilized savings into long-term industrial investment, unlike Britain’s fragmented banking. Public debt and guarantees underwrote canals, ports, and rails.\n\nRegional trajectories\n- Belgium (1820s–1830s): First continental takeoff, leveraging coal in Hainaut/Liège, coke-smelted iron, and British expertise; led in iron, glass, and locomotives.\n- France: Gradual, regionally uneven growth—textiles in Alsace and Normandy; mining and metallurgy in Nord and Lorraine; strong state role in infrastructure and education; universal banking financed rail and heavy industry.\n- German states/Prussia: Slow start, rapid acceleration after 1850. Ruhr coal, Saar and Upper Silesia iron; machine tools and chemicals flourished. Zollverein integration, technical education, and banks produced a late-19th-century surge.\n- Switzerland and Scandinavia: Resource-light but skill- and hydro-rich; specialized in textiles, precision machinery, and later electrification and pulp.\n- Austria-Hungary and Italy: Pockets of industry (Bohemia, Lombardy-Piedmont) tied to rail and protective policy; unification aided Italian market formation.\n- Russia: Late, state-driven push—St. Petersburg and Moscow textiles, Donbas coal, state railways; emancipation of serfs (1861) and foreign capital were prerequisites, but distance and institutions slowed diffusion.\n\nConstraints and adaptation\nContinental Europe faced scarcer coal near markets, entrenched guilds, and fragmented polities. By combining imported know-how with protective policy, integrated finance, engineers, and rail-led market formation, it developed its own industrial paths, culminating by the late 19th century in powerful German and French heavy industry and specialized niches elsewhere.\n\nIn short, Europe industrialized not by copying Britain wholesale, but by channeling British technology through statecraft, banks, railways, and technical education to fit diverse regional conditions.",
+       "candidates": [
+        {
+         "text": "The role of Napoleonic-era reforms (guild abolition, legal codes, metrication, administrative centralization) in enabling industrial diffusion across continental Europe.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "The contribution of agrarian reforms, rising agricultural productivity, and demographic urbanization in freeing labor and creating home-market demand for industry.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "The influence of colonial resources and export markets of France, Belgium, the Netherlands, and later Germany on capital accumulation and industrial demand.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "The impact of corporate law and limited-liability forms (e.g., sociétés anonymes, Kommanditgesellschaften) separate from banking in mobilizing large-scale industrial capital.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "The effect of military procurement and wartime mobilization on accelerating demand for rail, iron/steel, and chemicals.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 2,
+       "question": "What explains why some regions industrialized much faster than others?",
+       "answer": "Multiple, interacting factors explain why some regions industrialized quickly while others lagged. No single cause suffices; what mattered was how ingredients combined at the right time.\n\n- Endowments and energy: Regions with abundant, accessible coal (and later hydroelectric potential) near navigable water and cities cut power and transport costs. Britain’s coalfields, Belgium’s Hainaut/Liège, and the Ruhr had short coal-to-market distances; regions without cheap energy or with difficult geography faced higher thresholds to mechanization.\n\n- Institutions and state capacity: Secure property rights, enforceable contracts, patent regimes, and predictable taxation lowered risk and encouraged fixed-capital investment. Equally important was a state able to build or guarantee infrastructure, standardize weights/measures, and coordinate across jurisdictions (e.g., Zollverein). Absolutist bottlenecks, weak courts, or fiscal fragility blunted takeoff.\n\n- Finance and market integration: Deep capital markets and universal banks mobilized long-term funds for mines, railways, and machinery. Large, integrated home markets increased scale economies and returns to mechanization; tariffs sometimes protected “infant industries” until competitive (List). Fragmented polities, tolls, and poor internal trade reduced demand and deterred large plants.\n\n- Human capital and “useful knowledge”: High literacy, technical schools, and dense artisan-engineer networks sped adaptation of foreign designs and diffusion of best practice. Places with polytechnic traditions (France, German states) and tinkerer cultures (Midlands, Alsace) could absorb general-purpose technologies like steam and later electricity more rapidly.\n\n- Labor markets and social structure: Where wages were high relative to energy (Britain, parts of the Low Countries), inventing and adopting labor-saving machinery was profitable. Serfdom, slave-based systems, entrenched guilds, or restrictive migration laws reduced labor mobility and impeded factory discipline and skill formation, slowing transition.\n\n- Infrastructure as catalyst: Early canals and especially railways slashed transport costs, synchronized markets, and created mass demand for iron, coal, and machinery. Regions that financed and built coherent rail networks early experienced powerful multiplier effects; late builders missed cumulative spillovers.\n\n- External linkages and global position: Access to raw materials and export markets—via empire, trade treaties, or diasporic networks—underwrote early specializations (cotton, metals). Conversely, colonies and semi-colonies often suffered “deindustrialization” from unequal trade, tariff loss, and capital extraction, constraining endogenous industry.\n\n- Path dependence and shocks: Early successes created clusters, supplier bases, and skills that reinforced lead positions. Wars, blockades, or border changes could either catalyze import substitution and state-building (Germany) or devastate capital and markets (parts of Eastern Europe).\n\nIn essence, fast industrializers combined cheap reliable energy, supportive institutions and state capacity, patient finance, integrated markets, and thick skills networks—then locked in advantages through infrastructure and clustering. Where several of these were missing or externally constrained, industrialization was slower and more fragile.",
+       "candidates": [
+        {
+         "text": "The role of agricultural productivity and food supply in freeing labor, raising incomes, and enabling urbanization is not addressed.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Latecomer advantages and state-led catch-up (e.g., the US and Meiji Japan) via leapfrogging and aggressive industrial policy are not distinguished.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Disease environment and climate constraints (e.g., malaria impeding dense urban agglomeration and labor productivity) are not considered.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Different industrialization paths (export-led light industry versus heavy industry/engineering under state coordination) and their effects on speed are not differentiated.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "International migration flows and skill/labor inflows (e.g., into the United States) as accelerants are not covered.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 3,
+       "question": "Which factor is most often underestimated in standard explanations?",
+       "answer": "The most underestimated factor is relative prices—specifically the high-wage, cheap-energy environment that made labor-saving, energy-intensive machinery economically compelling.\n\nWhy relative prices mattered\n- Incentives to invent and adopt: In Britain (and later Belgium, the Ruhr, New England), urban and skilled wages were high while coal was unusually cheap. That gap made machines like the spinning jenny, water frame, and steam engine pay for themselves quickly by substituting energy and capital for expensive labor. Where wages were lower or energy dearer (much of continental Europe before mid-century, India, China), identical machines yielded thinner margins, slowing both invention and adoption.\n- Threshold effects: Many technologies had steep fixed costs (engines, power looms) but low operating costs if cheap fuel was available. Cheap coal pushed firms over the profitability threshold; expensive fuel kept them below it even with access to designs.\n- Direction of technical change: Inventors and mechanics solve the problems that pay. Britain’s price structure steered ingenuity toward coal-fired power, iron, and mechanized textiles; where energy was costly, innovation skewed toward incremental, labor-using improvements.\n\nEvidence and contrasts\n- Early steam: Newcomen engines were wildly inefficient, yet profitable in British coal mines because they saved dear pit-labor and burned near-free pit-head coal; they were uneconomic where fuel had to be hauled far.\n- Cotton profitability: Model-based reconstructions show mechanized spinning and weaving crossed the adoption hurdle in Britain decades before France or India because wage–energy ratios differed, not because others lacked brains or blueprints.\n- Sectoral patterns: Regions with coal near markets (Hainaut/Liège, Ruhr) industrialized early in iron, glass, and machinery; hydro-rich regions later surged with electrification, echoing the same price- and power-driven logic.\n\nWhat this doesn’t deny\nInstitutions, finance, skills, and state capacity were necessary complements: without enforceable contracts, engineers, and capital, price signals could not be acted upon. But relative prices set the returns. They explain why the same ideas flourished in some places and languished in others until transport, railways, or new energy sources shifted the calculus.\n\nA close runner-up is the often-overlooked maintenance and skills ecosystem—dense networks of mechanics, foundries, and parts suppliers that kept complex machinery running. Yet even those ecosystems grew fastest where relative prices first made large-scale mechanization worthwhile.\n\nIn short, the wage–energy configuration quietly organized the whole opportunity set. It didn’t guarantee success, but it made rapid, capital-deep industrialization pay when and where it did.",
+       "candidates": [
+        {
+         "text": "Ambiguity about what counts as “standard explanations” and which historians or frameworks are being contrasted.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Possible endogeneity: whether high wages and cheap energy were antecedent causes or partly outcomes of early industrialization.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Scope of generalization: whether the wage–energy mechanism accounts for early industrializers lacking cheap coal but using water power (e.g., New England).",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Empirical robustness: sufficiency and comparability of wage and energy price data across regions and decades to support the claim.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Dependency on imperial trade and slavery: how access to slave-grown cotton and global markets conditioned the profitability attributed to relative prices.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "conversation_id": "CONV_STARTUP",
+     "domain": "product and growth",
+     "turns": [
+      {
+       "turn": 0,
+       "question": "I am building a social app for teenagers. How do I get the first thousand users?",
+       "answer": "Start with a sharp wedge\n- Define one specific job the app does better than anything else for a narrow teen segment (e.g., “make inside jokes go viral within a class” vs. “general social”). Identify the moment of magic (the action that makes them smile and return) and design onboarding to get users there in <60 seconds.\n- Pick one or two cohorts to dominate first (e.g., 3–5 specific high schools, an esports club network, K-pop stans). Depth beats breadth early.\n\nPrelaunch momentum\n- Teaser + waitlist: a simple landing page with a crisp promise, a TikTok/IG/Reels content series showing the core loop, and a Discord for early adopters. Let signups claim usernames and join their school/club.\n- Creator seeding: recruit 10–20 nano/micro-creators (5k–50k teen audiences) to make native demos. Pay by deliverable, not views; give them creative control and whitelisting rights for light boosting.\n\nSchool-by-school launch\n- Ambassadors: 2–3 students per target school with clear weekly goals (e.g., 50 new users, 70% profile completion), a toolkit (QR posters, class slides, scripts), and perks (status, features named after them, gift cards). Keep it exclusive at first: “Our school is live; next school in 10 days.”\n- On-campus moments (with permission): lunch-table demos, club collabs, after-school events. Avoid disrupting classes; get club advisors on board.\n- Content spark: seed daily prompts, school leaderboards, and “first 100” badges. Ensure there’s something fun to do even with 5–10 friends.\n\nDesign viral loops that actually work\n- Double-sided referrals with instant, non-monetary rewards (e.g., unlock a theme, custom emoji pack, or profile flair when 3 friends join).\n- Group-first mechanics: features that only make sense with 3–8 people (inside-joke threads, squad challenges). Let users form/claim their school or club and invite via link or code.\n- Make invites easy: native contact sharing is optional and transparent; also support QR, Snapcodes, and short links.\n\nRetention before scale\n- Track: D1/D7 retention, K-factor, invite acceptance rate, activation rate, and school penetration (% of target cohort with 1+ weekly action).\n- Run weekly teen interviews and 15-minute usability tests. Ship small improvements fast. When one school crosses 30–40% penetration and D7 >25–30%, replicate playbook to the next.\n\nLightweight paid tests\n- $500–$2k tests on TikTok/Snap with creator-style ads driving to a school waitlist. Optimize for completed onboarding and first action, not installs.\n\nTrust, safety, and compliance\n- Clear community rules, easy reporting/blocking, proactive moderation for harassment and self-harm, and fast response times.\n- Age gating and required consents where applicable (COPPA, GDPR-K), minimal data collection, and transparent privacy.\n\nPath to 1,000\n- Win 3–5 schools to 200–300 active each, or 10–15 tight communities to 70–100 each. Nail one cohort, then copy-paste. Celebrate milestones publicly to fuel FOMO.\n\nWith a crisp wedge, tight cohorts, creator-led seeding, and strong safety, you can reach the first thousand users with real engagement—not just installs.",
+       "candidates": [
+        {
+         "text": "Compliance with Apple App Store and Google Play policies for teen-targeted apps (e.g., Families/Designed for Families) and how these constrain data, ads, and permissions.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Robust age verification and parental consent flows across jurisdictions (beyond simple age gating) given COPPA and varying GDPR-K ages.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Safety-by-design for grooming and CSAM prevention, including detection, escalation, and mandatory reporting (e.g., NCMEC) beyond general harassment/self-harm moderation.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Legal and school policy constraints for paying teen ambassadors and running on-campus promotions, including minor labor laws and required permissions.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Privacy-safe analytics/instrumentation to measure activation/K-factor while respecting under-18 data limits and platform tracking restrictions (e.g., ATT/IDFA).",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 1,
+       "question": "Which features are most effective at retaining users?",
+       "answer": "Focus on habits, not features\n- Identify the one repeatable action that brings delight (posting with friends, reacting to inside jokes, joining a daily prompt). Optimize the path to that action in 2–3 taps. Remove every blocker (latency, confusion, empty feeds).\n\nMake the graph dense and group-first\n- Small-group primitives: squads/close-friends lists, private threads, and shared spaces (class, club, team). Retention spikes when users have 2–3 active micro-groups.\n- Easy formation and re-formation: invite links, QR codes, join-by-nearby, and auto-suggested groups (same school/club).\n- Lightweight participation: quick reactions, polls, emoji replies, and “tap to add” remixes so shy users contribute without posting from scratch.\n\nDesign repeatable rituals\n- Time-boxed moments: a daily/weekly prompt or drop window that creates anticipation and FOMO without spamming.\n- Streaks done right: group streaks or creation streaks that reward consistency with cosmetic perks, not anxiety. Offer grace days and quiet opt-outs.\n- Seasonal arcs: school-year milestones (homecoming, exams, holidays) with themed templates and badges.\n\nKeep feeds meaningful\n- Prioritize friend and group updates before broad discovery; blend in 10–30% interest-based content to avoid dead ends.\n- Contextual micro-topics (classes, clubs, events) so users always find something relevant to react to.\n- Gentle scaffolding for new users: starter packs, suggested people/groups, and seeded content so their first session isn’t empty.\n\nCreation that feels effortless\n- Camera-first speed, fun templates, auto-captions, smart crops, and music/sticker packs teens actually use.\n- Collaborative formats: shared albums, chain posts, duet/remix, “finish this meme.” Every format should invite at least one friend to add on.\n\nStatus without toxicity\n- Earned cosmetic rewards: profile flair, themes, limited-time cosmetics, school leaderboards by participation (not vanity metrics).\n- Positive feedback loops: celebrate contributions, not popularity. Surface “your post made 5 friends smile” rather than like counts.\n\nThoughtful notifications and re-engagement\n- Event-driven: pings for mentions, replies, and group activity; batch non-urgent recaps. Default to quiet hours.\n- Personalized nudges tied to unfinished social loops (you were tagged, your squad is 1 person short), not generic “come back.”\n- Weekly recap that highlights meaningful moments; let users tune frequency and types.\n\nTrust, safety, and control\n- Clear privacy defaults (private by default for minors, easy audience controls), robust blocking/reporting, quick moderation.\n- Content filters, anti-harassment protections, and community guidelines in teen-friendly language. A safe space is a retained space.\n\nMeasure and iterate\n- Track activation (first post/reaction within session 1), D1/D7/D30 retention, DAU/WAU, group density (avg active groups/user), and notification opt-in → re-engagement.\n- Run weekly user interviews and A/B tests on rituals, group features, and notification strategies.\n\nAnchor retention in small-group belonging, effortless creation, and safe, meaningful interactions. Nail those loops, and the features will take care of themselves.",
+       "candidates": [
+        {
+         "text": "Absence of empirical benchmarks or evidence quantifying which listed features most improve D1/D7/D30 retention in teen social apps.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Missing prioritization framework to choose which retention features to build first under limited resources.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Legal/compliance gap: no consideration of COPPA, age verification, or parental consent constraints that shape teen-focused feature design.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Insufficient treatment of potential mental health risks from streaks/leaderboards and the broader ethical safeguards needed.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "No handling of notification deliverability/permission realities (iOS/Android focus modes, opt-in flows) that affect re-engagement efficacy.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 2,
+       "question": "How do I make the app viral so users invite their friends?",
+       "answer": "Make the core loop invite‑worthy\n- Nail a moment that’s better with friends (e.g., squad challenges, chain posts, inside-joke threads). Users should feel, “This is only fun if my 3 friends join.” Put that moment in the first session and make inviting the next natural step.\n\nDesign group-dependent mechanics\n- Locks that unlock with people: features that activate at 3/5/8 members (custom themes, shared albums, remix chains).\n- Collective goals: squad streaks, “finish this meme” chains, or scavenger hunts where each friend contributes a piece.\n- School/club structures: leaderboards and participation bars so every invite nudges a shared goal.\n\nFrictionless, trustworthy invites\n- One-tap, privacy-safe invites via deep links, QR, Snapcodes, short links, and contact pickers with transparent messaging.\n- Deferred deep links: accept → lands inside friend’s group/thread, not a generic home.\n- Fast onboarding: Apple/Google sign‑in, username claim, auto-join the inviter’s group in under 30 seconds.\n\nDouble‑sided, instant rewards\n- Cosmetic and capability unlocks: themes, emoji packs, profile flair, remix tools. Deliver instantly when an invite is accepted; avoid cash.\n- Tiered milestones: 1, 3, 5, 10 friends = progressively cooler perks; show progress and who can help complete it.\n- Social status, not clout: “Builder” badges, school contributors wall. Celebrate contributors, not raw follower counts.\n\nPortable content that teases\n- Easy exports with tasteful watermark and a CTA deep link. Non-interactive preview outside; the fun (replies, reveals, remixes) lives inside.\n- Reveal mechanics: blurred or partial content that fully unlocks when a friend joins or replies.\n\nCreate timely “reasons to invite now”\n- Limited-time drops, weekend events, or school rivalries with countdowns. Give ambassadors early access so they seed urgency.\n- Micro‑rituals: daily prompt that’s best with 3 friends; first hour bonuses for groups that complete it together.\n\nSocial proof without spam\n- Show familiar faces (shared classes/clubs) at signup; suggest 2–3 “likely friends” to invite.\n- Invite trees: let users see how their invites brought others (privacy‑respecting), reinforcing the impact of sharing.\n- Guardrails: caps, pacing, and clear controls so users never feel tricked into spamming.\n\nMeasure and iterate your K‑factor\n- Track: invites sent/user, acceptance rate, activation after accept, time to first group formed, and content exports → installs.\n- A/B test copy, channels, and incentives. Prioritize experiments that lift acceptance and activation, not just send volume.\n- Instrument cohort density: virality is local. Aim for 30–40% penetration in a school/club before jumping to the next.\n\nTrust and safety first\n- Clear consent, age‑appropriate defaults, and easy reporting/blocking. Viral growth that breaks trust stalls fast.\n\nDesign for small-group joy, make inviting the obvious next step, and reward both sides instantly. Do that, and virality becomes a byproduct of real value, not gimmicks.",
+       "candidates": [
+        {
+         "text": "Compliance for teen-specific regulations on invites (COPPA/GDPR‑K, parental consent, contact uploads, SMS/email outreach to minors) is not addressed.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Controls against incentive abuse (fake accounts, self-invites, emulator farms) for double‑sided rewards are unspecified.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Channel and platform constraints (App Store/Play policies, SMS deliverability/costs and carrier filtering, WhatsApp/Snapchat sharing and deep-link policies) are not considered.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "The tradeoff between ultra-fast onboarding and required safety/age verification steps for teenagers is undetermined.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Fallback behavior for deferred deep links when the app isn’t installed or on unsupported devices/browsers (web landing, continuity) is not specified.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 3,
+       "question": "What is the best business model for an app aimed at young users?",
+       "answer": "Short answer: a free core with optional, non-extractive upgrades works best. Teens have low purchasing power, high sensitivity to trust and privacy, and parents watching. Aim for a hybrid model that aligns with how they seek identity, creativity, and belonging—without compromising safety.\n\nPrinciples\n- Safety and compliance first: default-private for minors, COPPA/GDPR‑K compliant, no behavioral ads for under‑13 and limited profiling for teens, clear consent flows, no dark patterns.\n- Monetize status, creativity, and access—not attention. Avoid paywalls on basic social utility and avoid gambling-like mechanics.\n\nViable models (pros/cons and fit)\n- Cosmetic IAPs (best-in-class): themes, profile flair, stickers, camera effects, badges, seasonal drops. Pros: privacy-safe, voluntary, scalable; Cons: needs steady content cadence. Target 1–5% payer conversion; ARPPU $5–15/month among payers.\n- Lightweight subscription: “Plus” tier with advanced creation tools, vault backups, bigger group limits, ad-free, and early access to drops. Price $2–4/month student plan; include family approval and grace periods. Pros: predictable revenue; Cons: must deliver ongoing value without FOMO pressure.\n- Seasonal passes: 6–8 week “school season” packs tied to events (homecoming, exams) with quests that reward participation (cosmetics, not power). Pros: time-bound urgency; Cons: requires live-ops discipline.\n- Creator tools and rev share: tipping for older teens (where permitted), brand-safe UGC templates, revenue from marketplace assets. Pros: motivates supply; Cons: compliance and payouts KYC hurdles for minors—consider routing via parents/guardians and strict eligibility.\n- Contextual, high-quality ads (use sparingly): opt‑in or feed-native placements, no retargeting for minors, strong frequency caps, school/club sponsorships. Pros: broad monetization; Cons: regulatory and trust risk—keep under ~10–15% of impressions for minors.\n- Brand activations: limited-time challenges with youth-safe brands (music, gaming, sports) that unlock cosmetics for participation. Pros: aligned with culture; Cons: requires curation and moderation.\n\nRecommended hybrid\n- Free core experience.\n- 60–70% of revenue from cosmetics and seasonal passes.\n- 20–30% from Plus subscription (bundle ad‑light, advanced tools, early drops).\n- 10–20% from contextual ads/brand activations (strict standards).\n- Pilot school/club bundles (sponsored themes, event packs) where administrators opt in.\n\nPayments and UX guardrails\n- Lean on platform IAP with Ask‑to‑Buy/Family Sharing; support gift cards. Clear spend controls, receipts, and monthly caps. No loot boxes; if you use randomized rewards, disclose exact odds and offer a direct-purchase path.\n- Transparent cancel/ refund flows; quiet reminders before renewals. No streak-loss penalties tied to spending.\n\nMetrics to watch\n- Payer conversion, ARPPU, subscription retention (M3/M6), cosmetic attach rate, ad ARPDAU for eligible users, and impact of monetization on D1/D7/D30 retention and safety reports.\n\nBuild trust, sell self‑expression and convenience, and keep the core social graph free. If teens feel respected and in control, they’ll pay—and tell their friends.",
+       "candidates": [
+        {
+         "text": "Unclear target age bands (under‑13 vs 13–17) and how that split changes allowable ads, consent, data handling, and feature set.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "App Store/Google Play program constraints (e.g., “Made for Kids”/Designed for Families) and how classification limits ads, tracking, and IAP mechanics.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Availability of payment instruments for teens across regions (Ask‑to‑Buy, gift cards, carrier billing) and required parental consent flows.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Additional regulatory regimes beyond COPPA/GDPR‑K (e.g., UK Age Appropriate Design Code, California AADC) that restrict profiling, dark patterns, and nudges.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Unit economics uncertainty: whether proposed payer conversion/ARPPU and ad mix can cover CAC, moderation/safety costs, and live‑ops content cadence.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 4,
+       "question": "How should I use user data to improve recommendations?",
+       "answer": "Start with goals and guardrails\n- Define success beyond clicks: optimize for session satisfaction, healthy creation/consumption balance, and long-term retention by cohort. Track: dwell-without-regret (view + no quick back), meaningful interactions, creator breadth.\n- Put safety and compliance first: data minimization, clear consent, default-private for minors, COPPA/GDPR‑K compliant processing, no sensitive categories, short retention windows, and transparent settings. Offer on-device controls and parental options where required.\n\nCollect the right signals (minimize, prioritize high-signal)\n- Explicit: follows/joins, likes/reactions, “show me more/less,” hides/mutes, reports.\n- Implicit: dwell time vs. scroll-through, replays/rewatches, completion rate, saves/shares, tap-to-expand, time-to-first-negative.\n- Social/graph: close-friend edges (DMs, mutual replies), group memberships, school/club affinity.\n- Content/creator features: embeddings from text, audio, and vision; topic/taxonomy tags; freshness; creator cadence and reliability.\n- Context: session recency/length, time-of-day, device/network; avoid precise location for minors.\n- Negative signals are gold: hides, long-press skip, quick bounces—use for downranking more strongly than positives for upranking.\n\nModeling architecture (multi-stage)\n- Candidate generation: two-tower retrieval (user and item embeddings), graph-powered expansion (friends-of-friends, group-local popular), and contextual popularity within micro-communities (class/club/school).\n- Filtering: safety/age filters, dedupe, recency, creator caps, and diversity quotas.\n- Ranking: lightweight GBDTs or shallow neural ranker using calibrated features (engagement propensity, freshness, social affinity, boredom penalty).\n- Explore vs. exploit: small, continuous exploration (e.g., Thompson sampling or ε-greedy per topic/creator) to avoid echo chambers and cold-start stasis. Add diversity constraints at slate level.\n\nCold start and bootstrap\n- Onboarding: 5–8 high-signal choices (interests, groups, school), plus “follow 5 friends” flow. Seed with micro-community popularity and starter packs.\n- Creator-side metadata: make tagging easy/automatic (auto-caption, topic suggestions) to improve retrievability.\n- Use lookalikes within the same school/club before global trends; decay global popularity quickly for minors.\n\nFeedback loops and debiasing\n- Decay historical interactions to fight entrenchment; cap per-creator exposure; promote fresh and small creators with protected slots.\n- Explicit “show less like this” feeds a negative feedback model; reflect back control so users trust the loop.\n- Periodically reset a slice of users into exploration cohorts to measure long-term lift.\n\nEvaluation and experimentation\n- Offline: precision@k, NDCG, calibration, coverage, diversity, creator fairness.\n- Online: A/B with guardrails on safety incidents and time-in-app for minors. Monitor regret surveys, report rates, and concentration (Gini across creators).\n- Use counterfactual logging/IPS to reduce bias in offline sims; maintain a real-time feature store and robust event pipeline.\n\nPrivacy-preserving enhancements\n- Prefer on-device personalization and federated learning where feasible; ship small models to rank the last mile. Differential privacy on aggregates; strict access controls and audits.\n\nDo less, but better: collect only what you use, earn trust with clear controls, and iteratively tune a retrieval→filter→rank pipeline for small-group relevance and long-term wellbeing.",
+       "candidates": [
+        {
+         "text": "Legal basis and consent strategy for personalization (e.g., consent vs legitimate interest for teens) and how opt-out affects data use.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Mechanisms for machine unlearning: how user data deletions/erasure requests propagate to trained models, caches, and logs.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Controls to prevent proxy inference and disparate impact from embeddings/features (fairness constraints and audits on protected attributes).",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Age assurance/verification approach to reliably apply minor-specific data policies and consent flows.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Cross-device identity resolution and treatment of logged-out/ephemeral users in personalization and data collection.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 5,
+       "question": "How do I scale the infrastructure if growth accelerates?",
+       "answer": "Anchor on SLOs and headroom\n- Define user-facing SLOs (e.g., p95 < 200 ms, error rate < 0.5%). Tie autoscaling and release gates to them via error budgets.\n- Capacity plan by hot path: auth, feed read, post write, media upload, notifications. Maintain 2–3x headroom on critical services and run weekly load tests to 5–10x baseline.\n\nArchitect for horizontal scale\n- Make services stateless; externalize session/state to Redis or your DB. Use containers with HPA/cluster autoscaling; pre-warm nodes with bin packing tuned for CPU/mem spikes.\n- Front door: CDN for static/media, HTTP/2+gRPC, anycast DNS, WAF, and rate limiting at the edge.\n- Caching hierarchy: client hints + CDN + service cache (Redis/memcached). Apply cache-busting keys, TTLs, and soft limits; measure cache hit rate per endpoint.\n- Asynchronous by default: enqueue writes that can be delayed (fan-out notifications, indexing, emails). Use durable queues with DLQs, retries, idempotency keys, and backpressure.\n- Feature flags and kill switches for expensive features; support graceful degradation paths.\n\nData layer that won’t melt\n- Scale reads first: read replicas, follower reads, CQRS for heavy queries. Pool DB connections; use read/write splitting at the app layer.\n- Partition when needed: choose a stable shard key (e.g., user_id). Avoid “celebrity key” hotspots with randomization or hash-ring sharding.\n- Schema evolution: additive changes, background backfills, online migrations (ghost, pt-osc), blue/green deploys for DB changes.\n- Search/feeds: precompute/materialize timelines per user or per cohort; use streaming (Kafka/Pulsar) to keep indexes updated. Keep joins out of hot paths.\n- Media: object storage with lifecycle policies, transcoding pipelines, and signed URLs; async virus scanning and moderation.\n\nResilience, limits, and protection\n- Apply timeouts, retries with jitter, circuit breakers, and bulkheads. Protect upstreams with token buckets and quotas per tenant/client.\n- Graceful overload: return partial results, reduce page sizes, or fall back to cached/stale data under pressure.\n- DR and backups: RPO/RTO targets, encrypted snapshots, cross-region replicas; run restore and region-failover drills quarterly. Chaos tests for top failure modes.\n\nObservability and operations\n- Unified metrics/logs/traces; RED/USE dashboards per service. SLO burn alerts tied to paging; everything else as tickets.\n- Golden signals per dependency (DB latency, queue lag, cache hit rate). Log sampling and PII scrubbing at ingress.\n- Incident response: on-call rota, runbooks, comms templates, postmortems with action items.\n\nGlobal and client considerations\n- Multi-region when necessary: active-active for stateless, primary/replica for DBs with data locality. Consistency strategy documented per data type.\n- Versioning and feature flags on clients; allow server-driven config to throttle features. Protect against thundering herds after app updates.\n\nCost and velocity\n- Prefer managed services for DB/queues/observability early; monitor cost per MAU/DAU and per request. Autoscale down, use rightsizing and spot where safe.\n- CI/CD with canaries, progressive delivery, and automated rollbacks. Performance budgets in PRs and load tests in pipelines.\n\nIn practice: identify the top 3 hot paths, add caching and async, set SLOs with autoscaling tied to them, instrument queue/DB health, and rehearse failure. Design for graceful degradation so rapid growth becomes a routing problem, not a crisis.",
+       "candidates": [
+        {
+         "text": "Data residency and compliance constraints when moving to multi-region or cross-border data flows are not addressed.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Scaling strategies for real-time features (WebSockets/SSE, presence, live fan-out) are not covered.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Push notification deliverability and provider rate limits (APNs/FCM), token lifecycle, and batching are not considered.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Path and constraints for evolving a monolith into horizontally scalable services during rapid growth are unspecified.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Secrets management and IAM scaling (key rotation, least-privilege, service-to-service auth) are not discussed.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 6,
+       "question": "Which metrics should I show investors?",
+       "answer": "Focus on a clear narrative: durable growth, engaged cohorts, improving unit economics, and a credible path to defensible scale. Pick a north-star metric (e.g., meaningful interactions per user per week) and show how everything ladders up to it.\n\nGrowth and engagement\n- MAU/WAU/DAU with DAU/MAU ratio (stickiness). Show 6–12 months trend.\n- New user activation rate: % who complete key actions in first 24–48 hours.\n- Session frequency and average sessions/day; median session length.\n- Virality: invites sent per active user, invite→install conversion, K-factor; share/install attribution; organic vs. paid mix.\n\nRetention and quality (by cohort)\n- D1/D7/D30/D90 retention by acquisition channel and geography.\n- Rolling 12-week retention curves and flattened tail.\n- Churn reasons (survey- or event-based) and win-back rates.\n- Breadth metrics: % of users engaging with 3+ topics/creators per week; creator breadth to avoid over-concentration.\n\nSupply and network effects\n- Creator health: % of users who create monthly, creators per 1k DAU, new creators/week.\n- Content throughput: items created per creator, time-to-first-engagement.\n- Network density: average mutual connections, community clustering; concentration (Gini) of attention across creators.\n\nMonetization (stage-appropriate)\n- If pre-revenue: leading indicators—attach rates to cosmetic features, waitlist to paid conversion intent, pricing tests.\n- If monetizing: payer conversion, ARPPU, ARPU, subscription take and M3/M6 retention, churn/cancel reasons.\n- Ads (if applicable): eligible audience size, fill rate, eCPM/RPM, % of impressions to minors with compliance controls.\n- Revenue mix and seasonality; geographic and platform splits.\n\nUnit economics and efficiency\n- LTV by cohort (revenue + modeled probability of survival), CAC by channel, LTV/CAC ratio.\n- Payback period (blended and by channel).\n- Contribution margin and gross margin; infra cost per DAU/MAU and trend.\n- Support load per 1k users; moderation cost per 1k items.\n\nSafety, trust, and compliance (especially for young users)\n- Policy violation and report rates per 1k sessions; time-to-action SLAs.\n- Age‑appropriate design compliance, parental consent rates, default-private adoption.\n- Exposure to potentially harmful content (pre- and post-filters) and false positive/negative rates.\n- User trust: NPS/CSAT, “feel in control/safe” survey scores.\n\nReliability and scalability signals\n- p95 latency and error rate on hot paths; uptime vs. SLOs.\n- Outage minutes per quarter; successful peak events handled; autoscaling headroom.\n\nHow to present\n- Show cohort charts, not just aggregates; highlight 3–4 actionable insights and what you changed.\n- Benchmark selectively (range vs. peers) and call out deltas, not just levels.\n- Tie metrics to roadmap risks and de-risking milestones.\n\nTell a cohesive story: engaged cohorts are compounding, monetization is turning on with improving unit economics, and you’re scaling safely and reliably for a young audience.",
+       "candidates": [
+        {
+         "text": "Tailoring metrics to company stage and investor type (pre-seed vs Series A/Growth; consumer vs infra-focused) is not specified.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Data integrity and metric governance (clear definitions, event instrumentation quality, auditability) are not addressed.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Traffic quality and fraud/bot detection metrics (invalid installs, incentivized traffic, fake accounts) are missing.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Core financial health signals (burn rate, runway, burn multiple, revenue growth rate, net dollar retention where applicable) are absent.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Privacy/compliance safeguards when sharing data with investors (PII anonymization, aggregation, data room controls) are not covered.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 7,
+       "question": "How should I handle negative publicity if it occurs?",
+       "answer": "Prepare before it happens\n- Build a crisis playbook: severity tiers, decision owners, spokespeople, legal/PR contacts, and an approval ladder. Run tabletop exercises quarterly.\n- Monitor in real time: media and social listening, app store reviews, support spikes; define trigger thresholds to activate the playbook.\n- Create ready-to-ship assets: boilerplate statements, dark site/SOT (single source of truth) page templates, customer email templates, FAQs.\n\nFirst response (0–24 hours)\n- Stabilize: pause scheduled marketing, assess facts, preserve evidence/logs, engage legal/IR if material. Spin up a cross‑functional “war room” with a comms lead.\n- Acknowledge fast, then update with facts: within hours, post a holding statement that shows empathy, states what you know/don’t know, immediate steps taken, and when you’ll update next.\n- One voice, many channels: central SOT page; link to it from social, email to affected users/customers, in‑product notices if relevant. Keep cadence (e.g., every 6–12 hours until stable).\n\nInvestigate and fix\n- Establish a verified timeline; quantify impact (who, what, where, when). Ship mitigations quickly: disable risky features, add guardrails, raise thresholds, or roll back.\n- If safety/privacy is involved, notify users/regulators as required; offer concrete next steps (password resets, refunds, helplines).\n- Document corrective actions with owners and deadlines; track publicly if trust is damaged.\n\nMessaging principles\n- Lead with people, not defense: acknowledge harm, apologize when warranted, avoid minimizing or blame‑shifting.\n- Be specific and verifiable: what happened, impact, what you’ve done, how you’ll prevent recurrence, next update time. Avoid vague clichés (“we take this seriously”) without substance.\n- Equip stakeholders: internal FAQs and talking points for employees; tailored notes for customers, partners, and investors.\n\nMedia and social handling\n- Designate trained spokespeople; do briefings with facts and artifacts (timelines, data). Correct inaccuracies once, then move on—don’t amplify.\n- Use a response tree for social: route safety/legal issues to the war room; standardize empathetic replies; close the loop publicly when resolved.\n- Engage credible third parties (auditors, advisors, community leaders) when independent validation will help.\n\nMeasure and adapt\n- Track sentiment, share of voice, support volume, churn/retention deltas, refunds, and press reach. Define exit criteria to wind down crisis comms.\n- Run a blameless postmortem within 1–2 weeks; publish a summary and progress on fixes if the issue was user‑impacting.\n- Long tail: update SEO with a transparent recap page and FAQs; produce positive proof of change (policy updates, transparency reports).\n\nCommon pitfalls to avoid\n- Delayed acknowledgment, legalese without empathy, over‑promising timelines, inconsistent messages across channels, ignoring employees, and failing to show durable fixes.\n\nHandled well, negative publicity can become an inflection point for trust. Move fast, center users, communicate transparently, and follow through with visible improvements.",
+       "candidates": [
+        {
+         "text": "Distinction between handling a legitimate incident versus a misinformation/smear campaign and how tactics, evidence sharing, and escalation differ.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Jurisdiction-specific legal constraints on public statements during active investigations/litigation, including preservation holds and discovery exposure.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Localization needs: multilingual messaging, regional cultural sensitivities, and 24/7 time zone coverage for global audiences.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Coordination with external platforms affected by the crisis (app stores, ad networks, UGC platforms) including review-bombing mitigation and policy compliance.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Employee protection during public pile-ons: doxxing/harassment safeguards, security protocols, and mental health support.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 8,
+       "question": "What is the biggest long-term threat to this kind of app?",
+       "answer": "Biggest long‑term threat: losing the engagement flywheel\nFor consumer social, the existential risk is the flywheel stalling—cultural relevance fades, cohorts stop forming durable habits, and creators migrate. Once network effects flip negative, recovery is rare: content quality dips, feeds feel stale or unsafe, and new users don’t cross the activation threshold that past cohorts did.\n\nHow it manifests\n- Cohort decay: D30/D90 retention curves flatten lower; DAU/MAU drops; session frequency declines even if MAU grows.\n- Creator leakage: top creators multi‑home then concentrate elsewhere; time‑to-first-engagement rises; content supply per creator falls.\n- Trust/safety drag: highly visible incidents (harms, moderation failures) erode parent/press sentiment, raising acquisition costs and driving regulatory scrutiny.\n- Algorithm fatigue: recommendations feel repetitive or low‑value; users perceive “engagement hacks,” creating cynicism.\n- Platform shocks: distribution or monetization gets squeezed by gatekeepers (OS privacy changes, app store policy shifts, ad identifier deprecation).\n- Competitive mimicry: incumbents clone core formats and out‑distribute; your differentiation collapses.\n\nLeading indicators to watch\n- Retention by cohort and by interest graph depth (e.g., users following 5+ interests).\n- Creator concentration (Gini of views), creator NPS, and % of sessions with fresh content.\n- Safety sentiment: report rates per 1k sessions, time‑to‑action, “feel safe/in control” survey scores.\n- Recommendation quality: save/reshare rate per impression, long‑click/read‑through, hide/mute rates.\n- Distribution risk: share of installs from paid vs. organic; dependency on a single channel or OS feature; install friction post‑policy changes.\n\nMitigations\n- Product differentiation: build a durable edge beyond format (e.g., smaller graphs with higher trust, novel creation tools, utility loops that stand without celebrity content). Ship measurable novelty every quarter.\n- Defensible network: invest in creator economics (predictable reach, fair revshare/marketplaces, creation assistive AI), community governance tools, and portable identity/social graphs where it helps trust.\n- Safety as a feature: proactive detection, age‑appropriate defaults, and clear user controls. Publish transparency reports; earn third‑party validation. Treat safety incidents like product outages.\n- Feed quality: optimize for long‑term satisfaction metrics (2–7 day return, hides avoided) over short‑term clicks. Use diversity/serendipity constraints and spam/engagement‑bait dampening.\n- Distribution resiliency: diversify acquisition (search, web, partnerships, UGC embeds), web‑to‑app flows, and region/channel mix. Maintain a strong SEO surface and email/push re‑engagement strategy.\n- Regulatory readiness: design for privacy-by-default, parental controls, data residency, and auditability to avoid sudden feature cuts or fines.\n- Scenario planning: pre‑bake responses for OS policy shifts and incumbent copycat launches; keep a “fast follow” playbook and runway for a 2–3 quarter shock.\n\nUltimately, longevity comes from compounding trust and distinct value, not just growth. If you continuously earn creator/user loyalty and reduce platform/regulatory dependence, you neutralize the flywheel’s biggest failure modes.",
+       "candidates": [
+        {
+         "text": "Ambiguity of “this kind of app” — assumes consumer social without clarifying format, audience, or business model.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Security/privacy breach risk (data leaks, account takeovers) not addressed as distinct from content safety harms.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "ML/recommender robustness risks (dataset shift, feedback loops, cold start bias) not considered beyond “algorithm fatigue.”",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Monetization dependency not examined (ads vs. subscriptions/commerce) and risk of weak unit economics despite engagement.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Infrastructure and cost scalability risk (cloud spend, SLO reliability, technical debt) not considered as a long-term threat.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "conversation_id": "CONV_CITY",
+     "domain": "urban development",
+     "turns": [
+      {
+       "turn": 0,
+       "question": "Our city wants to revitalize the downtown area. Where should we start?",
+       "answer": "A strong downtown turnaround starts with clarity, coalition, and quick visible wins—then locks in structural changes. Here’s a practical sequence that works in many cities.\n\n1) Start with facts and a shared vision\n- Baseline assessment: Map vacancies, foot traffic by time of day, business mix, rent levels, safety incidents, housing supply, transit access, and public space quality. Identify “why people come” vs. “why they leave.”\n- Positioning: Agree on a few roles your downtown can own (e.g., arts and dining district; medical/education anchor; maker/tech hub; family-friendly culture spine). Align this with regional demand, not wishful thinking.\n\n2) Build the coalition and delivery structure\n- Stakeholders: Property owners, small businesses, residents, cultural institutions, major employers, transit agencies, social service providers, and developers.\n- Governance: Create or strengthen a downtown partnership/BID with clear authority for maintenance, programming, marketing, and data.\n- Engagement: Co-design priorities with the community, including youth and underserved groups, to ensure equity and buy-in.\n\n3) Quick wins (0–12 months) to signal momentum\n- Clean and safe: Ambassadors, lighting fixes, graffiti/litter blitz, public restrooms, wayfinding.\n- Activation: Weekly events, pop-up retail/markets, outdoor dining, parklets, street performances, murals. Program evenings and weekends.\n- Small business support: One-stop permitting help, micro-grants, façade/tenant-improvement subsidies, flexible pop-up leases in vacant storefronts.\n\n4) Structural changes (6–36 months) that make it stick\n- Public realm and streets: Convert select streets to slow/complete streets; widen sidewalks; add trees, shade, seating, and curb management for deliveries and rideshare. Create a signature plaza or waterfront/riverwalk if applicable.\n- Land use and buildings: Enable mixed-use by right; streamline adaptive reuse and office-to-residential conversions; reduce/decouple parking minimums; allow small floorplates and flexible ground-floor uses; consider a form-based code for predictable quality.\n- Housing downtown: Incentivize a mix of incomes and unit types (including family-sized and live/work). More residents = safer, steadier demand for services.\n- Anchors and institutions: Partner to place a library, college extension, health clinic, food hall, or cultural venue downtown. These drive daily footfall and broaden hours of activity.\n- Mobility: Improve transit headways where feasible; add protected bike lanes and secure parking; strengthen last-mile links; right-price and manage parking to reduce cruising and free curb space.\n\n5) Finance and delivery\n- Blend tools: BID assessments, TIF/value capture, tax abatements for reuse/housing, state/federal grants, philanthropy, and impact investment. Package a few catalytic blocks for coordinated upgrades.\n- Streamline: Fast-track permits for priority zones; publish a playbook for tenants and developers.\n\n6) Measure and adapt\n- Track footfall, vacancy, sales tax, dwell time, event attendance, perception surveys, and mode share. Share results publicly and iterate quarterly.\n\nStart small but visible, build trust, and channel that momentum into lasting policy and design. With a clear vision and disciplined delivery, downtown can become your city’s everyday destination again.",
+       "candidates": [
+        {
+         "text": "Whether anti-displacement measures for residents and legacy small businesses are built into the plan.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How homelessness, behavioral health, and social services coordination will be integrated with “clean and safe” efforts.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Whether the city has legal authority and fiscal capacity to create/expand a BID and to use TIF/value capture as proposed.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether local office building typologies, codes, and market conditions actually allow viable office-to-residential conversions.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "How climate resilience (heat, flooding, storms) and ADA accessibility are embedded in public realm upgrades.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 1,
+       "question": "How can we attract more shops, restaurants, and cafes?",
+       "answer": "To attract shops, restaurants, and cafes, grow dependable foot traffic, reduce operator risk, and curate a compelling tenant mix. Focus on demand, deal structure, and delivery.\n\nBuild daily demand\n- Add residents and anchors: Fast-track housing conversions, student/medical/civic facilities, and coworking to generate weekday and evening traffic.\n- Program the calendar: Weekly markets, festivals, live music, and family events that repeat and spread across blocks. Pair events with vendor stalls to test future tenants.\n- Improve the public realm: Clean/safe teams, lighting, shade, seating, and parklets/outdoor dining zones. Make it easy to linger.\n\nReduce operator risk and cost\n- One-stop permitting: Dedicated concierge for health/fire/building approvals with published timelines and checklists. Pre-approve sidewalk dining zones.\n- Small grants and TI support: Façade/fit-out grants, hood/grease-trap subsidies, and equipment loans. Offer microgrants for first-year compliance costs.\n- Flexible licensing: Streamline alcohol permits (with clear safety standards), extend pilot hours in well-managed areas, and allow seasonal/pop-up uses.\n- Predictable costs: Right-price parking and offer short-term validation for customers; negotiate utility connection fee reductions for small operators.\n\nSmarter leasing and activation\n- Pop-ups to pipelines: 3–6 month pop-up leases in vacant storefronts with step-up rents; percent-rent leases to align risk; a “try-before-you-lease” program for market vendors graduating to brick-and-mortar.\n- Master leasing: The city/BID or a partner master-leases key ground floors to curate a cohesive mix and backstop vacancy.\n- Cluster strategy: Concentrate first wave on 2–3 contiguous blocks to create a reliable destination, then radiate outward. Create themed nodes (e.g., coffee/pastry lane, global street food court, home & design row).\n- Design for success: Require transparent facades, frequent doors, corner anchors, signage standards, and utility rough-ins (venting, amperage) to lower fit-out friction.\n\nOperational enablers\n- Curb management: Dedicated delivery bays, short-stay parking, rideshare pick-up zones; avoid double-parking chaos that deters diners.\n- Outdoor dining: Standardized, attractive parklet kit-of-parts; heaters/shade; small music allowances balanced with residential quiet hours.\n- Back-of-house support: Shared commissary kitchen and dishwashing, centralized trash/recycling with frequent pickups, secure staff bike parking.\n\nInclusive talent and capital\n- Retail/food business accelerator with technical assistance, bilingual coaching, and menu/pricing help.\n- Capital stack: Revolving low-interest loans, credit enhancement, rent guarantees for first-year revenue gaps, and a local “Friends of Downtown” investment fund.\n- Recruit anchor operators and beloved local brands; pair with chef-in-residence or incubator kiosks to keep it fresh.\n\nMeasure and market\n- Track footfall, sales tax, dwell time, vacancy, and operator satisfaction. Promote wins via a unified downtown brand, maps, and coordinated hours.\n\nStart by concentrating activity, de-risking entry for operators, and proving sustained foot traffic. Momentum plus predictable delivery will draw the next wave of tenants.",
+       "candidates": [
+        {
+         "text": "Missing retail market analysis to validate demand (trade area, spending power, leakage, competitor corridors) and define target tenant segments.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Unaddressed land-use and code constraints (zoning/use-by-right, change-of-use, occupancy, historic preservation, ADA) that can block food/retail openings.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "No plan for aligning fragmented property owners (incentives, vacancy costs, CAM charges, cooperation agreements) to enable flexible leases and clustering.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Limited treatment of displacement risks and legacy business protections (rent escalation controls, right-to-return, anti-eviction supports).",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 2,
+       "question": "How should we improve accessibility and traffic?",
+       "answer": "Aim to move more people, more safely, with less friction. Start by prioritizing universal access and person-throughput over peak-hour car volume, then manage the curb like prime real estate.\n\nPrinciples and quick diagnostics\n- Safety first: Commit to Vision Zero targets. Map crash hotspots, sidewalks gaps, and ADA barriers. Track speeds by corridor and curb occupancy by time of day.\n- Universal design: Ensure continuous, obstacle-free routes with 2% max cross-slope, 5 ft+ sidewalks, high-contrast/tactile cues, benches every ~200–300 ft, shade, and lighting.\n- Pilot, then scale: Use 60–90 day pilots for street reconfigurations, curb zones, and signal timing, with before/after data.\n\nStreet design and crossings\n- Complete streets: Convert selected downtown streets to 10–11 ft lanes, add protected bike lanes, and widen sidewalks. Use quick-build materials first.\n- Safer crossings: High-visibility crosswalks, raised intersections, daylighting at corners, curb extensions, and median refuges. Add LPIs (3–7 seconds) and audible/tactile signals.\n- Speeds: Target 20–25 mph downtown. Use tightened curb radii, speed cushions on appropriate streets, and gateway treatments.\n\nTransit and first/last mile\n- Bus priority: Consolidate stops for spacing, provide shelters with seating and real-time info, add bus bulbs, queue jumps, and transit signal priority on key corridors.\n- Service coordination: Work with agencies to improve headways at evenings/weekends. Align routes with anchors (hospitals, campuses, venues).\n- Paratransit and taxis: Designate accessible pick-up/drop-off zones near major destinations with curb ramps and clear signage.\n- Micromobility: Provide protected lanes, slow-speed shared streets, and abundant secure bike/scooter parking. Add e-bike charging where feasible.\n\nCurb and parking management\n- Dynamic curb: Stripe, sign, and price curbs by time of day for short-stay parking, ADA stalls, deliveries, rideshare, and transit. Enforce consistently.\n- Right-priced parking: Demand-based meter rates to maintain ~70–85% occupancy. Enable mobile payment and wayfinding to garages to cut cruising.\n- Shared/off-street supply: Broker shared parking with private garages; convert excess on-street parking to loading, bike corrals, and parklets where demand warrants.\n\nTraffic flow and signals\n- Modern signal policy: Coordinate for person-throughput, not car speed. Add LPIs, scramble phases where foot traffic is heavy, and pedestrian recall in peak foot hours.\n- Access management: Reduce redundant driveways; favor right-in/right-out where appropriate to cut conflicts.\n- Event management: Pre-plan reversible lanes, wayfinding, and temporary rideshare hubs for peak nights.\n\nFreight and deliveries\n- Dedicated loading: Time-windowed loading zones on every block face in retail streets; off-peak delivery incentives. Use alleys or shared micro-distribution hubs for e‑commerce.\n\nWayfinding and comfort\n- Cohesive signage linking transit, parking, and attractions; tactile maps and audible beacons at key nodes. Provide shade trees, canopies, and hydration in hot climates; snow/ice clearance plans in cold ones.\n\nGovernance and metrics\n- Downtown curb manager (city/BID) to adjust allocations quarterly. Monitor mode share, average speeds, injury crashes, bus reliability, curb turnover, and ADA compliance. Report publicly and iterate.\n\nWith safer, universally accessible streets, reliable transit, and well-managed curbs, you’ll unlock foot traffic and reduce congestion—making downtown easy to reach and a pleasure to stay.",
+       "candidates": [
+        {
+         "text": "Lack of funding, phasing, and procurement plan (capital/operating sources, grants, PPPs, maintenance) to implement and sustain changes.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Missing coordination approach for state-controlled arterials, rail crossings, and utility/jurisdictional constraints that affect street reconfiguration.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "No explicit provisions for emergency response access (fire/apparatus turning paths, signal preemption, clear widths during road diets).",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Absent inclusive engagement and on-street user testing with people with disabilities to validate pilots and universal design details.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Equity impacts of pricing/enforcement not addressed (reduced-fare transit, curb pricing exemptions/discounts, fine structures, paratransit affordability).",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 3,
+       "question": "How can we make downtown more attractive to tourists?",
+       "answer": "Make downtown a place with a clear promise, must-do experiences, and an easy visitor journey—from arrival to late-night. Focus on distinctiveness, activation, hospitality, and partnerships.\n\nDefine the promise and curate must-do experiences\n- Signature theme: Choose 1–2 storylines downtown can own (e.g., “riverfront arts + food,” “music and makers,” “history to modern tech”). Build around authentic assets, not generic attractions.\n- Hero experiences: Create 3–5 “can’t-miss” anchors within a 10–15 minute walk: a waterfront/plaza with daily programming, an iconic observation spot or rooftop, a food hall featuring regional cuisine, a major museum/cultural venue, and a family-friendly experience.\n- Trails and clusters: Design a walkable “culture and bites” trail linking murals, galleries, heritage sites, and tastings. Cluster attractions on 2–3 contiguous blocks to concentrate buzz.\n- Photogenic moments: Commission large-scale public art, night lighting, and a signature sign/viewpoint—clearly marked for social sharing.\n\nActivate day-to-night, year-round\n- Predictable programming: A published weekly cadence (markets Thu–Sun, live music Fri, family craft Sat mornings, night market twice a month). Guarantee something happening every weekend and most evenings.\n- Nighttime economy: Extend hours with well-lit streets, outdoor dining, late-opening museums/shops on set nights, and safe late-night transit.\n- Seasonal draws: Winter lights/ice, spring blooms, summer concerts, fall food/wine—paired with hotel packages.\n\nSmooth the visitor journey\n- Wayfinding and amenities: Multilingual, cohesive signage from transit/parking to attractions; plentiful clean restrooms, water stations, stroller/wheelchair rentals, and shaded seating.\n- Welcome hubs: A staffed visitor center and mobile kiosks at gateways (train/bus stations, key garages) with maps, event info, and ticketing.\n- Easy mobility: Frequent shuttle/loop bus connecting hotels, attractions, and parking; protected walking/biking routes; curbside tour/Rideshare zones; luggage lockers for day trippers.\n\nHospitality and retail readiness\n- Coordinated hours: Align shops/museums/restaurants to be open during peak visitor windows (late afternoons/evenings, weekends).\n- Service standards: Train frontline staff as “downtown ambassadors;” encourage bilingual service and inclusive accessibility practices.\n- Clean and safe: Daily cleaning, graffiti/litter blitz, lighting fixes, and visible ambassadors; manage curb clutter and noise.\n\nMarketing and partnerships\n- Unified brand and pass: A “Downtown Pass” bundling transit, attractions, and dining perks; time-limited itineraries (24/48/72 hours) on a mobile-friendly site.\n- Partner with hotels, airlines, rail, and cruise lines for packages and layover/day-trip offers; coordinate with convention center to convert delegates to diners/shoppers.\n- Content engine: Professional photo/video, influencer fam tours, user-generated content prompts on-site; track redemptions via QR.\n\nMeasure and iterate\n- KPIs: Visitor counts/dwell time, hotel occupancy, attraction/pass redemptions, event attendance, social reach, perception surveys. Adjust programming and offerings quarterly.\n\nBy clarifying what makes your downtown unique, programming it reliably, and making visits seamless and welcoming, you’ll turn tourists into enthusiastic storytellers—and repeat guests.",
+       "candidates": [
+        {
+         "text": "Lack of target visitor segmentation and origin-market analysis to focus themes, programming, and packages.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Unspecified funding, ownership, and governance model to sustain programming, ambassadors, shuttles, and the pass.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Missing sustainability and crowd-management plan (waste, noise, capacity, resident impacts, “overtourism” safeguards).",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Incomplete accessibility strategy beyond rentals (ADA compliance, sensory-friendly options, wayfinding for low-vision, multilingual assistance depth).",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Absent digital infrastructure details (public Wi‑Fi, real-time info/app, integrated ticketing/payments) to support the visitor journey.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 4,
+       "question": "What role should housing development play in the city center?",
+       "answer": "Housing should be a central pillar of the city center strategy. A resident base delivers all‑day, year‑round foot traffic, stabilizes small businesses, justifies transit and public realm upgrades, and makes downtown safer through presence.\n\nWhat kinds of housing and where\n- Mixed-income, mixed-typology: Include market-rate, workforce (60–120% AMI), and deeply affordable units. Add “missing middle” (studios to 3BRs), not just micro-units, to attract students, service workers, and families.\n- Adaptive reuse: Prioritize converting obsolete offices, hotels, and upper-floor space. Target shallow floorplates and good window lines; combine with envelope/MEP upgrades.\n- Transit-oriented: Concentrate new units within a 10–15 minute walk of major stations and along frequent bus corridors.\n- Specialized formats: Student and faculty housing near campuses; senior/accessible units near healthcare; live/work lofts and artist housing in creative districts.\n- Family-friendly cores: Require a share of 2–3BRs, safe play spaces, and access to schools/childcare to keep households downtown.\n\nPolicies and tools to deliver it\n- Zoning and by-right approvals: Allow residential by-right in commercial districts, enable mixed-use, reduce minimum unit sizes, allow SRO/co‑living with standards.\n- Parking reform: Eliminate or reduce minimums; unbundle parking from rent; manage curb for short stays and deliveries instead.\n- Inclusionary housing: Set clear on-site requirements with feasible set-asides and income bands; offer in-lieu only when it funds units nearby on synchronized timelines.\n- Incentives: Property tax abatements/TIF for conversions, density bonuses for affordability/family units, expedited permitting for projects with deep affordability and universal design.\n- Public land: Prioritize city parcels/air rights for mixed-income projects via long-term ground leases.\n- Financing stack: Pair low-interest loans, 4%/9% LIHTC, historic tax credits, green financing for electrification, and gap-closing local funds.\n\nDesign and ground-floor activation\n- Active edges: Require transparent, leasable ground floors (retail, community uses, childcare, maker spaces). Where retail demand is thin, design convertible “white box” shells.\n- Human-centered site design: Wider sidewalks, street trees, stoops/porches, mid-block passages, secure bike rooms, pet relief areas, loading bays off alleys.\n- Quiet and quality: Acoustical glazing, mechanical ventilation, and smart loading to balance nightlife with livability.\n\nEquity, stability, and community benefits\n- Anti-displacement: Preserve and rehab existing affordable stock; offer right-to-return and tenant protections; fund eviction prevention and rental assistance.\n- Jobs and local wealth: Require local hiring/apprenticeships, support minority-owned developers, and ground community ownership via CLTs or shared-equity homes.\n- Social infrastructure: Co-locate clinics, libraries, and recreation; ensure 24/7 safety, lighting, and ambassador programs.\n\nImplementation and metrics\n- Start with a few catalytic blocks and key conversions; phase utilities and streetscape upgrades in tandem.\n- Track delivery by income band, unit mix, conversion success rates, retail occupancy, transit ridership, and resident satisfaction.\n\nDone well, housing makes downtown resilient—anchoring activity beyond office hours, supporting small businesses, and creating an inclusive, vibrant urban core.",
+       "candidates": [
+        {
+         "text": "Financial feasibility and market absorption analysis for proposed housing types and office-to-residential conversions is not addressed.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Integration of supportive housing and services for the unhoused within the downtown housing strategy is missing.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Assessment of infrastructure and public services capacity (schools, utilities, emergency services) to support new residents is not covered.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Policies on short-term rentals to prevent erosion of the downtown housing supply are not considered.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Climate and hazard resilience requirements (heat, flooding, seismic, stormwater) for new and converted housing are not discussed.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 5,
+       "question": "How should we add more green public space?",
+       "answer": "Aim for a connected “green network” rather than isolated parks—each piece adding shade, play, respite, and stormwater benefits within a 5–10 minute walk of every block.\n\nWhere to find space (near-term to long-term)\n- Streets and curbs: Convert selected curb lanes and slip lanes into parklets and micro-plazas; widen sidewalks with planting beds and trees; create green medians and bioswales on overwide streets; reclaim one low-volume street as a linear greenway.\n- Underused parcels: Activate vacant/underbuilt lots as pop-up pocket parks via interim-use licenses; turn surface parking edges into planted buffers and seating; negotiate public access easements on private plazas with required greening.\n- Roofs and structures: Install intensive green roofs on public buildings/garages (add play, community gardens, or courts); retrofit extensive green roofs on large flat roofs for heat/stormwater.\n- Waterfronts and rights-of-way: Naturalize riverfronts/creek edges, add soft landings and boardwalks; green utility corridors and alleys into “eco-passages” with lighting and vines.\n- Big moves: Deck over short spans of rail or roadway to create cap parks; daylight culverted streams where feasible; co-create shared schoolyards (open after hours) to add playable green acreage.\n\nDesign essentials for high-performance, inclusive spaces\n- Universal access and safety: Step-free paths, 2% max cross-slope, tactile cues, shade, lighting, clear sightlines, and emergency call points; inclusive play and seating at multiple heights.\n- Trees and soil: Prioritize canopy—large-species trees with 600–1,000 cu ft of connected soil per tree (structural cells/continuous trenches); target 30–40% canopy downtown over time.\n- Nature and water: Native, pollinator-friendly plantings, layered habitat, bird-safe lighting; integrate rain gardens, permeable paving, and cistern-fed irrigation to meet stormwater mandates.\n- Comfort and activation: Mix sun/shade, movable seating, drinking fountains, restrooms, and power/Wi‑Fi; design flexible lawns/plazas for markets, performances, and quiet zones.\n- Materials and climate: Cool surfaces, high albedo where appropriate; wind breaks in winter cities; drought-tolerant palettes in arid climates.\n\nDelivery, governance, and funding\n- Quick-build first: Use modular planters, paint, and furnishings for pilots; measure use and adjust before capital projects.\n- Stewardship: Establish a green space conservancy or BID-managed park team for horticulture, litter, security ambassadors, and programming; adopt-a-park partners for gardens.\n- Funding stack: Blend TIF/EIFD, park impact fees, stormwater utility funds, state/federal grants (RAISE, LWCF, urban forestry), philanthropic gifts/naming rights, and developer exactions (in-lieu fees or on-site green).\n- Maintenance by design: Choose durable species/materials, smart irrigation, and clear maintenance zones; set per-acre O&M budgets and service standards.\n\nImplementation and metrics\n- Map a 10-minute green gap analysis; prioritize heat islands, schools, senior housing, and transit nodes.\n- Phase: 6–12 months (parklets, pop-ups, street trees); 1–3 years (plazas, greenways, roof gardens); 3–7 years (waterfronts, caps/daylighting).\n- Track canopy cover, stormwater captured, visitor counts/dwell time, accessibility audits, perceived safety, and maintenance response times; publish dashboards and iterate.\n\nWith a planned, equitable green network—delivered quickly, built to last, and well-stewarded—you’ll cool streets, invite lingering, boost biodiversity, and make downtown feel welcoming every day.",
+       "candidates": [
+        {
+         "text": "Potential displacement/“green gentrification” risks and any anti-displacement measures tied to new green amenities.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Need for environmental site assessment and remediation on brownfields, parking lots, and waterfront edges before greening.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Trade-offs with traffic, freight/loading, emergency access, and curb management when converting lanes/curbs to green space.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Long-term land control and permanence strategy to secure pop-up/interim green sites against future loss or redevelopment.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Biodiversity management policies (native species ratios, invasive control, tree species diversity/resilience standards).",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 6,
+       "question": "How do we keep downtown safe and lively in the evening?",
+       "answer": "Make evenings reliably worth the trip—and feel predictably safe—by combining activation, good operations, and visible guardianship. Aim for a consistent rhythm week-to-week so people know what’s on and how to get home.\n\nProgram a dependable night rhythm\n- Set a weekly cadence: live music Thu–Sat, late museum/gallery night one weekday, family-friendly early evenings, and rotating night markets. Guarantee “something on” year-round.\n- Diversify venues and audiences: mix arts, sports-on-the-plaza, comedy, dance, film, teen nights, and low/no-alcohol options. Program multiple price points and early/late slots.\n- Simplify participation: a monthly evening pass or stamp program across venues; coordinated calendars; busker zones and licensed vendors to add street life.\n\nStrengthen place operations and hospitality\n- Ambassadors + co-response teams: visible hospitality staff for directions, escorts, and minor issues; pair with social workers/clinicians to address crises humanely.\n- Clean-and-safe cadence: pre-evening litter and graffiti blitz, rapid-response teams, open and well-maintained public restrooms, and managed waste after events.\n- Clear rules, fair enforcement: vendor management, busking permits, noise and queue plans to reduce friction while allowing vibrancy.\n\nDesign for nighttime comfort and visibility\n- Lighting hierarchy: warm, uniform pedestrian lighting on sidewalks, crossings, and plazas; accent lighting on art/landmarks; avoid glare. Light alleys and mid-block passages.\n- Eyes on the street: active ground floors, transparent facades, and sidewalk seating; CPTED audits to fix blind spots, sightlines, and emergency call points.\n- Seating and amenities: abundant movable chairs, water stations, weather shelters, and wayfinding that’s legible at night.\n\nMobility that makes evenings easy\n- Frequent evening transit: 10–15 minute headways on core routes until late; a downtown circulator; well-lit stops with real-time info.\n- Safe rides home: designated rideshare/taxi bays, late-night parking guidance and escorts, bike corrals with security, and discounted “night out” passes.\n- Curb and crowd plans: event traffic management, freight/loading curfews on key blocks, and pedestrian-priority streets during peak hours.\n\nPolicing, safety, and nightlife management\n- Problem-oriented policing: focused on hot spots with data-informed deployment; foot/bike patrols that are approachable and consistent.\n- Nightlife manager and venue partnership: standardize queueing, security, ID checks, and dispersal; adopt best-practice codes (e.g., “Good Night Out,” Purple Flag).\n- Alcohol harm reduction: staggered closing times, late-night food options, hydration/rest areas, and transport lined up at dispersal.\n\nCommunity, equity, and communication\n- Include residents, youth, venues, service providers, and businesses in a Nighttime Governance group; run listening sessions and after-action debriefs.\n- Promote what’s on and how to stay safe via unified channels; multilingual messaging and visible maps help newcomers navigate confidently.\n\nMeasure and adapt\n- Track footfall, transit ridership, incidents, cleanliness scores, venue sales, and sentiment; publish dashboards and iterate programming and deployment quarterly.\n\nWith predictable programming, well-lit and well-run streets, and welcoming guardianship, evenings can feel effortless—inviting more people to linger, spend, and return.",
+       "candidates": [
+        {
+         "text": "Funding and governance model for evening operations and programming (who pays, who manages: BID, city, sponsors, levies).",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Zoning/licensing and policy framework for the nighttime economy (hours extensions, noise standards, entertainment district rules, outdoor alcohol/service permits).",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Seasonal and weather adaptations for evening comfort (heat, cold, rain/wind plans, heaters/misters, winter lighting, covered areas).",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Transit and egress safety coordination with the transit agency (on-board/stop security, last-mile escorts, timed transfers at closing).",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Resident impact mitigation and agreements (noise spillover, late-night dispersal routes, parking spillback, cleanup SLAs, complaint/resolution process).",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 7,
+       "question": "How can the municipality finance all of this?",
+       "answer": "Blend dedicated public revenues, value capture, outside grants/credits, and project finance. Build a layered “capital-and-operations stack” so no single source carries the load.\n\nCore local revenues (stable, voter-facing)\n- Targeted tax measures: a modest sales or lodging tax increment dedicated to downtown housing, streets/greenery, and nighttime operations; sunset and oversight to build trust.\n- Bonds: General obligation (for parks/streets) and revenue bonds (backed by parking, lodging, or sales taxes) for larger capital; green/social bonds for climate/affordable housing.\n- Utilities and fees: Stormwater utility fees to fund bioswales/green roofs; transportation fees for curb management and evening transit; updated park impact fees and linkage fees on new development.\n\nValue capture and district tools\n- TIF/EIFD: Capture incremental property/sales taxes within a defined district to service debt for streetscapes, conversions, and cap parks.\n- Special assessments: Create or expand a BID/assessment district to fund clean-and-safe teams, programming, lighting, plantings, and marketing.\n- Development contributions: Calibrated inclusionary requirements, in-lieu fees tied to near-site production, negotiated community benefits, and public realm exactions tied to upzoning.\n- Public land and air rights: Long-term ground leases and air-rights sales to generate upfront or steady cash; recycle proceeds into the Downtown Investment Fund.\n\nGrants and credits (braided by project)\n- Federal/state transport and streets: IIJA/BIL—RAISE, Safe Streets for All, Reconnecting Communities, CMAQ/STBG; state active transportation programs.\n- Parks/urban nature: LWCF, Urban and Community Forestry, FEMA BRIC for resilience, state water/stormwater grants.\n- Housing/conversions: HUD CDBG/HOME/Section 108, Choice Neighborhoods planning/implementation; LIHTC (4%/9%), Historic Tax Credits for adaptive reuse, IRA energy-efficiency rebates and tax credits; state housing trust funds.\n- Economy/safety: EDA Public Works; DOJ COPS and Byrne for community policing/technology; SAMHSA for co-response and behavioral health.\n- Philanthropy/corporate: Challenge grants, naming rights, sponsorships for plazas, play, and arts programming.\n\nProject finance and P3s (use where risk fits)\n- Public-private partnerships for structured parking, cap parks, and facility operations; availability-payment models with performance metrics.\n- Credit enhancements: Loan loss reserves for small landlords; catalyze C-PACE for energy retrofits; energy savings performance contracts for lighting/HVAC.\n- Revolving funds: A Downtown Conversion/Green Fund offering low-interest loans and predevelopment grants; capitalize with TIF, philanthropy, and bank CRA dollars.\n\nOperating sustainability\n- Diversify ops: BID assessments, event revenues, concessions/leases, modest vendor permits, and advertising; unbundle parking to stabilize revenues.\n- Maintenance first: Dedicate a fixed O&M set-aside in every capital budget; design to reduce lifecycle costs.\n\nGovernance and discipline\n- Publish a 10-year capital plan with clear benefit-cost and equity screens; phase projects so grant matches and TIF flows align.\n- Create an interagency “deal desk” to braid funds, standardize incentives with clawbacks, and track outcomes publicly.\n\nWith a durable mix—local votes, captured value, outside dollars, and disciplined delivery—you can finance the buildout and keep the lights on night after night.",
+       "candidates": [
+        {
+         "text": "Whether state enabling law permits TIF/EIFD, BIDs/special assessments, and linkage/impact fees as described—and any statutory limits on their use.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "The city’s debt capacity and credit rating constraints that could limit GO/revenue bond issuance and affect borrowing costs.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Voter approval thresholds and political feasibility for new or increased taxes and bonds, including required election timing and polling.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Grant match, eligibility, and compliance requirements (e.g., NEPA, Buy America, labor standards) that could affect timelines and costs.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Potential displacement and affordability impacts from value capture and upzoning, and what anti-displacement safeguards or set‑asides are needed.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 8,
+       "question": "What most often goes wrong in downtown revitalization projects?",
+       "answer": "Common failure modes in downtown revitalization—and how to avoid them\n\n- No plan for operations and maintenance: Capital projects open with fanfare, then degrade. Antidote: hardwire O&M—dedicate an annual set-aside, define service levels, and choose durable materials/species. Tie ribbon cuttings to funded maintenance plans and stewards.\n\n- Fragmented governance and slow delivery: Multiple agencies, unclear ownership, and permitting bottlenecks stall momentum. Antidote: create a single accountable delivery office with interagency MOUs, delegated approvals, and a rolling 18–24 month work program.\n\n- Chasing silver bullets: Stadiums, megaprojects, or one festival aren’t a strategy. Antidote: build a diverse pipeline—small wins (parklets, storefront activations), mid-scale streetscapes, and a few big moves—sequenced to show visible progress every quarter.\n\n- Token community engagement: Check-the-box meetings yield backlash and redesigns. Antidote: co-create with residents, workers, youth, and businesses early; publish what you heard/changed; compensate lived-experience advisors; pilot and iterate before permanent build.\n\n- Displacement and inequity: Investments raise values but push out small businesses and renters. Antidote: pair public realm upgrades with anti-displacement tools—tenant protections, small-business stabilization, commercial rent assistance, inclusionary/LIHTC pipeline, and local hiring.\n\n- Programming without place care (or vice versa): Lively events don’t stick if it’s dirty or unsafe; clean-and-safe without culture feels sterile. Antidote: fund a balanced “place management stack”: ambassadors/co-response, cleaning, horticulture, lighting, and a dependable events calendar.\n\n- Over-policing or under-guardianship: Either alienates communities or leaves disorder unchecked. Antidote: problem-oriented, data-driven deployments; visible hospitality staff; behavioral-health co-response; clear rules with fair, consistent enforcement.\n\n- Car-first streets that repel people: Overwide lanes, fast traffic, and poor crossings undermine retail and evening life. Antidote: pedestrian-first design—short crossings, protected bike lanes, 20–25 mph design speeds, lighting, and generous shade/seating.\n\n- Weak ground-floor strategy: Vacant or mismatched tenants kill footfall. Antidote: curate a tenant mix with pop-up/short leases, fit-out grants, nighttime anchors, and spillout seating; manage loading/curb so operations don’t dominate sidewalks.\n\n- Underestimating housing’s role: Office-only cores empty out after 5 pm. Antidote: enable mixed-income housing and office-to-residential conversions, school/childcare access, and pet/park amenities to build an everyday resident base.\n\n- Poor budgeting and risk management: Optimism bias, thin contingencies, and grant mismatches derail projects. Antidote: independent cost reviews, 20–30% early contingencies, value engineering tied to outcomes, and phasing aligned with secured funds.\n\n- Ignoring climate and resilience: Heat, flooding, and smoke can make spaces unusable. Antidote: trees, shade, cool materials, stormwater capture, backup power, and flexible indoor/outdoor venues.\n\n- No metrics, no feedback loop: Success isn’t tracked, so resources drift. Antidote: publish dashboards—footfall, safety, sales, satisfaction, canopy—and adjust quarterly.\n\nGet the basics right—governance, maintenance, safety with dignity, housing, streets for people—and layer visible wins with sustained care. That steadiness, more than any one project, is what makes a downtown revival stick.",
+       "candidates": [
+        {
+         "text": "Dependency on regional transit evening service and last‑mile options—and alignment with parking policy—to sustain nighttime activation.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Regulatory barriers (zoning, building code, conversion standards) that hinder or raise costs for office‑to‑residential and mixed‑use projects.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Procurement and contracting constraints (low‑bid mandates, change‑order risk, labor availability) that slow or compromise delivery.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Coordination and capacity dependencies with county/state homelessness and behavioral‑health systems (shelter, outreach, treatment beds) outside city control.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Market absorption and demand uncertainty for ground‑floor retail and new housing amid economic cycles and remote‑work shifts.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "model": "gpt-6.1-sol",
+   "resolved_models": [
+    "gpt-6.1-sol"
+   ],
+   "conversations": [
+    {
+     "conversation_id": "CONV_IR_SHORT",
+     "domain": "history and economics",
+     "turns": [
+      {
+       "turn": 0,
+       "question": "Briefly explain why the Industrial Revolution began in Great Britain.",
+       "answer": "The Industrial Revolution began in Great Britain in the late eighteenth century because several advantages came together:\n\n- **Energy and resources:** Abundant coal and iron supported steam power, machinery, and expanding factories.\n- **Agricultural change:** Rising farm productivity helped feed growing towns and freed workers for industrial employment.\n- **Capital and markets:** Banks, merchants, and profits from domestic and overseas trade—including colonial trade and slavery—provided investment and markets for manufactured goods.\n- **Institutions and innovation:** Relatively stable government, property rights, patents, and networks of skilled craftspeople encouraged investment and practical invention.\n- **Transport and labor costs:** Ports, navigable rivers, and canals lowered transport costs. Relatively high wages, combined with cheap coal, made labor-saving machinery attractive.\n\nNo single factor explains Britain’s lead; it was the interaction of resources, economic incentives, institutions, and global connections.",
+       "candidates": [
+        {
+         "text": "How Britain’s combination of advantages differed from those of other potential early industrializers.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "The role of the textile industry in initiating mechanized factory production.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 1,
+       "question": "How did industrialization then spread to continental Europe?",
+       "answer": "Industrialization spread to continental Europe during the nineteenth century as countries **adopted British technology and adapted it to local conditions**. It was gradual and uneven, concentrating first in regions with coal, capital, and established manufacturing.\n\n### How it spread\n- **Technology and expertise:** British machinery, engineers, and skilled workers carried industrial techniques abroad, despite early British restrictions on their export. Continental entrepreneurs also studied and copied British methods.\n- **Investment and government support:** Banks and investors financed mines, factories, and railways. Governments encouraged development through infrastructure, technical education, and, in some countries, protective tariffs.\n- **Railways and larger markets:** Railway construction increased demand for coal, iron, and machinery while reducing transport costs. The removal of internal trade barriers—especially through the German **Zollverein**, established in 1834—helped producers reach wider markets.\n\n### Where it took hold\n**Belgium** became the first major industrial center on the continent, benefiting from coal, iron, textiles, and close links with Britain. **France** industrialized more gradually, combining mechanized production with a substantial agricultural and craft economy. **German states**, particularly the Ruhr and Saxony, expanded rapidly; after unification in 1871, Germany became a leader in steel, chemicals, and electrical engineering.\n\nOther regions followed different paths: Switzerland specialized in textiles and precision manufacturing, while parts of southern and eastern Europe industrialized later.\n\nIn short, continental industrialization was not simply a copy of Britain’s: imported knowledge combined with local resources, finance, and state policies to produce distinct regional patterns.",
+       "candidates": [
+        {
+         "text": "How agricultural change affected the supply of workers for continental industrialization.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "What constrained industrialization in parts of southern and eastern Europe compared with earlier-industrializing regions.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 2,
+       "question": "What explains why some regions industrialized much faster than others?",
+       "answer": "Some European regions industrialized faster because **resources, investment, skills, and access to markets reinforced one another**. National borders mattered, but differences within countries were often just as important.\n\n- **Coal, iron, and transport:** Regions such as Belgium’s industrial belt and Germany’s Ruhr had abundant coal near industrial centers. Rivers, ports, and later railways made raw materials and finished goods cheaper to move. Areas lacking both resources and good transport faced higher costs.\n\n- **Existing industry and skills:** Places with established textile production, metalworking, or commercial networks could adapt more readily to factory production. Skilled workers and entrepreneurs helped import, maintain, and improve machinery.\n\n- **Capital and institutions:** Banks and investors supplied money for expensive factories, mines, and railways. Reliable laws and fewer internal trade barriers encouraged investment, while fragmented markets or political instability could slow it.\n\n- **Agriculture and demand:** Productive farming supported urban populations and created demand for manufactured goods. In poorer rural regions, low incomes limited markets, while unequal landholding or restrictions on labor mobility could impede change.\n\n- **Government policy and timing:** Infrastructure, technical education, and sometimes tariffs helped industries develop. Latecomers could adopt advanced foreign technology rather than invent it, but only if they had the finance and expertise to use it.\n\nEarly advantages also became **self-reinforcing**: growing industrial centers attracted more workers, suppliers, investment, and railway connections. Yet coal was not essential everywhere—Switzerland, for example, developed specialized industries using skills, waterpower, and export markets.\n\nThus, uneven industrialization reflected different combinations of opportunities and constraints, not a simple divide between “advanced” and “backward” societies.",
+       "candidates": [
+        {
+         "text": "Whether regional differences in wages relative to energy costs affected incentives to mechanize production.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How regions’ specialization in different industries affected the pace of industrialization.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether competition from already-industrialized regions constrained industrial development elsewhere.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 3,
+       "question": "Which factor is most often underestimated in standard explanations?",
+       "answer": "One often underestimated factor is **the accumulation and circulation of practical skills**—though historians disagree about which factor deserves the most weight.\n\nStandard explanations emphasize coal, capital, and major inventions. But having a machine’s design was not the same as being able to build, operate, repair, and improve it. Industrialization depended on mechanics, metalworkers, engineers, and experienced workers whose knowledge was often learned through practice rather than written down.\n\nThis helps explain why industrial growth clustered in particular regions:\n\n- **Existing craft industries provided a foundation.** Textile and metalworking districts already had workers and suppliers capable of adapting new machinery.\n- **Migration transferred know-how.** British technicians helped establish continental factories, while local workers gained expertise through apprenticeships and experience.\n- **Industrial clusters accelerated learning.** Nearby firms shared suppliers and hired one another’s workers, spreading techniques and making improvements easier.\n\nSkills also help explain why resources alone were insufficient. A coal-rich region without technical expertise or effective business networks could develop slowly, while a resource-poor region such as Switzerland could succeed in specialized manufacturing.\n\nThe key point is that **technology had to be absorbed, not merely imported**. Coal and finance created opportunities; practical knowledge helped determine which regions could turn those opportunities into sustained industrial growth.",
+       "candidates": [
+        {
+         "text": "The comparative basis for identifying practical skills as the most underestimated factor rather than merely one overlooked factor.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Which “standard explanations” are being assessed: scholarly accounts, textbooks, or popular summaries.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "conversation_id": "CONV_STARTUP",
+     "domain": "product and growth",
+     "turns": [
+      {
+       "turn": 0,
+       "question": "I am building a social app for teenagers. How do I get the first thousand users?",
+       "answer": "Your first 1,000 users should probably come from **a few dense communities—not 1,000 scattered downloads**. A social app feels valuable when people find friends or peers who actually respond.\n\n### 1. Pick a narrow starting community\nChoose one age range, location, and use case—for example, “16–17-year-olds in local music groups sharing works in progress,” rather than “an app for teenagers.”\n\nInterview 15–20 teens through appropriate, permission-based channels. Ask:\n- What do you already use for this?\n- What’s frustrating about it?\n- What would make your friends join you here?\n\nLook for a recurring need, not just enthusiasm for your idea.\n\n### 2. Make safety part of the launch\nBefore recruiting, establish age-appropriate privacy defaults, reporting and blocking, moderation coverage, and clear community rules. Minimize collection of location, school, and contact information; avoid public precise-location sharing and unsolicited adult-to-minor messaging.\n\nReview child privacy and age-assurance requirements in your launch markets. In the U.S., serving children under 13 raises COPPA obligations; older teens also have important protections. Don’t treat an age checkbox as your whole compliance plan.\n\n### 3. Recruit your first 50–100 personally\nWork with a handful of relevant clubs, youth organizations, or community leaders, with permission. Invite small groups together so newcomers immediately know someone.\n\nGive them a concrete reason to participate: a weekly creative challenge, collaborative project, or useful group activity. Be present, answer feedback, and fix onboarding friction quickly. Avoid cold-DMing minors or scraping school directories.\n\n### 4. Grow through 5–10 community hosts\nRecruit enthusiastic early users to host activities and welcome friends. Give them clear responsibilities and recognition—not rewards for spam or pressuring classmates.\n\nBuild invitations around genuine shared value: “Join our group’s project” is stronger than “Invite five friends to unlock features.” Let users share a link without uploading their address books.\n\n### 5. Prove retention before buying reach\nTrack:\n- **Activation:** Did users complete the action that delivers your app’s value?\n- **Retention:** Do they return the following week?\n- **Network health:** Do posts or messages receive meaningful responses?\n- **Safety:** Are reports handled promptly, and do users feel comfortable?\n\nDefine “1,000 users” as active people, not registrations. If initial groups go quiet, improve the experience before expanding. Once several communities remain active, replicate the launch playbook in adjacent groups and test small, transparently sponsored creator partnerships where appropriate.\n\n**Bottom line:** Start with one community you can serve exceptionally well. Your best acquisition channel is a safe, useful experience that friends genuinely want to share—not a viral mechanic bolted onto an empty app.",
+       "candidates": [
+        {
+         "text": "Whether the app’s core activity requires existing friends or can provide value among unfamiliar peers.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether the founder already has permission-based access to a suitable teenage community.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "The budget available to recruit and support the first 1,000 active users.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Whether the app is ready for a live pilot or still requires product development before recruitment.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "The timeframe intended for reaching 1,000 active users.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 1,
+       "question": "Which features are most effective at retaining users?",
+       "answer": "For a teen social app, the strongest retention features usually help users **connect meaningfully, get a response, and feel safe returning**—not simply spend more time scrolling. Which ones work best depends on your app’s purpose, but I’d prioritize these:\n\n### 1. Small groups with a clear purpose\nBuild private, interest-based groups around an existing friendship circle or shared activity. Give each group something concrete to do: collaborate, ask questions, share progress, or plan events.\n\n**Why it helps:** People return for relationships and shared commitments. An empty public feed rarely creates either.\n\n### 2. A fast, meaningful first interaction\nHelp new users find a relevant group and make one low-pressure contribution. Offer optional prompts or introductions, and give community hosts tools to welcome newcomers.\n\n**Measure:** How many newcomers receive a substantive response within their first day? Test whether that predicts next-week retention rather than assuming it does.\n\n### 3. Recurring activities—not punitive streaks\nTry weekly creative prompts, group challenges, project updates, or scheduled discussions. Make participation flexible, with no penalty for missing a day.\n\n**Why it helps:** A predictable shared activity gives people a reason to return without guilt, loss aversion, or pressure to remain constantly available.\n\n### 4. User-controlled notifications\nNotify users about things they explicitly care about: replies, invitations, and chosen group updates. Offer digests, quiet hours, and easy per-group controls; default overnight notifications off for teens.\n\nAvoid vague “someone misses you” alerts, exaggerated urgency, or repeated nudges after inactivity.\n\n### 5. Strong control over the social experience\nPrioritize private-by-default settings, audience controls, blocking, muting, accessible reporting, and responsive moderation. Let users control who can contact them and whether activity status or read receipts are visible.\n\n**Why it helps:** Harassment, unwanted contact, and social pressure can drive people away even when engagement initially looks high.\n\n### 6. Continuity and shared progress\nSaved projects, group collections, and collaborative milestones give users something worthwhile to resume. Favor collective accomplishments over public popularity rankings, which can intensify comparison and exclusion.\n\n### What to build first\nFor your first 1,000 users, start with **small groups, a good welcome-and-response flow, one recurring activity, and robust safety controls**. Add complexity only when user research identifies a need.\n\nTrack week-one and week-four retention by cohort, alongside meaningful exchanges, notification opt-outs, safety reports, and whether users say the app improves their social experience. Session length alone is a poor success metric.\n\nThe goal is to make returning worthwhile—not leaving difficult. Sustainable retention comes from genuine social value and trust.",
+       "candidates": [
+        {
+         "text": "How retention is defined for the app’s intended frequency of use.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether the proposed features causally improve retention rather than merely correlate with it.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How feature effectiveness differs across teen age groups.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether users leave because too few of their existing friends are active on the app.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether technical reliability or performance is a significant source of user churn.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 2,
+       "question": "How do I make the app viral so users invite their friends?",
+       "answer": "For a teen social app, the best viral loop is **“this is better with my friends,” not “I have to invite friends to keep using it.”** Build sharing around real social value, then make it easy and safe.\n\n### 1. Make invitations accomplish something\nPick one activity that naturally needs other people:\n- Invite friends to contribute to a shared playlist or creative project.\n- Start a private group for a club or hobby.\n- Share a challenge that friends can participate in together.\n\nThe invitation should explain the value immediately: **“Help us choose songs for Friday’s rehearsal”** is stronger than “Download this new app.”\n\nDon’t lock basic functionality behind invitations or require users to recruit others before seeing whether the app is useful.\n\n### 2. Make the invitation-to-value path short\nUse a shareable link that opens a clear preview of the activity, with sensitive details hidden. After signup, take the person directly to the group or project—not a generic feed.\n\nLet users share through their device’s share sheet. Avoid mandatory contact uploads, automatic messages, or revealing who has someone’s phone number. Group links should be revocable, with joining approval where appropriate.\n\n### 3. Create shareable outputs, not exposure\nLet users voluntarily share something they made: artwork, a collaborative result, or an event announcement.\n\nProvide an attractive export with a discreet app attribution. Don’t include other users’ names, photos, school information, or private contributions without appropriate permission. Never make private groups publicly discoverable just to increase reach.\n\n### 4. Seed groups rather than isolated users\nRecruit a few enthusiastic community hosts through permission-based channels. Help each host launch one worthwhile activity and welcome newcomers.\n\nRecognition or optional cosmetic rewards can support this, but avoid referral leaderboards, escalating recruitment targets, or rewards tied to friends’ spending. Those can turn friendship into pressure.\n\n### 5. Measure whether sharing creates healthy growth\nTrack the full funnel:\n**Active users → voluntary invitations → accepted invitations → activated newcomers → retained newcomers.**\n\nA useful diagnostic is:\n\n**Invites per active user × invite conversion rate = new users per active user.**\n\nBut don’t optimize that number alone. Compare referred users’ week-four retention, unwanted-invite complaints, blocks, and safety incidents. A burst of signups that produces empty groups or harassment is not success.\n\nStart with one experiment: a private collaborative activity, a clear invitation preview, and a frictionless joining flow. If people invite friends without prompting—and those friends stay—you’ve found a loop worth expanding.",
+       "candidates": [
+        {
+         "text": "Which shared activity fits the app’s core use case well enough to motivate voluntary friend invitations.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How invitation cycle time affects the pace of viral growth.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How age eligibility is checked when newcomers join through invitation links.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How experiments distinguish incremental referral growth from signups that would have happened without an invitation.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 3,
+       "question": "What is the best business model for an app aimed at young users?",
+       "answer": "**For a teen social app, the strongest starting model is usually a free core experience with an optional subscription—not targeted advertising.** It aligns revenue with delivering value rather than maximizing attention or collecting personal data.\n\n### 1. Start with freemium\nKeep essential social participation and all safety features free: joining groups, basic messaging, blocking, reporting, and privacy controls.\n\nCharge for extras with clear, nonessential value:\n- Profile themes and cosmetic customization.\n- Advanced creative tools or additional project storage.\n- Optional tools for organizing clubs and collaborative activities.\n\nAvoid selling visibility, popularity, access to friends, or relief from deliberately imposed friction. A subscription should improve the product without making nonpaying teens socially excluded.\n\n### 2. Identify who actually pays\nTeen users may love the product without having purchasing power. Test two distinct options:\n\n- **Optional individual or family subscriptions:** Best when premium tools offer understandable value. Make pricing, renewal, and cancellation clear, with age-appropriate purchase authorization.\n- **Organization subscriptions:** Clubs, youth organizations, or schools pay for coordination and administration tools while teens participate free. This can provide steadier revenue, but introduces longer sales cycles and additional privacy obligations.\n\nIf organizations pay, don’t turn their dashboard into surveillance of teens’ private conversations.\n\n### 3. Treat advertising as a later, constrained option\nAds require substantial scale to generate meaningful revenue and can create pressure to prioritize screen time over well-being. Behavioral targeting involving minors also faces significant legal restrictions in many markets.\n\nIf you eventually use ads, favor clearly labeled, age-appropriate contextual placements or sponsorships. Avoid sensitive-data targeting, disguised promotions, and advertisers contacting minors directly. Don’t sell users’ personal data.\n\n### 4. Validate economics before expanding\nFor your first 1,000 users, focus on retention and willingness to pay—not squeezing revenue from a small audience. Test a simple paid offer with a limited group of eligible purchasers.\n\nMeasure:\n- Conversion to paid and subscription cancellations.\n- Revenue after payment fees, hosting, moderation, and support.\n- Whether paid features damage participation for free users.\n- Safety outcomes and trust, not just revenue.\n\nModeration is a core operating cost, not an expense to postpone until the app grows. Purchase, privacy, and child-protection requirements also vary by age and country.\n\n**My recommendation:** Start with a free, safe social core and one optional subscription built around creative or organizational utility. If your strongest use case is clubs, test organization-paid plans alongside it. Choose the payer whose interests best align with teens having a genuinely useful, healthy experience.",
+       "candidates": [
+        {
+         "text": "Whether the app’s specific use case creates recurring premium value sufficient to support a subscription.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How the users’ age range and launch countries constrain the available monetization models.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether expected customer lifetime value can cover acquisition costs alongside the operating costs listed.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether organization-paid plans fit the app’s intended use without requiring a different product or customer strategy.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 4,
+       "question": "How should I use user data to improve recommendations?",
+       "answer": "For your teen social app, use data to recommend **relevant, safe connections and content—not whatever maximizes time spent**. Start with a small, explainable system rather than collecting everything for a complex model.\n\n### 1. Prioritize explicit preferences\nStart with interests users voluntarily select, groups they join, and feedback such as “more like this,” “not interested,” and “hide this topic.”\n\nSupplement these with limited behavioral signals, such as saves or meaningful participation. Treat viewing time cautiously: lingering can indicate confusion or distress, not enjoyment.\n\nAvoid collecting precise location, address books, cross-app browsing history, or inferring sensitive traits such as sexuality, health conditions, or emotional vulnerability. Prefer user-selected interests over profiling.\n\n### 2. Build a simple, safety-filtered ranking\nA useful first system could:\n1. Retrieve posts from joined groups and selected interests.\n2. Remove content the user cannot access, blocked accounts, and material that violates your policies.\n3. Rank by relevance, freshness, and quality of interaction.\n4. Add variety so recommendations don’t become repetitive or increasingly extreme.\n\nFor account and group recommendations, respect age boundaries, audience settings, and contact restrictions. Don’t expose private memberships or enable adults to discover and contact minors through recommendations.\n\n### 3. Give users meaningful control\nExplain recommendations in plain language: “Because you follow digital art,” rather than implying knowledge you shouldn’t have.\n\nOffer:\n- A chronological or following-only feed.\n- Easy topic and account controls.\n- A way to reset recommendation history.\n- Clear options to delete data.\n\nKeep personalization settings understandable and avoid making users disable multiple hidden tracking options.\n\n### 4. Evaluate usefulness alongside harm\nMeasure whether recommendations produce satisfying interactions and whether users say they found something worthwhile. Use retention as supporting evidence—not the sole objective.\n\nAlso monitor unwanted contact, reports, blocks, repeated exposure to upsetting material, and concentration on a narrow set of topics. Test differences across age groups using appropriately collected data, and pause changes that worsen safety even if engagement rises.\n\n### 5. Minimize and protect the data\nCollect only what each feature needs, set short retention periods for raw activity logs, restrict staff access, and use aggregated reporting where possible. Removing names does not necessarily make behavioral records anonymous.\n\nReview applicable youth-privacy and profiling rules before deployment; consent alone does not make every data use appropriate or lawful. Keep recommendation data separate from advertising uses.\n\n**For your first 1,000 users:** explicit interests, group membership, simple ranking, and direct feedback will likely teach you more than invasive tracking. Add data only when you can explain the user benefit, demonstrate improvement, and manage the risks.",
+       "candidates": [
+        {
+         "text": "How the applicable age range and jurisdiction constrain whether personalized recommendations may be enabled by default.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether private-group activity may be used to personalize recommendations outside that group.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How deleted data and recommendation-history resets propagate to derived profiles and trained models.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How recommendation feedback loops affect the interpretation of behavioral signals collected from previously recommended content.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether third-party recommendation providers receive user data and under what restrictions.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 5,
+       "question": "How do I scale the infrastructure if growth accelerates?",
+       "answer": "For your teen social app, **scale around measured bottlenecks—not a premature move to microservices**. Your goal is to absorb spikes while keeping private content private and safety tools operational.\n\n### 1. Establish a reliable baseline\nA sensible early architecture is:\n- **Stateless application servers** behind a load balancer, with autoscaling.\n- **Managed relational database** for accounts, permissions, groups, and posts.\n- **Object storage plus a CDN** for images and video.\n- **A managed queue** for notifications, media processing, and recommendation updates.\n- **A cache** where measurements show repeated, expensive reads.\n\nKeep the application relatively simple—a modular monolith is often sufficient. Separate services when you have a specific scaling or operational reason.\n\n### 2. Measure capacity before growth arrives\nTrack request volume, tail latency, error rates, database connections, slow queries, queue age, and cost per active user. Set service-level objectives for critical actions such as signing in, messaging, and reporting abuse.\n\nLoad-test realistic scenarios:\n- A popular group generates a burst of messages.\n- Many users upload video simultaneously.\n- An invitation campaign causes a signup spike.\n- A dependency becomes slow or unavailable.\n\nAutoscaling application servers won’t help if the database or an external provider is already saturated.\n\n### 3. Protect the system from overload\nUse connection pooling, appropriate indexes, pagination, upload limits, and per-user or per-device rate limits. Move slow work off request paths.\n\nAdd bounded retries with backoff, idempotency for retried operations, and queue backpressure. During overload, degrade nonessential features first: serve simpler recommendations or delay digests rather than breaking messaging or abuse reporting.\n\nFor media-heavy apps, direct uploads to object storage and CDN delivery often provide the biggest early improvement. Keep uploads quarantined until required safety checks complete.\n\n### 4. Scale safety and privacy with traffic\nApply authorization on every private-content access; a CDN or cache must not accidentally make private posts public. Use short-lived signed links where appropriate.\n\nScale moderation queues, reporting, blocking, and incident response alongside traffic. Keep sensitive content out of logs, limit staff access, and ensure deletion workflows cover caches and downstream systems. Prevent abuse from consuming unlimited storage, messaging, or moderation capacity.\n\n### 5. Prepare recovery and cost controls\nUse automated backups, test restoration, deploy gradually, and maintain rollback procedures. Start with multi-zone resilience; add multi-region complexity only when your availability or geographic requirements justify it.\n\nSet spending alerts and monitor major cost drivers—especially video delivery, database usage, and third-party APIs.\n\n**Your next move:** benchmark the current system, identify its first bottleneck, and rehearse a traffic spike. A tested, observable architecture will handle growth better than a complicated one built on guesses.",
+       "candidates": [
+        {
+         "text": "How the current architecture and projected peak traffic determine the capacity required.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How to scale database writes when a single database becomes the bottleneck.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How persistent messaging connections would be distributed and maintained as application servers scale.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether infrastructure quotas and autoscaling startup times can accommodate the expected speed of growth.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 6,
+       "question": "Which metrics should I show investors?",
+       "answer": "For your teen social app, investors should see evidence of **lasting user value, a credible business model, and responsible scaling**—not just downloads or time spent.\n\n### 1. Growth and engagement quality\nShow:\n- **Weekly and monthly active users**, with a clear definition of “active”—ideally a meaningful action, not simply opening the app.\n- **Growth by acquisition channel:** organic invitations, partnerships, and paid campaigns.\n- **Activation rate:** the share of new users who reach an early value milestone, such as joining a relevant group and having a reciprocal interaction.\n- **Time to value:** how quickly users reach that milestone.\n\nSeparate genuine adoption from bots, duplicate accounts, and incentivized signups.\n\n### 2. Retention—the strongest early evidence\nShow **cohort retention curves**, not just a blended retention number. Track whether users return after their first week, month, and subsequent months.\n\nBreak results down by acquisition channel and meaningful product segments, using privacy-preserving aggregates. Explain whether newer cohorts retain better and why.\n\nFor a social app, also track **community health**: the share of groups with sustained participation and users receiving meaningful responses. Strong activity in one founder-run group is different from repeatable growth across communities.\n\n### 3. Monetization and unit economics\nIf you offer subscriptions, report:\n- Free-to-paid conversion, with the eligible population clearly defined.\n- Monthly recurring revenue and growth.\n- Subscriber churn.\n- Gross margin, including relevant infrastructure, moderation, and support costs.\n\nIf organizations pay, add paying organizations, average contract value, renewals, and sales-cycle length.\n\nShow customer acquisition cost by channel and payback where measurable. Avoid presenting speculative lifetime value as established fact when retention history is short.\n\n### 4. Safety, trust, and operating efficiency\nBecause your users are young, safety performance is part of business durability. Include:\n- Harmful-content prevalence from structured sampling.\n- Unwanted-contact incidence.\n- Time to resolve high-severity reports.\n- Reliability and infrastructure cost per active user.\n\nNormalize incident metrics by exposure or active users. **Fewer reports do not automatically mean a safer product**; reporting may have become harder. Pair report trends with independent sampling or user feedback.\n\n### 5. Cash and the next milestone\nShow monthly burn, runway, and what the proposed funding unlocks—for example, validating retention across additional communities or demonstrating repeatable paid conversion.\n\n**For your current stage, lead with retained users, healthy community participation, and evidence of willingness to pay.** Keep the main dashboard to roughly eight metrics, define each consistently, and show trends rather than isolated headline numbers.",
+       "candidates": [
+        {
+         "text": "Which metrics fit the company’s actual stage and the funding round being pursued?",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How invitation-driven growth is measured through invite conversion and retention of referred users.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Whether growth and retention depend on a small number of unusually active communities.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "How metric definitions and reporting periods reconcile across the investor dashboard.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "What evidence supports attributing improved cohort retention to specific product changes.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 7,
+       "question": "How should I handle negative publicity if it occurs?",
+       "answer": "For your teen social app, treat negative publicity as **a potential safety incident first and a communications problem second**. The goal is to protect users, establish what happened, and earn trust through verifiable action—not simply quiet the story.\n\n### 1. Assess the allegation and contain harm\nQuickly distinguish between criticism of a product decision, misinformation, a privacy breach, and an immediate safety threat. Assign one incident lead with support from engineering, safety, communications, and legal counsel.\n\nIf harm may be ongoing, act before the investigation is complete: restrict an affected feature, stop a data flow, or limit account access as appropriate. Preserve relevant evidence securely without retaining unnecessary sensitive data. Escalate imminent danger and suspected exploitation through appropriate emergency and reporting channels.\n\n### 2. Communicate promptly, without guessing\nIssue an initial statement once you have enough verified information to be useful. Include:\n- What you know and what remains unconfirmed.\n- What protective steps you have taken.\n- What affected users should do.\n- When and where you will provide the next update.\n\nFor example:\n\n> “We’re investigating reports of unwanted adult contact through group recommendations. We have temporarily paused that feature while we assess the scope. Users can continue to block and report accounts through [channel]. We’ll provide another update by [time], even if the investigation is ongoing.”\n\nAvoid blanket claims such as “no users were harmed” unless you can substantiate them. Don’t call a problem “isolated” prematurely.\n\n### 3. Protect minors throughout the response\nNever identify affected teens or publish details that could reveal them indirectly. Don’t repost sensitive screenshots to defend the company.\n\nProvide accessible, private support and age-appropriate guidance. Decide how to notify parents or guardians with safeguarding and legal advice; doing so automatically can create risks for some young people. Meet applicable breach-notification, child-safety, and regulatory reporting obligations—public statements do not replace them.\n\n### 4. Match the response to the facts\nFor valid criticism, acknowledge the specific failure, apologize where warranted, and explain the remedy. For inaccurate claims, correct material errors calmly with evidence, without attacking reporters or users.\n\nUse one spokesperson and a central update page. Brief employees and investors consistently, while restricting sensitive incident details to those who need them. Never organize fake support, pressure affected users into silence, or trade compensation for removing criticism.\n\n### 5. Demonstrate follow-through\nPublish confirmed findings, corrective actions, accountable owners, and timelines where safe. Consider independent review for serious failures. Track whether harm decreases and fixes work—not just whether sentiment improves.\n\nPrepare this process before a crisis: escalation contacts, response templates, and a tabletop exercise. Credibility comes from protecting users and keeping promises, especially when the headlines are uncomfortable.",
+       "candidates": [
+        {
+         "text": "How emerging negative publicity will be detected and routed to the incident lead.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "What remedies or redress affected users can access.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "What criteria must be met before a restricted feature or data flow is restored.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 8,
+       "question": "What is the biggest long-term threat to this kind of app?",
+       "answer": "The biggest long-term threat is **failing to sustain a trusted, healthy community as the app grows**. For a teen social app, safety, social relevance, and business viability are tightly linked.\n\n### Why this is an existential risk\nYour product depends on network effects: teens join because people they care about are there. But those effects can reverse. If harassment, unwanted adult contact, spam, or social pressure become common, valued members leave. Their friends follow, making the app less useful even for users who never experienced harm directly.\n\nTeens also age out, interests change, and groups migrate. You must continually earn relevance with new cohorts without undermining the community that already works.\n\nA serious safety or privacy failure can accelerate this decline by damaging trust among teens, parents, schools, distribution partners, and regulators. Even rapid signup growth cannot compensate for weakening community health.\n\n### The dangerous business-model tension\nThe risk becomes greater if revenue depends on maximizing attention or collecting increasingly sensitive data. Those incentives can push you toward:\n- Recommendations that reward provocative content.\n- Notifications that encourage compulsive checking.\n- Broad discovery features that increase unwanted contact.\n- Growth that outpaces moderation and support.\n\nThese choices can improve short-term engagement while weakening the conditions that make the app worth using. Subscriptions or institutional buyers have different trade-offs; no model removes the need to align revenue with user value.\n\n### How to defend against it\nBuild around a **specific, durable reason for communities to exist**, rather than trying to become a general-purpose social feed.\n\nThen make trust a product constraint:\n- Use age-appropriate privacy defaults and carefully designed discovery and messaging.\n- Make blocking, reporting, and leaving groups straightforward.\n- Scale moderation capacity with exposure and risk, not just headcount.\n- Evaluate growth experiments against safety and retention—not engagement alone.\n- Test whether communities thrive without constant founder intervention.\n\nWatch for early warning signs: worsening cohort retention, fewer reciprocal interactions, rising unwanted contact, and activity concentrating among a small number of dominant users. Measure these alongside revenue and growth; report volume alone is not a reliable safety indicator.\n\n**Large competitors, regulation, and infrastructure costs matter, but the deepest threat is losing the community’s trust and relevance.** Your strongest defense is a product whose growth makes healthy connections more valuable—not harmful behavior more rewarding.",
+       "candidates": [
+        {
+         "text": "What evidence would distinguish loss of community trust and relevance from other risks as the app’s biggest long-term threat?",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether moderation and safety costs remain financially sustainable as the app grows.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How dependence on app stores or other distribution platforms affects the app’s long-term viability.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How the app’s target teen age range and operating jurisdictions affect its exposure to regulatory restrictions.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether the app offers durable differentiation that prevents communities from moving to larger competitors.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "conversation_id": "CONV_CITY",
+     "domain": "urban development",
+     "turns": [
+      {
+       "turn": 0,
+       "question": "Our city wants to revitalize the downtown area. Where should we start?",
+       "answer": "Start by identifying **what keeps people from coming downtown—and what would make them return regularly.** Don’t begin with a signature building or a new branding campaign. Begin with a focused diagnosis, then test a few improvements.\n\n### 1. Establish a baseline and listen\nOver the first 30–60 days, combine basic data with conversations and walking audits.\n\n- **Activity:** Where do people go, at what times, and where does activity drop off?\n- **Property:** Which storefronts and upper floors are vacant? What are rents, building conditions, and barriers to reuse?\n- **Access and comfort:** Are sidewalks, crossings, transit, lighting, shade, restrooms, and parking arrangements working?\n- **People:** Ask residents, businesses, workers, young people, people with disabilities, and people who rarely visit downtown what they need.\n\nDistinguish symptoms from causes. Empty storefronts might reflect weak demand, renovation costs, restrictive rules, or owners unwilling to lease—not simply a lack of marketing.\n\n### 2. Choose a small area and a clear purpose\nConcentrate initial effort on a few connected blocks rather than spreading money thinly. Choose somewhere with existing strengths: a library, market, college, historic buildings, transit stop, or cluster of businesses.\n\nAgree on two or three outcomes, such as:\n- More everyday visits and occupied storefronts.\n- Safer, more comfortable walking.\n- More downtown residents and locally owned businesses.\n\nDowntown should serve a useful daily role, not just host occasional festivals.\n\n### 3. Run a 90-day improvement program\nPair visible public-space improvements with practical business support:\n\n- Fix broken lights, crossings, sidewalks, and maintenance problems.\n- Test seating, shade, wayfinding, or a temporary plaza where appropriate.\n- Help businesses navigate permits; pilot vacant-space pop-ups with willing owners.\n- Coordinate opening hours and modest recurring activities.\n- Address safety through good design, maintenance, outreach, and appropriate public-safety services.\n\nMeasure results before making temporary changes permanent. Don’t assume either adding parking or removing it is the answer; check occupancy, turnover, accessibility, and actual travel patterns first.\n\n### 4. Build the longer-term delivery plan\nUse early findings to prioritize housing and upper-floor reuse, building rehabilitation, infrastructure, and regulatory changes. Assign one accountable lead, identify funding and maintenance responsibilities, and publish a simple quarterly dashboard.\n\nInclude protections against displacement from the outset: support existing small businesses, preserve affordable housing where relevant, and involve current residents in decisions.\n\n**Your best first move:** appoint a cross-functional downtown lead and launch a 60-day diagnostic focused on one promising district. The goal is not merely a better-looking downtown, but a place people can afford to use, enjoy visiting, and rely on every day.",
+       "candidates": [
+        {
+         "text": "How the city’s size and downtown’s current economic role affect the recommended starting point.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether available funding and staff capacity can support the proposed 60-day diagnostic and 90-day improvement program.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How demand for downtown housing and commercial space compares with competing locations elsewhere in the city or region.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Which proposed actions require approvals or cooperation beyond the downtown lead’s authority.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 1,
+       "question": "How can we attract more shops, restaurants, and cafes?",
+       "answer": "To attract more shops, restaurants, and cafes, make downtown **a place where businesses can realistically earn a profit**, not just a place with attractive storefronts. Focus on customer demand, usable spaces, and lower startup risk.\n\n### 1. Match businesses to real demand\nIdentify who already spends time downtown, when they visit, and what’s missing. Combine pedestrian counts, storefront vacancies, nearby employment and housing, and interviews with customers and business owners.\n\nLook for specific gaps—not simply “more restaurants.” For example:\n- Coffee and breakfast near transit or offices.\n- Affordable lunch options for workers and students.\n- Everyday shops serving downtown residents.\n- Evening dining near cultural venues.\n\nCheck the wider trade area, too. A category that looks absent downtown may already be well served nearby.\n\n### 2. Make vacant spaces easier to open\nCreate a reliable inventory of available properties, including rent, size, condition, accessibility, utilities, and permitted uses. Work with landlords to offer smaller spaces, realistic rents, graduated leases, or short-term trials.\n\nRestaurants face especially high fit-out costs. Identify buildings with suitable ventilation, electrical capacity, plumbing, and grease-management infrastructure before recruiting operators.\n\nGive applicants a **single city contact**, clear permit checklists, coordinated inspections, and predictable review timelines—without weakening health, safety, or accessibility standards.\n\n### 3. Recruit selectively—and support existing businesses\nStart with successful local operators who might open a second location, market vendors ready for permanent premises, and entrepreneurs already seeking space.\n\nPrepare a short recruitment package showing:\n- The likely customer base and foot traffic by time of day.\n- Suitable properties and full occupancy costs.\n- Planned public improvements and available assistance.\n\nAsk existing downtown businesses what would help them expand or stay. Retaining a good operator is usually less costly than replacing one.\n\n### 4. Reduce risk without subsidizing failure\nUse limited, transparent assistance for genuine barriers: building improvements, code compliance, accessibility, or shared technical support. Where lawful, consider matching grants or small-business loans with clear eligibility and milestones.\n\nAvoid blanket tax breaks or incentives that simply move a business from another neighborhood. Pop-ups and markets can test demand, but they need a pathway to viable permanent leases.\n\n### 5. Build a dependable customer base\nBusinesses need ordinary Tuesdays, not just festival crowds. Improve walking routes, cleanliness, lighting, transit access, and parking turnover where evidence supports it. Over time, more downtown housing and complementary services can sustain everyday spending.\n\n**Start with a 90-day leasing initiative:** select a small cluster of viable vacancies, resolve their opening barriers, and approach well-matched operators. Track sustained occupancy, business survival, and customer activity—not just ribbon cuttings.",
+       "candidates": [
+        {
+         "text": "Whether prospective operators can recruit and retain the staff needed to operate downtown.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether downtown properties can accommodate deliveries and waste collection for new shops, restaurants, and cafes.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Whether the city has the staffing and funding needed to carry out the proposed 90-day leasing initiative.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How rising commercial rents could affect existing businesses as downtown attracts new tenants.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 2,
+       "question": "How should we improve accessibility and traffic?",
+       "answer": "Aim for **easy access to downtown, safe movement within it, and reliable deliveries**—not simply faster vehicle travel. Shops and cafes benefit when customers of different ages and abilities can arrive comfortably and spend time there.\n\n### 1. Diagnose the actual problems\nBefore changing street layouts, collect data on:\n- Crashes, vehicle speeds, crossing delays, and pedestrian activity.\n- Sidewalk gaps, inaccessible crossings, and blocked routes.\n- Transit reliability and connections.\n- Parking occupancy and turnover by block and time.\n- Delivery needs, loading conflicts, and cut-through traffic.\n\nWalk the area with people who use wheelchairs, walkers, white canes, and strollers. Their experience will reveal barriers that traffic counts miss.\n\n### 2. Make accessibility the foundation\nCreate continuous, unobstructed walking routes connecting shops, parking, transit stops, and public spaces. Prioritize:\n- Smooth sidewalks, compliant curb ramps, and accessible building entrances.\n- Safe crossings with adequate crossing time and accessible signals where needed.\n- Benches, shade, lighting, and accessible transit shelters.\n- Convenient accessible parking and passenger drop-off areas.\n\nKeep cafe seating, signs, scooters, and construction out of the accessible route. Temporary projects must meet accessibility requirements too.\n\n### 3. Manage traffic for safety and access\nOn downtown shopping streets, use context-appropriate low speeds, shorter crossings, and clear intersections. Consider curb extensions, pedestrian refuges, signal changes, or lane reconfiguration where engineering analysis supports them.\n\nMaintain emergency access and evaluate whether changes divert traffic onto residential streets. Avoid widening roads by default: it can make crossings harder and undermine the environment businesses need.\n\n### 4. Give each travel mode a practical role\n- **Transit:** Improve frequency, reliability, accessible stops, and evening service where demand warrants it.\n- **Cycling:** Provide connected, protected routes and secure parking—not isolated lanes.\n- **Driving:** Make routes and parking easy to understand; preserve necessary access without encouraging through traffic on pedestrian-focused blocks.\n- **Deliveries:** Designate loading zones and suitable delivery periods so trucks do not block sidewalks, bike lanes, or travel lanes.\n\nManage the curb as valuable shared space, including accessible parking, loading, pickups, and short visits.\n\n### 5. Test changes and measure results\nPilot improvements on one corridor before committing to major construction. Measure speeds, safety conflicts, travel-time reliability, accessibility, customer visits, and business feedback. Use parking data to adjust time limits or pricing before building additional supply.\n\n**Start with an accessibility audit and a corridor-level traffic study, then fund the most important safety fixes first.** Judge success by how safely and reliably people reach downtown—not by vehicle speed alone.",
+       "candidates": [
+        {
+         "text": "Which agencies control the downtown streets, signals, transit services, and curb space needed for the proposed changes.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "How ongoing sidewalk maintenance and obstruction removal would preserve accessible routes after initial improvements.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether people in surrounding neighborhoods have practical connections to the proposed downtown walking, cycling, and transit networks.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "What funding and staffing constraints would shape the sequence of accessibility and traffic improvements.",
+         "recorded_intake": "not_atomic"
+        }
+       ]
+      },
+      {
+       "turn": 3,
+       "question": "How can we make downtown more attractive to tourists?",
+       "answer": "Make downtown worth visiting **because it offers something distinctive—and make that experience easy to enjoy**. Tourism should strengthen the shops, restaurants, accessibility, and public spaces residents use, rather than create a separate visitor district.\n\n### 1. Build around your authentic strengths\nIdentify what visitors can experience downtown that they cannot easily find elsewhere: local food, history, architecture, arts, waterfronts, markets, or cultural traditions.\n\nChoose a few compelling experiences rather than a generic “something for everyone” campaign. Develop them with local businesses and cultural communities, including fair compensation and accurate storytelling.\n\n### 2. Create a complete half-day visit\nVisitors need more than one attraction. Connect several stops into an easy itinerary: breakfast, a walking tour, independent shops, a museum or gallery, and dinner.\n\nPrioritize:\n- Clear, accessible routes between attractions.\n- Reliable opening hours, including appropriate weekend and evening options.\n- Clean restrooms, seating, shade, drinking water, and good maintenance.\n- Useful wayfinding from transit, parking, and major arrival points.\n\nPublish accurate accessibility information so visitors can plan confidently.\n\n### 3. Give people reasons to come—and return\nBuild a dependable calendar of markets, performances, exhibitions, and seasonal activities. Start with recurring, manageable events rather than an expensive flagship festival.\n\nSupport local guides, artists, cafes, and retailers in offering bookable experiences. Coordinate hours so visitors do not arrive to find most businesses closed. Events should also introduce customers to permanent businesses, not bypass them.\n\n### 4. Market specific experiences to realistic audiences\nStart with nearby residents taking day trips, regional travelers, conference attendees, or visitors already coming to nearby attractions.\n\nMaintain a mobile-friendly visitor page with itineraries, opening hours, transport options, accessibility details, and an up-to-date calendar. Help businesses keep map listings current. Partner with hotels, regional tourism organizations, and nearby attractions on referrals and packages.\n\nPromote a clear proposition—such as “a car-free afternoon of local food and historic streets”—rather than simply “visit downtown.”\n\n### 5. Measure value, not just crowds\nTrack visitor spending, overnight stays where relevant, business participation, repeat visits, and resident feedback. Monitor litter, noise, congestion, and pressure on housing. Footfall alone does not show whether tourism benefits the community.\n\n**A practical first step:** assemble businesses and cultural partners to create one excellent, accessible half-day itinerary, fix its biggest service gaps, and test it with regional visitors. Invest in delivering a memorable experience before spending heavily to advertise it.",
+       "candidates": [
+        {
+         "text": "Which visitor segments have unmet demand that downtown’s existing attractions could serve?",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How will responsibility and funding for coordinating the visitor experience be assigned?",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How will visitors who speak different languages navigate downtown and access visitor information?",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How will seasonal weather affect the reliability of proposed visitor experiences?",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 4,
+       "question": "What role should housing development play in the city center?",
+       "answer": "Housing should be a **core part of city-center development—not an afterthought**. A downtown with residents is less dependent on office workers, tourists, and occasional events. But success means creating a livable neighborhood, not simply adding apartments.\n\n### Support a year-round downtown economy\nResidents provide regular demand for groceries, cafes, restaurants, pharmacies, and services, including evenings and weekends. Housing can therefore support the businesses you want to attract while making downtown feel more active.\n\nHowever, more housing does not automatically make every storefront viable. Concentrate development near existing businesses, transit, and public spaces, and allow ground-floor uses to reflect actual demand rather than requiring retail everywhere.\n\n### Offer homes for different households and incomes\nEncourage a mix of rental and ownership options, unit sizes, and accessible homes for families, older people, workers, and people with disabilities. Include affordable housing through locally appropriate tools such as public land, housing funding, and carefully calibrated development requirements.\n\nProtect existing residents through affordable-housing preservation, rehabilitation assistance, tenant protections where authorized, and relocation support when redevelopment causes displacement. Tourism-oriented accommodation should not undermine the supply of permanent homes.\n\n### Combine new construction with sensible reuse\nAllow additional density where infrastructure and neighborhood conditions can support it. Consider apartments above shops, infill on underused sites, and conversion of vacant buildings.\n\nOffice-to-housing conversions can help, but they are not universally feasible: floor-plate depth, daylight, plumbing, fire safety, and construction costs matter. Assess buildings individually rather than assuming conversion is always cheaper than new construction.\n\n### Build a neighborhood people can live in\nHousing needs safe crossings, accessible sidewalks, useful transit, parks, groceries, childcare, and other everyday services. As the residential population grows, plan for school capacity and utility needs too.\n\nManage potential conflicts early: late-night noise, deliveries, waste collection, and entertainment venues. Good building design and clear operating rules can help housing and nightlife coexist.\n\nAvoid excessive parking requirements that inflate housing costs and consume valuable land; base provision on transport access, accessibility needs, and local evidence.\n\n### Measure outcomes, not just units\nTrack completed and occupied homes, affordability, displacement, resident satisfaction, and access to services—not merely development approvals. Use transparent incentives only where they address a demonstrated funding gap and deliver clear public benefits.\n\n**The goal is a city center where people can afford to live well, not just visit or work.** Housing should reinforce commerce and tourism while ensuring downtown remains a genuine, inclusive neighborhood.",
+       "candidates": [
+        {
+         "text": "How local housing demand should determine the scale and pace of city-center development.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "Whether zoning and permitting processes create barriers to the proposed housing mix.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How environmental hazards and site contamination affect the suitability of downtown sites for housing.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "How housing development should balance historic preservation with redevelopment needs.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 5,
+       "question": "How should we add more green public space?",
+       "answer": "Add green public space as **a connected network of useful, welcoming places**, not just isolated beautification projects. Downtown residents, workers, and tourists should be able to reach greenery easily without every trip requiring a car.\n\n### Prioritize gaps and everyday needs\nMap existing parks, tree canopy, summer heat, flood risk, and walking routes. Identify where new housing is coming and which neighborhoods lack comfortable outdoor space. Prioritize underserved areas rather than concentrating improvements around tourist attractions.\n\nAsk residents—including children, older people, and people with disabilities—what is missing: somewhere to sit, play, exercise, socialize, or simply cool down. Different spaces can serve different needs.\n\n### Use downtown land creatively\nBuild a mix of spaces:\n- **Pocket parks and small plazas** on suitable vacant or publicly owned sites.\n- **Larger neighborhood parks** through strategic acquisitions and redevelopment.\n- **Greener streets** with shade trees, planting, and safe walking connections.\n- **Courtyards or shared school grounds** where agreements guarantee meaningful public access.\n\nReview underused parking and oversized road space for potential conversion, while retaining necessary accessible parking, loading, emergency access, and transport functions. Temporary installations can test a location, but should not substitute indefinitely for permanent investment.\n\n### Design for comfort, accessibility, and climate\nProvide step-free entrances, firm accessible paths, shaded seating with varied options, clear sightlines, and appropriate lighting. Larger spaces may need accessible toilets and drinking water.\n\nUse climate-suitable trees with adequate soil volume and establishment watering. Incorporate rain gardens and permeable surfaces where site conditions allow, with maintenance and safe drainage planned from the start. Balance planting with flexible areas for play and gatherings; a paved event plaza is not a substitute for shade and greenery.\n\n### Secure funding—and long-term care\nCombine public capital funding, grants, land acquisition, and proportionate developer contributions where legally available. Ensure publicly accessible spaces on private land have enforceable access rules and clear maintenance responsibilities.\n\nBudget for cleaning, horticulture, tree care, repairs, and programming before construction. Avoid relying on volunteers for essential upkeep or commercial events that regularly exclude everyday users.\n\n### Connect greening with housing affordability\nBetter parks can increase nearby property values and rents. Pair major investments with affordable-housing preservation and appropriate anti-displacement measures so existing residents can enjoy the benefits.\n\n**Start with a downtown green-space plan and a few high-need projects.** Measure success through access, shade, actual use, ecological performance, and resident satisfaction—not simply the number of trees planted or square meters landscaped.",
+       "candidates": [
+        {
+         "text": "Whether former uses of proposed park sites require soil-contamination assessment before conversion.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How underground utilities constrain tree planting and green-space layouts.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How planting choices and connections between green spaces should support native biodiversity.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 6,
+       "question": "How do we keep downtown safe and lively in the evening?",
+       "answer": "A safe, lively downtown needs **people with reasons to stay, comfortable public spaces, and reliable responses when problems arise**. The aim should be an evening neighborhood for many ages—not just a nightlife district.\n\n### Create activity beyond bars\nEncourage a mix of restaurants, performances, libraries, recreation, evening markets, and family-friendly programming. Coordinate opening hours so activity connects across several blocks rather than leaving isolated venues surrounded by closed storefronts.\n\nDowntown housing helps sustain everyday foot traffic. Green spaces can support evening activity too, with appropriate lighting, clear entrances, and programming that respects nearby residents.\n\n### Make walking and getting home easy\nFix dark gaps along actual routes between venues, housing, transit stops, and parking. Use even, well-directed lighting rather than simply increasing brightness; avoid glare into homes and excessive illumination of natural areas.\n\nProvide:\n- Clear sightlines, accessible sidewalks, safe crossings, and maintained public toilets.\n- Frequent evening transit where demand supports it, with schedules aligned to closing times.\n- Well-organized taxi and ride-hail pickup areas that do not block sidewalks or cycle lanes.\n- Secure bicycle parking and clearly signed routes.\n\nTraffic danger deserves attention alongside crime, especially where alcohol and late-night driving mix.\n\n### Match the response to the problem\nUse incident reports, victimization information, resident feedback, and business observations to identify specific locations and times. Distinguish violence, harassment, theft, traffic risks, and public-health emergencies rather than treating all evening activity as disorder.\n\nDeploy trained outreach workers, crisis teams, venue staff, and visible, accountable police according to their roles. Hospitality ambassadors can offer directions and report maintenance issues, but should not replace emergency services or qualified crisis responders.\n\nHomelessness or someone’s appearance should not be treated as evidence of danger. Pair public-space management with housing assistance, toilets, outreach, and behavioral-health services.\n\n### Manage nightlife without suppressing it\nSet clear expectations for noise, queues, outdoor seating, waste, deliveries, and responsible alcohol service. Encourage venues to train staff in de-escalation, harassment response, and emergency procedures. Use staggered closing or transport arrangements where local evidence supports them, rather than assuming one solution fits everywhere.\n\n### Test and measure\nPilot improvements in a few connected evening corridors. Track assaults, harassment, crashes, emergency calls, foot traffic, resident sleep disruption, and how safe different groups feel. More visitors alone is not proof of success.\n\n**Start by walking downtown after dark with residents, venue operators, transport staff, and accessibility advocates.** Fix obvious gaps quickly, then build a coordinated evening plan that makes downtown welcoming without displacing problems—or people—to the next block.",
+       "candidates": [
+        {
+         "text": "Who would coordinate the evening plan across venues, transport providers, public-space managers, and emergency services?",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How would ongoing evening programming, maintenance, transit, and response services be funded?",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether evening safety needs differ between early-evening visitors, late-night patrons, and overnight workers.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "How businesses and venues would make harassment reporting accessible to people who need immediate help.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether pilot evaluation would distinguish changes in incident counts from changes in risk as evening attendance grows.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 7,
+       "question": "How can the municipality finance all of this?",
+       "answer": "The municipality should finance downtown housing, green space, and evening safety through **a phased investment plan—not one large funding source**. Match each expense to who benefits, how long the asset lasts, and whether it requires ongoing staffing.\n\n### 1. Establish costs and priorities\nPrepare a multiyear plan separating:\n- **Capital costs:** land, parks, sidewalks, lighting, utilities, and affordable-housing investment.\n- **Operating costs:** maintenance, evening transit, outreach, programming, and safety personnel.\n\nStart with high-impact fixes and coordinate construction—for example, adding trees and lighting when a street is already being rebuilt. Publish realistic lifecycle costs, including replacement and upkeep.\n\n### 2. Use a balanced funding package\nDepending on local law and financial capacity, combine:\n\n| Funding source | Best role |\n|---|---|\n| General municipal revenues | Core public services and ongoing operations |\n| Regional or national grants | Housing, transport, climate adaptation, and major infrastructure |\n| Long-term municipal borrowing | Durable assets with benefits extending over decades |\n| Developer contributions | Infrastructure needs attributable to new development |\n| Public land | Affordable housing, parks, or leases generating recurring income |\n| Targeted assessments or business improvement districts | Additional services benefiting a defined area |\n\nBorrowing should remain affordable under conservative revenue forecasts. It is generally a poor substitute for a sustainable budget for routine staffing and maintenance.\n\n### 3. Make development contribute without making it unviable\nUse predictable, proportionate contributions and affordable-housing requirements, tested against development economics. Excessive charges can prevent construction and undermine both housing supply and revenue.\n\nMunicipalities can also capture part of publicly created land-value gains through legally available levies, land agreements, or similar tools. Tax-increment financing requires particular caution: future revenue growth is uncertain, and earmarking it can leave less money for existing services.\n\nWhere public land is valuable, consider a long-term ground lease rather than an outright sale. Assess the trade-off between financial returns and public benefits.\n\n### 4. Protect essential budgets and public access\nBusiness partnerships and philanthropy can fund events or enhancements, but should not determine access to parks or replace dependable funding for basic services. Visitor-related taxes, where authorized, can support tourism-related costs, but fluctuate with demand.\n\nDo not assume new development immediately pays for itself: additional residents and visitors also create service costs. Avoid funding permanent commitments from one-time land sales or temporary grants.\n\n### 5. Deliver in stages, with accountability\nLaunch an affordable first phase, secure operating funding before building, and expand as results and revenues justify it. Report borrowing, subsidies, contracts, project outcomes, and distribution of benefits publicly.\n\n**The strongest approach combines municipal investment, outside funding, and fair private contributions—with maintenance funded from the outset.** If the numbers do not work, adjust the scope or timing rather than relying on optimistic growth forecasts.",
+       "candidates": [
+        {
+         "text": "Which financing tools are legally available in the municipality’s jurisdiction?",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "What fiscal capacity remains after existing debt obligations and essential service commitments?",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How would the proposed funding mix distribute costs among residents, businesses, developers, and visitors?",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How would funding be bridged if project expenditures precede grant payments or new revenues?",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "What role could reallocating existing municipal spending play in financing the downtown plan?",
+         "recorded_intake": "accepted"
+        }
+       ]
+      },
+      {
+       "turn": 8,
+       "question": "What most often goes wrong in downtown revitalization projects?",
+       "answer": "Downtown revitalization most often goes wrong when it is treated as **a construction project rather than the long-term work of building a functioning neighborhood**. Attractive streets and new buildings help, but they cannot substitute for housing, customers, reliable services, and ongoing care.\n\n### 1. Building a showcase instead of meeting everyday needs\nA landmark venue, plaza, or entertainment district can consume the budget while basic problems remain: vacant storefronts, unsafe crossings, unaffordable housing, or poor transit.\n\n**Better approach:** Start with evidence about who uses downtown, who avoids it, and why. Balance major projects with practical improvements that serve residents and workers throughout the week.\n\n### 2. Getting the mix—and timing—wrong\nToo much office space leaves streets empty after work. A nightlife-only strategy creates noise conflicts and fragile demand. Retail projects fail when forecasts assume customers will appear simply because space is available.\n\n**Better approach:** Support complementary uses, including housing, essential services, culture, and employment. Phase commercial space to realistic demand and help existing businesses survive construction.\n\n### 3. Improving the place while displacing its people\nRising rents can push out lower-income residents, independent shops, and cultural organizations that helped make downtown distinctive. Increased property values alone do not establish public success.\n\n**Better approach:** Preserve affordable housing early, consider commercial stabilization measures where feasible, and track who stays and who benefits—not just investment totals.\n\n### 4. Funding construction but neglecting operations\nNew parks deteriorate, public toilets close, trees die, and evening programming disappears when maintenance and staffing were never securely funded. Optimistic revenue projections and poorly allocated partnership risks can worsen the gap.\n\n**Better approach:** Approve lifecycle budgets alongside capital projects. Stress-test finances against slower development, higher costs, and weaker revenues.\n\n### 5. Confusing safety with exclusion\nHeavy-handed enforcement can displace vulnerable people without addressing violence, harassment, or unmet health needs. Conversely, ignoring persistent harmful behavior undermines confidence and hurts businesses.\n\n**Better approach:** Address specific problems with proportionate enforcement, outreach, crisis response, good design, and dependable maintenance.\n\n### 6. Fragmented delivery and weak accountability\nTransport, planning, parks, housing, and police departments may pursue conflicting goals. Public consultation becomes performative, responsibilities blur, and success gets measured through ribbon-cuttings rather than outcomes.\n\n**Better approach:** Assign clear leadership, coordinate budgets, involve affected communities early, and publish a small set of measures: affordability, vacancies, foot traffic across different hours, safety, accessibility, and upkeep.\n\n**The central warning sign is a plan that promises transformation through one project or rising land values.** Successful revitalization is usually incremental, coordinated, and judged by whether downtown becomes more useful and welcoming for existing communities as well as newcomers.",
+       "candidates": [
+        {
+         "text": "What evidence supports describing these failures as the ones that occur most often?",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How local market conditions affect which revitalization strategies are viable.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "Whether zoning and permitting requirements obstruct the proposed mix of downtown uses.",
+         "recorded_intake": "not_atomic"
+        },
+        {
+         "text": "How changes in political leadership affect continuity of long-term revitalization plans.",
+         "recorded_intake": "accepted"
+        },
+        {
+         "text": "How downtown investment affects businesses and services in other municipal neighborhoods.",
+         "recorded_intake": "accepted"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

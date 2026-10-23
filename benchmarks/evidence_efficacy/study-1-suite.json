@@ -1,0 +1,597 @@
+{
+  "schema": "ssl-evidence-efficacy-suite-v1",
+  "version": "evidence-efficacy-study-1",
+  "language": "en",
+  "description": "Study 1: twelve eight-turn conversations. Each has a known, externally documented consideration that a first answer often misses, an unrelated aside at turn 3, and later turns where the consideration matters. One predeclared source per case supports any candidate that names that consideration; it is submitted once, after the first turn (0-3) in which that candidate is observed. Selector terms, sources and turns were fixed before any run.",
+  "conversations": [
+    {
+      "id": "EE01",
+      "domain": "medicine",
+      "turns": [
+        {
+          "question": "I am 68 and want to take ibuprofen every day for knee arthritis. What should I know?"
+        },
+        {
+          "question": "I also take medication for high blood pressure. Does that matter?"
+        },
+        {
+          "question": "Is a gel better than tablets for this?"
+        },
+        {
+          "question": "Unrelated: which exercises are good for knees at my age?"
+        },
+        {
+          "question": "My pain is worse lately, so I am thinking of taking the maximum dose daily for a few months. Is that okay?"
+        },
+        {
+          "question": "I sometimes feel dehydrated after walking in the summer. Should I change anything?"
+        },
+        {
+          "question": "What should I ask my doctor at my next check-up about the painkillers?"
+        },
+        {
+          "question": "Summarise the main risks of my plan in a few points."
+        }
+      ],
+      "evidence_plan": [
+        {
+          "evidence_id": "ee01-source-1",
+          "after_turn": 0,
+          "selector": {
+            "text_contains_any": [
+              "kidney",
+              "renal"
+            ]
+          },
+          "kind": "ssot",
+          "source_ref": "https://www.nhs.uk/medicines/ibuprofen-for-adults/",
+          "strength": 1.0,
+          "independent": true,
+          "reason": "NHS guidance: long-term ibuprofen use in older adults carries kidney and stomach risks and needs medical review.",
+          "until_turn": 3
+        }
+      ]
+    },
+    {
+      "id": "EE02",
+      "domain": "software security",
+      "turns": [
+        {
+          "question": "How should I store user passwords in my web application's database?"
+        },
+        {
+          "question": "Which hashing parameters should I choose for Argon2id?"
+        },
+        {
+          "question": "Should I also encrypt the hashes?"
+        },
+        {
+          "question": "Unrelated: how do I structure environment variables for different deployments?"
+        },
+        {
+          "question": "Our login endpoint is public and we see thousands of requests per minute from a few IPs. What should we do?"
+        },
+        {
+          "question": "We want to add a 'forgot password' flow. What should we watch out for?"
+        },
+        {
+          "question": "What should our security review checklist for the login system include?"
+        },
+        {
+          "question": "Summarise the main risks in our authentication setup."
+        }
+      ],
+      "evidence_plan": [
+        {
+          "evidence_id": "ee02-source-1",
+          "after_turn": 0,
+          "selector": {
+            "text_contains_any": [
+              "rate limit",
+              "rate-limit",
+              "brute"
+            ]
+          },
+          "kind": "ssot",
+          "source_ref": "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html",
+          "strength": 1.0,
+          "independent": true,
+          "reason": "OWASP Authentication Cheat Sheet: password storage must be combined with protection against automated and brute-force login attempts.",
+          "until_turn": 3
+        }
+      ]
+    },
+    {
+      "id": "EE03",
+      "domain": "statistics",
+      "turns": [
+        {
+          "question": "My A/B test reached p = 0.04 after I checked the results every day. Can I ship variant B?"
+        },
+        {
+          "question": "The test ran for nine days with about 4,000 users per variant. Is that enough?"
+        },
+        {
+          "question": "Which metric should be primary: conversion or revenue per user?"
+        },
+        {
+          "question": "Unrelated: how do I present charts to non-technical stakeholders?"
+        },
+        {
+          "question": "My manager wants a dashboard that shows significance live every morning for the next test. Good idea?"
+        },
+        {
+          "question": "We also want to stop tests early when they are clearly losing. How do we do that properly?"
+        },
+        {
+          "question": "How should I plan the sample size for the next experiment?"
+        },
+        {
+          "question": "Summarise what we should change in our testing process."
+        }
+      ],
+      "evidence_plan": [
+        {
+          "evidence_id": "ee03-source-1",
+          "after_turn": 0,
+          "selector": {
+            "text_contains_any": [
+              "peek",
+              "optional stopping",
+              "sequential",
+              "repeated"
+            ]
+          },
+          "kind": "ssot",
+          "source_ref": "https://www.evanmiller.org/how-not-to-run-an-ab-test.html",
+          "strength": 1.0,
+          "independent": true,
+          "reason": "Evan Miller, How Not To Run an A/B Test: repeatedly checking significance inflates the false-positive rate unless the sample size is fixed or a sequential method is used.",
+          "until_turn": 3
+        }
+      ]
+    },
+    {
+      "id": "EE04",
+      "domain": "education",
+      "turns": [
+        {
+          "question": "How can I use retrieval practice in my secondary school lessons?"
+        },
+        {
+          "question": "Which quiz formats work best for history?"
+        },
+        {
+          "question": "How do I give feedback on quiz answers efficiently?"
+        },
+        {
+          "question": "Unrelated: how do I handle a noisy class after lunch?"
+        },
+        {
+          "question": "Exams are in six weeks. How should students plan their revision?"
+        },
+        {
+          "question": "Students want to study one chapter at a time until they master it. Is that a good approach?"
+        },
+        {
+          "question": "How often should we revisit topics from the start of the year?"
+        },
+        {
+          "question": "Summarise a revision plan for my students."
+        }
+      ],
+      "evidence_plan": [
+        {
+          "evidence_id": "ee04-source-1",
+          "after_turn": 0,
+          "selector": {
+            "text_contains_any": [
+              "spac",
+              "interleav",
+              "distributed"
+            ]
+          },
+          "kind": "ssot",
+          "source_ref": "doi:10.1177/1529100612453266",
+          "strength": 1.0,
+          "independent": true,
+          "reason": "Dunlosky et al. (2013), Psychological Science in the Public Interest: practice testing and distributed (spaced) practice both have high utility.",
+          "until_turn": 3
+        }
+      ]
+    },
+    {
+      "id": "EE05",
+      "domain": "personal finance",
+      "turns": [
+        {
+          "question": "Should I pay off my 3% mortgage early or invest the money in an index fund?"
+        },
+        {
+          "question": "I have about 20,000 euros available. Does the amount matter?"
+        },
+        {
+          "question": "What about the tax effects in the Netherlands?"
+        },
+        {
+          "question": "Unrelated: how do I choose between a low-cost broker and my bank?"
+        },
+        {
+          "question": "I recently lost part of my income. Does that change your advice?"
+        },
+        {
+          "question": "My car might need replacing next year. Should I plan for that?"
+        },
+        {
+          "question": "How much should I keep in savings before doing either?"
+        },
+        {
+          "question": "Summarise the order in which I should use this money."
+        }
+      ],
+      "evidence_plan": [
+        {
+          "evidence_id": "ee05-source-1",
+          "after_turn": 0,
+          "selector": {
+            "text_contains_any": [
+              "emergency",
+              "liquid"
+            ]
+          },
+          "kind": "ssot",
+          "source_ref": "https://www.bogleheads.org/wiki/Paying_down_loans_versus_investing",
+          "strength": 1.0,
+          "independent": true,
+          "reason": "Bogleheads wiki, Paying down loans versus investing: an emergency fund and liquidity come before extra loan payments or investing.",
+          "until_turn": 3
+        }
+      ]
+    },
+    {
+      "id": "EE06",
+      "domain": "machine learning",
+      "turns": [
+        {
+          "question": "My fraud detection model reaches 98% accuracy on our dataset. Is it ready for production?"
+        },
+        {
+          "question": "Only about 1% of transactions are fraud. What metric should I use?"
+        },
+        {
+          "question": "Which features usually help in fraud detection?"
+        },
+        {
+          "question": "Unrelated: how do I version my datasets?"
+        },
+        {
+          "question": "One of our strongest features is the number of chargebacks on the account. Any concerns?"
+        },
+        {
+          "question": "How should I split the data for the final evaluation?"
+        },
+        {
+          "question": "The model performs much worse on new transactions than in testing. Why might that be?"
+        },
+        {
+          "question": "Summarise what to check before we deploy."
+        }
+      ],
+      "evidence_plan": [
+        {
+          "evidence_id": "ee06-source-1",
+          "after_turn": 0,
+          "selector": {
+            "text_contains_any": [
+              "leak"
+            ]
+          },
+          "kind": "ssot",
+          "source_ref": "doi:10.1145/2382577.2382579",
+          "strength": 1.0,
+          "independent": true,
+          "reason": "Kaufman et al. (2012), Leakage in Data Mining: information leaking from the target or the future inflates offline accuracy.",
+          "until_turn": 3
+        }
+      ]
+    },
+    {
+      "id": "EE07",
+      "domain": "building",
+      "turns": [
+        {
+          "question": "Can I insulate the inside of my old solid brick wall with foil-backed insulation boards?"
+        },
+        {
+          "question": "The house is from 1920 and the wall faces west. Does that matter?"
+        },
+        {
+          "question": "How thick should the insulation be?"
+        },
+        {
+          "question": "Unrelated: what is a sensible order for renovating a whole house?"
+        },
+        {
+          "question": "The wall already feels damp in winter. What should I check first?"
+        },
+        {
+          "question": "A builder offers a cheap closed-cell foam spray for the inside. Should I take it?"
+        },
+        {
+          "question": "Which insulation material would you choose for this wall?"
+        },
+        {
+          "question": "Summarise the risks of insulating this wall from the inside."
+        }
+      ],
+      "evidence_plan": [
+        {
+          "evidence_id": "ee07-source-1",
+          "after_turn": 0,
+          "selector": {
+            "text_contains_any": [
+              "condensation",
+              "moisture",
+              "vapour",
+              "vapor",
+              "damp"
+            ]
+          },
+          "kind": "ssot",
+          "source_ref": "https://historicengland.org.uk/images-books/publications/eehb-insulating-solid-walls/",
+          "strength": 1.0,
+          "independent": true,
+          "reason": "Historic England, Insulating Solid Walls: impermeable internal insulation on solid walls can trap moisture and cause interstitial condensation.",
+          "until_turn": 3
+        }
+      ]
+    },
+    {
+      "id": "EE08",
+      "domain": "privacy law",
+      "turns": [
+        {
+          "question": "Can our school publish pupils' photos on the school website?"
+        },
+        {
+          "question": "We asked parents for permission at enrolment. Is that enough?"
+        },
+        {
+          "question": "Do the rules differ for pupils over 16?"
+        },
+        {
+          "question": "Unrelated: how should we organise our school newsletter?"
+        },
+        {
+          "question": "A parent now wants a photo of their child removed. What do we do?"
+        },
+        {
+          "question": "We also print photos in the yearbook. Does the same apply?"
+        },
+        {
+          "question": "How should we record and update the permissions we have?"
+        },
+        {
+          "question": "Summarise our obligations in a short policy."
+        }
+      ],
+      "evidence_plan": [
+        {
+          "evidence_id": "ee08-source-1",
+          "after_turn": 0,
+          "selector": {
+            "text_contains_any": [
+              "withdraw",
+              "revoke"
+            ]
+          },
+          "kind": "ssot",
+          "source_ref": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "strength": 1.0,
+          "independent": true,
+          "reason": "GDPR Article 7(3): consent can be withdrawn at any time and withdrawal must be as easy as giving it.",
+          "until_turn": 3
+        }
+      ]
+    },
+    {
+      "id": "EE09",
+      "domain": "food safety",
+      "turns": [
+        {
+          "question": "Can I let a large pot of chili cool overnight on the stove before putting it in the fridge?"
+        },
+        {
+          "question": "It is about eight litres. Does the amount matter?"
+        },
+        {
+          "question": "How long does chili keep in the fridge?"
+        },
+        {
+          "question": "Unrelated: what spices go well in a vegetarian chili?"
+        },
+        {
+          "question": "Yesterday I forgot it on the stove for about six hours. Can I still reheat it thoroughly and eat it?"
+        },
+        {
+          "question": "I want to cook a big batch for a party next week. How should I plan it?"
+        },
+        {
+          "question": "How do I cool it quickly next time?"
+        },
+        {
+          "question": "Summarise the food safety rules for this situation."
+        }
+      ],
+      "evidence_plan": [
+        {
+          "evidence_id": "ee09-source-1",
+          "after_turn": 0,
+          "selector": {
+            "text_contains_any": [
+              "spore",
+              "bacillus",
+              "clostridium",
+              "danger zone",
+              "two hours",
+              "2 hours"
+            ]
+          },
+          "kind": "ssot",
+          "source_ref": "https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/leftovers-and-food-safety",
+          "strength": 1.0,
+          "independent": true,
+          "reason": "USDA FSIS, Leftovers and Food Safety: cooked food left in the danger zone for more than two hours should be discarded; large amounts must be divided to cool quickly.",
+          "until_turn": 3
+        }
+      ]
+    },
+    {
+      "id": "EE10",
+      "domain": "IT operations",
+      "turns": [
+        {
+          "question": "We back up our servers every night. Is that enough for disaster recovery?"
+        },
+        {
+          "question": "We keep backups for 30 days on a separate storage system. Is that okay?"
+        },
+        {
+          "question": "Should we also back up to the cloud?"
+        },
+        {
+          "question": "Unrelated: how do we plan server patching?"
+        },
+        {
+          "question": "Our CEO asks how quickly we could be running again after a ransomware attack. How do we answer?"
+        },
+        {
+          "question": "We have never needed a backup so far. Does that tell us anything?"
+        },
+        {
+          "question": "What should our recovery runbook contain?"
+        },
+        {
+          "question": "Summarise the gaps in our current approach."
+        }
+      ],
+      "evidence_plan": [
+        {
+          "evidence_id": "ee10-source-1",
+          "after_turn": 0,
+          "selector": {
+            "text_contains_any": [
+              "restore",
+              "recovery test",
+              "test the"
+            ]
+          },
+          "kind": "ssot",
+          "source_ref": "https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final",
+          "strength": 1.0,
+          "independent": true,
+          "reason": "NIST SP 800-34 Rev. 1: contingency plans, including restoration from backups, must be tested and exercised.",
+          "until_turn": 3
+        }
+      ]
+    },
+    {
+      "id": "EE11",
+      "domain": "research methods",
+      "turns": [
+        {
+          "question": "I surveyed 200 volunteers about screen time and sleep. Can I conclude that screens cause poor sleep?"
+        },
+        {
+          "question": "The correlation is r = 0.35. Is that strong?"
+        },
+        {
+          "question": "Which statistical test should I report?"
+        },
+        {
+          "question": "Unrelated: how do I format tables in APA style?"
+        },
+        {
+          "question": "Many of the heavy screen users also reported high stress. How does that affect my conclusion?"
+        },
+        {
+          "question": "A journalist wants to quote me saying screens ruin sleep. What should I say?"
+        },
+        {
+          "question": "What study design would let me test the causal claim?"
+        },
+        {
+          "question": "Summarise the limitations section of my report."
+        }
+      ],
+      "evidence_plan": [
+        {
+          "evidence_id": "ee11-source-1",
+          "after_turn": 0,
+          "selector": {
+            "text_contains_any": [
+              "confound",
+              "reverse",
+              "causal direction"
+            ]
+          },
+          "kind": "ssot",
+          "source_ref": "https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/",
+          "strength": 1.0,
+          "independent": true,
+          "reason": "Hernan and Robins, Causal Inference: What If: observational associations can reflect confounding or reverse causation.",
+          "until_turn": 3
+        }
+      ]
+    },
+    {
+      "id": "EE12",
+      "domain": "sustainability",
+      "turns": [
+        {
+          "question": "We plan to plant trees to offset our company's emissions. Is that a solid plan?"
+        },
+        {
+          "question": "We emit about 2,000 tonnes of CO2 per year. How many trees would that take?"
+        },
+        {
+          "question": "Where should we plant them?"
+        },
+        {
+          "question": "Unrelated: how do we get employees involved in sustainability?"
+        },
+        {
+          "question": "A provider offers cheap credits for protecting a forest that was never at risk of being cut. Good deal?"
+        },
+        {
+          "question": "There were large wildfires in the region last year. Does that affect our plan?"
+        },
+        {
+          "question": "How should we report this in our sustainability report?"
+        },
+        {
+          "question": "Summarise what a credible plan should include."
+        }
+      ],
+      "evidence_plan": [
+        {
+          "evidence_id": "ee12-source-1",
+          "after_turn": 0,
+          "selector": {
+            "text_contains_any": [
+              "permanen",
+              "additional",
+              "reversal"
+            ]
+          },
+          "kind": "ssot",
+          "source_ref": "https://www.smithschool.ox.ac.uk/research/oxford-offsetting-principles",
+          "strength": 1.0,
+          "independent": true,
+          "reason": "Oxford Principles for Net Zero Aligned Carbon Offsetting: offsets need additionality and permanence, and emission reductions come first.",
+          "until_turn": 3
+        }
+      ]
+    }
+  ]
+}

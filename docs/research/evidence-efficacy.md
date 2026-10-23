@@ -172,3 +172,31 @@ It cannot support:
 - the system is production-ready.
 
 Report unmatched selectors, blocked Gate events, point-of-use denials, and no-opportunity conversations alongside successful A/B items. Negative and null results are part of the protocol rather than errors to hide.
+
+## Study 1 (protocol v2)
+
+`src/shadowseed/data/evidence_efficacy_preregistration_v2.json` amends v1 before any v2 result exists:
+
+- **Product calibration (ADR-011):** one verified source promotes (`promotion_threshold = 0.2`, `min_evidence_for_gate = 1`), so the study measures the product's default behavior.
+- **Self-critique arm:** on every surfaced turn the model also gets one extra pass that reviews and revises its own SSL-off answer. Reviewers compare SSL with SSL off and SSL with self-critique in separate blind packets (`review/answer_review_packet.json` and `review/answer_review_packet_self_critique.json`).
+- **Decision rule:** fixed in the preregistration before results.
+
+The suite `benchmarks/evidence_efficacy/study-1-suite.json` has twelve eight-turn conversations across twelve domains. SSL works across a conversation, so each one has:
+
+- an opening question and two follow-ups (turns 0-2);
+- an unrelated aside (turn 3), where nothing should surface;
+- four later turns where the documented consideration matters (turns 4-7).
+
+Each case has one documented external source and a `text_contains_any` selector listing the terms that name the consideration the source supports. The plan item's evidence window (`after_turn` 0 to `until_turn` 3) means the source is submitted once, after the first turn in which a matching candidate is observed, as an operator would. A selector that matches nothing in the window, or more than one candidate, is a null opportunity and is reported.
+
+### Pilot result (2026-10-23)
+
+The first full run (`benchmarks/results/evidence_efficacy/study-1_qwen2.5_7b_q4km/`) is a pilot, not an efficacy result:
+
+- 12 of 12 evidence opportunities ended as `text_selector_not_observed`; no seed was authorized or surfaced and no answer pairs were produced.
+- The runner used the older open-set detector (`prompt_variant="generative"`, v0.4) instead of the product's `current_pair` detector (v0.6). Every candidate took the form "X as a dimension influencing Y" with a generic lens (psychological, economic, regulatory). The runner now uses `current_pair`.
+- Predeclared keyword selectors assume which gap the model should find. That conflicts with open-set seed birth. A follow-up study lets the operator verify the seeds that actually emerge between two phases instead.
+
+Seed usefulness and recurrence recognition come first: an efficacy test is only meaningful once the detector finds real gaps and the same gap is recognized when it returns.
+
+`.github/workflows/evidence-efficacy-study.yml` runs the study on Qwen 2.5 7B (q4_K_M, Ollama) with a pinned digest and embedding revision. Three parallel shards of four conversations each produce their own verified bundle (`--conversation`). The bundles are committed under `benchmarks/results/evidence_efficacy/`.
