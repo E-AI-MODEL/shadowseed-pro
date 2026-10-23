@@ -50,7 +50,16 @@ def product_system_prompt() -> str:
             isinstance(t, ast.Name) and t.id == "_ANSWER_GENERATION_SYSTEM_CONTRACT"
             for t in node.targets
         ):
-            template = ast.literal_eval(node.value)
+            value = node.value
+            # surfacing.py defines the constant as a literal plus .strip().
+            if (
+                isinstance(value, ast.Call)
+                and isinstance(value.func, ast.Attribute)
+                and value.func.attr == "strip"
+                and not value.args
+            ):
+                value = value.func.value
+            template = ast.literal_eval(value)
             return template.strip().format(
                 language_instruction=(
                     "Respond in the same language as the user's current question only."
