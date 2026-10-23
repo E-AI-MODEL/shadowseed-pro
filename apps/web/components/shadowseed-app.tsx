@@ -629,7 +629,8 @@ export function ShadowseedApp() {
       !question.trim() ||
       sending ||
       loadingSession ||
-      seedActionBusy
+      seedActionBusy ||
+      (session.backend === "openai" && !externalTurnConfirmed)
     ) return;
     const text = question.trim();
     const requestId =
@@ -853,7 +854,11 @@ export function ShadowseedApp() {
   function onComposerKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
       event.preventDefault();
-      event.currentTarget.form?.requestSubmit();
+      const form = event.currentTarget.form;
+      const submit = form?.querySelector<HTMLButtonElement>(".composer__send");
+      if (form && submit && !submit.disabled) {
+        form.requestSubmit(submit);
+      }
     }
   }
 
