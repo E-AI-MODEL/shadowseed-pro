@@ -384,3 +384,16 @@ def test_review_summary_counts_self_critique_wins(tmp_path: Path) -> None:
     answer = json.loads(output.read_text(encoding="utf-8"))["answer"]
     assert answer["unblinded_source_counts"] == {"self_critique": 2, "ssl": 1}
     assert answer["ssl_win_rate_non_tie"] == round(1 / 3, 6)
+
+
+def test_provider_timeout_is_applied_to_provider_clients() -> None:
+    from types import SimpleNamespace
+
+    from shadowseed_research.benchmark.evidence_efficacy import _apply_provider_timeout
+
+    backend = SimpleNamespace(client=SimpleNamespace(timeout=120.0))
+    _apply_provider_timeout(backend, 900)
+    assert backend.client.timeout == 900.0
+    _apply_provider_timeout(SimpleNamespace(), 900)  # fixture backends have no client
+    with pytest.raises(ValueError):
+        _apply_provider_timeout(backend, 0)

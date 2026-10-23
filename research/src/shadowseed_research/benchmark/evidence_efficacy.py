@@ -240,6 +240,22 @@ def _core_config(prereg: dict[str, Any]) -> SSLCoreConfig | None:
     )
 
 
+def _apply_provider_timeout(backend: Any, seconds: float | None) -> None:
+    """Raise the HTTP timeout of a provider-backed model or detector.
+
+    CPU-only research runners can need longer than the product default for one
+    generation once a conversation has several turns of history.
+    """
+
+    if seconds is None:
+        return
+    if seconds <= 0:
+        raise ValueError("provider timeout must be positive")
+    client = getattr(backend, "client", None)
+    if client is not None and hasattr(client, "timeout"):
+        client.timeout = float(seconds)
+
+
 def _self_critique_answer(
     model: Any,
     history: list[tuple[str, str]],
@@ -508,6 +524,7 @@ def run_evidence_efficacy(
     run_id: str | None = None,
     quantization: str | None = None,
     conversation_ids: tuple[str, ...] = (),
+    provider_timeout: float | None = None,
 ) -> Path:
     prereg = _load_json(preregistration_path)
     validate_preregistration(prereg)
@@ -569,6 +586,8 @@ def run_evidence_efficacy(
         prompt_variant="generative",
         model_revision=model_revision,
     )
+    _apply_provider_timeout(model, provider_timeout)
+    _apply_provider_timeout(detector, provider_timeout)
 
     core_config = _core_config(prereg)
     self_critique = SELF_CRITIQUE_ARM in prereg.get("comparison_arms", [])
@@ -934,6 +953,12 @@ def _build_parser() -> argparse.ArgumentParser:
         default=[],
         help="Run only these conversation ids from the suite (repeatable).",
     )
+    run.add_argument(
+        "--provider-timeout",
+        type=float,
+        default=None,
+        help="HTTP timeout in seconds for provider-backed generation (research runners).",
+    )
     verify = sub.add_parser("verify")
     verify.add_argument("output_dir", type=Path)
     return parser
@@ -962,6 +987,7 @@ def main(argv: list[str] | None = None) -> int:
             reviewers=tuple(args.reviewer_id or DEFAULT_REVIEWERS),
             run_id=args.run_id,
             conversation_ids=tuple(args.conversation),
+            provider_timeout=args.provider_timeout,
         )
         print(manifest)
         return 0
