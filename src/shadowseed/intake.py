@@ -16,6 +16,7 @@ import numpy as np
 
 from shadowseed.models import SeedOrigin, SeedStatus, ShadowSeed
 from shadowseed.seed_normalization import (
+    BROAD_PREFIXES,
     normalize_detection_candidates as normalize_candidates,
 )
 
@@ -68,12 +69,18 @@ def is_atomic_seed(text: str, max_seed_words: int | None = None) -> bool:
     lowered = text.lower().strip()
     if not lowered:
         return False
+    # Structural rejection must not depend on the language of the model.
+    # One long copied instruction paragraph is not an atomic candidate.
+    if re.search(r"[.!?]\s+[A-Z]", text):
+        return False
+    if any(lowered.startswith(prefix) for prefix in BROAD_PREFIXES):
+        return False
     from shadowseed.atomicity import is_single_question
 
     question_verdict = is_single_question(text)
     if question_verdict is not None:
         return question_verdict
-    separators = [",", ";", " en ", " of ", "zoals", "bijvoorbeeld"]
+    separators = [",", ";", " en ", " of ", " and ", " or ", "zoals", "bijvoorbeeld"]
     broad_terms = [
         "analysekader",
         "complete",
