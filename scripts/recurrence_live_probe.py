@@ -140,6 +140,11 @@ def main(argv: list[str] | None = None) -> int:
             runtime_mode="live",
             recurrence_recognizer=args.recognizer,
         )
+        # CPU runners can need longer than the product default per generation.
+        for backend in (session.model, session.detector):
+            client = getattr(backend, "client", None)
+            if client is not None and hasattr(client, "timeout"):
+                client.timeout = 900.0
         results.append(run_conversation(conversation, session))
         print(
             f"{conversation['id']}: seeds={results[-1]['seeds']} "
