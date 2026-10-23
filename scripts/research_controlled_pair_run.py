@@ -24,7 +24,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 DEFAULT_SUITE = "src/shadowseed/data/ssl_session_suite.json"
-MAX_ANSWER_TOKENS = 1400
+MAX_ANSWER_TOKENS = 3000
 MAX_DETECTOR_TOKENS = 2400
 REASONING_EFFORT = "low"
 MAX_HISTORY_TURNS = 6
