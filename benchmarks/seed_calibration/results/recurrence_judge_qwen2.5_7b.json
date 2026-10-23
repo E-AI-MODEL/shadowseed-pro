@@ -1,0 +1,246 @@
+{
+  "schema": "ssl-recurrence-judge-v1",
+  "backend": "ollama",
+  "model": "qwen2.5:7b-instruct-q4_K_M",
+  "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+  "prompt": "Two notes were written about open questions in the same conversation, at different turns.\n\nNote A: {a}\nNote B: {b}\n\nDo A and B point at the same open question or gap, even if they are worded differently?\nAnswer with exactly one word: SAME or DIFFERENT.",
+  "reference_labeler": "claude (blind to similarity; 13 pairs carried over from the pre-change sample by identical pair id)",
+  "model_vs_reference": {
+    "same_recognized": "7/8",
+    "different_wrongly_merged": "1/44",
+    "unparsed": 0,
+    "accuracy": 0.962
+  },
+  "embedding_at_default_threshold_vs_reference": {
+    "same_recognized": "7/8",
+    "different_wrongly_merged": "10/44",
+    "unparsed": 0,
+    "accuracy": 0.788
+  },
+  "verdicts": {
+    "2cefa493d03249be": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "7e36247e66d83b35": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "b9cf1da791a60fb5": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "fdd9ed4cb3fdd710": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "2427c518468d5d7a": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "6bf62248e2419275": {
+      "raw": "SAME",
+      "verdict": "same"
+    },
+    "8c43c8966188f01e": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "266c52c0acd2f206": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "6704b6489eeb5283": {
+      "raw": "SAME",
+      "verdict": "same"
+    },
+    "3f38da74c8b4d629": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "102bcd50bb781b89": {
+      "raw": "SAME",
+      "verdict": "same"
+    },
+    "81d574ee026b851c": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "7cca8502ec23421f": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "eb283d63e2e70e54": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "388c050c809a658e": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "7b58326b8b9ee6b5": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "7cd02bdd4888b542": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "51db3514c38338c3": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "38574fc1f58a97d3": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "59e5c3c606c61c68": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "629cb6a8c0fdd1e3": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "1402b5877496afdc": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "419e68195e22ac0e": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "9ae2c76cbdffb671": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "211109cac36ac834": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "d2a6534c7325394e": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "6eee2486d4d36a5f": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "8dcf4acadf178566": {
+      "raw": "SAME",
+      "verdict": "same"
+    },
+    "b0a4bf97db6cc673": {
+      "raw": "SAME",
+      "verdict": "same"
+    },
+    "bd285486366c688b": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "c210922167f89412": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "381aaabaf14bbe39": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "7fdd61861f649916": {
+      "raw": "SAME",
+      "verdict": "same"
+    },
+    "ceb73ff4a1fb71f9": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "3898d96314803740": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "ef732d56095c9da9": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "3ad25e4cb3930ce3": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "4b392be4a5987e7f": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "f924ac2d635a7b49": {
+      "raw": "SAME",
+      "verdict": "same"
+    },
+    "9fdcf7ffd4ab1159": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "141402ed76c96bc6": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "820c38ebf1f63327": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "9394d0198b2e9f56": {
+      "raw": "SAME",
+      "verdict": "same"
+    },
+    "435bee1f25a7cfff": {
+      "raw": "SAME",
+      "verdict": "same"
+    },
+    "664961794144cd0e": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "b85688df7b50b748": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "1374c360092dd125": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "c8154d4c57e34159": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "a33e83d9a718881b": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "cad62c783d449cf9": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "d60210bc07227e05": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "49ecba8d2997631e": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "a539e6e7583154c9": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "9ef87e47edc64dc9": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "a9bdf10893a15515": {
+      "raw": "DIFFERENT",
+      "verdict": "different"
+    },
+    "a162c14102db6728": {
+      "raw": "SAME",
+      "verdict": "same"
+    }
+  }
+}

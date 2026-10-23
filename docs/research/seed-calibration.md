@@ -31,6 +31,13 @@ Same-gap pairs score 0.59 to 0.75. Different-gap pairs reach 0.72. At the defaul
 
 ## Model judge
 
-`scripts/recurrence_judge.py` asks a model "do A and B point at the same open question?" on the labelled pairs (`seed-calibration.yml`). Qwen 2.5 7B on the earlier pre-change sample recognized 4 of 8 same-gap pairs and wrongly merged 1 of 40 different pairs (embedding at 0.60 on that sample: 5 of 8 and 10 of 40). It is far more precise and misses some recurrences. The run on the current sample follows in CI. The same script runs with `--backend openai` for GPT-5 and GPT-6.1-sol, the models that produced the candidates.
+`scripts/recurrence_judge.py` asks a model "do A and B point at the same open question?" on the labelled pairs (`seed-calibration.yml`).
+
+| Recognizer (current sample) | Same gap recognized | Different gaps wrongly merged |
+|---|---:|---:|
+| Embedding similarity at 0.60 | 7 of 8 | 10 of 44 |
+| Qwen 2.5 7B q4_K_M (digest `845dbda0…`) | 7 of 8 | 1 of 44 |
+
+Result file: `recurrence_judge_qwen2.5_7b.json`. Even a small local model finds the same recurrences as the embedding threshold and removes nine of its ten wrong merges. On the earlier pre-change sample, Qwen recognized 4 of 8 with 1 of 40 wrong merges. The same script runs with `--backend openai` for GPT-5 and GPT-6.1-sol, the models that produced the candidates.
 
 If a model clearly beats the embedding threshold, recurrence recognition moves into the detector. The detector then receives the open seeds of the conversation and reports "new" or "recurs: <seed id>", and similarity is kept only as a floor. Recurrence stays an observation and never becomes evidence or weight.
