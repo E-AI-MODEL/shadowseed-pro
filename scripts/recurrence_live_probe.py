@@ -97,7 +97,11 @@ def run_conversation(conversation: dict[str, Any], session: ShadowChatSession) -
         "weight_above_zero": sum(seed.weight > 0 for seed in session.manager.seeds.values()),
         "recognition": {
             "decisions": len(recognized),
-            "repeats": sum(d.get("repeats_cluster") is not None for d in recognized),
+            # A refused claim is logged with its cluster but starts a new one.
+            "repeats": sum(
+                d.get("repeats_cluster") is not None and not d.get("refused_below_floor")
+                for d in recognized
+            ),
             "refused_below_floor": sum(bool(d.get("refused_below_floor")) for d in recognized),
             "failures": len(failures),
             "failure_reasons": dict(Counter(str(d.get("reason")) for d in failures)),
