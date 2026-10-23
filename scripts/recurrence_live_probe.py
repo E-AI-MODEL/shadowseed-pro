@@ -61,9 +61,12 @@ def run_conversation(conversation: dict[str, Any], session: ShadowChatSession) -
         report = session.turn(str(turn["question"]))
         turn_seconds.append(time.perf_counter() - started)
         new_events = session.manager.event_log[events_before:]
+        detector = session.detector
         turns.append(
             {
                 "turn": index,
+                "detector_raw": str(getattr(detector, "last_raw_output", "") or "")[:1200],
+                "detector_diagnostics": getattr(detector, "last_parse_diagnostics", None),
                 "born": len(report.get("seeds_born_weightless", [])),
                 "surfaced": len(report.get("surfaced_seed_ids", [])),
                 "events": dict(Counter(event.event_type for event in new_events)),

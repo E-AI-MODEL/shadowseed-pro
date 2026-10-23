@@ -71,3 +71,12 @@ def test_english_declarative_candidates_are_structural_only():
         assert SSLManager.is_atomic_seed(text)
     # Visibly separate sentences are still not one candidate.
     assert not SSLManager.is_atomic_seed("Funding is unclear. Staffing is also unclear.")
+
+
+def test_detector_unwraps_a_leading_bold_label():
+    from shadowseed.detection.model_detector import _strip_markdown_wrappers
+
+    assert _strip_markdown_wrappers("**Cost comparison**: The draft gives no costs.")[0] == (
+        "Cost comparison: The draft gives no costs."
+    )
+    assert _strip_markdown_wrappers("Uses **bold** inside")[0] == "Uses **bold** inside"

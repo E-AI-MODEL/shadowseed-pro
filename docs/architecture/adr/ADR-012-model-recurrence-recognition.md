@@ -36,6 +36,22 @@ session asks its own model one question:
   change restore with `embedding`, so an existing conversation does not change
   behavior mid-way.
 
+## Revision after the live probe (prompt v2)
+
+A live probe (`scripts/recurrence_live_probe.py`, #214) ran the twelve
+eight-turn study conversations through live sessions with Qwen 2.5 7B and the
+product embedding model `embeddinggemma`. No seed gained weight and no
+recognition call failed (median 22 s per call on a CPU runner, against about
+2.5 minutes per turn). However, notes from one turn were still grouped by the
+0.60 embedding threshold, and with `embeddinggemma` that merged up to eleven
+different gaps sharing the "The draft does not ..." template into one cluster.
+
+The question now also covers notes from the same turn: each new note may repeat
+an earlier open question (a number), an earlier note in the same list (a
+letter), or neither (NONE). The first detection of a conversation with several
+notes is also judged by the model. Embedding similarity stays a floor for both
+kinds of repeat.
+
 ## Unchanged
 
 - Recurrence is observation. It affects cluster membership, the recurrence count

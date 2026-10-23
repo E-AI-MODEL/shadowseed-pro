@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Recurrence recognition v2: the model also judges whether new notes from the
+  same turn name the same gap, instead of the 0.60 embedding threshold, which
+  merged up to eleven different gaps with `embeddinggemma` in the live probe.
+- Detector: a leading bold label ("**Cost comparison**: ...") is unwrapped, so
+  no stray Markdown markers stay in seed text.
 - Recurrence: the session model now recognizes a returning gap (ADR-012).
   New seeds are matched against the open questions of the conversation in one
   short model call; embedding similarity is a floor (0.3) and the fallback.

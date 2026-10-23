@@ -160,10 +160,18 @@ def test_auto_uses_embedding_for_fixture_and_restored_sessions_keep_embedding() 
 
 
 def test_parse_answer() -> None:
-    assert parse_answer("a: 2\nb: NONE\nc) 9", 3, 3) == {0: 2, 1: None, 2: None}
+    from shadowseed.recurrence_recognition import Verdict
+
+    assert parse_answer("a: 2\nb: NONE\nc) 9\nd: a\ne: e", 5, 3) == {
+        0: Verdict(open_question=2),
+        1: Verdict(),
+        2: Verdict(),
+        3: Verdict(earlier_note=0),
+        4: Verdict(),
+    }
     assert parse_answer("no idea", 2, 2) is None
     # Unmentioned notes stay absent so they keep embedding clustering.
-    assert parse_answer("b: 1", 2, 1) == {1: 1}
+    assert parse_answer("b: 1", 2, 1) == {1: Verdict(open_question=1)}
 
 
 # Both notes are near enough to FUNDING (0.35) to be offered to the model, and
@@ -174,7 +182,7 @@ _VECTORS["New gap phrased twice."] = [0.35, 0.0, 0.656, math.sqrt(1 - 0.1225 - 0
 
 def test_same_observation_paraphrases_of_a_new_gap_share_one_cluster() -> None:
     session = _session(
-        _Model(lambda prompt: "a: NONE\nb: NONE"),
+        _Model(lambda prompt: "a: NONE\nb: a"),
         [(FUNDING,), ("New gap phrased once.", "New gap phrased twice.")],
     )
     session.turn("First question")
@@ -203,4 +211,28 @@ def test_recognizer_setting_and_prompt_are_part_of_the_behavior_fingerprint() ->
     assert "recurrence_recognition" in model_session._prompt_registry_audit()
     assert behavior_config_digest(model_session.to_state()) != behavior_config_digest(
         embedding_session.to_state()
+    )
+
+
+def test_new_notes_the_model_calls_different_stay_apart_despite_high_similarity() -> None:
+    # The live probe showed embeddinggemma merging eleven different gaps that
+    # share the "The draft does not ..." template. The model's NONE wins.
+    session = _session(
+        _Model(lambda prompt: "a: NONE\nb: NONE"),
+        [(FUNDING,), ("New gap phrased once.", "New gap phrased twice.")],
+    )
+    session.turn("First question")
+    session.turn("Second question")
+    assert _cluster_of(session, "New gap phrased once.") != _cluster_of(
+        session, "New gap phrased twice."
+    )
+
+
+def test_first_turn_with_several_notes_is_judged_by_the_model() -> None:
+    model = _Model(lambda prompt: "a: NONE\nb: NONE")
+    session = _session(model, [("New gap phrased once.", "New gap phrased twice.")])
+    session.turn("First question")
+    assert "(none yet)" in model.recognition_prompts[0]
+    assert _cluster_of(session, "New gap phrased once.") != _cluster_of(
+        session, "New gap phrased twice."
     )
