@@ -470,12 +470,15 @@ class ShadowChatSession:
             return True
         return str(self.backend) != "fixture"
 
-    def _recognize_recurrence(self, seed_ids: list[str]) -> dict[str, int | None]:
+    def _recognize_recurrence(self, seed_ids: list[str]) -> dict[str, tuple[str, Any]]:
         """Ask the session model which new seeds repeat an open question.
 
-        Returns a cluster decision per new seed (cluster id, or None for a new
-        cluster). Seeds missing from the result use embedding clustering, which
-        is also the fallback when the model call fails or cannot be read.
+        Returns a decision per new seed: ``("cluster", cluster_id)`` repeats an
+        open question, ``("same_as", seed_id)`` repeats an earlier new seed of
+        this observation, ``("new", None)`` is a new question. Seeds missing
+        from the result use embedding clustering, which is also the fallback
+        when the model call fails, cannot be read, or the only matching
+        clusters have expired representatives.
         """
 
         assert self.clusterer is not None
@@ -484,7 +487,7 @@ class ShadowChatSession:
             for seed_id in seed_ids
             if seed_id not in self.seed_to_cluster and seed_id in self.manager.seeds
         ]
-        if not new_ids or not self.clusterer.centroids:
+        if not new_ids:
             return {}
         offered: dict[int, float] = {}
         for seed_id in new_ids:
@@ -502,10 +505,12 @@ class ShadowChatSession:
             open_questions.append(
                 OpenQuestion(len(open_questions) + 1, cluster_id, representative.text)
             )
-        if not open_questions:
-            # No live representative to ask about (for example only expired
-            # ones): keep embedding clustering, which can replace them.
+        if offered and not open_questions:
+            # Only expired representatives match: keep embedding clustering,
+            # which can replace them.
             return {}
+        if not open_questions and len(new_ids) == 1:
+            return {new_ids[0]: ("new", None)}
         notes = [self.manager.seeds[seed_id].text for seed_id in new_ids]
         try:
             mapping, raw = recognize(
@@ -530,27 +535,38 @@ class ShadowChatSession:
                 raw=raw[:200],
             )
             return {}
-        decisions: dict[str, int | None] = {}
+        decisions: dict[str, tuple[str, Any]] = {}
         for index, seed_id in enumerate(new_ids):
             if index not in mapping:
                 continue
-            number = mapping[index]
-            cluster_id = None if number is None else open_questions[number - 1].cluster_id
-            similarity = (
-                None
-                if cluster_id is None
-                else self.clusterer.similarity(self.manager.seeds[seed_id].embedding, cluster_id)
-            )
+            verdict = mapping[index]
+            embedding = self.manager.seeds[seed_id].embedding
+            decision: tuple[str, Any] = ("new", None)
+            similarity = None
+            if verdict.open_question is not None:
+                cluster_id = open_questions[verdict.open_question - 1].cluster_id
+                similarity = self.clusterer.similarity(embedding, cluster_id)
+                decision = ("cluster", cluster_id)
+            elif verdict.earlier_note is not None:
+                other_id = new_ids[verdict.earlier_note]
+                other = np.asarray(self.manager.seeds[other_id].embedding, dtype=float)
+                own = np.asarray(embedding, dtype=float)
+                denominator = float(np.linalg.norm(own) * np.linalg.norm(other))
+                similarity = float(np.dot(own, other) / denominator) if denominator else 0.0
+                decision = ("same_as", other_id)
             refused = similarity is not None and similarity < RECURRENCE_FLOOR
-            decisions[seed_id] = None if refused else cluster_id
+            decisions[seed_id] = ("new", None) if refused else decision
             self.manager._record_event(
                 "recurrence_recognized",
                 seed_id,
                 recognizer=RECOGNIZER_ID,
-                repeats_cluster=cluster_id,
+                repeats_cluster=decision[1] if decision[0] == "cluster" else None,
                 repeats_seed_id=(
-                    None if cluster_id is None else self.cluster_rep.get(cluster_id)
+                    self.cluster_rep.get(decision[1])
+                    if decision[0] == "cluster"
+                    else decision[1]
                 ),
+                same_observation=decision[0] == "same_as",
                 similarity=None if similarity is None else round(similarity, 4),
                 refused_below_floor=refused,
             )
@@ -562,38 +578,26 @@ class ShadowChatSession:
         *,
         observation_ref: str,
     ) -> None:
-        assert self.clusterer is not None
         decisions = (
             self._recognize_recurrence(seed_ids) if self._uses_model_recognition() else {}
         )
-        created_now: set[int] = set()
         for seed_id in seed_ids:
-            if seed_id not in decisions:
+            decision = decisions.get(seed_id)
+            if decision is None:
                 self._register_cluster_observation(seed_id, observation_ref=observation_ref)
                 continue
-            target = decisions[seed_id]
-            if target is None and seed_id in self.manager.seeds:
-                # Not a repeat of an earlier open question. Paraphrases within
-                # this same observation may still share one new cluster.
-                same_observation = [
-                    cluster_id
-                    for cluster_id, _similarity in self.clusterer.nearest(
-                        self.manager.seeds[seed_id].embedding,
-                        floor=self.clusterer.threshold,
-                        limit=len(self.clusterer.centroids),
-                    )
-                    if cluster_id in created_now
-                ]
-                target = same_observation[0] if same_observation else None
-            before = len(self.clusterer.centroids)
+            kind, value = decision
+            target = None
+            if kind == "cluster":
+                target = value
+            elif kind == "same_as":
+                target = self.seed_to_cluster.get(value)
             self._register_cluster_observation(
                 seed_id,
                 observation_ref=observation_ref,
                 cluster_id=target,
                 new_cluster=target is None,
             )
-            if len(self.clusterer.centroids) > before:
-                created_now.add(len(self.clusterer.centroids) - 1)
 
     def _register_cluster_observation(
         self,

@@ -187,11 +187,22 @@ def _looks_like_fewshot_leak(seed: str, threshold: float = 0.7) -> bool:
     return False
 
 
+_LEADING_BOLD_LABEL = re.compile(r"^(\*\*|__)([^*_\n]+?)\1\s*:\s*")
+
+
 def _strip_markdown_wrappers(text: str) -> tuple[str, int]:
-    """Remove whole-candidate formatting while preserving internal markup."""
+    """Remove whole-candidate formatting while preserving internal markup.
+
+    A leading bold label ("**Cost comparison**: ...") is unwrapped to
+    "Cost comparison: ..." so no stray markers stay in the seed text.
+    """
 
     value = text.strip()
     removed = 0
+    label = _LEADING_BOLD_LABEL.match(value)
+    if label:
+        value = f"{label.group(2).strip()}: {value[label.end():]}".strip()
+        removed += 1
     while True:
         for marker in ("**", "__", "`", "*", "_"):
             if (
