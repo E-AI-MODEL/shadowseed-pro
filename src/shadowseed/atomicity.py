@@ -32,30 +32,37 @@ _SECOND_WH_CLAUSE = re.compile(
     r"how|what|why|which|who|when|where)\b",
     re.IGNORECASE,
 )
+# After a comma, an inverted auxiliary is strong evidence of another
+# question. Without punctuation, restrict rejection to auxiliaries that
+# unambiguously begin a separate clause. "and is the same size" may be a
+# coordinated predicate of the same subject and must not be rejected.
+_YES_NO_PREFIX = (
+    r"(?:de|het|een|er|dat|die|dit|deze|the|a|an|this|that|"
+    r"it|there|we|ze|zij|they)\b"
+)
 _SECOND_YES_NO_CLAUSE = re.compile(
-    r"(?:(?:[,;]\s*)?(?:en|and)\s+|[,;]\s*)"
+    r"[,;]\s*(?:(?:en|and)\s+)?"
     r"(?:is|zijn|kan|kunnen|blijft|blijven|hangt|verandert|verschilt|"
     r"heeft|hebben|geldt|ligt|wordt|werkt|lukt|does|do|did|are|was|were|"
-    r"can|could|should|will|would)\s+"
-    r"(?:de|het|een|er|dat|die|dit|deze|the|a|an|this|that|"
-    r"it|there|we|ze|zij|they)\b",
+    r"has|have|had|can|could|should|will|would)\s+"
+    + _YES_NO_PREFIX,
+    re.IGNORECASE,
+)
+_UNPUNCTUATED_SECOND_YES_NO = re.compile(
+    r"\b(?:en|and)\s+"
+    r"(?:does|do|did|has|have|had|can|could|should|will|would|"
+    r"lukt|werkt|kan|kunnen|heeft|hebben)\s+"
+    + _YES_NO_PREFIX,
     re.IGNORECASE,
 )
 _MULTIPLE_SENTENCES = re.compile(r"[.!?]\s+[A-ZÀ-Ý]")
 _WORD = re.compile(r"[\w-]+")
-# Lists of values of one measured variable are not separate investigations.
-# Require a concrete comparison/measurement predicate as well as its
-# argument-level preposition; "What about X, Y and Z?" still fails.
+# A list of levels introduced by one preposition is still one possible
+# investigation. No word/character cap or allowed-predicate vocabulary is
+# needed: the exception applies only to the detected list's own first item.
 _MEASUREMENT_LEVELS = re.compile(
     r"\b(?:across|among|at|by|per|under|over|between|"
-    r"op|bij|tussen|onder|langs)\s+[^,;?!]{1,70},",
-    re.IGNORECASE,
-)
-_MEASURED_RELATION = re.compile(
-    r"\b(?:vary|varies|varying|change|changes|changing|differ|differs|"
-    r"measure|measured|compared|compare|varieert|verandert|veranderen|"
-    r"verschilt|vergelijken|meten|gemeten|hangt|hangen|samen|"
-    r"verschillen|toename|afname)\b",
+    r"op|bij|tussen|onder|langs)\s+[^,;?!]+,",
     re.IGNORECASE,
 )
 # These words begin a new aside about a different checklist; they are not
@@ -87,8 +94,6 @@ def _is_measured_list(text: str, segments: list[str], item_index: int) -> bool:
     A prior phrase such as 'at night,' cannot exempt a later unrelated
     checklist introduced by 'considering security, privacy, and scalability'.
     """
-    if not _MEASURED_RELATION.search(text):
-        return False
     index = item_index - 1
     while index > 0:
         tokens = _WORD.findall(segments[index].lower())
@@ -153,6 +158,10 @@ def is_single_question(text: str) -> bool | None:
         flags=re.IGNORECASE,
     ):
         return False
-    if _SECOND_WH_CLAUSE.search(stripped) or _SECOND_YES_NO_CLAUSE.search(stripped):
+    if (
+        _SECOND_WH_CLAUSE.search(stripped)
+        or _SECOND_YES_NO_CLAUSE.search(stripped)
+        or _UNPUNCTUATED_SECOND_YES_NO.search(stripped)
+    ):
         return False
     return not looks_like_short_category_list(stripped)
