@@ -136,6 +136,13 @@ class InspectionService:
             if str(item.get("status", "open")).lower() == "open"
         }
         manager_config = dict(manager.get("config", {}))
+        # A seed is "used" each time the point-of-use check allowed it into a
+        # generation; denied attempts are audit records, not use.
+        used_counts: dict[str, int] = {}
+        for record in state.get("influence_records", []):
+            if isinstance(record, dict) and record.get("allowed") is True:
+                used_seed_id = str(record.get("seed_id"))
+                used_counts[used_seed_id] = used_counts.get(used_seed_id, 0) + 1
         decorated = []
         for seed in seeds:
             seed_id = str(seed.get("id"))
@@ -174,6 +181,7 @@ class InspectionService:
                 "blocking": blocking,
                 "current_gate_authorized": current_gate_authorized,
                 "plain_explanation": plain_explanation,
+                "used_count": used_counts.get(seed_id, 0),
             }
             decorated_seed["orchestration"] = derive_seed_orchestration(
                 decorated_seed,
