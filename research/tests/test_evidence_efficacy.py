@@ -397,3 +397,9 @@ def test_provider_timeout_is_applied_to_provider_clients() -> None:
     _apply_provider_timeout(SimpleNamespace(), 900)  # fixture backends have no client
     with pytest.raises(ValueError):
         _apply_provider_timeout(backend, 0)
+
+
+def test_runner_uses_the_product_detector(tmp_path: Path) -> None:
+    _run(tmp_path)
+    manifest = json.loads((tmp_path / "bundle" / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["model"]["detector_prompt_variant"] == "current_pair"

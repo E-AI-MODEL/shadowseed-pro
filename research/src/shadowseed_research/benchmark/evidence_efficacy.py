@@ -38,8 +38,9 @@ from shadowseed_research.benchmark.ssl45_model_benefit_suite import blind_order
 from shadowseed.chat import ShadowChatSession
 from shadowseed.core_config import SSLCoreConfig
 from shadowseed.detection.model_detector import (
-    OPEN_SET_GENERATIVE_DETECTOR_ID,
-    OPEN_SET_GENERATIVE_PROMPT,
+    CURRENT_PAIR_DETECTOR_ID,
+    CURRENT_PAIR_DETECTOR_VERSION,
+    CURRENT_PAIR_GENERATIVE_PROMPT,
     make_detector_backend,
 )
 from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal
@@ -583,7 +584,9 @@ def run_evidence_efficacy(
         backend,
         model_id=model_id,
         max_new_tokens=max_new_tokens,
-        prompt_variant="generative",
+        # The product detector (chat sessions use the same variant), so the
+        # study measures the seeds the product would actually find.
+        prompt_variant="current_pair",
         model_revision=model_revision,
     )
     _apply_provider_timeout(model, provider_timeout)
@@ -833,7 +836,7 @@ def run_evidence_efficacy(
         copied_suite,
         *critique_paths,
     ]
-    detector_prompt_hash = sha256(OPEN_SET_GENERATIVE_PROMPT.encode("utf-8")).hexdigest()
+    detector_prompt_hash = sha256(CURRENT_PAIR_GENERATIVE_PROMPT.encode("utf-8")).hexdigest()
     manifest = {
         "schema": BUNDLE_SCHEMA,
         "run_id": run_id,
@@ -847,8 +850,9 @@ def run_evidence_efficacy(
             "digest": model_digest,
             "quantization": quantization,
             "max_new_tokens": max_new_tokens,
-            "detector_id": OPEN_SET_GENERATIVE_DETECTOR_ID,
-            "detector_prompt_variant": "generative",
+            "detector_id": CURRENT_PAIR_DETECTOR_ID,
+            "detector_version": CURRENT_PAIR_DETECTOR_VERSION,
+            "detector_prompt_variant": "current_pair",
             "detector_prompt_template_sha256": detector_prompt_hash,
             "authority_effect_of_model_identity": "none",
         },

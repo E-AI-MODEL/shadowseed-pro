@@ -1,13 +1,8 @@
 name: Research - Evidence efficacy study 1
 
+# Manual only. Dispatch it on a research branch: the verified bundles are
+# committed back to that branch under a run-specific directory.
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - .github/workflows/evidence-efficacy-study.yml
-      - benchmarks/evidence_efficacy/study-1-suite.json
-      - src/shadowseed/data/evidence_efficacy_preregistration_v2.json
   workflow_dispatch:
 
 permissions:
@@ -22,8 +17,8 @@ env:
   EMBEDDING_REFERENCE: sentence-transformers/all-MiniLM-L6-v2
   SUITE: benchmarks/evidence_efficacy/study-1-suite.json
   PREREG: src/shadowseed/data/evidence_efficacy_preregistration_v2.json
-  RUN_DIR: benchmarks/results/evidence_efficacy/study-1_qwen2.5_7b_q4km
-  RUN_ID: evidence-efficacy-study-1-qwen2.5-7b-q4km
+  RUN_DIR: benchmarks/results/evidence_efficacy/study-1_qwen2.5_7b_q4km_run-${{ github.run_id }}
+  RUN_ID: evidence-efficacy-study-1-qwen2.5-7b-q4km-${{ github.run_id }}
 
 jobs:
   study:
@@ -46,7 +41,7 @@ jobs:
       - name: Check out exact head
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
 
       - name: Set up Python
@@ -166,13 +161,13 @@ jobs:
 
   commit:
     needs: study
-    if: github.event_name == 'pull_request'
+    if: github.ref_name != 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Check out PR branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.ref_name }}
 
       - name: Download shard bundles
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
@@ -186,4 +181,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$RUN_DIR"
           git commit -m "Record evidence efficacy study 1 (Qwen 2.5 7B)"
-          git push origin "HEAD:${{ github.head_ref }}"
+          git push origin "HEAD:${{ github.ref_name }}"
