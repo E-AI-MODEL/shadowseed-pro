@@ -50,6 +50,13 @@ from shadowseed.detection.model_detector import (
     DetectorBackend,
     make_detector_backend,
 )
+from shadowseed.recurrence_recognition import (
+    MAX_OPEN_QUESTIONS,
+    RECOGNIZER_ID,
+    RECURRENCE_FLOOR,
+    OpenQuestion,
+    recognize,
+)
 from shadowseed.recurrence_clustering import (
     DEFAULT_CLUSTER_THRESHOLD,
     RecurrenceClusterer,
@@ -181,6 +188,7 @@ class ShadowChatSession:
         max_seeds_per_turn: int = 5,
         recurrence_mode: str = "cluster",
         cluster_threshold: float | None = None,
+        recurrence_recognizer: str = "auto",
         contract: AgentSafetyContract | None = None,
         probe_corpus: str | None = None,
         probe_top_k: int = 3,
@@ -228,6 +236,9 @@ class ShadowChatSession:
         self.embedding_model = embedding_model
         self.recurrence_mode = recurrence_mode
         self.cluster_threshold = cluster_threshold
+        if recurrence_recognizer not in {"auto", "model", "embedding"}:
+            raise ValueError("recurrence_recognizer must be 'auto', 'model' or 'embedding'")
+        self.recurrence_recognizer = recurrence_recognizer
         self.probe_corpus_path = probe_corpus
         if runtime_mode not in {"evaluation", "live"}:
             raise ValueError("runtime_mode must be 'evaluation' or 'live'")
@@ -451,11 +462,123 @@ class ShadowChatSession:
                 seed.occurrence_count = before + 1
                 self.manager._sync_seed(seed_id)
 
+    def _uses_model_recognition(self) -> bool:
+        if self.clusterer is None or self.recurrence_recognizer == "embedding":
+            return False
+        if self.recurrence_recognizer == "model":
+            return True
+        return str(self.backend) != "fixture"
+
+    def _recognize_recurrence(self, seed_ids: list[str]) -> dict[str, int | None]:
+        """Ask the session model which new seeds repeat an open question.
+
+        Returns a cluster decision per new seed (cluster id, or None for a new
+        cluster). Seeds missing from the result use embedding clustering, which
+        is also the fallback when the model call fails or cannot be read.
+        """
+
+        assert self.clusterer is not None
+        new_ids = [
+            seed_id
+            for seed_id in seed_ids
+            if seed_id not in self.seed_to_cluster and seed_id in self.manager.seeds
+        ]
+        if not new_ids or not self.clusterer.centroids:
+            return {}
+        offered: dict[int, float] = {}
+        for seed_id in new_ids:
+            for cluster_id, similarity in self.clusterer.nearest(
+                self.manager.seeds[seed_id].embedding,
+                floor=RECURRENCE_FLOOR,
+                limit=MAX_OPEN_QUESTIONS,
+            ):
+                offered[cluster_id] = max(similarity, offered.get(cluster_id, -1.0))
+        open_questions = []
+        for cluster_id in sorted(offered, key=offered.get, reverse=True)[:MAX_OPEN_QUESTIONS]:
+            representative = self.manager.seeds.get(self.cluster_rep.get(cluster_id, ""))
+            if representative is None or representative.status == SeedStatus.EXPIRED:
+                continue
+            open_questions.append(
+                OpenQuestion(len(open_questions) + 1, cluster_id, representative.text)
+            )
+        if not open_questions:
+            return {seed_id: None for seed_id in new_ids}
+        notes = [self.manager.seeds[seed_id].text for seed_id in new_ids]
+        try:
+            mapping, raw = recognize(
+                lambda prompt: self.model.generate_messages([{"role": "user", "content": prompt}]),
+                open_questions,
+                notes,
+            )
+        except Exception as exc:  # noqa: BLE001 - recognition must never break a turn
+            self.manager._record_event(
+                "recurrence_recognition_failed",
+                new_ids[0],
+                recognizer=RECOGNIZER_ID,
+                reason=type(exc).__name__,
+            )
+            return {}
+        if mapping is None:
+            self.manager._record_event(
+                "recurrence_recognition_failed",
+                new_ids[0],
+                recognizer=RECOGNIZER_ID,
+                reason="unreadable_answer",
+                raw=raw[:200],
+            )
+            return {}
+        decisions: dict[str, int | None] = {}
+        for index, seed_id in enumerate(new_ids):
+            number = mapping.get(index)
+            cluster_id = None if number is None else open_questions[number - 1].cluster_id
+            similarity = (
+                None
+                if cluster_id is None
+                else self.clusterer.similarity(self.manager.seeds[seed_id].embedding, cluster_id)
+            )
+            refused = similarity is not None and similarity < RECURRENCE_FLOOR
+            decisions[seed_id] = None if refused else cluster_id
+            self.manager._record_event(
+                "recurrence_recognized",
+                seed_id,
+                recognizer=RECOGNIZER_ID,
+                repeats_cluster=cluster_id,
+                repeats_seed_id=(
+                    None if cluster_id is None else self.cluster_rep.get(cluster_id)
+                ),
+                similarity=None if similarity is None else round(similarity, 4),
+                refused_below_floor=refused,
+            )
+        return decisions
+
+    def _register_cluster_observations(
+        self,
+        seed_ids: list[str],
+        *,
+        observation_ref: str,
+    ) -> None:
+        decisions = (
+            self._recognize_recurrence(seed_ids) if self._uses_model_recognition() else {}
+        )
+        for seed_id in seed_ids:
+            if seed_id in decisions:
+                target = decisions[seed_id]
+                self._register_cluster_observation(
+                    seed_id,
+                    observation_ref=observation_ref,
+                    cluster_id=target,
+                    new_cluster=target is None,
+                )
+            else:
+                self._register_cluster_observation(seed_id, observation_ref=observation_ref)
+
     def _register_cluster_observation(
         self,
         seed_id: str,
         *,
         observation_ref: str,
+        cluster_id: int | None = None,
+        new_cluster: bool = False,
     ) -> int | None:
         """Register one accepted seed and keep the cluster representative live."""
 
@@ -470,6 +593,8 @@ class ShadowChatSession:
                 seed.text,
                 seed.embedding,
                 observation_ref=observation_ref,
+                cluster_id=cluster_id,
+                new_cluster=new_cluster,
             )
             self.seed_to_cluster[seed_id] = cluster_id
         else:
@@ -794,6 +919,7 @@ class ShadowChatSession:
             "max_seeds_per_turn": self.max_seeds_per_turn,
             "recurrence_mode": self.recurrence_mode,
             "cluster_threshold": self.cluster_threshold,
+            "recurrence_recognizer": self.recurrence_recognizer,
             "probe_corpus": self.probe_corpus_path,
             "probe_top_k": self.probe_top_k,
             "runtime_mode": self.runtime_mode,
@@ -1193,11 +1319,10 @@ class ShadowChatSession:
             born.append(accepted["seed_id"])
 
         if self.clusterer is not None:
-            for accepted in ingest.get("accepted", []):
-                self._register_cluster_observation(
-                    accepted["seed_id"],
-                    observation_ref=f"turn:{turn}",
-                )
+            self._register_cluster_observations(
+                [accepted["seed_id"] for accepted in ingest.get("accepted", [])],
+                observation_ref=f"turn:{turn}",
+            )
             self._sync_cluster_recurrence()
 
         changed_seed_ids = {
@@ -1600,11 +1725,10 @@ class ShadowChatSession:
 
         # 5. Credit semantic recurrence to one cluster representative.
         if self.clusterer is not None:
-            for accepted in ingest.get("accepted", []):
-                self._register_cluster_observation(
-                    accepted["seed_id"],
-                    observation_ref=f"turn:{turn}",
-                )
+            self._register_cluster_observations(
+                [accepted["seed_id"] for accepted in ingest.get("accepted", [])],
+                observation_ref=f"turn:{turn}",
+            )
             self._sync_cluster_recurrence()
 
         # 6. Recurrence is a first-class SSL signal: under the exploratory policy
@@ -1762,11 +1886,10 @@ class ShadowChatSession:
             born.append(seed_id)
 
         if self.clusterer is not None:
-            for accepted in ingest.get("accepted", []):
-                self._register_cluster_observation(
-                    accepted["seed_id"],
-                    observation_ref=recurrence_observation_ref,
-                )
+            self._register_cluster_observations(
+                [accepted["seed_id"] for accepted in ingest.get("accepted", [])],
+                observation_ref=recurrence_observation_ref,
+            )
             self._sync_cluster_recurrence()
 
         self._scope_pairwise_source_recurrence(
@@ -1994,6 +2117,9 @@ class ShadowChatSession:
         if schema_version not in {1, 2, SESSION_STATE_SCHEMA_VERSION}:
             raise ValueError("unsupported ShadowChatSession state schema")
         config = dict(state.get("session_config", {}))
+        # Sessions saved before model recognition keep embedding recognition,
+        # so a restored conversation does not change behavior mid-way.
+        config.setdefault("recurrence_recognizer", "embedding")
         has_v1_runtime_metadata = "runtime_mode" in config
         if schema_version == 1 and not has_v1_runtime_metadata:
             # Snapshots written before the live/evaluation split used the
