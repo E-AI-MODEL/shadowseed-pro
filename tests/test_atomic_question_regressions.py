@@ -69,3 +69,58 @@ def test_clean_question_can_use_a_comma_and_two_alternatives():
     assert SSLManager.is_atomic_seed(
         "How does existing knowledge relate to performance on a new task?"
     )
+
+
+# Post-merge review on PR #206: one relation can compare several values.
+@pytest.mark.parametrize("question", [
+    "How does latency vary across Android, iOS, and web clients?",
+    "How does pressure change at 10, 20, and 30 degrees?",
+    "Hoe verschilt de latency tussen Android, iOS en web clients?",
+    "Hoe veranderen resultaten per leerjaar in havo 4, havo 5 en vwo 4?",
+    "Hoe hangt de druk bij 10, 20 en 30 graden samen met de temperatuur?",
+])
+def test_measured_levels_do_not_become_category_lists(question):
+    assert SSLManager.is_atomic_seed(question)
+
+
+@pytest.mark.parametrize("question", [
+    "Is the API reachable and does the retry succeed?",
+    "Is de API bereikbaar en lukt het opnieuw proberen?",
+    "Is de API bereikbaar, en werkt de volgende poging?",
+    "Can we reproduce the failure and is the log format stable?",
+    "Does this result hold, and was the sample selected randomly?",
+])
+def test_conjoined_independent_yes_no_questions_are_not_one_seed(question):
+    assert not SSLManager.is_atomic_seed(question)
+
+
+def test_long_single_question_does_not_fail_on_arbitrary_word_ceiling():
+    question = (
+        "Does the reduction in failed logins after the restart persist "
+        + (
+            "with the same network load and the same client versions "
+            "and the same logging interval "
+        ) * 7
+        + "in an independently repeated measurement?"
+    )
+    assert len(question.split()) > 60
+    assert SSLManager.is_atomic_seed(question)
+
+
+@pytest.mark.parametrize("candidate", [
+    "What about security, privacy, and scalability?",
+    "Welke rol spelen motivatie, thuissituatie en schooltype?",
+    "Hoe hangen oorzaken, gevolgen, contexten, perspectieven samen?",
+    "Wat weten we over de klas, de docent, de toets en de AI-tool?",
+])
+def test_broad_checklists_remain_blocked_after_measured_list_exemption(candidate):
+    assert not SSLManager.is_atomic_seed(candidate)
+
+
+def test_binary_alternative_still_counts_as_one_question():
+    assert SSLManager.is_atomic_seed(
+        "Is it a measurement error, or is the underlying process changing?"
+    )
+    assert SSLManager.is_atomic_seed(
+        "Is het een meetfout of verandert het echte proces?"
+    )
