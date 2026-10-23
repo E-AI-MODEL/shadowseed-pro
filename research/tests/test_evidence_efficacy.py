@@ -357,3 +357,30 @@ def test_evidence_window_submits_once_when_the_candidate_appears(tmp_path: Path)
     assert len(audit["items"]) == 1
     assert audit["items"][0]["evidence_window"] == [0, 1]
     assert audit["items"][0]["scheduled_after_turn"] == 0
+
+
+def test_review_summary_counts_self_critique_wins(tmp_path: Path) -> None:
+    from shadowseed_research.benchmark.capability_scaling import REVIEW_SCHEMA, summarize_reviews
+
+    def write(name: str, payload: dict) -> Path:
+        path = tmp_path / name
+        path.write_text(json.dumps(payload), encoding="utf-8")
+        return path
+
+    items, keys = [], []
+    for index, choice in enumerate(["A", "A", "B"]):
+        rid = f"r{index}"
+        items.append(
+            {"review_id": rid, "reviewer_responses": [{"scores": {"better_answer": choice}}]}
+        )
+        keys.append({"review_id": rid, "option_a_source": "self_critique", "option_b_source": "ssl"})
+    output = summarize_reviews(
+        candidate_packet_path=write("cp.json", {"schema": REVIEW_SCHEMA, "items": []}),
+        candidate_key_path=write("ck.json", {"schema": REVIEW_SCHEMA, "items": []}),
+        answer_packet_path=write("ap.json", {"schema": REVIEW_SCHEMA, "items": items}),
+        answer_key_path=write("ak.json", {"schema": REVIEW_SCHEMA, "items": keys}),
+        output_path=tmp_path / "summary.json",
+    )
+    answer = json.loads(output.read_text(encoding="utf-8"))["answer"]
+    assert answer["unblinded_source_counts"] == {"self_critique": 2, "ssl": 1}
+    assert answer["ssl_win_rate_non_tie"] == round(1 / 3, 6)

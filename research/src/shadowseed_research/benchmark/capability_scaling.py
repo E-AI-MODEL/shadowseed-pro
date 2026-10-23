@@ -1221,7 +1221,9 @@ def summarize_reviews(
             else:
                 source = key["option_a_source"] if value == "A" else key["option_b_source"]
                 source_counts[source] += 1
-    non_ties = source_counts["ssl"] + source_counts["baseline"]
+    # Every non-tie preference counts, whatever the comparison arm is called
+    # (baseline, self_critique, ...), so a comparison win is never dropped.
+    non_ties = sum(count for source, count in source_counts.items() if source != "tie")
     payload = {
         "schema": REVIEW_SCHEMA,
         "candidate": {
