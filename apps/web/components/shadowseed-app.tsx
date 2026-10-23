@@ -229,12 +229,12 @@ function SeedCard({
   return (
     <button className="seed-card" onClick={onOpen} type="button">
       <StatusBadge seed={seed} />
-      <p className="seed-text">{seed.text}</p>
-      <p className="seed-meta">
+      <span className="seed-text">{seed.text}</span>
+      <span className="seed-meta">
         <span>Seen {seen}×</span>
         <span>{plural(evidence, "source", "sources")}</span>
         <span>{seed.blocking ? "Contradiction open" : "No contradiction"}</span>
-      </p>
+      </span>
     </button>
   );
 }
@@ -590,7 +590,7 @@ export function ShadowseedApp() {
     setNotice(null);
 
     try {
-      const created = await createSession(draft);
+      const created = await createSession({ ...draft, title: draft.title.trim() });
 
       refreshRequestId.current += 1;
       sessionRequestId.current += 1;
