@@ -45,15 +45,15 @@ const AUTHORITY_MODES: Record<
 > = {
   controlled: {
     label: "Controlled",
-    help: "A candidate influences answers only after you attach a verified source. Shadowseed does not prompt you.",
+    help: "Gate policy evidence_backed. Influence requires verified evidence. No review prompts.",
   },
   assisted: {
     label: "Guided",
-    help: "A candidate influences answers only after you attach a verified source. Shadowseed tells you when one needs it.",
+    help: "Gate policy evidence_backed. Influence requires verified evidence. Prompts when a candidate reaches the review threshold.",
   },
   exploratory: {
     label: "Exploratory",
-    help: "Recurrence alone can grant influence, without external evidence. For research sessions, not for decisions.",
+    help: "Gate policy exploratory. Recurrence counts as a support signal; no external evidence required.",
   },
 };
 
@@ -111,18 +111,18 @@ type Tone = "neutral" | "warning" | "success" | "danger" | "muted";
 function seedStatus(seed: Seed): { label: string; tone: Tone } {
   if (seed.blocking) return { label: "Contradicted", tone: "danger" };
   if (seed.current_gate_authorized) {
-    return { label: "May influence", tone: "success" };
+    return { label: "Authorized", tone: "success" };
   }
   const status = String(seed.status ?? "").toLowerCase();
   if (status === "expired") return { label: "Expired", tone: "muted" };
   if (status === "dormant") return { label: "Dormant", tone: "muted" };
   if (seed.orchestration?.state === "human_turn") {
-    return { label: "Needs evidence", tone: "warning" };
+    return { label: "Evidence required", tone: "warning" };
   }
   if (status === "promoted") {
-    return { label: "Promoted, not active", tone: "neutral" };
+    return { label: "Promoted (inactive)", tone: "neutral" };
   }
-  return { label: "Remembered", tone: "neutral" };
+  return { label: "Observed", tone: "neutral" };
 }
 
 function StatusBadge({ seed }: { seed: Seed }) {
@@ -133,7 +133,7 @@ function StatusBadge({ seed }: { seed: Seed }) {
 }
 
 function handoffTitle(state?: string) {
-  if (state === "human_turn") return "Your input is needed";
+  if (state === "human_turn") return "Action required";
   if (state === "blocked") return "Blocked";
   return null;
 }
@@ -176,6 +176,44 @@ function BrandMark() {
       <circle cx="16" cy="16" fill="none" r="7" stroke="var(--surface)" strokeDasharray="3 3" strokeWidth="2" />
       <circle cx="16" cy="16" fill="var(--surface)" r="3" />
     </svg>
+  );
+}
+
+function RawJson({ label, value }: { label: string; value: unknown }) {
+  const text = useMemo(
+    () =>
+      JSON.stringify(value, null, 2).replace(
+        /\[\s*(-?[\d.eE+-]+(?:,\s*-?[\d.eE+-]+)*)\s*\]/g,
+        (_match, items: string) => "[" + items.split(/,\s*/).join(", ") + "]",
+      ),
+    [value],
+  );
+  const [copied, setCopied] = useState(false);
+  return (
+    <details className="raw-json">
+      <summary>
+        <span>{label}</span>
+        <span className="mono">{text.length.toLocaleString()} chars</span>
+      </summary>
+      <div className="raw-json__body">
+        <button
+          className="button button--ghost raw-json__copy"
+          onClick={() => {
+            navigator.clipboard
+              ?.writeText(text)
+              .then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1500);
+              })
+              .catch(() => undefined);
+          }}
+          type="button"
+        >
+          {copied ? "Copied" : "Copy"}
+        </button>
+        <pre>{text}</pre>
+      </div>
+    </details>
   );
 }
 
@@ -224,7 +262,7 @@ function timelineTimestamp(event: SeedTimelineEvent) {
 
 function SeedTimeline({ events }: { events: SeedTimelineEvent[] }) {
   if (!events.length) {
-    return <p className="muted">No events recorded yet.</p>;
+    return <p className="muted">No events recorded.</p>;
   }
 
   return (
@@ -238,7 +276,7 @@ function SeedTimeline({ events }: { events: SeedTimelineEvent[] }) {
               <span>{timelineTimestamp(event)}</span>
             </div>
             <details>
-              <summary>Audit record</summary>
+              <summary>Event payload (JSON)</summary>
               <pre>{JSON.stringify(event.payload, null, 2)}</pre>
             </details>
           </div>
@@ -289,6 +327,11 @@ export function ShadowseedApp() {
   const [createError, setCreateError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [newChatOpen, setNewChatOpen] = useState(false);
+  const [lastTurn, setLastTurn] = useState<{
+    sessionId: string;
+    report: Record<string, unknown>;
+    comparison: Record<string, unknown> | null;
+  } | null>(null);
   const sessionRequestId = useRef(0);
   const refreshRequestId = useRef(0);
   const seedRequestId = useRef(0);
@@ -610,6 +653,11 @@ export function ShadowseedApp() {
       } else {
         setSession(result.session);
       }
+      setLastTurn({
+        sessionId: session.session_id,
+        report: result.report,
+        comparison: result.comparison,
+      });
       setRetryTurn(null);
       if (session.backend === "openai") {
         setExternalTurnConfirmed(false);
@@ -810,6 +858,11 @@ export function ShadowseedApp() {
   }
 
   const formBusy = sending || creating || loadingSession || seedActionBusy;
+  const answerAuthor = session
+    ? compactModelLabel(session.model_roles?.generation.model_id ?? session.model_id) === "default"
+      ? backendLabel(session.backend)
+      : compactModelLabel(session.model_roles?.generation.model_id ?? session.model_id)
+    : "";
   const showNewChat = newChatOpen || sessions.length === 0;
   const handoff = handoffTitle(session?.orchestration?.state);
   const sessionMeta = session
@@ -1172,26 +1225,15 @@ export function ShadowseedApp() {
         <div className="messages">
           {!session ? (
             <div className="empty-state">
-              <BrandMark />
-              <h2>Remember without trusting</h2>
-              <p>
-                Shadowseed notes possible gaps in each answer as weightless
-                candidates. They only influence a later answer after the
-                Validation Gate allows it.
-              </p>
-              <ol className="empty-steps">
-                <li>Start a conversation on the left.</li>
-                <li>Ask your question as usual.</li>
-                <li>Review what Shadowseed remembered in the Shadow panel.</li>
-              </ol>
+              <h2>No conversation selected</h2>
+              <p>Create a conversation in the sidebar.</p>
             </div>
           ) : session.messages.length === 0 ? (
             <div className="empty-state">
-              <h2>What would you like to explore?</h2>
+              <h2>No messages</h2>
               <p>
-                Ask a question. Candidates that Shadowseed remembers appear in
-                the Shadow panel, where you can add verified sources or
-                contradictions.
+                Detected candidates are listed in the Shadow panel with
+                weight 0.
               </p>
             </div>
           ) : (
@@ -1202,15 +1244,15 @@ export function ShadowseedApp() {
                   key={message.role + "-" + index}
                 >
                   {message.role === "assistant" ? (
-                    <span className="message__author">Assistant</span>
+                    <span className="message__author">{answerAuthor}</span>
                   ) : null}
                   <p>{message.content}</p>
                 </article>
               ))}
               {sending ? (
                 <article className="message message--assistant message--pending">
-                  <span className="message__author">Assistant</span>
-                  <p aria-live="polite">Thinking…</p>
+                  <span className="message__author">{answerAuthor}</span>
+                  <p aria-live="polite">Waiting for response…</p>
                 </article>
               ) : null}
             </div>
@@ -1257,8 +1299,8 @@ export function ShadowseedApp() {
                     ? "Configure the provider first…"
                     : loadingSession
                       ? "Loading conversation…"
-                      : "Ask a question…"
-                  : "Start a conversation first…"
+                      : "Message"
+                  : "No conversation selected"
               }
               value={question}
               onChange={(event) => {
@@ -1299,7 +1341,7 @@ export function ShadowseedApp() {
         <div className="shadow-heading">
           <div>
             <h2>Shadow memory</h2>
-            <p>Remembered, not yet trusted.</p>
+            <p>{plural(sortedSeeds.length, "candidate", "candidates")}</p>
           </div>
           <button
             aria-label="Close shadow memory"
@@ -1357,7 +1399,7 @@ export function ShadowseedApp() {
                 </dl>
                 {selectedSeed.review_required ? (
                   <div className="alert alert--warning">
-                    This candidate is waiting for your review.
+                    Review required.
                   </div>
                 ) : null}
               </section>
@@ -1365,9 +1407,8 @@ export function ShadowseedApp() {
               <section className="panel">
                 <h3>Add verified evidence</h3>
                 <p className="muted">
-                  Only use this after you have checked the source yourself and
-                  it supports this candidate. Adding a link is not evidence on
-                  its own.
+                  Submit only a source you have checked yourself. The Gate
+                  records it as operator-verified evidence.
                 </p>
                 <form className="stack" onSubmit={onSubmitEvidence}>
                   <label className="field">
@@ -1432,9 +1473,8 @@ export function ShadowseedApp() {
                 {selectedSeed.blocking ? (
                   <form className="stack" onSubmit={onResolveContradiction}>
                     <p className="muted">
-                      This candidate is blocked. Explain why the contradiction
-                      can be resolved; the Gate then re-evaluates its
-                      authority.
+                      Blocked by an open contradiction. Record the basis for
+                      resolution; the Gate re-evaluates authority.
                     </p>
                     <label className="field">
                       <span>Basis for resolution</span>
@@ -1462,9 +1502,8 @@ export function ShadowseedApp() {
                 ) : (
                   <>
                     <p className="muted">
-                      Use this when you have information that contradicts this
-                      candidate. It stays blocked until the contradiction is
-                      resolved through the Gate.
+                      Blocks this candidate from influencing answers until the
+                      contradiction is resolved through the Gate.
                     </p>
                     <button
                       className="button button--danger"
@@ -1479,8 +1518,13 @@ export function ShadowseedApp() {
               </section>
 
               <section className="panel">
-                <h3>History</h3>
+                <h3>Timeline</h3>
                 <SeedTimeline events={selectedSeed.timeline} />
+              </section>
+
+              <section className="panel">
+                <h3>Raw data</h3>
+                <RawJson label="Seed record" value={selectedSeed} />
               </section>
             </div>
           ) : (
@@ -1508,11 +1552,8 @@ export function ShadowseedApp() {
                 </div>
               ) : (
                 <div className="shadow-empty">
-                  <strong>No candidates yet</strong>
-                  <p>
-                    New candidates start with zero weight. Remembering is not
-                    the same as trusting.
-                  </p>
+                  <strong>No candidates</strong>
+                  <p>Candidates are created with weight 0.</p>
                 </div>
               )}
             </>
@@ -1521,7 +1562,7 @@ export function ShadowseedApp() {
 
         {session ? (
           <details className="tech-details">
-            <summary>Technical details</summary>
+            <summary>Technical details and raw data</summary>
             <dl>
               <div>
                 <dt>Gate policy</dt>
@@ -1540,6 +1581,19 @@ export function ShadowseedApp() {
                 <dd className="mono">{session.session_id}</dd>
               </div>
             </dl>
+            <div className="raw-stack">
+              <RawJson label="Session" value={session} />
+              {lastTurn && lastTurn.sessionId === session.session_id ? (
+                <>
+                  <RawJson label="Last turn report" value={lastTurn.report} />
+                  {lastTurn.comparison ? (
+                    <RawJson label="Last turn comparison" value={lastTurn.comparison} />
+                  ) : null}
+                </>
+              ) : (
+                <p className="muted">Turn reports appear here after the next message.</p>
+              )}
+            </div>
           </details>
         ) : null}
       </aside>

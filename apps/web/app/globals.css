@@ -417,20 +417,8 @@ button:disabled, input:disabled, textarea:disabled, select:disabled {
   margin: 8vh auto 0;
   text-align: center;
 }
-.empty-state .brand-mark { width: 44px; height: 44px; margin-bottom: 6px; }
 .empty-state h2 { font-size: 20px; letter-spacing: -0.01em; }
 .empty-state p { color: var(--text-3); }
-.empty-steps {
-  display: grid;
-  gap: 6px;
-  margin: 10px 0 0;
-  padding: 14px 16px 14px 34px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface-2);
-  color: var(--text-2);
-  text-align: left;
-}
 
 .chat-alert { width: min(760px, calc(100% - 48px)); margin: 0 auto 10px; }
 
@@ -590,9 +578,41 @@ button:disabled, input:disabled, textarea:disabled, select:disabled {
   font-size: 12px;
 }
 .tech-details summary { cursor: pointer; }
+.tech-details[open] { max-height: 65vh; overflow-x: hidden; overflow-y: auto; }
+.raw-stack { display: grid; gap: 8px; margin-top: 12px; }
+.raw-json {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.raw-json summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+.raw-json summary .mono { color: var(--text-3); font-weight: 400; }
+.raw-json__body { position: relative; border-top: 1px solid var(--border); }
+.raw-json__copy { position: absolute; top: 6px; right: 6px; min-height: 26px; padding: 0 8px; font-size: 11px; }
+.raw-json pre {
+  max-height: 360px;
+  margin: 0;
+  overflow: auto;
+  padding: 10px;
+  background: var(--surface-2);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 .tech-details dl { display: grid; gap: 6px; margin: 10px 0 0; }
-.tech-details dl div { display: flex; justify-content: space-between; gap: 12px; }
-.tech-details dd { margin: 0; overflow: hidden; color: var(--text-2); text-overflow: ellipsis; white-space: nowrap; }
+.tech-details dl div { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; }
+.tech-details dd { min-width: 0; margin: 0; overflow: hidden; color: var(--text-2); text-align: right; text-overflow: ellipsis; white-space: nowrap; }
 
 /* Responsive */
 

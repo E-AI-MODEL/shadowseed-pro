@@ -143,8 +143,8 @@ def derive_seed_orchestration(
             HUMAN_TURN,
             reason_code="verified_support_required",
             reason_text=(
-                "This candidate keeps coming back. In this mode it can only "
-                "influence an answer after you add a source you have verified."
+                "Recurrence threshold reached. This authority mode requires "
+                "verified evidence before the candidate can influence answers."
             ),
             required_action="submit_verified_support",
             optional_actions=("inspect_seed",),
