@@ -111,7 +111,6 @@ def test_long_single_question_does_not_fail_on_arbitrary_word_ceiling():
     "What about security, privacy, and scalability?",
     "Welke rol spelen motivatie, thuissituatie en schooltype?",
     "Hoe hangen oorzaken, gevolgen, contexten, perspectieven samen?",
-    "Wat weten we over de klas, de docent, de toets en de AI-tool?",
 ])
 def test_broad_checklists_remain_blocked_after_measured_list_exemption(candidate):
     assert not SSLManager.is_atomic_seed(candidate)
@@ -187,4 +186,26 @@ def test_unpunctuated_second_clause_with_pronoun_subject_is_rejected(candidate):
 def test_shared_copular_predicate_with_article_remains_single_question():
     assert SSLManager.is_atomic_seed(
         "Does the result remain stable when the sample is large and is the same size across groups?"
+    )
+
+
+def test_ambiguous_topical_question_is_admissible_at_zero_weight():
+    import numpy as np
+
+    question = "Wat weten we over de klas, de docent, de toets en de AI-tool?"
+    manager = SSLManager(embedding_fn=lambda _text: np.array([1.0, 0.0]))
+    created = manager.ingest_detection_candidates(
+        [question],
+        expand_short_fragments=False,
+        split_broad=False,
+    )
+    assert len(created["accepted"]) == 1
+    seed_id = created["accepted"][0]["seed_id"]
+    assert manager.seeds[seed_id].weight == 0.0
+    assert manager.seeds[seed_id].evidence_count == 0
+
+
+def test_temporal_over_enumeration_is_not_blocked_as_a_category_list():
+    assert SSLManager.is_atomic_seed(
+        "How does retention vary over one day, one week, and one month?"
     )
