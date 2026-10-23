@@ -24,15 +24,14 @@ jobs:
         with:
           ref: ${{ inputs.release_tag }}
           fetch-depth: 0
-      - name: Bind assurance to current protected main
+      - name: Bind assurance to the exact published tag
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin main --tags --force
+          git fetch origin --tags --force
           release_sha="$(git rev-list -n 1 "$RELEASE_TAG")"
           test -n "$release_sha"
           test "$(git rev-parse HEAD)" = "$release_sha"
-          test "$(git rev-parse origin/main)" = "$release_sha"
           gh release view "$RELEASE_TAG" >/dev/null
           echo "RELEASE_SHA=$release_sha" >> "$GITHUB_ENV"
       - name: Download published assets
@@ -156,9 +155,3 @@ jobs:
               -R "$GITHUB_REPOSITORY" \
               --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release-workbench.yml"
           done < verified-release/SHA256SUMS
-      - name: Recheck main after assurance
-        shell: bash
-        run: |
-          set -euo pipefail
-          git fetch origin main --force
-          test "$(git rev-parse origin/main)" = "$RELEASE_SHA"

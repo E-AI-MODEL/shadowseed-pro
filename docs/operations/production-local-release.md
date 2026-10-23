@@ -45,7 +45,7 @@ After those checks and **before publication**, the trusted `Release Workbench` w
 
 After release creation, download all assets again and verify `SHA256SUMS` and the exact tag target. A mismatch invalidates the release.
 
-The final production-local candidate then runs `.github/workflows/production-release-assurance.yml` manually against the published tag. That workflow is verification-only: it has no OIDC or attestation-write authority. It checks that the tag still resolves to unchanged current `main`, redownloads the release, first verifies that the published `SHA256SUMS` itself was attested by the trusted `release-workbench.yml` signer, requires that checksum manifest to cover exactly every published release file, verifies all published bytes against that trusted manifest, validates `PROVENANCE.json` and all three standalone manifests, verifies every checksum-listed subject against the trusted Release Workbench signer, and checks `main` again after assurance. The resulting workflow run ID is mandatory final release evidence.
+The final production-local candidate then runs `.github/workflows/production-release-assurance.yml` manually against the published tag. That workflow is verification-only: it has no OIDC or attestation-write authority. It binds to the exact published tag, redownloads the release, first verifies that the published `SHA256SUMS` itself was attested by the trusted `release-workbench.yml` signer, requires that checksum manifest to cover exactly every published release file, verifies all published bytes against that trusted manifest, validates `PROVENANCE.json` and all three standalone manifests, and verifies every checksum-listed subject against the trusted Release Workbench signer. It does not require `main` to stay on the release SHA. The resulting workflow run ID is mandatory final release evidence.
 
 ## Signing and platform-verification policy
 
@@ -93,16 +93,16 @@ Do not replace a live workspace with an older raw database copy to perform an ap
 
 ## Candidate soak
 
-After the final release-candidate commit reaches protected `main`, keep it unchanged for at least 24 hours before the final production-ready/local declaration. During that window:
+The soak is bound to the published release, not to `main`. Use the published candidate for at least 24 hours before the final production-ready/local declaration; development on `main` may continue. During that window:
 
 - complete at least one normal local Workbench use cycle on the candidate;
 - run `shadowseed doctor` against the used workspace;
 - record any operational, integrity, provider or packaging anomaly on #103;
 - treat any discovered P0/P1 as a blocker requiring a new protected fix and a new soak window.
 
-Two automated guards support this window. After a successful publication, `Release Workbench` dispatches the read-only `Production Release Assurance` workflow for the new tag while `main` still equals the release SHA. During the first 24 hours after publication, the `candidate-soak-guard` CI job fails pull requests into `main` while the latest release still equals `main`, so the required `build` check blocks the merge. A P0/P1 fix may proceed with the `soak-override` label; merging it ends the candidate. The use cycle, `shadowseed doctor` and the #103 record remain manual.
+After a successful publication, `Release Workbench` dispatches the read-only `Production Release Assurance` workflow for the new tag automatically. The use cycle, `shadowseed doctor` and the #103 record remain manual.
 
-A code change to the candidate SHA resets the soak clock. Documentation-only evidence records that do not alter the candidate release artifact must still be checked against the exact-SHA publication rule.
+A P0/P1 found in the published release ends the candidate; its fix needs a new release and a new soak. Later commits on `main` do not change the published release and do not reset its soak.
 
 ## Final stop condition
 

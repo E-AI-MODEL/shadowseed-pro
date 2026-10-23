@@ -18,7 +18,7 @@ def test_required_build_propagates_cross_platform_production_acceptance_result()
     assert 'glob.glob("tests/test_workbench_*.py")' in workflow
     assert 'glob.glob("tests/test_production_*_phase4.py")' in workflow
     assert 'glob.glob("tests/test_production_*_phase5.py")' in workflow
-    assert "build:\n    if: ${{ always() }}\n    needs: [production-local, candidate-soak-guard]" in workflow
+    assert "build:\n    if: ${{ always() }}\n    needs: [production-local]" in workflow
     assert "Require production-local acceptance success" in workflow
     assert "PRODUCTION_LOCAL_RESULT: ${{ needs.production-local.result }}" in workflow
     assert 'test "$PRODUCTION_LOCAL_RESULT" = "success"' in workflow
@@ -90,8 +90,8 @@ def test_production_release_assurance_only_verifies_trusted_build_attestations()
     assert "$GITHUB_REPOSITORY/.github/workflows/release-workbench.yml" in workflow
     assert "-name 'shadowseed-web-*'" in workflow
     assert "-name 'shadowseed-workbench-*'" not in workflow
-    assert 'test "$(git rev-parse origin/main)" = "$release_sha"' in workflow
-    assert 'test "$(git rev-parse origin/main)" = "$RELEASE_SHA"' in workflow
+    assert 'test "$(git rev-parse HEAD)" = "$release_sha"' in workflow
+    assert "origin/main" not in workflow
 
 
 def test_release_runbook_keeps_native_signing_claims_explicitly_bounded() -> None:
@@ -125,15 +125,3 @@ def test_release_publication_dispatches_production_release_assurance() -> None:
     )
     assert "actions: write" in workflow
 
-
-def test_ci_build_blocks_merges_during_candidate_soak() -> None:
-    workflow = _text(".github/workflows/ci.yml")
-
-    assert "candidate-soak-guard:" in workflow
-    assert "needs: [production-local, candidate-soak-guard]" in workflow
-    assert 'SOAK_HOURS: "24"' in workflow
-    assert "soak-override" in workflow
-    assert 'test "$SOAK_GUARD_RESULT" = "success" || test "$SOAK_GUARD_RESULT" = "skipped"' in workflow
-    runbook = _text("docs/operations/production-local-release.md")
-    assert "candidate-soak-guard" in runbook
-    assert "soak-override" in runbook

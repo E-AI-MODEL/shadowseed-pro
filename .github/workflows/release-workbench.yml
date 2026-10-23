@@ -562,10 +562,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Assurance requires main to still equal the release SHA. Starting it
-          # here removes the manual post-publication step that let earlier
-          # candidates lapse once main moved.
-          git fetch origin main --force
-          test "$(git rev-parse origin/main)" = "$RELEASE_SHA"
+          # Starting assurance here removes the manual post-publication step
+          # that let earlier candidates lapse.
           gh workflow run production-release-assurance.yml --ref main -f release_tag="$RELEASE_TAG"
           echo "Dispatched Production Release Assurance for $RELEASE_TAG ($RELEASE_SHA)."
