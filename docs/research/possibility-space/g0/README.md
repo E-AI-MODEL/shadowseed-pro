@@ -43,12 +43,14 @@ These G0 cases assess whether the **meaning of the measurements** is sound. They
 
 **T2:** Require a concrete downstream *question/probe or safe action plan*, with predictions/checks. Do not reward longer answers, more unique phrases, or merely naming a new relation.
 
+**T3:** Test whether that newly grounded possibility unlocks a **further, distinct investigation**, not merely the immediate answer or action. F1 proposes a mechanism-specific prospective correction test; F2 proposes an independently witnessed repeated-operation safety question. A later model does not receive the hidden expected outcome in advance. The reviewer must reject an obvious repair or repeated toggle as insufficiently novel; **author-defined downstream tasks do not establish model-generated possibility creation**.
+
 **Evaluation:** Use the independent case rule for technical validity; additionally require blinded human/domain review of *meaningfulness*. Track whether the proposed move was already reachable in a strong ordinary baseline with the same resources.
 
 ## What G0 would and would not authorize
 
 - **Now available:** two concrete, challengeable study designs; their information-flow boundaries and falsification conditions; a reviewer packet.
 - **Not yet available:** independent approval of either case's construct validity; sealed confirmatory cases; actual model/LLM results; probability-distribution evidence; evidence that weightless SSL has any benefit.
-- **Before any paid or automatic run:** complete the [review checklist](g0-independent-review.md) with signed independent outcomes, remove any leak/hint problems, confirm non-tautological value, establish held-out-case protection, and then preregister budgets and primary measures. **G0 remains NOT PASSED until that is done.**
+- **Before any paid or automatic run:** complete the [review checklist](g0-independent-review.md) with signed independent outcomes, remove any leak/hint problems, confirm non-tautological value, establish held-out-case protection, and then preregister budgets and primary measures. **G0 remains NOT PASSED until that is done.** The [independent reviewer rubric](g0-independent-review.md) includes explicit **C11**: second-order dependence. A desk-check of the toy equations is not independent construct review.
 
 No change to accepted ADRs, trace/weight, recurrence, Gate, point-of-use controls, production packages or the retired v0 fixed-edge workflow is needed.
