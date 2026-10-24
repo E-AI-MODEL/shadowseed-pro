@@ -1,0 +1,71 @@
+name: Research - Detector calibration
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/detector-calibration.yml
+      - scripts/detector_calibration.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: detector-calibration-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MODEL_ID: qwen2.5:7b-instruct-q4_K_M
+  SUITE: benchmarks/evidence_efficacy/study-1-suite.json
+
+jobs:
+  calibrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - EE01 EE05 EE09
+          - EE02 EE06 EE10
+          - EE03 EE07 EE11
+          - EE04 EE08 EE12
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.11"
+
+      - name: Install Shadowseed
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Install and start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve > /tmp/ollama.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then break; fi
+            sleep 2
+          done
+          ollama pull "$MODEL_ID"
+          curl -fsS http://127.0.0.1:11434/api/tags
+
+      - name: Run paired detection
+        run: |
+          selected=()
+          for id in ${{ matrix.shard }}; do selected+=(--conversation "$id"); done
+          python scripts/detector_calibration.py \
+            --suite "$SUITE" \
+            --model "$MODEL_ID" \
+            "${selected[@]}" \
+            --output calibration/calibration.json
+          echo "::group::calibration.json"
+          cat calibration/calibration.json
+          echo "::endgroup::"
