@@ -57,6 +57,8 @@ def read_cases(path: Path) -> list[dict[str, Any]]:
                 raise ValueError("bad base edge")
             if not compatible(nodes[u], nodes[v]):
                 raise ValueError(f"base link violates constraints: {u} -> {v}")
+        if _cycle([tuple(edge) for edge in c["existing_edges"]]):
+            raise ValueError(f"cyclic base graph in case {c['id']}")
     return cases
 
 
@@ -213,6 +215,22 @@ def extract_pairs(value: Any, limit: int) -> list[tuple[str, str]]:
     return out
 
 
+def valid_pair_array(payload: dict[str, Any], field: str, limit: int) -> bool:
+    """Require the declared JSON schema; missing/invalid arrays are not abstentions."""
+
+    value = payload.get(field)
+    return (
+        isinstance(value, list)
+        and len(value) <= limit
+        and all(
+            isinstance(item, list)
+            and len(item) == 2
+            and all(isinstance(part, str) for part in item)
+            for item in value
+        )
+    )
+
+
 def score_first(case: dict[str, Any], proposed: list[tuple[str, str]]) -> dict[str, Any]:
     valid = [e for e in proposed if legal_bridge(case, e)]
     gains = {e: delta(case, e) for e in valid}
@@ -316,12 +334,13 @@ def pilot(cases: list[dict[str, Any]], args: argparse.Namespace, cases_path: Pat
                 raw1 = responses_call(args.model, p1, args.max_output_tokens, args.reasoning_effort, key)
                 metadata["calls"] += 1
                 parsed1 = _json_object(raw1["output_text"])
-                proposals = extract_pairs(parsed1.get("bridges"), 2)
+                first_valid = valid_pair_array(parsed1, "bridges", 2)
+                proposals = extract_pairs(parsed1.get("bridges"), 2) if first_valid else []
                 row["first_status"] = raw1["status"]
                 row["first_usage"] = raw1["usage"]
                 row["first_raw_output"] = raw1["output_text"]
-                row["first_parse_success"] = bool(parsed1)
-                row["first_score"] = score_first(case, proposals)
+                row["first_parse_success"] = first_valid
+                row["first_score"] = score_first(case, proposals) if first_valid else None
                 if arm == "A-ordinary":
                     ordinary_answer = raw1["output_text"]
                     ordinary_pairs = proposals
@@ -333,12 +352,17 @@ def pilot(cases: list[dict[str, Any]], args: argparse.Namespace, cases_path: Pat
                 raw2 = responses_call(args.model, p2, args.max_output_tokens, args.reasoning_effort, key)
                 metadata["calls"] += 1
                 parsed2 = _json_object(raw2["output_text"])
-                claims = extract_pairs(parsed2.get("new_paths"), 12)
+                second_valid = valid_pair_array(parsed2, "new_paths", 12)
+                claims = extract_pairs(parsed2.get("new_paths"), 12) if second_valid else []
                 row["second_status"] = raw2["status"]
                 row["second_usage"] = raw2["usage"]
                 row["second_raw_output"] = raw2["output_text"]
-                row["second_parse_success"] = bool(parsed2)
-                row["second_score"] = score_second(case, row["first_score"], claims)
+                row["second_parse_success"] = second_valid
+                row["second_score"] = (
+                    score_second(case, row["first_score"], claims)
+                    if second_valid and first_valid
+                    else None
+                )
             except RuntimeError as exc:
                 row["error"] = str(exc)
                 metadata["failed_calls"].append({"case": case["id"], "arm": arm, "reason": str(exc)})
@@ -351,8 +375,15 @@ def pilot(cases: list[dict[str, Any]], args: argparse.Namespace, cases_path: Pat
                 metadata["status"] = "completed_calls_with_incomplete_or_unparseable_output"
     for case_result in metadata["cases"]:
         arms = case_result["arms"]
-        a = set(map(tuple, arms["A-ordinary"]["first_score"]["verified_new_terminal_pairs"]))
-        d = set(map(tuple, arms["D-shadow"]["first_score"]["verified_new_terminal_pairs"]))
+        a_score = arms["A-ordinary"]["first_score"]
+        d_score = arms["D-shadow"]["first_score"]
+        if a_score is None or d_score is None:
+            case_result["exploratory_D_downstream_pairs_not_reached_by_A"] = None
+            case_result["D_outperforms_A_on_oracle_pairs"] = None
+            case_result["comparison_status"] = "unavailable_invalid_first_stage_schema"
+            continue
+        a = set(map(tuple, a_score["verified_new_terminal_pairs"]))
+        d = set(map(tuple, d_score["verified_new_terminal_pairs"]))
         case_result["exploratory_D_downstream_pairs_not_reached_by_A"] = sorted([list(x) for x in d-a])
         case_result["D_outperforms_A_on_oracle_pairs"] = len(d) > len(a)
     return metadata
