@@ -3,7 +3,7 @@
 > **Recorded:** 2026-10-25.
 > **Status:** Critical research synthesis and provisional mechanism competition, **not** proof, a preregistered study, an architecture decision, or a new experiment.
 > **Purpose:** Return to the original SSL sources, identify unexamined assumptions, and prevent an attractive technical test from redefining the research question.
-> **Inputs:** [original 4.5 theory](https://github.com/E-AI-MODEL/shadowseed/blob/main/docs/legacy/00_shadow_seed_learning_4_5.md), [4.6 evidence discipline](https://github.com/E-AI-MODEL/shadowseed/blob/main/docs/00_shadow_seed_learning_4_6.md), [June 2026 generative vision](https://github.com/E-AI-MODEL/shadowseed/blob/main/docs/research/vision-generative-seeds.md), [current Pro ADRs](../architecture/adr/ADR-001-validation-gate-authority.md), [source/claim audit](source-claim-audit-2026-10-25.md), and the failed [first live pilot](https://github.com/E-AI-MODEL/shadowseed-pro/pull/220).
+> **Inputs:** [original 4.5 theory](https://github.com/E-AI-MODEL/shadowseed/blob/main/docs/legacy/00_shadow_seed_learning_4_5.md), [4.6 evidence discipline](https://github.com/E-AI-MODEL/shadowseed/blob/main/docs/00_shadow_seed_learning_4_6.md), [June 2026 generative vision](https://github.com/E-AI-MODEL/shadowseed/blob/main/docs/research/vision-generative-seeds.md), [current Pro ADRs](../../architecture/adr/ADR-001-validation-gate-authority.md), [source/claim audit](source-claim-audit-2026-10-25.md), and the failed [first live pilot](https://github.com/E-AI-MODEL/shadowseed-pro/pull/220).
 > **Next gate:** Clarify rival mechanisms and what would count as the sought phenomenon, **before** G0, coding, or another paid-model call.
 
 ## Unmodified fundamental research question
@@ -69,7 +69,7 @@ The alternatives below can coexist in an implementation; they compete over **whi
 
 ## 4. Why the earlier "relation kind" G0 is too restrictive
 
-The [2026-10-25 revised Q1/Q2 plan](revised-q1-q2-experiment-2026-10-25.md) stated that G0 had to demonstrate changed **relation kinds/constraints**, and treated a "new relation kind" as the core Q2 outcome.
+The **earlier version** of the [2026-10-25 Q1/Q2 plan](revised-q1-q2-experiment-2026-10-25.md) initially required changed **relation kinds/constraints** at G0, treating a "new relation kind" as the core Q2 outcome. **This restriction has now been amended in that plan**: a new relation kind remains one optional test case, not an overall definition.
 
 **Correction:** new predicate vocabulary or a new operator is a **sufficient *candidate example* of an inspectable formal change**, not the unique signature of possibility-making. It may even be a superficial renaming or a trivial axiom relaxation.
 
@@ -136,7 +136,7 @@ Strong counterexamples belong in the analysis: some models produce genuinely nov
 1. **Do not run another GPT-5 test yet.** The 24-call failed pilot is archived and its automatic paid trigger retired. More tokens would fix output completeness but not construct validity.
 2. **Do not write a new accepted ADR** and do not alter existing trace/weight, Gate or production data structures.
 3. Use this **mechanism competition** (H0–H5) and the *five meanings of possibility* as the anchor for designing **contrasting cases**; allow a case to falsify a favored theory.
-4. Revise the existing [proposed test protocol](revised-q1-q2-experiment-2026-10-25.md) to mark "new relation kinds" as only **one candidate branch**, not the definition of Q2.
+4. **Completed documentation correction:** The [amended Q1/Q2 protocol](revised-q1-q2-experiment-2026-10-25.md) now makes new relation kinds one *optional* branch. This does **not** pass G0 or authorize running a model.
 5. When a new independent G0 design has valid positive *and negative* conceptual cases in at least two distinct families and meaningful discriminators between H0–H5, implement the minimum research harness. Only then decide if a paid strong-model run is informative.
 
 **The strongest current conclusion is methodological:** the two-clause research question survives; the old candidate mechanisms are still competing; the first tested proxy did not measure the intended phenomenon. This is not a negative result about the hypothesis itself.
