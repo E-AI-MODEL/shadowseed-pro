@@ -62,7 +62,7 @@ The [first-principles reorientation](possibility-space/first-principles-reorient
 
 **Observed so far:** a 24-call GPT-5 first feasibility run found 16 parseable and 8 incomplete responses, but its fixed-edge task was not a valid test of the fundamental question. The failed trial is preserved under [research PR #220](https://github.com/E-AI-MODEL/shadowseed-pro/pull/220). Neither **Q1** (underselected meaningful possibilities) nor **Q2** (causally changed later investigability) has been established by that run.
 
-**Research boundary:** A new relation type is not necessary to show a change of meaningful possibilities; an omitted edge, more generated variants, favorable review, or convincing model self-description does not prove such a change. The pending **G0** task is to independently specify at least two different mechanisms of future possibility formation, with negative cases, withheld consequences, matched capable-model controls, and candidate ablation. No model-run success, accepted ADR, product claim or safety-rule change follows from a conceptual proposal.
+**Research boundary:** A new relation type is not necessary to show a change of meaningful possibilities; an omitted edge, more generated variants, favorable review, or convincing model self-description does not prove such a change. The [G0 packet](possibility-space/g0/README.md) now **proposes two author-designed mechanisms** (F1 changing the investigable question through an independent observation; F2 changing admissible actions through separately certified operations), with negative cases, T3 second-order checks and an [independent reviewer record](possibility-space/g0/g0-independent-review.md). **G0 IS NOT PASSED:** these examples may still be only routine diagnosis or action planning. Two independent reasoned reviews, a defensible non-tautological second-order outcome, held-out-case protection and matched capable-model controls are required before any model call. No model-run success, accepted ADR, product claim or safety-rule change follows from a conceptual proposal.
 
 This is a **separate horizon from the existing evidence-backed answer-efficacy studies and the local production-readiness work**. Keep all three status and evidence chains independent.
 
@@ -90,7 +90,7 @@ For the **existing product's candidate-quality and evidence-backed answer-effica
 4. blind-review only surfaced A/B pairs and report null/unmatched/blocked opportunities alongside positive comparisons;
 5. decide whether candidate generation, prompts, thresholds, or product direction need changes only after those results are available.
 
-For the **separate fundamental possibility-formation program**, the next deliverable is G0 construct validation for two distinct possibility-making mechanisms. No further paid model run or production implementation follows automatically from this documentation.
+For the **separate fundamental possibility-formation program**, the next deliverable is **independent G0 construct review** of the two already drafted mechanisms, and replacement of either case if it reduces to ordinary troubleshooting or planning. No further paid model run or production implementation follows automatically from this documentation.
 
 Issue #63 remains the natural home for high-end capability/evidence follow-up. Candidate-quality review is research work, not a hidden prerequisite for the production-local release-assurance sequence.
 
