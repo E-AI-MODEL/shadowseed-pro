@@ -21,6 +21,10 @@
 - **[External environment feasibility](g0/external-benchmark-feasibility-2026-10-25.md)** — primary-source screen of DiscoveryWorld, DiscoverPhysics, WorldTest, AgentIdeaBench, Into the Unknown and ScienceWorld, with an explicit *not yet verified at code/API level* boundary.
 - **[Matched-model adapter contract](g0/adapter-evaluation-contract-2026-10-25.md)** — exact A/B/C/D/E controls, genuine weightless cross-turn persistence, fair total budgets, independent later-question validation and candidate ablation. Research proposal only, NOT G0 approval or permission to run paid models.
 
+## Narrow compression-retention research (NOT a replacement thesis)
+
+- **[Compression-retention mechanics and prospective study](compression-retention-narrow-pilot-2026-10-25.md)** — a separately labeled, offline calibration test using canonical candidate birth and vector retrieval. Investigator-authored summaries and candidates, no model calls, no result about Q1 or Q2. Details matched strong-model controls for a *future* independently reviewed study without claiming G0 approval.
+
 ## Historical reasoning, decisions and failed trial — keep intact
 
 - **[Conversation reconstruction and user corrections](conversation-record-2026-10-24.md)** — chronology of the recoverable discussion; **not** a literal full transcript.
