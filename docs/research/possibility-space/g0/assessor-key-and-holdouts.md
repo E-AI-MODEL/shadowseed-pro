@@ -105,6 +105,29 @@ Known T0 operations `flip_A` and `flip_B` toggle exactly one latch. Every such m
 
 **Construct-validity risk:** the device's atomic property was supplied externally in a synthetic world. This may measure a model's interpretation of new external action permissions rather than generation of genuinely new possibilities. The human G0 reviewer must be allowed to reject F2 as a dressed-up planning task.
 
+## Explicit second-generation T3 check: can the first opening enable another?
+
+**F1:** After a trusted, discriminating `z` and conditional P/L diagnosis, freeze a **new future reference profile** (held back until after T2), then ask for a mechanism-specific follow-up experiment:
+
+- In P the physical plant follows `u[t-2]`; a test of prospective scheduling with a **known two-tick-ahead target** can make physical timing align, whereas simply re-labelling the archive cannot alter the physical state. For unexpected targets with no look-ahead, prospective scheduling is not a solution.
+- In L the physical plant follows `u[t]`; a test of correcting the logger's time labels can align archived observations with the direct physical state, whereas sending anticipatory commands would introduce a physical error.
+- **Nontriviality check:** The answer must formulate an independently testable, cause-specific consequence not fully given in the T1 diagnosis, before its T3 outcomes are revealed. A standard model can correctly do so; that is not SSL evidence.
+
+**F2:** A verified *first* atomic transition makes it possible to investigate **whether atomicity/safety persists under repeated operations**, using an isolated witness rig that records every microstep. This is a new test question about the operation; do not score "we can now toggle the pair" as second-order insight.
+
+- P permits **only a proposed** repeated-cycle study in a controlled test rig. No reliability evidence has been supplied, and no live use is authorized from a single certificate.
+- N/U/Z lack evidence/availability for a safe live repeated transition. Claims of ongoing safety or a life-cycle guarantee must fail.
+- **Nontriviality check:** A reviewer must decide whether this is an actually different inquiry opened by the first possibility, **or merely an obvious repetition**. If only repetition, **reject F2 at G0**.
+
+**Across both families:** Q2 evidence would require a candidate-specific difference in *what later becomes investigable*, not simply a predetermined two-step chain inserted by the task author. Keep ordinary deliberate-model and notes baselines equally informed and credit the author and external witness for their roles. G0 checks whether this could in principle be measured; it does **not** show that it happened in a model.
+
+## Author-only arithmetic self-check (2026-10-25)
+
+A direct deterministic calculation (no model calls, no independent reviewer) verified:
+- F1: T0 and withheld T1 archive match `u[t-2]` in **both** P and L; T1 informative absolute ticks are **12, 13, 14, 17, 18, 21**; tick **15** is intentionally uninformative because P and L predict the same direct physical value.
+- F2: single-latch flips from either safe state violate `A==B`; an indivisible `00 -> 11` and `11 -> 00` would retain endpoint/invariant safety *if independently witnessed*, while `00 -> 10 -> 11` violates the invariant.
+- This self-check **does not pass G0**, establish a new research construct, demonstrate a new model relation or substitute for independent semantic review.
+
 ## Leakage and evaluation caveats
 
 - **Neither data partition is confidential:** a public GitHub file with an assessor key is unsuitable as a sealed model benchmark. A proposed T0 prompt containing only an input envelope reduces accidental leakage, not training contamination or tool-assisted retrieval.
