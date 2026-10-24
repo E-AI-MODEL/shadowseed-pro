@@ -73,6 +73,14 @@ class TestPossibilityPilot(unittest.TestCase):
         self.assertEqual(extract_pairs({"from": "x"}, 2), [])
         self.assertEqual(extract_pairs([["x", "y"], ["x", "y"], "injection"], 2), [("x", "y")])
 
+    def test_retired_live_run_needs_explicit_paid_opt_in(self):
+        from unittest.mock import patch
+        from pilot import main
+
+        with patch("sys.argv", ["pilot.py", "run", "--output", "unused.json"]):
+            with self.assertRaisesRegex(SystemExit, "retired paid pilot"):
+                main()
+
     def test_fixture_selftest_is_explicitly_not_model_evidence(self):
         result = selftest(CASES)
         self.assertEqual(result["status"], "passed")
