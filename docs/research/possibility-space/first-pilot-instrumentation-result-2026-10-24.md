@@ -2,7 +2,7 @@
 
 > **Evidence status:** independent deterministic **test mechanics only**; **NOT** a real-model result, Q1 validation, Q2 validation, Shadowseed efficacy, or an accepted architecture decision.
 > **Research branch:** `research/possibility-pilot-20261024` (stacked on the foundational documentation thesis branch).
-> **Source/trace:** [GitHub Actions run #40133767196](https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40133767196), [pilot implementation](../../experiments/possibility_space/README.md), [complete thesis](../possibility-space-thesis.md), [first research protocol](first-discriminating-experiment.md).
+> **Source/trace:** [GitHub Actions run #40133767196](https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40133767196), [pilot implementation](../../../experiments/possibility_space/README.md), [complete thesis](../possibility-space-thesis.md), [first research protocol](first-discriminating-experiment.md).
 > **Execution:** GitHub Actions on commit `31964eb4a248ca42b354203d6d8d726d32d95aaa`; local Python 3.13 preflight; GitHub Python 3.12.
 
 ## What ran and is independently inspectable
