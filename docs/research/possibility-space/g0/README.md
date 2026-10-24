@@ -1,8 +1,18 @@
-# G0 research cases — distinguish possibility-making from missing-answer detection
+# G0 investigation — archived v1 cases and current candidate routes
 
-> **G0 status: DESIGNED FOR REVIEW — NOT PASSED.** Two different, inspectable synthetic case families are specified. Their facts and falsification conditions are author-defined and **have not received independent external review**. No model calls, experiment implementation or production change is authorized by this file.
+> **G0 v1: RETIRED AS PRIMARY THESIS TESTS after internal adversarial review; G0 overall: NOT PASSED.** Two different, inspectable synthetic case families were specified. Their facts and falsification conditions are author-defined and **have not received independent external review**. No model calls, experiment implementation or production change is authorized by this file.
 >
 > **Date:** 2026-10-25. **Program authority:** [fundamental thesis](../../possibility-space-thesis.md), [first-principles mechanisms H0–H5](../first-principles-reorientation-2026-10-25.md), [revised Q1/Q2 protocol](../revised-q1-q2-experiment-2026-10-25.md), [initial failed model trial](https://github.com/E-AI-MODEL/shadowseed-pro/pull/220).
+
+## Current decision as of 2026-10-25
+
+**[Internal adverse review](internal-adversarial-audit-2026-10-25.md): F1 and F2 cannot serve as the primary Q1/Q2 test.** F1 is familiar system diagnosis plus an authored direct measurement; F2 is externally certified action-set expansion and ordinary planning. Their T3 follow-ups were substantially written by the designer. They remain here, **unchanged as historical/calibration cases**, so that the rejected reasoning is inspectable.
+
+- **[v1 author rejection](internal-adversarial-audit-2026-10-25.md):** internal scientific NO-GO, **not** two completed independent reviewer votes.
+- **[v2 challengers](redesign-v2-candidate-mechanisms-2026-10-25.md)** and **[arithmetic/construct warning](v2-review-and-selfcheck-2026-10-25.md):** ordered-operation and synergistic-signal cases have mathematically valid positive/negative controls, but may only measure standard compositional inference or feature engineering. **G0 NOT PASSED.**
+- **[v3 candidate method: dynamic, model-originated inquiry](dynamic-inquiry-protocol-candidate-2026-10-25.md):** seeks an independently testable new question not scripted by the author, followed by a distinct prospective question. **Only a method proposal**; independent review, actual evaluator and holdout protection are missing.
+
+**Do not run any of these historical T0 model-facing inputs as a paid efficacy trial.** Public illustrative answer keys are not sealed, formal arithmetic is not construct validation, and no independent reviewer approval has occurred.
 
 ## The whole fundamental research question — unchanged
 
