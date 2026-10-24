@@ -1,8 +1,10 @@
-# G0 independent review — mandatory before any new Shadowseed possibility-model run
+# G0 v1 independent review rubric — HISTORICAL, still unfilled
 
-> **Status: OPEN / NOT PASSED.** This is an **unfilled independent review form**. The author has designed F1/F2 but **has not supplied independent expert judgments, model evidence or approved the constructs**. Passing a mathematical or syntactic check is not equivalent to scientific construct validity.
+> **Status: G0 v1 NOT PASSED; F1/F2 RETIRED AS PRIMARY CASES by [internal critical audit](internal-adversarial-audit-2026-10-25.md).** This is an **unfilled historical independent review form**. The author has designed F1/F2 but **has not supplied independent expert judgments, model evidence or approved the constructs**. Passing a mathematical or syntactic check is not equivalent to scientific construct validity.
 >
 > **Review packet:** [G0 index](README.md), [F1 case](f1-observational-reframing.md), [F2 case](f2-atomic-admissibility.md), [F1 T0 envelope](model-facing-f1.md), [F2 T0 envelope](model-facing-f2.md), [assessor key](assessor-key-and-holdouts.md), [first-principles review](../first-principles-reorientation-2026-10-25.md), [two-clause thesis](../../possibility-space-thesis.md).
+
+**Do not record the author's NO-GO as an independent reviewer vote.** A future [v3 dynamic-inquiry design](dynamic-inquiry-protocol-candidate-2026-10-25.md) requires a **new, version-specific independent review** rather than backdating this form. No external reviewer has signed this file.
 
 ## What reviewers are assessing
 
