@@ -1,8 +1,7 @@
 name: Research - Possibility space first discriminating pilot
 
-# Environment secrets are only accessible to jobs bound to that environment.
-# Manual dispatch selects the environment explicitly. A push can run the model
-# only if the repository variable POSSIBILITY_PILOT_ENVIRONMENT is set.
+# The existing GitHub Environment is named "OpenAI key" and contains
+# the OPENAI_KEY secret. Attach the model job to that environment.
 on:
   push:
     branches:
@@ -11,11 +10,6 @@ on:
       - experiments/possibility_space/**
       - .github/workflows/possibility-space-pilot.yml
   workflow_dispatch:
-    inputs:
-      github_environment:
-        description: "Existing GitHub Environment containing OPENAI_KEY"
-        type: environment
-        required: true
 
 permissions:
   contents: read
@@ -49,13 +43,12 @@ jobs:
           if-no-files-found: warn
 
   strong-model:
-    # Never spend API budget on push unless a repo variable names the environment.
-    if: ${{ github.event_name == 'workflow_dispatch' || vars.POSSIBILITY_PILOT_ENVIRONMENT != '' }}
+    # Bounded trial: 24 API calls maximum, on this research branch only.
     needs: offline-oracle
     runs-on: ubuntu-latest
     timeout-minutes: 35
     environment:
-      name: ${{ inputs.github_environment || vars.POSSIBILITY_PILOT_ENVIRONMENT }}
+      name: "OpenAI key"
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
     steps:
