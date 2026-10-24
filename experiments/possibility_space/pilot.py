@@ -368,7 +368,14 @@ def main() -> None:
     parser.add_argument("--reasoning-effort", default="low", choices=["minimal", "low", "medium", "high"])
     parser.add_argument("--max-output-tokens", type=int, default=900)
     parser.add_argument("--max-calls", type=int, default=24)
+    parser.add_argument(
+        "--acknowledge-retired-paid-run",
+        action="store_true",
+        help="Explicitly opt in to the retired and scientifically invalid paid pilot.",
+    )
     args = parser.parse_args()
+    if args.mode == "run" and not args.acknowledge_retired_paid_run:
+        raise SystemExit("retired paid pilot: explicit --acknowledge-retired-paid-run is required")
     if args.max_calls > 24 or args.max_output_tokens > 1200 or args.max_calls < 0 or args.max_output_tokens < 128:
         raise SystemExit("safety budget exceeded or invalid")
     cases = read_cases(args.cases)
