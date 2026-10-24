@@ -14,6 +14,11 @@
 
 **Do not run any of these historical T0 model-facing inputs as a paid efficacy trial.** Public illustrative answer keys are not sealed, formal arithmetic is not construct validation, and no independent reviewer approval has occurred.
 
+## Current pre-G0 work (no approval or live experiment)
+
+- **[Source-screened external research environments](external-benchmark-feasibility-2026-10-25.md):** papers and project descriptions only, without claiming any executable environment has been accepted or that public fixtures are blind holdouts.
+- **[LLM-adapter evaluation contract](adapter-evaluation-contract-2026-10-25.md):** five matched strong-model arms (ordinary, deliberate search, normal notes, genuine weightless candidate retention, exact candidate ablation); the complete Q1/Q2 claim remains unproved. Neither document fills the [independent review ledger](dynamic-inquiry-independent-review.md).
+
 ## The whole fundamental research question — unchanged
 
 > Kunnen we de waarschijnlijkheidsgerichte werking van een taalmodel gebruiken om niet alleen te onderzoeken wat het model weet, niet weet of niet genereert, maar ook welke relaties en mogelijkheden er zouden kunnen zijn buiten de gebruikelijke generatie? En kunnen we onderzoeken hoe nieuwe mogelijkheden ontstaan die de ruimte van wat daarna denkbaar is zelf veranderen?
