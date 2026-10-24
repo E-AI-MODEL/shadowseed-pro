@@ -61,11 +61,53 @@ jobs:
         run: |
           selected=()
           for id in ${{ matrix.shard }}; do selected+=(--conversation "$id"); done
-          python scripts/detector_calibration.py \
+          python scripts/detector_calibration.py run \
             --suite "$SUITE" \
             --model "$MODEL_ID" \
             "${selected[@]}" \
             --output calibration/calibration.json
-          echo "::group::calibration.json"
-          cat calibration/calibration.json
+
+      # The shard output names the prompt per candidate, so it is not printed.
+      - name: Upload shard output
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: detector-calibration-${{ strategy.job-index }}
+          path: calibration/calibration.json
+
+  sample:
+    needs: calibrate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.11"
+
+      - name: Install Shadowseed
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Download shard outputs
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: detector-calibration-*
+          path: shards
+
+      # Blind sample in the clear; the key only base64-encoded, in its own group,
+      # so labelling can be done and recorded before the key is decoded.
+      - name: Draw the blind sample
+        run: |
+          python scripts/detector_calibration.py sample \
+            --input shards/*/calibration.json \
+            --items review_items.json --key review_key.json
+          echo "::group::review_items.json"
+          cat review_items.json
+          echo "::endgroup::"
+          echo "::group::review_key.b64"
+          base64 -w0 review_key.json
+          echo
           echo "::endgroup::"

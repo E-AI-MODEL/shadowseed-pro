@@ -18,7 +18,7 @@ The candidate prompt asks for "open points the answer depends on but does not se
 
 Measured per prompt: detections with no admitted candidate, explicit NONE, parsed and admitted candidates, example leaks.
 
-Usefulness: the admitted candidates of both prompts are mixed into one blind sample with the prompt hidden. Each candidate is rated against its question and draft answer as "useful gap", "not useful" or "unclear", with the same definition as the seed calibration (docs/research/seed-calibration.md). If one prompt has more than 60 admitted candidates, a seeded random 60 of them are rated.
+Usefulness: the admitted candidates of both prompts are mixed into one blind sample with the prompt hidden. Each candidate is rated against its question and draft answer as "useful gap", "not useful" or "unclear", with the same definition as the seed calibration (docs/research/seed-calibration.md). After all shards finish, `sample` merges them and draws per prompt a seeded random sample of at most 60 admitted candidates (seed 20261024). The mixed sample and the id-to-prompt key are written to separate files; the key is decoded only after all labels are recorded. Only recurrence uses the embedder in this run, so the session uses the lexical embedder.
 
 ## Decision rule (fixed before the run)
 

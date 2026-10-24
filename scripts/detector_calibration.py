@@ -8,13 +8,16 @@ its seeds enter the session. Per turn and per prompt the script records the
 raw output, the parsed candidates, which of them pass intake, and whether the
 turn produced no admitted candidate at all.
 
-The admitted candidates of both prompts are written to a blind review sample
-(``review_items``) with the prompt hidden behind an id; the key is stored
-separately so usefulness can be labelled without knowing the prompt.
+``sample`` merges the run outputs of all shards and draws, per prompt, a
+seeded random sample of at most ``--cap`` admitted candidates. The mixed sample
+is written with the prompt hidden behind an id; the id-to-prompt key goes to a
+separate file, so usefulness can be labelled without knowing the prompt.
 
 Usage:
-    python scripts/detector_calibration.py --suite benchmarks/evidence_efficacy/study-1-suite.json \\
+    python scripts/detector_calibration.py run --suite benchmarks/evidence_efficacy/study-1-suite.json \\
         --model qwen2.5:7b-instruct-q4_K_M --output calibration.json [--conversation EE01 ...]
+    python scripts/detector_calibration.py sample --input shard-*.json \\
+        --items review_items.json --key review_key.json [--cap 60] [--seed 20261024]
 """
 
 from __future__ import annotations
@@ -22,6 +25,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import random
 from pathlib import Path
 from typing import Any
 
@@ -84,7 +88,9 @@ def build_candidate_prompt(item: dict[str, Any], max_seeds: int) -> str:
         max_seeds=max_seeds,
         example_1=CANDIDATE_EXAMPLES[0],
         example_2=CANDIDATE_EXAMPLES[1],
-        conversation_context=(str(item.get("conversation_context") or "").strip() or "NONE"),
+        conversation_context=(
+            str(item.get("conversation_context") or "").strip() or "NONE"
+        ),
         question=str(item.get("question") or "").strip(),
         answer=str(item.get("text") or "").strip(),
     )
@@ -94,7 +100,9 @@ def _candidate_leak(seed: str) -> bool:
     tokens = _token_set(seed)
     if not tokens:
         return False
-    return any(len(tokens & ex) / len(tokens | ex) >= 0.7 for ex in _EXAMPLE_TOKENS if ex)
+    return any(
+        len(tokens & ex) / len(tokens | ex) >= 0.7 for ex in _EXAMPLE_TOKENS if ex
+    )
 
 
 def evaluate(raw: str, text: str, max_seeds: int, *, candidate: bool) -> dict[str, Any]:
@@ -155,7 +163,9 @@ def summarize(conversations: list[dict[str, Any]]) -> dict[str, Any]:
         summary[arm] = {
             "detections": len(turns),
             "empty_detections": sum(t[arm]["empty"] for t in turns),
-            "explicit_none": sum(bool(t[arm]["diagnostics"]["explicit_none"]) for t in turns),
+            "explicit_none": sum(
+                bool(t[arm]["diagnostics"]["explicit_none"]) for t in turns
+            ),
             "parsed": sum(len(t[arm]["parsed"]) for t in turns),
             "admitted": sum(len(t[arm]["admitted"]) for t in turns),
             "example_leaks": sum(len(t[arm]["example_leaks"]) for t in turns),
@@ -163,42 +173,46 @@ def summarize(conversations: list[dict[str, Any]]) -> dict[str, Any]:
     return summary
 
 
-def review_items(conversations: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], dict[str, str]]:
+def review_sample(
+    conversations: list[dict[str, Any]], *, cap: int, seed: int
+) -> tuple[list[dict[str, Any]], dict[str, str]]:
+    """Draw at most ``cap`` admitted candidates per prompt and mix them blind."""
+
+    rng = random.Random(seed)
     items, key = [], {}
-    for conversation in conversations:
-        for turn in conversation["turns"]:
-            for arm in ("product", "candidate"):
-                for seed in turn[arm]["admitted"]:
+    for arm in ("product", "candidate"):
+        pool = []
+        for conversation in conversations:
+            for turn in conversation["turns"]:
+                for seed_text in turn[arm]["admitted"]:
                     item_id = hashlib.sha256(
-                        f"{conversation['conversation_id']}|{turn['turn']}|{arm}|{seed}".encode()
+                        f"{conversation['conversation_id']}|{turn['turn']}|{arm}|{seed_text}".encode()
                     ).hexdigest()[:16]
-                    key[item_id] = arm
-                    items.append(
+                    pool.append(
                         {
                             "id": item_id,
                             "conversation_id": conversation["conversation_id"],
                             "turn": turn["turn"],
                             "question": turn["question"],
                             "answer": turn["answer"],
-                            "candidate": seed,
+                            "candidate": seed_text,
                         }
                     )
+        pool.sort(key=lambda item: item["id"])
+        chosen = rng.sample(pool, cap) if len(pool) > cap else pool
+        for item in chosen:
+            key[item["id"]] = arm
+        items.extend(chosen)
     items.sort(key=lambda item: hashlib.sha256(item["id"].encode()).hexdigest())
     return items, key
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--suite", required=True, type=Path)
-    parser.add_argument("--model", required=True)
-    parser.add_argument("--conversation", action="append", default=[])
-    parser.add_argument("--max-new-tokens", type=int, default=400)
-    parser.add_argument("--output", required=True, type=Path)
-    args = parser.parse_args(argv)
-
+def _run(args: argparse.Namespace) -> int:
     suite = json.loads(args.suite.read_text(encoding="utf-8"))
     conversations = [
-        c for c in suite["conversations"] if not args.conversation or c["id"] in args.conversation
+        c
+        for c in suite["conversations"]
+        if not args.conversation or c["id"] in args.conversation
     ]
     results = []
     for conversation in conversations:
@@ -207,6 +221,8 @@ def main(argv: list[str] | None = None) -> int:
             model_id=args.model,
             runtime_mode="live",
             recurrence_recognizer="embedding",
+            # Only recurrence uses the embedder; this run measures detection.
+            allow_toy_embedder=True,
         )
         # CPU runners can need longer than the product default per generation.
         for backend in (session.model, session.detector):
@@ -216,25 +232,58 @@ def main(argv: list[str] | None = None) -> int:
         results.append(run_conversation(conversation, session, args.max_new_tokens))
         print(f"{conversation['id']}: {summarize(results[-1:])}", flush=True)
 
-    items, key = review_items(results)
     payload = {
         "schema": "ssl-detector-calibration-v1",
         "model": args.model,
         "suite": str(args.suite),
         "candidate_prompt_id": CANDIDATE_ID,
-        "candidate_prompt_sha256": hashlib.sha256(CANDIDATE_PROMPT.encode()).hexdigest(),
+        "candidate_prompt_sha256": hashlib.sha256(
+            CANDIDATE_PROMPT.encode()
+        ).hexdigest(),
         "product_prompt_sha256": hashlib.sha256(
             build_detection_prompt("", variant="current_pair", question="q").encode()
         ).hexdigest(),
         "summary": summarize(results),
         "conversations": results,
-        "review_items": items,
-        "review_key": key,
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(payload["summary"]))
     return 0
+
+
+def _sample(args: argparse.Namespace) -> int:
+    conversations = []
+    for path in args.input:
+        conversations.extend(
+            json.loads(path.read_text(encoding="utf-8"))["conversations"]
+        )
+    items, key = review_sample(conversations, cap=args.cap, seed=args.seed)
+    args.items.write_text(
+        json.dumps({"items": items}, indent=2) + "\n", encoding="utf-8"
+    )
+    args.key.write_text(json.dumps({"key": key}, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps({"summary": summarize(conversations), "review_items": len(items)}))
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    commands = parser.add_subparsers(dest="command", required=True)
+    run = commands.add_parser("run")
+    run.add_argument("--suite", required=True, type=Path)
+    run.add_argument("--model", required=True)
+    run.add_argument("--conversation", action="append", default=[])
+    run.add_argument("--max-new-tokens", type=int, default=400)
+    run.add_argument("--output", required=True, type=Path)
+    sample = commands.add_parser("sample")
+    sample.add_argument("--input", required=True, type=Path, nargs="+")
+    sample.add_argument("--items", required=True, type=Path)
+    sample.add_argument("--key", required=True, type=Path)
+    sample.add_argument("--cap", type=int, default=60)
+    sample.add_argument("--seed", type=int, default=20261024)
+    args = parser.parse_args(argv)
+    return _run(args) if args.command == "run" else _sample(args)
 
 
 if __name__ == "__main__":
