@@ -39,8 +39,9 @@ A reviewer must be permitted to conclude **both F1 and F2 are merely conventiona
 | **C8 — Information provenance** | Who actually introduced the new possibility? | Author-defined case rules, device witness, model proposal, external source and human test decisions credited separately | **Stop** if an externally provided affordance is described as invented by model |
 | **C9 — Scope and evidence** | Are overclaims blocked? | No claim about internal latent absence, novel scientific fact, changed model weights or confirmed SSL advantage from the G0 cases | **Stop** if validation of toy equations is described as thesis validation |
 | **C10 — Held-out integrity** | Can future model tests avoid answer contamination? | Public illustrative key retained as provenance; *new* post-preregistration sealed cases and no tool/retrieval exposure are required for confirmatory run | **Stop** if GitHub examples are called confidential holdouts |
+| **C11 — Second-order dependence** | Does the first opportunity enable a **distinct later question/test**, not just one answer or first action? | T3 investigation has a new discriminating criterion; its dependence on candidate, T1 witness and T2 step can be tested separately, with strong matched ordinary models | **Stop** if the entire effect is only immediate diagnosis, a repeated toggle, or a chain of opportunities stipulated by the author |
 
-**Mandatory fail rule:** If **any** C0–C10 is fail or unknown in either family, **G0 is NOT PASSED**. Report all fail and unknown entries; do not compute an average that hides them. A reviewer may explicitly reject both case families.
+**Mandatory fail rule:** If **any** C0–C11 is fail or unknown in either family, **G0 is NOT PASSED**. Report all fail and unknown entries; do not compute an average that hides them. A reviewer may explicitly reject both case families.
 
 ## Independent review record (unfilled; do not invent scores)
 
@@ -48,10 +49,10 @@ A reviewer must be permitted to conclude **both F1 and F2 are merely conventiona
 |---|---|---|
 | R1 reviewer identity & institutional independence | **PENDING** | **PENDING** |
 | R1 date / commit reviewed | **PENDING** | **PENDING** |
-| R1 C0–C10 decisions and justifications | **NOT REVIEWED** | **NOT REVIEWED** |
+| R1 C0–C11 decisions and justifications | **NOT REVIEWED** | **NOT REVIEWED** |
 | R2 reviewer identity & independence | **PENDING** | **PENDING** |
 | R2 date / commit reviewed | **PENDING** | **PENDING** |
-| R2 C0–C10 decisions and justifications | **NOT REVIEWED** | **NOT REVIEWED** |
+| R2 C0–C11 decisions and justifications | **NOT REVIEWED** | **NOT REVIEWED** |
 | Reviewer disagreements and resolution evidence | **NOT AVAILABLE** | **NOT AVAILABLE** |
 | Requested case corrections | **NOT REVIEWED** | **NOT REVIEWED** |
 | Approved version hash of each T0 input and assessor key | **NOT FIXED** | **NOT FIXED** |
@@ -61,14 +62,14 @@ At least two reasoned **independent** reviews are needed before declaring **desi
 
 ## Acceptance and rejection
 
-**Accept G0 for *feasibility study design only*** when: both distinct families satisfy every C0–C10 with two independent reasoned approvals, disagreement is resolved transparently, no fatal answer leakage exists, and a new sequestered confirmatory dataset and pre-registration path are specified. G0 acceptance **does not** prove Q1, Q2, efficacy, or the usefulness of weightless memory; it authorizes designing a bounded model experiment.
+**Accept G0 for *feasibility study design only*** when: both distinct families satisfy every C0–C11 with two independent reasoned approvals, disagreement is resolved transparently, no fatal answer leakage exists, and a new sequestered confirmatory dataset and pre-registration path are specified. G0 acceptance **does not** prove Q1, Q2, efficacy, or the usefulness of weightless memory; it authorizes designing a bounded model experiment.
 
 **Reject G0** if either family collapses into generic troubleshooting, missing edge completion, simple device-permission revelation, a trivial axiom relaxation, or a direct restatement of the withheld answer. Replace the failing case with a genuinely different, predeclared construct rather than expanding arbitrary evaluator permissiveness.
 
 ## Additional stage after G0 — no shortcut
 
 - **Q1:** strong-model ordinary-generation selection distribution, matched alternate search, semantic relation-family judging; absence in samples ≠ model-internal impossibility.
-- **Q2:** independently validated new downstream investigability after candidate, with exact candidate + transformation ablations.
+- **Q2:** independently validated new downstream investigability (including a second-generation T3 test where meaningful) after candidate, with exact candidate + transformation ablations. An author-prescribed chain is not itself evidence of possibility-making.
 - **Coupling:** an *actual*, longitudinal, weightless-shadow process against matched ordinary-model deliberation, ordinary persistent notes and shuffled-candidate control.
 - **External validity:** new data, humans and tools credited to their actual role, with held-out tasks and replicated model tiers.
 
