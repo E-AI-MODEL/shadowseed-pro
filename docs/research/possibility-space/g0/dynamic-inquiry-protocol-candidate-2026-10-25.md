@@ -66,6 +66,8 @@ Mandatory conditions to advance beyond G0: an environment supports many admissib
 
 **G0 must fail** if the author's future question is written in the prompt/key, if the model is just given a new capability via tool access, if a new predicate counts as novelty by definition, if a strong matched model already generates the same query with no shadow, or if untrusted text becomes its own evidence.
 
+The version-specific [independent G0 v3 reviewer form](dynamic-inquiry-independent-review.md) is **unfilled**. It gives reviewers an explicit veto if a proposed dynamic environment is merely active learning, feature engineering, scripted follow-up questions, or an inadequately independent evaluator.
+
 ## Research decision
 
 - **v1 F1/F2:** stop as thesis tests; preserve historical controls.
