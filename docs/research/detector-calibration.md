@@ -87,7 +87,7 @@ Observations:
 
 - v0.8 is better than v0.7 (33% against 23%) and NONE now occurs, but two thirds of its points are still not useful. The useful ones again check a number or assumption in the answer: whether 1,250 euros a month is realistic after an income loss, whether the 7% index return is an average, the rate-limit values, whether the 30-day retention covers the data-change pattern.
 - Three candidates in the sample copy the template of a format example ("the 5% failure rate … older machines"). The exact-copy filter does not catch this mutated leak.
-- v0.6 gave the same 26% on both runs. On this model no prompt tried so far gets above a third.
+- v0.6 gave 23% in run 1 and 26% in run 2. On this model no prompt tried so far gets above a third.
 
 ## Conclusion after two runs
 
