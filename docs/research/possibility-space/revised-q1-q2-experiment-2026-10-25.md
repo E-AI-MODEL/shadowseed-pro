@@ -1,6 +1,6 @@
 # Shadowseed — corrected Q1/Q2 research route after the first live pilot
 
-> **Status:** revised exploratory research protocol; **not implemented**, not preregistered, and not evidence of efficacy.
+> **Status:** exploratory **amended research protocol (2026-10-25)**; not implemented, not preregistered, and not efficacy evidence. The [first-principles review](first-principles-reorientation-2026-10-25.md) corrects its earlier over-narrow claim: a new relation type is **one optional Q2 instance**, not the mandatory definition of a changing possibility space.
 > **Decision date:** 2026-10-25.
 > **Preserves:** [the foundational thesis](../possibility-space-thesis.md), [original discussion and corrections](conversation-record-2026-10-24.md), [course elimination](course-elimination-2026-10-24.md), [literature boundaries](literature-map-2026-10-24.md).
 > **Trigger for revision:** [PR #220](https://github.com/E-AI-MODEL/shadowseed-pro/pull/220), especially [24-call GPT-5 feasibility attempt](https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40136015917). The experiment was a *fixed-edge gap finding* assay with incomplete outputs. Preserve its raw observations; do not relabel it as either Q1/Q2 success or failure.
@@ -28,26 +28,25 @@ In the first 24-call GPT-5 run, **16/24 outputs completed as parseable JSON** an
 | Distinction | Operational meaning | What must not be claimed |
 |---|---|---|
 | **Q1 — selection vs exploratory access** | A distribution of ordinary responses is empirically sampled; a controlled procedure may access meaningful relational candidates that ordinary generation *in the measured budget* did not select | The model never knew, cannot generate, or contains an objectively empty representation |
-| **Q2 — frame/schema transformation** | A candidate changes the *rules for composing, typing, relating or describing further concepts*; a frozen independent checker can establish which **relation classes** were expressible under the old and new formal constraints | A newly connected edge within the old schema is transformation, or a mathematical softmax support changed |
-| **Coupling — intertemporal possibility formation** | A candidate originating from Q1 exploration is preserved *without knowledge authority*, and later enables a validated Q2 transformation and subsequent unprompted/unseen downstream relation classes | More text, more prompts, or labeling one prompt “shadow” demonstrates an SSL effect |
+| **Q2 — change in later investigability** | A candidate alters a working **interpretation, condition, meaning, dependency, admissibility rule, question or available experiment**; independent checks test its downstream effects | New predicates are required, or mere output changes establish fundamental new model capabilities |
+| **Coupling — intertemporal possibility formation** | A Q1-origin candidate is retained *without authority*, later enabling a genuinely new **question, distinction, test, relation or next action** under declared working conditions | Extra context, repetitions or a prompt labeled 'shadow' demonstrate an SSL effect |
 
 The observed **reachable possibility space** (under explicit rules, model, context and compute budget) is the initial operational target. A claim about model-internal mechanisms requires additional open-weight/logit/causal evidence. A claim about real-world knowledge needs external domain validation. Do not silently substitute either.
 
 ## Proposed experiment: discover a transformation, not a missing edge
 
-### Before any live model call — independent task design
+### Before any live model call — distinguish mechanisms rather than impose an ontology
 
-Construct **at least two unrelated constrained relational worlds** with independent validators. For each world, create:
-- A *before-state* with explicitly specified concept vocabulary `V0`, permissible relation **kinds** `R0`, composition constraints `C0`, and a checker that can enumerate or conservatively prove reachable relation types.
-- **Observations and anomalies** that permit several interpretations; do **not** explicitly provide the desired transformation, its label, or the held-out target relation to the model.
-- A small **bounded language of admissible transformations** `T` (e.g. introducing a conditioned relation, changing a typed operator's arity with independently justified consistency conditions, or defining a compositional relation that introduces a distinct consequence). The system must propose a transformation from the observations; the test author must not give it to the model.
-- A held-out **downstream challenge** where a transform may render **previously inexpressible or invalid relation classes** expressible and externally checkable. The challenge must not be a simple paraphrase of the enabling candidate or a path made valid by arbitrary rule weakening.
-- Independently validated *negative worlds* with anomalies for which no meaningful sanctioned transformation exists; a free-form “invent a rule for anything” answer must fail.
-- **Wrong-rule** controls, random valid transformations, exact-information-matched irrelevant candidates, and unchanged-rule controls. A rule whose mere relaxation guarantees “more links” counts as a trivial expansion and cannot meet the primary outcome.
+**G0 must not presuppose one ontology.** The [first-principles synthesis](first-principles-reorientation-2026-10-25.md) distinguishes generation support, observed selection, constructive expressibility, formal admissibility, and practical investigability. A **new relation kind** is optional, neither required nor automatically sufficient.
 
-The task designer must explicitly distinguish **intensional change** (new grammar/constraint for relations) from **extensional change** (additional links of an existing kind). Record the evaluator and challenge construction **before** seeing model outputs, use separately held-out worlds, and avoid hand-selecting only examples on which a shadow prompt succeeds.
+Develop at least **two independently adjudicable, qualitatively different families**, with positive, negative and tempting-invalid cases:
+- **F1 — Reframing with unchanged relation vocabulary.** Candidate alters a context condition, interpretive distinction, dependency or time assumption. A *newly testable comparison or question* is assessed against a predeclared frame and withheld follow-up. Do not score mere paraphrase, extra reasoning time, or explicit hinting.
+- **F2 — Formal change of constraints/composition.** Define a finite before-frame and consistent admissibility conditions. A candidate may propose a meaningful transformation of composition/rules, with independently checkable unseen consequences. Arbitrarily allowing every rule does not count; adding a new predicate alone does not count.
+- **F3 (later) — External, environment-dependent adjacent possible.** Candidate opens a previously unavailable investigation through controlled observations, tools or human collaboration. Attribute each actor and verify external outcomes independently.
 
-**Example of a permissible type of mechanism, not a validated case:** A system has relations that are timeless. Observations motivate a *temporally conditional* relationship with an independent consistency rule. A proposal introducing an event-conditioned operator can create downstream questions that were not expressible in the timeless schema. The independent checker must verify that the proposed operator is coherent under predeclared rules, not just accept new vocabulary because the model mentioned it. The specific operator must not be disclosed as a target in the model prompt.
+For each case explicitly register **which meaning of possible changes**, its before/after frame and the distinct dependent consequence. Independent evaluators must be fixed **before the model proposals**. Withhold the intended enabling move and downstream answer. Include ordinary additional reasoning, matched irrelevant candidate, candidate ablation, sham transformation, and no-opportunity controls.
+
+**G0 fails** if a static missing-edge test, trivial constraint loosening, or a larger count of answer variants would score as success. No model calls before G0 is inspectably satisfied.
 
 ### Stage Q1 — interrogate probability-oriented selection
 
@@ -59,16 +58,16 @@ The task designer must explicitly distinguish **intensional change** (new gramma
 
 **Q1 gate:** The strongest matched model baseline must fail to reach at least some independently meaningful **candidate relation families** in the fixed budget that the experimental procedure reaches reproducibly. Otherwise no incremental Q1 benefit has been shown. If this is observed only via prompt variations, attribute the gain to the **procedure**, not to a proven internal absence detector.
 
-### Stage Q2 — can a relation change what comes next?
+### Stage Q2 — can a possibility change what comes next?
 
-1. In a **separate observation window**, freeze the proposed enabling candidate and a no-transformation control. Keep the second-stage held-out challenge unseen until after candidate proposals have been committed.
-2. Let the system propose and explain a **relation-schema / conceptual-frame transformation**, not merely name two existing nodes to connect.
-3. Apply an **independent validator** to the proposed transformation and the downstream relation class. Check admissibility, nontriviality, novel structural expressibility relative to `V0/R0/C0`, and consistency under post-transform constraints.
-4. Verify the purported downstream relation type is **not expressible under the original schema**. Log any case where it is just a renamed existing relation, an obvious consequence of an added arbitrary rule, or an answer directly supplied by the observation.
-5. **Ablate the exact enabling candidate**; substitute a same-length irrelevant candidate and a random valid transformation; enforce equal context and inference budgets. Assess whether the downstream relation family genuinely depends on the candidate **and** on the proposed transformation.
-6. Report **separately**: new syntax, admissible new relation *kind*, new testable claim, and independently verified novel real-world fact. The experiment may establish one while leaving the others entirely unproven.
+1. Freeze the candidate's origin and a **no-change counterfactual** before exposing the future challenge.
+2. Allow a changed condition, interpretation, dependency, rule, meaningful question, relation kind, or action; **do not require newly named predicates**.
+3. Validate with case-specific independent evidence: in F1 an adjudicable new explanation/test; in F2 a consistent formal transformation and nontrivial previously unavailable consequence; in F3 external verification and actor provenance.
+4. Reject paraphrase, directly prompted answers, trivial rule relaxation, and a longer prompt alone; a meaningful newly *restricted* possibility set may be an advance too.
+5. Ablate **candidate and transformation separately** with matched context length, tool access, model calls and counterfactual controls. Hold later challenge fixed.
+6. Keep distinct fields for new expression, new meaningful distinction, formal new relation kind, new independently testable question, demonstrated external fact, and ablation effect; never compress them into an "expansion score".
 
-**Q2 gate:** The checker establishes an independently valid, *nontrivial change in relation classes* that causes the downstream effect, survives withheld tests, and is lost or predictably altered under candidate/transform ablation. An increased count of links does **not** satisfy the gate.
+**Q2 gate:** An **independently adjudicated, nontrivial change in downstream investigability** is causally dependent on the earlier candidate/transform, survives withheld tests, and is not reducible to extra context. A new predicate or extra graph path is not sufficient.
 
 ### Coupled stage — does a weightless shadow add anything?
 
@@ -84,7 +83,7 @@ Use at least five controlled arms with the **same base model** and matched total
 
 Each arm sees the same revealed future observations; **no arm gets another arm's prior answer for free**. Preserve candidate provenance, retain failures, and do not promote hypothetical seeds to production truth or action authority. D must implement an actual **cross-turn weightless state** in an isolated research harness before an SSL-specific claim is tested; the shipping Gate remains unchanged.
 
-**Coupled gate:** A relation independently assessed as meaningfully outside the *measured ordinary selection* at time `t0` is preserved without authority; at `t1` it causally enables a valid relation transformation and independently checkable downstream relation classes **more often than the strongest matched controls**, with successful exact-candidate ablation. This is an *operational* Q1+Q2 result, not proof of fundamentally changed fixed-model weights.
+**Coupled gate:** A candidate not seen in the **measured ordinary Q1 selection sample** at `t0` remains weightless; at `t1` it causally enables an independently checked later question, distinction, relation, test or action, **more often than strong matched controls**, with specific candidate ablation. This is a bounded behavioral/operational finding, not proof of previously zero-probability model outputs or changing model weights.
 
 ## Engineering/measurement requirements before first repeat
 
@@ -101,13 +100,13 @@ Each arm sees the same revealed future observations; **no arm gets another arm's
 
 | Gate | Pass requirement | If it fails |
 |---|---|---|
-| **G0 — Construct validity** | Two independent worlds, genuinely different relation kinds, withheld checks, negative controls and verified nontrivial transformations | **Stop.** Do not make API calls. Redesign tasks |
+| **G0 — Construct validity** | Two **different mechanisms of possibility-making** (F1 meaningful reframing and F2 formal transformation), independent withheld consequences, negative and sham controls, and no trivial rule-relaxation wins | **Stop.** No model/API calls until these constructs are independently assessable |
 | **G1 — Q1 observability** | Repeated ordinary-generation selection measured, alternatives controlled for budget and independent relation identity | Only behavioral comparison allowed, no “latent absence” claim |
-| **G2 — Q2 validity** | Independent proof/verification of transformed relation kinds; cause-specific downstream ablation | The result is only search, prompting, or graph completion |
+| **G2 — Q2 validity** | Independent check of a nontrivial changed downstream **investigability** (question, distinction, relation or intervention) with candidate and transform ablations | Only prompting, search, rule relaxation, paraphrase or graph completion |
 | **G3 — Coupled increment** | Actual weightless, longitudinal D arm outperforms strongest matched baseline; E/ablation separates candidate influence | Do not claim a unique SSL contribution |
 | **G4 — Replication** | Held-out families, model-capability tiers, independently reviewed candidate relevance and registered exclusions | Preliminary feasibility only; no ADR or production changes |
 
-**Research decision:** Return to the original sources and construct a test that can distinguish a **change in relational possibility-making** from merely finding a missing existing connection. Do not choose an anti-embedding architecture, a new seed schema, relaxed Gate, or an Accepted ADR yet.
+**Research decision (amended):** First distinguish competing explanatory mechanisms H0–H5 and several meanings of *possible*; test **selection Q1** and multiple **future possibility-making Q2** pathways. Do not choose anti-embedding geometry, new seed schemas, relaxed Gate, or an Accepted ADR. G0 precedes any implementation or further paid run.
 
 ## Provenance / future reading order
 
@@ -116,5 +115,7 @@ Each arm sees the same revealed future observations; **no arm gets another arm's
 3. [Relevant theoretical and empirical studies](literature-map-2026-10-24.md).
 4. [Earlier proposed experiment, preserved as original plan](first-discriminating-experiment.md).
 5. [Live pilot PR and retained negative/invalid outcomes](https://github.com/E-AI-MODEL/shadowseed-pro/pull/220).
+6. [First-principles inquiry and competing explanations](first-principles-reorientation-2026-10-25.md).
+7. [Source-to-claim audit of the underlying science](source-claim-audit-2026-10-25.md).
 
 **No new model experiment or concept-transformational validator was executed to create this revision.**
