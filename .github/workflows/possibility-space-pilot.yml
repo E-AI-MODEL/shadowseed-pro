@@ -1,5 +1,8 @@
 name: Research - Possibility space first discriminating pilot
 
+# Environment secrets are only accessible to jobs bound to that environment.
+# Manual dispatch selects the environment explicitly. A push can run the model
+# only if the repository variable POSSIBILITY_PILOT_ENVIRONMENT is set.
 on:
   push:
     branches:
@@ -8,6 +11,11 @@ on:
       - experiments/possibility_space/**
       - .github/workflows/possibility-space-pilot.yml
   workflow_dispatch:
+    inputs:
+      github_environment:
+        description: "Existing GitHub Environment containing OPENAI_API_KEY"
+        type: environment
+        required: true
 
 permissions:
   contents: read
@@ -17,24 +25,54 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  pilot:
+  offline-oracle:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
-    env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    timeout-minutes: 10
     steps:
-      - name: Check out the exact commit
+      - name: Check out exact commit
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Python 3.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: '3.12'
-      - name: Offline contract and negative controls
+      - name: Run independent oracle and negative controls
         working-directory: experiments/possibility_space
         run: |
           python -m unittest -v test_pilot
           python pilot.py selftest --output ../../pilot-artifacts/oracle-selftest.json
-      - name: Bounded strong-model pilot, if a repository secret exists
+      - name: Upload independent oracle test results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: possibility-oracle-${{ github.run_id }}
+          path: pilot-artifacts/oracle-selftest.json
+          if-no-files-found: warn
+
+  strong-model:
+    # Never spend API budget on push unless a repo variable names the environment.
+    if: ${{ github.event_name == 'workflow_dispatch' || vars.POSSIBILITY_PILOT_ENVIRONMENT != '' }}
+    needs: offline-oracle
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment:
+      name: ${{ inputs.github_environment || vars.POSSIBILITY_PILOT_ENVIRONMENT }}
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - name: Check out exact commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Check selected Environment secret without displaying its value
+        shell: bash
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::The chosen GitHub Environment has no accessible OPENAI_API_KEY secret."
+            exit 1
+          fi
+      - name: Bounded GPT-5 exploratory pilot (at most 24 API calls)
         run: |
           python experiments/possibility_space/pilot.py run \
             --cases experiments/possibility_space/first_pilot_cases.json \
@@ -44,29 +82,22 @@ jobs:
             --max-output-tokens 900 \
             --max-calls 24 \
             --output pilot-artifacts/model-pilot.json
-      - name: Report actual status without leaking any credentials
-        if: always()
+      - name: Confirm model result is complete
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-          root = Path('pilot-artifacts')
-          for name in ('oracle-selftest.json', 'model-pilot.json'):
-              p = root/name
-              if p.exists():
-                  data = json.loads(p.read_text())
-                  status = data.get('status')
-                  calls = data.get('calls', data.get('model_calls', 0))
-                  print(f'{name}: status={status}, model_calls={calls}')
-                  if status == 'blocked_no_api_key':
-                      print('::warning::Model pilot not run: repository-level OPENAI_API_KEY secret not available')
-                  elif status in ('incomplete_live_error', 'completed_calls_with_incomplete_or_unparseable_output'):
-                      print(f'::warning::Model pilot incomplete: {status}')
+          result = json.loads(Path("pilot-artifacts/model-pilot.json").read_text(encoding="utf-8"))
+          status = result.get("status")
+          calls = result.get("calls", 0)
+          print("model-pilot status:", status, "model calls:", calls)
+          if status != "complete_exploratory_live_pilot":
+              raise SystemExit("Model pilot incomplete; inspect captured artifact")
           PY
-      - name: Upload results without modifying source or main
+      - name: Upload raw results, including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: possibility-space-pilot-${{ github.run_id }}
-          path: pilot-artifacts/
+          name: possibility-model-${{ github.run_id }}
+          path: pilot-artifacts/model-pilot.json
           if-no-files-found: warn
