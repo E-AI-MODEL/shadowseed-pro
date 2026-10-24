@@ -54,6 +54,18 @@ The runner cannot establish source truth. The researcher/operator remains the tr
 
 A failed predeclared selector, blocked Gate decision, point-of-use denial, or absence of a later relevant turn remains visible in the opportunity audit. The harness does not change policy or fabricate a candidate to force an A/B denominator.
 
+## Separate fundamental research program: possibility formation
+
+Shadowseed Pro has a **distinct, unproven fundamental research question** about using the probability-oriented operation of language models to investigate meaningful possibilities outside ordinary generation **and** whether the formation of a possibility changes what can subsequently be conceived or investigated. Its exact original Dutch wording is preserved in the [foundational thesis](possibility-space-thesis.md), not replaced by an answer-completeness metric.
+
+The [first-principles reorientation](possibility-space/first-principles-reorientation-2026-10-25.md) identifies several competing mechanisms rather than selecting a solution. The [source-to-claim audit](possibility-space/source-claim-audit-2026-10-25.md) separates SSL's original hypotheses from external evidence. The [revised Q1/Q2 protocol](possibility-space/revised-q1-q2-experiment-2026-10-25.md) requires independent construct checks before paid model tests.
+
+**Observed so far:** a 24-call GPT-5 first feasibility run found 16 parseable and 8 incomplete responses, but its fixed-edge task was not a valid test of the fundamental question. The failed trial is preserved under [research PR #220](https://github.com/E-AI-MODEL/shadowseed-pro/pull/220). Neither **Q1** (underselected meaningful possibilities) nor **Q2** (causally changed later investigability) has been established by that run.
+
+**Research boundary:** A new relation type is not necessary to show a change of meaningful possibilities; an omitted edge, more generated variants, favorable review, or convincing model self-description does not prove such a change. The pending **G0** task is to independently specify at least two different mechanisms of future possibility formation, with negative cases, withheld consequences, matched capable-model controls, and candidate ablation. No model-run success, accepted ADR, product claim or safety-rule change follows from a conceptual proposal.
+
+This is a **separate horizon from the existing evidence-backed answer-efficacy studies and the local production-readiness work**. Keep all three status and evidence chains independent.
+
 ## Claims not supported yet
 
 - General answer-quality improvement across open-ended tasks.
@@ -62,19 +74,23 @@ A failed predeclared selector, blocked Gate decision, point-of-use denial, or ab
 - Calibration between seed weight and factual correctness.
 - Cross-domain, cross-model, or cross-lingual generalization of candidate quality.
 - A general internal neural signal for missing context.
+- Verified access to meaningful LLM possibilities that ordinary probability-oriented generation did not select, beyond strong matched generation/search baselines.
+- Demonstrated causal emergence of genuinely new downstream investigable possibilities, or evidence that weightless cross-turn memory contributes beyond ordinary notes and extra model effort.
 - Safety against all prompt-injection, evidence-poisoning, or seed-spam attacks.
 - Hostile-network or high-impact production readiness.
 - General efficacy from the existence of the runner alone; real-model results and independent review are still required.
 
 ## Next evidence work
 
-The highest-value follow-up is empirical rather than architectural:
+For the **existing product's candidate-quality and evidence-backed answer-efficacy program**, the highest-value follow-up is empirical rather than architectural:
 
 1. complete independent review of the existing 43 Qwen candidate items;
 2. preregister evidence-efficacy suites with genuine externally reviewable support and later relevance opportunities;
 3. execute the same frozen protocol across at least two meaningful model tiers while pinning model and embedding provenance;
 4. blind-review only surfaced A/B pairs and report null/unmatched/blocked opportunities alongside positive comparisons;
 5. decide whether candidate generation, prompts, thresholds, or product direction need changes only after those results are available.
+
+For the **separate fundamental possibility-formation program**, the next deliverable is G0 construct validation for two distinct possibility-making mechanisms. No further paid model run or production implementation follows automatically from this documentation.
 
 Issue #63 remains the natural home for high-end capability/evidence follow-up. Candidate-quality review is research work, not a hidden prerequisite for the production-local release-assurance sequence.
 
