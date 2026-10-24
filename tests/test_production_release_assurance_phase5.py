@@ -107,7 +107,7 @@ def test_release_runbook_keeps_native_signing_claims_explicitly_bounded() -> Non
     assert "macos_first_launch_helper=true" in runbook
     assert "Apple Developer ID signing and notarization are **not claimed**" in runbook
     assert "Windows Authenticode signing is also not currently claimed" in runbook
-    assert "at least 24 hours" in runbook
+    assert "There is no minimum waiting period" in runbook
     assert "#95" in runbook
     assert "#97" in runbook
 

@@ -172,6 +172,6 @@ Do not expose this preview directly to an untrusted network.
 
 ## Claim boundary
 
-Version 0.12.4 is the current Research Preview release candidate and production-local assurance candidate; published `v0.12.1` is not eligible for production-local promotion. Packaging, licensing, tester observations, support-dataset aggregation, release hardening and the existence of an efficacy runner do not establish general answer-quality benefit, semantic truth, hostile-network production security or high-impact deployment readiness. The `production-ready/local` claim remains gated on exact protected-main release evidence and the unchanged-candidate soak defined by the production acceptance contract.
+Version 0.12.4 is the current Research Preview release candidate and production-local assurance candidate; published `v0.12.1` is not eligible for production-local promotion. Packaging, licensing, tester observations, support-dataset aggregation, release hardening and the existence of an efficacy runner do not establish general answer-quality benefit, semantic truth, hostile-network production security or high-impact deployment readiness. The `production-ready/local` claim remains gated on exact protected-main release evidence and the recorded use cycle on the published release defined by the production acceptance contract.
 
 The scientific/authority constraints remain in the canonical runtime. Historical evaluation sessions, benchmark artifacts and compatibility surfaces remain research/provenance material rather than product prerequisites.
