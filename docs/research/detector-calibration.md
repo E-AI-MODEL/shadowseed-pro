@@ -56,3 +56,14 @@ What the labels show:
 - Truncated candidates ("Thermal Performance:", "User Notification: The draft does not") come from both prompts.
 - The useful ones name a concrete assumption or open number in the answer: whether the 24-hour reset-token lifetime fits, whether the 30% Dutch tax rate holds, the per-tree sequestration figure, hot holding of chili at a party.
 - In absolute terms the candidate yields about 14 times more seeds at the same share, so roughly 110 useful and 370 not useful or unclear over 96 turns, against 8 and 27 for v0.6.
+
+## Revision: candidate v0.8 (fixed before run 2)
+
+Changes against v0.7, each aimed at a pattern in the run-1 labels:
+
+- each point must be something that, once settled, could change what the answer recommends or concludes, and should name a specific assumption, number, case or distinction in the answer;
+- general background about the user is excluded unless the recommendation clearly depends on it;
+- at most three points instead of five (parsed with the same cap), and NONE is stated as an ordinary outcome instead of "answer NONE only when…";
+- the format examples are tied to a claim in an answer; the run-1 example "Which budget limit the user is working within" invited the generic requests.
+
+The design and the decision rule stay the same, including the cap of 60 rated candidates per prompt. Run 2 uses the same suite and the same rater as run 1, so a pass is weaker evidence than it would be on fresh conversations. If v0.8 passes, the product change is checked once more on conversations outside this suite before release.

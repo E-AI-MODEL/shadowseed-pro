@@ -39,31 +39,38 @@ from shadowseed.detection.model_detector import (
 )
 from shadowseed.intake import is_atomic_seed
 
-CANDIDATE_ID = "detector_current_pair_candidate_v0.7"
+CANDIDATE_ID = "detector_current_pair_candidate_v0.8"
+
+# Run 1 (v0.7) rated 23% useful: it filled every slot and mostly asked for
+# generic facts about the user. v0.8 ties each point to the answer, allows
+# fewer points and makes NONE an ordinary outcome.
+CANDIDATE_MAX_POINTS = 3
 
 CANDIDATE_EXAMPLES = (
-    "Whether the deadline already includes the review period.",
-    "Which budget limit the user is working within.",
+    "Whether the two-week deadline in the answer already includes the review period.",
+    "Whether the 5% failure rate the answer assumes also holds for older machines.",
 )
 
 CANDIDATE_PROMPT = """
-You read one user question and the draft answer to it. Note what is still open:
-points the answer depends on but does not settle.
+You read one user question and the draft answer to it. Note what the answer
+leaves open: points that, once settled, could change what the answer
+recommends or concludes.
 
-Look for:
-- an assumption the answer makes without checking it;
-- a case or condition the answer does not cover;
-- a number, threshold or choice it leaves unspecified;
-- information about the user's situation that the answer needs but was not given;
-- a distinction the answer blurs.
+A good point names something specific in the answer:
+- an assumption it makes without checking it;
+- a number, threshold or choice it states or leaves unspecified;
+- a case or condition it does not cover;
+- a distinction it blurs.
 
-Most practical answers leave at least one such point open. Answer NONE only
-when the answer fully settles the question.
+Do not list general background about the user (goals, preferences, budget,
+location, experience) unless the answer's recommendation clearly depends on
+it. Do not list topics the answer could have added more detail on.
 
-Write at most {max_seeds} open points, one short sentence per numbered line, in
-the same language as the question. One open point per line. Do not answer it,
-do not explain why it matters, and do not invent facts, names or numbers. Do
-not repeat a point that the earlier conversation already settled.
+Write at most {max_points} open points, each one complete short sentence on its
+own numbered line, in the same language as the question. Do not answer them,
+do not explain why they matter, and do not invent facts, names or numbers. Do
+not repeat a point that the earlier conversation already settled. If nothing
+open would change the answer, return exactly: NONE.
 
 Format example (different topic):
 1. {example_1}
@@ -86,7 +93,7 @@ _EXAMPLE_TOKENS = tuple(_token_set(example) for example in CANDIDATE_EXAMPLES)
 
 def build_candidate_prompt(item: dict[str, Any], max_seeds: int) -> str:
     return CANDIDATE_PROMPT.format(
-        max_seeds=max_seeds,
+        max_points=min(max_seeds, CANDIDATE_MAX_POINTS),
         example_1=CANDIDATE_EXAMPLES[0],
         example_2=CANDIDATE_EXAMPLES[1],
         conversation_context=(
@@ -144,7 +151,12 @@ def run_conversation(
                 "question": str(item.get("question") or ""),
                 "answer": text,
                 "product": evaluate(product_raw, text, max_seeds, candidate=False),
-                "candidate": evaluate(candidate_raw, text, max_seeds, candidate=True),
+                "candidate": evaluate(
+                    candidate_raw,
+                    text,
+                    min(max_seeds, CANDIDATE_MAX_POINTS),
+                    candidate=True,
+                ),
             }
         )
         return seeds
@@ -246,7 +258,9 @@ def _run(args: argparse.Namespace) -> int:
         "candidate_prompt_id": CANDIDATE_ID,
         # Template and examples together: both change every rendered prompt.
         "candidate_prompt_sha256": hashlib.sha256(
-            json.dumps([CANDIDATE_PROMPT, CANDIDATE_EXAMPLES]).encode()
+            json.dumps(
+                [CANDIDATE_PROMPT, CANDIDATE_EXAMPLES, CANDIDATE_MAX_POINTS]
+            ).encode()
         ).hexdigest(),
         "product_prompt_sha256": hashlib.sha256(
             build_detection_prompt("", variant="current_pair", question="q").encode()
