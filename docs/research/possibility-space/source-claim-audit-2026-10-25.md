@@ -66,7 +66,7 @@
 
 ### S05 — The canonical/current Pro safety decision
 
-**Sources:** [ADR-001](../architecture/adr/ADR-001-validation-gate-authority.md), [ADR-002](../architecture/adr/ADR-002-epistemic-seed-contract.md), and [ADR-012](../architecture/adr/ADR-012-model-recurrence-recognition.md).
+**Sources:** [ADR-001](../../architecture/adr/ADR-001-validation-gate-authority.md), [ADR-002](../../architecture/adr/ADR-002-epistemic-seed-contract.md), and [ADR-012](../../architecture/adr/ADR-012-model-recurrence-recognition.md).
 
 **Source says:** A seed may be an atomic investigable gap, doubt, missing relation, contradiction or relevant what-if; it is born without authority. Only the Gate changes authority, with an additional point-of-use influence decision. Recurrence is an **observation**, not independent evidence. Recognizer calibration contained both cross-turn false merges and bounded model-based judgments.
 
