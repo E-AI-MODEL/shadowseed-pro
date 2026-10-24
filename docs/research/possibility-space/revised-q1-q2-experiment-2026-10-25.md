@@ -48,6 +48,8 @@ For each case explicitly register **which meaning of possible changes**, its bef
 
 **G0 fails** if a static missing-edge test, trivial constraint loosening, or a larger count of answer variants would score as success. No model calls before G0 is inspectably satisfied.
 
+**Current G0 candidate packet (2026-10-25):** [two case families, input envelopes, author counterfactual key and independent reviewer rubric](g0/README.md) have been drafted. They have an additional **T3 second-generation** test: the first possibility must enable a distinct later investigation, not merely an immediate diagnosis or action. The [blocking independent review](g0/g0-independent-review.md) is still **empty**. These cases are *not* approved, are publicly documented (not sealed model holdouts), and must be replaced if independent reviewers conclude they amount to ordinary troubleshooting or granted operator permissions. No model tests are authorized by their existence.
+
 ### Stage Q1 — interrogate probability-oriented selection
 
 1. Fix a **strong model snapshot**, input text, output shape, decoding parameters, inference budget, model calls, and temperature. Record these in an immutable run manifest.
