@@ -435,7 +435,9 @@ anonymized material when real personal data is not needed.
 the Python package installed you can use:
 
 - `shadowseed workspace info` — show where the data is and how much there is;
-- `shadowseed workspace backup` — make a consistent copy of the database;
+- `shadowseed workspace backup --output <file>` — make a consistent copy of the
+  database. Always give a file **outside** `.shadowseed`: without `--output` the
+  copy goes to `.shadowseed/exports`, and deleting the workspace deletes it too;
 - `shadowseed workspace restore <file>` — restore a copy;
 - `shadowseed workspace delete --yes` — delete the complete workspace;
 - `shadowseed export-workbench-report <session>` — export one conversation as a
@@ -447,7 +449,8 @@ The `<session>` id is shown under **Technical details and raw data** →
 **Session**.
 
 A backup contains the same content as the original and must be protected in
-the same way. Deleting the workspace does not delete backups or exports you made.
+the same way. Deleting the workspace removes everything inside `.shadowseed`,
+including `.shadowseed/exports`; copies you saved elsewhere are kept.
 
 ## 14. Limitations
 
@@ -797,8 +800,9 @@ The full threat model is in `docs/architecture/production-threat-model.md`.
 - **Integrity.** An audit ledger with protected integrity material records
   authority events. Never "repair" a workspace by deleting its integrity
   material; restore a verified backup instead.
-- **Backups.** Use `shadowseed workspace backup`; keep backups as safe as the
-  original.
+- **Backups.** Use `shadowseed workspace backup --output <file>` with a file
+  outside the workspace; the default location inside `.shadowseed/exports` is
+  removed with the workspace. Keep backups as safe as the original.
 - **Containers.** `Dockerfile.workbench` is for development. Publish the port on
   loopback only: `-p 127.0.0.1:7860:7860`.
 - **Diagnostics.** `shadowseed doctor` separates usable state, integrity problems

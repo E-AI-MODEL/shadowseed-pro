@@ -454,7 +454,10 @@ verzonnen of geanonimiseerd materiaal als echte persoonsgegevens niet nodig zijn
 het Python-pakket geïnstalleerd gebruik je:
 
 - `shadowseed workspace info` — laat zien waar de gegevens staan en hoeveel het is;
-- `shadowseed workspace backup` — maakt een consistente kopie van de database;
+- `shadowseed workspace backup --output <bestand>` — maakt een consistente kopie
+  van de database. Geef altijd een bestand **buiten** `.shadowseed` op: zonder
+  `--output` komt de kopie in `.shadowseed/exports`, en die verdwijnt als je de
+  werkmap verwijdert;
 - `shadowseed workspace restore <bestand>` — zet een kopie terug;
 - `shadowseed workspace delete --yes` — verwijdert de hele werkmap;
 - `shadowseed export-workbench-report <sessie>` — exporteert één gesprek als
@@ -465,8 +468,8 @@ het Python-pakket geïnstalleerd gebruik je:
 De `<sessie>`-id staat onder **Technical details and raw data** → **Session**.
 
 Een back-up bevat dezelfde inhoud als het origineel en moet je net zo goed
-beschermen. Het verwijderen van de werkmap verwijdert geen back-ups of exports
-die je hebt gemaakt.
+beschermen. Het verwijderen van de werkmap wist alles in `.shadowseed`, ook
+`.shadowseed/exports`; kopieën die je elders hebt bewaard, blijven bestaan.
 
 ## 14. Beperkingen
 
@@ -832,8 +835,9 @@ Het volledige dreigingsmodel staat in
   zeggenschapsgebeurtenissen vast. "Repareer" een werkmap nooit door dat
   integriteitsmateriaal te verwijderen; zet in plaats daarvan een geverifieerde
   back-up terug.
-- **Back-ups.** Gebruik `shadowseed workspace backup`; bewaar back-ups even
-  veilig als het origineel.
+- **Back-ups.** Gebruik `shadowseed workspace backup --output <bestand>` met een
+  bestand buiten de werkmap; de standaardplek in `.shadowseed/exports` verdwijnt
+  samen met de werkmap. Bewaar back-ups even veilig als het origineel.
 - **Containers.** `Dockerfile.workbench` is bedoeld voor ontwikkeling. Publiceer
   de poort alleen op loopback: `-p 127.0.0.1:7860:7860`.
 - **Diagnose.** `shadowseed doctor` onderscheidt bruikbare toestand,
