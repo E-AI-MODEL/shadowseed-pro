@@ -254,6 +254,8 @@ def _run(args: argparse.Namespace) -> int:
     payload = {
         "schema": "ssl-detector-calibration-v1",
         "model": args.model,
+        "model_digest": args.model_digest,
+        "ollama_version": args.ollama_version,
         "suite": str(args.suite),
         "candidate_prompt_id": CANDIDATE_ID,
         # Template and examples together: both change every rendered prompt.
@@ -276,16 +278,30 @@ def _run(args: argparse.Namespace) -> int:
 
 def _sample(args: argparse.Namespace) -> int:
     conversations = []
+    digests = set()
     for path in args.input:
-        conversations.extend(
-            json.loads(path.read_text(encoding="utf-8"))["conversations"]
+        shard = json.loads(path.read_text(encoding="utf-8"))
+        digests.add(shard.get("model_digest"))
+        conversations.extend(shard["conversations"])
+    # Shards pull the model independently; mixed artifacts are not one run.
+    if len(digests) != 1:
+        raise SystemExit(
+            f"shards used different model digests: {sorted(map(str, digests))}"
         )
     items, key = review_sample(conversations, cap=args.cap, seed=args.seed)
     args.items.write_text(
         json.dumps({"items": items}, indent=2) + "\n", encoding="utf-8"
     )
     args.key.write_text(json.dumps({"key": key}, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"summary": summarize(conversations), "review_items": len(items)}))
+    print(
+        json.dumps(
+            {
+                "summary": summarize(conversations),
+                "review_items": len(items),
+                "model_digest": digests.pop(),
+            }
+        )
+    )
     return 0
 
 
@@ -295,6 +311,8 @@ def main(argv: list[str] | None = None) -> int:
     run = commands.add_parser("run")
     run.add_argument("--suite", required=True, type=Path)
     run.add_argument("--model", required=True)
+    run.add_argument("--model-digest", default=None)
+    run.add_argument("--ollama-version", default=None)
     run.add_argument("--conversation", action="append", default=[])
     run.add_argument("--output", required=True, type=Path)
     sample = commands.add_parser("sample")

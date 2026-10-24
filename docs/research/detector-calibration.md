@@ -70,7 +70,7 @@ The design and the decision rule stay the same, including the cap of 60 rated ca
 
 ## Results, run 2: candidate v0.8 (2026-10-24)
 
-Same model, suite and cap. Run: https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40081609202. Data: `benchmarks/detector_calibration/run2_candidate_v0.8/`. Labels hashed before the key was decoded (`9b53cece…`).
+Same model, suite and cap. All eight shards of both runs used Ollama model digest `845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e` (read from each job's `/api/tags` output; the Ollama version was not logged). Run: https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40081609202. Data: `benchmarks/detector_calibration/run2_candidate_v0.8/`. Labels hashed before the key was decoded (`9b53cece…`).
 
 | | v0.6 (product) | candidate v0.8 |
 |---|---|---|
@@ -91,6 +91,6 @@ Observations:
 
 ## Conclusion after two runs
 
-On Qwen 2.5 7B the detector prompt is a lever for how many seeds appear, not for how good they are: a third useful at best, against 85% for v0.6 on GPT-5. Further prompt rounds on the same suite and rater risk fitting the prompt to these labels. The product prompt stays v0.6. The next lever is the model: the same paired design on a larger local model (for example a 14B model), and the release notes for 0.12.4 say that 7B models produce few seeds and that about a quarter of those are useful.
+On Qwen 2.5 7B the detector prompt is a lever for how many seeds appear, not for how good they are: a third useful at best, against 85% for v0.6 on GPT-5. Further prompt rounds on the same suite and rater risk fitting the prompt to these labels. The product prompt stays v0.6. The next lever is the model: the same paired design on a larger local model (for example a 14B model). The limitation is recorded in the Unreleased section of `CHANGELOG.md`, so the next release notes carry it.
 
 The workflow is now dispatch-only, so later pull requests do not start a 2.5-hour run.

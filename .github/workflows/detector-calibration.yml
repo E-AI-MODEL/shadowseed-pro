@@ -49,7 +49,10 @@ jobs:
             sleep 2
           done
           ollama pull "$MODEL_ID"
-          curl -fsS http://127.0.0.1:11434/api/tags
+          echo "OLLAMA_VERSION=$(ollama --version 2>&1 | tr '\n' ' ')" >> "$GITHUB_ENV"
+          digest="$(curl -fsS http://127.0.0.1:11434/api/tags | python -c "import json,os,sys; m=[x for x in json.load(sys.stdin)['models'] if os.environ['MODEL_ID'] in (x.get('name'), x.get('model'))]; print(m[0]['digest'])")"
+          test -n "$digest"
+          echo "MODEL_DIGEST=$digest" >> "$GITHUB_ENV"
 
       - name: Run paired detection
         run: |
@@ -58,6 +61,8 @@ jobs:
           python scripts/detector_calibration.py run \
             --suite "$SUITE" \
             --model "$MODEL_ID" \
+            --model-digest "$MODEL_DIGEST" \
+            --ollama-version "$OLLAMA_VERSION" \
             "${selected[@]}" \
             --output calibration/calibration.json
 

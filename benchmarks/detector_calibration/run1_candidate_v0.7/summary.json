@@ -44,5 +44,8 @@
     "rule_2_useful_majority": false,
     "rule_3_within_15pp": true,
     "outcome": "revise_and_remeasure"
-  }
+  },
+  "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+  "model_digest_source": "Ollama /api/tags output in each calibrate job log (all four shards)",
+  "ollama_version": null
 }
