@@ -1,6 +1,8 @@
-# Shadowseed possibility-space feasibility pilot (2026-10-24)
+# Archived Shadowseed fixed-edge feasibility pilot v0 (2026-10-24)
 
 **Research prototype only.** This is not the shipping Shadowseed runtime, does not create actual Shadow Seeds, does not modify the Validation Gate, and has **not** proven the fundamental possibility-space thesis.
+
+> **RETIRED AS A TEST OF THE TWO-CLAUSE THESIS (2026-10-25):** The 24-call GPT-5 run [#40136015917](https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40136015917) was completed with 8/24 unparseable outputs; the missing-edge task did not measure new *relation kinds* or representational possibility transformation. This directory is retained for independent reproduction of the **offline** oracle and historical failure analysis, not a current Q1/Q2 experimental arm. See the [revised research protocol](../../docs/research/possibility-space/revised-q1-q2-experiment-2026-10-25.md) on the documentation base branch (PR #219) and [the full run report](../../docs/research/possibility-space/first-live-pilot-result-2026-10-24.md).
 
 The authoritative two-clause research question and related literature are stored in `docs/research/possibility-space/` (PR #219). This pilot is a *first assay and instrumentation test*, not a preregistered confirmatory evaluation.
 
@@ -30,17 +32,11 @@ python pilot.py selftest --output /tmp/possibility-oracle.json
 
 The self-test result is explicitly marked `model_calls=0` and `this_is_not_model_evidence=true`. It tests evaluator mechanics and negative controls, **not** the Q1/Q2 claims.
 
-## Bounded live test (only when credentials already exist)
+## Historical GPT-5 run — do not repeat as the new test
 
-```bash
-python experiments/possibility_space/pilot.py run \
-  --case-ids ARCHIVE LOGISTICS NEGATIVE \
-  --model gpt-5 --reasoning-effort low \
-  --max-output-tokens 900 --max-calls 24 \
-  --output /tmp/possibility-model-pilot.json
-```
+The originally bounded GPT-5 fixed-edge test used the GitHub Environment `OpenAI key` and its secret `OPENAI_KEY`, injected as the Python environment variable `OPENAI_API_KEY`. The real run made 24 calls; 16 responses were parseable, and 8 were incomplete. No credential value was exposed.
 
-The local command requires the process environment variable `OPENAI_API_KEY`. **Never paste, print or commit its value.** In GitHub Actions, the workflow reads the **GitHub secret named `OPENAI_KEY`** and maps it to the Python environment variable `OPENAI_API_KEY`. These names are deliberately different. When the secret is stored under a GitHub **Environment**, the live job must be bound to that exact Environment, selected through the manual workflow input `github_environment`, or (for push-driven runs) through the repository variable `POSSIBILITY_PILOT_ENVIRONMENT`. The screenshot of `OPENAI_KEY` shows the secret name, not the Environment name. Automatic push runs never make paid model calls unless an Environment has been explicitly configured. No credentials are set or restored by this code, no conversations are uploaded, and no production authority changes. The action uploads only the synthetic evidence bundle. Maximum 24 calls and 900 generated tokens per call, including reasoning. Actual model and token usage are recorded in raw output.
+**The associated GitHub Actions workflow is now manual/offline-only**, and no longer reads the API secret or makes paid model calls. Historical behavior can be inspected from the original Git revision and immutable run artifacts; repeat model calls only as a separately approved **plumbing reproduction**, not as evidence of the revised research thesis. The current protocol does not authorize repeating this run merely by increasing token budgets.
 
 ## Major limits and next research gate
 
@@ -52,4 +48,4 @@ The local command requires the process environment variable `OPENAI_API_KEY`. **
 6. A "shadow" prompt is not a deployed Shadowseed system. No answer-quality superiority or actual system efficacy can be attributed to SSL from this pilot.
 7. Error, blocked, incomplete, null and negative results must be recorded transparently, not concealed as missing opportunities.
 
-**Exit condition:** Move to a preregistered, held-out relational-transformational study only if this harness can reject invalid and zero-utility proposals and can reliably capture parseable strong-model results. The first study must use causal candidate ablation, equal context exposure, stronger controls, model capacity tiers and independent evaluations. If ordinary generation already solves these examples, that is evidence against *incremental value on these examples* and a reason to avoid celebrating a trivial benchmark.
+**Historical finding:** The v0 fixed-edge oracle passed its controls, but the live measurement failed both response-completeness and **construct-validity** checks against the protected question. The next study requires Q1 probability-conditioned selection, Q2 genuinely changed **relation types/constraints**, same-model/cost-matched baselines, a cross-turn **weightless** candidate arm, prospective independent verification, and candidate ablation. This repository directory should **not** be extended into that study without completing its G0 construct-validity gate.
