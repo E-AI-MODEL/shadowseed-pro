@@ -26,6 +26,7 @@ import argparse
 import hashlib
 import json
 import random
+import secrets
 from pathlib import Path
 from typing import Any
 
@@ -141,7 +142,7 @@ def run_conversation(
         records.append(
             {
                 "question": str(item.get("question") or ""),
-                "answer": text[:3000],
+                "answer": text,
                 "product": evaluate(product_raw, text, max_seeds, candidate=False),
                 "candidate": evaluate(candidate_raw, text, max_seeds, candidate=True),
             }
@@ -178,34 +179,38 @@ def summarize(conversations: list[dict[str, Any]]) -> dict[str, Any]:
 def review_sample(
     conversations: list[dict[str, Any]], *, cap: int, seed: int
 ) -> tuple[list[dict[str, Any]], dict[str, str]]:
-    """Draw at most ``cap`` admitted candidates per prompt and mix them blind."""
+    """Draw at most ``cap`` admitted candidates per prompt and mix them blind.
+
+    Which candidates are drawn is reproducible from ``seed``. The review ids
+    are random and carry no trace of the prompt, so the key is the only link.
+    """
 
     rng = random.Random(seed)
-    items, key = [], {}
+    drawn: list[tuple[str, dict[str, Any]]] = []
     for arm in ("product", "candidate"):
-        pool = []
-        for conversation in conversations:
-            for turn in conversation["turns"]:
-                for seed_text in turn[arm]["admitted"]:
-                    item_id = hashlib.sha256(
-                        f"{conversation['conversation_id']}|{turn['turn']}|{arm}|{seed_text}".encode()
-                    ).hexdigest()[:16]
-                    pool.append(
-                        {
-                            "id": item_id,
-                            "conversation_id": conversation["conversation_id"],
-                            "turn": turn["turn"],
-                            "question": turn["question"],
-                            "answer": turn["answer"],
-                            "candidate": seed_text,
-                        }
-                    )
-        pool.sort(key=lambda item: item["id"])
+        pool = [
+            {
+                "conversation_id": conversation["conversation_id"],
+                "turn": turn["turn"],
+                "question": turn["question"],
+                "answer": turn["answer"],
+                "candidate": seed_text,
+            }
+            for conversation in conversations
+            for turn in conversation["turns"]
+            for seed_text in turn[arm]["admitted"]
+        ]
+        pool.sort(
+            key=lambda item: (item["conversation_id"], item["turn"], item["candidate"])
+        )
         chosen = rng.sample(pool, cap) if len(pool) > cap else pool
-        for item in chosen:
-            key[item["id"]] = arm
-        items.extend(chosen)
-    items.sort(key=lambda item: hashlib.sha256(item["id"].encode()).hexdigest())
+        drawn.extend((arm, item) for item in chosen)
+    items, key = [], {}
+    for arm, item in drawn:
+        item_id = secrets.token_hex(8)
+        key[item_id] = arm
+        items.append({"id": item_id, **item})
+    items.sort(key=lambda item: item["id"])
     return items, key
 
 
@@ -239,8 +244,9 @@ def _run(args: argparse.Namespace) -> int:
         "model": args.model,
         "suite": str(args.suite),
         "candidate_prompt_id": CANDIDATE_ID,
+        # Template and examples together: both change every rendered prompt.
         "candidate_prompt_sha256": hashlib.sha256(
-            CANDIDATE_PROMPT.encode()
+            json.dumps([CANDIDATE_PROMPT, CANDIDATE_EXAMPLES]).encode()
         ).hexdigest(),
         "product_prompt_sha256": hashlib.sha256(
             build_detection_prompt("", variant="current_pair", question="q").encode()

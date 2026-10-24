@@ -83,5 +83,8 @@ def test_sample_caps_each_prompt_separately() -> None:
     arms = [key[item["id"]] for item in items]
     assert arms.count("product") == 40
     assert arms.count("candidate") == 60
-    again, _ = calibration.review_sample([conversation], cap=60, seed=7)
-    assert [item["id"] for item in again] == [item["id"] for item in items]
+    again, again_key = calibration.review_sample([conversation], cap=60, seed=7)
+    drawn = sorted((key[item["id"]], item["candidate"]) for item in items)
+    assert sorted((again_key[item["id"]], item["candidate"]) for item in again) == drawn
+    # Ids are random, so they cannot be recomputed from the visible fields.
+    assert {item["id"] for item in again}.isdisjoint(item["id"] for item in items)
