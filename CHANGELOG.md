@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Manual: a professional manual in English and Dutch (`docs/manual/`), in six
+  parts for users, testers, researchers, developers and specialists, with
+  screenshots of the web application and PDF editions built by
+  `scripts/build_manual_pdf.py`.
+
 ## 0.12.4 - English interface and model-recognized recurrence
 
 - Known limitation: with local 7B models (measured with Qwen 2.5 7B Q4_K_M) the
