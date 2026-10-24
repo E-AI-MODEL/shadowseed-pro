@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: "Visser"
     given-names: "H."
-version: "0.12.3"
+version: "0.12.4"
 repository-code: "https://github.com/E-AI-MODEL/shadowseed-pro"
 keywords:
   - "language-model memory"
