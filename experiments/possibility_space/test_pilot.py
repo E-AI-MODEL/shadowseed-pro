@@ -5,6 +5,7 @@ from pathlib import Path
 from pilot import (
     ARMS, _json_object, delta, extract_pairs, first_prompt, legal_bridge,
     read_cases, reachable_pairs, score_first, score_second, second_prompt, selftest,
+    valid_pair_array,
 )
 
 CASES = read_cases(Path(__file__).with_name("first_pilot_cases.json"))
@@ -72,6 +73,62 @@ class TestPossibilityPilot(unittest.TestCase):
         self.assertEqual(_json_object("not JSON"), {})
         self.assertEqual(extract_pairs({"from": "x"}, 2), [])
         self.assertEqual(extract_pairs([["x", "y"], ["x", "y"], "injection"], 2), [("x", "y")])
+
+    def test_schema_invalid_json_is_not_valid_abstention(self):
+        from argparse import Namespace
+        from unittest.mock import patch
+        from pilot import pilot
+
+        self.assertTrue(valid_pair_array({"bridges": []}, "bridges", 2))
+        self.assertTrue(valid_pair_array({"new_paths": [["source", "sink"]]}, "new_paths", 12))
+        for payload in (
+            {},
+            {"bridges": None},
+            {"bridges": "NONE"},
+            {"bridges": {"from": "x", "to": "y"}},
+            {"bridges": [["one"]]},
+            {"bridges": [["one", 2]]},
+            {"bridges": [["x", "y"], ["a", "b"], ["c", "d"]]},
+        ):
+            self.assertFalse(valid_pair_array(payload, "bridges", 2), payload)
+
+        # No network call: simulate a provider returning valid JSON with a missing required array.
+        args = Namespace(model="gpt-5", reasoning_effort="low", max_output_tokens=900, max_calls=24)
+        mock_output = {"output_text": '{"why":"no candidates"}', "status": "completed", "usage": {}}
+        with patch.dict("os.environ", {"OPENAI_API_KEY": "test-dummy"}), patch(
+            "pilot.responses_call", return_value=mock_output
+        ):
+            result = pilot(CASES, args, Path(__file__).with_name("first_pilot_cases.json"))
+        self.assertEqual(result["status"], "completed_calls_with_incomplete_or_unparseable_output")
+        self.assertEqual(result["calls"], 24)
+        for case in result["cases"]:
+            for arm in case["arms"].values():
+                self.assertFalse(arm["first_parse_success"])
+                self.assertFalse(arm["second_parse_success"])
+                self.assertIsNone(arm["first_score"])
+                self.assertIsNone(arm["second_score"])
+            self.assertIsNone(case["D_outperforms_A_on_oracle_pairs"])
+
+    def test_case_loader_rejects_compatible_existing_cycle(self):
+        import copy
+        import json
+        import tempfile
+
+        case = copy.deepcopy(CASES[0])
+        for name in ("cycle_a", "cycle_b"):
+            case["nodes"].append({
+                "id": name, "kind": "process", "consumes": "loop",
+                "produces": "loop", "zone": "east",
+            })
+        case["existing_edges"].extend([["cycle_a", "cycle_b"], ["cycle_b", "cycle_a"]])
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = Path(directory) / "bad-case.json"
+            fixture.write_text(json.dumps({
+                "schema": "shadowseed-possibility-pilot-cases-v0",
+                "cases": [case],
+            }), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "cyclic base graph"):
+                read_cases(fixture)
 
     def test_retired_live_run_needs_explicit_paid_opt_in(self):
         from unittest.mock import patch
