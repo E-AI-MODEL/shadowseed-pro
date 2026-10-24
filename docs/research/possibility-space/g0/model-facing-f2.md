@@ -1,5 +1,7 @@
-# G0 F2 — T0 model input envelope (DRAFT, NOT APPROVED)
+# G0 F2 — T0 model input envelope (DRAFT, NOT APPROVED) — RETIRED AS THESIS TEST
 
+> **Research decision 2026-10-25:** This v1 model-facing envelope has been **retired as a primary Q1/Q2 thesis test** by [internal critical audit](internal-adversarial-audit-2026-10-25.md). Do not use it to run the new paid model experiment. It is retained only for historical calibration and failure analysis.
+>
 > **Operational rule:** At T0, only the text between the horizontal delimiters below can be used as model input, after an independent case audit. No assessor key, future certificate, evaluation rule, report title or linked file accompanies it. This is public exploratory material, **not sealed data**.
 
 ---
