@@ -15,6 +15,12 @@
 7. **[F3/F4 challenger designs](g0/redesign-v2-candidate-mechanisms-2026-10-25.md)** and **[formal self-check + blockers](g0/v2-review-and-selfcheck-2026-10-25.md)** — order-composition and jointly informative observations have checkable nulls but may merely test well-known algebra and feature engineering; **not approved or run**.
 8. **[Current G0 method proposal: model-originated dynamic inquiry](g0/dynamic-inquiry-protocol-candidate-2026-10-25.md)** — move from scripted answer chains to bounded environments accepting many **model-proposed prospective questions**, independently checked against held-out consequences, with strong model/ordinary notes/weightless memory and exact-candidate-ablation controls. **No approved evaluator, independent review, preregistration or new model calls yet.**
 
+## Adapter framing and readiness checks (still unapproved)
+
+- **[LLM-adapter positioning](adapter-not-model-improver-2026-10-25.md)** — existing external memory/validation interface versus an *unproven* possibility-inquiry process. The host model and its credentials stay separate from the adapter; this is not an accepted ADR or a model-fine-tuning method.
+- **[External environment feasibility](g0/external-benchmark-feasibility-2026-10-25.md)** — primary-source screen of DiscoveryWorld, DiscoverPhysics, WorldTest, AgentIdeaBench, Into the Unknown and ScienceWorld, with an explicit *not yet verified at code/API level* boundary.
+- **[Matched-model adapter contract](g0/adapter-evaluation-contract-2026-10-25.md)** — exact A/B/C/D/E controls, genuine weightless cross-turn persistence, fair total budgets, independent later-question validation and candidate ablation. Research proposal only, NOT G0 approval or permission to run paid models.
+
 ## Historical reasoning, decisions and failed trial — keep intact
 
 - **[Conversation reconstruction and user corrections](conversation-record-2026-10-24.md)** — chronology of the recoverable discussion; **not** a literal full transcript.
