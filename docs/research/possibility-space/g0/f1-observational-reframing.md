@@ -57,6 +57,20 @@ A selected informative input sequence at T1 lets a researcher measure `x[t]` and
 
 **Counterfactual ablation:** Remove the precise earlier "two potential locations" candidate; replace it with an equally long unrelated one (e.g., "the display may be aesthetically misleading"); and permit an ordinary no-shadow model an equivalent opportunity to design a test from the same T0/T1 data. If the new discriminating test is equally generated and used without the candidate, **candidate-specific mechanism value has not been shown**.
 
+## T3: second-generation inquiry, beyond the immediate diagnosis
+
+**Risk under examination:** Merely naming P or L after a new measurement is a **first-order diagnostic gain**. It does not yet demonstrate that the first candidate changed the *future space* of investigations.
+
+After the T1 direct measurement and T2 diagnosis, freeze a *new, still-hidden prospective command profile* and ask for a **causally specific next experiment**:
+
+- **If P (actual process delay):** Test whether anticipatory command scheduling can make a **known** future target coincide with the physical plant state. Predict why this requires advance knowledge, and why merely relabeling archived timestamps cannot remove a genuine physical delay.
+- **If L (recording delay):** Test whether timestamp correction makes archived `r` contemporaneous with a trusted physical-state meter, while keeping live physical commands unaltered. Predict why anticipatory commands would create a physical mismatch here.
+- **Wrong intervention controls:** Claim that retimestamping fixes P's physical lag, or advance commands in L as if its physical plant were delayed. Independently reject them on a fresh sequence.
+
+This T3 layer is a **candidate downstream investigation**, not automatically a "new possibility" finding. It earns no Q2 credit merely because the author provided future intervention categories. The model must specify a distinct causal prediction *before* seeing the held-out outcome; an independent checker tests that prediction. If strong-model ordinary deliberation can formulate the same progression with equal resources, attribute no special value to SSL.
+
+**T3 stop rule:** If T2 diagnosis followed by the two obvious textbook repairs is all this case offers, or the supposed new inquiry follows immediately from supplied sensor information with no enabling candidate effect, independent reviewers may reject F1 as too shallow to represent possibility-space change.
+
 ## Independent technical judgment (not a human novelty verdict)
 
 A test is *discriminating* only if it names a **non-derived** measurement/intervention and contains at least one predeclared observation for which P and L make different predictions. A full audit records:
