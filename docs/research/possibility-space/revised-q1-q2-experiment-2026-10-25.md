@@ -48,7 +48,9 @@ For each case explicitly register **which meaning of possible changes**, its bef
 
 **G0 fails** if a static missing-edge test, trivial constraint loosening, or a larger count of answer variants would score as success. No model calls before G0 is inspectably satisfied.
 
-**Current G0 candidate packet (2026-10-25):** [two case families, input envelopes, author counterfactual key and independent reviewer rubric](g0/README.md) have been drafted. They have an additional **T3 second-generation** test: the first possibility must enable a distinct later investigation, not merely an immediate diagnosis or action. The [blocking independent review](g0/g0-independent-review.md) is still **empty**. These cases are *not* approved, are publicly documented (not sealed model holdouts), and must be replaced if independent reviewers conclude they amount to ordinary troubleshooting or granted operator permissions. No model tests are authorized by their existence.
+**Current G0 decision (critical update on 2026-10-25):** The initial [F1/F2 concrete toy cases](g0/README.md) are **retired as the primary thesis test** following an [internal author-side audit](g0/internal-adversarial-audit-2026-10-25.md), although their mathematical checks and negative fixtures remain useful controls. The [F3/F4 alternatives](g0/v2-review-and-selfcheck-2026-10-25.md) may only be standard compositional inference/feature engineering and are likewise not validated. The [dynamic model-originated inquiry protocol (v3)](g0/dynamic-inquiry-protocol-candidate-2026-10-25.md) is now the **candidate direction**, with an [unfilled independent reviewer/veto record](g0/dynamic-inquiry-independent-review.md).
+
+**Distinction:** The F1/F2/F3 labels in the *conceptual categories above* are theoretical routes, not endorsements of the similarly named, retired concrete toy cases. A new case must genuinely test an independently checked, prospectively generated subsequent question, not simply scripted diagnosis, operator permissions or a pre-authored T3. **G0 remains NOT PASSED; no model tests are authorized.**
 
 ### Stage Q1 — interrogate probability-oriented selection
 
@@ -102,7 +104,7 @@ Each arm sees the same revealed future observations; **no arm gets another arm's
 
 | Gate | Pass requirement | If it fails |
 |---|---|---|
-| **G0 — Construct validity** | Two **different mechanisms of possibility-making** (F1 meaningful reframing and F2 formal transformation), independent withheld consequences, negative and sham controls, and no trivial rule-relaxation wins | **Stop.** No model/API calls until these constructs are independently assessable |
+| **G0 — Construct validity** | An **independently checkable dynamic inquiry environment** in two distinct mechanism families, with genuinely model-originated questions, prospective withheld consequences, invalid/null/sham controls, a strong ordinary active-learning comparator, an independent general evaluator and a veto for scripted follow-ups; accepted by independent reviewers | **Stop.** v1 cases are retired, v2 examples are challengers only, and v3 remains unapproved. No model/API calls until the constructs are defensible |
 | **G1 — Q1 observability** | Repeated ordinary-generation selection measured, alternatives controlled for budget and independent relation identity | Only behavioral comparison allowed, no “latent absence” claim |
 | **G2 — Q2 validity** | Independent check of a nontrivial changed downstream **investigability** (question, distinction, relation or intervention) with candidate and transform ablations | Only prompting, search, rule relaxation, paraphrase or graph completion |
 | **G3 — Coupled increment** | Actual weightless, longitudinal D arm outperforms strongest matched baseline; E/ablation separates candidate influence | Do not claim a unique SSL contribution |
