@@ -27,7 +27,7 @@ feedback, export, and standalone packaging.
 > [!NOTE]
 > Repository states and releases that include [`LICENSE`](LICENSE) are source-available under **PolyForm Noncommercial License 1.0.0**. Noncommercial research, experiment, testing, modification, and distribution are permitted according to those terms. Commercial use requires separate permission. This is not an OSI open-source license. Historical artifacts keep the rights terms distributed with those versions; the new license is not retroactive.
 
-See [the 0.12.4 release notes](docs/workbench/release-0.12.4.md) for the changes since the current download and the remaining local acceptance checks.
+The [manual](docs/manual/README.md) (English and Dutch, also as PDF) explains installation, daily use, the SSL model, development and security. See [the 0.12.4 release notes](docs/workbench/release-0.12.4.md) for the changes since the current download and the remaining local acceptance checks.
 
 ## Quick start
 
