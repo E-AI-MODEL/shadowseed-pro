@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Known limitation: with local 7B models (measured with Qwen 2.5 7B Q4_K_M) the
+  detector finds a seed in about one turn in eight, and about a quarter of
+  those seeds are useful. Two candidate prompts raised the number of seeds but
+  not their quality, so the detector prompt stays unchanged. See
+  `docs/research/detector-calibration.md`.
+- Security: setuptools 84.1.0 in the build closure (GHSA-xmj3-9gf7-h52w).
 - Recurrence recognition v2: the model also judges whether new notes from the
   same turn name the same gap, instead of the 0.60 embedding threshold, which
   merged up to eleven different gaps with `embeddinggemma` in the live probe.

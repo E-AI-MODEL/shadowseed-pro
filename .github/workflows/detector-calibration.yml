@@ -1,0 +1,112 @@
+name: Research - Detector calibration
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: detector-calibration-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MODEL_ID: qwen2.5:7b-instruct-q4_K_M
+  SUITE: benchmarks/evidence_efficacy/study-1-suite.json
+
+jobs:
+  calibrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - EE01 EE05 EE09
+          - EE02 EE06 EE10
+          - EE03 EE07 EE11
+          - EE04 EE08 EE12
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.11"
+
+      - name: Install Shadowseed
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Install and start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve > /tmp/ollama.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then break; fi
+            sleep 2
+          done
+          ollama pull "$MODEL_ID"
+          echo "OLLAMA_VERSION=$(ollama --version 2>&1 | tr '\n' ' ')" >> "$GITHUB_ENV"
+          digest="$(curl -fsS http://127.0.0.1:11434/api/tags | python -c "import json,os,sys; m=[x for x in json.load(sys.stdin)['models'] if os.environ['MODEL_ID'] in (x.get('name'), x.get('model'))]; print(m[0]['digest'])")"
+          test -n "$digest"
+          echo "MODEL_DIGEST=$digest" >> "$GITHUB_ENV"
+
+      - name: Run paired detection
+        run: |
+          selected=()
+          for id in ${{ matrix.shard }}; do selected+=(--conversation "$id"); done
+          python scripts/detector_calibration.py run \
+            --suite "$SUITE" \
+            --model "$MODEL_ID" \
+            --model-digest "$MODEL_DIGEST" \
+            --ollama-version "$OLLAMA_VERSION" \
+            "${selected[@]}" \
+            --output calibration/calibration.json
+
+      # The shard output names the prompt per candidate, so it is not printed.
+      - name: Upload shard output
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: detector-calibration-${{ strategy.job-index }}
+          path: calibration/calibration.json
+
+  sample:
+    needs: calibrate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.11"
+
+      - name: Install Shadowseed
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Download shard outputs
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: detector-calibration-*
+          path: shards
+
+      # Blind sample in the clear; the key only base64-encoded, in its own group,
+      # so labelling can be done and recorded before the key is decoded.
+      - name: Draw the blind sample
+        run: |
+          python scripts/detector_calibration.py sample \
+            --input shards/*/calibration.json \
+            --items review_items.json --key review_key.json
+          echo "::group::review_items.json"
+          cat review_items.json
+          echo "::endgroup::"
+          echo "::group::review_key.b64"
+          base64 -w0 review_key.json
+          echo
+          echo "::endgroup::"

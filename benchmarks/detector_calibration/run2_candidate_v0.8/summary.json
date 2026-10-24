@@ -1,0 +1,51 @@
+{
+  "schema": "ssl-detector-calibration-result-v1",
+  "model": "qwen2.5:7b-instruct-q4_K_M",
+  "suite": "benchmarks/evidence_efficacy/study-1-suite.json",
+  "workflow_run": "https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40081609202",
+  "head_sha": "4631cb19f76d02f633a6e0ea343dcc219b4acd65",
+  "detection": {
+    "product": {
+      "detections": 96,
+      "empty_detections": 82,
+      "explicit_none": 57,
+      "parsed": 58,
+      "admitted": 42,
+      "example_leaks": 0
+    },
+    "candidate": {
+      "detections": 96,
+      "empty_detections": 10,
+      "explicit_none": 10,
+      "parsed": 258,
+      "admitted": 258,
+      "example_leaks": 0
+    }
+  },
+  "usefulness": {
+    "product": {
+      "not_useful": 27,
+      "unclear": 4,
+      "useful": 11,
+      "rated": 42,
+      "useful_share": 0.262
+    },
+    "candidate": {
+      "not_useful": 32,
+      "useful": 20,
+      "unclear": 8,
+      "rated": 60,
+      "useful_share": 0.333
+    }
+  },
+  "labels_sha256_before_key": "9b53cecea713ec3cfd146dbdc618373d4a8dbec65ea78b016bf035203adf039d",
+  "decision": {
+    "rule_1_nonempty_half": true,
+    "rule_2_useful_majority": false,
+    "rule_3_within_15pp": true,
+    "outcome": "not_adopted"
+  },
+  "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+  "model_digest_source": "Ollama /api/tags output in each calibrate job log (all four shards)",
+  "ollama_version": null
+}
