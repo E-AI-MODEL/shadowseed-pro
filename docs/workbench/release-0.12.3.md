@@ -1,8 +1,7 @@
 # Shadowseed Web 0.12.3
 
-Release notes for the Research Preview candidate. These notes do not claim that
-v0.12.3 has already been published. The latest published archive remains
-v0.12.2 until the exact-SHA release workflow completes successfully.
+Release notes for the Research Preview. v0.12.3 was published on 2026-10-23
+from source `c6715a5`; Production Release Assurance passed for the tag.
 
 ## Distribution change
 

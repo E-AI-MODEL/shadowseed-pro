@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.12.4 - English interface and model-recognized recurrence
+
 - Known limitation: with local 7B models (measured with Qwen 2.5 7B Q4_K_M) the
   detector finds a seed in about one turn in eight, and about a quarter of
   those seeds are useful. Two candidate prompts raised the number of seeds but

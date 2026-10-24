@@ -1,13 +1,13 @@
 # Shadowseed Web and legacy Workbench
 
-The 0.12.3 Research Preview candidate packages the existing browser client
+The 0.12.4 Research Preview candidate packages the existing browser client
 with its local, loopback-only Python backend. It uses the canonical Shadow Seed
 runtime. The old Gradio Workbench stays in the repository for opt-in
-development/research, but **is not part of the audited 0.12.3 download**
+development/research, but **is not part of the audited 0.12.4 download**
 because the legacy Gradio dependency pins a vulnerable Pillow version.
-See [release notes](release-0.12.3.md) and
+See [release notes](release-0.12.4.md) and
 [security issue #200](https://github.com/E-AI-MODEL/shadowseed-pro/issues/200).
-Until an exact-SHA release completes, v0.12.2 remains the latest published
+Until an exact-SHA release completes, v0.12.3 remains the latest published
 download. No claim of production-ready/local follows from a successful
 Research Preview build.
 
@@ -146,7 +146,7 @@ static assets. The command is `shadowseed-web`. To run from source, build
 `apps/web` and synchronize assets with `scripts/sync_web_assets.py`.
 
 The previous Gradio interface remains explicitly opt-in and **not approved
-as a secure downloadable 0.12.3 bundle** while issue #200 is unresolved.
+as a secure downloadable 0.12.4 bundle** while issue #200 is unresolved.
 
 ```bash
 python -m pip install "shadowseed[workbench]"
@@ -161,17 +161,17 @@ python -m pip install "shadowseed[workbench,models]"
 The optional container route remains available for development/testing:
 
 ```bash
-docker build -f Dockerfile.workbench -t shadowseed-workbench:0.12.3 .
+docker build -f Dockerfile.workbench -t shadowseed-workbench:0.12.4 .
 docker run --rm \
   -p 127.0.0.1:7860:7860 \
   -v shadowseed-data:/data \
-  shadowseed-workbench:0.12.3
+  shadowseed-workbench:0.12.4
 ```
 
 Do not expose this preview directly to an untrusted network.
 
 ## Claim boundary
 
-Version 0.12.3 is the current Research Preview release candidate and production-local assurance candidate; published `v0.12.1` is not eligible for production-local promotion. Packaging, licensing, tester observations, support-dataset aggregation, release hardening and the existence of an efficacy runner do not establish general answer-quality benefit, semantic truth, hostile-network production security or high-impact deployment readiness. The `production-ready/local` claim remains gated on exact protected-main release evidence and the unchanged-candidate soak defined by the production acceptance contract.
+Version 0.12.4 is the current Research Preview release candidate and production-local assurance candidate; published `v0.12.1` is not eligible for production-local promotion. Packaging, licensing, tester observations, support-dataset aggregation, release hardening and the existence of an efficacy runner do not establish general answer-quality benefit, semantic truth, hostile-network production security or high-impact deployment readiness. The `production-ready/local` claim remains gated on exact protected-main release evidence and the unchanged-candidate soak defined by the production acceptance contract.
 
 The scientific/authority constraints remain in the canonical runtime. Historical evaluation sessions, benchmark artifacts and compatibility surfaces remain research/provenance material rather than product prerequisites.

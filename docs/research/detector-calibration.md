@@ -51,7 +51,7 @@ Decision rule: 1 holds, 2 fails (23% is not more than half), 3 holds (0.4 points
 
 What the labels show:
 
-- Both prompts reach the same useful share on this model. With GPT-5 the v0.6 prompt reached 85% (seed calibration). On a 7B model the bottleneck is not only the prompt.
+- Both prompts reach the same useful share on this model. With GPT-5 and GPT-6.1-sol the v0.6 prompt reached 51 useful in 60 (seed calibration). On a 7B model the bottleneck is not only the prompt.
 - The candidate almost always returns exactly five points. Most of the not-useful ones are generic requests for the user's situation ("the user's current portfolio", "the desired colour of the chili") that would not change the answer.
 - Truncated candidates ("Thermal Performance:", "User Notification: The draft does not") come from both prompts.
 - The useful ones name a concrete assumption or open number in the answer: whether the 24-hour reset-token lifetime fits, whether the 30% Dutch tax rate holds, the per-tree sequestration figure, hot holding of chili at a party.
@@ -91,6 +91,6 @@ Observations:
 
 ## Conclusion after two runs
 
-On Qwen 2.5 7B the detector prompt is a lever for how many seeds appear, not for how good they are: a third useful at best, against 85% for v0.6 on GPT-5. Further prompt rounds on the same suite and rater risk fitting the prompt to these labels. The product prompt stays v0.6. The next lever is the model: the same paired design on a larger local model (for example a 14B model). The limitation is recorded in the Unreleased section of `CHANGELOG.md`, so the next release notes carry it.
+On Qwen 2.5 7B the detector prompt is a lever for how many seeds appear, not for how good they are: a third useful at best, against 51 of 60 for v0.6 on GPT-5 and GPT-6.1-sol. Further prompt rounds on the same suite and rater risk fitting the prompt to these labels. The product prompt stays v0.6. The next lever is the model: the same paired design on a larger local model (for example a 14B model). The limitation is recorded in the Unreleased section of `CHANGELOG.md`, so the next release notes carry it.
 
 The workflow is now dispatch-only, so later pull requests do not start a 2.5-hour run.
