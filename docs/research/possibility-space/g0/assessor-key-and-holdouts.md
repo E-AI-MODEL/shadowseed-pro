@@ -119,6 +119,14 @@ Known T0 operations `flip_A` and `flip_B` toggle exactly one latch. Every such m
 - N/U/Z lack evidence/availability for a safe live repeated transition. Claims of ongoing safety or a life-cycle guarantee must fail.
 - **Nontriviality check:** A reviewer must decide whether this is an actually different inquiry opened by the first possibility, **or merely an obvious repetition**. If only repetition, **reject F2 at G0**.
 
+### Optional T3 counterfactual fixtures (illustrative, not sealed)
+
+- **F1 prospective target H2:** `d=[1,0,1,1,0,1]`, revealed only *after* the T2 source-of-delay diagnosis. Under P, `x[t]=u[t-2]`, so matching a known future `d[t]` requires setting `u[t-2]=d[t]` with at least two-tick look-ahead. Under L, `x[t]=u[t]`, so command `u[t]=d[t]` matches the physical target immediately, while the archived `r[t]` is simply delayed. Relabelling timestamps in P cannot change physical `x`. An equal-resource ordinary model may infer all of these steps; do not count them as Shadowseed-specific.
+- **F2 stable-device counterfactual H3a:** after one valid independently certified `00⇒11⇒00` event pair, an *isolated* rig records three further cycles, all consisting solely of indivisible `00⇒11` and `11⇒00` events. This supports only **observed bounded** repeatability, not lifetime reliability.
+- **F2 failing-device counterfactual H3b:** after the *same initial* independently certified event pair, an isolated rig records the next attempted transition as microsteps `00→10→11`. The first unequal microstep makes **repeated operation unsafe** despite the previously good event. A proposal that assumes permanent safety from the first certificate is falsified.
+- **F2 no-opportunity H3c:** without a certified pair operation, no repeatability trial may be carried out on the live protected system; a proposal to proceed based on coarse endpoints is invalid.
+- **Important:** These are **post hoc test-design exemplars disclosed in a public repository**, not real observations. A later confirmatory model test must use new, securely held-out variants; the author cannot count a constructed target/witness as a model's own discovery.
+
 **Across both families:** Q2 evidence would require a candidate-specific difference in *what later becomes investigable*, not simply a predetermined two-step chain inserted by the task author. Keep ordinary deliberate-model and notes baselines equally informed and credit the author and external witness for their roles. G0 checks whether this could in principle be measured; it does **not** show that it happened in a model.
 
 ## Author-only arithmetic self-check (2026-10-25)
