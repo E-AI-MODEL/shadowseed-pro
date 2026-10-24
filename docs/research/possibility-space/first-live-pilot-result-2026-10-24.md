@@ -20,9 +20,7 @@
 |---|---|---|---|---|
 | ARCHIVE | First-stage **incomplete**; later prediction incorrectly evaluated against an empty candidate set | Found the valid causal bridge; 2 new source-to-sink pairs in the formal oracle | Found the same bridge and 2 pairs; second-stage output incomplete | First-stage JSON **incomplete**, despite a visible partial proposal of the same bridge; second stage incomplete |
 | LOGISTICS | Found the valid bridge; 2 new source-to-sink pairs; follow-up prediction correct | First-stage incomplete; follow-up predicted paths unsupported by the parsed candidate set | Found the same bridge and 2 pairs; follow-up prediction correct | Both stages incomplete |
-| NEGATIVE | Correctly returned no legal links and no new paths | Correctly returned no legal links and no new paths (first stage reported incomplete in the original source? **see correction below**) | Correctly returned no legal links and no new paths | Correctly returned no legal links and no new paths |
-
-**Exact source-corrected NEGATIVE details:** A, C and D completed both stages. **B first-stage was incomplete**, so B's empty candidate set is a parser/response failure, *not* evidence that it correctly abstained; its second-stage answer independently predicted no paths. The table's B cell must be read with this correction. Failure cases stay visible.
+| NEGATIVE | Both stages correctly returned no legal links or new paths | First stage **incomplete** (not valid abstention); second-stage response predicted no paths | Both stages correctly returned no legal links or new paths | Both stages correctly returned no legal links or new paths |
 
 ### Nontrivial protocol flaws beyond output length
 
