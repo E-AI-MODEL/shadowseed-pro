@@ -10,6 +10,7 @@
 2. **[Conversation record and user corrections](conversation-record-2026-10-24.md)** — chronological detailed reconstruction, including repeated reminders not to narrow the question, the anti-embedding metaphor, model capability concerns, why over-strict exploration may fail, and the correction concerning FunSearch. This is **not** a byte-for-byte ChatGPT export.
 3. **[Annotated, source-checked literature map](literature-map-2026-10-24.md)** — links to original studies and their fit and non-conclusions. No reproduced paper PDFs.
 4. **[Course-elimination and two-clause audit](course-elimination-2026-10-24.md)** — discarded approaches, rejected comparisons, experimental controls, proposed coupled research design, and conditions for abandoning the preferred route.
+5. **[First discriminating Q1/Q2 experiment](first-discriminating-experiment.md)** — feasibility protocol, paired strong-model baselines, relation-level checks, candidate ablations, model capability comparisons, and explicit stop/go gates; **not yet preregistered or executed**.
 
 ## Decisions and open work
 
