@@ -1,0 +1,149 @@
+"""Offline contract/negative control tests; never model-efficacy evidence."""
+import unittest
+from pathlib import Path
+
+from pilot import (
+    ARMS, _json_object, delta, extract_pairs, first_prompt, legal_bridge,
+    read_cases, reachable_pairs, score_first, score_second, second_prompt, selftest,
+    valid_pair_array,
+)
+
+CASES = read_cases(Path(__file__).with_name("first_pilot_cases.json"))
+
+
+class TestPossibilityPilot(unittest.TestCase):
+    def test_four_arms_and_no_truth_shortcut(self):
+        self.assertEqual(len(ARMS), 4)
+        for c in CASES:
+            for arm in ARMS:
+                p = first_prompt(c, arm)
+                self.assertNotIn("positive_fixture_bridge", p)
+                self.assertNotIn("invalid_fixture_bridge", p)
+                self.assertIn('"bridges"', p)
+            self.assertNotIn("positive_fixture_bridge", second_prompt(c, []))
+            self.assertIn("Shared ordinary-generation reference", first_prompt(c, "D-shadow", "{\"bridges\": []}"))
+
+    def test_positive_bridge_and_ablation(self):
+        for c in CASES:
+            bridge = c["positive_fixture_bridge"]
+            if bridge is None:
+                continue
+            prior = reachable_pairs(c, c["existing_edges"])
+            self.assertTrue(legal_bridge(c, tuple(bridge)))
+            self.assertTrue(delta(c, tuple(bridge)))
+            self.assertTrue(delta(c, tuple(bridge)).isdisjoint(prior))
+            score = score_first(c, [tuple(bridge)])
+            self.assertTrue(score["ablation_pass"])
+            self.assertGreater(len(score["verified_new_terminal_pairs"]), 0)
+            correctly_predicted = list(map(tuple, score["verified_new_terminal_pairs"]))
+            follow = score_second(c, score, correctly_predicted)
+            self.assertEqual(follow["false_positive_claims"], [])
+            self.assertEqual(follow["missed_verified_relations"], [])
+
+    def test_nontrivial_choice_set(self):
+        from pilot import legal_candidates
+        for c in CASES:
+            if c["positive_fixture_bridge"]:
+                candidates = legal_candidates(c)
+                self.assertGreater(len(candidates), 1)
+                self.assertTrue(any(not delta(c, pair) for pair in candidates))
+
+    def test_wrong_zone_never_grants_new_relation(self):
+        for c in CASES:
+            invalid = tuple(c["invalid_fixture_bridge"])
+            self.assertFalse(legal_bridge(c, invalid))
+            self.assertFalse(delta(c, invalid))
+            scored = score_first(c, [invalid])
+            self.assertFalse(scored["verified_new_terminal_pairs"])
+            self.assertEqual(scored["invalid"], [list(invalid)])
+
+    def test_negative_world_has_no_valid_solution(self):
+        c = next(c for c in CASES if c["id"] == "NEGATIVE")
+        self.assertIsNone(c["positive_fixture_bridge"])
+        self.assertEqual(selftest([c])["cases"][0]["positive_fixture_delta"], [])
+
+    def test_model_false_prediction_is_detected(self):
+        c = next(c for c in CASES if c["id"] == "ARCHIVE")
+        invalid_score = score_first(c, [("dewarp_east", "tag_west")])
+        bogus = score_second(c, invalid_score, [("scan_east_1", "catalog_east")])
+        self.assertEqual(bogus["verified_correct_claims"], [])
+        self.assertEqual(len(bogus["false_positive_claims"]), 1)
+
+    def test_parsing_does_not_treat_prose_as_edge(self):
+        self.assertEqual(_json_object("not JSON"), {})
+        self.assertEqual(extract_pairs({"from": "x"}, 2), [])
+        self.assertEqual(extract_pairs([["x", "y"], ["x", "y"], "injection"], 2), [("x", "y")])
+
+    def test_schema_invalid_json_is_not_valid_abstention(self):
+        from argparse import Namespace
+        from unittest.mock import patch
+        from pilot import pilot
+
+        self.assertTrue(valid_pair_array({"bridges": []}, "bridges", 2))
+        self.assertTrue(valid_pair_array({"new_paths": [["source", "sink"]]}, "new_paths", 12))
+        for payload in (
+            {},
+            {"bridges": None},
+            {"bridges": "NONE"},
+            {"bridges": {"from": "x", "to": "y"}},
+            {"bridges": [["one"]]},
+            {"bridges": [["one", 2]]},
+            {"bridges": [["x", "y"], ["a", "b"], ["c", "d"]]},
+        ):
+            self.assertFalse(valid_pair_array(payload, "bridges", 2), payload)
+
+        # No network call: simulate a provider returning valid JSON with a missing required array.
+        args = Namespace(model="gpt-5", reasoning_effort="low", max_output_tokens=900, max_calls=24)
+        mock_output = {"output_text": '{"why":"no candidates"}', "status": "completed", "usage": {}}
+        with patch.dict("os.environ", {"OPENAI_API_KEY": "test-dummy"}), patch(
+            "pilot.responses_call", return_value=mock_output
+        ):
+            result = pilot(CASES, args, Path(__file__).with_name("first_pilot_cases.json"))
+        self.assertEqual(result["status"], "completed_calls_with_incomplete_or_unparseable_output")
+        self.assertEqual(result["calls"], 24)
+        for case in result["cases"]:
+            for arm in case["arms"].values():
+                self.assertFalse(arm["first_parse_success"])
+                self.assertFalse(arm["second_parse_success"])
+                self.assertIsNone(arm["first_score"])
+                self.assertIsNone(arm["second_score"])
+            self.assertIsNone(case["D_outperforms_A_on_oracle_pairs"])
+
+    def test_case_loader_rejects_compatible_existing_cycle(self):
+        import copy
+        import json
+        import tempfile
+
+        case = copy.deepcopy(CASES[0])
+        for name in ("cycle_a", "cycle_b"):
+            case["nodes"].append({
+                "id": name, "kind": "process", "consumes": "loop",
+                "produces": "loop", "zone": "east",
+            })
+        case["existing_edges"].extend([["cycle_a", "cycle_b"], ["cycle_b", "cycle_a"]])
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = Path(directory) / "bad-case.json"
+            fixture.write_text(json.dumps({
+                "schema": "shadowseed-possibility-pilot-cases-v0",
+                "cases": [case],
+            }), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "cyclic base graph"):
+                read_cases(fixture)
+
+    def test_retired_live_run_needs_explicit_paid_opt_in(self):
+        from unittest.mock import patch
+        from pilot import main
+
+        with patch("sys.argv", ["pilot.py", "run", "--output", "unused.json"]):
+            with self.assertRaisesRegex(SystemExit, "retired paid pilot"):
+                main()
+
+    def test_fixture_selftest_is_explicitly_not_model_evidence(self):
+        result = selftest(CASES)
+        self.assertEqual(result["status"], "passed")
+        self.assertTrue(result["this_is_not_model_evidence"])
+        self.assertEqual(result["model_calls"], 0)
+
+
+if __name__ == "__main__":
+    unittest.main()

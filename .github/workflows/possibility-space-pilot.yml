@@ -1,0 +1,36 @@
+name: Research - Archived possibility-space v0 offline validation
+
+# Historical first fixed-edge feasibility assay (2026-10-24).
+# The 24-call GPT-5 run took place on run 40136015917 and is retained.
+# This workflow intentionally does NOT run paid model experiments.
+# Current Q1/Q2 program: docs/research/possibility-space/revised-q1-q2-experiment-2026-10-25.md
+# (on the base documentation branch, PR #219).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  archived-oracle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the exact revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Reproduce archived formal controls
+        working-directory: experiments/possibility_space
+        run: |
+          python -m unittest -v test_pilot
+          python pilot.py selftest --output ../../pilot-artifacts/oracle-selftest.json
+      - name: Publish archived oracle record (not LLM evidence)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: possibility-v0-oracle-${{ github.run_id }}
+          path: pilot-artifacts/oracle-selftest.json
+          if-no-files-found: warn
