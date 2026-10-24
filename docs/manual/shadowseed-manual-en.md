@@ -179,7 +179,11 @@ Shadowseed keeps everything in one folder in your home directory:
 | macOS | `/Users/<name>/.shadowseed` |
 | Linux | `/home/<name>/.shadowseed` |
 
-Chapter 13 explains what is in it and how to back it up or delete it.
+Next to it, a folder `.shadowseed-integrity` holds the protected key and
+anchor of the audit ledger. Do not copy, move or delete these folders by hand;
+use the commands in chapter 13: `workspace delete` removes both folders, and a
+backup goes back only through `workspace restore`. Chapter 13 also explains what
+is stored.
 
 ## 4. Setting up a local model with Ollama
 
@@ -419,7 +423,8 @@ extra (chapter 20). In that case:
 
 **What is stored.** The folder `.shadowseed` in your home directory contains a
 local database with your conversations, the model answers, seeds, Gate
-decisions, evidence references and notes, and a protected audit ledger.
+decisions, evidence references and notes, and the audit ledger. Its protected
+integrity key lives in the neighbouring folder `.shadowseed-integrity`.
 Nothing is sent anywhere unless you use OpenAI.
 
 **What not to type.** Do not paste passwords, API keys, access tokens or other
@@ -707,7 +712,7 @@ ADR-011 (single-source promotion) and ADR-012 (model recurrence recognition).
 | `shadowseed doctor [--json] [--workspace DIR]` | Diagnose the installation |
 | `shadowseed init [--workspace DIR]` | Create a workspace |
 | `shadowseed workspace info\|backup\|restore\|delete` | Manage the workspace |
-| `shadowseed workbench [--legacy-gradio]` | Start the Workbench (web client by default) |
+| `shadowseed-workbench [--legacy-gradio]` | Start the desktop launcher: the web client by default, the legacy Gradio interface with `--legacy-gradio` |
 | `shadowseed export-workbench-report <session>` | Export one conversation as a verified, content-bearing report ZIP |
 | `shadowseed export-support-bundle <session>` | Export a privacy-minimized support ZIP |
 
@@ -733,8 +738,11 @@ The server listens on `127.0.0.1` only. All routes start with `/api/v1`.
 | POST | `/sessions/{id}/seeds/{seed}/contradictions` | Mark as contradicted |
 | POST | `/sessions/{id}/seeds/{seed}/contradictions/resolve` | Resolve a contradiction (basis required) |
 
-Every mutating request carries a `request_id`; a reused id with different
-content is refused. Requests from a foreign browser origin or with a
+Sending a turn and the three seed actions (evidence, contradiction,
+resolution) require a `request_id`: replaying the same id is safe, and a reused
+id with different content is refused. Creating a conversation and setting or
+clearing the OpenAI key have no `request_id`; repeating them repeats the
+action. Requests from a foreign browser origin or with a
 non-loopback `Host` header are refused.
 
 ## 24. Builds and releases

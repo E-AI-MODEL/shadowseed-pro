@@ -17,6 +17,7 @@ specialists. Both editions have the same chapters and numbering.
 
   ```bash
   pip install markdown playwright
+  python -m playwright install chromium   # or pass --chromium /path/to/chromium
   python scripts/build_manual_pdf.py docs/manual/shadowseed-manual-en.md
   python scripts/build_manual_pdf.py docs/manual/shadowseed-handleiding-nl.md
   ```

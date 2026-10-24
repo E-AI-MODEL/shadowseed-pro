@@ -186,8 +186,11 @@ Shadowseed bewaart alles in één map in je persoonlijke map:
 | macOS | `/Users/<naam>/.shadowseed` |
 | Linux | `/home/<naam>/.shadowseed` |
 
-Hoofdstuk 13 legt uit wat erin staat en hoe je een back-up maakt of alles
-verwijdert.
+Daarnaast staat een map `.shadowseed-integrity` met de beschermde sleutel en
+het ankerpunt van het auditlogboek. Kopieer, verplaats of verwijder deze mappen
+niet met de hand; gebruik de opdrachten uit hoofdstuk 13: `workspace delete`
+verwijdert beide mappen, en een back-up zet je alleen terug met
+`workspace restore`. Hoofdstuk 13 legt ook uit wat er wordt opgeslagen.
 
 ## 4. Een lokaal model instellen met Ollama
 
@@ -439,8 +442,9 @@ zijn beschikbaar als Shadowseed als Python-pakket is geïnstalleerd met de extra
 
 **Wat er wordt opgeslagen.** De map `.shadowseed` in je persoonlijke map bevat
 een lokale database met je gesprekken, de antwoorden van het model, seeds,
-Gate-beslissingen, bewijsverwijzingen en notities, en een beveiligd
-auditlogboek. Er gaat niets naar buiten, tenzij je OpenAI gebruikt.
+Gate-beslissingen, bewijsverwijzingen en notities, en het auditlogboek. De
+beschermde integriteitssleutel daarvan staat in de naastgelegen map
+`.shadowseed-integrity`. Er gaat niets naar buiten, tenzij je OpenAI gebruikt.
 
 **Wat je niet intypt.** Plak geen wachtwoorden, API-sleutels, toegangstokens
 of andere geheimen in gesprekken, bewijsverwijzingen of notities. Gebruik
@@ -737,7 +741,7 @@ terugkeer door het model).
 | `shadowseed doctor [--json] [--workspace MAP]` | De installatie diagnosticeren |
 | `shadowseed init [--workspace MAP]` | Een werkmap aanmaken |
 | `shadowseed workspace info\|backup\|restore\|delete` | De werkmap beheren |
-| `shadowseed workbench [--legacy-gradio]` | De Workbench starten (standaard de webclient) |
+| `shadowseed-workbench [--legacy-gradio]` | De desktoplauncher starten: standaard de webclient, met `--legacy-gradio` de oude Gradio-interface |
 | `shadowseed export-workbench-report <sessie>` | Eén gesprek exporteren als geverifieerd rapport-ZIP met inhoud |
 | `shadowseed export-support-bundle <sessie>` | Een privacyvriendelijke support-ZIP exporteren |
 
@@ -763,8 +767,11 @@ De server luistert alleen op `127.0.0.1`. Alle routes beginnen met `/api/v1`.
 | POST | `/sessions/{id}/seeds/{seed}/contradictions` | Als tegengesproken markeren |
 | POST | `/sessions/{id}/seeds/{seed}/contradictions/resolve` | Tegenspraak oplossen (grond verplicht) |
 
-Elk verzoek dat iets verandert, heeft een `request_id`; een hergebruikte id met
-andere inhoud wordt geweigerd. Verzoeken vanaf een vreemde browserherkomst of
+Een beurt versturen en de drie seedacties (bewijs, tegenspraak, oplossen)
+vragen een `request_id`: dezelfde id opnieuw sturen is veilig, en een
+hergebruikte id met andere inhoud wordt geweigerd. Een gesprek aanmaken en de
+OpenAI-sleutel instellen of wissen hebben geen `request_id`; herhaal je die, dan
+gebeurt de actie opnieuw. Verzoeken vanaf een vreemde browserherkomst of
 met een `Host`-header die niet naar loopback wijst, worden geweigerd.
 
 ## 24. Builds en releases
