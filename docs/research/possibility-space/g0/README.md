@@ -10,7 +10,7 @@
 
 - **[v1 author rejection](internal-adversarial-audit-2026-10-25.md):** internal scientific NO-GO, **not** two completed independent reviewer votes.
 - **[v2 challengers](redesign-v2-candidate-mechanisms-2026-10-25.md)** and **[arithmetic/construct warning](v2-review-and-selfcheck-2026-10-25.md):** ordered-operation and synergistic-signal cases have mathematically valid positive/negative controls, but may only measure standard compositional inference or feature engineering. **G0 NOT PASSED.**
-- **[v3 candidate method: dynamic, model-originated inquiry](dynamic-inquiry-protocol-candidate-2026-10-25.md):** seeks an independently testable new question not scripted by the author, followed by a distinct prospective question. **Only a method proposal**; independent review, actual evaluator and holdout protection are missing.
+- **[v3 candidate method: dynamic, model-originated inquiry](dynamic-inquiry-protocol-candidate-2026-10-25.md):** seeks an independently testable new question not scripted by the author, followed by a distinct prospective question. The [new independent-veto record](dynamic-inquiry-independent-review.md) is **unfilled**. **Only a method proposal**; independent review, actual evaluator and holdout protection are missing.
 
 **Do not run any of these historical T0 model-facing inputs as a paid efficacy trial.** Public illustrative answer keys are not sealed, formal arithmetic is not construct validation, and no independent reviewer approval has occurred.
 
