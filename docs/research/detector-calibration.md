@@ -67,3 +67,30 @@ Changes against v0.7, each aimed at a pattern in the run-1 labels:
 - the format examples are tied to a claim in an answer; the run-1 example "Which budget limit the user is working within" invited the generic requests.
 
 The design and the decision rule stay the same, including the cap of 60 rated candidates per prompt. Run 2 uses the same suite and the same rater as run 1, so a pass is weaker evidence than it would be on fresh conversations. If v0.8 passes, the product change is checked once more on conversations outside this suite before release.
+
+## Results, run 2: candidate v0.8 (2026-10-24)
+
+Same model, suite and cap. Run: https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40081609202. Data: `benchmarks/detector_calibration/run2_candidate_v0.8/`. Labels hashed before the key was decoded (`9b53cece…`).
+
+| | v0.6 (product) | candidate v0.8 |
+|---|---|---|
+| detections with no admitted candidate | 82 of 96 | 10 of 96 |
+| explicit NONE | 57 | 10 |
+| admitted candidates | 42 | 258 (2.7 per detection) |
+| rated | 42 (all) | 60 (seeded sample) |
+| useful / unclear / not useful | 11 / 4 / 27 | 20 / 8 / 32 |
+| useful share | 26% | 33% |
+
+Decision rule: 1 holds, 2 fails (33%), 3 holds. v0.8 is not adopted.
+
+Observations:
+
+- v0.8 is better than v0.7 (33% against 23%) and NONE now occurs, but two thirds of its points are still not useful. The useful ones again check a number or assumption in the answer: whether 1,250 euros a month is realistic after an income loss, whether the 7% index return is an average, the rate-limit values, whether the 30-day retention covers the data-change pattern.
+- Three candidates in the sample copy the template of a format example ("the 5% failure rate … older machines"). The exact-copy filter does not catch this mutated leak.
+- v0.6 gave the same 26% on both runs. On this model no prompt tried so far gets above a third.
+
+## Conclusion after two runs
+
+On Qwen 2.5 7B the detector prompt is a lever for how many seeds appear, not for how good they are: a third useful at best, against 85% for v0.6 on GPT-5. Further prompt rounds on the same suite and rater risk fitting the prompt to these labels. The product prompt stays v0.6. The next lever is the model: the same paired design on a larger local model (for example a 14B model), and the release notes for 0.12.4 say that 7B models produce few seeds and that about a quarter of those are useful.
+
+The workflow is now dispatch-only, so later pull requests do not start a 2.5-hour run.
