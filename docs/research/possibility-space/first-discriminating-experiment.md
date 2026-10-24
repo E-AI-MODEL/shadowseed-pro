@@ -1,6 +1,6 @@
 # The first discriminating Shadowseed experiment — design candidate
 
-> **Status:** Proposed **feasibility protocol** (not preregistered; no experiment executed).
+> **Status:** **HISTORICAL FIRST DRAFT — superseded as the active experimental proposal by the [revised Q1/Q2 protocol (2026-10-25)](revised-q1-q2-experiment-2026-10-25.md).** This particular document was a proposal, but its subsequent [24-call fixed-edge feasibility attempt](https://github.com/E-AI-MODEL/shadowseed-pro/pull/220) did run, with 8 incomplete outputs and inadequate construct validity. Retained unchanged below for provenance, **not** a current test plan.
 > **Date:** 2026-10-24.
 > **Research authority:** [unchanged, verbatim fundamental question](../possibility-space-thesis.md).
 > **Evidence:** [source map](literature-map-2026-10-24.md), [corrected elimination](course-elimination-2026-10-24.md), [conversation record](conversation-record-2026-10-24.md).

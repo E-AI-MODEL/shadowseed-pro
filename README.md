@@ -29,6 +29,16 @@ feedback, export, and standalone packaging.
 
 The [manual](docs/manual/README.md) (English and Dutch, also as PDF) explains installation, daily use, the SSL model, development and security. See [the 0.12.4 release notes](docs/workbench/release-0.12.4.md) for the changes since the current download and the remaining local acceptance checks.
 
+## Research horizon: beyond answer omissions (not yet demonstrated)
+
+The **current product** provides auditable, weightless candidate memory with separate Validation Gate and point-of-use authority. Its existing benchmarks study candidate quality, safe influence, and sometimes later answer quality. These outcomes **do not establish** the larger, foundational Shadowseed research question:
+
+> Kunnen we de waarschijnlijkheidsgerichte werking van een taalmodel gebruiken om niet alleen te onderzoeken wat het model weet, niet weet of niet genereert, maar ook welke relaties en mogelijkheden er zouden kunnen zijn buiten de gebruikelijke generatie? En kunnen we onderzoeken hoe nieuwe mogelijkheden ontstaan die de ruimte van wat daarna denkbaar is zelf veranderen?
+
+The wording above is preserved verbatim in the [foundational thesis](docs/research/possibility-space-thesis.md). The open research investigates **both** the probability-oriented model's ordinary selection of possibilities and whether newly formed or reinterpreted possibilities alter what can subsequently be conceived or investigated. A new relation *type*, a missing fact, a better answer, or another generated alternative is not automatically evidence of that phenomenon.
+
+The [first-principles inquiry](docs/research/possibility-space/first-principles-reorientation-2026-10-25.md), [source-to-claim audit](docs/research/possibility-space/source-claim-audit-2026-10-25.md), and [current research index](docs/research/possibility-space/README.md) explain the competing mechanisms, negative controls, and evidence boundaries. The first [24-call GPT-5 fixed-edge pilot](https://github.com/E-AI-MODEL/shadowseed-pro/pull/220) is retained as an **inadequate measurement of the thesis**, not a positive or negative efficacy finding. New research does **not** change shipping behavior or weaken existing authority safeguards.
+
 ## Quick start
 
 ### 1. Add the SSL engine to an existing model application

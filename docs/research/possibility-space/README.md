@@ -1,26 +1,46 @@
-# Possibility-space research — sources, conversation, and course elimination
+# Shadowseed possibility-space research — questions, sources, rival mechanisms
 
-> **Status:** open research program; neither a proven capability nor an accepted architecture decision.
-> **Date:** 2026-10-24.
-> **Source of authority for the question:** [Foundational research thesis (verbatim, Dutch)](../possibility-space-thesis.md). Never reduce its two clauses to only "better answers," "more ideas," or "novel knowledge from existing knowledge."
+> **Status:** open research program; no demonstrated Q1/Q2 efficacy or accepted architecture change.
+> **Updated:** 2026-10-25 following first-principles review.
+> **Question authority:** [Verbatim Dutch thesis](../possibility-space-thesis.md), with **both clauses** intact. No narrower paraphrase or experiment can replace it.
 
-## Read in this order
+## Current reading order (start here)
 
-1. **[Original question and scope](../possibility-space-thesis.md)** — exact research question and explicit boundary between possibility, knowledge, and evidence.
-2. **[Conversation record and user corrections](conversation-record-2026-10-24.md)** — chronological detailed reconstruction, including repeated reminders not to narrow the question, the anti-embedding metaphor, model capability concerns, why over-strict exploration may fail, and the correction concerning FunSearch. This is **not** a byte-for-byte ChatGPT export.
-3. **[Annotated, source-checked literature map](literature-map-2026-10-24.md)** — links to original studies and their fit and non-conclusions. No reproduced paper PDFs.
-4. **[Course-elimination and two-clause audit](course-elimination-2026-10-24.md)** — discarded approaches, rejected comparisons, experimental controls, proposed coupled research design, and conditions for abandoning the preferred route.
-5. **[First discriminating Q1/Q2 experiment](first-discriminating-experiment.md)** — feasibility protocol, paired strong-model baselines, relation-level checks, candidate ablations, model capability comparisons, and explicit stop/go gates; **not yet preregistered or executed**.
+1. **[Fundamental question](../possibility-space-thesis.md)** — canonical, literal Dutch wording and honest scientific claim boundary.
+2. **[First-principles reorientation](first-principles-reorientation-2026-10-25.md)** — **current conceptual framework**: five distinct meanings of possibility, the source-to-hypothesis leap, H0–H5 rival mechanisms, and what would eliminate each.
+3. **[Source-to-claim audit](source-claim-audit-2026-10-25.md)** — what original SSL 4.5/4.6, Pro ADRs and primary papers actually support, and where earlier readings overclaimed.
+4. **[Annotated research literature](literature-map-2026-10-24.md)** — 17 source entries, including 2026-10-25 additions. Theory, experimental observations and non-conclusions are separated; papers linked rather than copied as PDFs.
+5. **[Amended Q1/Q2 proposal](revised-q1-q2-experiment-2026-10-25.md)** — **current candidate experimental contract**, not implemented or preregistered. Q2 can involve reframing, conditions, meaning, dependencies, tests, constraints and optionally new relation kinds. G0 requires at least two distinct mechanisms and negative cases **before model calls**.
+6. **[G0 internal rejection of F1/F2](g0/internal-adversarial-audit-2026-10-25.md)** — author-side **NO-GO**: both measure mainly conventional diagnosis/planning, with author-provided capabilities and follow-ups. Technical examples are retained as [historical calibration material](g0/README.md); the unfilled reviewer form remains unfilled.
+7. **[F3/F4 challenger designs](g0/redesign-v2-candidate-mechanisms-2026-10-25.md)** and **[formal self-check + blockers](g0/v2-review-and-selfcheck-2026-10-25.md)** — order-composition and jointly informative observations have checkable nulls but may merely test well-known algebra and feature engineering; **not approved or run**.
+8. **[Current G0 method proposal: model-originated dynamic inquiry](g0/dynamic-inquiry-protocol-candidate-2026-10-25.md)** — move from scripted answer chains to bounded environments accepting many **model-proposed prospective questions**, independently checked against held-out consequences, with strong model/ordinary notes/weightless memory and exact-candidate-ablation controls. **No approved evaluator, independent review, preregistration or new model calls yet.**
 
-## Decisions and open work
+## Adapter framing and readiness checks (still unapproved)
 
-- **Preserved:** the full, unshortened question.
-- **Corrected:** FunSearch is not a direct comparator for the Shadowseed research aim.
-- **Not proven:** either that model-internal unselected relations can be measured from output, or that a fixed LLM's conceptual space is expanded by current Shadowseed.
-- **Not yet decided:** architecture, data structures, prompt changes, TTL/Gate adjustments, model family or size.
-- **Immediate next evidence need:** an experiment connecting controlled investigation of ordinary probability-conditioned generation (**Q1**) to verified changes in downstream relational reachability (**Q2**), with matched baselines and candidate ablation.
-- **Safeguard:** retain zero authority for mere suggestions and the existing Gate/point-of-use boundary until a separately justified architectural decision is accepted.
+- **[LLM-adapter positioning](adapter-not-model-improver-2026-10-25.md)** — existing external memory/validation interface versus an *unproven* possibility-inquiry process. The host model and its credentials stay separate from the adapter; this is not an accepted ADR or a model-fine-tuning method.
+- **[External environment feasibility](g0/external-benchmark-feasibility-2026-10-25.md)** — primary-source screen of DiscoveryWorld, DiscoverPhysics, WorldTest, AgentIdeaBench, Into the Unknown and ScienceWorld, with an explicit *not yet verified at code/API level* boundary.
+- **[Matched-model adapter contract](g0/adapter-evaluation-contract-2026-10-25.md)** — exact A/B/C/D/E controls, genuine weightless cross-turn persistence, fair total budgets, independent later-question validation and candidate ablation. Research proposal only, NOT G0 approval or permission to run paid models.
 
-Related [original June 2026 vision](https://github.com/E-AI-MODEL/shadowseed/blob/main/docs/research/vision-generative-seeds.md) and [Pro ADR-002](../../architecture/adr/ADR-002-epistemic-seed-contract.md). The original archived sources are historical material; accepted Pro ADRs remain authoritative for the existing runtime.
+## Narrow compression-retention research (NOT a replacement thesis)
 
-**Scope:** This folder is a research continuity package for future investigators. It is not an instruction to implement an experimental suggestion as production behavior.
+- **[Compression-retention mechanics and prospective study](compression-retention-narrow-pilot-2026-10-25.md)** — a separately labeled, offline calibration test using canonical candidate birth and vector retrieval. Investigator-authored summaries and candidates, no model calls, no result about Q1 or Q2. Details matched strong-model controls for a *future* independently reviewed study without claiming G0 approval.
+
+## Historical reasoning, decisions and failed trial — keep intact
+
+- **[Conversation reconstruction and user corrections](conversation-record-2026-10-24.md)** — chronology of the recoverable discussion; **not** a literal full transcript.
+- **[Earlier elimination of directions](course-elimination-2026-10-24.md)** — historical method comparison, including the correction that FunSearch is not a direct Shadowseed competitor.
+- **[Initial experiment proposal](first-discriminating-experiment.md)** — superseded draft, preserved so its narrowing is visible.
+- **[GPT-5 fixed-edge pilot failure record, PR #220](https://github.com/E-AI-MODEL/shadowseed-pro/blob/research/possibility-pilot-20261024/docs/research/possibility-space/first-live-pilot-result-2026-10-24.md)** — 24 genuine API calls, 16 parseable, 8 incomplete; more fundamentally the test measured fixed-rule missing graph edges rather than the thesis. Raw artifacts preserved, no claim of proven or disproven SSL.
+
+## Current findings and decision boundary
+
+- **Q1 remains unproved.** Failing to generate a relation is not evidence that a model knows its own absence or that the relation is outside its representational ability.
+- **Q2 remains unproved.** A new type of edge is neither necessary nor automatically sufficient for a changed space of meaningful, subsequently investigable possibilities.
+- **The existing product's true distinctive asset is an implemented boundary between observed, weightless candidates and trusted influence.** This is not yet proof that its persistent shadow has a discovery advantage over ordinary notes, deliberate exploration or a strong LLM.
+- **No winner yet among H0–H5.** A powerful ordinary model, decoding/selection effects, internal interventions, weightless cross-turn memory, conceptual reframing, and human/environment interaction all require fair discriminatory tests.
+- **G0 status — NOT PASSED:** F1/F2 **rejected as main thesis cases** by internal self-audit, F3/F4 **blocked by remaining construct-identifiability risk** despite correct toy math, and E1/E2 **proposed as dynamic inquiry method** without an implemented or independently accepted evaluator. A version-specific independent review, prospective question-validation criteria and true post-preregistration holdouts are required **before any more model calls**.
+- **No new production changes or paid calls from this review.** Existing Gate/point-of-use rules and accepted ADRs remain authoritative. The [historical v0 pilot workflow](https://github.com/E-AI-MODEL/shadowseed-pro/pull/220) was made manual/offline-only; its failure must not be hidden or rerun as if it were the current study.
+
+Related [original 2026-06 generative vision](https://github.com/E-AI-MODEL/shadowseed/blob/main/docs/research/vision-generative-seeds.md) and [accepted Pro ADR-002](../../architecture/adr/ADR-002-epistemic-seed-contract.md).
+
+**This folder is for continuity, source scrutiny, and test design — not a code implementation order or a claim that Shadowseed has demonstrated possibility-space expansion.**

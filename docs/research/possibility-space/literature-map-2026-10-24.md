@@ -89,6 +89,34 @@ The meaning of "possible" must be declared separately: formal possibility under 
 - **Fit:** Q1 hypothesis generator about homogenization; not a proof of how any individual model encodes unchosen possibilities.
 - **Caution:** observational preprint, not a definitive trend or support for Q2.
 
+## Additional sources checked during first-principles reorientation (2026-10-25)
+
+These later checks are source-critical additions to the original 2026-10-24 literature map, not a claim of comprehensive coverage. The [claim-by-claim audit](source-claim-audit-2026-10-25.md) explains why these findings cannot be carried over to SSL without further tests.
+
+### L14 — Si, Yang & Hashimoto, "Can LLMs Generate Novel Research Ideas? A Large-Scale Human Study with 100+ NLP Researchers" (ICLR 2025)
+- **Original:** [ICLR 2025 conference record and abstract](https://proceedings.iclr.cc/paper_files/paper/2025/hash/ea94957d81b1c1caf87ef5319fa6b467-Abstract-Conference.html).
+- **What it says:** In blinded evaluations with 100+ NLP researchers, LLM-generated ideas were **rated** more novel than expert-generated ideas within that study, while rated slightly less feasible. The authors note inadequate idea diversity and unreliable model self-evaluation.
+- **Fit:** Strong Q1 **counterevidence against the shortcut** "a strong LLM cannot propose novel ideas"; necessitates a capable same-model no-shadow baseline and independent novelty/feasibility review.
+- **Does not show:** That a novel-looking proposal genuinely transforms later conceivability, or that the model introspectively accessed a known missing internal representation. Rated novelty is not external discovery.
+
+### L15 — Suzgun et al., "Language models cannot reliably distinguish belief from knowledge and fact" (*Nature Machine Intelligence* 2025)
+- **Original:** [Publisher article, DOI 10.1038/s42256-025-01113-8](https://www.nature.com/articles/s42256-025-01113-8), published 3 November 2025; KaBLE benchmark of **13,000 questions** across 13 epistemic tasks involving 24 models.
+- **What it says:** Models show important failures distinguishing types of belief, knowledge and facts, including strong difficulties with first-person false beliefs.
+- **Fit:** Q1 **epistemic-discrimination caution**: a model's confident self-report that a possibility is absent, latent, or known cannot serve as ground truth.
+- **Does not show:** That no internal access to latent states is ever possible, or directly test the discoverability of unselected relation candidates. The benchmark tests epistemic-language tasks, not the proposed SSL mechanism.
+
+### L16 — Anthropic, "Signs of introspection in large language models" (2025 research report)
+- **Original:** [First-party primary research report, 29 October 2025](https://www.anthropic.com/research/introspection), with a linked technical paper.
+- **What it says:** Concept-injection experiments provide evidence of **some limited, condition-dependent internal-state reporting** in studied Claude models. The source itself stresses unreliability, including only about 20% successful recognition for the strongest protocol in one reported model/setting.
+- **Fit:** Q1 **internal-intervention candidate**, not a contradiction of L15: the studies measure different abilities. Internal representation work may be testable, but cannot be assumed from natural-language claims.
+- **Does not show:** An LLM can list its ungenerated possible relations, or that an "anti-embedding" counterpart exists. This is a first-party report, not independent replication of the Shadowseed thesis.
+
+### L17 — Machado, "Generative AI bias against scientific novelty: a cautionary tale from a small-sample evaluation of research proposals" (*Scientometrics* 2026)
+- **Original:** [Springer Nature, DOI 10.1007/s11192-026-05792-x](https://doi.org/10.1007/s11192-026-05792-x), published 27 August 2026.
+- **What it says:** GPT-4o-ranked decisions were compared with historic human funding decisions for **139** Austrian research proposals. Disagreement was associated with human novelty assessments; the paper explicitly says its design cannot identify the responsible model mechanism.
+- **Fit:** A **selection/evaluation-bias warning** for Q1 candidate filtering and human/AI reviewer disagreement, not evidence of generation itself.
+- **Does not show:** That next-token prediction causally caused the ranking differences, that all LLMs suppress novelty, or that a weightless seed mechanism avoids this bias.
+
 ## Related but not equivalent systems — do not conflate research questions
 
 ### L12 — Wang et al., "Towards Diverse Scientific Hypothesis Search with Large Language Models" / EvoDiverse (2026)
