@@ -46,7 +46,7 @@ The meaning of "possible" must be declared separately: formal possibility under 
 ## Sources closest to Q1: probabilistic generation, concept geometry, and model capacity
 
 ### L05 — Schapiro, Park, Sosa & Varshney, "CreativityNeuro: Steering Language Model Weights to Improve Divergent Thinking and Reduce Mode Collapse" (2026)
-- **Original:** COLM 2026 proceedings, [conference record](https://proceedings.colm.cc/paper_files/paper/2026/hash/8edb116d5b288b6a9bba4c16ab647702-Abstract-Conference.html), [arXiv:2607.01433](https://arxiv.org/abs/2607.01433).
+- **Original:** [COLM 2026 pre-proceedings](https://proceedings.colm.cc/paper_files/paper/2026/hash/8edb116d5b288b6a9bba4c16ab647702-Abstract-Conference.html), [arXiv:2607.01433](https://arxiv.org/abs/2607.01433). The arXiv record also lists acceptance at an ICML 2026 creativity workshop; distinguish this metadata from the COLM pre-proceedings listing.
 - **What it says:** contrastive weight steering changes divergent generation and reduces observed mode-collapse measures on evaluated creativity tasks; includes a reported human-evaluation sample and comparisons with activation steering.
 - **Fit:** **Q1: highly pertinent experimental mechanism**, distinct from ordinary "ask for more alternatives." Q2: not demonstrated.
 - **What it does not show:** that model weight steering finds empirically valid relations, or creates a new conceptual possibility space as meant in Q2.
