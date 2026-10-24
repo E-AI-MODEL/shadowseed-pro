@@ -1,0 +1,48 @@
+{
+  "schema": "ssl-detector-calibration-result-v1",
+  "model": "qwen2.5:7b-instruct-q4_K_M",
+  "suite": "benchmarks/evidence_efficacy/study-1-suite.json",
+  "workflow_run": "https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40071579894",
+  "head_sha": "aa4fc44369cdf268db94bb2feb85ba5305330a1f",
+  "detection": {
+    "product": {
+      "detections": 96,
+      "empty_detections": 84,
+      "explicit_none": 57,
+      "parsed": 60,
+      "admitted": 35,
+      "example_leaks": 0
+    },
+    "candidate": {
+      "detections": 96,
+      "empty_detections": 0,
+      "explicit_none": 0,
+      "parsed": 480,
+      "admitted": 478,
+      "example_leaks": 0
+    }
+  },
+  "usefulness": {
+    "product": {
+      "not_useful": 22,
+      "useful": 8,
+      "unclear": 5,
+      "rated": 35,
+      "useful_share": 0.229
+    },
+    "candidate": {
+      "unclear": 11,
+      "not_useful": 35,
+      "useful": 14,
+      "rated": 60,
+      "useful_share": 0.233
+    }
+  },
+  "labels_sha256_before_key": "e4f9cacbd5f1d5d82edee4f23a816a4e75afb8272819494a0119cf1d48479fb9",
+  "decision": {
+    "rule_1_nonempty_half": true,
+    "rule_2_useful_majority": false,
+    "rule_3_within_15pp": true,
+    "outcome": "revise_and_remeasure"
+  }
+}

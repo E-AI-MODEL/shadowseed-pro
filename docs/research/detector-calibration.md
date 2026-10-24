@@ -32,6 +32,27 @@ If 1 holds but 2 or 3 fails, the prompt is revised and measured again on the sam
 
 The rule is about the detector only. No candidate gets weight from this run: the session uses the product Gate and no evidence is submitted.
 
-## Results
+## Results, run 1: candidate v0.7 (2026-10-24)
 
-Pending.
+Qwen 2.5 7B Q4_K_M, 12 conversations, 96 detections, same detection cap (220 tokens) for both prompts. Run: https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40071579894. Data: `benchmarks/detector_calibration/run1_candidate_v0.7/`.
+
+| | v0.6 (product) | candidate v0.7 |
+|---|---|---|
+| detections with no admitted candidate | 84 of 96 | 0 of 96 |
+| explicit NONE | 57 | 0 |
+| admitted candidates | 35 | 478 |
+| rated | 35 (all) | 60 (seeded sample) |
+| useful / unclear / not useful | 8 / 5 / 22 | 14 / 11 / 35 |
+| useful share | 23% | 23% |
+
+The 95 labels were recorded and hashed (`e4f9cacb…`) before the key was decoded. One limitation weakens the blinding: some v0.6 output has a recognisable form ("Label: The draft … does not …").
+
+Decision rule: 1 holds, 2 fails (23% is not more than half), 3 holds (0.4 points apart). Outcome: the prompt is revised and measured again.
+
+What the labels show:
+
+- Both prompts reach the same useful share on this model. With GPT-5 the v0.6 prompt reached 85% (seed calibration). On a 7B model the bottleneck is not only the prompt.
+- The candidate almost always returns exactly five points. Most of the not-useful ones are generic requests for the user's situation ("the user's current portfolio", "the desired colour of the chili") that would not change the answer.
+- Truncated candidates ("Thermal Performance:", "User Notification: The draft does not") come from both prompts.
+- The useful ones name a concrete assumption or open number in the answer: whether the 24-hour reset-token lifetime fits, whether the 30% Dutch tax rate holds, the per-tree sequestration figure, hot holding of chili at a party.
+- In absolute terms the candidate yields about 14 times more seeds at the same share, so roughly 110 useful and 370 not useful or unclear over 96 turns, against 8 and 27 for v0.6.
