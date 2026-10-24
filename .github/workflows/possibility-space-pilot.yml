@@ -1,96 +1,36 @@
-name: Research - Possibility space first discriminating pilot
+name: Research - Archived possibility-space v0 offline validation
 
-# The existing GitHub Environment is named "OpenAI key" and contains
-# the OPENAI_KEY secret. Attach the model job to that environment.
+# Historical first fixed-edge feasibility assay (2026-10-24).
+# The 24-call GPT-5 run took place on run 40136015917 and is retained.
+# This workflow intentionally does NOT run paid model experiments.
+# Current Q1/Q2 program: docs/research/possibility-space/revised-q1-q2-experiment-2026-10-25.md
+# (on the base documentation branch, PR #219).
 on:
-  push:
-    branches:
-      - research/possibility-pilot-20261024
-    paths:
-      - experiments/possibility_space/**
-      - .github/workflows/possibility-space-pilot.yml
   workflow_dispatch:
 
 permissions:
   contents: read
 
-concurrency:
-  group: possibility-space-pilot-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  offline-oracle:
+  archived-oracle:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Check out exact commit
+      - name: Check out the exact revision
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Python 3.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: '3.12'
-      - name: Run independent oracle and negative controls
+      - name: Reproduce archived formal controls
         working-directory: experiments/possibility_space
         run: |
           python -m unittest -v test_pilot
           python pilot.py selftest --output ../../pilot-artifacts/oracle-selftest.json
-      - name: Upload independent oracle test results
+      - name: Publish archived oracle record (not LLM evidence)
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: possibility-oracle-${{ github.run_id }}
+          name: possibility-v0-oracle-${{ github.run_id }}
           path: pilot-artifacts/oracle-selftest.json
-          if-no-files-found: warn
-
-  strong-model:
-    # Bounded trial: 24 API calls maximum, on this research branch only.
-    needs: offline-oracle
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-    environment:
-      name: "OpenAI key"
-    env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
-    steps:
-      - name: Check out exact commit
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Python 3.12
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
-        with:
-          python-version: '3.12'
-      - name: Check selected Environment secret without displaying its value
-        shell: bash
-        run: |
-          if [ -z "$OPENAI_API_KEY" ]; then
-            echo "::error::The chosen GitHub Environment has no accessible OPENAI_KEY secret."
-            exit 1
-          fi
-      - name: Bounded GPT-5 exploratory pilot (at most 24 API calls)
-        run: |
-          python experiments/possibility_space/pilot.py run \
-            --cases experiments/possibility_space/first_pilot_cases.json \
-            --case-ids ARCHIVE LOGISTICS NEGATIVE \
-            --model gpt-5 \
-            --reasoning-effort low \
-            --max-output-tokens 900 \
-            --max-calls 24 \
-            --output pilot-artifacts/model-pilot.json
-      - name: Confirm model result is complete
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          result = json.loads(Path("pilot-artifacts/model-pilot.json").read_text(encoding="utf-8"))
-          status = result.get("status")
-          calls = result.get("calls", 0)
-          print("model-pilot status:", status, "model calls:", calls)
-          if status != "complete_exploratory_live_pilot":
-              raise SystemExit("Model pilot incomplete; inspect captured artifact")
-          PY
-      - name: Upload raw results, including failures
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: possibility-model-${{ github.run_id }}
-          path: pilot-artifacts/model-pilot.json
           if-no-files-found: warn
