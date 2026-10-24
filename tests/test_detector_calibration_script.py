@@ -18,6 +18,7 @@ class _Client:
 
     def generate(self, prompt: str, max_new_tokens: int = 400) -> str:
         self.prompts.append(prompt)
+        self.max_new_tokens = max_new_tokens
         return (
             "1. Whether the deadline already includes the review period.\n"
             "2. Which cloud provider stores the backups.\n"
@@ -33,9 +34,10 @@ def test_paired_run_keeps_candidate_out_of_the_session() -> None:
         "turns": [{"question": "How should we back up Office files?"}],
     }
 
-    result = calibration.run_conversation(conversation, session, max_new_tokens=50)
+    result = calibration.run_conversation(conversation, session)
 
     turn = result["turns"][0]
+    assert session.detector.client.max_new_tokens == session.detection_max_new_tokens
     assert "How should we back up Office files?" in session.detector.client.prompts[0]
     assert turn["candidate"]["admitted"] == ["Which cloud provider stores the backups."]
     assert turn["candidate"]["example_leaks"] == [

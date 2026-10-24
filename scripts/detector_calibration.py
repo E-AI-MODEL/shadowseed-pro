@@ -123,7 +123,7 @@ def evaluate(raw: str, text: str, max_seeds: int, *, candidate: bool) -> dict[st
 
 
 def run_conversation(
-    conversation: dict[str, Any], session: ShadowChatSession, max_new_tokens: int
+    conversation: dict[str, Any], session: ShadowChatSession
 ) -> dict[str, Any]:
     detector = session.detector
     original = detector.detect_seeds
@@ -134,7 +134,9 @@ def run_conversation(
         text = str(item.get("text") or "").strip()
         product_raw = str(getattr(detector, "last_raw_output", "") or "")
         candidate_raw = detector.client.generate(
-            build_candidate_prompt(item, max_seeds), max_new_tokens=max_new_tokens
+            build_candidate_prompt(item, max_seeds),
+            # Same generation cap as the product detector in this session.
+            max_new_tokens=session.detection_max_new_tokens,
         )
         records.append(
             {
@@ -229,7 +231,7 @@ def _run(args: argparse.Namespace) -> int:
             client = getattr(backend, "client", None)
             if client is not None and hasattr(client, "timeout"):
                 client.timeout = 900.0
-        results.append(run_conversation(conversation, session, args.max_new_tokens))
+        results.append(run_conversation(conversation, session))
         print(f"{conversation['id']}: {summarize(results[-1:])}", flush=True)
 
     payload = {
@@ -274,7 +276,6 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--suite", required=True, type=Path)
     run.add_argument("--model", required=True)
     run.add_argument("--conversation", action="append", default=[])
-    run.add_argument("--max-new-tokens", type=int, default=400)
     run.add_argument("--output", required=True, type=Path)
     sample = commands.add_parser("sample")
     sample.add_argument("--input", required=True, type=Path, nargs="+")
