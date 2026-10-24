@@ -36,7 +36,7 @@ The self-test result is explicitly marked `model_calls=0` and `this_is_not_model
 
 The originally bounded GPT-5 fixed-edge test used the GitHub Environment `OpenAI key` and its secret `OPENAI_KEY`, injected as the Python environment variable `OPENAI_API_KEY`. The real run made 24 calls; 16 responses were parseable, and 8 were incomplete. No credential value was exposed.
 
-**The associated GitHub Actions workflow is now manual/offline-only**, and no longer reads the API secret or makes paid model calls. Historical behavior can be inspected from the original Git revision and immutable run artifacts; repeat model calls only as a separately approved **plumbing reproduction**, not as evidence of the revised research thesis. The current protocol does not authorize repeating this run merely by increasing token budgets.
+**The associated GitHub Actions workflow is now manual/offline-only**, and no longer reads the API secret or makes paid model calls. The archived script also rejects its live `run` mode unless the caller explicitly supplies `--acknowledge-retired-paid-run`; the default self-test stays fully offline. That opt-in does **not** authorize treating the old design as a Q1/Q2 test. Historical behavior can be inspected from the original Git revision and immutable run artifacts; repeat model calls only as a separately approved **plumbing reproduction**, not as evidence of the revised research thesis. The current protocol does not authorize repeating this run merely by increasing token budgets.
 
 ## Major limits and next research gate
 
