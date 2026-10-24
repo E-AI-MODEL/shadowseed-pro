@@ -63,6 +63,19 @@ A genuinely informative T0 candidate names the **unknown affordance** and propos
 
 Candidate-specific ablation and *transformation-specific ablation* are separate: remove the earlier speculative proposal **versus** remove actual trusted certification, while keeping all other context and resources matched. Even when the candidate is removed, a capable model may independently infer the operation after a certificate is supplied. Do not mis-score that as hallucination.
 
+## T3: does this first affordance open a different research question?
+
+A single certified `00 -> 11 -> 00` procedure is still just **one newly admissible plan**. The second part of the Shadowseed thesis asks whether that possibility *itself* changes what can be investigated next.
+
+**Prospective dependent test:** Only after certification at T1, an independent reviewer can offer a **bounded, event-resolved repeatability test**: is the presumed atomic act still invariant-preserving when repeated under controlled conditions, or do unsafe intermediate states emerge in later cycles? A model must propose a discriminating **stability/reliability experiment**, with explicit rejection/stop conditions for the first unsafe microstep; it cannot claim repeated safety from a single certified event.
+
+- **P first certified act:** the repeated-cycle experiment becomes physically meaningful in an isolated safety-controlled rig, but **its result is unknown** and requires new trace evidence. The model must specify what would falsify stability. No production operation is authorized.
+- **N serial or U uncertified:** there is no sanctioned basis to run repeated transitions in the operating system; a proposed repeatability trial has to be restricted to isolated non-operational validation and may not be counted as safe.
+- **Z no additional primitive:** no meaningful live cycle protocol can be attempted under the invariant; abstention is a valid result.
+- **False positive:** "One safe pair update proves a lifetime of safe cycling" is **incorrect** without additional independent evidence.
+
+**Second-order criterion:** the candidate and subsequently verified new act must make an independently justifiable **new question/test** accessible, rather than simply renaming the initial `00 -> 11` move. It is acceptable and expected that a strong baseline may ask exactly that reliability question without shadow memory. If the result is merely an obvious repetition of a supplied operator, reviewers should reject F2's conceptual novelty at G0.
+
 ## Non-tautology check
 
 One cannot count the statement "suppose there is an atomic operator" as proof that a safe transition exists. The physically admissible action set is expanded **only** by a precommitted independent certification of actual transitions in a defined model-world. In N/U/Z the attractive hypothesis **fails**. A stricter alternative world can also reject P if additional constraints invalidate the witness; never redefine the safety invariant post hoc to rescue the model.
