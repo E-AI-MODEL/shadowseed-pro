@@ -113,6 +113,17 @@ def _candidate_leak(seed: str) -> bool:
     )
 
 
+RUN_CONFIG_FIELDS = (
+    "model",
+    "model_digest",
+    "ollama_version",
+    "suite",
+    "candidate_prompt_id",
+    "candidate_prompt_sha256",
+    "product_prompt_sha256",
+)
+
+
 def evaluate(raw: str, text: str, max_seeds: int, *, candidate: bool) -> dict[str, Any]:
     seeds, diagnostics = parse_numbered_seeds_with_diagnostics(
         raw, max_seeds=max_seeds, source_text=text
@@ -278,16 +289,19 @@ def _run(args: argparse.Namespace) -> int:
 
 def _sample(args: argparse.Namespace) -> int:
     conversations = []
-    digests = set()
+    configs = set()
     for path in args.input:
         shard = json.loads(path.read_text(encoding="utf-8"))
-        digests.add(shard.get("model_digest"))
+        configs.add(tuple(shard.get(field) for field in RUN_CONFIG_FIELDS))
         conversations.extend(shard["conversations"])
-    # Shards pull the model independently; mixed artifacts are not one run.
-    if len(digests) != 1:
+    # Shards are pooled only when they are parts of one run configuration.
+    if len(configs) != 1:
         raise SystemExit(
-            f"shards used different model digests: {sorted(map(str, digests))}"
+            f"shards come from different run configurations: {sorted(map(str, configs))}"
         )
+    config = dict(zip(RUN_CONFIG_FIELDS, configs.pop()))
+    if not config["model_digest"]:
+        raise SystemExit("shards do not record a model digest")
     items, key = review_sample(conversations, cap=args.cap, seed=args.seed)
     args.items.write_text(
         json.dumps({"items": items}, indent=2) + "\n", encoding="utf-8"
@@ -298,7 +312,7 @@ def _sample(args: argparse.Namespace) -> int:
             {
                 "summary": summarize(conversations),
                 "review_items": len(items),
-                "model_digest": digests.pop(),
+                "run_config": config,
             }
         )
     )

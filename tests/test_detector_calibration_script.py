@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
+
+import pytest
 
 from shadowseed.chat import ShadowChatSession
 
@@ -88,3 +91,54 @@ def test_sample_caps_each_prompt_separately() -> None:
     assert sorted((again_key[item["id"]], item["candidate"]) for item in again) == drawn
     # Ids are random, so they cannot be recomputed from the visible fields.
     assert {item["id"] for item in again}.isdisjoint(item["id"] for item in items)
+
+
+def _full_turn() -> dict:
+    arm = {
+        "admitted": ["seed"],
+        "parsed": ["seed"],
+        "empty": False,
+        "example_leaks": [],
+        "diagnostics": {"explicit_none": False},
+    }
+    return {
+        "turn": 0,
+        "question": "q",
+        "answer": "a",
+        "product": arm,
+        "candidate": dict(arm),
+    }
+
+
+def _shard(path, **overrides) -> None:
+    payload = {
+        "model": "m",
+        "model_digest": "d",
+        "ollama_version": "v",
+        "suite": "s",
+        "candidate_prompt_id": "c",
+        "candidate_prompt_sha256": "h",
+        "product_prompt_sha256": "p",
+        "conversations": [
+            {
+                "conversation_id": "C1",
+                "turns": [_full_turn()],
+            }
+        ],
+    }
+    payload.update(overrides)
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+
+def test_sample_refuses_mixed_or_unpinned_shards(tmp_path) -> None:
+    a, b = tmp_path / "a.json", tmp_path / "b.json"
+    out = ["--items", str(tmp_path / "i.json"), "--key", str(tmp_path / "k.json")]
+    _shard(a)
+    _shard(b)
+    assert calibration.main(["sample", "--input", str(a), str(b), *out]) == 0
+    _shard(b, candidate_prompt_sha256="other")
+    with pytest.raises(SystemExit, match="different run configurations"):
+        calibration.main(["sample", "--input", str(a), str(b), *out])
+    _shard(a, model_digest=None)
+    with pytest.raises(SystemExit, match="model digest"):
+        calibration.main(["sample", "--input", str(a), *out])
