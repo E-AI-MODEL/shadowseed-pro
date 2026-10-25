@@ -168,7 +168,7 @@ def audit_case(case: dict[str, Any], variant: str) -> dict[str, Any]:
         model_backend=_NoGeneration(),
         revision_model_backend=_NoGeneration(),
         embedding_backend="lexical",  # offline toy fixture, NOT semantic evidence
-        recurrence_mode="pairwise",
+        # Keep the real default clustered recurrence route, not a custom pairwise mode.
         allow_same_turn_revision=False,
         self_derived_signal_policy="fail_closed",
     )
