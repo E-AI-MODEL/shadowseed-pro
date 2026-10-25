@@ -64,7 +64,7 @@ jobs:
           uv run --no-sync python - <<'PY'
           import json
           from pathlib import Path
-          r = json.loads(Path("research-artifacts/g0-ssot-polarity-existing-code.json").read_text(encoding="utf-8"))
+          r = json.loads(Path("research-artifacts/g0-ssot-polarity-after-fix.json").read_text(encoding="utf-8"))
           assert r["schema"] == "g0-ssot-polarity-before-after-characterization-v1"
           assert r["status"] == "post_fix_synthetic_mechanics_characterized_not_independently_verified"
           assert r["model_calls"] == r["human_verifiers"] == 0
@@ -95,7 +95,7 @@ jobs:
         with:
           name: g0-ssot-polarity-before-after-${{ github.run_id }}
           path: |
-            research-artifacts/g0-ssot-polarity-existing-code.json
+            research-artifacts/g0-ssot-polarity-after-fix.json
             research-artifacts/g0-ssot-polarity-dependencies.txt
           if-no-files-found: error
           retention-days: 30
