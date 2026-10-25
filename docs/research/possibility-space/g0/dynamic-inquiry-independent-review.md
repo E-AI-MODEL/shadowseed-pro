@@ -1,6 +1,6 @@
 # G0 v3 — version-specific independent construct review (UNFILLED)
 
-> **Current status:** PENDING / NOT PASSED. **No completed independent expert reviews**; no model experiments; no sealed holdouts or evaluator exist. Do not reuse the retired [F1/F2 reviewer ledger](g0-independent-review.md) as approval of this distinct proposal.
+> **Current status, updated 25 October 2026:** PENDING / NOT PASSED. **No completed independent expert reviews, accepted general evaluator or sealed holdouts.** Bounded **exploratory** GPT-5 trials [#250](https://github.com/E-AI-MODEL/shadowseed-pro/pull/250) and [#251](https://github.com/E-AI-MODEL/shadowseed-pro/pull/251) have now occurred, but **none was a G0-approved confirmatory trial**, and one RF trial stopped at T2. See the [version-pinned review submission](g0-v3-review-submission-2026-10-25.md). Do not reuse the retired [F1/F2 reviewer ledger](g0-independent-review.md) as approval of this distinct proposal.
 > **Read:** [dynamic inquiry proposal](dynamic-inquiry-protocol-candidate-2026-10-25.md); [v1 failure](internal-adversarial-audit-2026-10-25.md); [v2 challenge](v2-review-and-selfcheck-2026-10-25.md).
 > **Required reviewers:** one independent technical/evaluator reviewer plus a separate independent conceptual/methodological reviewer, each recording a reasoned verdict before discussing. A model acting as reviewer **does not** constitute independent human review.
 
