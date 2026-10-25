@@ -41,3 +41,5 @@ Zonder dat herstel starten we **geen nieuwe betaalde run**. De v1-uitvoer blijft
 ## Instrumentcorrectie na deze run
 
 Er is een fail-closed diagnostiek toegevoegd die bij een volgende afwijking de **vaste checkpoint-foutcode**, de verwachte en werkelijk berekende event-/Gate-/historyprefix-hashes en de nul-autoriteitsstatus in het gedeeltelijke onderzoeksartifact bewaart. De normale `freeze_weightless_followup` is **niet** aangepast of overgeslagen. Een nieuwe negatieve no-networktest simuleert een tweede-follow-up-fout en verifieert dat T2 niet alsnog modelvragen genereert. Dit is nog **geen diagnose van de oorspronkelijke ValueError** en geen reden voor een automatische betaalde herhaling.
+
+Laatste offline verificatie: [run #40225139146](https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40225139146), **432 tests geslaagd, 3 overgeslagen**. De nieuwe negatieve test verifieert dat een geforceerde T2-checkpointfout de T2-onderzoeksvragen niet uitvoert en de foutcode en niet-gevoelige prefixcontrole bewaart. Deze injectietest reproduceert **niet** de oorspronkelijke foutoorzaak.
