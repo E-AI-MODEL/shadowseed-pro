@@ -68,14 +68,14 @@ For each case explicitly register **which meaning of possible changes**, its bef
 2. Allow a changed condition, interpretation, dependency, rule, meaningful question, relation kind, or action; **do not require newly named predicates**.
 3. Validate with case-specific independent evidence: in F1 an adjudicable new explanation/test; in F2 a consistent formal transformation and nontrivial previously unavailable consequence; in F3 external verification and actor provenance.
 4. Reject paraphrase, directly prompted answers, trivial rule relaxation, and a longer prompt alone; a meaningful newly *restricted* possibility set may be an advance too.
-5. Ablate **candidate and transformation separately** with matched context length, tool access, model calls and counterfactual controls. Hold later challenge fixed.
+5. Ablate **candidate and transformation separately** under the same precommitted opportunity/cost ceilings, tool permissions and independent evaluator. For **RF fixed replay**, freeze the later observations and comparison challenge across arms. For **RI adaptive inquiry**, freeze the initial world, evaluator, eligible actions and exogenous-update schedule, **not** the results of different arm-chosen actions. Keep actual costs, context changes and world trajectories inspectable.
 6. Keep distinct fields for new expression, new meaningful distinction, formal new relation kind, new independently testable question, demonstrated external fact, and ablation effect; never compress them into an "expansion score".
 
 **Q2 gate:** An **independently adjudicated, nontrivial change in downstream investigability** is causally dependent on the earlier candidate/transform, survives withheld tests, and is not reducible to extra context. A new predicate or extra graph path is not sufficient.
 
 ### Coupled stage — does a weightless shadow add anything?
 
-Use at least five controlled arms with the **same base model** and matched total exposure, prompt budget, time, tool access, and evaluation calls:
+Use at least five controlled arms with the **same base model**, pinned tools/evaluator and matched **allowed** prompt/call/token/time/tool budgets. Track actual consumption per arm; adaptive interventions may legitimately produce different feedback and therefore different later contexts:
 
 | Arm | Input/memory process | Purpose |
 |---|---|---|
@@ -85,7 +85,9 @@ Use at least five controlled arms with the **same base model** and matched total
 | **D** | Same generation budget + explicit weightless candidate preservation, relation-aware reactivation, and transformation testing | **Actual experimental shadow mechanism**, distinct from merely calling a prompt “D-shadow” |
 | **E** | Same as D but candidate shuffled/ablated or replaced by matched irrelevant proposal | Candidate specificity and causal control |
 
-Each arm sees the same revealed future observations; **no arm gets another arm's prior answer for free**. Preserve candidate provenance, retain failures, and do not promote hypothetical seeds to production truth or action authority. D must implement an actual **cross-turn weightless state** in an isolated research harness before an SSL-specific claim is tested; the shipping Gate remains unchanged.
+**Future feedback is an explicit, versioned study choice:** **RF** (fixed evidence replay) gives every arm the same prospective observations and measures later question formation under the same information; **RI** (adaptive inquiry) gives every arm identical *initial state, admissible opportunities, exogenous updates and resource ceilings*, while its self-chosen intervention returns its **own** result in an isolated world. **RF does not establish intervention-causal Q2; RI does not require identical realized observations.** Do not pool their outcomes or call unlike trajectories equal-information tests. The [prospective adapter contract](g0/adapter-evaluation-contract-2026-10-25.md#two-noninterchangeable-future-feedback-regimes-b8-resolution-proposed) is the controlling definition.
+
+**No arm gets another arm's prior answer or intervention outcome for free.** Preserve candidate provenance, retain all invalid/no-opportunity/untestable and no-growth turns, and do not promote hypothetical seeds to production truth or action authority. D must use an actual **cross-turn weightless state** with per-turn prepare_turn → ordinary host generation → observe_turn, the canonical product detector/parser/intake and honest decay/recurrence logs. A single combined prompt, a late-created manager or a D-labeled list of alternatives **is not** that arm. The shipping Gate remains unchanged.
 
 **Coupled gate:** A candidate not seen in the **measured ordinary Q1 selection sample** at `t0` remains weightless; at `t1` it causally enables an independently checked later question, distinction, relation, test or action, **more often than strong matched controls**, with specific candidate ablation. This is a bounded behavioral/operational finding, not proof of previously zero-probability model outputs or changing model weights.
 
@@ -104,7 +106,7 @@ Each arm sees the same revealed future observations; **no arm gets another arm's
 
 | Gate | Pass requirement | If it fails |
 |---|---|---|
-| **G0 — Construct validity** | An **independently checkable dynamic inquiry environment** in two distinct mechanism families, with genuinely model-originated questions, prospective withheld consequences, invalid/null/sham controls, a strong ordinary active-learning comparator, an independent general evaluator and a veto for scripted follow-ups; accepted by independent reviewers | **Stop.** v1 cases are retired, v2 examples are challengers only, and v3 remains unapproved. No model/API calls until the constructs are defensible |
+| **G0 — Construct validity** | An **independently checkable dynamic inquiry environment** in two distinct mechanism families, with genuinely model-originated questions, prospective withheld consequences, invalid/null/sham controls, a strong ordinary active-learning comparator, an independent general evaluator, **predeclared RF/RI feedback regime, separate evaluability/validity verdicts**, and a veto for scripted follow-ups; accepted by independent reviewers | **Stop.** v1 cases are retired, v2 examples are challengers only, and v3 remains unapproved. No model/API calls until the constructs are defensible |
 | **G1 — Q1 observability** | Repeated ordinary-generation selection measured, alternatives controlled for budget and independent relation identity | Only behavioral comparison allowed, no “latent absence” claim |
 | **G2 — Q2 validity** | Independent check of a nontrivial changed downstream **investigability** (question, distinction, relation or intervention) with candidate and transform ablations | Only prompting, search, rule relaxation, paraphrase or graph completion |
 | **G3 — Coupled increment** | Actual weightless, longitudinal D arm outperforms strongest matched baseline; E/ablation separates candidate influence | Do not claim a unique SSL contribution |
