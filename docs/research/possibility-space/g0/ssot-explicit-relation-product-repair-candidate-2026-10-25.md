@@ -1,43 +1,50 @@
-# SSOT-verificatie: voorgestelde productreparatie
+# SSOT-bewijsroute: conceptreparatie en historische blokkering
 
-> 25 oktober 2026 | Draft, **geen gemergde productieaanpassing**. Aansluiting op issue [#241](https://github.com/E-AI-MODEL/shadowseed-pro/issues/241), [PR #240](https://github.com/E-AI-MODEL/shadowseed-pro/pull/240) en het read-only onderzoek in [PR #242](https://github.com/E-AI-MODEL/shadowseed-pro/pull/242). De oorspronkelijke tweeledige Q1/Q2-vraag blijft open. **G0 NOT PASSED.**
+> 25 oktober 2026 | **Draft PR #243; niet gemerged.** [Issue #241](https://github.com/E-AI-MODEL/shadowseed-pro/issues/241) blijft open. De tweeledige Shadowseed-vraag Q1/Q2 is **niet** getest. G0 **NOT PASSED**.
 
-## Wat er in bestaande code fout ging
+## Waargenomen fout, met twee afzonderlijke uitvoerbewijzen
 
-De SSOT-producer stuurde iedere voldoende vergelijkbare chunk met `status=verified` rechtstreeks als `SSOT SUPPORT` naar de bestaande Gate. Dat gebeurde ook bij de *ontkennende* voorbeelden in de gecontroleerde, fictieve proef. De originele [GitHub-run #40176388209](https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40176388209) blijft het historische bewijs: twee tegengestelde bronfamilies kregen ieder vier SUPPORT-signalen en eindigden op gewicht 0,6. Dat was uitvoerbaar softwaregedrag, geen onafhankelijke waarheidstoets.
+Het oorspronkelijke product stuurde een vergelijkbaar gevonden `verified`-document direct als `SSOT SUPPORT` naar de bestaande Gate. Vier kunstmatig geverifieerde ontkennende teksten leverden daardoor vier SSOT-steunsignalen op en promoveerden de fictieve seed tot gewicht 0,6. De oorspronkelijke [modelvrije GitHub-run #40176388209](https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40176388209) bewijst dit voor die onderzoeksinputs, niet voor echte onafhankelijk gecontroleerde bronnen.
 
-## Wat deze productbranch wijzigt
+Een eerdere versie van concept-PR #243 koppelde het Gate-signaal aan een opgegeven `reviewer` en `supports`-label. De [groene run #40182789691](https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40182789691) bevestigde dat de nieuwe selectie technisch werkte, maar **niet** dat de reviewer echt bevoegd was. Een zelfverklaarde controle kon nog steeds via de nieuwe SSOT-route gewicht toekennen. Een groene test was geen inhoudelijke toestemming om dit te mergen.
 
-De bestaande `SSOTManager` blijft de producer, de bestaande `SSLManager` en de **enige echte Validation Gate** blijven eigenaren van autoriteit. Er komt geen extra model, onderzoeksmemory, detector, Gate, TrTL, TTL of promptlaag.
+## Huidige voorgestelde oplossing
 
-- `ingest_document` houdt document-identiteit en SHA-256 van de exacte brontekst én elke geïndexeerde chunk bij. Nieuwe broninhoud onder hetzelfde document-ID vervangt de oude chunks en maakt bestaande relatiebeoordelingen ongeldig. Veranderde chunktekst of oude chunkmetadata zonder versiehash mogen geen bewijs opleveren, ook niet met een eerdere attestatie.
-- `attest_document_relation(seed_id, doc_id, relation, reviewer, rationale, evidence_unit_id)` is een **expliciete operatoractie**. De reviewer wordt als bewering opgeslagen, niet geauthenticeerd of wetenschappelijk gevalideerd door de code. Een modelantwoord mag die rol niet aannemen.
-- Relaties zijn `supports`, `opposes`, `topical`, `undetermined` en `not_testable`. Het type relatie is **niet** uit vectorovereenkomst, negatie-woorden of het oude `verified`-label afgeleid.
-- `validate_open_seeds_against_ssot` blijft voor gewichtloze seeds zoeken. Alleen `supports`, **gecombineerd** met geldige, versiegebonden bronrelatiebeoordeling en verificatiestatus van alle documentchunks, mag één steunbewijs naar de bestaande Gate sturen.
-- Eén document met veel chunks is maximaal **één geclaimde bewijs-eenheid**. Duplicaten met hetzelfde `evidence_unit_id` tellen één keer; een conflict tussen relaties binnen die geclaimde eenheid blokkeert SUPPORT. Verschillende ID's zijn op zichzelf geen wetenschappelijk bewijs van onafhankelijke studies.
-- `opposes` maakt niet automatisch een `CONTRADICTION`. Een what-if of vraag hoeft immers geen bewezen stelling te zijn.
-- Een seed met historisch SSOT-SUPPORT, zonder de nieuwe relatiebeoordeling, wordt **niet stilzwijgend opnieuw gevalideerd**. Het oude Gate-logboek blijft onaangeroerd en vereist een afzonderlijke migratie-/auditbeslissing.
+Het bestaande `SSOTManager`-pad blijft gericht op gewichtloze, contextgebonden seeds en werkt over dezelfde documenten. Het verandert **geen** Gate-, model-, detector-, memory-, TTL-, TrTL-, gewicht- of promptregel.
 
-Het enige SSOT-SUPPORT-signaal dat dit pad nog maakt, heeft `reason=relation-attested:ssot:...` en `source_ref=evidence_unit_id`. `strength=1.0` in deze compatibiliteitsroute is **geen kans op waarheid** en **niet** de zoekscore. Brononafhankelijkheid wordt niet door `independent=True` geclaimd: die vlag blijft `False`.
+- `ingest_document` bewaart document- en chunkversiehashes. Opnieuw importeren met hetzelfde document-ID verwijdert oude chunks en maakt bestaande relatiebeoordelingen ongeldig. Beschadigde of oude chunkmetadata zonder versiehash wordt niet als beoordeelde bron geaccepteerd.
+- `attest_document_relation` legt een **zelf opgegeven** relatie vast tussen exacte seed en document: `supports`, `opposes`, `topical`, `undetermined` of `not_testable`. Een ingevuld `reviewer`-veld blijft metadata, geen bewijs van authenticatie of bronwaarheid.
+- `validate_open_seeds_against_ssot` is, ondanks de historische naam, nu een **read-only inspectie**. De functie retourneert alleen `review_candidates`; de velden `gate_authorized=False` en `requires_authorized_submission=True` maken duidelijk dat er nog geen autoriteit is toegekend. Zelfs vier geattesteerde ondersteunende documenten leveren **geen** Gate-event, gewicht of bewijsopbouw op.
+- De bestaande vectorzoekfunctie blijft ontkennende, topicale en onbesliste bronnen tonen. De relatie wordt niet met een woordfilter, een negatieheuristiek of een modelscore gegist. Oppositie tegen een open what-if wordt niet automatisch een formele `CONTRADICTION`.
+- Eén geclaimde bron-eenheid levert maximaal één kandidaat voor vervolgbeoordeling op. Tegenstrijdige verklaarde relaties binnen dezelfde bronunit blokkeren ondersteuning. Een tweede ID bewijst op zichzelf geen onafhankelijke studie.
 
-## Wat deze wijziging niet kan bewijzen
+### Wie mag echt bewijs indienen?
 
-De methode **verifieert geen echte menselijke identiteit**, authenticiteit of onafhankelijke bronherkomst. Een operator kan een onwaarachtige `supports`-verklaring opslaan. De code controleert het vastgelegde besluit en de versie, niet de feitelijke semantiek. Dat is een expliciete beperking, geen reden om opnieuw een onzichtbare LLM-beoordelaar in te voeren. Alleen een betrouwbaar extern beoordelingsproces kan die laag invullen.
+De productieomgeving heeft al een aparte grens: `ActorContext` met de capability `evidence.verify`, scopecontrole, idempotente aanvraag-ID, een bestaande Gate-transitie en een atomair productielogboek. Dat staat in [production-actor-authorization.md](../../../architecture/production-actor-authorization.md) en `SessionService.submit_verified_evidence_authorized`.
 
-Een oude seed kan al gezag gekregen hebben van vóór deze reparatie. Noch de nieuwe relatiebeoordeling, noch herimporteren trekt dat oude gezag automatisch in. De geschiedenis mag niet worden herschreven. Correctie, herbeoordeling of blokkering daarvan moet via **een afzonderlijk expliciet Gate-proces** worden besloten.
+De SSOT-manager wordt **niet** heimelijk een tweede productie-ingang. Het is de taak van een vertrouwde product-operator om de precieze bron/seedrelatie inhoudelijk te beoordelen en, waar gerechtvaardigd, de **bestaande geautoriseerde** bewijsfunctie te gebruiken. De SSOT-inspectie doet die stap niet automatisch, beschikt niet zelf over een productie-`ActorContext` en maakt geen valse claim dat twee velden menselijke verificatie aantonen. Een complete duurzame koppeling van SSOT-relatiebeoordeling aan een productie-ledger-event vraagt nog een afzonderlijk uitvoeringsbesluit.
 
-## Regressies en onderzoeksgrens
+### Historische seedgewichten worden niet stilzwijgend vertrouwd
 
-- Producttests toetsen wegvallen van automatische SUPPORT, vier fictief en apart geattesteerde bronnen, één document met vele chunks, bronduplicaten, bronconflicten, gewijzigde documenten, afgewezen materiaal en een bestaand historisch Gate-event.
-- De eerder onjuist positieve SSOT-tests worden inhoudelijk gecorrigeerd, niet stilzwijgend verwijderd.
-- De bestaande modelvrije G0-proef produceert een **voor/na-vergelijking**: historische resultaten worden gelinkt aan hun oude GitHub-run; huidige code wordt echt uitgevoerd. Alle beoordelingen in de huidige proef blijven expliciet door de **onderzoeker gesimuleerd**.
-- De `run-ssot-smoke` geeft geen groen resultaat meer alleen omdat één document meerdere chunks oplevert. Het toetst dat zonder relatiebeoordeling niets promoveert, en dat één geattesteerd document als één bronunit wordt behandeld.
+Een nieuw, read-only signaal in de agent-facing point-of-use-controle herkent oudere `SSOT SUPPORT`-events, zowel uit echte objecten als uit opgeslagen JSON. Zo'n seed kan historisch nog `PROMOTED` en positief gewogen zijn, maar mag **geen nieuwe** antwoordwijziging, toolactie of retrieval veroorzaken. De geweigerde poging wordt gewoon als point-of-use-besluit geregistreerd, met reden `legacy_ssot_requires_review`.
 
-## Nog vereist voordat een merge inhoudelijk verantwoord is
+De Workbench-inspectie toont `legacy_ssot_requires_review=True`, `current_gate_authorized=False` en een heldere uitleg. Ook als een oudere sessie current-Gate-herbeoordeling uit heeft staan, blijft het laatste point-of-use-contract weigeren.
 
-1. Vaststellen welke actor een relatiebeoordeling mag afgeven, hoe identiteit en bronherkomst worden vastgesteld, en wat de betekenis van SUPPORT bij een open vraag of wat-if is.
-2. Beslissen hoe oude, door similarity bevoegde seeds afzonderlijk beoordeeld, geblokkeerd of gemigreerd worden zonder bestaande Gate-events te herschrijven.
-3. Verifiëren van negatieve en aanvullende tegenproeven, de volledige testsuite op GitHub en eventuele problemen met `run-ssot-smoke` en opgeslagen datasets.
-4. Onafhankelijke technische en wetenschappelijke toets voor **Q1/Q2 zelf** blijven aparte taken. Deze SSOT-reparatie bewijst geen nieuwe mogelijkheden, semantische groei of blijvend modelvoordeel.
+De blokkering blijft bewust gelden nadat iemand alleen een nieuw, los `supports`-label indient. Een onwaarachtig label mag een oud historisch gewicht niet opnieuw bruikbaar maken. De geschiedenis blijft intact: eerder vastgelegde Gate-events, bronverwijzingen, seedgewichten en vroegere toegestane point-of-use-besluiten worden niet herschreven of achteraf als nieuwe overtredingen bestempeld. Historische records blijven reproduceerbaar, maar zijn geen toestemming voor een **nieuw** gebruik. Een later besluit over herstel of migratie heeft een nieuwe versiegebonden, door bevoegd gezag goedgekeurde procedure nodig.
 
-**Geen betaalde LLM-calls, keys, nieuwe modelrollen of wijzigingen aan de meerturns-shadowroute.**
+Dit is een conservatieve blokkering: ook werkelijk betrouwbare oudere SSOT-steun blijft tijdelijk buiten nieuwe invloed. Dat is een bewuste keuze zolang de oude records geen product-authenticatie van de precieze bron/seedrelatie aantonen. De code beweert **niet** dat iedere oude bron onjuist is.
+
+## Testafbakening
+
+- Producttests: geen promotie door zoekovereenkomst, fake reviewers of vier `supports`-claims; bronduplicaten, conflicten, veranderde tekst, onvolledig geverifieerde documenten, modelvoorstellen en oude logboeken.
+- Agenttests: nieuw antwoord, retrieval en besluit geblokkeerd door oude SSOT-steun; JSON-restore herkent dezelfde situatie; normale recurrence-seeds blijven toegestaan; historische toegestane point-of-use-besluiten blijven replaybaar.
+- Workbenchinspectie: de oud gepromoveerde seed verschijnt als `legacy_ssot_requires_review`, zonder dat gewicht of Gate-geschiedenis verdwijnt.
+- Modelvrije G0-proef: oorspronkelijke fout blijft gepind op [#40176388209](https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40176388209), de tussenvorm met operatorclaims op [#40182789691](https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40182789691). De nieuwe proef moet aantonen dat geen van de fictieve relatieverklaringen op zichzelf een Gate-event veroorzaakt. Er zijn geen echte bronbeoordelaars of modelcalls.
+
+## Nog vereist vóór merge
+
+Een review van de nieuwe **read-only** responsvorm van `validate_open_seeds_against_ssot` is nodig omdat eerdere callers `applied_evidence` en daadwerkelijke Gate-resultaten verwachtten. We veranderen hier een API-contract en moeten eventuele externe clients expliciet waarschuwen.
+
+Ook nodig: het formele werkproces voor onafhankelijke bronherkomst en bron/seedrelatie, plus een versiegebonden herstelprocedure voor historische SSOT-autoriteit. De [production-migration-policy.md](../../../architecture/production-migration-policy.md) verbiedt om oude events stilzwijgend met nieuwe garanties te markeren.
+
+**Deze reparatie is geen resultaat voor G0, Q1 of Q2.** De echte meerturns-shadowpipeline blijft bestaan en ongewijzigd. Er zijn geen betaalde LLM-aanroepen, nieuwe sleutels, tweede Gate of nieuwe modelrollen gebruikt.
