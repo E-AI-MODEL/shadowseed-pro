@@ -9,7 +9,6 @@ from dataclasses import replace
 import pytest
 
 from shadowseed_research.ssot_relation_preflight import (
-    BatchPreflight,
     Relation,
     RelationAttestation,
     RetrievedHit,
