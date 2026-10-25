@@ -62,3 +62,5 @@
 Related [original 2026-06 generative vision](https://github.com/E-AI-MODEL/shadowseed/blob/main/docs/research/vision-generative-seeds.md) and [accepted Pro ADR-002](../../architecture/adr/ADR-002-epistemic-seed-contract.md).
 
 **This folder is for continuity, source scrutiny, and test design — not a code implementation order or a claim that Shadowseed has demonstrated possibility-space expansion.**
+
+- **[G0: overeenkomst versus bewijsrichting in bestaande SSOT](g0/ssot-polarity-support-vs-relevance-2026-10-25.md)** — falsificatieproef met echte Manager/SSOT/Gate, fictief ondersteunende en tegengestelde broninhoud, plus een niet-geverifieerde controle. Geen productwijziging of Q1/Q2-conclusie.
