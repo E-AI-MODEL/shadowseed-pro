@@ -5,6 +5,8 @@ prepare_turn -> host generation -> observe_turn -> export_state sequence.
 It does NOT create a seed, reinterpret detector prose, call a model, build
 an inquiry prompt, submit Gate evidence, or allow seed influence. It only
 checks a canonical first birth before a future Q1/Q2 experimental handoff.
+It does not reconstruct per-raw-item transformation lineage: the product
+records raw detector observations and aggregate intake separately.
 
 The returned hashes bind *locally provided* records; they are not source
 authenticity, independent review, or evidence of latent model representations.
@@ -142,6 +144,11 @@ def freeze_canonical_weightless_birth(
         "origin_event_sha256": _hash_json(created[0]),
         "accepted_candidate_sha256": _hash_json(accepted[0]),
         "detector_observations_sha256": _hash_json(observations),
+        "detector_observation_count": len(observations),
+        # Product records raw observations and aggregate intake separately.
+        # Per-item raw-to-accepted transform lineage may be lost.
+        "raw_detector_item_to_seed_mapping_verified": False,
+        "raw_to_seed_link_scope": "same_turn_cooccurrence_not_item_lineage",
         "detector_prompt_contract": canonical.get("detector_audit", {}).get(
             "prompt_contract", None
         ),
