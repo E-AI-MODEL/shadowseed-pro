@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   offline-preflight:
-    if: github.event.before == '7d97d93ba20b76e293421511b13f8a547bec107f' && github.run_attempt == 1
+    if: github.event.before == 'a049dd142c5eca0fa328a12444351e9a62ebb322' && github.run_attempt == 1
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -27,7 +27,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Python 3.12
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b # v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: '3.12'
       - name: Locked uv
@@ -69,7 +69,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Python 3.12
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b # v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: '3.12'
       - name: Locked uv
