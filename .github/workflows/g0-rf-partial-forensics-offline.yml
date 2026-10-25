@@ -1,0 +1,58 @@
+name: Research - One-shot archived RF partial forensic replay (offline)
+
+# Replay one completed real GitHub artifact's recorded T0/T1 history.
+# No model/provider calls, no secrets, no G0 approval. Never run routinely.
+on:
+  push:
+    branches:
+      - research/q1-q2-real-seed-rf-20261025
+    paths:
+      - .github/workflows/g0-rf-partial-forensics-offline.yml
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  verified-archive-audit:
+    if: github.event.before == '41b14ea22a01f4b53a6993375e0e92b410e342ba' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install existing locked research dependencies
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+      - name: Test offline forensic checker, including corrupt-record negatives
+        run: uv run --no-sync python -m pytest -q research/tests/test_g0_rf_partial_forensics.py
+      - name: Retrieve prior first RF run by exact ID without provider access
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p research-artifacts/g0-rf-forensics/source
+          gh run download 40224494313 --repo E-AI-MODEL/shadowseed-pro \
+            --name g0-real-seed-rf-inquiry-40224494313 \
+            --dir research-artifacts/g0-rf-forensics/source
+          test -s research-artifacts/g0-rf-forensics/source/observed.json
+      - name: Verify immutable source bytes and archived T0/T1 record hashes
+        run: |
+          uv run --no-sync python research/scripts/g0_rf_partial_forensics.py \
+            research-artifacts/g0-rf-forensics/source/observed.json \
+            --expected-sha256 62f778fb53547f2c0532795ccb31f02f09381500a2eb67b7598bf86ae597820f \
+            > research-artifacts/g0-rf-forensics/summary.json
+          cat research-artifacts/g0-rf-forensics/summary.json
+      - name: Publish ONLY provenance-limited summary, not the raw model archive
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: g0-rf-forensics-offline-${{ github.run_id }}
+          path: research-artifacts/g0-rf-forensics/summary.json
+          if-no-files-found: warn
+          retention-days: 30

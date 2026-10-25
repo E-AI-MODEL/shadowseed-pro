@@ -1,0 +1,137 @@
+name: Research - One-shot GPT-5 Genuine Seed RF Inquiry
+
+# Public fictional, exploratory, model-originated question FORMULATION ONLY.
+# G0 NOT PASSED. No independent evaluator, closed-loop feedback or causal claim.
+# First independent research tests; then tightly capped live model, no retries.
+# Exact predecessor SHA and push-path restrict automatic execution to one push.
+on:
+  push:
+    branches:
+      - research/q1-q2-real-seed-rf-20261025
+    paths:
+      - .github/workflows/g0-real-seed-rf-inquiry-once.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: real-seed-rf-inquiry-one-shot-20261025
+  cancel-in-progress: false
+
+jobs:
+  no-network-tests:
+    if: github.event.before == 'a16a04e3bec2e1fa5bd4b95ae8eb7b6f62343d14' && github.ref == 'refs/heads/research/q1-q2-real-seed-rf-20261025'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact study revision without credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Locked uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install pinned product and research
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+      - name: Execute full offline research suite and frozen model budget checks
+        run: |
+          uv run --no-sync python -m pytest -q research/tests
+          uv run --no-sync python - <<'PY'
+          import json
+          from pathlib import Path
+          from shadowseed_research.benchmark.real_seed_rf_inquiry import (
+              validate, MAX_CALLS, MAX_EMBEDDINGS, MAX_TOKENS, OUTPUT_CAP
+          )
+          obj = json.loads(Path('research/fixtures/real_seed_rf_inquiry_v1.json').read_text(encoding='utf-8'))
+          case = validate(obj)
+          assert case['id'] == 'MEASUREMENT'
+          assert len(case['turns']) == 3
+          assert (MAX_CALLS, MAX_EMBEDDINGS, MAX_TOKENS, OUTPUT_CAP) == (24, 48, 110000, 4096)
+          print('PASS: no-network full-suite, chronological real-seed RF contract, G0 NOT PASSED.')
+          PY
+
+  live-questions:
+    needs: no-network-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: OpenAI key
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+    steps:
+      - name: Checkout exact research revision without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Locked uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install pinned product and research
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+          mkdir -p research-artifacts/real-seed-rf-inquiry
+      - name: Reject missing scoped provider credential without printing it
+        shell: bash
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::Existing OpenAI key Environment credential not available. No model calls."
+            exit 1
+          fi
+      - name: Run bounded five-arm real-seed question-formulation pilot
+        run: |
+          uv run --no-sync python -m shadowseed_research.benchmark.real_seed_rf_inquiry \
+            --fixture research/fixtures/real_seed_rf_inquiry_v1.json \
+            --output research-artifacts/real-seed-rf-inquiry/observed.json
+      - name: Validate only process integrity, not semantic Q2 success
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('research-artifacts/real-seed-rf-inquiry/observed.json')
+          d = json.loads(p.read_text(encoding='utf-8'))
+          assert d['schema'] == 'ssl-rf-real-seed-observations-v1'
+          assert d['feedback_regime'] == 'RF'
+          assert d['G0'] == 'NOT_PASSED'
+          assert d['q2_causal_novel_inquiry_established'] is False
+          assert d['q1_internal_absence_established'] is False
+          assert d['no_independent_evaluator'] is True
+          assert len(d['ordinary_t0_samples']) == 2 and len(d['turns']) == 3
+          a = d['provider_audit']
+          assert a['model_calls'] <= 24
+          assert a['embedding_calls'] <= 48
+          assert a['recorded_tokens'] <= 110000
+          if d['first_seed'] is not None:
+              assert d['status'] == 'completed_exploratory_real_seed_and_arm_questions'
+              assert set(d['turns'][1]['arms']) == set('ABCDE')
+              assert set(d['turns'][2]['arms']) == set('ABCDE')
+              assert all(t['followup'] is not None for t in d['turns'][1:])
+              assert all(t['followup']['seed_state_after_turn']['weight'] == 0
+                         for t in d['turns'][1:])
+          else:
+              assert d['status'] == 'completed_no_seed_no_q2_opportunity'
+              assert all(not t['arms'] for t in d['turns'])
+          print(json.dumps({
+              'status':d['status'], 'model_calls':a['model_calls'],
+              'embedding_calls':a['embedding_calls'],
+              'tokens':a['recorded_tokens'],
+              'first_seed_id':d['first_seed']['id'] if d['first_seed'] else None,
+              'G0':d['G0'],
+          }))
+          PY
+      - name: Preserve exact raw outputs, failures and provider receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: real-seed-rf-inquiry-${{ github.run_id }}
+          path: research-artifacts/real-seed-rf-inquiry/observed.json
+          if-no-files-found: warn
+          retention-days: 30

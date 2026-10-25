@@ -1,0 +1,137 @@
+name: Research - One-shot Genuine Seed RF Inquiry GPT-5
+
+# G0 NOT PASSED. One exploratory RF trial, no product-Gate influence and
+# no independent semantic efficacy claim. Never an automatic recurring run.
+on:
+  push:
+    branches:
+      - research/q1-q2-real-seed-rf-20261025
+    paths:
+      - .github/workflows/g0-real-seed-rf-one-shot.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: g0-real-seed-rf-inquiry-20261025
+  cancel-in-progress: false
+
+jobs:
+  offline-preflight:
+    if: github.event.before == 'a049dd142c5eca0fa328a12444351e9a62ebb322' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact isolated research branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Locked uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install product and research packages
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+      - name: Run all no-network research tests
+        run: uv run --no-sync python -m pytest -q research/tests
+      - name: Freeze RF controls without model calls
+        run: |
+          uv run --no-sync python - <<'PY'
+          import json
+          from pathlib import Path
+          from shadowseed_research.benchmark.real_seed_rf_inquiry import (
+              validate, MAX_CALLS, MAX_TOKENS, OUTPUT_CAP, ARMS,
+          )
+          data=json.loads(Path('research/fixtures/real_seed_rf_inquiry_v1.json').read_text(encoding='utf-8'))
+          c=validate(data)
+          assert data['feedback_regime']=='RF' and len(c['turns'])==3
+          assert len(ARMS)==5 and MAX_CALLS==24 and MAX_TOKENS==110000
+          assert OUTPUT_CAP==4096
+          print('OFFLINE ONLY: canonical pipeline, real-seed rule, five arms and bounded caps valid')
+          PY
+
+  bounded-live-model:
+    needs: offline-preflight
+    if: github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    environment:
+      name: OpenAI key
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+    steps:
+      - name: Checkout exact research code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Locked uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install pinned research dependencies
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+          mkdir -p research-artifacts/real-seed-rf
+      - name: Require existing GitHub Environment credential without disclosing it
+        shell: bash
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::No scoped OPENAI_KEY; zero model calls."
+            exit 1
+          fi
+      - name: Run real three-turn shadow engine plus five isolated inquiry arms
+        run: |
+          uv run --no-sync python -m shadowseed_research.benchmark.real_seed_rf_inquiry \
+            --fixture research/fixtures/real_seed_rf_inquiry_v1.json \
+            --output research-artifacts/real-seed-rf/observed.json
+      - name: Check recorded non-efficacy and zero-product-influence claims
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('research-artifacts/real-seed-rf/observed.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          assert d['schema']=='ssl-rf-real-seed-observations-v1'
+          assert d['G0']=='NOT_PASSED'
+          assert d['q1_internal_absence_established'] is False
+          assert d['q2_causal_novel_inquiry_established'] is False
+          assert d['no_closed_loop_feedback'] is True
+          assert len(d['turns'])==3
+          assert d['provider_audit']['model_calls'] <= 24
+          assert d['provider_audit']['embedding_calls'] <= 48
+          assert d['provider_audit']['recorded_tokens'] <= 110000
+          assert all(t['none_control_answer_identical'] for t in d['turns'])
+          if d['first_seed']:
+              assert d['status']=='completed_exploratory_real_seed_and_arm_questions'
+              assert len(d['turns'][1]['arms'])==len(d['turns'][2]['arms'])==5
+              assert d['first_seed']['weight']==0
+              for t in d['turns'][1:]:
+                  assert t['followup']['seed_state_after_turn']['weight']==0
+                  assert t['followup']['seed_state_after_turn']['evidence_count']==0
+                  assert t['followup']['product_answer_seed_influence_observed'] is False
+          else:
+              assert d['status']=='completed_no_seed_no_q2_opportunity'
+              assert all(not t['arms'] for t in d['turns'])
+          print(json.dumps({
+              'status':d['status'], 'calls':d['provider_audit']['model_calls'],
+              'tokens':d['provider_audit']['recorded_tokens'],
+              'first_seed':bool(d['first_seed']),
+              'research_arm_question_records':sum(len(t['arms']) for t in d['turns']),
+              'G0':d['G0'],
+          }))
+          PY
+      - name: Preserve full raw outputs or partial failure record
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: g0-real-seed-rf-inquiry-${{ github.run_id }}
+          path: research-artifacts/real-seed-rf/observed.json
+          if-no-files-found: warn
+          retention-days: 30

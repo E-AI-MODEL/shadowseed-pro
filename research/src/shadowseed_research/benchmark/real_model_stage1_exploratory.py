@@ -114,9 +114,26 @@ class BoundedProvider:
     appear in the persisted audit output.
     """
 
-    def __init__(self, key: str, *, transport: Any = None):
+    def __init__(
+        self, key: str, *, transport: Any = None,
+        model_call_cap: int = MAX_MODEL_CALLS,
+        embedding_call_cap: int = MAX_EMBEDDING_CALLS,
+        all_token_cap: int = MAX_ALL_TOKENS,
+        output_token_cap: int = MAX_OUTPUT_TOKENS,
+    ):
         if not isinstance(key, str) or not key.strip():
             raise ValueError("missing scoped OpenAI research credential")
+        if (
+            type(model_call_cap) is not int or not 1 <= model_call_cap <= 48
+            or type(embedding_call_cap) is not int or not 1 <= embedding_call_cap <= 64
+            or type(all_token_cap) is not int or not 5000 <= all_token_cap <= 160000
+            or type(output_token_cap) is not int or not 800 <= output_token_cap <= 4096
+        ):
+            raise ValueError("invalid or excessive research provider cap")
+        self.model_call_cap = model_call_cap
+        self.embedding_call_cap = embedding_call_cap
+        self.all_token_cap = all_token_cap
+        self.output_token_cap = output_token_cap
         self._key = key
         self._transport = transport or urllib.request.urlopen
         self.model_calls = 0
@@ -152,15 +169,15 @@ class BoundedProvider:
         if type(count) is not int or count < 0:
             raise RuntimeError("provider token usage is absent or invalid")
         self.total_tokens += count
-        if self.total_tokens > MAX_ALL_TOKENS:
+        if self.total_tokens > self.all_token_cap:
             raise RuntimeError("hard combined provider-token cap exceeded")
         return count
 
     def generate(self, *, stage: str, case_id: str, prompt: str,
                  instructions: str) -> str:
-        if self.model_calls >= MAX_MODEL_CALLS:
+        if self.model_calls >= self.model_call_cap:
             raise RuntimeError("hard model-call cap reached")
-        if self.total_tokens > MAX_ALL_TOKENS - 5000:
+        if self.total_tokens > self.all_token_cap - (self.output_token_cap + 1200):
             raise RuntimeError("insufficient remaining token budget")
         if not isinstance(prompt, str) or not 1 <= len(prompt) <= MAX_PROMPT_CHARS:
             raise ValueError("invalid or oversized model prompt")
@@ -169,7 +186,7 @@ class BoundedProvider:
             "model": MODEL,
             "instructions": instructions,
             "input": prompt,
-            "max_output_tokens": MAX_OUTPUT_TOKENS,
+            "max_output_tokens": self.output_token_cap,
             "reasoning": {"effort": "low"},
             "store": False,
         })
@@ -212,9 +229,9 @@ class BoundedProvider:
             raise ValueError("invalid embedding input")
         if text in self._embedding_cache:
             return self._embedding_cache[text].copy()
-        if self.embedding_calls >= MAX_EMBEDDING_CALLS:
+        if self.embedding_calls >= self.embedding_call_cap:
             raise RuntimeError("hard embedding call cap reached")
-        if self.total_tokens > MAX_ALL_TOKENS - 2000:
+        if self.total_tokens > self.all_token_cap - 2000:
             raise RuntimeError("insufficient embedding budget")
         self.embedding_calls += 1
         response = self._post("embeddings", {
@@ -251,7 +268,7 @@ class DetectorClientBridge:
         self.turn = -1
 
     def generate(self, prompt: str, *, max_new_tokens: int = 400, **_: Any) -> str:
-        if max_new_tokens > MAX_OUTPUT_TOKENS:
+        if max_new_tokens > self.provider.output_token_cap:
             raise ValueError("detector output request exceeds provider cap")
         return self.provider.generate(
             stage=f"detector_t{self.turn}", case_id=self.case_id,
@@ -420,9 +437,10 @@ def run(document: dict[str, Any], provider: BoundedProvider) -> dict[str, Any]:
         "model_calls": provider.model_calls,
         "embedding_calls": provider.embedding_calls,
         "token_total": provider.total_tokens,
-        "model_call_cap": MAX_MODEL_CALLS,
-        "embedding_call_cap": MAX_EMBEDDING_CALLS,
-        "all_token_cap": MAX_ALL_TOKENS,
+        "model_call_cap": provider.model_call_cap,
+        "embedding_call_cap": provider.embedding_call_cap,
+        "all_token_cap": provider.all_token_cap,
+        "output_token_cap": provider.output_token_cap,
         "events": list(provider.events),
     }
     return result
