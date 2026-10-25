@@ -142,9 +142,10 @@ def freeze_canonical_weightless_birth(
         "origin_event_sha256": _hash_json(created[0]),
         "accepted_candidate_sha256": _hash_json(accepted[0]),
         "detector_observations_sha256": _hash_json(observations),
-        "detector_variant": canonical.get("detector_audit", {}).get(
+        "detector_prompt_contract": canonical.get("detector_audit", {}).get(
             "prompt_contract", None
         ),
+        "origin_of_visible_answer_not_verified": True,
         "question_sha256": _digest(canonical["question"]),
         "answer_sha256": _digest(canonical["answer"]),
         "authority_at_birth": {
