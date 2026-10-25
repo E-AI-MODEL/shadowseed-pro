@@ -24,6 +24,12 @@ Voor neuron j en positie t definieert het H-Neurons-onderzoek de genormaliseerde
 
 De exacte neuronindex, projectiematrix, breedte en parameterisatie zijn modelafhankelijk. Een lijst neuron-IDs uit Mistral kan niet als dezelfde biologische of semantische eenheden in Qwen worden behandeld.
 
+### Broncontrole: labeloriëntatie in de publicatie en de code
+
+Bij het controleren van de primaire bronnen vond ik een **concrete interne tegenstrijdigheid in de HTML-methodesectie van Gao et al.** De tekst definieert de positieve klasse als hallucinerende antwoordtokens, maar de weergegeven vergelijking laat voor antwoordtokens juist de waarde 1 bij "faithful" zien. De [officiële classificatiecode](https://github.com/thunlp/H-Neurons/blob/main/scripts/classifier.py) maakt de gebruikte implementatie helder: *false answer tokens* krijgen label 1; *true answer tokens* en beide soorten overige tokens krijgen label 0. De [officiële README](https://github.com/thunlp/H-Neurons/blob/main/README.md) noemt deze 3-vs-1-strategie ook expliciet.
+
+Dit lijkt op een **vergissing in de formule/notatie**, maar daaruit volgt zonder volledige reproductie geen conclusie over onjuiste experimentresultaten. Voor onze toekomstige instrumentproef geldt: neem geen labeloriëntatie uit een losse paperzin over zonder code, trainlabels en daadwerkelijke evaluatiesplit naast elkaar te controleren. Controleer ook of "positive coefficient" dezelfde klasse betekent als in de interventiecode.
+
 ## 2. De beperkingen van sparse lokalisatie zijn nu expliciet onderzocht
 
 [Cavus et al., 2026, preprint](https://arxiv.org/html/2609.29781) onderzochten twee 4B Gemma-familiemodellen en drie QA-datasets. Zij bevestigen dat een sparse classifier bepaalde gedragstypen kan voorspellen, terwijl gekozen neuronen **niet uniek** lijken. Hun onderzoeksspecifieke cijfers:
