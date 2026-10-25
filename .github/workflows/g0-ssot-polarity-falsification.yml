@@ -1,0 +1,89 @@
+name: Research - G0 SSOT Polarity Falsification
+
+# Characterization of EXISTING manager/SSOT/Gate behavior only.
+# This is not a new model, trust verifier, polarity classifier, Gate fix,
+# positive Q1/Q2 result or permission to use synthetic claims as facts.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "research/scripts/g0_ssot_evidence_polarity_preflight.py"
+      - "research/tests/test_g0_ssot_evidence_polarity.py"
+      - ".github/workflows/g0-ssot-polarity-falsification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: research-g0-ssot-polarity-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  ssot-polarity-model-free:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      GEMINI_API_KEY: ""
+      GOOGLE_API_KEY: ""
+      HF_TOKEN: ""
+    steps:
+      - name: Read-only checkout without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+      - name: Pinned uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
+      - name: Locked product test environment
+        run: uv sync --locked --extra test
+      - name: Run genuine SSOT and Gate polarity-characterization regressions
+        run: |
+          uv run --no-sync python -m pytest -q \
+            research/tests/test_g0_ssot_evidence_polarity.py \
+            tests/test_ssot_manager.py \
+            tests/test_ssot_falsification.py
+      - name: Capture sanitized actual evidence trace from real Gate events
+        run: |
+          mkdir -p research-artifacts
+          uv run --no-sync python research/scripts/g0_ssot_evidence_polarity_preflight.py \
+            --output research-artifacts/g0-ssot-polarity-existing-code.json
+          uv pip freeze --python .venv/bin/python > research-artifacts/g0-ssot-polarity-dependencies.txt
+      - name: Enforce claim restrictions, synthetic provenance and opposing evidence labels
+        run: |
+          uv run --no-sync python - <<'PY'
+          import json
+          from pathlib import Path
+          r = json.loads(Path("research-artifacts/g0-ssot-polarity-existing-code.json").read_text(encoding="utf-8"))
+          assert r["schema"] == "g0-ssot-polarity-mechanical-characterization-v0"
+          assert r["status"] == "existing_product_code_characterized_not_repaired"
+          assert r["model_calls"] == r["human_verifiers"] == 0
+          assert r["Q1_tested"] is r["Q2_tested"] is r["G0_passed"] is False
+          assert r["product_code_changed"] is r["gate_logic_changed"] is False
+          assert r["input_provenance"] == "INVESTIGATOR_AUTHORED_FICTIONAL_POLARITIES"
+          a = r["cases"]["affirmation"]
+          b = r["cases"]["explicit_negation"]
+          c = r["cases"]["unverified_negation"]
+          assert len(a["gate_decisions"]) == len(b["gate_decisions"]) == 4
+          assert a["accepted_evidence_count"] == b["accepted_evidence_count"] == 4
+          assert all(e["directions"] == ["support"] for e in a["gate_decisions"] + b["gate_decisions"])
+          assert a["final_seed"]["weight"] > 0 and b["final_seed"]["weight"] > 0
+          assert c["final_seed"]["weight"] == 0 and not c["gate_decisions"]
+          print("Synthetic negation and affirmation both received SSOT SUPPORT. Not an independent truth verdict.")
+          PY
+      - name: Upload synthetic-only observation and exact dependency set
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: g0-ssot-polarity-falsification-${{ github.run_id }}
+          path: |
+            research-artifacts/g0-ssot-polarity-existing-code.json
+            research-artifacts/g0-ssot-polarity-dependencies.txt
+          if-no-files-found: error
+          retention-days: 30
