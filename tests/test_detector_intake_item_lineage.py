@@ -328,3 +328,42 @@ def test_evaluation_and_source_observation_report_the_same_lineage() -> None:
     )
     assert not imported["promoted_this_observation"]
     assert all(s.weight == 0 for s in source.manager.seeds.values())
+
+
+def test_all_live_newborn_created_events_have_same_canonical_origin() -> None:
+    engine = ShadowseedEngine(
+        detector_backend=_FirstTurnDetector(),
+        embedding_fn=_embed,
+        recurrence_mode="pairwise",
+        gate_policy_id="evidence_backed",
+    )
+    pending = engine.prepare_turn("Which readings are available?")
+    first = engine.observe_turn(pending, "Only one pressure reading exists.")
+    ids = first["seeds_born_weightless"]
+    assert len(ids) == 2
+    ref = first["first_pass_context_ref"]
+    assert ref == "turn:0:visible_answer"
+    events = engine._session.manager.event_log
+
+    origins = []
+    for seed_id in ids:
+        seed = engine._session.manager.get_seed(seed_id)
+        assert seed.origin is not None
+        origin = seed.origin.to_dict()
+        origins.append(seed.origin)
+        matching = [
+            event for event in events
+            if event.event_type == "created" and event.seed_id == seed_id
+        ]
+        assert len(matching) == 1
+        assert matching[0].detail["origin"] == origin
+        assert matching[0].detail["text"] == seed.text
+        assert origin["context_ref"] == ref
+        assert origin["detection_basis"] == "visible_answer_non_ssl_attributed"
+        assert seed.weight == 0
+        assert seed.evidence_count == 0
+    # Historical caller-visible object identity is preserved. The original
+    # bug was that only the first separately recorded created-event was fixed.
+    assert origins[0] is origins[1]
+    assert engine._session.manager.gate_events == []
+    assert first["surfaced_seed_ids"] == []
