@@ -1,0 +1,115 @@
+name: Research - One-shot GPT-5 Compression Retention Pilot
+
+# Paid, explicitly bounded, fictional engineering research only.
+# Trigger ONCE by adding this workflow file to the named research branch.
+# A rerun is not scheduled and no workflow_dispatch entry exists.
+# The archived v0 possibility-space workflow remains offline-only.
+on:
+  push:
+    branches:
+      - research/live-compression-retention-20261025
+    paths:
+      - .github/workflows/live-compression-retention.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-compression-retention-one-shot
+  cancel-in-progress: false
+
+jobs:
+  offline-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact research revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Install locked uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install project and research namespace
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+      - name: No-network contracts and full research regression suite
+        run: uv run --no-sync python -m pytest -q research/tests
+      - name: Recheck synthetic input and model pins
+        run: |
+          uv run --no-sync python - <<'PY'
+          import json
+          from pathlib import Path
+          from shadowseed_research.benchmark.live_compression_retention import validate_cases
+          data = json.loads(Path("research/fixtures/live_compression_exploratory_v0.json").read_text(encoding="utf-8"))
+          assert len(validate_cases(data)) == 3
+          print("Three fixed fictional cases validated. Zero model calls.")
+          PY
+
+  bounded-live-model:
+    needs: offline-check
+    if: github.ref == 'refs/heads/research/live-compression-retention-20261025'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    environment:
+      name: OpenAI key
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+    steps:
+      - name: Checkout exact research revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Install locked uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install product and research package
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+      - name: Check Environment credential without disclosing value
+        shell: bash
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::No configured OPENAI_KEY in this Environment; no model calls made."
+            exit 1
+          fi
+      - name: Execute bounded live model and real embedding retention pilot
+        run: |
+          uv run --no-sync python -m shadowseed_research.benchmark.live_compression_retention \
+            --cases research/fixtures/live_compression_exploratory_v0.json \
+            --out-dir research-artifacts/live-compression-retention
+      - name: Print bounded outcome manifest, not unreviewed efficacy claims
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("research-artifacts/live-compression-retention/result.json")
+          if not p.exists():
+              print("NO RESULT: live runner did not produce a report")
+          else:
+              o = json.loads(p.read_text(encoding="utf-8"))
+              summary = {
+                  "status": o.get("status"),
+                  "claim": o.get("claim"),
+                  "case_count_frozen": len(o.get("t0", [])),
+                  "case_count_followup": len(o.get("t2", [])),
+                  "model": o.get("model"),
+                  "embedding_model": o.get("embedding_model"),
+                  "usage": o.get("usage"),
+                  "limitations": o.get("limitations"),
+              }
+              print(json.dumps(summary, ensure_ascii=False))
+          PY
+      - name: Retain frozen and complete or partial fictional result artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: live-compression-retention-v0-${{ github.run_id }}
+          path: research-artifacts/live-compression-retention/
+          if-no-files-found: warn
+          retention-days: 30
