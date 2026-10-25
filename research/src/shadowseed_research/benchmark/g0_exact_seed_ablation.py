@@ -32,6 +32,7 @@ SCHEMA = "shadowseed-g0-exact-seed-ablation-design-v1"
 RESULT_SCHEMA = "shadowseed-g0-exact-seed-ablation-observations-v1"
 EXPECTED_SOURCE_SHA = "62f778fb53547f2c0532795ccb31f02f09381500a2eb67b7598bf86ae597820f"
 EXPECTED_SOURCE_COMMIT = "7677f8e145c4766ff3fea5451c95acea21edaacb"
+EXPECTED_SOURCE_FIXTURE_SHA = "e72bc6a6846d2cbe12af672a0d12365ea571ad10091ab1ec3f4746ad87d38bee"
 ORDER = (("D", "X", "P", "N"), ("X", "N", "D", "P"),
          ("P", "D", "N", "X"), ("N", "P", "X", "D"))
 ARMS = ("D", "X", "P", "N")
@@ -50,7 +51,10 @@ def validate_design(d: dict[str, Any]) -> None:
             "invalid frozen design schema")
     _assert(d.get("source_run_id") == 40224494313 and
             d.get("source_commit") == EXPECTED_SOURCE_COMMIT and
-            d.get("source_raw_observed_sha256") == EXPECTED_SOURCE_SHA,
+            d.get("source_raw_observed_sha256") == EXPECTED_SOURCE_SHA and
+            d.get("source_fixture_sha256") == EXPECTED_SOURCE_FIXTURE_SHA and
+            d.get("source_fixture_path") ==
+                "research/fixtures/real_seed_rf_inquiry_v1.json",
             "source of real seed was substituted")
     _assert(d.get("source_model") == "gpt-5" and
             d.get("source_seed_id") == "ss_001" and
@@ -107,7 +111,8 @@ def verify_recorded_source(original: dict, fixture: dict, design: dict) -> dict:
             "incomplete_exploratory_not_a_null_result"
         and original.get("case_id") == "MEASUREMENT"
         and original.get("G0") == "NOT_PASSED"
-        and original.get("fixture_sha256") == _hash(fixture),
+        and original.get("fixture_sha256") == _hash(fixture)
+        and original.get("fixture_sha256") == EXPECTED_SOURCE_FIXTURE_SHA,
         "original frozen RF source mismatch")
     turns = original.get("turns")
     _assert(isinstance(turns, list) and len(turns) == 3 and
