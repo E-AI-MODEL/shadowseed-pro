@@ -138,7 +138,7 @@ def test_unobserved_turns_cannot_be_recreated_retroactively():
         freeze_weightless_followup(app, birth, previous=first)
     turn(app, "Tweede vervolg")
     turn(app, "Derde vervolg")
-    with pytest.raises(ValueError, match="immediately preceding"):
+    with pytest.raises(ValueError, match="previous checkpoint is not the preceding history"):
         freeze_weightless_followup(app, birth, previous=first)
 
 
@@ -245,6 +245,10 @@ def test_tampered_turns_and_audit_history_fail_closed(monkeypatch, kind, error):
     elif kind == "wrong_seed":
         b["candidate_text_sha256"] = "0" * 64
         b = rehash(b)
+        # Rebind the claimed previous checkpoint so this test reaches the
+        # independent seed-text check, rather than an earlier hash mismatch.
+        prev["birth_snapshot_sha256"] = b["snapshot_sha256"]
+        prev = rehash(prev)
     elif kind == "previous_hash":
         prev["turn"] = 999
     elif kind == "previous_history":
@@ -252,6 +256,13 @@ def test_tampered_turns_and_audit_history_fail_closed(monkeypatch, kind, error):
         prev = rehash(prev)
     elif kind == "raw_item":
         state["turn_reports"][0]["detected_candidates"][0] = "Forged raw item"
+        # Match the new (falsified) historical report hash in the checkpoint.
+        # The original observation ID must still reject the changed raw item.
+        prev["history_sha256"] = sha256(json.dumps(
+            state["turn_reports"][:2], ensure_ascii=False, sort_keys=True,
+            separators=(",", ":"), allow_nan=False,
+        ).encode("utf-8")).hexdigest()
+        prev = rehash(prev)
     elif kind == "created":
         for event in state["manager"]["event_log"]:
             if event["event_type"] == "created":
@@ -276,8 +287,8 @@ def test_tampered_turns_and_audit_history_fail_closed(monkeypatch, kind, error):
         state["manager"]["gate_events"].insert(0, {
             "seed_id": "unrelated", "decision": "blocked",
         })
-        # A zero prefix cannot prove a pre-existing Gate stream; create a
-        # genuine refused Gate in the first-turn chain for the negative test.
+        # Supply a claimed previous Gate prefix to test its integrity check.
+        # It is intentionally synthetic and cannot count as a real Gate run.
         prev["gate_log_count"] = 1
         prev["gate_log_sha256"] = "0" * 64
         prev = rehash(prev)
