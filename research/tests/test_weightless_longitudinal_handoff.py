@@ -197,6 +197,27 @@ def test_dormant_and_trtl_are_lifecycle_not_semantic_growth():
     assert detector.calls == app.turn
 
 
+def test_terminal_dormant_ttl_expiry_is_observed_as_a_negative_path():
+    app, _ = engine()
+    sid, birth = first_birth(app)
+    previous = None
+    for i in range(1, 45):
+        turn(app, f"Losstaande latere waarneming {i}", "Nog altijd geen nieuw bewijs.")
+        checkpoint = freeze_weightless_followup(app, birth, previous=previous)
+        previous = checkpoint
+        if checkpoint["seed_state_after_turn"]["status"] == "EXPIRED":
+            break
+    else:
+        raise AssertionError("normal dormant TTL never caused expiry")
+    assert checkpoint["seed_id"] == sid
+    assert checkpoint["seed_state_after_turn"]["weight"] == 0
+    assert checkpoint["seed_state_after_turn"]["evidence_count"] == 0
+    assert checkpoint["seed_state_after_turn"]["authority_version"] == 0
+    assert "expired" in checkpoint["new_gate_decisions"]
+    assert checkpoint["semantic_growth_assessed"] is False
+    assert checkpoint["q1_or_q2_effect_established"] is False
+
+
 @pytest.mark.parametrize("kind,error", [
     ("birth_hash", "birth snapshot hash"),
     ("wrong_seed", "original candidate text or origin"),
