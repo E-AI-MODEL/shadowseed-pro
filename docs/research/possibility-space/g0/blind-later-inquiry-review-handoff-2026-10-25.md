@@ -79,7 +79,7 @@ Voor toekomstige onuitgegeven, modelgegenereerde traces bestaat `prepare --input
 - De software mag **geen Q1-distributie**, modelinterne neuronrepresentatie of inhoudelijke Q2-groei afleiden uit PR #232.
 - De software voert **geen LLM-oproep** uit en vraagt **geen** model om zijn eigen vraag te beoordelen.
 - Er is **geen** automatisch G0-succes en geen verborgen benchmarkantwoord om "nieuwheid" te belonen.
-- Het masker kan tijdens een adaptief RI-traject herkenbare externe observaties **niet magisch onherkenbaar maken**. Dat risico blijft zichtbaar voor een menselijk reviewer, inclusief een mogelijke blinderingsbreuk.
+- Het masker kan tijdens een adaptief RI-traject herkenbare externe observaties **niet magisch onherkenbaar maken**. Dat risico blijft zichtbaar voor een menselijk reviewer, inclusief een mogelijke blinderingsbreuk. De software maskeert **expliciete metadata-velden**, maar gaat geen geldige vraagteksten op losse woorden of armletters (A/B/C/D/E) afkeuren of herschrijven. Een vraag die zelf de experimentele arm noemt, is een te beoordelen **blinderingsbreuk**, geen reden om de vraag achteraf als inhoudelijk niet-bestaand te schrappen.
 - Een tweede beoordelaar is geen wetenschappelijk onafhankelijk reviewer als diezelfde persoon de casus/vragen vooraf heeft geschreven. De software kan dat niet controleren.
 - Het instrument dwingt geen nieuwe productstatus, seedscore, Gate/point-of-use, TTL/TrTL of wijziging van accepted ADR's af.
 
