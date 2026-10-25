@@ -23,7 +23,7 @@ SPEC.loader.exec_module(MODULE)
 def test_unreviewed_and_opposing_sources_do_not_gain_authority() -> None:
     r = MODULE.build_result()
     assert r["status"] == (
-        "post_fix_synthetic_mechanics_characterized_not_independently_verified"
+        "researcher_asserted_relations_read_only_no_gate_authority"
     )
     for name in (
         "affirmation_without_relation",
@@ -31,32 +31,26 @@ def test_unreviewed_and_opposing_sources_do_not_gain_authority() -> None:
         "unverified_with_author_support",
     ):
         case = r["cases"][name]
-        assert case["accepted_ssot_signal_count"] == 0
+        assert case["review_candidate_count"] == 0
         assert case["gate_events"] == []
         assert case["final_seed"]["weight"] == 0
         assert case["final_seed"]["evidence_count"] == 0
 
 
-def test_only_author_attested_support_can_reach_real_gate() -> None:
+def test_researcher_declared_support_yields_candidates_not_authority() -> None:
     r = MODULE.build_result()
     affirmative = r["cases"]["affirmation_with_author_support"]
-    assert affirmative["accepted_ssot_signal_count"] == 4
-    assert len(affirmative["gate_events"]) == 4
-    assert affirmative["final_seed"]["weight"] > 0
-    assert affirmative["final_seed"]["evidence_count"] == 4
-    assert affirmative["final_seed"]["status"] == "PROMOTED"
-    for event in affirmative["gate_events"]:
-        kinds = event["signal_kinds"]
-        assert "recurrence" in kinds
-        assert any(
-            kind == "ssot" and direction == "support"
-            for kind, direction in zip(kinds, event["directions"])
-        )
-        assert any(
-            ref.startswith("g0_affirm_reviewed")
-            for kind, ref in zip(kinds, event["source_refs"])
-            if kind == "ssot"
-        )
+    assert affirmative["review_candidate_count"] == 4
+    assert affirmative["gate_events"] == []
+    assert affirmative["gate_authorized"] is False
+    assert affirmative["candidate_review_required"] is True
+    assert affirmative["final_seed"]["weight"] == 0.0
+    assert affirmative["final_seed"]["evidence_count"] == 0
+    assert affirmative["final_seed"]["status"] != "PROMOTED"
+    assert all(
+        case["gate_authorized"] is False and case["gate_events"] == []
+        for case in r["cases"].values()
+    )
 
 
 def test_search_still_retrieves_explicitly_negative_source() -> None:
@@ -86,9 +80,11 @@ def test_results_have_no_independent_verification_claims(tmp_path: Path, monkeyp
     monkeypatch.setattr(sys, "argv", [str(SCRIPT), "--output", str(output)])
     MODULE.main()
     result = json.loads(output.read_text(encoding="utf-8"))
-    assert result["schema"] == "g0-ssot-polarity-before-after-characterization-v1"
+    assert result["schema"] == "g0-ssot-polarity-read-only-handoff-v2"
     assert result["model_calls"] == result["human_verifiers"] == 0
     assert result["no_research_gate_or_polarity_classifier"] is True
+    assert result["authorized_actor_submissions"] == 0
+    assert result["intermediate_unsafe_attestation_run"].endswith("/40182789691")
     assert result["current_product_code_executed"] is True
     assert result["input_provenance"] == "INVESTIGATOR_AUTHORED_FICTIONAL_POLARITIES"
     assert result["Q1_tested"] is result["Q2_tested"] is result["G0_passed"] is False
