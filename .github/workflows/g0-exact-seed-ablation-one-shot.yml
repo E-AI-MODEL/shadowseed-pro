@@ -1,0 +1,167 @@
+name: Research - One-shot GPT-5 exact real seed T1 ablation
+
+# Explicitly exploratory/post-hoc, one real canonical first seed at frozen T1.
+# G0 remains NOT PASSED. This action never changes the ordinary product.
+# One-shot only, by unique commit predecessor + first run attempt.
+on:
+  push:
+    branches:
+      - research/g0-exact-seed-ablation-20261025
+    paths:
+      - .github/workflows/g0-exact-seed-ablation-one-shot.yml
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: research-g0-exact-seed-ablation-one-shot-20261025
+  cancel-in-progress: false
+
+jobs:
+  no-network-preflight:
+    if: github.event.before == '4c3c4e480d8d1ed164c65f29ec47978c6332e0ce' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact fixed research revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Locked uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install pinned product and research packages
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+      - name: Run all offline research tests without provider key
+        run: |
+          uv run --no-sync python -m pytest -q research/tests
+      - name: Retrieve original 14-call real T1 record and verify immutable bytes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p research-artifacts/g0-seed-ablation/source
+          gh run download 40224494313 --repo E-AI-MODEL/shadowseed-pro \
+            --name g0-real-seed-rf-inquiry-40224494313 \
+            --dir research-artifacts/g0-seed-ablation/source
+          echo "62f778fb53547f2c0532795ccb31f02f09381500a2eb67b7598bf86ae597820f  research-artifacts/g0-seed-ablation/source/observed.json" | sha256sum -c -
+      - name: Require real first birth and exactly balanced single-slot contrast
+        run: |
+          uv run --no-sync python - <<'PY'
+          import json
+          from pathlib import Path
+          from shadowseed_research.benchmark.g0_exact_seed_ablation import (
+              validate_design, build_prompts, ARMS, ORDER, CALLS,
+          )
+          design=json.loads(Path('research/fixtures/g0_exact_seed_ablation_v1.json').read_text(encoding='utf-8'))
+          fixture=json.loads(Path('research/fixtures/real_seed_rf_inquiry_v1.json').read_text(encoding='utf-8'))
+          observed=json.loads(Path('research-artifacts/g0-seed-ablation/source/observed.json').read_text(encoding='utf-8'))
+          validate_design(design)
+          prompts=build_prompts(observed,fixture,design)
+          assert len(prompts)==4 and set(prompts)==set(ARMS)
+          assert prompts['D']['prompt_chars']==prompts['P']['prompt_chars']
+          assert len(ORDER)==4 and CALLS==16
+          print('OFFLINE PASS: first real canonical seed at T0, T1 history, D-only text exposure, exact removal, matched-placebo length, four draws per arm.')
+          PY
+
+  one-shot-gpt5-ablation:
+    needs: no-network-preflight
+    if: github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    environment:
+      name: OpenAI key
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+    steps:
+      - name: Checkout exact fixed research revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Locked uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install pinned research runtime
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+          mkdir -p research-artifacts/g0-seed-ablation/source research-artifacts/g0-seed-ablation/results
+      - name: Require existing scoped secret, never print its value
+        shell: bash
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::No GitHub Environment OPENAI_KEY; no paid calls."
+            exit 1
+          fi
+      - name: Retrieve exact original research source (no new detector calls)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 40224494313 --repo E-AI-MODEL/shadowseed-pro \
+            --name g0-real-seed-rf-inquiry-40224494313 \
+            --dir research-artifacts/g0-seed-ablation/source
+          echo "62f778fb53547f2c0532795ccb31f02f09381500a2eb67b7598bf86ae597820f  research-artifacts/g0-seed-ablation/source/observed.json" | sha256sum -c -
+      - name: Run 16 bounded stateless GPT-5 inquiry calls, no retries
+        run: |
+          uv run --no-sync python -m shadowseed_research.benchmark.g0_exact_seed_ablation \
+            --source research-artifacts/g0-seed-ablation/source/observed.json \
+            --source-fixture research/fixtures/real_seed_rf_inquiry_v1.json \
+            --design research/fixtures/g0_exact_seed_ablation_v1.json \
+            --output research-artifacts/g0-seed-ablation/results/observed.json \
+            --blind-output research-artifacts/g0-seed-ablation/results/blind-review.json \
+            --owner-output research-artifacts/g0-seed-ablation/results/owner-unblind.json
+      - name: Check that the completed trial does NOT claim scientific efficacy
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('research-artifacts/g0-seed-ablation/results')
+          d=json.loads((p/'observed.json').read_text(encoding='utf-8'))
+          b=json.loads((p/'blind-review.json').read_text(encoding='utf-8'))
+          o=json.loads((p/'owner-unblind.json').read_text(encoding='utf-8'))
+          assert d['schema']=='shadowseed-g0-exact-seed-ablation-observations-v1'
+          assert d['status']=='completed_exploratory_unreviewed_single_seed'
+          assert d['G0']=='NOT_PASSED'
+          assert d['Q1_internal_absence_proven'] is False
+          assert d['Q2_causal_new_investigability_proven'] is False
+          assert len(d['observations'])==16 and d['provider_audit']['model_calls_attempted']==16
+          assert d['provider_audit']['embedding_calls_attempted']==0
+          assert d['provider_audit']['reported_tokens']<=110000
+          assert all(sum(item['arm']==arm for item in d['observations'])==4
+                     for arm in ('D','X','P','N'))
+          assert len(b['samples'])==len(o['sample_mapping'])==16
+          assert all('arm' not in item for item in b['samples'])
+          print(json.dumps({
+            'status':d['status'],
+            'model_calls':d['provider_audit']['model_calls_attempted'],
+            'tokens':d['provider_audit']['reported_tokens'],
+            'G0':d['G0'],
+            'independent_review_completed':False,
+          }))
+          PY
+      - name: Upload raw and blinded/owner research observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: exact-seed-ablation-owner-${{ github.run_id }}
+          path: |
+            research-artifacts/g0-seed-ablation/results/observed.json
+            research-artifacts/g0-seed-ablation/results/owner-unblind.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Upload independent-review-friendly blinded material separately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: exact-seed-ablation-blind-${{ github.run_id }}
+          path: research-artifacts/g0-seed-ablation/results/blind-review.json
+          if-no-files-found: warn
+          retention-days: 30
