@@ -55,7 +55,9 @@ def test_real_session_uses_original_detector_prompt_parser_and_canonical_intake(
     assert len(cp0["parsed_candidates"]) == 2
     assert len(cp0["intake"]["normalized_candidates"]) == len(cp0["parsed_candidates"])
     assert len(cp0["observation_ledger_entries"]) == 2
-    assert cp0["seed_birth_ids_this_turn"]
+    assert len(cp0["seed_birth_ids_this_turn"]) == 2
+    assert cp0["redetected_existing_seed_ids_this_turn"] == []
+    assert set(cp0["accepted_seed_ids_this_turn"]) == set(cp0["seed_birth_ids_this_turn"])
     assert all(s["weight"] == 0 for s in cp0["seed_state_after"].values())
     assert all(s["evidence_count"] == 0 for s in cp0["seed_state_after"].values())
     assert all(s["origin"]["context_ref"] == "turn:0:visible_answer"
@@ -81,11 +83,19 @@ def test_none_parser_failure_and_recurring_seed_are_different_events():
     assert cp1["parse_diagnostics"]["explicit_none"] is True
     assert cp1["parse_status"] == "explicit_NONE"
     assert cp1["seed_birth_ids_this_turn"] == []
+    assert cp1["redetected_existing_seed_ids_this_turn"] == []
     assert cp1["parsed_candidates"] == []
 
     assert cp2["raw_detector_output"] == cp0["raw_detector_lines"][0]
     repeated = cp0["seed_birth_ids_this_turn"][0]
     assert cp2["intake"]["accepted"][0]["seed_id"] == repeated
+    assert cp2["seed_birth_ids_this_turn"] == []
+    assert cp2["accepted_seed_ids_this_turn"] == [repeated]
+    assert cp2["redetected_existing_seed_ids_this_turn"] == [repeated]
+    assert not any(
+        event["event_type"] == "created"
+        for event in cp2["manager_events_this_turn"]
+    )
     assert cp2["seed_state_after"][repeated]["occurrence_count"] >= 2
     # Trace is not monotonic across turns: TTL decay can outweigh recurrence.
     # Test the actual transition after prepare_turn, not a desired end score.
