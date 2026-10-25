@@ -26,7 +26,7 @@ Twee gescheiden sessies gebruiken exact dezelfde fictieve antwoorden, maar versc
 | Ruwe detectie | Exacte uitvoer, afzonderlijke ruwe regels en volledige parsercounters | Niet elke regel heeft een afzonderlijk parserafwijslabel |
 | Parser | Parsed candidates; onderscheid tussen expliciet NONE, leeg en niet parsebaar | Geen onafhankelijke kandidaatvaliditeit |
 | Intake | Genormaliseerde kandidaten, toegelaten en afgewezen kandidaten met redenen | Toegelaten is niet automatisch relevant, nieuw of waar |
-| Geboorte | Originele seed-ID, status, trace, weight, evidence_count, occurrence_count en herkomst | Nul gewicht is geen wetenschappelijk resultaat |
+| Geboorte | Originele seed-ID, status, trace, weight, evidence_count, occurrence_count en herkomst; met snapshots vóór voorbereiding, na het TTL-/TrTL-voorbereidingspad en na observe_turn | Nul gewicht is geen wetenschappelijk resultaat; terugkeer hoeft het totale traceverval niet te overtreffen |
 | Tijdsverloop | Dezelfde manager over vier turns, eventlog en seedstatus vóór/na | Nog geen getoetste meerturnswaarde of groei |
 
 De ruwe parseroutput blijft inspecteerbaar. De huidige parser geeft niet voor iedere individuele weggefilterde regel een afzonderlijke inhoudelijke reden. Het instrument verzint die informatie niet.
