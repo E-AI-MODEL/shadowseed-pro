@@ -108,8 +108,8 @@ class PreflightRecord:
 @dataclass(frozen=True)
 class BatchPreflight:
     observations: tuple[PreflightRecord, ...]
-    support_units_to_review: tuple[str, ...]
-    conflicting_source_units: tuple[str, ...]
+    support_units_to_review: tuple[tuple[str, str], ...]
+    conflicting_source_units: tuple[tuple[str, str], ...]
     gate_authorized: bool = False
 
 
@@ -173,10 +173,10 @@ def preflight_batch(
         preflight_hit(hit, reviews.get((hit.seed_id, hit.chunk_id)))
         for hit in hits
     ]
-    relations: dict[str, set[Relation]] = {}
+    relations: dict[tuple[str, str], set[Relation]] = {}
     for record in records:
         if record.source_unit_id and record.relation is not None:
-            relations.setdefault(record.source_unit_id, set()).add(record.relation)
+            relations.setdefault((record.seed_id, record.source_unit_id), set()).add(record.relation)
     conflicting = {
         unit for unit, values in relations.items()
         if len(values) > 1
@@ -184,11 +184,11 @@ def preflight_batch(
     records = [
         replace(record, disposition="conflicting_relation_same_source",
                 possible_support_for_external_review=False)
-        if record.source_unit_id in conflicting else record
+        if (record.seed_id, record.source_unit_id) in conflicting else record
         for record in records
     ]
     support = sorted({
-        record.source_unit_id
+        (record.seed_id, record.source_unit_id)
         for record in records
         if record.possible_support_for_external_review
         and record.source_unit_id is not None
