@@ -81,7 +81,7 @@ Workbench is still not part of the audited download (issue #200).
 | Distribution | Clean wheel and standalone self-tests, supported-platform CI, provenance, checksums and SBOM |
 | Dependency audit | Strict audit of the locked web-only shipping closure |
 | Real conversation | A local Ollama chat over several turns, close and reopen, then `shadowseed doctor` |
-| Production claim | Production Release Assurance on the published tag, no open P0/P1 finding and the 24-hour soak |
+| Production claim | Production Release Assurance on the published tag, the recorded use cycle and no open P0/P1 finding |
 
 Deterministic backend doubles do not establish live-model quality or latency.
 

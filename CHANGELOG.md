@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Release process: the 24-hour soak after publication is removed. The
+  production-ready/local declaration needs the recorded use cycle with
+  `shadowseed doctor` on the published release and no open P0/P1 finding, with
+  no minimum waiting period.
 - Manual: a professional manual in English and Dutch (`docs/manual/`), in six
   parts for users, testers, researchers, developers and specialists, with
   screenshots of the web application and PDF editions built by

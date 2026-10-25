@@ -91,21 +91,21 @@ For a bad binary/release:
 
 Do not replace a live workspace with an older raw database copy to perform an application rollback. Intentional data rollback must use the supported audited restore flow and create the required new audit epoch.
 
-## Candidate soak
+## Use cycle on the published release
 
-The soak is bound to the published release, not to `main`. Use the published candidate for at least 24 hours before the final production-ready/local declaration; development on `main` may continue. During that window:
+The use cycle is bound to the published release, not to `main`. There is no minimum waiting period: the production-ready/local declaration can follow as soon as the steps below are recorded. Development on `main` may continue. On the published release:
 
-- complete at least one normal local Workbench use cycle on the candidate;
+- complete at least one normal local Workbench use cycle;
 - run `shadowseed doctor` against the used workspace;
-- record any operational, integrity, provider or packaging anomaly on #103;
-- treat any discovered P0/P1 as a blocker requiring a new protected fix and a new soak window.
+- record the result and any operational, integrity, provider or packaging anomaly on #103;
+- treat any discovered P0/P1 as a blocker requiring a new protected fix and a new release.
 
 After a successful publication, `Release Workbench` dispatches the read-only `Production Release Assurance` workflow for the new tag automatically. The use cycle, `shadowseed doctor` and the #103 record remain manual.
 
-A P0/P1 found in the published release ends the candidate; its fix needs a new release and a new soak. Later commits on `main` do not change the published release and do not reset its soak.
+A P0/P1 found in the published release ends the candidate; its fix needs a new release and a new use cycle. Later commits on `main` do not change the published release.
 
 ## Final stop condition
 
-Do not claim `production-ready/local` until all mandatory sections in `docs/architecture/production-acceptance.md` are green on the exact release commit, #95 has a clean independent-assurance verdict, the 24-hour candidate soak completes without unresolved P0/P1 findings, the release assets have passed post-download verification, the trusted pre-publication attestations cover the exact published subjects and checksum manifest, and the read-only production-release-assurance workflow has successfully re-verified those attestations for the exact published tag.
+Do not claim `production-ready/local` until all mandatory sections in `docs/architecture/production-acceptance.md` are green on the exact release commit, #95 has a clean independent-assurance verdict, the use cycle on the published release is recorded on #103 without unresolved P0/P1 findings, the release assets have passed post-download verification, the trusted pre-publication attestations cover the exact published subjects and checksum manifest, and the read-only production-release-assurance workflow has successfully re-verified those attestations for the exact published tag.
 
 Hosted production remains out of scope. Optional Chroma support remains research-only under #97 until that issue's exit condition is met.
