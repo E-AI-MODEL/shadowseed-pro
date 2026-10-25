@@ -1530,24 +1530,29 @@ class ShadowChatSession:
         )
         for seed_id in born:
             seed = self.manager.seeds.get(seed_id)
+            if seed is None:
+                continue
             if (
-                seed is not None
-                and seed.origin is not None
+                seed.origin is not None
                 and seed.origin.context_ref == provisional_context_ref
             ):
                 seed.origin.context_ref = first_pass_context_ref
                 seed.origin.detection_basis = first_pass_detection_basis
-                for event in reversed(self.manager.event_log):
-                    if event.event_type != "created" or event.seed_id != seed_id:
-                        continue
-                    event_origin = event.detail.get("origin")
-                    if (
-                        isinstance(event_origin, dict)
-                        and event_origin.get("context_ref") == provisional_context_ref
-                    ):
-                        event_origin["context_ref"] = first_pass_context_ref
-                        event_origin["detection_basis"] = first_pass_detection_basis
-                    break
+            # Multiple newborn seeds may deliberately share the caller's
+            # SeedOrigin instance. The first update mutates that instance,
+            # but EACH created-event has its own frozen dictionary. Repair
+            # the event independently instead of skipping later siblings.
+            for event in reversed(self.manager.event_log):
+                if event.event_type != "created" or event.seed_id != seed_id:
+                    continue
+                event_origin = event.detail.get("origin")
+                if (
+                    isinstance(event_origin, dict)
+                    and event_origin.get("context_ref") == provisional_context_ref
+                ):
+                    event_origin["context_ref"] = first_pass_context_ref
+                    event_origin["detection_basis"] = first_pass_detection_basis
+                break
 
         turn_observations = self.observation_ledger.record_batch(
             raw_candidates,
