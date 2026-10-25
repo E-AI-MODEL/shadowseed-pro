@@ -116,42 +116,45 @@ def has_logged_promotion(seed_id: str, gate_log: Iterable[Any]) -> bool:
 
 
 
-def has_unreviewed_ssot_support(seed_id: str, gate_log: Iterable[Any]) -> bool:
-    """Flag historical SSOT support lacking a product authorization ledger.
+def is_known_legacy_ssot_support_signal(signal: Any) -> bool:
+    """Identify the *known defective producer*, not every SSOT signal.
 
-    Identify the specific legacy *automated SSOT producer* by its recorded
-    reason ('verified SSOT chunk ...'), source_ref ('...::chunk_...'), or the
-    intermediate self-attestation ('relation-attested:ssot:...'). A differently
-    sourced, explicitly operator/researcher-submitted SSOT signal is a separate
-    provenance channel: do not silently relabel that study as the same defect.
-    The producer lacked a workspace-authorized source/seed relationship.
-    Fail closed for known legacy paths at new point of use, but never rewrite
-    old Gate events, weights or archived decisions. This is not proof a source
-    was false. Unknown historical provenance needs its own explicit audit.
+    Legacy provenance is inferred from historical text fields; it is not a
+    cryptographic source attestation. Keep the same predicate for point-of-use
+    quarantine and the read-only review dossier so they cannot drift.
     """
-    for event in gate_log:
-        if str(_value(event, "seed_id", "")) != seed_id:
-            continue
-        for signal in _value(event, "signals", ()) or ():
-            kind = _value(signal, "kind", "")
-            direction = _value(signal, "direction", "support")
-            kind_name = str(getattr(kind, "value", kind))
-            direction_name = str(getattr(direction, "value", direction))
-            reason = str(_value(signal, "reason", "") or "")
-            source_ref = str(_value(signal, "source_ref", "") or "")
-            known_legacy_producer = (
-                reason.startswith("verified SSOT chunk ")
-                or reason.startswith("relation-attested:ssot:")
-                or "::chunk_" in source_ref
-            )
-            if (
-                kind_name == "ssot"
-                and direction_name == "support"
-                and _as_bool(_value(signal, "verified", False))
-                and known_legacy_producer
-            ):
-                return True
-    return False
+    kind = _value(signal, "kind", "")
+    direction = _value(signal, "direction", "support")
+    kind_name = str(getattr(kind, "value", kind))
+    direction_name = str(getattr(direction, "value", direction))
+    reason = str(_value(signal, "reason", "") or "")
+    source_ref = str(_value(signal, "source_ref", "") or "")
+    return (
+        kind_name == "ssot"
+        and direction_name == "support"
+        and _as_bool(_value(signal, "verified", False))
+        and (
+            reason.startswith("verified SSOT chunk ")
+            or reason.startswith("relation-attested:ssot:")
+            or "::chunk_" in source_ref
+        )
+    )
+
+
+def has_unreviewed_ssot_support(seed_id: str, gate_log: Iterable[Any]) -> bool:
+    """Flag the identifiable historical SSOT auto-support producer.
+
+    This does not prove that all other SSOT support was independently verified.
+    Historical Gate events and earlier point-of-use records stay immutable.
+    """
+    return any(
+        str(_value(event, "seed_id", "")) == seed_id
+        and any(
+            is_known_legacy_ssot_support_signal(signal)
+            for signal in (_value(event, "signals", ()) or ())
+        )
+        for event in gate_log
+    )
 
 
 def evidence_can_support_gate(evidence_ref: Any) -> bool:
