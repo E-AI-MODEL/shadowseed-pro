@@ -28,7 +28,7 @@ Provider: GPT-5 via de Responses API; embeddings: `text-embedding-3-small`. Maxi
 
 **Niet op te maken:** intern niet-gekozen neuronale mogelijkheid, kans van niet-generatie, feitelijke semantische waarde of originaliteit, autonome nieuwe Q2-onderzoeksvraag, kandidaat-specifieke bijdrage boven krachtige B/C-controles, of goedkeuring van G0.
 
-Voor Q2 is een **volgende, gescheiden** studie nodig waarin het model zélf later een onverwachte onderzoeksvraag voorstelt, die een onafhankelijke algemene toets kan uitvoeren. De Q1/Q2-comparaties A/B/C/D/E, RF/RI-scheiding, volledige kostenvergelijking en onafhankelijke beoordeling uit [het bestaande evaluatiecontract](g0/adapter-evaluation-contract-2026-10-25.md) blijven vereist voor een echte effectclaim.
+Voor Q2 is een **volgende, gescheiden** studie nodig waarin het model zélf later een onverwachte onderzoeksvraag voorstelt, die een onafhankelijke algemene toets kan uitvoeren. De Q1/Q2-comparaties A/B/C/D/E, RF/RI-scheiding, volledige kostenvergelijking en onafhankelijke beoordeling uit [het bestaande evaluatiecontract](adapter-evaluation-contract-2026-10-25.md) blijven vereist voor een echte effectclaim.
 
 ## Stopregels
 
