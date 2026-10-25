@@ -342,3 +342,24 @@ def test_undated_or_timezone_naive_review_does_not_pass_reconciliation() -> None
     bad["reviewer_timestamp_iso8601"] = "2026-10-25T07:37:00"
     with pytest.raises(ValueError, match="timezone"):
         REVIEW.reconcile(packet, private, good, bad)
+
+
+def test_short_arm_ids_and_private_word_do_not_silently_filter_questions() -> None:
+    """One-letter arms A/B/C/D/E and legitimate 'PRIVATE' words are not evidence leaks."""
+    src = _source()
+    src["episodes"][0]["private_arm"] = "A"
+    src["episodes"][1]["private_arm"] = "D"
+    src["episodes"][0]["private_case_id"] = "x"
+    src["episodes"][1]["private_case_id"] = "y"
+    src["episodes"][0]["turns"][1]["question"] = (
+        "Could a PRIVATE register affect this observable measurement?"
+    )
+    packet, owner, blank = REVIEW.create_pack(src, FAKE_SECRET)
+    assert len(packet["episodes"]) == 2
+    assert any(
+        "PRIVATE register" in card["evidence_turns"][1]["question"]
+        for card in packet["episodes"]
+    )
+    assert "private_arm" not in json.dumps(packet)
+    assert {r["private_arm"] for r in owner["mapping"]} == {"A", "D"}
+    assert blank["G0_approval"] is False
