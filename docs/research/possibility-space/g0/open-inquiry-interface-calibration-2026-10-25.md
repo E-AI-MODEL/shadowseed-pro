@@ -1,7 +1,7 @@
 # G0: modelvrije calibratie van open onderzoeksvragen aan de DiscoveryWorld-interface
 
 > 25 oktober 2026 | Implementatievoorstel en **technische** preflight; geen onafhankelijke methodereview. **G0 NOT PASSED.**
-> Volgt op [de gepinde broncodeaudit](external-executor-source-audit-2026-10-25.md), [de geslaagde tweearmen-rooktest](../../../research/scripts/g0_discoveryworld_smoke.py) en [issue #228](https://github.com/E-AI-MODEL/shadowseed-pro/issues/228). De tweedelige [hoofdvraag Q1/Q2](../../possibility-space-thesis.md) en RF/RI-scheiding blijven ongewijzigd.
+> Volgt op [de gepinde broncodeaudit](external-executor-source-audit-2026-10-25.md), [de geslaagde tweearmen-rooktest](../../../../research/scripts/g0_discoveryworld_smoke.py) en [issue #228](https://github.com/E-AI-MODEL/shadowseed-pro/issues/228). De tweedelige [hoofdvraag Q1/Q2](../../possibility-space-thesis.md) en RF/RI-scheiding blijven ongewijzigd.
 
 ## Waar de oorspronkelijke G0-uitdaging zit
 
@@ -12,7 +12,7 @@ Een model kan een vraag voorstellen die de onderzoeker niet had voorzien. De bes
 3. De werkelijke **simulatoruitvoering en voor de agent toegankelijke observatie**. Een tijdstap, geslaagde actie of waarneembare verandering is niet hetzelfde als informatie- of leerwinst.
 4. De **inhoudelijke interpretatie**: maakt deze vraag onder nieuwe omstandigheden iets anders onderzoekbaar? Een onafhankelijke, geblindeerde beoordelaar moet dit bepalen. De software vult die beoordeling niet in.
 
-De [preflightcode](../../../research/scripts/g0_discoveryworld_open_inquiry.py) brengt alleen (1–3) op gang met uitdrukkelijk **door de onderzoeker gemaakte** publieke calibratievragen. De [fixture](../../../research/fixtures/g0_discoveryworld_open_inquiry_calibration_v0.json) is dus **geen** zelfstandig door een LLM geformuleerde vraag, geen blind holdout en geen Q1/Q2-uitkomst. De [tests](../../../research/tests/test_g0_discoveryworld_open_inquiry.py) controleren de claimgrens.
+De [preflightcode](../../../../research/scripts/g0_discoveryworld_open_inquiry.py) brengt alleen (1–3) op gang met uitdrukkelijk **door de onderzoeker gemaakte** publieke calibratievragen. De [fixture](../../../../research/fixtures/g0_discoveryworld_open_inquiry_calibration_v0.json) is dus **geen** zelfstandig door een LLM geformuleerde vraag, geen blind holdout en geen Q1/Q2-uitkomst. De [tests](../../../../research/tests/test_g0_discoveryworld_open_inquiry.py) controleren de claimgrens.
 
 ## Wat de technische proef onderscheidt
 
