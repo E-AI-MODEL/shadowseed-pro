@@ -53,7 +53,8 @@ jobs:
 
   bounded-live-model:
     needs: offline-check
-    if: github.ref == 'refs/heads/research/live-compression-retention-20261025'
+    # Exact paid-run SHA finished successfully; no future branch push may repeat it.
+    if: github.ref == 'refs/heads/research/live-compression-retention-20261025' && github.sha == '3f470a093508c74b1a9a84a8d313b0d603991fb2'
     runs-on: ubuntu-latest
     timeout-minutes: 55
     environment:
