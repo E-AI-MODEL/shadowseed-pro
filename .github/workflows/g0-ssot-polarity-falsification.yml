@@ -73,7 +73,11 @@ jobs:
           c = r["cases"]["unverified_negation"]
           assert len(a["gate_decisions"]) == len(b["gate_decisions"]) == 4
           assert a["accepted_evidence_count"] == b["accepted_evidence_count"] == 4
-          assert all(e["directions"] == ["support"] for e in a["gate_decisions"] + b["gate_decisions"])
+          assert all(
+              "recurrence" in e["signal_kinds"]
+              and any(k == "ssot" and d == "support" for k, d in zip(e["signal_kinds"], e["directions"]))
+              for e in a["gate_decisions"] + b["gate_decisions"]
+          )
           assert a["final_seed"]["weight"] > 0 and b["final_seed"]["weight"] > 0
           assert c["final_seed"]["weight"] == 0 and not c["gate_decisions"]
           print("Synthetic negation and affirmation both received SSOT SUPPORT. Not an independent truth verdict.")
