@@ -1,6 +1,7 @@
 name: Research - One-shot GPT-5 Stage1 V2 Context-Parity Exploratory
 
-# Post-v1 context parity correction; v1 run 40215854335 remains immutable.# G0 independent approval is NOT PASSED. This is bounded, non-confirmatory
+# Post-v1 context parity correction; v1 run 40215854335 remains immutable.
+# G0 independent approval is NOT PASSED. This is bounded, non-confirmatory
 # model-origin and pipeline-observability research on fictional public cases.
 # Trigger at most once from the unique predecessor SHA below, by adding this
 # exact workflow file to this branch. No cron or workflow_dispatch.
@@ -20,7 +21,7 @@ concurrency:
 
 jobs:
   offline-preflight:
-    if: github.event.before == '050ab9767d77e75aba4f2263fad6aab91543390a' && github.ref == 'refs/heads/research/g0-exploratory-real-model-stage1-20261025'
+    if: github.event.before == 'b75e07f2fda20e5842a85fd0278f8a8b337e2c1a' && github.ref == 'refs/heads/research/g0-exploratory-real-model-stage1-20261025'
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
@@ -90,7 +91,7 @@ jobs:
       - name: Run exactly two staged, bounded real-model multi-turn studies
         run: |
           uv run --no-sync python -m shadowseed_research.benchmark.real_model_stage1_exploratory \
-            --fixture research/fixtures/real_model_stage1_exploratory_v1.json \
+            --fixture research/fixtures/real_model_stage1_exploratory_v2.json \
             --output research-artifacts/real-model-stage1/observed.json
       - name: Assert true canonical turn/zero-authority and no efficacy claims
         run: |
@@ -122,7 +123,8 @@ jobs:
               'embedding_calls': d['provider_audit']['embedding_calls'],
               'tokens': d['provider_audit']['token_total'],
               'first_birth_turns': [c['selected_first_seed_birth_turn'] for c in d['cases']],
-              'G0': d['G0'],\n              'context_revision': d.get('research_adapter_context_revision'),
+              'G0': d['G0'],
+              'context_revision': d.get('research_adapter_context_revision'),
           }))
           PY
       - name: Publish read-only fictional research trace or bounded failure manifest
