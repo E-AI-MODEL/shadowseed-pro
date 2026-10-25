@@ -1,4 +1,4 @@
-name: Research - RF multi-birth checkpoint regression (offline)
+name: Research - RF checkpoint integrity and error diagnostics (offline)
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   offline-replay:
-    if: github.event.before == '997d080bbbc4d72fe7440e602180ed29b860a149' && github.run_attempt == 1
+    if: github.event.before == 'e39138bde7fded1ba8e72e3666248b8b5d13db38' && github.run_attempt == 1
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
