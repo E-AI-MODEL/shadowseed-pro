@@ -296,6 +296,10 @@ def run(
             "followup": None,
             "arms": {},
         }
+        # Persist partial results before any optional notes or research calls.
+        # A failed provider stage must not erase completed canonical turns.
+        results["turns"].append(row)
+        persist()
         if i == 0:
             ids = [
                 sid for sid in observed.get("seeds_born_weightless", [])
@@ -305,7 +309,7 @@ def run(
                 # First accepted canonical seed; never a chosen best example.
                 birth = freeze_canonical_weightless_birth(actual, observed, ids[0])
                 frozen_seed = _seed_text(actual, ids[0])
-                if _hash(frozen_seed) != birth["candidate_text_sha256"]:
+                if sha256(frozen_seed.encode("utf-8")).hexdigest() != birth["candidate_text_sha256"]:
                     raise RuntimeError("raw-to-seed birth identity invalid")
                 row["birth"] = birth
                 results["first_seed"] = {
@@ -371,7 +375,6 @@ def run(
                     prior_inquiry[arm] = parsed["question"] if parsed else None
                     persist()
         ordinary_history.append((user_input, host_answer))
-        results["turns"].append(row)
         persist()
     if actual.audit() or none.audit() or actual.inspect()["influence_records"]:
         raise RuntimeError("unexpected seed authority or answer influence")
