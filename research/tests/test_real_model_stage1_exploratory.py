@@ -33,7 +33,7 @@ from shadowseed_research.benchmark.real_model_stage1_exploratory import (
 
 FIXTURE = (
     Path(__file__).resolve().parents[1]
-    / "fixtures" / "real_model_stage1_exploratory_v1.json"
+    / "fixtures" / "real_model_stage1_exploratory_v2.json"
 )
 
 
@@ -210,6 +210,14 @@ def test_detector_parser_and_embedding_are_called_without_second_pipeline() -> N
                 "cases": [first, fixture()["cases"][1]]}, p)
     turn0 = data["cases"][0]["turns"][0]
     report = turn0["canonical_turn_report"]
+    # The T0 detector's own input must contain the full scenario the host saw.
+    original = fixture()["cases"][0]["context"]
+    assert report["question"].startswith("BEGIN FICTIEVE ONDERZOEKSSITUATIE")
+    assert original in report["question"]
+    assert "VRAAG: " + turn0["question"] in report["question"]
+    # A later observation must never be brought forward into T0.
+    assert fixture()["cases"][0]["turns"][1]["new_observation"] not in report["question"]
+    assert data["research_adapter_context_revision"].endswith("_v2")
     assert report["runtime_mode"] == "live"
     assert report["turn"] == 0
     assert report["detector_context_policy"] == "recent_clean_turns_v1"
