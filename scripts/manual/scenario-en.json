@@ -1,0 +1,91 @@
+{
+  "topics": {
+    "recovery": [
+      "working again",
+      "outage",
+      "without the administration",
+      "working day",
+      "available again",
+      "recovery",
+      "fails"
+    ],
+    "restore": [
+      "restore",
+      "restored",
+      "restoring"
+    ],
+    "backup": [
+      "backup",
+      "copies",
+      "copy"
+    ],
+    "outside": [
+      "outside the nas",
+      "cloud",
+      "laptops"
+    ],
+    "frequency": [
+      "how often",
+      "every night",
+      "daily"
+    ]
+  },
+  "turns": [
+    {
+      "match": "backup plan for the student administration",
+      "answer": "A sound starting point is the 3-2-1 rule: keep three copies of the data, on two different kinds of storage, with one copy away from the school.\n\nFor a student administration this usually means:\n\n1. The live system itself, run by the school or by its software supplier.\n2. A daily backup to storage inside the school, for fast restores of single files.\n3. An encrypted copy at a second location or with a cloud service that has a data processing agreement with the school.\n\nMake the backups automatic, so they do not depend on someone remembering them, and keep several versions, so that a file damaged or encrypted last week can still be recovered from an older copy.\n\nWrite the plan down in one page: what is backed up, where, how often, and who checks that it ran. Students' personal data falls under the GDPR, so agree on who may access the copies and how long they are kept.",
+      "gaps": [
+        "How quickly must the administration be working again after an outage?",
+        "Has anyone tested whether a backup can actually be restored?"
+      ]
+    },
+    {
+      "match": "NAS in the server room",
+      "answer": "A NAS is a good place for the second copy, but on its own it is not enough.\n\nThe NAS stands in the same building as the live system. A fire, a water leak or a break-in can take both at once. Ransomware is a second risk: if the NAS is reachable as a normal network share, the malware can encrypt the backups along with the originals.\n\nThree additions make the NAS useful:\n\n1. Snapshots that cannot be changed from the network, so an older version always survives.\n2. An extra encrypted copy outside the building, made automatically.\n3. A separate administrator account for the NAS that nobody uses for daily work.\n\nAlso check what the NAS does not see. Many schools keep part of their administration in online services, and those need their own arrangement with the supplier.",
+      "gaps": [
+        "How long may the school be without the administration if the NAS fails?",
+        "Which data is stored outside the NAS, for example in cloud services or on laptops?"
+      ]
+    },
+    {
+      "match": "Who in the school should be able to restore",
+      "answer": "Keep the group small and named.\n\n- Two people should be able to restore: usually the system administrator and one deputy, so a restore never depends on one person being available.\n- The head of administration decides what is restored and checks the result, but does not need technical access to the backups.\n- The supplier of the administration software can help, but only under the data processing agreement and on request of the school.\n\nGive these people separate accounts for backup work, protected with two-factor authentication. Log every restore: who did it, what was restored and why. A short log like that also helps when the school has to account for its handling of personal data.",
+      "gaps": [
+        "Is a regular restore test part of anyone's tasks?"
+      ]
+    },
+    {
+      "match": "How often should we make the backup",
+      "answer": "Make the backup every night, after the school day.",
+      "answer_with_seed": "Because the administration has to be available again within one working day, a nightly backup is the minimum.\n\n- Frequency. Back up every night after the school day. In the busy weeks around reports and enrolment, add a midday backup, so at most half a day of work can be lost.\n- Where the copies go. The first copy goes to the NAS, with snapshots that cannot be changed from the network. The second goes encrypted to a location outside the school, for example a cloud service with a data processing agreement.\n- How long you keep them. Keep 14 daily versions, 8 weekly ones and 12 monthly ones. That lets you go back far enough to find a problem that went unnoticed for weeks.\n\nTo actually meet the one-day target, the restore itself must fit in a working day. Time a full restore once and write down how long it took.",
+      "gaps": []
+    }
+  ],
+  "recurrence": {
+    "How long may the school be without the administration if the NAS fails?": "How quickly must the administration be working again after an outage?",
+    "Is a regular restore test part of anyone's tasks?": "Has anyone tested whether a backup can actually be restored?"
+  },
+  "play": {
+    "title": "Backup plan for the school administration",
+    "questions": [
+      "We want a backup plan for the student administration at our school. What do you recommend?",
+      "We already have a NAS in the server room. Is that enough?",
+      "Who in the school should be able to restore files?",
+      "How often should we make the backup, and where do we keep the copies?"
+    ],
+    "source_ref": "Minutes of the IT meeting, 12 September 2026, decision 4",
+    "note": "The board decided that the student administration must be available again within one working day.",
+    "new_title": "Exam schedule"
+  },
+  "domain": [
+    "backup",
+    "administration",
+    "restore",
+    "outage",
+    "nas",
+    "copies",
+    "recover",
+    "available",
+    "data"
+  ]
+}

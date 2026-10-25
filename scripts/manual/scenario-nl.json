@@ -1,0 +1,91 @@
+{
+  "topics": {
+    "recovery": [
+      "weer werken",
+      "storing",
+      "zonder administratie",
+      "werkdag",
+      "weer beschikbaar",
+      "herstel",
+      "uitvalt"
+    ],
+    "restore": [
+      "teruggezet",
+      "terugzetten",
+      "hersteltest"
+    ],
+    "backup": [
+      "back-up",
+      "kopieën",
+      "kopie"
+    ],
+    "outside": [
+      "buiten de nas",
+      "cloud",
+      "laptops"
+    ],
+    "frequency": [
+      "hoe vaak",
+      "elke nacht",
+      "dagelijks"
+    ]
+  },
+  "domain": [
+    "back-up",
+    "administratie",
+    "terugzet",
+    "storing",
+    "nas",
+    "kopie",
+    "herstel",
+    "beschikbaar",
+    "gegevens"
+  ],
+  "turns": [
+    {
+      "match": "back-upplan voor de leerlingenadministratie",
+      "answer": "Een goed uitgangspunt is de 3-2-1-regel: bewaar drie kopieën van de gegevens, op twee verschillende soorten opslag, waarvan één buiten de school.\n\nVoor een leerlingenadministratie betekent dat meestal:\n\n1. Het systeem zelf, beheerd door de school of door de leverancier van de software.\n2. Een dagelijkse back-up op opslag in de school, om losse bestanden snel terug te zetten.\n3. Een versleutelde kopie op een tweede locatie of bij een clouddienst waarmee de school een verwerkersovereenkomst heeft.\n\nLaat de back-ups automatisch lopen, zodat ze niet afhangen van iemand die eraan denkt. Bewaar meerdere versies, zodat je een bestand dat vorige week beschadigd of versleuteld raakte nog uit een oudere kopie kunt halen.\n\nLeg het plan vast op één pagina: wat er wordt geback-upt, waar, hoe vaak, en wie controleert dat het gelukt is. Leerlinggegevens vallen onder de AVG, dus spreek af wie bij de kopieën mag en hoe lang ze bewaard blijven.",
+      "gaps": [
+        "Hoe snel moet de administratie na een storing weer werken?",
+        "Heeft iemand getest of een back-up echt kan worden teruggezet?"
+      ]
+    },
+    {
+      "match": "NAS in de serverruimte",
+      "answer": "Een NAS is een goede plek voor de tweede kopie, maar op zichzelf is het niet genoeg.\n\nDe NAS staat in hetzelfde gebouw als het systeem zelf. Brand, een waterlek of een inbraak kan beide tegelijk treffen. Ransomware is een tweede risico: als de NAS als gewone netwerkschijf bereikbaar is, versleutelt de malware de back-ups samen met de originelen.\n\nDrie aanvullingen maken de NAS bruikbaar:\n\n1. Snapshots die vanaf het netwerk niet te wijzigen zijn, zodat er altijd een oudere versie overblijft.\n2. Een extra versleutelde kopie buiten het gebouw, automatisch gemaakt.\n3. Een apart beheerdersaccount voor de NAS dat niemand voor het dagelijkse werk gebruikt.\n\nKijk ook wat de NAS niet ziet. Veel scholen hebben een deel van hun administratie in online diensten, en daarvoor zijn aparte afspraken met de leverancier nodig.",
+      "gaps": [
+        "Hoe lang mag de school zonder administratie als de NAS uitvalt?",
+        "Welke gegevens staan buiten de NAS, bijvoorbeeld in clouddiensten of op laptops?"
+      ]
+    },
+    {
+      "match": "Wie in de school moet bestanden kunnen terugzetten",
+      "answer": "Houd de groep klein en bij naam bekend.\n\n- Twee mensen moeten kunnen terugzetten: meestal de systeembeheerder en een vervanger, zodat herstel nooit afhangt van één persoon.\n- Het hoofd administratie beslist wat er wordt teruggezet en controleert het resultaat, maar heeft geen technische toegang tot de back-ups nodig.\n- De leverancier van de administratiesoftware kan helpen, maar alleen binnen de verwerkersovereenkomst en op verzoek van de school.\n\nGeef deze mensen aparte accounts voor back-upwerk, beveiligd met tweestapsverificatie. Leg elke terugzetactie vast: wie, wat en waarom. Zo'n kort logboek helpt ook als de school moet verantwoorden hoe ze met persoonsgegevens omgaat.",
+      "gaps": [
+        "Hoort een regelmatige proef met terugzetten bij iemands taken?"
+      ]
+    },
+    {
+      "match": "Hoe vaak moeten we de back-up maken",
+      "answer": "Maak de back-up elke nacht, na de schooldag.",
+      "answer_with_seed": "Omdat de administratie binnen één werkdag weer beschikbaar moet zijn, is een nachtelijke back-up het minimum.\n\n- Hoe vaak. Maak elke nacht na de schooldag een back-up. Voeg in drukke weken rond rapporten en inschrijvingen een back-up rond het middaguur toe, zodat je hooguit een halve dag werk kwijt kunt raken.\n- Waar de kopieën staan. De eerste kopie gaat naar de NAS, met snapshots die vanaf het netwerk niet te wijzigen zijn. De tweede gaat versleuteld naar een plek buiten de school, bijvoorbeeld een clouddienst met een verwerkersovereenkomst.\n- Hoe lang je ze bewaart. Bewaar 14 dagelijkse, 8 wekelijkse en 12 maandelijkse versies. Dan kun je ver genoeg terug om een probleem te vinden dat weken onopgemerkt bleef.\n\nOm de doelstelling van één werkdag echt te halen, moet het terugzetten zelf binnen een werkdag passen. Meet één keer hoe lang een volledig herstel duurt en schrijf het op.",
+      "gaps": []
+    }
+  ],
+  "recurrence": {
+    "Hoe lang mag de school zonder administratie als de NAS uitvalt?": "Hoe snel moet de administratie na een storing weer werken?",
+    "Hoort een regelmatige proef met terugzetten bij iemands taken?": "Heeft iemand getest of een back-up echt kan worden teruggezet?"
+  },
+  "play": {
+    "title": "Back-upplan voor de schooladministratie",
+    "new_title": "Toetsrooster voorjaar",
+    "questions": [
+      "We willen een back-upplan voor de leerlingenadministratie van onze school. Wat raad je aan?",
+      "We hebben al een NAS in de serverruimte. Is dat genoeg?",
+      "Wie in de school moet bestanden kunnen terugzetten?",
+      "Hoe vaak moeten we de back-up maken, en waar bewaren we de kopieën?"
+    ],
+    "source_ref": "Verslag IT-overleg 12 september 2026, besluit 4",
+    "note": "Het bestuur heeft besloten dat de leerlingenadministratie binnen één werkdag weer beschikbaar moet zijn."
+  }
+}
