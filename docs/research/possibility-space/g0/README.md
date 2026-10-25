@@ -73,3 +73,5 @@ These G0 cases assess whether the **meaning of the measurements** is sound. They
 - **Before any paid or automatic run:** complete the [review checklist](g0-independent-review.md) with signed independent outcomes, remove any leak/hint problems, confirm non-tautological value, establish held-out-case protection, and then preregister budgets and primary measures. **G0 remains NOT PASSED until that is done.** The [independent reviewer rubric](g0-independent-review.md) includes explicit **C11**: second-order dependence. A desk-check of the toy equations is not independent construct review.
 
 No change to accepted ADRs, trace/weight, recurrence, Gate, point-of-use controls, production packages or the retired v0 fixed-edge workflow is needed.
+
+- **[SSOT polarity falsification against canonical Gate](ssot-polarity-support-vs-relevance-2026-10-25.md):** model-free test of whether opposite, similarity-matched fictional source statements are both classified as SSOT SUPPORT; source metadata verification and semantic relation are separate. No new Gate or Q1/Q2 claim.
