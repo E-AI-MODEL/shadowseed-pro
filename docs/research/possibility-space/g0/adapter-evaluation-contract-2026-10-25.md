@@ -31,9 +31,24 @@ An independent reviewer must explicitly try to reduce the phenomenon to (a) ordi
 
 The historical D-*prompt* in the 24-call fixed-edge pilot is **not D**: it never stored a candidate across turns. A renamed prompt, extra generations or higher token ceiling is not an adapter implementation.
 
-Budget matching includes **all** LLM calls and tokens (including detector and revision calls), tool queries, feedback events, retrieval/results, latency or capped compute where applicable, and context available at every turn. Do not provide A's answer to other arms without granting a separately balanced equivalent to A. Keep provider, model revision, system prompts, temperature/decoder and accessible tool inventory pinned within a comparison; test model tiers *after* the primary controlled comparison.
+Budget matching includes **all** LLM calls and tokens (including detector and revision calls), tool queries, feedback events, retrieval/results, latency or capped compute where applicable, and context available at every turn. Preallocate the **same opportunity and cost ceilings**, account for unused budget and failed or invalid requests, and report actual consumption per arm. Do not force identical realized observations or action counts in an adaptive test: different model-selected queries may consume different budgets and legitimately return different evidence. Unequal access rights, unbilled extra detector calls, unequal caps or hidden hints invalidate the comparison. Do not provide A's answer to other arms without granting a separately balanced equivalent to A. Keep provider, model revision, system prompts, temperature/decoder and accessible tool inventory pinned within a comparison; test model tiers *after* the primary controlled comparison.
 
 **Research-state isolation:** run each arm on its own disposable state; never mutate ordinary Workbench production records with experimental candidate memory. A research candidate's existence, semantic similarity or recurrence grants no evidence, confidence calibration, steering permission or Gate promotion.
+
+## Two noninterchangeable future-feedback regimes (B8 resolution, proposed)
+
+The [bounded Blindspot method audit](../step1-eai-blindspot-method-audit-2026-10-25.md) found conflicting phrases in the Q1/Q2 protocol: "same revealed future observations" versus "the actual result of their own allowed interventions". **Both are valid, but they test different claims.** Select and version the regime **before** revealing later evidence. Do not mix the results, pools, denominators or endpoints.
+
+| Frozen design | What each arm receives | Question it can address | What it cannot establish |
+| --- | --- | --- | --- |
+| **F — fixed-feedback / matched-information replay (supporting control)** | The **identical, precommitted, time-stamped exogenous observation sequence** and equivalent permitted time/context budget, regardless of the question each arm would have chosen. Their proposed inquiries are logged but do not change that sequence. | Whether the retained candidate changes the **formulation or interpretation of later questions under identical information** beyond deliberate search or ordinary notes. | That the seed enabled a different **self-selected intervention**, produced its observation or changed the environment. |
+| **A — adaptive intervention inquiry (primary candidate for dynamic Q2)** | Each arm independently chooses bounded, model-originated questions/interventions. A pinned general executor returns the **true result of that arm's own admissible action**, with identical initial world versions, rule set, rights, ceilings and exogenous updates. Trajectories can diverge. | Whether a frozen, initially weightless candidate leads to **different, independently meaningful later investigations**, compared with strong controls and exact-candidate ablation. | That differences are caused by SSL without the matched D/E and A/B/C comparisons, source trace, independent validation and uncertainty analysis. |
+
+**Order and isolation:** measure Q1's initial ordinary-generation distribution **before** any candidate detector or future outcome exposure. Keep each arm's evolving world/state on an isolated, identically seeded clone; never reuse another arm's intervention outcome as "shared context". If the same external event occurs in all worlds independently of arm actions, it can be replayed identically. If an arm's own action changes what it can observe next, the resulting difference is part of the *adaptive outcome*, not a protocol violation. In F, arm-generated actions never alter the replay.
+
+**Precommit for each regime:** model/revision and sampling; common initial information; eligibility grammar and evaluator version; arm definitions and candidate-ablation strategy; maximum calls/tokens/tool requests/latency; exogenous-update schedule; handling of invalid, untestable and no-opportunity actions; prospective follow-up window; independent meaning/admissibility judgments; denominator, effect definition, uncertainty and stopping conditions. Before any confirmatory run, get two separate, dated independent G0 reviews and protected holdouts. This addition is a **design correction**, not an approval to run.
+
+**Primary claim boundary:** a positive F result is a narrower *same-information question-formulation* finding, not Q2 causal proof of opening a different intervention. A may test that stronger claim, but only if genuinely novel questions arise **over multiple turns** and are checked against the same capable-model, ordinary-note and candidate-specific ablation controls. If model-only deliberation, active learning, or ordinary notes match D, report the null for any unique Shadowseed effect.
 
 ## Prospectively frozen trajectory
 
@@ -41,17 +56,17 @@ Budget matching includes **all** LLM calls and tokens (including detector and re
 | --- | --- | --- | --- |
 | **T0 — ordinary distribution** | Model, prompts, decoding, randomization, sampling budget, question-family coding and arm allocation | Repeated ordinary responses and observed semantic families; uncertainty of estimates | A single unselected answer treated as internal impossibility |
 | **T1 — first inquiry** | Candidate text/ID, parent question, content hash, origin, selected tool budget, allowed action grammar | Each arm independently proposes a question/intervention; general validator can accept, reject or return no opportunity | Author-provided ideal question, leaked answer key, hand-selected only successful candidate |
-| **T2 — new evidence** | Exact intervention and evaluator version, timestamp and returned observation; randomized disclosure schedule | All arms receive equivalent opportunities and the **actual result** of their own allowed interventions | Different feedback, private hints or free access to another arm's proposed answers |
-| **T3 — later inquiry** | Subsequent model-originated question, dependency on T1/T2, claims about what changed | Independently checked consequence, meaningful distinct investigability and documented counterfactual | Calling more answer variants or a prewritten second task a transformed possibility space |
-| **T4 — comparison** | All trajectories and failure/null cases, independent human assessments and scoring code | Compare D to A/B/C and candidate-specific E without post-hoc rescue | Moving the goalposts, merging incomparable budgets or using self-rating as ground truth |
+| **T2 — new evidence** | Feedback regime F or A; exact evaluator version; actions and timestamps; pinned exogenous-update schedule | **F:** identical frozen observation replay. **A:** each arm's own admissible action receives its actual result in an isolated cloned world, under identical opportunity/cost ceilings | Treating adaptive arm-specific evidence as a broken match, or letting one arm see another's private results |
+| **T3 — later inquiry** | Subsequent model-originated question(s), immutable turn chronology, dependency on T1/T2, declared regime | **F:** later formulation/interpretation on common evidence. **A:** independently checked *different investigability* after the arm's own observation, including no-growth/null trajectories | Calling repetition, extra text, evaluator-inaccessible queries, or a prewritten second task a transformed possibility space |
+| **T4 — comparison** | All trajectories and failure/null/untestable cases, independent human assessments and scoring code, separate F/A ledgers | Compare D to A/B/C and candidate-specific E **within the same feedback regime** without post-hoc rescue | Merging F and A, moving goalposts, dropping failures, or using the proposing model's self-rating as truth |
 
 All candidate and evaluator records must be append-only or hash-bound, with a predeclared handling rule for parser errors, model refusal, tool failures, ambiguous questions, duplicate candidates, inaccessible queries and no-opportunity cases.
 
 ### Minimal proposed record fields (not a new production schema)
 
-- Protocol/environment: protocol version, environment ID/revision, restricted holdout ID, arm/run IDs, model ID/revision, decoder, random seed, budget preset.
+- Protocol/environment: protocol version, environment ID/revision, restricted holdout ID, **feedback regime (F or A)**, arm/run IDs, model ID/revision, decoder, random seed, budget preset, fixed versus adaptively disclosed evidence contract.
 - Candidate: turn and stage, question, origin, candidate ID/text/hash, original timestamp and explicit research-weightless status.
-- Independent check: tool request and response hash, admissibility decision, independent rule, invalid/no-opportunity reason and full token/call/tool costs.
+- Independent check: tool request and response hash, source/actor, admissibility decision (**allowed / invalid / not testable by this evaluator / no opportunity**), independent rule, exogenous versus action-derived observations, failure and actual versus allocated token/call/tool costs.
 - Next question: later-question ID, candidate/observation dependency IDs, withheld-consequence result, independent human meaningfulness verdict and reviewer provenance.
 - Comparison: exact ablated candidate, ablation outcome, failed attempts, contamination flags, model/researcher/tool/human contributions and blinding status.
 
@@ -61,15 +76,16 @@ These are *research log requirements* to vet, not a command to expand Shadowseed
 
 1. **Q1:** distribution of observed meaningful families and selection differences among *cost-matched* ordinary/sampling procedures. Report confidence intervals and number of draws; absence is always budget-relative.
 2. **Inquiry validity:** proportion of model-originated questions that a separate general validator can execute, reject or mark untestable. Preserve all attempted queries.
-3. **Q2:** verified **different later investigations**, whose meaning is justified independently and whose relevant follow-up outcome was not given to the agent in advance.
-4. **D-specific causal contribution:** D versus strongest A/B/C control and E candidate-specific ablation, with predeclared effect size and uncertainty. A successful baseline counts as evidence **against** a unique D advantage.
-5. **Safety and cost:** any invalid intervention, leak, unauthorized influence, price/time overhead, failure to retain rare valuable candidates, or detector flooding. Do not hide negative externalities behind a success score.
+3. **F supporting outcome:** independently checked changes to later question formation under identical frozen evidence; **not** intervention-causal Q2 by itself.
+4. **A dynamic Q2:** verified **different later investigations** under arm-specific admissible actions, independently checked downstream meaning and consequences; future results withheld until the relevant action. Report untestable questions and null trajectories, not merely successful chains.
+5. **D-specific causal contribution within F or A, never pooled:** D versus strongest A/B/C control and E candidate-specific ablation, with predeclared effect size and uncertainty. A successful baseline counts as evidence **against** a unique D advantage.
+6. **Safety and cost:** any invalid intervention, leak, unauthorized influence, price/time overhead, failure to retain rare valuable candidates, or detector flooding. Do not hide negative externalities behind a success score.
 
 **Stop rules:** pause for leakage, benchmark-key contamination, unequal budgets, unauthorized external action, unsandboxed secrets, unexpected spend, invalid evaluator behavior or inability to blind the independent review. An invalid protocol gives no efficacy conclusion regardless of the number of model calls.
 
 ## Required decisions before implementation, currently unanswered
 
-- Which environment and exact version actually validates unscripted prospective questions, not only predetermined answers?
+- Which version-pinned environment validates unscripted prospective questions, not only predetermined answers, and can be replayed **both** with frozen feedback (F) and isolated adaptive feedback (A) without altering their different construct meanings?
 - How will independent domain experts decide "meaningfully new later inquiry" without merely favoring surprising language?
 - Which normal-note baseline is strongest, and how are extra memory/detector tokens debited fairly?
 - How will truly new, sequestered confirmatory cases be created *after* preregistration and protected from retrieval leakage?
