@@ -40,8 +40,10 @@ def test_existing_review_packet_is_inspectable_but_not_passed():
     assert "independent_conceptual_review" in reasons
     assert "E1_pinned_executable_evaluator" in reasons
     assert "E2_pinned_executable_evaluator" in reasons
-    assert "sequestered_confirmatory_cases_created_by_independent_case_owner" in reasons
-    assert "known_T2_checkpoint_failure_resolved" in reasons
+    assert "holdout_creation_protocol_independently_approved" in reasons
+    assert "live_Rf_T2_checkpoint_failure_unresolved" in result["parallel_non_G0_work_items"]
+    assert "product_SSOT_polarity_issue_241_open" in result["parallel_non_G0_work_items"]
+    assert "future_confirmatory_cases_not_created" in result["parallel_non_G0_work_items"]
     assert result["ri_later_effect_status"] == "NOT_DEMONSTRATED"
 
 
@@ -109,6 +111,7 @@ def test_even_two_structural_fake_reviews_cannot_yield_automatic_g0_pass():
         row["technical_decision"] = "ACCEPT FOR LIMITED FEASIBILITY"
         row["conceptual_decision"] = "INDETERMINATE"
     doc["sequestered_confirmatory_cases_created_by_independent_case_owner"] = True
+    doc["holdout_creation_protocol_independently_approved"] = True
     doc["evaluator_allowlisted_safe_execution_verified"] = True
     doc["known_T2_checkpoint_failure_resolved"] = True
     doc["ssot_evidence_polarity_issue_241_open"] = False
