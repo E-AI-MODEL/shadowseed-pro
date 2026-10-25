@@ -193,6 +193,20 @@ def audit_case(case: dict[str, Any], variant: str) -> dict[str, Any]:
                 except Exception:
                     pass
             raise
+        # The product's "seeds_born_weightless" report contains all accepted
+        # IDs, including an existing seed re-detected in a later turn.
+        # Derive true birth from the canonical manager registry + created events.
+        new_seed_ids = sorted(set(session.manager.seeds) - set(before))
+        accepted_ids = [
+            item["seed_id"] for item in report["intake_diagnostics"]["accepted"]
+        ]
+        re_detected_ids = sorted(set(accepted_ids) & set(before))
+        created_event_ids = {
+            event.seed_id for event in session.manager.event_log[before_event:]
+            if event.event_type == "created"
+        }
+        if set(new_seed_ids) != created_event_ids:
+            raise AssertionError("seed birth registry and created events disagree")
         audit = report["detector_audit"]
         raw = audit["raw_output"]
         if raw != scripted[turn_no]:
@@ -226,7 +240,9 @@ def audit_case(case: dict[str, Any], variant: str) -> dict[str, Any]:
             "parsed_candidates": list(report["detected_candidates"]),
             "intake": report["intake_diagnostics"],
             "observation_ledger_entries": report["candidate_observations"],
-            "seed_birth_ids_this_turn": list(report["seeds_born_weightless"]),
+            "seed_birth_ids_this_turn": new_seed_ids,
+            "redetected_existing_seed_ids_this_turn": re_detected_ids,
+            "accepted_seed_ids_this_turn": accepted_ids,
             "seed_state_before": before,
             "seed_state_after_prepare": after_prepare,
             "seed_state_after": snapshots,
