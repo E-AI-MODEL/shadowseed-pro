@@ -11,7 +11,7 @@ De [offline meetmodule](../../../research/src/shadowseed_research/benchmark/step
 
 Er is geen nieuwe detector geschreven. De recorder gebruikt rechtstreeks de productmethode **OpenAIDetectorBackend.detect_seeds**, maar injecteert een lokaal, vooraf vastgelegd transport, zonder het OpenAI-clientobject of HTTP op te starten. Zo worden dezelfde originele promptopbouw, nummerparser, parserdiagnostiek en de bijzondere generative-v0.4-nummerprefill gebruikt.
 
-De sessie doorloopt de echte productmethoden: **prepare_turn → vastgelegd hostantwoord → observe_turn → kandidaatobservaties → normalisatie → atomiciteit → deduplicatie → gewichtloze seedgeboorte**.
+De sessie doorloopt de echte productmethoden: **prepare_turn → vastgelegd hostantwoord → observe_turn → kandidaatobservaties → normalisatie → atomiciteit → deduplicatie → gewichtloze seedgeboorte**. Ook de standaard **clustergebaseerde recurrence** blijft actief. De generatieve modelbeoordelaar voor recurrence wordt in deze fixture niet gebruikt, omdat er geen echt model wordt aangeroepen.
 
 Twee gescheiden sessies gebruiken exact dezelfde fictieve antwoorden, maar verschillende vooraf geschreven detectoruitvoer. Dit is GEEN meting van welk model of welke detector beter is:
 - **current_pair v0.6** onderzoekt vraag, eerste antwoord en maximaal vier begrensde, schone eerdere turns. Expliciet NONE betekent geen kandidaat.
