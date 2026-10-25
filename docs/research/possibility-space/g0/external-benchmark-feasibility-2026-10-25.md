@@ -1,6 +1,7 @@
 # External research environments: feasibility screen for Shadowseed Q1/Q2
 
 > **Reviewed:** 2026-10-25. **Status:** primary-publication and project-description desk screen, NOT executed, NOT independently reviewed, NOT a G0 pass, and NOT a license/security approval.
+> **Follow-up (source code, same date):** [Pinned interface and safety audit](external-executor-source-audit-2026-10-25.md) directly inspected specific upstream API/scorer implementations. It found plausible experimental action interfaces but **no demonstrated independent scorer of model-originated later investigability**; runtime smoke tests and independent G0 reviews are still absent.
 > **Scope:** What established evaluations might supply an independent environment for studying model-originated, *later* investigable possibilities? This comparison does not claim that another project implements Shadowseed or proves the two-part thesis.
 > **Decision authority:** [verbatim research question](../../possibility-space-thesis.md), [first-principles rivals H0–H5](../first-principles-reorientation-2026-10-25.md), [current dynamic inquiry proposal](dynamic-inquiry-protocol-candidate-2026-10-25.md), [unfilled independent review](dynamic-inquiry-independent-review.md).
 
@@ -36,4 +37,4 @@ An apparently impressive experimental result must be rejected as **non-discrimin
 4. **Pre-study controls:** independently authored positive and negative examples; no-opportunity environments; sham candidates; matched strong-model, ordinary-note and full-history baselines; exact candidate ablation; equal tool and feedback budgets.
 5. **Independent verdict:** one independent technical evaluator reviewer and a separate construct/method reviewer must approve a particular environment version and held-out plan. The [review ledger](dynamic-inquiry-independent-review.md) remains **UNFILLED**.
 
-**Decision:** no benchmark selected or imported, no G0 approval, no new paid calls or automatic Actions dispatch, and no change to product runtime, trace, weight, TTL, TrTL or Validation Gate. The next deliverable is a source-and-code-verified environment suitability review, not an efficacy run.
+**Decision (historical desk-screen; supplemented by the code audit):** no benchmark selected or imported, no G0 approval, no new paid calls or automatic Actions dispatch, and no change to product runtime, trace, weight, TTL, TrTL or Validation Gate. The next deliverable is a source-and-code-verified environment suitability review, not an efficacy run.
