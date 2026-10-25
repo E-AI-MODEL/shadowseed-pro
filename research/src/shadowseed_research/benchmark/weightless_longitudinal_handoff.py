@@ -166,16 +166,40 @@ def freeze_weightless_followup(
     ):
         raise ValueError("invalid Gate decision ledger")
     relevant_gate = [event for event in gate_log if event.get("seed_id") == sid]
+    # Natural expiry is a legitimate LOSS of a weightless possibility. It
+    # reaches the existing Gate as lifecycle_expiry, not evidentiary support.
+    # Refusing it would silently exclude precisely the negative paths we need
+    # to observe. Other expiry reasons and authoritative decisions still fail.
+    natural_expiry = [
+        event for event in relevant_gate
+        if event.get("decision") == "expired"
+        and event.get("policy_id") == "lifecycle_expiry"
+        and event.get("reason") == "dormant_ttl"
+        and event.get("status_before") == "DORMANT"
+        and event.get("status_after") == "EXPIRED"
+        and len(event.get("signals", [])) == 1
+        and event["signals"][0].get("kind") == "lifecycle_expiry"
+        and event["signals"][0].get("direction") == "neutral"
+        and event["signals"][0].get("reason") == "dormant_ttl"
+    ]
+    allowed_lifecycle = (
+        len(natural_expiry) == 1 and seed.get("status") == "EXPIRED"
+    )
     if any(
-        event.get("decision") not in {"blocked", "no_change"}
-        or event.get("weight_before") != 0
+        event.get("weight_before") != 0
         or event.get("weight_after") != 0
         or event.get("authority_version") != 0
         or event.get("status_before") == "PROMOTED"
         or event.get("status_after") == "PROMOTED"
+        or (
+            event.get("decision") not in {"blocked", "no_change"}
+            and not (allowed_lifecycle and event is natural_expiry[0])
+        )
         for event in relevant_gate
     ):
         raise ValueError("candidate has crossed the Gate authority boundary")
+    if seed.get("status") == "EXPIRED" and not allowed_lifecycle:
+        raise ValueError("terminal expiry has no verified lifecycle Gate record")
     if (
         seed.get("weight") != 0 or seed.get("evidence_count") != 0
         or seed.get("authority_version") != 0
