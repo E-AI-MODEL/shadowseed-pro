@@ -18,6 +18,7 @@ from shadowseed.application.orchestration import (
 from shadowseed.application.sessions import SessionService
 from shadowseed.authority_profiles import resolve_authority_runtime
 from shadowseed.gate.current_authority import snapshot_meets_current_gate
+from shadowseed_agent.agent_contract import has_unreviewed_ssot_support
 from shadowseed.storage.integrity import (
     behavior_config_digest,
     behavior_config_epoch,
@@ -153,22 +154,34 @@ class InspectionService:
                     persisted_config.get("revalidate_current_gate", False),
                 )
             )
+            legacy_ssot_requires_review = has_unreviewed_ssot_support(
+                seed_id, manager.get("gate_events", [])
+            )
             current_gate_authorized = (
-                snapshot_meets_current_gate(
-                    seed,
-                    manager_config,
-                    effective_gate_policy_id,
-                    blocking=blocking,
-                    gate_events=manager.get("gate_events", []),
-                )
-                if revalidate_current_gate
-                else (
-                    str(seed.get("status", "")).upper() == "PROMOTED"
-                    and not blocking
+                not legacy_ssot_requires_review
+                and (
+                    snapshot_meets_current_gate(
+                        seed,
+                        manager_config,
+                        effective_gate_policy_id,
+                        blocking=blocking,
+                        gate_events=manager.get("gate_events", []),
+                    )
+                    if revalidate_current_gate
+                    else (
+                        str(seed.get("status", "")).upper() == "PROMOTED"
+                        and not blocking
+                    )
                 )
             )
             plain_explanation = explain_seed(seed, blocking=blocking)
-            if (
+            if legacy_ssot_requires_review:
+                plain_explanation += (
+                    " Historical SSOT support has no authenticated source-to-seed "
+                    "review and cannot authorize new influence. The immutable "
+                    "Gate history remains available for separate review."
+                )
+            elif (
                 str(seed.get("status", "")).upper() == "PROMOTED"
                 and not current_gate_authorized
             ):
@@ -179,6 +192,7 @@ class InspectionService:
             decorated_seed = {
                 **seed,
                 "blocking": blocking,
+                "legacy_ssot_requires_review": legacy_ssot_requires_review,
                 "current_gate_authorized": current_gate_authorized,
                 "plain_explanation": plain_explanation,
                 "used_count": used_counts.get(seed_id, 0),
