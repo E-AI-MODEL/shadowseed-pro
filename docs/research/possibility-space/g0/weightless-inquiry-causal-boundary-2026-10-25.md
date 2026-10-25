@@ -5,7 +5,7 @@
 
 ## Vastgesteld in de bestaande implementatie
 
-De [bestaande productcode](../../../src/shadowseed/chat.py) (`prepare_turn`, rond L1167–1247 in commit `372a2b8`) haalt alleen **eligible promoted seeds** op voor mogelijke prompt-surfacing, na de bestaande context- en autorisatiecontroles. Een nieuwe `weight=0`-seed is niet automatisch eligible. Dat is een **noodzakelijke productbescherming**. De [geslaagde PR #232-proef](real-shadowchat-discoveryworld-bridge-2026-10-25.md) bevestigde bij twee dezelfde onafhankelijke werelden en dezelfde onderzoekeracties **nul influence records, nul Gate-promoties en identieke hostantwoorden**.
+De [bestaande productcode](../../../../src/shadowseed/chat.py) (`prepare_turn`, rond L1167–1247 in commit `372a2b8`) haalt alleen **eligible promoted seeds** op voor mogelijke prompt-surfacing, na de bestaande context- en autorisatiecontroles. Een nieuwe `weight=0`-seed is niet automatisch eligible. Dat is een **noodzakelijke productbescherming**. De [geslaagde PR #232-proef](real-shadowchat-discoveryworld-bridge-2026-10-25.md) bevestigde bij twee dezelfde onafhankelijke werelden en dezelfde onderzoekeracties **nul influence records, nul Gate-promoties en identieke hostantwoorden**.
 
 Daaruit volgt een beperking voor de *onderzoeksmethode*, geen fout in het product:
 
