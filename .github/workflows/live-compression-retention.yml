@@ -2,7 +2,10 @@ name: Research - One-shot GPT-5 Compression Retention Pilot
 
 # Paid, explicitly bounded, fictional engineering research only.
 # Trigger ONCE by adding this workflow file to the named research branch.
-# A rerun is not scheduled and no workflow_dispatch entry exists.
+# Preflight retry: original run stopped before provider calls because the
+# frozen fixture used later_event instead of late_event. Fixture repaired,
+# Research Package CI green on 5e0b03fca4dc; this retry remains capped.
+# No schedule or workflow_dispatch entry exists.
 # The archived v0 possibility-space workflow remains offline-only.
 on:
   push:
