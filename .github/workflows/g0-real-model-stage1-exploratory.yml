@@ -1,6 +1,6 @@
-name: Research - One-shot GPT-5 Stage1 Canonical Shadow Exploratory
+name: Research - One-shot GPT-5 Stage1 V2 Context-Parity Exploratory
 
-# G0 independent approval is NOT PASSED. This is bounded, non-confirmatory
+# Post-v1 context parity correction; v1 run 40215854335 remains immutable.# G0 independent approval is NOT PASSED. This is bounded, non-confirmatory
 # model-origin and pipeline-observability research on fictional public cases.
 # Trigger at most once from the unique predecessor SHA below, by adding this
 # exact workflow file to this branch. No cron or workflow_dispatch.
@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   offline-preflight:
-    if: github.event.before == '5fe7c0e059960300974d265fe7b7ff102d17ee14' && github.ref == 'refs/heads/research/g0-exploratory-real-model-stage1-20261025'
+    if: github.event.before == '050ab9767d77e75aba4f2263fad6aab91543390a' && github.ref == 'refs/heads/research/g0-exploratory-real-model-stage1-20261025'
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
@@ -48,7 +48,7 @@ jobs:
               validate_fixture, MAX_MODEL_CALLS, MAX_EMBEDDING_CALLS,
               MAX_ALL_TOKENS,
           )
-          data = json.loads(Path('research/fixtures/real_model_stage1_exploratory_v1.json').read_text(encoding='utf-8'))
+          data = json.loads(Path('research/fixtures/real_model_stage1_exploratory_v2.json').read_text(encoding='utf-8'))
           cases = validate_fixture(data)
           assert len(cases) == 2 and all(len(c['turns']) == 4 for c in cases)
           assert MAX_MODEL_CALLS == 24 and MAX_EMBEDDING_CALLS == 48
@@ -99,7 +99,7 @@ jobs:
           from pathlib import Path
           p = Path('research-artifacts/real-model-stage1/observed.json')
           d = json.loads(p.read_text(encoding='utf-8'))
-          assert d['schema'] == 'shadowseed-real-stage1-recorded-observations-v1'
+          assert d['schema'] == 'shadowseed-real-stage1-recorded-observations-v2'
           assert d['status'] == 'completed_exploratory_real_model_stage1_only'
           assert d['G0'] == 'NOT_PASSED'
           assert d['confirmatory_trial'] is False
@@ -122,14 +122,14 @@ jobs:
               'embedding_calls': d['provider_audit']['embedding_calls'],
               'tokens': d['provider_audit']['token_total'],
               'first_birth_turns': [c['selected_first_seed_birth_turn'] for c in d['cases']],
-              'G0': d['G0'],
+              'G0': d['G0'],\n              'context_revision': d.get('research_adapter_context_revision'),
           }))
           PY
       - name: Publish read-only fictional research trace or bounded failure manifest
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: real-model-stage1-exploratory-${{ github.run_id }}
+          name: real-model-stage1-v2-context-parity-${{ github.run_id }}
           path: research-artifacts/real-model-stage1/observed.json
           if-no-files-found: warn
           retention-days: 30
