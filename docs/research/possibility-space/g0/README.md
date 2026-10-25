@@ -75,3 +75,4 @@ These G0 cases assess whether the **meaning of the measurements** is sound. They
 No change to accepted ADRs, trace/weight, recurrence, Gate, point-of-use controls, production packages or the retired v0 fixed-edge workflow is needed.
 
 - **[SSOT polarity falsification against canonical Gate](ssot-polarity-support-vs-relevance-2026-10-25.md):** model-free test of whether opposite, similarity-matched fictional source statements are both classified as SSOT SUPPORT; source metadata verification and semantic relation are separate. No new Gate or Q1/Q2 claim.
+- **[SSOT relation preflight candidate](ssot-relation-review-candidate-2026-10-25.md):** research-only read-only handoff from real SSOT hits to separately *asserted* support, opposition, topical, unknown and untestable relations. Missing/stale reviews fail closed; no Gate authorization or product fix. Issue #241 remains open.
