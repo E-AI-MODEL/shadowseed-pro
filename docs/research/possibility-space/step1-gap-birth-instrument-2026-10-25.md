@@ -31,6 +31,8 @@ Twee gescheiden sessies gebruiken exact dezelfde fictieve antwoorden, maar versc
 
 De ruwe parseroutput blijft inspecteerbaar. De huidige parser geeft niet voor iedere individuele weggefilterde regel een afzonderlijke inhoudelijke reden. Het instrument verzint die informatie niet.
 
+**Geboorte is iets anders dan opnieuw herkennen.** De bestaande productrapportage kan ook een bestaande, opnieuw toegelaten seed in de lijst met toegelaten IDs zetten. De meetmodule leidt echte geboortes uitsluitend af uit nieuwe manager-IDs en bijbehorende canonical created-events, en rapporteert herdetectie apart. Eén seed die in twee beurten voorkomt, telt niet tweemaal als geboorte.
+
 ## Vaste mechanische controles
 
 De vier fictieve turns toetsen:
