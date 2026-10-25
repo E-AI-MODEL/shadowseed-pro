@@ -1,0 +1,66 @@
+name: Research - G0 Existing Shadow Travel Characterization
+
+# Uses the actual product engine, manager, TTL and TrTL: NO model calls.
+# Describes existing mechanics, NOT Q1/Q2 efficacy, Gate authorization or
+# a newly introduced inquiry pipeline.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "tests/test_live_shadow_travel_without_redetection.py"
+      - "docs/research/possibility-space/g0/weightless-inquiry-causal-boundary-2026-10-25.md"
+      - ".github/workflows/g0-existing-shadow-travel-regression.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: research-g0-existing-shadow-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  canonical-shadow-memory-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      GEMINI_API_KEY: ""
+      GOOGLE_API_KEY: ""
+      HF_TOKEN: ""
+    steps:
+      - name: Read-only exact source checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+      - name: Set up pinned uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
+      - name: Install locked product test dependencies
+        run: uv sync --locked --extra test
+      - name: Verify existing real engine, weightless travel and dormant TrTL, no model calls
+        run: |
+          uv run --no-sync python -m pytest -q tests/test_live_shadow_travel_without_redetection.py
+      - name: Regression neighbors (no LLM provider)
+        run: |
+          uv run --no-sync python -m pytest -q \
+            tests/test_weightless_inquiry_lifecycle.py \
+            tests/test_ssot_manager.py \
+            tests/test_ssot_falsification.py \
+            tests/test_vector_workflows_extraction.py
+      - name: Keep claim boundary explicit
+        run: |
+          uv run --no-sync python - <<'PY'
+          from pathlib import Path
+          doc = Path("docs/research/possibility-space/g0/weightless-inquiry-causal-boundary-2026-10-25.md").read_text(encoding="utf-8")
+          assert "G0 NOT PASSED" in doc
+          assert "niet aangetoond" in doc
+          assert "bestaande shadow-route" in doc
+          print("No new model research or Q1/Q2 result asserted.")
+          PY
