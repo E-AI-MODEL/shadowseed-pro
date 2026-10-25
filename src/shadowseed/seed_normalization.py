@@ -127,34 +127,54 @@ def split_broad_seed_text(text: str, expand_short_fragments: bool = True) -> lis
     return [maybe_expand_fragment(normalized, expand_short_fragments=expand_short_fragments)]
 
 
+def normalize_detection_candidates_with_sources(
+    candidates: list[str] | tuple[str, ...],
+    expand_short_fragments: bool = True,
+    split_broad: bool = True,
+) -> list[tuple[int, str]]:
+    """Use the ONE canonical normalizer while preserving each raw input index.
+
+    A broad item can split into several normalized items, all with the same
+    source index. Repeated raw text keeps separate indices. The mapping is
+    about string transformations, NOT semantic correctness or model origin.
+    """
+    normalized: list[tuple[int, str]] = []
+    for raw_index, candidate in enumerate(candidates):
+        cleaned = clean_candidate_text(candidate)
+        if not cleaned:
+            continue
+        if not split_broad:
+            candidate_text = maybe_expand_fragment(
+                cleaned, expand_short_fragments=expand_short_fragments
+            )
+            if candidate_text:
+                normalized.append((raw_index, candidate_text))
+            continue
+        normalized.extend(
+            (raw_index, text)
+            for text in split_broad_seed_text(
+                cleaned, expand_short_fragments=expand_short_fragments
+            )
+        )
+    return normalized
+
+
 def normalize_detection_candidates(
     candidates: list[str] | tuple[str, ...],
     expand_short_fragments: bool = True,
     split_broad: bool = True,
 ) -> list[str]:
-    """Normalize raw detection output into seed-shaped candidates.
+    """Normalize raw detection output with the canonical shared rules.
 
-    Set ``expand_short_fragments=False`` for output produced by a real
-    language-model detector. The historical default keeps the auto-"ontbreekt"
-    expansion, which is appropriate for broad human-written categories but
-    disguises garbage as a well-formed seed when applied to model output.
-
-    Set ``split_broad=False`` for real language-model output. The comma /
-    semicolon / "en" / "of" splitting exists to break up broad human-written
-    category stacks (for example the Dutch "Security, privacy en schaalbaarheid
-    ontbreken."). A language model already emits one gap per line, and natural
-    sentences contain commas, so splitting them only shreds whole sentences into
-    fragments.
+    This historical API remains list[str]. Provenance-aware callers may use
+    normalize_detection_candidates_with_sources; no second set of splitting
+    or punctuation rules exists.
     """
-    normalized: list[str] = []
-    for candidate in candidates:
-        cleaned = clean_candidate_text(candidate)
-        if not cleaned:
-            continue
-        if not split_broad:
-            normalized.append(maybe_expand_fragment(cleaned, expand_short_fragments=expand_short_fragments))
-            continue
-        normalized.extend(
-            split_broad_seed_text(cleaned, expand_short_fragments=expand_short_fragments)
+    return [
+        item
+        for _raw_index, item in normalize_detection_candidates_with_sources(
+            candidates,
+            expand_short_fragments=expand_short_fragments,
+            split_broad=split_broad,
         )
-    return normalized
+    ]

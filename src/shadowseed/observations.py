@@ -430,3 +430,56 @@ class CandidateObservationLedger:
                 legacy_projection=True,
             )
         return ledger
+
+
+def link_intake_lineage_to_observations(
+    lineage: Iterable[dict[str, Any]],
+    raw_candidates: Iterable[str],
+    observations: Iterable[CandidateObservation],
+    *,
+    context_ref: str,
+) -> list[dict[str, Any]]:
+    """Attach ONLY an actually recorded observation to a mapped raw item.
+
+    The canonical ledger hashes source context, raw item position and text.
+    A missing/duplicate-suppressed observation is not silently replaced with
+    an invented identifier. No ledger record or seed state is modified.
+    """
+    raw = list(raw_candidates)
+    recorded = {
+        item.observation_id: item
+        for item in observations
+        if item.context_ref == context_ref
+    }
+    linked: list[dict[str, Any]] = []
+    for row in lineage:
+        result = dict(row)
+        raw_index = result.get("raw_candidate_index")
+        result["observation_id"] = None
+        if (
+            not isinstance(raw_index, int)
+            or isinstance(raw_index, bool)
+            or raw_index < 0
+            or raw_index >= len(raw)
+        ):
+            result["observation_link_status"] = "unresolved_source"
+            linked.append(result)
+            continue
+
+        original = str(raw[raw_index]).strip()
+        if not original:
+            result["observation_link_status"] = "empty_unrecorded_source"
+            linked.append(result)
+            continue
+
+        expected = CandidateObservationLedger._observation_id(
+            context_ref, raw_index, original
+        )
+        observed = recorded.get(expected)
+        if observed is not None and observed.raw_text == original:
+            result["observation_id"] = observed.observation_id
+            result["observation_link_status"] = "recorded_exact_raw_item"
+        else:
+            result["observation_link_status"] = "not_recorded_in_current_batch"
+        linked.append(result)
+    return linked

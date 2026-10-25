@@ -105,7 +105,10 @@ from shadowseed.storage.integrity import (
     behavior_config_epoch,
     behavior_config_projection,
 )
-from shadowseed.observations import CandidateObservationLedger
+from shadowseed.observations import (
+    CandidateObservationLedger,
+    link_intake_lineage_to_observations,
+)
 from shadowseed_agent import (
     AgentInfluenceRecord,
     AgentSafetyContract,
@@ -1592,6 +1595,14 @@ class ShadowChatSession:
                 "normalized_candidates": list(ingest.get("normalized_candidates", [])),
                 "accepted": [dict(item) for item in ingest.get("accepted", [])],
                 "rejected": [dict(item) for item in ingest.get("rejected", [])],
+                "lineage_schema": ingest.get("lineage_schema"),
+                "lineage_status": ingest.get("lineage_status", "unavailable"),
+                "item_lineage": link_intake_lineage_to_observations(
+                    ingest.get("lineage", []),
+                    raw_candidates,
+                    turn_observations,
+                    context_ref=first_pass_context_ref,
+                ),
             },
             "model_roles": self._model_role_audit(),
             "prompt_contracts": {
@@ -1815,6 +1826,14 @@ class ShadowChatSession:
                 "normalized_candidates": list(ingest.get("normalized_candidates", [])),
                 "accepted": [dict(item) for item in ingest.get("accepted", [])],
                 "rejected": [dict(item) for item in ingest.get("rejected", [])],
+                "lineage_schema": ingest.get("lineage_schema"),
+                "lineage_status": ingest.get("lineage_status", "unavailable"),
+                "item_lineage": link_intake_lineage_to_observations(
+                    ingest.get("lineage", []),
+                    candidates,
+                    turn_observations,
+                    context_ref=f"turn:{turn}:baseline_answer",
+                ),
             },
             "prompt_contracts": {
                 "answer_generation": dict(ANSWER_GENERATION_PROMPT_META),
@@ -1970,6 +1989,14 @@ class ShadowChatSession:
                 "normalized_candidates": list(ingest.get("normalized_candidates", [])),
                 "accepted": [dict(item) for item in ingest.get("accepted", [])],
                 "rejected": [dict(item) for item in ingest.get("rejected", [])],
+                "lineage_schema": ingest.get("lineage_schema"),
+                "lineage_status": ingest.get("lineage_status", "unavailable"),
+                "item_lineage": link_intake_lineage_to_observations(
+                    ingest.get("lineage", []),
+                    raw_candidates,
+                    observations,
+                    context_ref=context_ref,
+                ),
             },
             "candidate_observations": [item.to_dict() for item in observations],
             "seeds_born_weightless": born,
