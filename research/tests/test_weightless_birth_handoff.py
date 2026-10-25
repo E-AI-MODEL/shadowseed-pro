@@ -99,6 +99,11 @@ def test_actual_seed_birth_is_frozen_with_no_authority_or_causal_claim() -> None
     assert handoff["ordinary_answer_model_was_not_seed_exposed"] is True
     assert handoff["origin_of_visible_answer_not_verified"] is True
     assert handoff["candidate_origin_is_observed_not_independently_validated"] is True
+    assert handoff["raw_detector_item_to_seed_mapping_verified"] is False
+    assert handoff["raw_to_seed_link_scope"] == (
+        "same_turn_cooccurrence_not_item_lineage"
+    )
+    assert handoff["detector_observation_count"] == 1
     assert handoff["subsequent_inquiry_generated"] is False
     assert handoff["independent_question_or_evidence_review"] is False
     assert handoff["q1_or_q2_effect_established"] is False
