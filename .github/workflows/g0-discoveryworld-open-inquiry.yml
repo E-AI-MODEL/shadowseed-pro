@@ -17,7 +17,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: research-g0-open-inquiry-\${{ github.event_name }}-\${{ github.head_ref || github.ref_name }}
+  group: research-g0-open-inquiry-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -117,7 +117,7 @@ jobs:
       - name: Publish sanitized observation trace and dependency versions only
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: g0-open-inquiry-calibration-\${{ github.run_id }}
+          name: g0-open-inquiry-calibration-${{ github.run_id }}
           path: |
             research-artifacts/g0-open-inquiry-calibration.json
             research-artifacts/g0-open-inquiry-dependency-freeze.txt
