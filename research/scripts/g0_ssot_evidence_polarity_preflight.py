@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Model-free before/after SSOT polarity regression against the REAL Gate.
+"""Model-free SSOT relation handoff on the real product manager.
 
-The historical, unfixed result is preserved in PR #240 and its archived
-GitHub Actions JSON artifact, not recomputed by installing a fake legacy Gate.
-All current cases use the product manager, SSOT and Gate unchanged apart from
-the reviewed source-relation producer. Every text and attestation is synthetic.
+PR #240 keeps the original, now-fixed product defect in an archived Actions
+trace. PR #243 initially let fabricated 'reviewer' labels reach the real Gate;
+this revision makes ALL relation inspection read-only. The true product
+evidence.verify boundary is separate. All test texts/reviews are researcher
+authored; this is not G0 or a new model result.
 """
 
 from __future__ import annotations
@@ -96,8 +97,17 @@ def _case(
             }
             for chunk_id, score, meta in retrieved
         ],
-        "accepted_ssot_signal_count": sum(
-            len(record["applied_evidence"]) for record in observed
+        "review_candidate_count": sum(
+            len(record["review_candidates"]) for record in observed
+        ),
+        "gate_authorized": any(
+            record["gate_authorized"] for record in observed
+        ),
+        "candidate_review_required": all(
+            not candidate["gate_authorized"]
+            and candidate["requires_authorized_submission"]
+            for record in observed
+            for candidate in record["review_candidates"]
         ),
         "gate_events": [
             {
@@ -136,29 +146,21 @@ def build_result() -> dict:
         assert len(case["retrieval_hits"]) == 4
         assert min(row["similarity"] for row in case["retrieval_hits"]) > 0.65
 
-    yes = cases["affirmation_with_author_support"]
+    affirmative = cases["affirmation_with_author_support"]
+    assert affirmative["review_candidate_count"] == 4
     for name, case in cases.items():
-        if name == "affirmation_with_author_support":
-            assert case["accepted_ssot_signal_count"] == 4
-            assert case["final_seed"]["weight"] > 0
-            assert case["final_seed"]["evidence_count"] == 4
-            assert len(case["gate_events"]) == 4
-            assert all(
-                any(k == "ssot" and d == "support" for k, d in zip(
-                    event["signal_kinds"], event["directions"]
-                ))
-                for event in case["gate_events"]
-            )
-        else:
-            assert case["accepted_ssot_signal_count"] == 0
-            assert not case["gate_events"]
-            assert case["final_seed"]["weight"] == 0
-            assert case["final_seed"]["evidence_count"] == 0
-    assert yes["final_seed"]["status"] == "PROMOTED"
+        assert case["gate_authorized"] is False
+        assert case["candidate_review_required"] is True
+        assert case["gate_events"] == []
+        assert case["final_seed"]["weight"] == 0.0
+        assert case["final_seed"]["evidence_count"] == 0
+        assert case["final_seed"]["status"] != "PROMOTED"
+        if name != "affirmation_with_author_support":
+            assert case["review_candidate_count"] == 0
 
     return {
-        "schema": "g0-ssot-polarity-before-after-characterization-v1",
-        "status": "post_fix_synthetic_mechanics_characterized_not_independently_verified",
+        "schema": "g0-ssot-polarity-read-only-handoff-v2",
+        "status": "researcher_asserted_relations_read_only_no_gate_authority",
         "historic_pre_fix_result": {
             "source": HISTORIC_BUG_RUN,
             "original_git_commit": "4c433c6e95733491e4b4720950bf997f5f1af634",
@@ -168,6 +170,10 @@ def build_result() -> dict:
             "note": "Archival observation, not re-executed in this revision.",
         },
         "current_product_code_executed": True,
+        "authorized_actor_submissions": 0,
+        "intermediate_unsafe_attestation_run": (
+            "https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40182789691"
+        ),
         "input_provenance": "INVESTIGATOR_AUTHORED_FICTIONAL_POLARITIES",
         "human_verifiers": 0,
         "model_calls": 0,
@@ -191,9 +197,9 @@ def main() -> None:
         encoding="utf-8",
     )
     print(
-        "SSOT polarity after fix: real Gate, synthetic case reviews. "
-        "Unreviewed and opposing sources add no authority. "
-        "Historical defect retained as an immutable earlier-run reference. "
+        "SSOT polarity read-only handoff: real product SSOT, no Gate event. "
+        "Researcher-asserted support produces review candidates, never authority. "
+        "Historical defect and intermediate regression remain cited, not rerun. "
         "No independent evidence, G0 or Q1/Q2 finding."
     )
 
