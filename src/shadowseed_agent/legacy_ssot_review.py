@@ -126,16 +126,19 @@ def build_legacy_ssot_review_dossier(
     for index, raw in enumerate(uses):
         if str(raw.get("seed_id", "")) != seed_id:
             continue
+        reason = str(raw.get("reason", ""))
         entry = {
             "record_order": index,
             "record_sha256": _canonical_digest(raw),
             "action": _name(raw.get("action", "")),
             "recorded_allowed": raw.get("allowed") is True,
-            "recorded_reason": str(raw.get("reason", "")),
+            "recorded_reason_sha256": sha256(reason.encode("utf-8")).hexdigest(),
             "gate_event_ref": raw.get("gate_event_ref"),
             "authority_version": raw.get("authority_version"),
             "decided_at": raw.get("decided_at"),
         }
+        if include_source_refs:
+            entry["recorded_reason"] = reason
         recorded_use.append(entry)
 
     legacy_detected = has_unreviewed_ssot_support(seed_id, events)
