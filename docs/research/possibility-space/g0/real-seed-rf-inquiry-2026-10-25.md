@@ -26,7 +26,7 @@ De primaire uitvoer is de volledige, niet geselecteerde tekst van alle voorgeste
 | **B** | Dezelfde geschiedenis met een bewuste, doelgerichte zoektocht naar andere verklaringen |
 | **C** | Een gewone modelgemaakte notitie over de eerdere geschiedenis, geen Shadowseed |
 | **D** | De exacte eerste, echt geboren gewichtloze seed, uit het bestaande productgeheugen, **alleen voor onderzoek** |
-| **E** | Een alternatieve onbewezen notitie als sham/ablatie; interpretatie beperkt door mogelijke verschillen in inhoud en relevantie |
+| **E** | Een **ander daadwerkelijk T0-detectorvoorstel** uit dezelfde ruwe modeluitvoer, geen tweede gezaghebbende seed. Alleen als er geen alternatief is, een expliciet gelabelde onderzoeker-sham; interpretatie blijft beperkt door inhouds- en lengteverschillen |
 
 **Kosten en tijd:** alle onderzoeksarmen gebruiken hetzelfde GPT-5-model, twee momenten, dezelfde externe waarnemingen en hetzelfde maximum per modelaanroep. De complete proef telt ook de afzonderlijke detector-/notitiegeneraties mee; die extra oproepen zijn niet kostenvrij en worden gerapporteerd. Een match in modelaanroepen en toegestane informatie is niet vanzelf een match in daadwerkelijk gebruikte tokens. Budgetverschillen zijn expliciet een beperking.
 
