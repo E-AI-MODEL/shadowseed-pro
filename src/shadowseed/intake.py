@@ -9,6 +9,7 @@ thin compatibility facades.
 
 from __future__ import annotations
 
+from dataclasses import replace
 import re
 from typing import Any, Iterable
 
@@ -361,7 +362,11 @@ def create_seed(
         embedding=embedding,
         trigger_keywords=list(trigger_keywords or []),
         trace=manager.config.trace_start,
-        origin=origin,
+        # Each seed needs its OWN origin snapshot. A shared mutable SeedOrigin
+        # caused only the first created-event to be reclassified from
+        # provisional to visible_answer when multiple seeds were born in one
+        # live turn, leaving later created-events with stale provenance.
+        origin=replace(origin) if origin is not None else None,
     )
     manager._record_and_sync(
         "created",
