@@ -1,6 +1,6 @@
 """Research regression: SSOT retrieval alone cannot authorise seed evidence."""
 
-from shadowseed_research.benchmark.ssl45_gap_suite import lexical_embedding
+from shadowseed.text_similarity import lexical_embedding
 from shadowseed.manager import SSLManager
 from shadowseed.ssot import SSOTManager, SSOTRelation
 from shadowseed.vector_constellation import VectorConstellation
