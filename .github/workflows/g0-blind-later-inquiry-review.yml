@@ -1,0 +1,60 @@
+name: Research - G0 Blind Semantic Review Boundaries
+
+# Tests that independent reviewer packs remain blinded, unsigned and
+# incapable of asserting Q1, Q2 or G0. No providers, no external executor,
+# no fabricated human ratings, no product runtime mutations.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "research/scripts/g0_blind_later_inquiry_review.py"
+      - "research/tests/test_g0_blind_later_inquiry_review.py"
+      - ".github/workflows/g0-blind-later-inquiry-review.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: g0-blind-review-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  blinded-packet-privacy-and-claim-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      GEMINI_API_KEY: ""
+      GOOGLE_API_KEY: ""
+      HF_TOKEN: ""
+    steps:
+      - name: Read-only checkout without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned test runner (no model or network calls in tests)
+        run: python -m pip install "pytest==8.4.2"
+
+      - name: Test masked evidence, private unblinding, absence of auto-scoring and fail-closed invalid submissions
+        run: python -m pytest -q research/tests/test_g0_blind_later_inquiry_review.py
+
+      - name: Require all completed scientific approvals remain unavailable
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s = Path("research/scripts/g0_blind_later_inquiry_review.py").read_text(encoding="utf-8")
+          assert '"G0_status": "NOT_PASSED"' in s
+          assert '"G0_passed": False' in s
+          assert '"Q1_measured": False' in s
+          assert '"Q2_causality_established": False' in s
+          assert 'secrets.token_bytes(32)' in s
+          print("Blind reviewer instrument: NO human ratings, model calls, or automatic Q1/Q2/G0 approval.")
+          PY

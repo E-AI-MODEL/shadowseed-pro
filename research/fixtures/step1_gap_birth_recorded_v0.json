@@ -1,0 +1,43 @@
+{
+  "schema": "shadowseed-step1-recorded-detector-v0",
+  "provenance": "SYNTHETIC offline scripted output. No language model generated these responses. Not an independent benchmark or efficacy result.",
+  "cases": [
+    {
+      "id": "MEASUREMENT_DIALOGUE",
+      "turns": [
+        {
+          "question": "Waarom vertoont de meetkast telkens vreemde pieken in de sensormetingen?",
+          "answer": "De sensoren zijn mogelijk versleten. Dat is nog niet gecontroleerd.",
+          "detector_outputs": {
+            "current_pair": "1. Of de gedeelde elektrische voeding de sensormetingen beïnvloedt?\n2. Of de tijdstempels van de logger de pieken vertekenen?\n3. Colonial capital as an explanatory frame alongside technological innovation.",
+            "generative": "De gedeelde elektrische voeding als alternatieve verklaring voor meetpieken.\n2. Montagewarmte als verklaringsrichting voor langzame drift."
+          }
+        },
+        {
+          "question": "We schakelen over naar de kantine. Wat zijn twee vegetarische lunches?",
+          "answer": "Een salade met bonen of een omelet met groente zijn mogelijke opties.",
+          "detector_outputs": {
+            "current_pair": "NONE",
+            "generative": ""
+          }
+        },
+        {
+          "question": "Is de gedeelde voeding inmiddels zelfstandig doorgemeten?",
+          "answer": "Nee. Er is nog geen meting uitgevoerd die de stroomvoorziening los van de sensoren test.",
+          "detector_outputs": {
+            "current_pair": "1. Of de gedeelde elektrische voeding de sensormetingen beïnvloedt?",
+            "generative": "De gedeelde elektrische voeding als alternatieve verklaring voor meetpieken."
+          }
+        },
+        {
+          "question": "Wat staat vast over de nieuwe leverancier?",
+          "answer": "Alleen dat de contactpersoon is veranderd. Er is geen informatie over voorwaarden.",
+          "detector_outputs": {
+            "current_pair": "Niet-genummerd materiaal dat niet als seed mag meetellen.",
+            "generative": ""
+          }
+        }
+      ]
+    }
+  ]
+}

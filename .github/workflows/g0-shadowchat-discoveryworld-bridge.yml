@@ -1,0 +1,120 @@
+name: Research - G0 Real ShadowChat plus DiscoveryWorld Bridge
+
+# NO LLM RESEARCH EFFECTS. Only investigator-scripted text, canonical product
+# detector/intake/manager, a real pinned external world and a NONE control.
+# Preserves product Gate, trace, TTL, TrTL, accepted ADRs and secrets.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "research/scripts/g0_discoveryworld_shadowchat_bridge.py"
+      - "research/fixtures/g0_discoveryworld_shadowchat_bridge_v0.json"
+      - "research/tests/test_g0_discoveryworld_shadowchat_bridge.py"
+      - ".github/workflows/g0-shadowchat-discoveryworld-bridge.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: research-g0-real-bridge-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  real-canonical-bridge-no-model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      GEMINI_API_KEY: ""
+      GOOGLE_API_KEY: ""
+      HF_TOKEN: ""
+      SDL_VIDEODRIVER: "dummy"
+      SDL_AUDIODRIVER: "dummy"
+      PYGAME_HIDE_SUPPORT_PROMPT: "1"
+    steps:
+      - name: Check out research source with no persisted token
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check out pinned public external world
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: allenai/discoveryworld
+          ref: fd591323920be0d3786ef350955de1945aa571e5
+          path: external/discoveryworld
+          persist-credentials: false
+      - name: Check exact upstream revision
+        shell: bash
+        run: |
+          test "$(git -C external/discoveryworld rev-parse HEAD)" = "fd591323920be0d3786ef350955de1945aa571e5"
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+      - name: UV pinned
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.14"
+      - name: Install canonical product and research package from locked source
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+          uv pip install --python .venv/bin/python -e ./external/discoveryworld
+          mkdir -p research-artifacts
+          uv pip freeze --python .venv/bin/python > research-artifacts/g0-shadowchat-bridge-dependency-freeze.txt
+      - name: Pure scripted boundary tests, no world/model run
+        run: |
+          uv run --no-sync python -m pytest -q research/tests/test_g0_discoveryworld_shadowchat_bridge.py
+      - name: Run canonical detector to weightless real manager across real world turns
+        run: |
+          uv run --no-sync python research/scripts/g0_discoveryworld_shadowchat_bridge.py \
+            --upstream-dir external/discoveryworld \
+            --fixture research/fixtures/g0_discoveryworld_shadowchat_bridge_v0.json \
+            --output research-artifacts/g0-real-shadowchat-world-bridge.json
+      - name: Enforce exact negative claim boundary and birth/recurrence separation
+        run: |
+          uv run --no-sync python - <<'PY'
+          import json
+          from pathlib import Path
+          d = json.loads(Path("research-artifacts/g0-real-shadowchat-world-bridge.json").read_text(encoding="utf-8"))
+          assert d["schema"] == "g0-real-shadowchat-discoveryworld-bridge-audit-v0"
+          assert d["status"] == "model_free_product_pipeline_plus_real_world_mechanics_only"
+          assert d["source"] == "INVESTIGATOR_SCRIPTED_NO_LLM"
+          assert d["upstream_sha"] == "fd591323920be0d3786ef350955de1945aa571e5"
+          assert d["model_calls"] == d["embedding_hosted_calls"] == 0
+          assert d["actual_world_turns_per_arm"] == 4
+          assert d["replays_per_arm"] == 2
+          assert d["same_world_observations_and_investigator_actions_in_both_arms"] is True
+          assert d["used_true_canonical_detector_parser_intake_manager"] is True
+          assert d["seed_maturation_or_novelty_assessed"] is False
+          assert d["Q1_measured"] is d["Q2_measured"] is d["independent_semantic_review_completed"] is d["g0_passed"] is False
+          a, b = d["arms"]["scripted_seed"], d["arms"]["explicit_none"]
+          assert len(a["turns"]) == len(b["turns"]) == 4
+          assert a["has_real_persistent_ShadowChatSession"] is b["has_real_persistent_ShadowChatSession"] is True
+          assert a["canonical_detector_calls"] == b["canonical_detector_calls"] == 4
+          assert len(a["turns"][0]["true_seed_born_this_turn"]) == 1
+          assert len(a["turns"][1]["existing_seed_redetected_this_turn"]) == 1
+          assert not a["turns"][2]["true_seed_born_this_turn"]
+          assert len(a["turns"][3]["true_seed_born_this_turn"]) == 1
+          assert not b["final_seed_state"]
+          assert a["seed_authority_uses"] == b["seed_authority_uses"] == 0
+          assert a["Gate_events"] == b["Gate_events"] == 0
+          assert all(x["weight"] == 0 and x["evidence_count"] == 0 for x in a["final_seed_state"])
+          assert all(t["seed_authority_uses"] == 0 and t["Gate_events"] == 0 for t in a["turns"])
+          assert all(t["question_origin"] == "INVESTIGATOR_SCRIPTED_NO_MODEL" for t in a["turns"])
+          assert all(t["host_answer_origin"] == "INVESTIGATOR_DEFINED_VISIBLE_STATE_SERIALIZER_NO_MODEL" for t in a["turns"])
+          assert all(t["world_action_origin"] == "INVESTIGATOR_SCRIPTED_INDEPENDENT_OF_SEEDS" for t in a["turns"])
+          assert all(t["new_later_investigability"] == "NOT_ASSESSED" for t in a["turns"])
+          print("PASS: real product mechanics and real simulator, without Q1/Q2 authority or novelty claims.")
+          PY
+      - name: Upload sanitized read-only trace and dependency freeze
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: g0-real-shadowchat-world-bridge-${{ github.run_id }}
+          path: |
+            research-artifacts/g0-real-shadowchat-world-bridge.json
+            research-artifacts/g0-shadowchat-bridge-dependency-freeze.txt
+          if-no-files-found: error
+          retention-days: 30

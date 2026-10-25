@@ -1,0 +1,50 @@
+{
+  "schema": "shadowseed-live-compression-exploratory-v0",
+  "provenance": "Author-created synthetic research scenarios. Not independent, not sealed holdouts, not causal validation.",
+  "model": "gpt-5",
+  "embedding_model": "text-embedding-3-small",
+  "items": [
+    {
+      "id": "MEASUREMENT",
+      "initial_question": "We moeten vandaag een voorlopige verklaring kiezen voor het wegdrijven van de meetwaarden. Wat is de meest redelijke werkhypothese, en welke eerste controle hoort erbij?",
+      "initial_context": "Bij een fictief laboratorium in Havenstad laat een reeks omgevingsmetingen de afgelopen drie weken onregelmatige pieken zien. De meetinstallatie bestaat uit twee verwisselbare sensoren, een datalogger, een verwarmingselement, een goedkope interne voeding en een kast waarin de bekabeling bijeenkomt. De technicus vermoedt versleten sensoren: het probleem ontstond tijdens een periode waarin beide sensoren vaak moesten worden gekalibreerd. De logboeken tonen dat pieken vooral aan het einde van de middag voorkomen. Het werkprotocol zegt dat kalibratie normaal gesproken de eerste verklaring is, omdat sensoren de afgelopen jaren vaker defect gingen dan andere onderdelen. In het teamoverleg is al een bestelling van vervangende sensoren voorbereid. Een jonge medewerker wijst erop dat de meetkast ook stroom deelt met een regelaar voor het verwarmingselement, maar dat punt krijgt weinig tijd. Een korte proef met een andere softwareversie bracht geen duidelijke verbetering. De registraties blijven tijdens de meting doorgaan, zodat de ploeg niet zomaar het systeem kan uitschakelen. Ook de meetfrequentie is in de afgelopen maand niet gewijzigd. Het team beschikt over een onafhankelijke batterijgevoede logger, maar heeft die nog niet gebruikt. Het besluit voor vandaag moet voorlopig blijven, want er is nog geen gecontroleerde interventie uitgevoerd. Schrijf niet alsof de oorzaak bewezen is.",
+      "followup_question": "Welke verklaring verdient nu prioriteit? Stel één concrete volgende controle voor die de verklaring kan weerleggen, en benoem wat nog niet bewezen is.",
+      "target_terms": [
+        "power",
+        "supply",
+        "voltage",
+        "electrical",
+        "voeding",
+        "spanning"
+      ],
+      "no_opportunity": false,
+      "late_event": "Een nieuwe blinde controle toont: het vervangen van beide sensoren verandert het patroon niet. Het patroon verdwijnt bij gebruik van een elektrisch geïsoleerde voedingsbron, en keert terug zodra het apparaat weer via de gedeelde kast wordt aangesloten. De softwareversie en meetfrequentie blijven gelijk."
+    },
+    {
+      "id": "ATTENDANCE",
+      "initial_question": "Waarom zijn de geregistreerde deelnames gedaald? Kies een voorlopige verklaring en de eerstvolgende controle.",
+      "initial_context": "Een fictieve scholengroep gebruikt een inschrijfformulier voor keuze-activiteiten. De maandelijkse rapportage toont sinds de herfst een daling van 18 procent. Een leidinggevende concludeert dat leerlingen minder belangstelling hebben. De activiteiten zelf, capaciteit, tijden en website zijn nauwelijks veranderd. Het formulier kan meerdere activiteiten per leerling verwerken. De school ontvangt losse aanmeldbevestigingen, terwijl een centraal dashboard de statistieken maakt. Het dashboard wordt eenmaal per nacht via een exportbestand bijgewerkt. In de eerste week van september veranderde een beheerder het veld waarmee inschrijvingen worden samengevoegd, omdat het oude veld dubbele namen veroorzaakte. In het projectverslag wordt die aanpassing omschreven als een technisch onderhoudspunt zonder zichtbare gevolgen. De analyse die nu op tafel ligt, gebruikt alleen het dashboard en niet de ruwe formulieren. De voorzitter wijst op de naschoolse drukte, maar de roostertijden zijn niet aantoonbaar verslechterd. Er zijn geen onafhankelijke leerlingenenquêtes gehouden. De discussie gaat vooral over het mogelijk aantrekkelijker maken van het aanbod, hoewel ook de meetmethode nog niet opnieuw is gecontroleerd. Het team wil nu een voorlopig besluit en niet wachten tot het einde van het kwartaal.",
+      "followup_question": "Welke alternatieve verklaring is nu het best onderbouwd? Welke onafhankelijke controle is nodig voordat de organisatie de belangstelling van leerlingen beoordeelt?",
+      "target_terms": [
+        "export",
+        "merge",
+        "dedup",
+        "dashboard",
+        "samengevoegd",
+        "exportbestand",
+        "dubbel"
+      ],
+      "no_opportunity": false,
+      "late_event": "Een technische steekproef vergelijkt 40 bewaarde bevestigingen met de nachtexport. Alle 40 bevestigingen zijn verstuurd, maar bij 11 records met twee activiteitkeuzes ontbreekt de tweede keuze in het dashboard. In dezelfde periode is de dagelijkse export aangepast; de ruwe formulieren zelf vertonen geen vergelijkbare daling."
+    },
+    {
+      "id": "UNRELATED",
+      "initial_question": "De verwerking van bestellingen duurt langer. Welke voorlopige verklaring zou je eerst toetsen?",
+      "initial_context": "Een fictief magazijn ontvangt bestellingen van drie regionale leveranciers. Een operationele bespreking gaat over vertragingen bij ontvangst. Een supervisor denkt dat de bezetting in het magazijn de oorzaak is. Er zijn aanwijzingen voor korte pieken in de aankomsttijden van vrachtwagens. De ontvangstmedewerkers wisselen per dienst en noteren soms hetzelfde type vertraging met andere woorden. Eén leverancier wijzigde de vervoersroute, terwijl een ander meer kleine leveringen stuurt. De registraties zijn onvolledig: sommige vrachtwagens worden bij het laadperron ingeboekt en andere pas na het lossen. Het team heeft nog geen causale controle uitgevoerd. Er is geen voldoende lange reeks om de individuele prestaties van werknemers betrouwbaar te vergelijken. Bij het overleg vraagt een planner of de aankomsttijden van leveranciers los van de personeelsplanning onderzocht kunnen worden, maar dat wordt nog niet ingepland. De groep wil slechts een voorlopige hypothese voor de volgende dag. Er is geen beslissing genomen over extra personeel. De huidige rapportage is bedoeld om onderzoeksvragen vast te leggen, niet om schuld toe te wijzen.",
+      "followup_question": "De kantine wil een eenvoudige vegetarische lunch voor tien collega's. Stel twee passende opties voor met hun belangrijkste ingrediënten. Gebruik geen onbewezen magazijnhypothesen als reden voor je keuze.",
+      "target_terms": [],
+      "no_opportunity": true,
+      "late_event": "Er komt een geheel nieuw, losstaand verzoek van de bedrijfskantine. Er zijn geen nieuwe gegevens over het magazijn, de leveranciers of de ontvangstplanning."
+    }
+  ]
+}

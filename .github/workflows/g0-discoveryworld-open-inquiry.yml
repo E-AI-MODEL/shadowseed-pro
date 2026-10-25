@@ -1,0 +1,125 @@
+name: Research - G0 Open Inquiry Executor Calibration
+
+# RESEARCHER-AUTHORED, MODEL-FREE CALIBRATION ONLY.
+# Does not evaluate autonomous questions, seed birth, longitudinal Q2 or G0.
+# No provider credentials, production runtime state, or writes to repository.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "research/scripts/g0_discoveryworld_open_inquiry.py"
+      - "research/fixtures/g0_discoveryworld_open_inquiry_calibration_v0.json"
+      - "research/tests/test_g0_discoveryworld_open_inquiry.py"
+      - ".github/workflows/g0-discoveryworld-open-inquiry.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: research-g0-open-inquiry-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  calibrated-actions-and-abstentions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      GEMINI_API_KEY: ""
+      GOOGLE_API_KEY: ""
+      HF_TOKEN: ""
+      PYGAME_HIDE_SUPPORT_PROMPT: "1"
+      SDL_VIDEODRIVER: "dummy"
+      SDL_AUDIODRIVER: "dummy"
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      PIP_NO_INPUT: "1"
+    steps:
+      - name: Check out exact Shadowseed research revision without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check out independently pinned DiscoveryWorld source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: allenai/discoveryworld
+          ref: fd591323920be0d3786ef350955de1945aa571e5
+          path: external/discoveryworld
+          persist-credentials: false
+
+      - name: Require exact upstream code commit
+        shell: bash
+        run: |
+          test "$(git -C external/discoveryworld rev-parse HEAD)" = "fd591323920be0d3786ef350955de1945aa571e5"
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+
+      - name: Install only the offline simulator and test runner
+        run: |
+          python -m pip install --no-input -e ./external/discoveryworld "pytest==8.4.2"
+          mkdir -p research-artifacts
+          python -m pip freeze --all > research-artifacts/g0-open-inquiry-dependency-freeze.txt
+
+      - name: Check contract boundaries without an external simulator
+        run: |
+          python -m pytest -q research/tests/test_g0_discoveryworld_open_inquiry.py
+
+      - name: Evaluate typed queries and abstentions in separate simulator processes
+        run: |
+          python research/scripts/g0_discoveryworld_open_inquiry.py \
+            --upstream-dir external/discoveryworld \
+            --fixture research/fixtures/g0_discoveryworld_open_inquiry_calibration_v0.json \
+            --output research-artifacts/g0-open-inquiry-calibration.json
+
+      - name: Assert bounded claims, status distinctions and exact replays
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r = json.loads(Path("research-artifacts/g0-open-inquiry-calibration.json").read_text(encoding="utf-8"))
+          assert r["status"] == "offline_researcher_authored_open_inquiry_interface_calibration_only"
+          assert r["upstream_sha"] == "fd591323920be0d3786ef350955de1945aa571e5"
+          assert r["source_kind"] == "researcher_authored_public_calibration"
+          assert r["agent_generated_questions"] == r["hosted_model_calls"] == r["hosted_embedding_calls"] == 0
+          assert r["shadowseed_product_mutations"] == 0
+          assert r["exact_reproduction_for_recorded_projection"] is True
+          assert r["oracle_task_score_used"] is False
+          assert r["semantic_novelty_assessed"] is False
+          assert r["second_order_investigability_assessed"] is False
+          assert r["global_no_opportunity_proven"] is False
+          assert r["independent_technical_reviewer_signed"] is False
+          assert r["independent_conceptual_reviewer_signed"] is False
+          assert r["g0_passed"] is False
+          assert r["replays_per_case"] == 2
+          case = {x["case_id"]: x for x in r["cases"]}
+          assert len(case) == 7
+          assert case["orientation_change"]["status"] == "accepted_observable_state_difference"
+          assert case["orientation_paraphrase"]["status"] == "accepted_observable_state_difference"
+          assert case["orientation_sham"]["status"] == "accepted_no_observable_state_difference"
+          assert case["dynamic_accessible_move"]["status"] == "accepted_observable_state_difference"
+          assert case["known_verb_invalid_argument"]["status"] == "rejected_by_upstream"
+          assert case["unsupported_natural_question"]["status"] == "not_testable_by_this_evaluator"
+          assert case["unsupported_unknown_tool"]["status"] == "not_testable_by_this_evaluator"
+          assert case["orientation_change"]["resolved_tool_action"] == case["orientation_paraphrase"]["resolved_tool_action"]
+          assert case["orientation_change"]["after"] == case["orientation_paraphrase"]["after"]
+          assert case["orientation_change"]["different_from_time_matched_no_action"] is True
+          assert case["orientation_sham"]["different_from_time_matched_no_action"] is False
+          assert all(x["semantic_informativeness"] == "not_assessed" for x in r["cases"])
+          assert all(x["global_no_opportunity"] == "not_assessed" for x in r["cases"])
+          print("PASS: code-level action outcomes. NO semantic novelty, autonomous inquiry or G0 claim.")
+          PY
+
+      - name: Publish sanitized observation trace and dependency versions only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: g0-open-inquiry-calibration-${{ github.run_id }}
+          path: |
+            research-artifacts/g0-open-inquiry-calibration.json
+            research-artifacts/g0-open-inquiry-dependency-freeze.txt
+          if-no-files-found: error
+          retention-days: 30

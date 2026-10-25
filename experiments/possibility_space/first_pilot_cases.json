@@ -1,0 +1,245 @@
+{
+  "schema": "shadowseed-possibility-pilot-cases-v0",
+  "status": "synthetic feasibility worlds, not scientific evidence",
+  "cases": [
+    {
+      "id": "ARCHIVE",
+      "setting": "A fictional heritage-archive data workflow where a complete chain makes new catalog searches possible.",
+      "nodes": [
+        {
+          "id": "scan_east_1",
+          "kind": "source",
+          "consumes": null,
+          "produces": "raw_scan",
+          "zone": "east"
+        },
+        {
+          "id": "scan_east_2",
+          "kind": "source",
+          "consumes": null,
+          "produces": "raw_scan",
+          "zone": "east"
+        },
+        {
+          "id": "dewarp_east",
+          "kind": "process",
+          "consumes": "raw_scan",
+          "produces": "clean_text",
+          "zone": "east"
+        },
+        {
+          "id": "tag_east",
+          "kind": "process",
+          "consumes": "clean_text",
+          "produces": "index_record",
+          "zone": "east"
+        },
+        {
+          "id": "catalog_east",
+          "kind": "sink",
+          "consumes": "index_record",
+          "produces": null,
+          "zone": "east"
+        },
+        {
+          "id": "tag_west",
+          "kind": "process",
+          "consumes": "clean_text",
+          "produces": "index_record",
+          "zone": "west"
+        },
+        {
+          "id": "catalog_west",
+          "kind": "sink",
+          "consumes": "index_record",
+          "produces": null,
+          "zone": "west"
+        },
+        {
+          "id": "draft_east",
+          "kind": "process",
+          "consumes": "clean_text",
+          "produces": "draft",
+          "zone": "east"
+        },
+        {
+          "id": "dewarp_extra_east",
+          "kind": "process",
+          "consumes": "raw_scan",
+          "produces": "partial",
+          "zone": "east"
+        }
+      ],
+      "existing_edges": [
+        [
+          "scan_east_1",
+          "dewarp_east"
+        ],
+        [
+          "scan_east_2",
+          "dewarp_east"
+        ],
+        [
+          "tag_east",
+          "catalog_east"
+        ],
+        [
+          "tag_west",
+          "catalog_west"
+        ]
+      ],
+      "positive_fixture_bridge": [
+        "dewarp_east",
+        "tag_east"
+      ],
+      "invalid_fixture_bridge": [
+        "dewarp_east",
+        "tag_west"
+      ]
+    },
+    {
+      "id": "LOGISTICS",
+      "setting": "A fictional parcel-routing workflow where a valid missing handoff can complete more than one delivery route.",
+      "nodes": [
+        {
+          "id": "desk_a",
+          "kind": "source",
+          "consumes": null,
+          "produces": "ticket",
+          "zone": "hub"
+        },
+        {
+          "id": "desk_b",
+          "kind": "source",
+          "consumes": null,
+          "produces": "ticket",
+          "zone": "hub"
+        },
+        {
+          "id": "validate",
+          "kind": "process",
+          "consumes": "ticket",
+          "produces": "cleared",
+          "zone": "hub"
+        },
+        {
+          "id": "allocate",
+          "kind": "process",
+          "consumes": "cleared",
+          "produces": "assignment",
+          "zone": "hub"
+        },
+        {
+          "id": "dispatch",
+          "kind": "process",
+          "consumes": "assignment",
+          "produces": "delivery",
+          "zone": "hub"
+        },
+        {
+          "id": "destination",
+          "kind": "sink",
+          "consumes": "delivery",
+          "produces": null,
+          "zone": "hub"
+        },
+        {
+          "id": "outside_allocator",
+          "kind": "process",
+          "consumes": "cleared",
+          "produces": "assignment",
+          "zone": "outside"
+        },
+        {
+          "id": "review_hub",
+          "kind": "process",
+          "consumes": "cleared",
+          "produces": "audit",
+          "zone": "hub"
+        },
+        {
+          "id": "validate_extra",
+          "kind": "process",
+          "consumes": "ticket",
+          "produces": "note",
+          "zone": "hub"
+        }
+      ],
+      "existing_edges": [
+        [
+          "desk_a",
+          "validate"
+        ],
+        [
+          "desk_b",
+          "validate"
+        ],
+        [
+          "allocate",
+          "dispatch"
+        ],
+        [
+          "dispatch",
+          "destination"
+        ]
+      ],
+      "positive_fixture_bridge": [
+        "validate",
+        "allocate"
+      ],
+      "invalid_fixture_bridge": [
+        "validate",
+        "outside_allocator"
+      ]
+    },
+    {
+      "id": "NEGATIVE",
+      "setting": "A fictional pipeline with an obvious-looking but incompatible candidate and no viable new complete route.",
+      "nodes": [
+        {
+          "id": "feed",
+          "kind": "source",
+          "consumes": null,
+          "produces": "raw",
+          "zone": "north"
+        },
+        {
+          "id": "parser",
+          "kind": "process",
+          "consumes": "raw",
+          "produces": "parsed",
+          "zone": "north"
+        },
+        {
+          "id": "indexer",
+          "kind": "process",
+          "consumes": "parsed",
+          "produces": "index",
+          "zone": "south"
+        },
+        {
+          "id": "store",
+          "kind": "sink",
+          "consumes": "index",
+          "produces": null,
+          "zone": "south"
+        }
+      ],
+      "existing_edges": [
+        [
+          "feed",
+          "parser"
+        ],
+        [
+          "indexer",
+          "store"
+        ]
+      ],
+      "positive_fixture_bridge": null,
+      "invalid_fixture_bridge": [
+        "parser",
+        "indexer"
+      ]
+    }
+  ]
+}

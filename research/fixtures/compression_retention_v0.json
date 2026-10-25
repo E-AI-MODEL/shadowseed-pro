@@ -1,0 +1,186 @@
+{
+  "schema": "shadowseed-compression-retention-fixtures-v0",
+  "status": "investigator-authored synthetic plumbing fixtures, not model results or sealed holdouts",
+  "budget": {
+    "memory_slots": 2,
+    "max_words_per_slot": 24,
+    "policy": "fixed slots and word cap only; NOT matched token expenditure"
+  },
+  "cases": [
+    {
+      "id": "SENSOR_ANCHOR",
+      "context": "A fictional team initially blames a monitoring probe for measurement drift.",
+      "compressed_summary": "The team attributes drifting measurements to unreliable hardware and plans replacement.",
+      "later_cue": "A thermal chamber shows that warmer battery temperatures track changes in calibration.",
+      "candidates": [
+        {
+          "id": "temperature",
+          "text": "Battery temperature might explain calibration drift in the monitoring probe.",
+          "origin_ref": "synthetic-turn:0"
+        },
+        {
+          "id": "sampling",
+          "text": "Sampling intervals might create misleading patterns in the monitoring report.",
+          "origin_ref": "synthetic-turn:0"
+        }
+      ],
+      "ordinary_notes": [
+        {
+          "id": "ordinary-1",
+          "text": "The team plans to replace the unreliable monitoring device.",
+          "candidate_ref": null
+        },
+        {
+          "id": "ordinary-2",
+          "text": "Review the purchase order and replacement budget.",
+          "candidate_ref": null
+        }
+      ],
+      "sham_notes": [
+        {
+          "id": "sham-1",
+          "text": "Draft a project calendar for replacement equipment.",
+          "candidate_ref": null
+        },
+        {
+          "id": "sham-2",
+          "text": "Confirm the location of the old monitoring files.",
+          "candidate_ref": null
+        }
+      ],
+      "expected_candidate_id": "temperature",
+      "neutral_replacement": "Confirm the archive filename and administrative report version."
+    },
+    {
+      "id": "NOTE_PARITY",
+      "context": "A fictional organization receives fewer forms after an autumn policy update.",
+      "compressed_summary": "The reporting team is checking a decline in completed registrations.",
+      "later_cue": "Which autumn registration fee changes might explain a decline in submitted forms?",
+      "candidates": [
+        {
+          "id": "fee",
+          "text": "An autumn registration fee change may explain fewer submitted forms.",
+          "origin_ref": "synthetic-turn:0"
+        },
+        {
+          "id": "access",
+          "text": "A broken browser login could prevent some users from submitting forms.",
+          "origin_ref": "synthetic-turn:0"
+        }
+      ],
+      "ordinary_notes": [
+        {
+          "id": "ordinary-fee",
+          "text": "An autumn registration fee change may explain fewer submitted forms.",
+          "candidate_ref": "fee"
+        },
+        {
+          "id": "ordinary-login",
+          "text": "A broken browser login could prevent some users from submitting forms.",
+          "candidate_ref": "access"
+        }
+      ],
+      "sham_notes": [
+        {
+          "id": "sham-1",
+          "text": "Check whether last year's document template was archived.",
+          "candidate_ref": null
+        },
+        {
+          "id": "sham-2",
+          "text": "Review how many printer cartridges remain in storage.",
+          "candidate_ref": null
+        }
+      ],
+      "expected_candidate_id": "fee",
+      "neutral_replacement": "Confirm the archive filename and administrative report version."
+    },
+    {
+      "id": "NO_OPPORTUNITY",
+      "context": "A fictional logistics team is discussing staffing and customs checks.",
+      "compressed_summary": "The team is reviewing customs tasks and warehouse staffing.",
+      "later_cue": "Which vegetarian lunch menu should be printed for the staff cafeteria?",
+      "candidates": [
+        {
+          "id": "customs",
+          "text": "Customs clearance changes might delay arrivals at the warehouse.",
+          "origin_ref": "synthetic-turn:0"
+        },
+        {
+          "id": "staff",
+          "text": "Weekend staffing gaps might affect warehouse unloading times.",
+          "origin_ref": "synthetic-turn:0"
+        }
+      ],
+      "ordinary_notes": [
+        {
+          "id": "note-customs",
+          "text": "Review upcoming customs declarations for the warehouse.",
+          "candidate_ref": "customs"
+        },
+        {
+          "id": "note-staff",
+          "text": "Review the next warehouse staffing schedule.",
+          "candidate_ref": "staff"
+        }
+      ],
+      "sham_notes": [
+        {
+          "id": "sham-1",
+          "text": "Confirm the weekly archive backup completed successfully.",
+          "candidate_ref": null
+        },
+        {
+          "id": "sham-2",
+          "text": "File the meeting room cleaning schedule.",
+          "candidate_ref": null
+        }
+      ],
+      "expected_candidate_id": null
+    },
+    {
+      "id": "DEPENDENCY_REFRAME",
+      "context": "A fictional team initially assumes delays are caused by worker performance.",
+      "compressed_summary": "The manager plans to investigate the team's delivery performance.",
+      "later_cue": "Could altered supplier delivery dates after a shipping strike explain the schedule slipping?",
+      "candidates": [
+        {
+          "id": "supplier",
+          "text": "Supplier dependencies might explain delivery delays instead of team performance.",
+          "origin_ref": "synthetic-turn:0"
+        },
+        {
+          "id": "currency",
+          "text": "International invoice settlement might change the projected cash balance.",
+          "origin_ref": "synthetic-turn:0"
+        }
+      ],
+      "ordinary_notes": [
+        {
+          "id": "note-1",
+          "text": "Check the team's delivery performance and task planning.",
+          "candidate_ref": null
+        },
+        {
+          "id": "note-2",
+          "text": "Ask the manager for a revised activity timeline.",
+          "candidate_ref": null
+        }
+      ],
+      "sham_notes": [
+        {
+          "id": "sham-1",
+          "text": "Review the formatting of the weekly progress dashboard.",
+          "candidate_ref": null
+        },
+        {
+          "id": "sham-2",
+          "text": "Confirm who should archive signed attendance sheets.",
+          "candidate_ref": null
+        }
+      ],
+      "expected_candidate_id": "supplier",
+      "neutral_replacement": "Confirm the archive filename and administrative report version."
+    }
+  ]
+}
