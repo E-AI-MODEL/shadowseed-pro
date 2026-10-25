@@ -14,7 +14,7 @@
 
 **Do not run any of these historical T0 model-facing inputs as a paid efficacy trial.** Public illustrative answer keys are not sealed, formal arithmetic is not construct validation, and no independent reviewer approval has occurred.
 
-## Current pre-G0 work (no approval or live experiment)
+## Current pre-G0 work (exploratory live runs, no independent G0 approval)
 
 - **[Source-screened external research environments](external-benchmark-feasibility-2026-10-25.md):** initial paper review; later [code review](external-executor-source-audit-2026-10-25.md) pinned exact commits and [model-free smoke test](../../../../research/scripts/g0_discoveryworld_smoke.py) confirmed only the action interface (PR #230).
 - **[Open inquiry interface calibration](open-inquiry-interface-calibration-2026-10-25.md):** explicitly separate natural-language question, manually bound tool action, actual observer state, invalid requests and untestable questions. The public calibrations are researcher-authored; semantic novelty and Q2 remain unassessed, and G0 is NOT PASSED.
@@ -22,6 +22,9 @@
 - **[Blind later-inquiry reviewer handoff](blind-later-inquiry-review-handoff-2026-10-25.md):** actual runnable source-to-arm-blinded packet generator, two separately completed human forms and owner-only post-review unblinding; PR #232 only as public scripted calibration, **never** auto-novelty, model evidence or G0 approval.
 - **[Restored original shadow-route / weightless investigation boundary](weightless-inquiry-causal-boundary-2026-10-25.md):** checks the June vision, accepted ADR-002 and real manager/SSOT/TrTL code before inventing any additional inquiry role; a targeted model-free regression characterizes what existing shadow persistence **does and does not** already do. This corrects a too-narrow inference from `prepare_turn`.
 - **[LLM-adapter evaluation contract](adapter-evaluation-contract-2026-10-25.md):** five matched strong-model arms (ordinary, deliberate search, normal notes, genuine weightless candidate retention, exact candidate ablation); the complete Q1/Q2 claim remains unproved. Neither document fills the [independent review ledger](dynamic-inquiry-independent-review.md).
+
+- **[Actual GPT-5 research runs, still exploratory](https://github.com/E-AI-MODEL/shadowseed-pro/blob/research/g0-exploratory-real-model-stage1-20261025/docs/research/possibility-space/g0/real-model-stage1-observations-2026-10-25.md)** are on [draft PR #250](https://github.com/E-AI-MODEL/shadowseed-pro/pull/250) (20 model responses, first true multi-turn seed lineage; T0 context asymmetry). [Draft PR #251](https://github.com/E-AI-MODEL/shadowseed-pro/pull/251) subsequently recorded five model-authored T1 RF research questions from the same factual context (A/B/C/D/E) but stopped at a T2 checkpoint invariant after 14 responses. Those results **do not constitute G0-PASS, a model-internal Q1 claim or independently verified Q2**.
+- **[G0 v3 external reviewer submission](g0-v3-review-submission-2026-10-25.md)** and **[seed influence causal measurement guide](seed-influence-causal-measurement-2026-10-25.md)** were prepared on [PR #253](https://github.com/E-AI-MODEL/shadowseed-pro/pull/253). They point to the existing [technical independent review #234](https://github.com/E-AI-MODEL/shadowseed-pro/issues/234) and [conceptual independent review #235](https://github.com/E-AI-MODEL/shadowseed-pro/issues/235). **Neither reviewer has submitted a verdict.** The read-only review check cannot approve G0.
 
 ## The whole fundamental research question — unchanged
 
