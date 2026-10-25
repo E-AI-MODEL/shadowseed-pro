@@ -1,7 +1,7 @@
 name: Research - G0 SSOT Polarity Falsification
 
 # Live model-free regressions comparing the historical defect (archived PR #240)
-# with the current corrected product SSOT producer and unchanged real Gate.
+# with the new read-only product SSOT producer and unchanged real Gate.
 # Source text and relation attestations are entirely investigator-authored.
 # No model discovery, independent truth verification or G0 approval.
 on:
@@ -9,6 +9,8 @@ on:
     branches: [main]
     paths:
       - "src/shadowseed/ssot.py"
+      - "src/shadowseed_agent/agent_contract.py"
+      - "src/shadowseed/application/inspection.py"
       - "research/scripts/g0_ssot_evidence_polarity_preflight.py"
       - "research/tests/test_g0_ssot_evidence_polarity.py"
       - ".github/workflows/g0-ssot-polarity-falsification.yml"
@@ -65,8 +67,8 @@ jobs:
           import json
           from pathlib import Path
           r = json.loads(Path("research-artifacts/g0-ssot-polarity-after-fix.json").read_text(encoding="utf-8"))
-          assert r["schema"] == "g0-ssot-polarity-before-after-characterization-v1"
-          assert r["status"] == "post_fix_synthetic_mechanics_characterized_not_independently_verified"
+          assert r["schema"] == "g0-ssot-polarity-read-only-handoff-v2"
+          assert r["status"] == "researcher_asserted_relations_read_only_no_gate_authority"
           assert r["model_calls"] == r["human_verifiers"] == 0
           assert r["Q1_tested"] is r["Q2_tested"] is r["G0_passed"] is False
           assert r["no_research_gate_or_polarity_classifier"] is True
@@ -78,17 +80,18 @@ jobs:
           b = r["cases"]["explicit_negation_with_author_opposition"]
           c = r["cases"]["unverified_with_author_support"]
           d = r["cases"]["affirmation_without_relation"]
-          assert a["accepted_ssot_signal_count"] == 4
-          assert len(a["gate_events"]) == 4
-          assert a["final_seed"]["weight"] > 0
+          assert a["review_candidate_count"] == 4
+          assert r["authorized_actor_submissions"] == 0
+          assert r["intermediate_unsafe_attestation_run"].endswith("/40182789691")
           assert all(
-              case["accepted_ssot_signal_count"] == 0
+              case["gate_authorized"] is False
               and case["final_seed"]["weight"] == 0
               and case["final_seed"]["evidence_count"] == 0
               and not case["gate_events"]
-              for case in (b, c, d)
+              for case in (a, b, c, d)
           )
-          print("Post-fix: only author-attested SUPPORT reaches existing Gate. Still no independent truth check.")
+          assert all(case["review_candidate_count"] == 0 for case in (b, c, d))
+          print("SSOT inspected real hits without creating any Gate events; no independent truth check.")
           PY
       - name: Upload synthetic-only observation and exact dependency set
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
