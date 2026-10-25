@@ -118,7 +118,7 @@ def test_duplicate_chunks_share_one_provisional_source_unit() -> None:
             (b.seed_id, b.chunk_id): reviewed(b, Relation.SUPPORTS, unit="one-study"),
         },
     )
-    assert batch.support_units_to_review == ("one-study",)
+    assert batch.support_units_to_review == (("seed-1", "one-study"),)
     assert len(batch.observations) == 2
     assert batch.gate_authorized is False
     assert all(not obs.gate_authorized for obs in batch.observations)
@@ -134,7 +134,7 @@ def test_explicitly_conflicting_relations_quarantine_entire_unit() -> None:
             (b.seed_id, b.chunk_id): reviewed(b, Relation.OPPOSES, unit="same-study"),
         },
     )
-    assert batch.conflicting_source_units == ("same-study",)
+    assert batch.conflicting_source_units == (("seed-1", "same-study"),)
     assert batch.support_units_to_review == ()
     assert all(obs.disposition == "conflicting_relation_same_source"
                for obs in batch.observations)
@@ -176,3 +176,18 @@ def test_not_a_semantic_entailment_classifier() -> None:
     # *review handoff* that requires a real, independent attestation process.
     assert result.disposition == "asserted_support_needs_external_check"
     assert result.gate_authorized is False
+
+
+def test_same_underlying_source_can_have_opposing_relations_to_different_seeds() -> None:
+    first = hit(YES, seed_id="seed-1")
+    second = hit(NO, seed_id="seed-2")
+    batch = preflight_batch(
+        [first, second],
+        {
+            (first.seed_id, first.chunk_id): reviewed(first, Relation.SUPPORTS, unit="one-source"),
+            (second.seed_id, second.chunk_id): reviewed(second, Relation.OPPOSES, unit="one-source"),
+        },
+    )
+    assert batch.conflicting_source_units == ()
+    assert batch.support_units_to_review == (("seed-1", "one-source"),)
+    assert batch.observations[1].disposition == "asserted_opposition_not_auto_contradiction"
