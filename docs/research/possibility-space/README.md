@@ -10,6 +10,7 @@
 - **[Bronnen en bewijsoverzicht voor stap 1](step1-evidence-register-2026-10-25.md)** — onderscheid tussen uitgevoerde proeven, beoordelingen door andere LLM's, oude nulresultaten, niet-gemergede prototypes en nog ontbrekende onafhankelijke controles.
 - **[Technische vergelijking met H-Neurons](step1-h-neurons-method-crosswalk-2026-10-25.md)** — originele activatiemeetmethode, CETT, nieuwe kritische controles, E1 versus E2 en de eis dat kandidaat/label pas na originele generatieactivaties ontstaat. Dit is een onderzoeksvoorstel, geen neuronresultaat.
 - **[Stap-1 meetinstrument met echte detector/intake](step1-gap-birth-instrument-2026-10-25.md)** — offline, volledig vooraf vastgelegde model- en detectorantwoorden; daadwerkelijke productparser, observe_turn, intake, gewichtloze seedgeboorte, eventlogs en oorspronkelijke promptversies. Geen werkelijke modeldetectie, geen modelcalls en geen wetenschappelijke effectclaim.
+- **[Methodische EAI Blindspot-audit van Q1/Q2 en stap 1](step1-eai-blindspot-method-audit-2026-10-25.md)** — uitsluitend een interne controle op bronfit, rol/herkomst, parser- en evaluatorselectie, latere causaliteit, gewichtloos onderzoek en de verschillende feedbackregels in de protocollen. Geen EAI-rubric als gapfilter, geen nieuwe proef, geen onafhankelijke G0-goedkeuring.
 
 ## Current reading order (start here)
 
