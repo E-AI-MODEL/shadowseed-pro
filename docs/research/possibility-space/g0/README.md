@@ -16,7 +16,8 @@
 
 ## Current pre-G0 work (no approval or live experiment)
 
-- **[Source-screened external research environments](external-benchmark-feasibility-2026-10-25.md):** papers and project descriptions only, without claiming any executable environment has been accepted or that public fixtures are blind holdouts.
+- **[Source-screened external research environments](external-benchmark-feasibility-2026-10-25.md):** initial paper review; later [code review](external-executor-source-audit-2026-10-25.md) pinned exact commits and [model-free smoke test](../../../../research/scripts/g0_discoveryworld_smoke.py) confirmed only the action interface (PR #230).
+- **[Open inquiry interface calibration](open-inquiry-interface-calibration-2026-10-25.md):** explicitly separate natural-language question, manually bound tool action, actual observer state, invalid requests and untestable questions. The public calibrations are researcher-authored; semantic novelty and Q2 remain unassessed, and G0 is NOT PASSED.
 - **[LLM-adapter evaluation contract](adapter-evaluation-contract-2026-10-25.md):** five matched strong-model arms (ordinary, deliberate search, normal notes, genuine weightless candidate retention, exact candidate ablation); the complete Q1/Q2 claim remains unproved. Neither document fills the [independent review ledger](dynamic-inquiry-independent-review.md).
 
 ## The whole fundamental research question — unchanged
