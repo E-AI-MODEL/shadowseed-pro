@@ -4,6 +4,12 @@
 > **Updated:** 2026-10-25 following first-principles review.
 > **Question authority:** [Verbatim Dutch thesis](../possibility-space-thesis.md), with **both clauses** intact. No narrower paraphrase or experiment can replace it.
 
+## Stap 1: modelvermogen, gap-detectie en gewichtloze geboorte
+
+- **[Uitgebreid onderzoek: van modelsignaal naar gap en seed](step1-model-signals-gap-origin-2026-10-25.md)** — code en oorspronkelijke H-Neurons-bronnen naast elkaar; modelrollen, detector v0.6/generative, ruwe kandidaat tot seed, echte meerturnslevenscyclus en mogelijke modelinterne metingen. Dit is een onderzoeksontwerp, geen bewezen Q1/Q2-uitkomst of vrijgave voor nieuwe betaalde runs.
+- **[Bronnen en bewijsoverzicht voor stap 1](step1-evidence-register-2026-10-25.md)** — onderscheid tussen uitgevoerde proeven, beoordelingen door andere LLM's, oude nulresultaten, niet-gemergede prototypes en nog ontbrekende onafhankelijke controles.
+- **[Technische vergelijking met H-Neurons](step1-h-neurons-method-crosswalk-2026-10-25.md)** — originele activatiemeetmethode, CETT, nieuwe kritische controles, E1 versus E2 en de eis dat kandidaat/label pas na originele generatieactivaties ontstaat. Dit is een onderzoeksvoorstel, geen neuronresultaat.
+
 ## Current reading order (start here)
 
 1. **[Fundamental question](../possibility-space-thesis.md)** — canonical, literal Dutch wording and honest scientific claim boundary.
