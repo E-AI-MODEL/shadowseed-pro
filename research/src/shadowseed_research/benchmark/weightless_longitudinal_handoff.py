@@ -157,16 +157,64 @@ def freeze_weightless_followup(
             or report.get("self_reinforcement_applied")
         ):
             raise ValueError("ordinary answer route received SSL influence")
-    if any(
-        event.get("seed_id") == sid for event in manager.get("gate_events", [])
+    # A recurrence-only Gate attempt can be BLOCKED without granting weight.
+    # Preserve that actual decision rather than treating "Gate was called"
+    # as "authority was granted".
+    gate_log = manager.get("gate_events", [])
+    if not isinstance(gate_log, list) or any(
+        not isinstance(event, dict) for event in gate_log
     ):
-        raise ValueError("candidate has crossed the Gate boundary")
+        raise ValueError("invalid Gate decision ledger")
+    relevant_gate = [event for event in gate_log if event.get("seed_id") == sid]
+    if any(
+        event.get("decision") not in {"blocked", "no_change"}
+        or event.get("weight_before") != 0
+        or event.get("weight_after") != 0
+        or event.get("authority_version") != 0
+        or event.get("status_before") == "PROMOTED"
+        or event.get("status_after") == "PROMOTED"
+        for event in relevant_gate
+    ):
+        raise ValueError("candidate has crossed the Gate authority boundary")
     if (
         seed.get("weight") != 0 or seed.get("evidence_count") != 0
         or seed.get("authority_version") != 0
         or seed.get("status") == "PROMOTED"
     ):
         raise ValueError("candidate is no longer authority-free")
+
+    # The manager event ledger is append-only between successive checkpoints.
+    # This is a local integrity check, not tamper-proof external notarization.
+    event_log = manager.get("event_log", [])
+    if not isinstance(event_log, list) or any(
+        not isinstance(item, dict) for item in event_log
+    ):
+        raise ValueError("invalid seed event ledger")
+    if previous is not None:
+        prior_n = previous.get("event_log_count")
+        prior_gate_n = previous.get("gate_log_count")
+        if (
+            type(prior_n) is not int or not 0 <= prior_n <= len(event_log)
+            or _hash_json(event_log[:prior_n]) != previous.get("event_log_sha256")
+            or type(prior_gate_n) is not int
+            or not 0 <= prior_gate_n <= len(gate_log)
+            or _hash_json(gate_log[:prior_gate_n]) != previous.get("gate_log_sha256")
+        ):
+            raise ValueError("previous event ledger prefix was modified")
+        new_events = event_log[prior_n:]
+        new_gate = gate_log[prior_gate_n:]
+    else:
+        birth_positions = [
+            i for i, event in enumerate(event_log)
+            if event.get("seed_id") == sid
+            and event.get("event_type") == "created"
+        ]
+        if len(birth_positions) != 1:
+            raise ValueError("first seed event is missing or ambiguous")
+        # It includes any post-birth activity within T0; do not call it
+        # exclusively later-turn events.
+        new_events = event_log[birth_positions[0] + 1:]
+        new_gate = gate_log
 
     report = reports[last_turn]
     reported_again = sid in report.get("seeds_born_weightless", [])
@@ -206,6 +254,18 @@ def freeze_weightless_followup(
         ),
         "history_sha256": _hash_json(reports[:last_turn + 1]),
         "turn_report_sha256": _hash_json(report),
+        "event_log_count": len(event_log),
+        "event_log_sha256": _hash_json(event_log),
+        "gate_log_count": len(gate_log),
+        "gate_log_sha256": _hash_json(gate_log),
+        "new_seed_event_types": [
+            event.get("event_type") for event in new_events
+            if event.get("seed_id") == sid
+        ],
+        "new_gate_decisions": [
+            event.get("decision") for event in new_gate
+            if event.get("seed_id") == sid
+        ],
         "question_sha256": _digest(report["question"]),
         "answer_sha256": _digest(report["answer"]),
         "candidate_text_sha256": birth["candidate_text_sha256"],
