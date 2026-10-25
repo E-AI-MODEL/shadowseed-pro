@@ -87,7 +87,11 @@ def test_none_parser_failure_and_recurring_seed_are_different_events():
     repeated = cp0["seed_birth_ids_this_turn"][0]
     assert cp2["intake"]["accepted"][0]["seed_id"] == repeated
     assert cp2["seed_state_after"][repeated]["occurrence_count"] >= 2
-    assert cp2["seed_state_after"][repeated]["trace"] >= cp0["seed_state_after"][repeated]["trace"]
+    # Trace is not monotonic across turns: TTL decay can outweigh recurrence.
+    # Test the actual transition after prepare_turn, not a desired end score.
+    assert cp2["seed_state_after_prepare"][repeated]["trace"] < cp2["seed_state_before"][repeated]["trace"]
+    assert cp2["seed_state_after"][repeated]["trace"] > cp2["seed_state_after_prepare"][repeated]["trace"]
+    assert cp2["seed_state_after"][repeated]["trace"] < cp0["seed_state_after"][repeated]["trace"]
     assert cp2["seed_state_after"][repeated]["weight"] == 0
     assert cp2["seed_state_after"][repeated]["evidence_count"] == 0
     assert cp2["authorized_influence_seed_ids"] == []
