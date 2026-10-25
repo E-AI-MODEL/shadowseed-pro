@@ -167,7 +167,7 @@ def test_recurrence_gate_block_is_not_conflated_with_authority():
     assert b["seed_state_after_turn"]["weight"] == 0
     assert b["seed_state_after_turn"]["evidence_count"] == 0
     assert b["seed_state_after_turn"]["authority_version"] == 0
-    assert all(decision in ("blocked", "no_change") for decision in b["new_gate_decisions"])
+    assert b["new_gate_decisions"] == ["blocked"]  # not a vacuous all([])
     assert app.audit() == 0
 
 
