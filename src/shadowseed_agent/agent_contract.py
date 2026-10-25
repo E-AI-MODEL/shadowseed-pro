@@ -115,6 +115,34 @@ def has_logged_promotion(seed_id: str, gate_log: Iterable[Any]) -> bool:
     return False
 
 
+
+def has_unreviewed_ssot_support(seed_id: str, gate_log: Iterable[Any]) -> bool:
+    """Flag historical SSOT support lacking a product authorization ledger.
+
+    The old producer used similarity and a 'verified' metadata flag to mint
+    SSOT SUPPORT without source-to-seed review. A GateEvent cannot prove that
+    its SSOT signal had an authenticated, workspace-scoped evidence.verify
+    transaction. Until a versioned migration/audit explicitly establishes that
+    provenance, fail closed *at point of use*, without rewriting prior events
+    or changing seed weight. This is not a claim that every old source is false.
+    """
+    for event in gate_log:
+        if str(_value(event, "seed_id", "")) != seed_id:
+            continue
+        for signal in _value(event, "signals", ()) or ():
+            kind = _value(signal, "kind", "")
+            direction = _value(signal, "direction", "support")
+            kind_name = str(getattr(kind, "value", kind))
+            direction_name = str(getattr(direction, "value", direction))
+            if (
+                kind_name == "ssot"
+                and direction_name == "support"
+                and _as_bool(_value(signal, "verified", False))
+            ):
+                return True
+    return False
+
+
 def evidence_can_support_gate(evidence_ref: Any) -> bool:
     """Return whether an evidence reference is eligible for gate support.
 
@@ -193,6 +221,14 @@ class AgentSafetyContract:
         # requires a live current-version GateEvent link in ``decide_and_record``.
         if not has_logged_promotion(seed_id, gate_log):
             return InfluenceDecision(seed_id, action_value, False, "missing_logged_promotion")
+
+        # Historical SSOT SUPPORT could have been generated from mere vector
+        # similarity. Deny new influence, not historical event replay, until
+        # a separate authorized provenance migration/requalification exists.
+        if has_unreviewed_ssot_support(seed_id, gate_log):
+            return InfluenceDecision(
+                seed_id, action_value, False, "legacy_ssot_requires_review"
+            )
 
         return InfluenceDecision(seed_id, action_value, True, "allowed_promoted_gate_logged")
 
