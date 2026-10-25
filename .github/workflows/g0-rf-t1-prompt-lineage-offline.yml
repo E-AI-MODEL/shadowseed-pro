@@ -1,0 +1,59 @@
+name: Research - One-shot RF T1 prompt lineage (offline)
+
+# One immutable source run, no provider credentials, no token cost.
+# Prompt hash consistency and D-only exposure are NOT Q1/Q2 causal evidence.
+on:
+  push:
+    branches:
+      - research/q1-q2-real-seed-rf-20261025
+    paths:
+      - .github/workflows/g0-rf-t1-prompt-lineage-offline.yml
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  check-recorded-t1-prompts:
+    if: github.event.before == '0bb2a7cb0a9199b6678ccb8f686b063cb04db5d2' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install locked research dependencies
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+      - name: Verify control prompts against negative synthetic checks
+        run: uv run --no-sync python -m pytest -q research/tests/test_g0_rf_prompt_lineage.py
+      - name: Download actual T1 experimental record (no model calls)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p research-artifacts/g0-rf-prompt/source
+          gh run download 40224494313 --repo E-AI-MODEL/shadowseed-pro \
+            --name g0-real-seed-rf-inquiry-40224494313 \
+            --dir research-artifacts/g0-rf-prompt/source
+          test -s research-artifacts/g0-rf-prompt/source/observed.json
+      - name: Reconstruct exact source-time A/B/C/D/E prompts and compare SHA-256
+        run: |
+          uv run --no-sync python research/scripts/g0_rf_prompt_lineage.py \
+            --source research-artifacts/g0-rf-prompt/source/observed.json \
+            --fixture research/fixtures/real_seed_rf_inquiry_v1.json \
+            --expected-raw-sha 62f778fb53547f2c0532795ccb31f02f09381500a2eb67b7598bf86ae597820f \
+            > research-artifacts/g0-rf-prompt/summary.json
+          cat research-artifacts/g0-rf-prompt/summary.json
+      - name: Preserve only bounded audit summary
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: g0-rf-t1-prompt-lineage-${{ github.run_id }}
+          path: research-artifacts/g0-rf-prompt/summary.json
+          if-no-files-found: warn
+          retention-days: 30
