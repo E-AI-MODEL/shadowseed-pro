@@ -18,6 +18,7 @@ from shadowseed.models import SeedOrigin, SeedStatus, ShadowSeed
 from shadowseed.seed_normalization import (
     BROAD_PREFIXES,
     normalize_detection_candidates as normalize_candidates,
+    normalize_detection_candidates_with_sources,
 )
 
 
@@ -150,6 +151,39 @@ def normalize_detection_candidates(
     )
 
 
+def _canonical_source_indices(
+    manager: Any,
+    raw_candidates: list[str],
+    normalized: list[str],
+    *,
+    expand_short_fragments: bool,
+    split_broad: bool,
+) -> tuple[list[int | None], str]:
+    """Do not claim item lineage for a caller's replaced normalization hook.
+
+    The manager's historical overridable normalization method remains the
+    actual source of normalized items. Only the unmodified canonical facade
+    can be attributed to the shared normalizer. No fallback matching by
+    text/similarity is allowed: identical strings can occur at many indices.
+    """
+    from shadowseed.manager import SSLManager
+
+    if (
+        getattr(manager.normalize_detection_candidates, "__func__", None)
+        is not SSLManager.normalize_detection_candidates
+    ):
+        return [None] * len(normalized), "unresolved_normalizer_override"
+
+    pairs = normalize_detection_candidates_with_sources(
+        raw_candidates,
+        expand_short_fragments=expand_short_fragments,
+        split_broad=split_broad,
+    )
+    if [text for _raw_index, text in pairs] != normalized:
+        return [None] * len(normalized), "unresolved_normalizer_mismatch"
+    return [index for index, _text in pairs], "canonical"
+
+
 def ingest_detection_candidates(
     manager: Any,
     candidates: Iterable[str],
@@ -160,26 +194,53 @@ def ingest_detection_candidates(
     min_seed_words: int = 0,
     origin: SeedOrigin | None = None,
 ) -> dict[str, Any]:
-    """Normalize, validate, deduplicate, and install detector candidates."""
+    """Normalize and ingest once, with an observational per-item path.
 
+    Existing acceptance, rejection, recurrence and Gate behavior is unchanged.
+    The additional lineage does not count as evidence or as an independent
+    model observation. Unknown custom normalization remains explicitly unknown.
+    """
     raw_candidates = list(candidates)
     normalized = manager.normalize_detection_candidates(
         raw_candidates,
         expand_short_fragments=expand_short_fragments,
         split_broad=split_broad,
     )
+    source_indices, mapping_status = _canonical_source_indices(
+        manager, raw_candidates, normalized,
+        expand_short_fragments=expand_short_fragments,
+        split_broad=split_broad,
+    )
     accepted: list[dict[str, str]] = []
     rejected: list[dict[str, str]] = []
+    lineage: list[dict[str, Any]] = []
     seen_texts: set[str] = set()
     accepted_ids: set[str] = set()
-    for candidate in normalized:
+
+    for normalized_index, candidate in enumerate(normalized):
+        row: dict[str, Any] = {
+            "normalized_index": normalized_index,
+            "raw_candidate_index": source_indices[normalized_index],
+            "source_mapping_status": mapping_status,
+            "normalized_text": candidate,
+            "outcome": "rejected",
+            "reason": None,
+            "seed_id": None,
+            "seed_transition": None,
+        }
+        lineage.append(row)
+
         if min_seed_words and len(re.findall(r"\w+", candidate)) < min_seed_words:
             rejected.append({"text": candidate, "reason": "too_vague"})
+            row["reason"] = "too_vague"
             continue
         key = candidate.strip().lower()
         if key in seen_texts:
             rejected.append({"text": candidate, "reason": "duplicate"})
+            row["reason"] = "duplicate"
             continue
+
+        event_start = len(manager.event_log)
         try:
             seed_id = manager.add_or_update_seed(
                 candidate,
@@ -190,18 +251,54 @@ def ingest_detection_candidates(
             )
         except ValueError:
             rejected.append({"text": candidate, "reason": "not_atomic"})
+            row["reason"] = "not_atomic"
             continue
         if seed_id in accepted_ids:
             rejected.append({"text": candidate, "reason": "duplicate"})
+            row["reason"] = "duplicate"
             continue
+
         accepted.append({"seed_id": seed_id, "text": candidate})
         accepted_ids.add(seed_id)
         seen_texts.add(key)
+        row["outcome"] = "accepted"
+        row["seed_id"] = seed_id
+        transitions = [
+            event.event_type
+            for event in manager.event_log[event_start:]
+            if event.seed_id == seed_id
+        ]
+        # The recorded transition is a historical fact, not an inference
+        # about the semantic relation between source text and the seed.
+        row["seed_transition"] = (
+            "created" if "created" in transitions else
+            "deduplicated" if "deduplicated" in transitions else
+            "unresolved_custom_adapter"
+        )
+
+    if mapping_status == "canonical":
+        represented = {index for index in source_indices if index is not None}
+        for raw_index in range(len(raw_candidates)):
+            if raw_index in represented:
+                continue
+            lineage.append({
+                "normalized_index": None,
+                "raw_candidate_index": raw_index,
+                "source_mapping_status": mapping_status,
+                "normalized_text": None,
+                "outcome": "dropped",
+                "reason": "normalizer_dropped",
+                "seed_id": None,
+                "seed_transition": None,
+            })
+
     return {
         "input_count": len(raw_candidates),
         "normalized_candidates": normalized,
         "accepted": accepted,
         "rejected": rejected,
+        "lineage_status": mapping_status,
+        "lineage": lineage,
     }
 
 
