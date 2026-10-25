@@ -77,5 +77,6 @@
     "general_novelty",
     "Q2_later_investigability",
     "G0_PASS"
-  ]
+  ],
+  "source_fixture_sha256": "e72bc6a6846d2cbe12af672a0d12365ea571ad10091ab1ec3f4746ad87d38bee"
 }
