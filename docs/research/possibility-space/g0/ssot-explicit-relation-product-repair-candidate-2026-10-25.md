@@ -10,7 +10,7 @@ De SSOT-producer stuurde iedere voldoende vergelijkbare chunk met `status=verifi
 
 De bestaande `SSOTManager` blijft de producer, de bestaande `SSLManager` en de **enige echte Validation Gate** blijven eigenaren van autoriteit. Er komt geen extra model, onderzoeksmemory, detector, Gate, TrTL, TTL of promptlaag.
 
-- `ingest_document` houdt document-identiteit en SHA-256 van de exacte brontekst bij. Nieuwe broninhoud onder hetzelfde document-ID vervangt de oude chunks en maakt bestaande relatiebeoordelingen ongeldig.
+- `ingest_document` houdt document-identiteit en SHA-256 van de exacte brontekst én elke geïndexeerde chunk bij. Nieuwe broninhoud onder hetzelfde document-ID vervangt de oude chunks en maakt bestaande relatiebeoordelingen ongeldig. Veranderde chunktekst of oude chunkmetadata zonder versiehash mogen geen bewijs opleveren, ook niet met een eerdere attestatie.
 - `attest_document_relation(seed_id, doc_id, relation, reviewer, rationale, evidence_unit_id)` is een **expliciete operatoractie**. De reviewer wordt als bewering opgeslagen, niet geauthenticeerd of wetenschappelijk gevalideerd door de code. Een modelantwoord mag die rol niet aannemen.
 - Relaties zijn `supports`, `opposes`, `topical`, `undetermined` en `not_testable`. Het type relatie is **niet** uit vectorovereenkomst, negatie-woorden of het oude `verified`-label afgeleid.
 - `validate_open_seeds_against_ssot` blijft voor gewichtloze seeds zoeken. Alleen `supports`, **gecombineerd** met geldige, versiegebonden bronrelatiebeoordeling en verificatiestatus van alle documentchunks, mag één steunbewijs naar de bestaande Gate sturen.
