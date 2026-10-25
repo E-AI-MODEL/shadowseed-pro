@@ -1,0 +1,81 @@
+{
+  "schema": "shadowseed-g0-exact-seed-ablation-design-v1",
+  "recorded_at": "2026-10-25",
+  "design_status": "POST_HOC_EXPLORATORY_SINGLE_REAL_T1_CASE_NOT_G0_OR_CONFIRMATORY",
+  "source_run_id": 40224494313,
+  "source_commit": "7677f8e145c4766ff3fea5451c95acea21edaacb",
+  "source_raw_observed_sha256": "62f778fb53547f2c0532795ccb31f02f09381500a2eb67b7598bf86ae597820f",
+  "source_fixture_path": "research/fixtures/real_seed_rf_inquiry_v1.json",
+  "source_model": "gpt-5",
+  "source_seed_id": "ss_001",
+  "seed_birth_turn": 0,
+  "inquiry_turn": 1,
+  "feedback_regime": "RF",
+  "arms": {
+    "D": "exact_real_weightless_seed",
+    "X": "same_prompt_seed_removed_NONE",
+    "P": "administrative_placebo_185_chars",
+    "N": "original_ordinary_visible_note"
+  },
+  "control_placeholder": "Administratieve notitie: het logboek gebruikt deze documenttitel, een archiefnummer en een datumveld. De mapindeling en de bestandsnaam zijn vastgelegd voor het bewaren van het verslag.",
+  "removal_text": "NONE",
+  "schedule": [
+    {
+      "round": 0,
+      "order": [
+        "D",
+        "X",
+        "P",
+        "N"
+      ]
+    },
+    {
+      "round": 1,
+      "order": [
+        "X",
+        "N",
+        "D",
+        "P"
+      ]
+    },
+    {
+      "round": 2,
+      "order": [
+        "P",
+        "D",
+        "N",
+        "X"
+      ]
+    },
+    {
+      "round": 3,
+      "order": [
+        "N",
+        "P",
+        "X",
+        "D"
+      ]
+    }
+  ],
+  "planned_completed_model_calls": 16,
+  "max_model_calls": 16,
+  "max_embedding_calls": 1,
+  "max_all_reported_tokens": 110000,
+  "max_output_tokens_per_call": 4096,
+  "model_instructions": "USE_EXISTING_REAL_SEED_RF_INQUIRY_INSTRUCTIONS_UNCHANGED",
+  "expected_outputs": [
+    "raw_question_text",
+    "parsed_status",
+    "provider_response_metadata",
+    "prompt_hash",
+    "note_hash",
+    "blinded_human_review_packet"
+  ],
+  "claims_not_established": [
+    "internal_nonchosen_representation",
+    "sample_independent_effect",
+    "general_novelty",
+    "Q2_later_investigability",
+    "G0_PASS"
+  ]
+}
