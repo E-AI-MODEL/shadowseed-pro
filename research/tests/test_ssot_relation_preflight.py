@@ -191,3 +191,46 @@ def test_same_underlying_source_can_have_opposing_relations_to_different_seeds()
     assert batch.conflicting_source_units == ()
     assert batch.support_units_to_review == (("seed-1", "one-source"),)
     assert batch.observations[1].disposition == "asserted_opposition_not_auto_contradiction"
+
+
+def test_read_only_preflight_can_use_actual_product_ssot_retrieval() -> None:
+    """Real SSOT retrieval, real weightless seed, no actual Gate invocation."""
+    from shadowseed.manager import SSLManager
+    from shadowseed.ssot import SSOTManager
+    from shadowseed.text_similarity import lexical_embedding
+    from shadowseed.vectorstore import InMemoryVectorStore
+
+    manager = SSLManager(embedding_fn=lexical_embedding)
+    ssot = SSOTManager(InMemoryVectorStore(), manager)
+    seed_id = manager.add_or_update_seed(SEED)
+    ssot.ingest_document(YES, doc_id="affirmation", trust_level="user_verified")
+    ssot.ingest_document(NO, doc_id="negation", trust_level="user_verified")
+
+    actual_hits = [
+        RetrievedHit(
+            seed_id=seed_id, seed_text=SEED, doc_id=metadata["doc_id"],
+            chunk_id=chunk_id, chunk_text=metadata["text"],
+            status=metadata["status"], similarity=score,
+        )
+        for chunk_id, score, metadata in ssot.search(SEED, top_k=5)
+    ]
+    assert len(actual_hits) == 2
+    by_doc = {item.doc_id: item for item in actual_hits}
+    reviews = {
+        (seed_id, by_doc["affirmation"].chunk_id): reviewed(
+            by_doc["affirmation"], Relation.SUPPORTS, unit="affirmation-origin"
+        ),
+        (seed_id, by_doc["negation"].chunk_id): reviewed(
+            by_doc["negation"], Relation.OPPOSES, unit="negation-origin"
+        ),
+    }
+    result = preflight_batch(actual_hits, reviews)
+    assert len(result.observations) == 2
+    assert {item.relation for item in result.observations} == {
+        Relation.SUPPORTS, Relation.OPPOSES,
+    }
+    assert result.support_units_to_review == ((seed_id, "affirmation-origin"),)
+    assert result.gate_authorized is False
+    assert manager.get_seed(seed_id).weight == 0.0
+    assert manager.get_seed(seed_id).evidence_count == 0
+    assert manager.gate_events == []
