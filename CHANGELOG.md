@@ -6,10 +6,14 @@
   production-ready/local declaration needs the recorded use cycle with
   `shadowseed doctor` on the published release and no open P0/P1 finding, with
   no minimum waiting period.
-- Manual: a professional manual in English and Dutch (`docs/manual/`), in six
-  parts for users, testers, researchers, developers and specialists, with
-  screenshots of the web application and PDF editions built by
-  `scripts/build_manual_pdf.py`.
+- Manual: a manual in English and Dutch (`docs/manual/`), in seven parts for
+  users, testers, researchers, developers and specialists. It follows one
+  example conversation from the first question to a seed used in an answer,
+  with screenshots per language, three diagrams, and PDF editions with a cover,
+  a paged contents list, part openers and numbered figures
+  (`scripts/build_manual_pdf.py`). The screenshots are reproducible with
+  `scripts/manual/make_screenshots.py`, which plays a scripted conversation
+  through the real application.
 
 ## 0.12.4 - English interface and model-recognized recurrence
 

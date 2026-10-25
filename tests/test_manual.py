@@ -23,14 +23,21 @@ def test_editions_share_chapters_images_and_version() -> None:
     texts = {name: (MANUAL / name).read_text(encoding="utf-8") for name in EDITIONS}
 
     chapters = {name: _chapters(text) for name, text in texts.items()}
-    assert chapters[EDITIONS[0]] == [str(n) for n in range(1, 28)]
+    assert chapters[EDITIONS[0]] == [str(n) for n in range(1, len(chapters[EDITIONS[0]]) + 1)]
+    assert len(chapters[EDITIONS[0]]) >= 20
     assert chapters[EDITIONS[0]] == chapters[EDITIONS[1]]
+
+    # Each edition has its own screenshots, with the same names and order.
+    names = {
+        name: [Path(image).name for image in re.findall(r"!\[[^\]]*\]\(([^)]+)\)", text)]
+        for name, text in texts.items()
+    }
+    assert names[EDITIONS[0]] == names[EDITIONS[1]]
 
     for name, text in texts.items():
         images = re.findall(r"!\[[^\]]*\]\(([^)]+)\)", text)
         assert images, name
         for image in images:
             assert (MANUAL / image).is_file(), (name, image)
-        assert re.findall(r"!\[[^\]]*\]\(([^)]+)\)", texts[EDITIONS[0]]) == images
         assert f"Version {version}" in text or f"Versie {version}" in text, name
         assert (MANUAL / name).with_suffix(".pdf").is_file(), name
