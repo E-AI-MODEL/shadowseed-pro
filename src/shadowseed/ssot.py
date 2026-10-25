@@ -139,6 +139,8 @@ class SSOTManager:
                 "doc_id": doc_id,
                 "chunk_index": chunk_index,
                 "text": chunk,
+                "text_digest": _text_digest(chunk),
+                "document_digest": self.documents[doc_id].content_digest,
                 "source": source,
                 "trust_level": trust_level,
                 "status": status,
@@ -296,14 +298,25 @@ class SSOTManager:
         return review
 
     def _all_document_chunks_verified(self, doc_id: str) -> bool:
-        """A document-wide relation cannot rely on one trusted fragment alone."""
-        chunk_ids = [
-            chunk_id for chunk_id in self.store.get_all_ids()
-            if self.store.get_metadata(chunk_id).get("doc_id") == doc_id
+        """Require trusted status AND unchanged text of every indexed chunk.
+
+        Unknown older metadata is rejected until the source is re-ingested and
+        reviewed. A digest is an integrity check, not an authenticity proof.
+        """
+        document = self.documents.get(doc_id)
+        if document is None:
+            return False
+        chunks = [
+            metadata
+            for chunk_id in self.store.get_all_ids()
+            if (metadata := self.store.get_metadata(chunk_id)).get("doc_id") == doc_id
         ]
-        return bool(chunk_ids) and all(
-            self.store.get_metadata(chunk_id).get("status") == "verified"
-            for chunk_id in chunk_ids
+        return bool(chunks) and all(
+            metadata.get("status") == "verified"
+            and metadata.get("document_digest") == document.content_digest
+            and isinstance(metadata.get("text"), str)
+            and metadata.get("text_digest") == _text_digest(metadata["text"])
+            for metadata in chunks
         )
 
     def _has_unaudited_legacy_ssot_evidence(self, seed_id: str) -> bool:
