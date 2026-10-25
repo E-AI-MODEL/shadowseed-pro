@@ -173,9 +173,6 @@ def create_pack(source: dict[str, Any], secret: bytes) -> tuple[dict, dict, dict
                 if provenance == "investigator_scripted_calibration"
                 else "MODEL_OUTPUT_PROVENANCE_NOT_INDEPENDENTLY_VERIFIED"
             ),
-            "required_later_consequence_present": False
-            if provenance == "investigator_scripted_calibration"
-            else bool(case.get("private_independent_future_consequence_verified", False)),
             "review_instruction": (
                 "Judge whether the final inquiry differs materially from earlier inquiries, "
                 "is independently testable, and has an independently observed later consequence; "
@@ -189,6 +186,7 @@ def create_pack(source: dict[str, Any], secret: bytes) -> tuple[dict, dict, dict
             "private_group": case["private_group"],
             "private_candidate_record": case.get("private_candidate_record"),
             "private_raw_trace_ref": case.get("private_raw_trace_ref"),
+            "private_independent_future_consequence_verified": case.get("private_independent_future_consequence_verified", False),
             "declared_provenance": provenance,
         })
     cards.sort(key=lambda x: _tag(secret, "display", x["blind_id"]))
@@ -216,7 +214,6 @@ def create_pack(source: dict[str, Any], secret: bytes) -> tuple[dict, dict, dict
         "packet_id": package_id,
         "packet_sha256": packet["content_sha256"],
         "source_sha256": fingerprint(source),
-        "secret_hex": secret.hex(),
         "owner_only_never_publish": True,
         "mapping": owner_cases,
         "G0_status": "NOT_PASSED",
@@ -306,7 +303,7 @@ def reconcile(packet: dict, owner: dict, r1: dict, r2: dict) -> dict:
     validate_completed_review(packet, r2)
     if r1["reviewer_id"].strip().casefold() == r2["reviewer_id"].strip().casefold():
         raise ValueError("two distinct human reviewers required")
-    if owner.get("packet_id") != packet["packet_id"] or owner.get("packet_sha256") != packet["content_sha256"]:
+    if owner.get("packet_id") != packet["packet_id"] or owner.get("packet_sha256") != packet["content_sha256"] or owner.get("owner_only_never_publish") is not True:
         raise ValueError("private owner mapping does not correspond to the blind packet")
     mapping = {r["blind_id"]: r for r in owner["mapping"]}
     if set(mapping) != {c["blind_id"] for c in packet["episodes"]}:
