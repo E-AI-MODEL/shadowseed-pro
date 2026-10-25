@@ -20,6 +20,7 @@ import hmac
 import json
 import secrets
 from pathlib import Path
+from datetime import datetime
 from typing import Any
 
 SOURCE_SCHEMA = "g0-blind-later-inquiry-source-v0"
@@ -369,8 +370,15 @@ def validate_completed_review(packet: dict, submission: dict) -> None:
         raise ValueError("human independence declaration required; not mechanically verified")
     if submission.get("reviewer_role") != "independent_semantic_reviewer":
         raise ValueError("reviewer role mismatch")
-    if not _is_short_text(submission.get("reviewer_timestamp_iso8601")):
+    timestamp = submission.get("reviewer_timestamp_iso8601")
+    if not _is_short_text(timestamp):
         raise ValueError("dated human assessment required")
+    try:
+        parsed_time = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ValueError("dated assessment must have a valid ISO-8601 timestamp") from exc
+    if parsed_time.tzinfo is None or parsed_time.utcoffset() is None:
+        raise ValueError("dated assessment must have a timezone")
     if submission.get("automated_semantic_verdict") is not None or submission.get("G0_approval") is not False:
         raise ValueError("automatic novelty judgment or G0 pass is forbidden")
     rows = submission.get("reviews")
