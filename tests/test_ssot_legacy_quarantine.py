@@ -228,3 +228,58 @@ def test_read_only_inspection_labels_quarantined_legacy_seed() -> None:
     assert "Historical SSOT support" in seed_view["plain_explanation"]
     assert seed_view["weight"] == seed.weight
     assert len(manager.gate_events) == 4
+
+
+def test_distinct_research_submitted_ssot_evidence_is_not_legacy_producer() -> None:
+    # A separately authored evaluation signal is not a similarity-search hit.
+    # The test establishes channel separation, not genuine source truth.
+    manager = SSLManager(embedding_fn=lexical_embedding)
+    seed_id = manager.add_or_update_seed("An atomic alternative worth testing")
+    for i in range(3):
+        manager.submit_signals(
+            seed_id,
+            [
+                ValidationSignal(
+                    kind=SignalKind.SSOT,
+                    direction=SignalDirection.SUPPORT,
+                    verified=True,
+                    source_ref=f"fixture://predeclared-research-source/{i}",
+                    reason="independently predeclared researcher attestation for test",
+                )
+            ],
+            policy_id="evidence_backed",
+        )
+    seed = manager.get_seed(seed_id)
+    assert seed.status is SeedStatus.PROMOTED
+    assert not has_unreviewed_ssot_support(seed_id, manager.gate_events)
+    ledger: list = []
+    outcome = AgentSafetyContract().decide_and_record(
+        seed, InfluenceAction.ANSWER_MODIFICATION,
+        gate_events=manager.gate_events, ledger=ledger, contradiction_blocking=False,
+    )
+    assert outcome.allowed is True
+
+
+def test_intermediate_relation_attested_ssot_signal_is_not_product_auth() -> None:
+    manager = SSLManager(embedding_fn=lexical_embedding)
+    seed_id = manager.add_or_update_seed("One epistemic hypothesis")
+    for i in range(3):
+        manager.submit_signals(
+            seed_id,
+            [
+                ValidationSignal(
+                    kind=SignalKind.SSOT,
+                    direction=SignalDirection.SUPPORT,
+                    verified=True,
+                    source_ref=f"research-unit-{i}",
+                    reason="relation-attested:ssot:source at fake-review-time",
+                )
+            ],
+            policy_id="evidence_backed",
+        )
+    assert manager.get_seed(seed_id).status is SeedStatus.PROMOTED
+    assert has_unreviewed_ssot_support(seed_id, manager.gate_events)
+    assert not AgentSafetyContract().decide_and_record(
+        manager.get_seed(seed_id), InfluenceAction.ANSWER_MODIFICATION,
+        gate_events=manager.gate_events, ledger=[], contradiction_blocking=False,
+    ).allowed
