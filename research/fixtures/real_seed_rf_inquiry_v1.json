@@ -1,0 +1,26 @@
+{
+  "schema": "ssl-rf-real-seed-five-arm-one-case-v1",
+  "model": "gpt-5",
+  "feedback_regime": "RF",
+  "purpose": "Exploratory generation of original T1 and T2 research questions from a real weightless canonical seed; no external testing, no G0 approval, no efficacy claim.",
+  "source_fixture": "real_model_stage1_exploratory_v2.json public, researcher-authored, reused; NOT holdout",
+  "case": {
+    "id": "MEASUREMENT",
+    "context": "In een fictieve werkplaats worden elke minuut waarden van twee onafhankelijke meetkanalen vastgelegd. Sinds kort toont het eerste kanaal af en toe een scherpe uitschieter. De twee kanalen meten hetzelfde materiaal met verschillende sensortechnieken. De technische ploeg heeft vorige week firmware bijgewerkt en een extra regelkast aangesloten. Het logboek bevat alleen tijdstempels van het dataverzamelprogramma; het bevat geen ruwe tijdstempels van de afzonderlijke sensoren. Er is nog niets gecontroleerd met een extern meetinstrument. Het team moet nu een voorlopige analyse maken, zonder onderdelen te vervangen of een oorzaak als bewezen te presenteren.",
+    "turns": [
+      {
+        "question": "Welke voorlopige verklaringen zijn verdedigbaar op basis van deze waarnemingen, en wat kunnen we nog niet vaststellen?",
+        "new_observation": ""
+      },
+      {
+        "question": "Wat verandert deze nieuwe waarneming aan het beeld, en wat blijft onzeker?",
+        "new_observation": "In een nieuwe test laat het tweede meetkanaal geen vergelijkbare uitschieters zien. De uitschieters van kanaal één vallen vooral op tijdens tijdvakken waarin de regelkast actief is. De firmware blijft gedurende de nieuwe test ongewijzigd."
+      },
+      {
+        "question": "Welke aannames kunnen we nu uitsluiten en welke onzekerheid blijft over?",
+        "new_observation": "Een herhaalde meting met dezelfde opstelling laat zien dat de afzonderlijke sensoren volgens een handmatig afgelezen klok niet exact tegelijk registreren. De richting en omvang van het tijdverschil zijn nog niet onafhankelijk gemeten."
+      }
+    ],
+    "sham_note": "De kleur van de omslag van het papieren onderzoeksdossier is niet genoteerd. De administratieve mapindeling is niet gecontroleerd."
+  }
+}
