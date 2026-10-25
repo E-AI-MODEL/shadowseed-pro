@@ -6,6 +6,8 @@ import copy
 from datetime import datetime
 import importlib.util
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -279,3 +281,64 @@ def test_owner_file_is_created_with_private_mode(tmp_path: Path) -> None:
     assert p.stat().st_mode & 0o077 == 0
     with pytest.raises(FileExistsError):
         REVIEW._safe_write_json(p, {"secret": "accidental overwrite"}, private=True)
+
+
+def test_end_to_end_cli_owner_separation_and_structural_only_review(tmp_path: Path) -> None:
+    source = tmp_path / "owner-source.json"
+    packet_path = tmp_path / "reviewer" / "blind.json"
+    blank_path = tmp_path / "reviewer" / "blank.json"
+    owner = tmp_path / "owner" / "mapping.json"
+    source.write_text(json.dumps(_source()), encoding="utf-8")
+    result = subprocess.run(
+        [
+            sys.executable, str(SCRIPT),
+            "prepare", "--input", str(source),
+            "--packet", str(packet_path),
+            "--blank-review", str(blank_path),
+            "--owner-map", str(owner),
+        ],
+        capture_output=True, text=True, timeout=20,
+    )
+    assert result.returncode == 0, result.stderr
+    assert owner.stat().st_mode & 0o077 == 0
+    packet = json.loads(packet_path.read_text(encoding="utf-8"))
+    blank = json.loads(blank_path.read_text(encoding="utf-8"))
+    source_repr = packet_path.read_text(encoding="utf-8")
+    assert "TOP_SECRET_CANDIDATE_ARM" not in source_repr
+    assert packet["G0_status"] == "NOT_PASSED"
+    assert all(v["distinct_from_prior_questions"] is None for v in blank["reviews"])
+
+    review_a = tmp_path / "first.json"
+    review_b = tmp_path / "second.json"
+    review_a.write_text(json.dumps(_reviewer(blank, "Fake Fixture Reviewer A")), encoding="utf-8")
+    review_b.write_text(json.dumps(_reviewer(blank, "Fake Fixture Reviewer B")), encoding="utf-8")
+    unblinded = tmp_path / "owner" / "reconciled.json"
+    result = subprocess.run(
+        [
+            sys.executable, str(SCRIPT), "reconcile",
+            "--packet", str(packet_path),
+            "--owner-map", str(owner),
+            "--review-one", str(review_a),
+            "--review-two", str(review_b),
+            "--output", str(unblinded),
+        ],
+        capture_output=True, text=True, timeout=20,
+    )
+    assert result.returncode == 0, result.stderr
+    decoded = json.loads(unblinded.read_text(encoding="utf-8"))
+    assert decoded["G0_passed"] is False
+    assert decoded["Q2_causality_established"] is False
+    assert decoded["human_identity_and_independence_still_require_external_verification"] is True
+    assert len(decoded["comparisons"]) == 2
+
+
+def test_undated_or_timezone_naive_review_does_not_pass_reconciliation() -> None:
+    packet, private, blank = REVIEW.create_pack(_source(), FAKE_SECRET)
+    good = _reviewer(blank, "Independent Reviewer A")
+    bad = _reviewer(blank, "Independent Reviewer B")
+    bad["reviewer_timestamp_iso8601"] = "not-an-actual-date"
+    with pytest.raises(ValueError, match="valid ISO-8601"):
+        REVIEW.reconcile(packet, private, good, bad)
+    bad["reviewer_timestamp_iso8601"] = "2026-10-25T07:37:00"
+    with pytest.raises(ValueError, match="timezone"):
+        REVIEW.reconcile(packet, private, good, bad)
