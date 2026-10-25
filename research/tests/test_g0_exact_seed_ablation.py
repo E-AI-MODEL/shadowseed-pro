@@ -153,7 +153,7 @@ def test_full_fake_16_call_balance_raw_outputs_and_owner_separation():
     assert result["G0"] == "NOT_PASSED"
     assert result["source_real_canonical_seed_birth"] is True
     assert p.model_calls == 16 and p.embedding_calls == 0
-    assert len(checkpoints) == 17
+    assert len(checkpoints) == 18  # initial + 16 observations + completed state
     assert [x["arm"] for x in result["observations"]] == [
         arm for order in ORDER for arm in order
     ]
