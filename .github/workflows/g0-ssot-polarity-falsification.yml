@@ -48,7 +48,7 @@ jobs:
         run: uv sync --locked --extra test
       - name: Run genuine SSOT and Gate polarity-characterization regressions
         run: |
-          uv run --no-sync python -m pytest -q \
+          uv run --no-sync python -m pytest --import-mode=importlib -q \
             research/tests/test_g0_ssot_evidence_polarity.py \
             research/tests/test_ssot_falsification.py \
             tests/test_ssot_manager.py \
