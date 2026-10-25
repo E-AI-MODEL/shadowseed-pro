@@ -56,7 +56,7 @@ def test_unreviewed_opposition_cannot_be_counted_as_support():
     assert manager.gate_events == []
 
 
-def test_llm_proposal_needs_both_source_verification_and_relation_review():
+def test_verified_llm_proposal_with_asserted_relation_remains_read_only():
     manager, ssot, seed_id = setup()
     chunks = ssot.ingest_from_llm_output(
         "De blauwe klep beïnvloedt de druk in kamer B. " * 3,
@@ -74,8 +74,10 @@ def test_llm_proposal_needs_both_source_verification_and_relation_review():
     )
     result = ssot.validate_open_seeds_against_ssot(threshold=0, top_k=8)
     assert len(result) == 1
-    assert len(result[0]["applied_evidence"]) == 1
-    assert manager.get_seed(seed_id).evidence_count == 1
+    assert len(result[0]["review_candidates"]) == 1
+    assert result[0]["review_candidates"][0]["gate_authorized"] is False
+    assert manager.gate_events == []
+    assert manager.get_seed(seed_id).evidence_count == 0
     assert manager.get_seed(seed_id).weight == 0
 
 
