@@ -95,6 +95,8 @@ def resolve_action(request: Any, initial: dict, known: dict) -> tuple[dict | Non
 
 def action_status(resolution: str, result: dict | None, before: dict, after: dict) -> str:
     """Admissibility and observable state only; never infer meaning/novelty from state change."""
+    if resolution.startswith("executor_error_"):
+        return "executor_error"
     if resolution != "executable_tool_grammar":
         return "not_testable_by_this_evaluator"
     if result is None:
