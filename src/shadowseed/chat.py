@@ -1595,6 +1595,7 @@ class ShadowChatSession:
                 "normalized_candidates": list(ingest.get("normalized_candidates", [])),
                 "accepted": [dict(item) for item in ingest.get("accepted", [])],
                 "rejected": [dict(item) for item in ingest.get("rejected", [])],
+                "lineage_schema": ingest.get("lineage_schema"),
                 "lineage_status": ingest.get("lineage_status", "unavailable"),
                 "item_lineage": link_intake_lineage_to_observations(
                     ingest.get("lineage", []),
@@ -1825,6 +1826,7 @@ class ShadowChatSession:
                 "normalized_candidates": list(ingest.get("normalized_candidates", [])),
                 "accepted": [dict(item) for item in ingest.get("accepted", [])],
                 "rejected": [dict(item) for item in ingest.get("rejected", [])],
+                "lineage_schema": ingest.get("lineage_schema"),
                 "lineage_status": ingest.get("lineage_status", "unavailable"),
                 "item_lineage": link_intake_lineage_to_observations(
                     ingest.get("lineage", []),
@@ -1987,6 +1989,7 @@ class ShadowChatSession:
                 "normalized_candidates": list(ingest.get("normalized_candidates", [])),
                 "accepted": [dict(item) for item in ingest.get("accepted", [])],
                 "rejected": [dict(item) for item in ingest.get("rejected", [])],
+                "lineage_schema": ingest.get("lineage_schema"),
                 "lineage_status": ingest.get("lineage_status", "unavailable"),
                 "item_lineage": link_intake_lineage_to_observations(
                     ingest.get("lineage", []),
