@@ -204,3 +204,29 @@ def test_review_requires_known_identity_and_rationale() -> None:
         ssot.attest_document_relation(
             seed_id, "known", relation="made_up", reviewer="operator", rationale="x"
         )
+
+
+def test_mutated_indexed_chunk_cannot_reuse_old_relation_review() -> None:
+    manager, ssot, seed_id = make_manager_and_ssot()
+    (chunk_id,) = ssot.ingest_document(AFFIRMING, doc_id="source_a")
+    attest(ssot, seed_id, "source_a", SSOTRelation.SUPPORTS)
+    # A vectorstore can have metadata changed without re-import of a document.
+    # That must not turn an old relation review into support for new text.
+    ssot.store.update_metadata(
+        chunk_id, {"text": "Deze gewijzigde tekst heeft andere betekenis."}
+    )
+    assert ssot.validate_open_seeds_against_ssot(threshold=0) == []
+    assert manager.get_seed(seed_id).weight == 0
+    assert manager.gate_events == []
+
+
+def test_missing_legacy_chunk_version_binding_fails_closed() -> None:
+    manager, ssot, seed_id = make_manager_and_ssot()
+    (chunk_id,) = ssot.ingest_document(AFFIRMING, doc_id="legacy_source")
+    attest(ssot, seed_id, "legacy_source", SSOTRelation.SUPPORTS)
+    old_metadata = ssot.store.get_metadata(chunk_id)
+    old_metadata.pop("text_digest")
+    # Simulate a persisted pre-contract chunk lacking content hash.
+    ssot.store.add(chunk_id, manager.get_embedding(AFFIRMING), old_metadata)
+    assert ssot.validate_open_seeds_against_ssot(threshold=0) == []
+    assert manager.get_seed(seed_id).evidence_count == 0
