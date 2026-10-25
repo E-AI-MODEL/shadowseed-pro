@@ -37,3 +37,7 @@ Na de mislukte run is een nieuwe regressietest toegevoegd met **meerdere kandida
 De huidige onderzoeksrunner bewaart de brongegevens en hostrapporten, maar slaat vóór een falende `freeze_weightless_followup` niet het precieze faalargument of een beperkte manager-state-snapshot op. Een volgende run moet minstens de **gesloten, toegestane foutcode** en de hashes van het relevante eventledger-prefix vastleggen, zonder sleutel, intern redeneringsspoor of onbewezen autoriteit te publiceren.
 
 Zonder dat herstel starten we **geen nieuwe betaalde run**. De v1-uitvoer blijft intact en de runner blijft research-only. Q1 blijft een gedragsvraag en Q2 is nog niet onafhankelijk aangetoond. Ook G0 blijft `NOT PASSED`.
+
+## Instrumentcorrectie na deze run
+
+Er is een fail-closed diagnostiek toegevoegd die bij een volgende afwijking de **vaste checkpoint-foutcode**, de verwachte en werkelijk berekende event-/Gate-/historyprefix-hashes en de nul-autoriteitsstatus in het gedeeltelijke onderzoeksartifact bewaart. De normale `freeze_weightless_followup` is **niet** aangepast of overgeslagen. Een nieuwe negatieve no-networktest simuleert een tweede-follow-up-fout en verifieert dat T2 niet alsnog modelvragen genereert. Dit is nog **geen diagnose van de oorspronkelijke ValueError** en geen reden voor een automatische betaalde herhaling.
