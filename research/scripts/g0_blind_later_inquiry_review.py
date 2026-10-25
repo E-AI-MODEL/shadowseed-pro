@@ -248,6 +248,109 @@ def create_pack(source: dict[str, Any], secret: bytes) -> tuple[dict, dict, dict
     return packet, owner, review
 
 
+
+def source_from_verified_bridge(bridge: dict[str, Any], source_bytes: bytes) -> dict:
+    """Convert a *real* prior mechanics trace to a PUBLIC calibration example.
+
+    Strictly investigator-scripted, zero model calls and zero influence.
+    No hypothetical model behavior or downstream-seed effects are inferred.
+    """
+    if not isinstance(bridge, dict) or bridge.get("schema") != (
+        "g0-real-shadowchat-discoveryworld-bridge-audit-v0"
+    ):
+        raise ValueError("wrong bridge evidence source")
+    if (
+        bridge.get("status") != "model_free_product_pipeline_plus_real_world_mechanics_only"
+        or bridge.get("source") != "INVESTIGATOR_SCRIPTED_NO_LLM"
+        or bridge.get("model_calls") != 0
+        or bridge.get("embedding_hosted_calls") != 0
+        or bridge.get("Q1_measured") is not False
+        or bridge.get("Q2_measured") is not False
+        or bridge.get("g0_passed") is not False
+        or bridge.get("upstream_sha") != "fd591323920be0d3786ef350955de1945aa571e5"
+    ):
+        raise ValueError("bridge source provenance, claims or version unverified")
+    arms = bridge.get("arms")
+    if not isinstance(arms, dict) or set(arms) != {"scripted_seed", "explicit_none"}:
+        raise ValueError("missing pinned counterfactual arms")
+    if bridge.get("same_world_observations_and_investigator_actions_in_both_arms") is not True:
+        raise ValueError("comparison does not have identical world actions and observations")
+
+    episodes = []
+    identical_worlds = []
+    for arm in sorted(arms):
+        run = arms[arm]
+        if (
+            run.get("seed_authority_uses") != 0
+            or run.get("Gate_events") != 0
+            or run.get("hosted_model_calls") != 0
+            or run.get("has_real_persistent_ShadowChatSession") is not True
+        ):
+            raise ValueError("simulator bridge gained authority, model calls or lost canonical state")
+        turns = run.get("turns")
+        if not isinstance(turns, list) or len(turns) != 4:
+            raise ValueError("incorrect bridge turn count")
+        public = []
+        for i, t in enumerate(turns):
+            if t.get("turn_id") != f"T{i}":
+                raise ValueError("incorrect source chronology")
+            if (
+                t.get("question_origin") != "INVESTIGATOR_SCRIPTED_NO_MODEL"
+                or t.get("host_answer_origin") != "INVESTIGATOR_DEFINED_VISIBLE_STATE_SERIALIZER_NO_MODEL"
+                or t.get("world_action_origin") != "INVESTIGATOR_SCRIPTED_INDEPENDENT_OF_SEEDS"
+                or t.get("seed_authority_uses") != 0
+                or t.get("Gate_events") != 0
+                or t.get("semantic_novelty") != "NOT_ASSESSED"
+                or t.get("semantic_seed_growth") != "NOT_ASSESSED"
+                or t.get("new_later_investigability") != "NOT_ASSESSED"
+            ):
+                raise ValueError("bridge source contains stronger or untraceable claims")
+            public.append({k: t[k] for k in PUBLIC_TURN_FIELDS})
+        identical_worlds.append([
+            (
+                t["question"], t["host_answer"], t["investigator_action"],
+                t["observed_world_before"], t["world_action_status"],
+                t["observed_world_after"],
+            ) for t in public
+        ])
+        episodes.append({
+            "private_case_id": "recorded-pr232-" + arm,
+            "private_arm": arm,
+            "private_group": "pr232-fourturn-mechanics-control",
+            "turns": public,
+            "private_raw_trace_ref": (
+                "GitHub Actions 40169010028; source SHA-256 "
+                + hashlib.sha256(source_bytes).hexdigest()
+            ),
+            "private_candidate_record": [{
+                "turn_id": t["turn_id"],
+                "raw_detector_text": t["detector_output_raw"],
+                "born_scripted": t["true_seed_born_this_turn"],
+                "redetected_scripted": t["existing_seed_redetected_this_turn"],
+            } for t in turns],
+            "private_independent_future_consequence_verified": False,
+        })
+    if identical_worlds[0] != identical_worlds[1]:
+        raise ValueError("claimed matched independent worlds are not actually identical")
+    if not arms["scripted_seed"]["final_seed_state"] or arms["explicit_none"]["final_seed_state"]:
+        raise ValueError("scripted weightless versus NONE state contradicts frozen record")
+
+    source = {
+        "schema": SOURCE_SCHEMA,
+        "provenance_class": "investigator_scripted_calibration",
+        "feedback_regime": "MECHANICS_CALIBRATION",
+        "source_note": (
+            "Real PR232 simulator output, but ALL later questions, host answers, "
+            "detector text and actions are investigator authored. This is NOT "
+            "a blinded holdout or evidence of model Q1/Q2 ability."
+        ),
+        "source_record_sha256": hashlib.sha256(source_bytes).hexdigest(),
+        "episodes": episodes,
+    }
+    _check_source(source)
+    return source
+
+
 def validate_completed_review(packet: dict, submission: dict) -> None:
     if packet.get("schema") != PACK_SCHEMA or submission.get("schema") != REVIEW_SCHEMA:
         raise ValueError("incorrect review schemas")
@@ -357,7 +460,9 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     sub = ap.add_subparsers(dest="command", required=True)
     build = sub.add_parser("prepare", help="Make blind packet, blank sheet and PRIVATE owner map")
-    build.add_argument("--input", type=Path, required=True)
+    source_group = build.add_mutually_exclusive_group(required=True)
+    source_group.add_argument("--input", type=Path, help="Private future research trace source schema")
+    source_group.add_argument("--bridge-json", type=Path, help="Existing verified PR232 mechanics run; calibration only")
     build.add_argument("--packet", type=Path, required=True)
     build.add_argument("--blank-review", type=Path, required=True)
     build.add_argument("--owner-map", type=Path, required=True)
@@ -366,10 +471,16 @@ def main() -> None:
         combine.add_argument("--" + name, type=Path, required=True)
     args = ap.parse_args()
     if args.command == "prepare":
-        paths = [args.input, args.packet, args.blank_review, args.owner_map]
+        input_path = args.input if args.input is not None else args.bridge_json
+        paths = [input_path, args.packet, args.blank_review, args.owner_map]
         if len({p.resolve() for p in paths}) != len(paths):
             ap.error("private map, source and public outputs must be different files")
-        source = json.loads(args.input.read_text(encoding="utf-8"))
+        raw = input_path.read_bytes()
+        input_data = json.loads(raw)
+        source = (
+            source_from_verified_bridge(input_data, raw)
+            if args.bridge_json is not None else input_data
+        )
         public, private, blank = create_pack(source, secrets.token_bytes(32))
         _safe_write_json(args.owner_map, private, private=True)
         _safe_write_json(args.packet, public)
