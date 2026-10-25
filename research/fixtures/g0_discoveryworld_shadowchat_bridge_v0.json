@@ -1,0 +1,44 @@
+{
+  "schema": "g0-discoveryworld-shadowchat-bridge-v0",
+  "source": "RESEARCHER_SCRIPTED_NO_LLM",
+  "purpose": "End-to-end offline mechanics only: real ShadowChatSession detector/parser/intake/weightless seeds across separate turns, alongside real independent DiscoveryWorld observations, compared with canonical NONE detector control. No model-authored gap, no semantic/Q1/Q2 claim.",
+  "upstream_revision": "fd591323920be0d3786ef350955de1945aa571e5",
+  "scenario": "Small Skills: Dialog Test",
+  "difficulty": "Normal",
+  "seed": 0,
+  "turns": [
+    {
+      "id": "T0",
+      "question": "Welke waarnemingen zijn beschikbaar voordat we de omgeving veranderen?",
+      "detector_output": "1. Of een andere kijkrichting andere waarneembare voorwerpen of omstandigheden oplevert?",
+      "world_action": {
+        "action": "ROTATE_DIRECTION",
+        "arg1": "north"
+      }
+    },
+    {
+      "id": "T1",
+      "question": "Wat is na de eerste draaibeweging vast te stellen?",
+      "detector_output": "1. Of een andere kijkrichting andere waarneembare voorwerpen of omstandigheden oplevert?",
+      "world_action": {
+        "action": "ROTATE_DIRECTION",
+        "arg1": "north"
+      }
+    },
+    {
+      "id": "T2",
+      "question": "Heeft dezelfde draaiing bij herhaling nog een meetbaar verschil veroorzaakt?",
+      "detector_output": "NONE",
+      "world_action": {
+        "action": "MOVE_DIRECTION",
+        "arg1": "$first_legal_move"
+      }
+    },
+    {
+      "id": "T3",
+      "question": "Welke waarneembare verschillen zijn er na de verplaatsing?",
+      "detector_output": "1. Of de beschikbare looprichtingen afhankelijk zijn van de positie van de agent?",
+      "world_action": null
+    }
+  ]
+}
