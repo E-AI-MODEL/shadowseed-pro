@@ -254,3 +254,77 @@ def test_live_engine_reports_exact_lineage_and_preserves_weightless_memory() -> 
     assert engine.audit() == 0
     exported = engine.export_state()
     assert exported["turn_reports"][0]["intake_diagnostics"]["item_lineage"] == rows
+
+
+class _NoNetworkModel:
+    name = "scripted-local-host"
+
+    def generate(self, prompt, scenario, mode, seeds):
+        assert isinstance(prompt, str)
+        assert mode in {"baseline", "ssl"}
+        assert isinstance(seeds, list)
+        return "Only one pressure reading was available."
+
+
+def test_evaluation_and_source_observation_report_the_same_lineage() -> None:
+    from shadowseed.chat import ShadowChatSession
+
+    evaluation = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="evaluation",
+        detector_backend=_FirstTurnDetector(),
+        model_backend=_NoNetworkModel(),
+        embedding_fn=_embed,
+        recurrence_mode="pairwise",
+        gate_policy_id="evidence_backed",
+    )
+    comparison = evaluation.turn("What did the instrument measure?")
+    diag = comparison["intake_diagnostics"]
+    assert diag["lineage_schema"] == "candidate-intake-lineage-v1"
+    assert diag["lineage_status"] == "canonical"
+    assert [x["outcome"] for x in diag["item_lineage"]] == [
+        "accepted", "rejected", "accepted",
+    ]
+    assert [x["raw_candidate_index"] for x in diag["item_lineage"]] == [0, 1, 2]
+    recorded = {
+        item["observation_id"] for item in comparison["candidate_observations"]
+    }
+    assert len(recorded) == 3
+    assert {x["observation_id"] for x in diag["item_lineage"]} == recorded
+    assert not comparison["promoted_this_turn"]
+    assert all(s["weight"] == 0 for s in evaluation.shadow_report()["seeds"])
+
+    source = ShadowChatSession(
+        backend="fixture",
+        runtime_mode="live",
+        detector_backend=_FirstTurnDetector(),
+        model_backend=_NoNetworkModel(),
+        embedding_fn=_embed,
+        recurrence_mode="pairwise",
+        gate_policy_id="evidence_backed",
+    )
+    imported = source.observe_source_text(
+        "A synthetic report with one pressure reading.",
+        context_ref="source:fixture:007",
+    )
+    source_diag = imported["intake_diagnostics"]
+    assert source_diag["lineage_schema"] == "candidate-intake-lineage-v1"
+    assert source_diag["lineage_status"] == "canonical"
+    assert [x["raw_candidate_index"] for x in source_diag["item_lineage"]] == [
+        0, 1, 2,
+    ]
+    assert [x["outcome"] for x in source_diag["item_lineage"]] == [
+        "accepted", "rejected", "accepted",
+    ]
+    source_ids = {
+        item["observation_id"] for item in imported["candidate_observations"]
+    }
+    assert source_ids == {
+        x["observation_id"] for x in source_diag["item_lineage"]
+    }
+    assert all(
+        x["observation_link_status"] == "recorded_exact_raw_item"
+        for x in source_diag["item_lineage"]
+    )
+    assert not imported["promoted_this_observation"]
+    assert all(s.weight == 0 for s in source.manager.seeds.values())
