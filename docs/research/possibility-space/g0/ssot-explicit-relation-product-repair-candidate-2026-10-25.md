@@ -26,13 +26,13 @@ De SSOT-manager wordt **niet** heimelijk een tweede productie-ingang. Het is de 
 
 ### Historische seedgewichten worden niet stilzwijgend vertrouwd
 
-Een nieuw, read-only signaal in de agent-facing point-of-use-controle herkent oudere `SSOT SUPPORT`-events, zowel uit echte objecten als uit opgeslagen JSON. Zo'n seed kan historisch nog `PROMOTED` en positief gewogen zijn, maar mag **geen nieuwe** antwoordwijziging, toolactie of retrieval veroorzaken. De geweigerde poging wordt gewoon als point-of-use-besluit geregistreerd, met reden `legacy_ssot_requires_review`.
+Een nieuw, read-only signaal in de agent-facing point-of-use-controle herkent **de specifieke historische automatische SSOT-producer**. Die is terug te vinden aan het oude `verified SSOT chunk ...`-motief of een `::chunk_...`-bronreferentie, en de eerdere onveilige `relation-attested:ssot:...`-tussenvorm. Het werkt op echte GateEvent-objecten en opgeslagen JSON. Zo'n seed kan historisch nog `PROMOTED` en positief gewogen zijn, maar mag **geen nieuwe** antwoordwijziging, toolactie of retrieval veroorzaken. De geweigerde poging wordt gewoon als point-of-use-besluit geregistreerd, met reden `legacy_ssot_requires_review`.
 
 De Workbench-inspectie toont `legacy_ssot_requires_review=True`, `current_gate_authorized=False` en een heldere uitleg. Ook als een oudere sessie current-Gate-herbeoordeling uit heeft staan, blijft het laatste point-of-use-contract weigeren.
 
 De blokkering blijft bewust gelden nadat iemand alleen een nieuw, los `supports`-label indient. Een onwaarachtig label mag een oud historisch gewicht niet opnieuw bruikbaar maken. De geschiedenis blijft intact: eerder vastgelegde Gate-events, bronverwijzingen, seedgewichten en vroegere toegestane point-of-use-besluiten worden niet herschreven of achteraf als nieuwe overtredingen bestempeld. Historische records blijven reproduceerbaar, maar zijn geen toestemming voor een **nieuw** gebruik. Een later besluit over herstel of migratie heeft een nieuwe versiegebonden, door bevoegd gezag goedgekeurde procedure nodig.
 
-Dit is een conservatieve blokkering: ook werkelijk betrouwbare oudere SSOT-steun blijft tijdelijk buiten nieuwe invloed. Dat is een bewuste keuze zolang de oude records geen product-authenticatie van de precieze bron/seedrelatie aantonen. De code beweert **niet** dat iedere oude bron onjuist is.
+Dit is een conservatieve blokkering voor de herkenbare automatische SSOT-route: ook werkelijk betrouwbare oudere steun uit die route blijft tijdelijk buiten nieuwe invloed. Los daarvan blijven expliciet vooraf geregistreerde onderzoekssignalen en andere externe bewijsroutes herkenbaar als hun eigen kanaal; die mogen niet achteraf als dezelfde softwarefout worden bestempeld. De herkenning van legacy-signaturen is geen algemeen bewijs dat elke oude SSOT-bron volledig is geaudit. Onbekende herkomst vraagt afzonderlijke controle. Dat is een bewuste keuze zolang de oude records geen product-authenticatie van de precieze bron/seedrelatie aantonen. De code beweert **niet** dat iedere oude bron onjuist is.
 
 ## Testafbakening
 
