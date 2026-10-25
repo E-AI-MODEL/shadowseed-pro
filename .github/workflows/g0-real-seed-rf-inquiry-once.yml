@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   no-network-tests:
-    if: github.event.before == '4aa58ec9ad9bde2469ce37bf6d6db4b7d9dd1192' && github.ref == 'refs/heads/research/q1-q2-real-seed-rf-20261025'
+    if: github.event.before == 'a16a04e3bec2e1fa5bd4b95ae8eb7b6f62343d14' && github.ref == 'refs/heads/research/q1-q2-real-seed-rf-20261025'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
