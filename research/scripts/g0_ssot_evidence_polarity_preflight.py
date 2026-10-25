@@ -125,7 +125,18 @@ def build_result() -> dict:
     assert denying["accepted_evidence_count"] == 4
     assert unverified["accepted_evidence_count"] == 0
     assert all(
-        event["directions"] == ["support"]
+        sum(kind == "ssot" for kind in event["signal_kinds"]) == 1
+        and any(
+            kind == "ssot" and direction == "support"
+            for kind, direction in zip(event["signal_kinds"], event["directions"])
+        )
+        for record in (confirming, denying)
+        for event in record["gate_decisions"]
+    )
+    # The legacy Gate ALSO creates a separate recurrence signal. It must
+    # not be mistaken for SSOT evidence, in either the audit or conclusions.
+    assert all(
+        "recurrence" in event["signal_kinds"]
         for record in (confirming, denying)
         for event in record["gate_decisions"]
     )
