@@ -1,7 +1,9 @@
 """Single Source of Truth manager for SSL 4.5.
 
-The SSOT manager indexes trusted document text in a separate vectorstore. It can
-then validate open weightless seeds against that trusted store. The SSOT store
+The SSOT manager indexes documents in a separate vectorstore. It can inspect
+open weightless seeds and retain operator-asserted source/seed relationships
+without granting authority. An authorized product service may separately
+submit evidence. The SSOT store
 is separate from the seed vectorstore:
 
 - seed vectorstore: uncertain regions and shadow seeds;
@@ -20,7 +22,7 @@ from hashlib import sha256
 from typing import Any
 import re
 
-from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal
+from shadowseed.gate.signals import SignalDirection, SignalKind
 from shadowseed.manager import SSLManager, SeedStatus
 from shadowseed.vectorstore.base import VectorStore
 
@@ -338,12 +340,14 @@ class SSOTManager:
         top_k: int = 3,
         max_evidence_per_seed: int = 2,
     ) -> list[dict[str, Any]]:
-        """Offer explicitly attested support to the existing Validation Gate.
+        """READ ONLY: inspect explicit source relations for weightless seeds.
 
-        Retrieval presence, vector similarity and 'verified' source metadata
-        are not evidence of a relationship to this seed. Without a separately
-        asserted SUPPORTS review, this read-only search changes no authority.
-        Non-support and contested sources remain searchable, not contradictions.
+        Kept under the old method name for callers inspecting search results;
+        this no longer performs any Gate operation. A reviewer string and
+        source-status metadata cannot prove authorization or source truth.
+        The product's authorized evidence.verify service is the only supported
+        handoff to authority, with atomic workspace persistence. Opposing and
+        unresolved observations remain searchable, never auto-contradicted.
         """
         validations: list[dict[str, Any]] = []
         for seed_id, seed in self.ssl.seeds.items():
@@ -395,48 +399,34 @@ class SSOTManager:
                     review.evidence_unit_id, (chunk_id, score, metadata, review)
                 )
 
-            applied = []
-            for unit, (chunk_id, score, metadata, review) in list(candidates.items())[
-                :max_evidence_per_seed
-            ]:
-                result = self.ssl.run_validation_gate(
-                    seed_id,
-                    external_evidence=True,
-                    signals=[
-                        ValidationSignal(
-                            kind=SignalKind.SSOT,
-                            direction=SignalDirection.SUPPORT,
-                            # Fixed observation magnitude, NOT vector similarity
-                            # or a calibrated source-trust probability.
-                            strength=1.0,
-                            source_ref=unit,
-                            verified=True,
-                            independent=False,
-                            reason=(
-                                "relation-attested:ssot:"
-                                f"{review.doc_id} at {review.reviewed_at}"
-                            ),
-                        )
-                    ],
-                )
-                applied.append(
-                    {
-                        "chunk_id": chunk_id,
-                        "similarity": score,
-                        "gate_result": result,
-                        "doc_id": metadata.get("doc_id"),
-                        "source": metadata.get("source"),
-                        "evidence_unit_id": unit,
-                        "relation_review": review.to_dict(),
-                    }
-                )
-            if applied:
+            # This is a READ-ONLY handoff. A caller-written reviewer string,
+            # source status or relationship label cannot authenticate an actor,
+            # authorize a Gate event, or persist an atomic production ledger.
+            # The existing Workbench evidence.verify path handles the separate
+            # operator decision. A source identity must be preserved there.
+            review_candidates = [
+                {
+                    "chunk_id": chunk_id,
+                    "similarity": score,
+                    "doc_id": metadata.get("doc_id"),
+                    "source": metadata.get("source"),
+                    "evidence_unit_id": unit,
+                    "relation_review": review.to_dict(),
+                    "gate_authorized": False,
+                    "requires_authorized_submission": True,
+                }
+                for unit, (chunk_id, score, metadata, review) in list(candidates.items())[
+                    :max_evidence_per_seed
+                ]
+            ]
+            if review_candidates:
                 validations.append(
                     {
                         "seed_id": seed_id,
                         "seed_text": seed.text,
-                        "applied_evidence": applied,
-                        "seed_after_validation": self.ssl.get_seed(seed_id).to_dict(),
+                        "review_candidates": review_candidates,
+                        "gate_authorized": False,
+                        "seed_after_inspection": self.ssl.get_seed(seed_id).to_dict(),
                     }
                 )
         return validations
