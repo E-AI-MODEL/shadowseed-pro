@@ -1,0 +1,33 @@
+name: Research - RF multi-birth checkpoint regression (offline)
+
+on:
+  push:
+    branches:
+      - research/q1-q2-real-seed-rf-20261025
+    paths:
+      - .github/workflows/g0-real-seed-rf-multibirth-test.yml
+
+permissions:
+  contents: read
+
+jobs:
+  offline-replay:
+    if: github.event.before == '997d080bbbc4d72fe7440e602180ed29b860a149' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install locked research dependencies
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+      - name: Run multi-birth regression and all research tests, no model API
+        run: |
+          uv run --no-sync python -m pytest -q research/tests/test_real_seed_rf_multiple_births.py -x
+          uv run --no-sync python -m pytest -q research/tests
