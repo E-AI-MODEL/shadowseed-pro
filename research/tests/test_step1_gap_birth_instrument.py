@@ -53,7 +53,7 @@ def test_real_session_uses_original_detector_prompt_parser_and_canonical_intake(
     assert cp0["parse_diagnostics"]["dropped_fewshot_leak"] == 1
     assert cp0["parse_status"] == "parsed_candidates_not_validated"
     assert len(cp0["parsed_candidates"]) == 2
-    assert cp0["intake"]["input_count"] if "input_count" in cp0["intake"] else True
+    assert len(cp0["intake"]["normalized_candidates"]) == len(cp0["parsed_candidates"])
     assert len(cp0["observation_ledger_entries"]) == 2
     assert cp0["seed_birth_ids_this_turn"]
     assert all(s["weight"] == 0 for s in cp0["seed_state_after"].values())
