@@ -125,8 +125,6 @@ def _check_source(source: Any) -> list[dict[str, Any]]:
             for k in PUBLIC_TURN_FIELDS:
                 if k not in turn:
                     raise ValueError("missing public observation: " + k)
-            if "PRIVATE" in canonical({k: turn[k] for k in PUBLIC_TURN_FIELDS}):
-                raise ValueError("detected private field marker inside reviewer observation")
         if provenance == "recorded_model_unverified":
             if not _is_short_text(case.get("private_raw_trace_ref")):
                 raise ValueError("unverified model trace requires a private raw evidence reference")
@@ -243,9 +241,12 @@ def create_pack(source: dict[str, Any], secret: bytes) -> tuple[dict, dict, dict
     for field in FORBIDDEN_MASKED_KEYS:
         if f'"{field}":' in public_blob:
             raise AssertionError("review packet leaked a private treatment/candidate field")
-    for case in episodes:
-        if case["private_arm"] in public_blob or case["private_case_id"] in public_blob:
-            raise AssertionError("raw arm or case identity leaked through public packet")
+    # An arm named "A" or a case named "x" will naturally occur in ordinary
+    # research text. Never reject or rewrite an inquiry by searching for private
+    # label substrings in prose: that silently filters new relationships.
+    # Blindness is maintained by an explicit field whitelist, cryptic IDs,
+    # reviewer isolation and a separate private owner map. An inquiry can still
+    # itself disclose its origin; real reviewer masking must be independently audited.
     return packet, owner, review
 
 
