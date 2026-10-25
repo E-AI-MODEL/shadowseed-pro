@@ -19,6 +19,7 @@ from shadowseed.application.sessions import SessionService
 from shadowseed.authority_profiles import resolve_authority_runtime
 from shadowseed.gate.current_authority import snapshot_meets_current_gate
 from shadowseed_agent.agent_contract import has_unreviewed_ssot_support
+from shadowseed_agent.legacy_ssot_review import build_legacy_ssot_review_dossier
 from shadowseed.storage.integrity import (
     behavior_config_digest,
     behavior_config_epoch,
@@ -364,6 +365,38 @@ class InspectionService:
             ),
             "timeline": self.seed_timeline(session_id, seed_id),
         }
+
+    def legacy_ssot_review_dossier(
+        self,
+        session_id: str,
+        seed_id: str,
+        *,
+        include_source_refs: bool = False,
+    ) -> dict[str, Any]:
+        """Inspect persisted history; never requalify, mutate or clear quarantine.
+
+        The default report is content-minimized. A trusted local operator may
+        explicitly request source references for manual verification.
+        """
+        stored = self.sessions.load(session_id)
+        state = dict(stored["state"])
+        manager = dict(state.get("manager", {}))
+        seed = next(
+            (
+                item for item in manager.get("seeds", [])
+                if isinstance(item, dict) and str(item.get("id", "")) == str(seed_id)
+            ),
+            None,
+        )
+        if seed is None:
+            raise KeyError(f"unknown seed for historical SSOT review: {seed_id}")
+        return build_legacy_ssot_review_dossier(
+            seed,
+            manager.get("gate_events", []),
+            state.get("influence_records", []),
+            session_id=session_id,
+            include_source_refs=include_source_refs,
+        )
 
     def seed_timeline(self, session_id: str, seed_id: str) -> list[dict[str, Any]]:
         stored = self.sessions.load(session_id)

@@ -874,6 +874,18 @@ class WorkbenchController:
     def seed_view(self, session_id: str, seed_id: str) -> dict[str, Any]:
         return self.inspection.seed_view(session_id, seed_id)
 
+    def legacy_ssot_review_dossier(
+        self,
+        session_id: str,
+        seed_id: str,
+        *,
+        include_source_refs: bool = False,
+    ) -> dict[str, Any]:
+        """Read-only historical dossier, NOT a request to restore Gate authority."""
+        return self.inspection.legacy_ssot_review_dossier(
+            session_id, seed_id, include_source_refs=include_source_refs
+        )
+
     def record_feedback(
         self,
         *,
