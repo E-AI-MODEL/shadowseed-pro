@@ -56,7 +56,7 @@ def test_author_supplied_polarity_is_distinct_from_computed_similarity() -> None
     assert min(x["similarity"] for x in a["retrieval_hits"]) > 0.65
     assert min(x["similarity"] for x in b["retrieval_hits"]) > 0.65
     assert b["input_polarity_author_label_not_model_judgment"] == "author_negates"
-    assert not r["observations_are_not_independent_truth_labels"] is False
+    assert r["observations_are_not_independent_truth_labels"] is True
 
 
 def test_unverified_new_model_text_does_not_gain_ssot_authority() -> None:
