@@ -140,21 +140,30 @@ def check_manifest(doc: dict[str, Any]) -> dict[str, Any]:
                 missing.append(f"{family}_{role}_formal_environment_decision")
             elif row[role + "_decision"] not in DECISIONS:
                 raise ValueError("unknown independent environment verdict")
+    # Distinguish pre-G0 method approval from what must happen AFTER G0.
+    # A protected case-production PLAN and a safe evaluator matter to G0.
+    # Actually generating future held-out cases or completing a live effect
+    # study must not be silently invented as additional G0 prerequisites.
     for field in (
-        "sequestered_confirmatory_cases_created_by_independent_case_owner",
+        "holdout_creation_protocol_independently_approved",
         "evaluator_allowlisted_safe_execution_verified",
-        "known_T2_checkpoint_failure_resolved",
     ):
         if doc.get(field) is not True:
             missing.append(field)
+    parallel_work: list[str] = []
+    if doc.get("sequestered_confirmatory_cases_created_by_independent_case_owner") is not True:
+        parallel_work.append("future_confirmatory_cases_not_created")
+    if doc.get("known_T2_checkpoint_failure_resolved") is not True:
+        parallel_work.append("live_Rf_T2_checkpoint_failure_unresolved")
     if doc.get("ssot_evidence_polarity_issue_241_open") is True:
-        missing.append("ssot_evidence_polarity_issue_241_open")
-    if doc.get("later_RI_effect_independently_validated") is False:
-        # RI evidence is not necessarily a pre-G0 prerequisite; its absence
-        # always limits later claims, not structural G0 review eligibility.
-        ri_status = "NOT_DEMONSTRATED"
-    else:
-        ri_status = "UNVERIFIED_NEEDS_SOURCE_REVIEW"
+        parallel_work.append("product_SSOT_polarity_issue_241_open")
+    if doc.get("later_RI_effect_independently_validated") is not True:
+        parallel_work.append("RI_later_effect_not_demonstrated")
+    ri_status = (
+        "NOT_DEMONSTRATED"
+        if doc.get("later_RI_effect_independently_validated") is not True
+        else "UNVERIFIED_NEEDS_SOURCE_REVIEW"
+    )
 
     return {
         "schema": "g0-v3-structural-readiness-result-v1",
@@ -164,6 +173,7 @@ def check_manifest(doc: dict[str, Any]) -> dict[str, Any]:
         "independent_human_reviews": review_structure,
         "unresolved_items": sorted(set(missing)),
         "unresolved_count": len(set(missing)),
+        "parallel_non_G0_work_items": sorted(set(parallel_work)),
         "ri_later_effect_status": ri_status,
         "automatic_approval": False,
         "human_identity_and_construct_validity_not_programmatically_verifiable": True,
