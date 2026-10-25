@@ -1,0 +1,135 @@
+name: Research - One-shot GPT-5 Stage1 Canonical Shadow Exploratory
+
+# G0 independent approval is NOT PASSED. This is bounded, non-confirmatory
+# model-origin and pipeline-observability research on fictional public cases.
+# Trigger at most once from the unique predecessor SHA below, by adding this
+# exact workflow file to this branch. No cron or workflow_dispatch.
+on:
+  push:
+    branches:
+      - research/g0-exploratory-real-model-stage1-20261025
+    paths:
+      - .github/workflows/g0-real-model-stage1-exploratory.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: research-real-model-stage1-one-shot-20261025
+  cancel-in-progress: false
+
+jobs:
+  offline-preflight:
+    if: github.event.before == '5fe7c0e059960300974d265fe7b7ff102d17ee14' && github.ref == 'refs/heads/research/g0-exploratory-real-model-stage1-20261025'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Checkout fixed research revision without persisted git credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Locked uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install product plus research source (no API requests)
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+      - name: Validate schema and full research tests without network-model calls
+        run: |
+          uv run --no-sync python -m pytest -q research/tests
+          uv run --no-sync python - <<'PY'
+          import json
+          from pathlib import Path
+          from shadowseed_research.benchmark.real_model_stage1_exploratory import (
+              validate_fixture, MAX_MODEL_CALLS, MAX_EMBEDDING_CALLS,
+              MAX_ALL_TOKENS,
+          )
+          data = json.loads(Path('research/fixtures/real_model_stage1_exploratory_v1.json').read_text(encoding='utf-8'))
+          cases = validate_fixture(data)
+          assert len(cases) == 2 and all(len(c['turns']) == 4 for c in cases)
+          assert MAX_MODEL_CALLS == 24 and MAX_EMBEDDING_CALLS == 48
+          assert MAX_ALL_TOKENS == 85000
+          print('OFFLINE PASS: no hosted model calls, two staged fictional cases.')
+          PY
+
+  bounded-real-stage1:
+    needs: offline-preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: OpenAI key
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+    steps:
+      - name: Checkout one-shot research revision without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Locked uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install product and research namespace
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+          mkdir -p research-artifacts/real-model-stage1
+      - name: Check existing scoped secret is populated without printing any value
+        shell: bash
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::OpenAI key Environment credential unavailable; no calls made."
+            exit 1
+          fi
+      - name: Run exactly two staged, bounded real-model multi-turn studies
+        run: |
+          uv run --no-sync python -m shadowseed_research.benchmark.real_model_stage1_exploratory \
+            --fixture research/fixtures/real_model_stage1_exploratory_v1.json \
+            --output research-artifacts/real-model-stage1/observed.json
+      - name: Assert true canonical turn/zero-authority and no efficacy claims
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('research-artifacts/real-model-stage1/observed.json')
+          d = json.loads(p.read_text(encoding='utf-8'))
+          assert d['schema'] == 'shadowseed-real-stage1-recorded-observations-v1'
+          assert d['status'] == 'completed_exploratory_real_model_stage1_only'
+          assert d['G0'] == 'NOT_PASSED'
+          assert d['confirmatory_trial'] is False
+          assert d['q1_probability_or_internal_absence_proven'] is False
+          assert d['q2_later_investigability_proven'] is False
+          assert d['independent_human_review_completed'] is False
+          assert len(d['cases']) == 2
+          assert d['provider_audit']['model_calls'] == 20
+          assert d['provider_audit']['embedding_calls'] <= 48
+          assert d['provider_audit']['token_total'] <= 85000
+          for case in d['cases']:
+              assert len(case['turns']) == 4
+              assert case['none_control_seed_count'] == 0
+              assert all(t['none_control_answer_identical'] for t in case['turns'])
+              assert all(t['canonical_turn_report']['runtime_mode'] == 'live' for t in case['turns'])
+              assert all(not t['canonical_turn_report']['surfaced_seed_ids'] for t in case['turns'])
+          print(json.dumps({
+              'status': d['status'],
+              'model_calls': d['provider_audit']['model_calls'],
+              'embedding_calls': d['provider_audit']['embedding_calls'],
+              'tokens': d['provider_audit']['token_total'],
+              'first_birth_turns': [c['selected_first_seed_birth_turn'] for c in d['cases']],
+              'G0': d['G0'],
+          }))
+          PY
+      - name: Publish read-only fictional research trace or bounded failure manifest
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: real-model-stage1-exploratory-${{ github.run_id }}
+          path: research-artifacts/real-model-stage1/observed.json
+          if-no-files-found: warn
+          retention-days: 30
