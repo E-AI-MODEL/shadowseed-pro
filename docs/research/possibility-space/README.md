@@ -25,6 +25,11 @@
 
 - **[Compression-retention mechanics and prospective study](compression-retention-narrow-pilot-2026-10-25.md)** — a separately labeled, offline calibration test using canonical candidate birth and vector retrieval. Investigator-authored summaries and candidates, no model calls, no result about Q1 or Q2. Details matched strong-model controls for a *future* independently reviewed study without claiming G0 approval.
 
+## One-shot exploratory live compression pilot (not Q1/Q2 evidence)
+
+- **[Bounded GPT-5 engineering protocol](live-compression-retention-engineering-pilot-2026-10-25.md)** — synthetic cases, prospective freeze of model-generated candidates and genuine model-produced summaries, real embedding retrieval, ordinary notes and a negative control. This is a technical feasibility run only, without independent G0 review, equal total call budgets or scientific discovery claims.
+- **[Completed live GPT-5 result](live-compression-retention-result-2026-10-25.md)** — 30 model calls, 3 real embedding requests, no Gate events, and a NON-DISCRIMINATING outcome: the ordinary model's first answer and compressed summaries already retained both relevant hypotheses. No Shadowseed effect or new possibility-space claim established.
+
 ## Historical reasoning, decisions and failed trial — keep intact
 
 - **[Conversation reconstruction and user corrections](conversation-record-2026-10-24.md)** — chronology of the recoverable discussion; **not** a literal full transcript.
