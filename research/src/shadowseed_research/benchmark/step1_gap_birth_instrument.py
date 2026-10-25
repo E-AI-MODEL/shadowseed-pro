@@ -178,6 +178,7 @@ def audit_case(case: dict[str, Any], variant: str) -> dict[str, Any]:
         before_event = len(session.manager.event_log)
         bounded_context = session._detector_conversation_context()
         prepared = session.prepare_turn(turn["question"])
+        after_prepare = _seed_snapshots(session)
         if prepared.surfaced_seed_ids or prepared.model_context:
             session.abort_turn(prepared)
             raise AssertionError("fixture must never authorize candidate influence")
@@ -227,6 +228,7 @@ def audit_case(case: dict[str, Any], variant: str) -> dict[str, Any]:
             "observation_ledger_entries": report["candidate_observations"],
             "seed_birth_ids_this_turn": list(report["seeds_born_weightless"]),
             "seed_state_before": before,
+            "seed_state_after_prepare": after_prepare,
             "seed_state_after": snapshots,
             "manager_events_this_turn": [
                 {"event_type": event.event_type, "seed_id": event.seed_id}
