@@ -278,6 +278,11 @@ def test_duplicate_raw_items_do_not_lose_first_birth_attribution() -> None:
     other_birth = freeze_canonical_weightless_birth(eng, first, b)
     assert first_birth["raw_to_seed_item_lineage"]["raw_candidate_index"] == 0
     assert other_birth["raw_to_seed_item_lineage"]["raw_candidate_index"] == 2
+    # The second created-event used to retain a stale provisional context
+    # when both seeds shared one mutable SeedOrigin.
+    assert first_birth["origin"]["context_ref"] == first["first_pass_context_ref"]
+    assert other_birth["origin"]["context_ref"] == first["first_pass_context_ref"]
+    assert first_birth["origin_event_sha256"] != other_birth["origin_event_sha256"]
     assert (
         first_birth["raw_to_seed_item_lineage"]["observation_id"]
         != other_birth["raw_to_seed_item_lineage"]["observation_id"]
