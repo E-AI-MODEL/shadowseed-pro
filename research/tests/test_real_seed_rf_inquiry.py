@@ -76,8 +76,10 @@ class FakeHttpProvider(BoundedProvider):
             self.detect_calls += 1
             if self.seed and self.detect_calls == 1:
                 text = (
-                    "1. Onbekend of de mechanische montage van de sensoren "
-                    "de lokale trilling en meetruis beïnvloedt."
+                    "1. Onbekend of er verschillen zijn in mechanische "
+                    "montage/omgeving van de sensoren (trilling, thermische "
+                    "gradiënt, nabijheid van storingsbronnen) die kanaal 1 "
+                    "selectief beïnvloeden."
                 )
             else:
                 text = "NONE"
