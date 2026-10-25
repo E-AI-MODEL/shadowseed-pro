@@ -38,10 +38,16 @@ def test_explicitly_opposing_synthetic_statements_receive_same_support_direction
     )
     assert len(a["gate_decisions"]) == len(b["gate_decisions"]) == 4
     assert all(
-        all(ref and ref.startswith("g0_") for ref in event["source_refs"])
+        all(
+            isinstance(ref, str) and ref.startswith("g0_")
+            for kind, ref in zip(event["signal_kinds"], event["source_refs"])
+            if kind == "ssot"
+        )
         for case in (a, b)
         for event in case["gate_decisions"]
     )
+    # Recurrence deliberately has NO external source_ref. Demanding an
+    # SSOT source reference of recurrence would merge two trust channels.
     assert a["final_seed"]["weight"] > 0
     assert b["final_seed"]["weight"] > 0
     assert a["final_seed"]["evidence_count"] == b["final_seed"]["evidence_count"]
