@@ -214,3 +214,34 @@ def test_inquiry_only_sees_own_prior_question_not_other_arms() -> None:
     assert "Testseed" in prompt
     assert c["turns"][2]["new_observation"] not in prompt
     assert "resultaat van die vraag" in prompt
+
+
+def test_checkpoint_fail_closed_preserves_specific_invariant_and_no_t2_inquiries(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import shadowseed_research.benchmark.real_seed_rf_inquiry as module
+
+    provider = FakeHttpProvider()
+    original = module.freeze_weightless_followup
+    checkpoints: list[dict] = []
+
+    def fail_on_second_later_turn(engine, birth, *, previous=None):
+        if previous is not None:
+            raise ValueError("previous event ledger prefix was modified")
+        return original(engine, birth, previous=previous)
+
+    monkeypatch.setattr(module, "freeze_weightless_followup", fail_on_second_later_turn)
+    with pytest.raises(ValueError, match="previous event ledger prefix was modified"):
+        run(fixture(), provider, checkpoint=lambda x: checkpoints.append(deepcopy(x)))
+
+    assert checkpoints
+    last = checkpoints[-1]
+    assert len(last["turns"]) == 3
+    assert len(last["turns"][1]["arms"]) == 5
+    assert last["turns"][2]["arms"] == {}
+    diagnostics = last["turns"][2]["checkpoint_diagnostics"]
+    assert diagnostics["error_code"] == "previous event ledger prefix was modified"
+    assert diagnostics["no_automatic_repair"] is True
+    assert diagnostics["expected_prior_history_sha256"] == diagnostics["actual_prior_history_sha256"]
+    assert diagnostics["original_seed_weight"] == 0
+    assert provider.model_calls == 14
