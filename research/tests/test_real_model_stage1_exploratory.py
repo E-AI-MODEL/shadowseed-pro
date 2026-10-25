@@ -60,7 +60,7 @@ class NoNetworkProvider(BoundedProvider):
             elif instructions == HOST_INSTRUCTIONS:
                 if "testdozen" in prompt.lower():
                     text = (
-                        "De twee tellingen en de voorraadlijst spreken "
+                        "De twintig testdozen en de voorraadlijst spreken "
                         "elkaar niet tegen. Er is geen verdere meting gevraagd."
                     )
                 else:
