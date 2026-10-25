@@ -345,9 +345,65 @@ def run(
             )
         else:
             if birth is not None:
-                row["followup"] = freeze_weightless_followup(
-                    actual, birth, previous=previous_checkpoint
-                )
+                try:
+                    row["followup"] = freeze_weightless_followup(
+                        actual, birth, previous=previous_checkpoint
+                    )
+                except ValueError as exc:
+                    # Closed, non-secret diagnostic. The canonical checkpoint
+                    # rejects history drift instead of silently repairing it.
+                    # Never interpret a missing checkpoint as no seed/no idea.
+                    known = {
+                        "previous checkpoint is not the preceding history",
+                        "first-birth product history no longer matches freeze",
+                        "original candidate is missing or ambiguous",
+                        "original candidate text or origin changed",
+                        "first created-event has changed or been duplicated",
+                        "recorded detector-to-first-birth item changed",
+                        "ordinary answer route received SSL influence",
+                        "candidate has crossed the Gate authority boundary",
+                        "terminal expiry has no verified lifecycle Gate record",
+                        "candidate is no longer authority-free",
+                        "previous event ledger prefix was modified",
+                        "repeat candidate lacks recorded deduplication",
+                        "missing or invalid TrTL report",
+                        "noncanonical or reordered live history",
+                        "birth snapshot hash mismatch",
+                        "previous snapshot hash mismatch",
+                    }
+                    message = str(exc)
+                    state = actual.export_state()
+                    manager = state["manager"]
+                    events = manager["event_log"]
+                    gate = manager["gate_events"]
+                    pn = previous_checkpoint.get("event_log_count", 0) if previous_checkpoint else 0
+                    gn = previous_checkpoint.get("gate_log_count", 0) if previous_checkpoint else 0
+                    original = next(
+                        (x for x in manager["seeds"]
+                         if x.get("id") == birth["seed_id"]), None
+                    )
+                    row["checkpoint_diagnostics"] = {
+                        "error_code": message if message in known else "unclassified_validation_error",
+                        "turn": i,
+                        "previous_checkpoint_sha256": previous_checkpoint.get("snapshot_sha256") if previous_checkpoint else None,
+                        "expected_prior_eventlog_sha256": previous_checkpoint.get("event_log_sha256") if previous_checkpoint else None,
+                        "actual_prior_eventlog_sha256": _hash(events[:pn]),
+                        "expected_prior_gate_sha256": previous_checkpoint.get("gate_log_sha256") if previous_checkpoint else None,
+                        "actual_prior_gate_sha256": _hash(gate[:gn]),
+                        "expected_prior_history_sha256": previous_checkpoint.get("history_sha256") if previous_checkpoint else None,
+                        "actual_prior_history_sha256": _hash(state["turn_reports"][:i]),
+                        "original_seed_status": original.get("status") if original else None,
+                        "original_seed_weight": original.get("weight") if original else None,
+                        "original_seed_evidence_count": original.get("evidence_count") if original else None,
+                        "original_seed_text_sha256": (
+                            sha256(original["text"].encode("utf-8")).hexdigest()
+                            if original and isinstance(original.get("text"), str)
+                            else None
+                        ),
+                        "no_automatic_repair": True,
+                    }
+                    persist()
+                    raise
                 previous_checkpoint = row["followup"]
             if frozen_seed is not None:
                 # Different order at each stage. Fixed before provider calls.
