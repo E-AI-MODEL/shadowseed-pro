@@ -7,7 +7,12 @@ in PR #240. No real source truth, human review or research efficacy is claimed.
 from dataclasses import asdict
 
 from shadowseed.gate.events import GateDecision, GateEvent
-from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal, recurrence_signal
+from shadowseed.gate.signals import (
+    SignalDirection,
+    SignalKind,
+    ValidationSignal,
+    recurrence_signal,
+)
 from shadowseed.manager import SSLManager, SeedStatus
 from shadowseed.text_similarity import lexical_embedding
 from shadowseed_agent import (
