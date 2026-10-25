@@ -183,3 +183,48 @@ def test_historical_allowed_record_replays_without_rewriting_past() -> None:
         contradiction_blocking=False,
     )
     assert current.allowed is False
+
+
+def test_read_only_inspection_labels_quarantined_legacy_seed() -> None:
+    from shadowseed.application.inspection import InspectionService
+
+    manager, seed_id = _legacy_promoted_manager()
+    seed = manager.get_seed(seed_id)
+
+    class StoredFixture:
+        def load(self, _session_id):
+            return {
+                "session_id": "session::legacy",
+                "title": "Archived SSOT session",
+                "profile_id": "demo",
+                "backend": "fixture",
+                "model_id": "",
+                "created_at": "2026-10-24T00:00:00+00:00",
+                "updated_at": "2026-10-24T00:00:00+00:00",
+                "config": {"runtime_mode": "live", "authority_profile_id": "strict"},
+                "state": {
+                    "manager": {
+                        "seeds": [seed.to_dict()],
+                        "config": manager.config.to_dict(),
+                        "gate_events": [event.to_dict() for event in manager.gate_events],
+                    },
+                    "session_config": {
+                        "runtime_mode": "live",
+                        "authority_profile_id": "strict",
+                    },
+                    "turn_reports": [],
+                    "influence_records": [],
+                },
+            }
+
+        def list_feedback(self, _session_id):
+            return []
+
+    displayed = InspectionService(StoredFixture()).session_view("session::legacy")
+    assert len(displayed["seeds"]) == 1
+    seed_view = displayed["seeds"][0]
+    assert seed_view["legacy_ssot_requires_review"] is True
+    assert seed_view["current_gate_authorized"] is False
+    assert "Historical SSOT support" in seed_view["plain_explanation"]
+    assert seed_view["weight"] == seed.weight
+    assert len(manager.gate_events) == 4
