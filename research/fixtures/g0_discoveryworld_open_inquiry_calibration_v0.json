@@ -1,0 +1,60 @@
+{
+  "schema": "g0-open-inquiry-calibration-v0",
+  "source": "researcher_authored_public_calibration",
+  "purpose": "Calibration of tool representability and observable action effects. These are not model-originated questions, a sealed holdout, a semantic relevance test, or a Q2 run.",
+  "cases": [
+    {
+      "id": "orientation_change",
+      "question": "What happens to visible orientation after choosing a different legal heading?",
+      "tool_request": {
+        "action": "ROTATE_DIRECTION",
+        "arg1": "$alternate_facing"
+      }
+    },
+    {
+      "id": "orientation_paraphrase",
+      "question": "If I face another cardinal direction, what changes in my location and facing state?",
+      "tool_request": {
+        "action": "ROTATE_DIRECTION",
+        "arg1": "$alternate_facing"
+      }
+    },
+    {
+      "id": "orientation_sham",
+      "question": "Does requesting the direction I already face produce a different observable orientation?",
+      "tool_request": {
+        "action": "ROTATE_DIRECTION",
+        "arg1": "$current_facing"
+      }
+    },
+    {
+      "id": "dynamic_accessible_move",
+      "question": "If I choose a currently passable neighboring tile, which spatial observation and movement affordances become available?",
+      "tool_request": {
+        "action": "MOVE_DIRECTION",
+        "arg1": "$first_legal_move"
+      }
+    },
+    {
+      "id": "known_verb_invalid_argument",
+      "question": "Can the environment move the agent toward a diagonal northeast coordinate via the cardinal direction command?",
+      "tool_request": {
+        "action": "MOVE_DIRECTION",
+        "arg1": "northeast"
+      }
+    },
+    {
+      "id": "unsupported_natural_question",
+      "question": "Could a hidden relation between two later observations cause a genuinely new investigable distinction?",
+      "tool_request": null
+    },
+    {
+      "id": "unsupported_unknown_tool",
+      "question": "Does one intervention change a causal relationship not represented by the existing tools?",
+      "tool_request": {
+        "action": "TEST_HIDDEN_CAUSAL_RELATION",
+        "arg1": "unspecified"
+      }
+    }
+  ]
+}
