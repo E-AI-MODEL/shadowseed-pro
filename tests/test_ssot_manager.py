@@ -6,7 +6,6 @@ human-verification or proof of independent evidence units.
 
 import pytest
 
-from shadowseed.gate.signals import SignalDirection, SignalKind
 from shadowseed.manager import SSLManager, SeedStatus
 from shadowseed.ssot import SSOTManager, SSOTRelation
 from shadowseed.text_similarity import lexical_embedding
@@ -66,32 +65,34 @@ def test_similar_verified_documents_never_raise_weight_without_relation_review()
     assert manager.gate_events == []
 
 
-def test_explicitly_reviewed_support_uses_existing_gate_only() -> None:
+def test_declared_support_is_read_only_even_with_four_fake_reviewers() -> None:
     manager, ssot, seed_id = make_manager_and_ssot()
-    # Distinct IDs are *declared* source units, not verified independent studies.
+    # Caller-chosen reviewer strings are NOT product-authenticated actors.
     for n in range(4):
         doc_id = f"fictional_source_{n}"
         ssot.ingest_document(AFFIRMING, doc_id=doc_id)
         attest(ssot, seed_id, doc_id, SSOTRelation.SUPPORTS)
-    assert manager.get_seed(seed_id).evidence_count == 0
-    outcomes = ssot.validate_open_seeds_against_ssot(
+
+    before = manager.get_seed(seed_id).to_dict()
+    outcome = ssot.validate_open_seeds_against_ssot(
         threshold=0, top_k=8, max_evidence_per_seed=8
     )
-    seed = manager.get_seed(seed_id)
-    assert len(outcomes) == 1
-    assert len(outcomes[0]["applied_evidence"]) == 4
-    assert seed.evidence_count == 4
-    assert seed.status is SeedStatus.PROMOTED
-    assert seed.weight >= 0.5
-    assert len(manager.gate_events) == 4
-    for event in manager.gate_events:
-        ssot_signals = [s for s in event.signals if s.kind is SignalKind.SSOT]
-        assert len(ssot_signals) == 1
-        assert ssot_signals[0].direction is SignalDirection.SUPPORT
-        assert ssot_signals[0].strength == 1.0
-        assert ssot_signals[0].independent is False
-        assert ssot_signals[0].reason.startswith("relation-attested:ssot:")
-    assert ssot.validate_open_seeds_against_ssot(threshold=0, top_k=8) == []
+    assert len(outcome) == 1
+    assert len(outcome[0]["review_candidates"]) == 4
+    assert outcome[0]["gate_authorized"] is False
+    for candidate in outcome[0]["review_candidates"]:
+        assert candidate["gate_authorized"] is False
+        assert candidate["requires_authorized_submission"] is True
+        assert candidate["relation_review"]["relation"] == "supports"
+        assert candidate["evidence_unit_id"].startswith("fictional_source_")
+
+    # Calling it again must not manufacture extra support or promotion.
+    assert ssot.validate_open_seeds_against_ssot(
+        threshold=0, top_k=8, max_evidence_per_seed=8
+    ) == outcome
+    assert manager.get_seed(seed_id).to_dict() == before
+    assert manager.get_seed(seed_id).status is not SeedStatus.PROMOTED
+    assert manager.gate_events == []
 
 
 def test_many_chunks_of_one_document_are_only_one_evidence_unit() -> None:
@@ -108,8 +109,8 @@ def test_many_chunks_of_one_document_are_only_one_evidence_unit() -> None:
         threshold=0, top_k=12, max_evidence_per_seed=12
     )
     assert len(result) == 1
-    assert len(result[0]["applied_evidence"]) == 1
-    assert manager.get_seed(seed_id).evidence_count == 1
+    assert len(result[0]["review_candidates"]) == 1
+    assert manager.get_seed(seed_id).evidence_count == 0
     assert manager.get_seed(seed_id).weight == 0
     assert manager.get_seed(seed_id).status is not SeedStatus.PROMOTED
 
@@ -123,8 +124,8 @@ def test_same_asserted_underlying_source_across_documents_counts_once() -> None:
     result = ssot.validate_open_seeds_against_ssot(
         threshold=0, top_k=8, max_evidence_per_seed=8
     )
-    assert len(result[0]["applied_evidence"]) == 1
-    assert manager.get_seed(seed_id).evidence_count == 1
+    assert len(result[0]["review_candidates"]) == 1
+    assert manager.get_seed(seed_id).evidence_count == 0
     assert manager.get_seed(seed_id).weight == 0
 
 
