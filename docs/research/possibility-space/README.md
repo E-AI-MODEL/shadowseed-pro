@@ -27,6 +27,7 @@
 
 - **[LLM-adapter positioning](adapter-not-model-improver-2026-10-25.md)** — existing external memory/validation interface versus an *unproven* possibility-inquiry process. The host model and its credentials stay separate from the adapter; this is not an accepted ADR or a model-fine-tuning method.
 - **[External environment feasibility](g0/external-benchmark-feasibility-2026-10-25.md)** — primary-source screen of DiscoveryWorld, DiscoverPhysics, WorldTest, AgentIdeaBench, Into the Unknown and ScienceWorld, with an explicit *not yet verified at code/API level* boundary.
+- **[G0 codecontrole externe onderzoeksomgevingen](g0/external-executor-source-audit-2026-10-25.md)** — repo-/commitvast bewijs van echte actie-interfaces, vooraf bepaalde scorers, herinitialisatiegrenzen en onveilige code-executie in een evaluator; nog **niet uitgevoerd** en zonder onafhankelijke G0-goedkeuring. Onderscheid E1-prioriteit voor technische preflight en E2 zonder geaccepteerde evaluator.
 - **[Matched-model adapter contract](g0/adapter-evaluation-contract-2026-10-25.md)** — exact A/B/C/D/E controls, genuine weightless cross-turn persistence, fair total budgets, independent later-question validation and candidate ablation. Research proposal only, NOT G0 approval or permission to run paid models.
 
 ## Narrow compression-retention research (NOT a replacement thesis)
