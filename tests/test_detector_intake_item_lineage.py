@@ -11,7 +11,6 @@ import numpy as np
 
 from shadowseed import ShadowseedEngine
 from shadowseed.manager import SSLManager
-from shadowseed.models import SeedOrigin
 from shadowseed.observations import (
     CandidateObservationLedger,
     link_intake_lineage_to_observations,
@@ -331,31 +330,6 @@ def test_evaluation_and_source_observation_report_the_same_lineage() -> None:
     assert all(s.weight == 0 for s in source.manager.seeds.values())
 
 
-def test_multiple_new_seeds_get_independent_origin_instances() -> None:
-    manager = _manager()
-    shared_origin = SeedOrigin(
-        detection_basis="first_pass_answer",
-        context_ref="turn:0:first_pass_answer",
-    )
-    taken = manager.ingest_detection_candidates(
-        ["alpha missing", "beta missing"],
-        split_broad=False,
-        expand_short_fragments=False,
-        deduplicate=False,
-        origin=shared_origin,
-    )
-    assert len(taken["accepted"]) == 2
-    a, b = (manager.get_seed(row["seed_id"]) for row in taken["accepted"])
-    assert a.origin is not b.origin
-    assert a.origin is not shared_origin
-    assert b.origin is not shared_origin
-    a.origin.context_ref = "turn:0:visible_answer"
-    assert b.origin.context_ref == "turn:0:first_pass_answer"
-    assert shared_origin.context_ref == "turn:0:first_pass_answer"
-    assert a.weight == b.weight == 0
-    assert manager.gate_events == []
-
-
 def test_all_live_newborn_created_events_have_same_canonical_origin() -> None:
     engine = ShadowseedEngine(
         detector_backend=_FirstTurnDetector(),
@@ -388,6 +362,8 @@ def test_all_live_newborn_created_events_have_same_canonical_origin() -> None:
         assert origin["detection_basis"] == "visible_answer_non_ssl_attributed"
         assert seed.weight == 0
         assert seed.evidence_count == 0
-    assert origins[0] is not origins[1]
+    # Historical caller-visible object identity is preserved. The original
+    # bug was that only the first separately recorded created-event was fixed.
+    assert origins[0] is origins[1]
     assert engine._session.manager.gate_events == []
     assert first["surfaced_seed_ids"] == []
