@@ -297,6 +297,7 @@ def ingest_detection_candidates(
         "normalized_candidates": normalized,
         "accepted": accepted,
         "rejected": rejected,
+        "lineage_schema": "candidate-intake-lineage-v1",
         "lineage_status": mapping_status,
         "lineage": lineage,
     }
