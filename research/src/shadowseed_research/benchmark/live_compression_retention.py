@@ -396,25 +396,40 @@ def _t2(case: dict[str, Any], frozen: dict[str, Any],
     vectors = provider.embed(case["id"], unique_texts)
     manager = SSLManager(embedding_fn=lambda s: vectors[s])
     canonical_ids = []
+    rejected_candidates = []
+    accepted_texts = []
     for text in frozen["candidates"]:
-        seed_id = manager.add_or_update_seed(
-            text, deduplicate=False,
-            origin=SeedOrigin(
-                candidate_type=CandidateType.ALTERNATIVE_HYPOTHESIS,
-                detection_basis="model_generated_T0_pre_update",
-                context_ref="synthetic:" + case["id"] + ":T0",
+        try:
+            seed_id = manager.add_or_update_seed(
+                text, deduplicate=False,
+                origin=SeedOrigin(
+                    candidate_type=CandidateType.ALTERNATIVE_HYPOTHESIS,
+                    detection_basis="model_generated_T0_pre_update",
+                    context_ref="synthetic:" + case["id"] + ":T0",
+                )
             )
-        )
+        except ValueError:
+            # A candidate that fails the canonical atomicity contract never
+            # enters the Shadowseed arm. Do not silently use an unaccepted
+            # model string as though it were a real seed.
+            rejected_candidates.append({"candidate_sha256": _sha(text),
+                                        "reason": "canonical_intake_rejected"})
+            continue
         seed = manager.get_seed(seed_id)
         if seed.weight != 0.0 or seed.evidence_count != 0:
             raise RuntimeError("candidate was assigned evidence or weight")
         canonical_ids.append(seed_id)
+        accepted_texts.append(seed.text)
     if manager.gate_events:
         raise RuntimeError("no Gate call permitted in feasibility pilot")
 
+    shadow_texts = _pad_memory(accepted_texts)
+    ablated_texts = list(shadow_texts)
+    if accepted_texts:
+        ablated_texts[0] = NEUTRAL
     recovered = {
         "ordinary_notes": _retrieve(note_texts, cue, vectors, id_prefix="N"),
-        "shadowseeds": _retrieve(candidate_texts, cue, vectors, id_prefix="S"),
+        "shadowseeds": _retrieve(shadow_texts, cue, vectors, id_prefix="S"),
         "candidate_ablation": _retrieve(ablated_texts, cue, vectors, id_prefix="E"),
         "sham_notes": _retrieve(sham_texts, cue, vectors, id_prefix="X"),
     }
@@ -450,6 +465,7 @@ def _t2(case: dict[str, Any], frozen: dict[str, Any],
         "case_id": case["id"], "status": "completed_exploratory_followup",
         "no_opportunity": case["no_opportunity"],
         "canonical_seed_ids": canonical_ids,
+        "rejected_candidates": rejected_candidates,
         "candidate_weightless": all(x.weight == 0.0 for x in manager.seeds.values()),
         "gate_events": len(manager.gate_events),
         "embedding_model": EMBEDDING_MODEL, "retrieval_threshold": THRESHOLD,
