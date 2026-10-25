@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   no-network-preflight:
-    if: github.event.before == '1c0d29c9f97b87b9be89b7695c261813e9c081aa' && github.run_attempt == 1
+    if: github.event.before == '4c3c4e480d8d1ed164c65f29ec47978c6332e0ce' && github.run_attempt == 1
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
