@@ -1,12 +1,14 @@
 name: Research - G0 SSOT Polarity Falsification
 
-# Characterization of EXISTING manager/SSOT/Gate behavior only.
-# This is not a new model, trust verifier, polarity classifier, Gate fix,
-# positive Q1/Q2 result or permission to use synthetic claims as facts.
+# Live model-free regressions comparing the historical defect (archived PR #240)
+# with the current corrected product SSOT producer and unchanged real Gate.
+# Source text and relation attestations are entirely investigator-authored.
+# No model discovery, independent truth verification or G0 approval.
 on:
   pull_request:
     branches: [main]
     paths:
+      - "src/shadowseed/ssot.py"
       - "research/scripts/g0_ssot_evidence_polarity_preflight.py"
       - "research/tests/test_g0_ssot_evidence_polarity.py"
       - ".github/workflows/g0-ssot-polarity-falsification.yml"
@@ -48,13 +50,14 @@ jobs:
         run: |
           uv run --no-sync python -m pytest -q \
             research/tests/test_g0_ssot_evidence_polarity.py \
+            research/tests/test_ssot_falsification.py \
             tests/test_ssot_manager.py \
             tests/test_ssot_falsification.py
       - name: Capture sanitized actual evidence trace from real Gate events
         run: |
           mkdir -p research-artifacts
           uv run --no-sync python research/scripts/g0_ssot_evidence_polarity_preflight.py \
-            --output research-artifacts/g0-ssot-polarity-existing-code.json
+            --output research-artifacts/g0-ssot-polarity-after-fix.json
           uv pip freeze --python .venv/bin/python > research-artifacts/g0-ssot-polarity-dependencies.txt
       - name: Enforce claim restrictions, synthetic provenance and opposing evidence labels
         run: |
@@ -62,30 +65,35 @@ jobs:
           import json
           from pathlib import Path
           r = json.loads(Path("research-artifacts/g0-ssot-polarity-existing-code.json").read_text(encoding="utf-8"))
-          assert r["schema"] == "g0-ssot-polarity-mechanical-characterization-v0"
-          assert r["status"] == "existing_product_code_characterized_not_repaired"
+          assert r["schema"] == "g0-ssot-polarity-before-after-characterization-v1"
+          assert r["status"] == "post_fix_synthetic_mechanics_characterized_not_independently_verified"
           assert r["model_calls"] == r["human_verifiers"] == 0
           assert r["Q1_tested"] is r["Q2_tested"] is r["G0_passed"] is False
-          assert r["product_code_changed"] is r["gate_logic_changed"] is False
+          assert r["no_research_gate_or_polarity_classifier"] is True
           assert r["input_provenance"] == "INVESTIGATOR_AUTHORED_FICTIONAL_POLARITIES"
-          a = r["cases"]["affirmation"]
-          b = r["cases"]["explicit_negation"]
-          c = r["cases"]["unverified_negation"]
-          assert len(a["gate_decisions"]) == len(b["gate_decisions"]) == 4
-          assert a["accepted_evidence_count"] == b["accepted_evidence_count"] == 4
+          history = r["historic_pre_fix_result"]
+          assert history["source"].endswith("/40176388209")
+          assert history["explicit_negation"]["ssot_support"] == 4
+          a = r["cases"]["affirmation_with_author_support"]
+          b = r["cases"]["explicit_negation_with_author_opposition"]
+          c = r["cases"]["unverified_with_author_support"]
+          d = r["cases"]["affirmation_without_relation"]
+          assert a["accepted_ssot_signal_count"] == 4
+          assert len(a["gate_events"]) == 4
+          assert a["final_seed"]["weight"] > 0
           assert all(
-              "recurrence" in e["signal_kinds"]
-              and any(k == "ssot" and d == "support" for k, d in zip(e["signal_kinds"], e["directions"]))
-              for e in a["gate_decisions"] + b["gate_decisions"]
+              case["accepted_ssot_signal_count"] == 0
+              and case["final_seed"]["weight"] == 0
+              and case["final_seed"]["evidence_count"] == 0
+              and not case["gate_events"]
+              for case in (b, c, d)
           )
-          assert a["final_seed"]["weight"] > 0 and b["final_seed"]["weight"] > 0
-          assert c["final_seed"]["weight"] == 0 and not c["gate_decisions"]
-          print("Synthetic negation and affirmation both received SSOT SUPPORT. Not an independent truth verdict.")
+          print("Post-fix: only author-attested SUPPORT reaches existing Gate. Still no independent truth check.")
           PY
       - name: Upload synthetic-only observation and exact dependency set
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: g0-ssot-polarity-falsification-${{ github.run_id }}
+          name: g0-ssot-polarity-before-after-${{ github.run_id }}
           path: |
             research-artifacts/g0-ssot-polarity-existing-code.json
             research-artifacts/g0-ssot-polarity-dependencies.txt
