@@ -288,3 +288,55 @@ def test_intermediate_relation_attested_ssot_signal_is_not_product_auth() -> Non
         manager.get_seed(seed_id), InfluenceAction.ANSWER_MODIFICATION,
         gate_events=manager.gate_events, ledger=[], contradiction_blocking=False,
     ).allowed
+
+
+def test_real_live_prepare_turn_denies_legacy_promoted_seed_before_model_context() -> None:
+    from shadowseed.chat import ShadowChatSession
+
+    session = ShadowChatSession(
+        backend="fixture",
+        embedding_backend="lexical",
+        runtime_mode="live",
+        recurrence_mode="pairwise",
+    )
+    text = "Privacy as a missing decision boundary."
+    seed_id = session.manager.add_or_update_seed(text)
+    session.manager.add_or_update_seed(text)
+    session.manager.add_or_update_seed(text)
+    session.born_turn[seed_id] = -1
+    for index in range(4):
+        session.manager.run_validation_gate(
+            seed_id,
+            external_evidence=True,
+            signals=[
+                ValidationSignal(
+                    kind=SignalKind.SSOT,
+                    direction=SignalDirection.SUPPORT,
+                    source_ref=f"archived_doc_{index}::chunk_001",
+                    verified=True,
+                    strength=0.85,
+                    independent=True,
+                    reason=f"verified SSOT chunk archived_doc_{index}::chunk_001",
+                )
+            ],
+        )
+    assert session.manager.get_seed(seed_id).status is SeedStatus.PROMOTED
+    history_before = [event.to_dict() for event in session.manager.gate_events]
+    seed_before = session.manager.get_seed(seed_id).to_dict()
+
+    prepared = session.prepare_turn(text)
+    assert seed_id in prepared.selected_seed_ids
+    assert prepared.model_context == ""
+    assert prepared.surfaced_seeds == ()
+    assert prepared.surfaced_seed_ids == ()
+    assert any(
+        item["seed_id"] == seed_id
+        and item["allowed"] is False
+        and item["reason"] == "legacy_ssot_requires_review"
+        for item in prepared.influence_decisions
+    )
+    # Denial is recorded before the model ever receives candidate context.
+    assert session.influence_records[-1].reason == "legacy_ssot_requires_review"
+    session.abort_turn(prepared)
+    assert session.manager.get_seed(seed_id).to_dict() == seed_before
+    assert [event.to_dict() for event in session.manager.gate_events] == history_before
