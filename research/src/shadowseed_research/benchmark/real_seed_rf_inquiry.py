@@ -256,6 +256,8 @@ def run(
     birth = None
     previous_checkpoint = None
     frozen_seed = None
+    sham_note = case["sham_note"]
+    sham_origin = "investigator_authored_negative_fallback"
     for i, turn in enumerate(case["turns"]):
         user_input = _user_input(case, turn)
         prompt = _host_prompt(
@@ -312,11 +314,24 @@ def run(
                 if sha256(frozen_seed.encode("utf-8")).hexdigest() != birth["candidate_text_sha256"]:
                     raise RuntimeError("raw-to-seed birth identity invalid")
                 row["birth"] = birth
+                # Prefer an alternative REAL detector output from this exact
+                # first source response for the E candidate ablation. Its
+                # intake rejection remains in the canonical raw trace.
+                alternatives = [
+                    candidate for candidate in observed.get("detected_candidates", [])
+                    if isinstance(candidate, str) and candidate.strip()
+                    and candidate.strip() != frozen_seed.strip()
+                ]
+                if alternatives:
+                    sham_note = alternatives[0]
+                    sham_origin = "different_real_T0_detector_item_not_first_seed"
                 results["first_seed"] = {
                     "id": ids[0], "text": frozen_seed,
                     "birth_snapshot_sha256": birth["snapshot_sha256"],
                     "first_seed_predeclared_selection": "first_accepted_newborn",
                     "weight": 0, "evidence_count": 0,
+                    "sham_source": sham_origin,
+                    "sham_text_sha256": _hash(sham_note),
                 }
             # Ordinary notes are produced from T0 history; no seed text.
             note_prompt = (
@@ -344,7 +359,7 @@ def run(
                     notes = {
                         "A": "NONE", "B": "NONE",
                         "C": results["ordinary_note"], "D": frozen_seed,
-                        "E": case["sham_note"],
+                        "E": sham_note,
                     }
                     inquiry_prompt = _inquiry_prompt(
                         case, ordinary_history + [(user_input, host_answer)],
