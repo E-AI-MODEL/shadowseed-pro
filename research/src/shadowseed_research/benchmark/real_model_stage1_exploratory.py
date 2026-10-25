@@ -33,8 +33,8 @@ from shadowseed_research.benchmark.weightless_longitudinal_handoff import (
 
 MODEL = "gpt-5"
 EMBEDDING_MODEL = "text-embedding-3-small"
-SCHEMA = "shadowseed-real-stage1-exploratory-v1"
-OUTPUT_SCHEMA = "shadowseed-real-stage1-recorded-observations-v1"
+SCHEMA = "shadowseed-real-stage1-exploratory-v2"
+OUTPUT_SCHEMA = "shadowseed-real-stage1-recorded-observations-v2"
 MAX_CASES = 2
 TURNS_PER_CASE = 4
 MAX_MODEL_CALLS = 24
@@ -306,7 +306,20 @@ def run_case(case: dict[str, Any], provider: BoundedProvider) -> dict[str, Any]:
     for t, row in enumerate(case["turns"]):
         question = row["question"]
         incoming = row["new_observation"]
-        current_user = question + ("\nEXTERNE WAARNEMING: " + incoming if incoming else "")
+        # v2 research adapter correction: the host received case.context at T0.
+        # Make that SAME original case description visible to the real current-
+        # pair detector at T0. Later turns continue via the canonical bounded
+        # clean conversation history; do not create a new detector or inject
+        # the retained seed into normal answer generation.
+        if t == 0:
+            current_user = (
+                "BEGIN FICTIEVE ONDERZOEKSSITUATIE\n"
+                + case["context"] + "\nVRAAG: " + question
+            )
+        else:
+            current_user = question + (
+                "\nEXTERNE WAARNEMING: " + incoming if incoming else ""
+            )
         prompt = _host_prompt(case, history, question, incoming)
         if t == 0:
             # Budget-relative ordinary selection sample, BEFORE detector or
@@ -398,6 +411,7 @@ def run(document: dict[str, Any], provider: BoundedProvider) -> dict[str, Any]:
         "q2_later_investigability_proven": False,
         "independent_human_review_completed": False,
         "confirmatory_trial": False,
+        "research_adapter_context_revision": "t0_original_case_visible_to_host_and_current_pair_detector_v2",
         "cases": [],
     }
     for case in cases:
