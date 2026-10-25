@@ -28,10 +28,13 @@ def test_explicitly_opposing_synthetic_statements_receive_same_support_direction
     assert r["status"] == "existing_product_code_characterized_not_repaired"
     assert a["accepted_evidence_count"] == b["accepted_evidence_count"] == 4
     assert all(
-        signal == "support"
+        any(
+            kind == "ssot" and direction == "support"
+            for kind, direction in zip(event["signal_kinds"], event["directions"])
+        )
+        and "recurrence" in event["signal_kinds"]
         for case in (a, b)
         for event in case["gate_decisions"]
-        for signal in event["directions"]
     )
     assert len(a["gate_decisions"]) == len(b["gate_decisions"]) == 4
     assert all(
@@ -69,9 +72,9 @@ def test_unverified_new_model_text_does_not_gain_ssot_authority() -> None:
     assert none["final_seed"]["evidence_count"] == 0
 
 
-def test_result_is_research_only_without_new_signal_policy_or_model_claims(tmp_path: Path) -> None:
+def test_result_is_research_only_without_new_signal_policy_or_model_claims(tmp_path: Path, monkeypatch) -> None:
     output = tmp_path / "g0-ssot-polarity.json"
-    sys.argv = [str(SCRIPT), "--output", str(output)]
+    monkeypatch.setattr(sys, "argv", [str(SCRIPT), "--output", str(output)])
     MODULE.main()
     result = json.loads(output.read_text(encoding="utf-8"))
     assert result["schema"] == "g0-ssot-polarity-mechanical-characterization-v0"
