@@ -55,5 +55,6 @@
   "ssot_evidence_polarity_issue_241_open": true,
   "G0": "NOT_PASSED",
   "automatic_G0_pass_allowed": false,
-  "instructions": "This is public review coordination metadata, not private holdout data or a reviewer decision. Independent human verdicts must be separately authenticated out of band."
+  "instructions": "This is public review coordination metadata, not private holdout data or a reviewer decision. Independent human verdicts must be separately authenticated out of band.",
+  "holdout_creation_protocol_independently_approved": false
 }
