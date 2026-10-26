@@ -1,0 +1,134 @@
+name: Research - One-shot six-case real Shadowseed GPT-5 A/B
+
+# An explicitly exploratory, non-G0-approved research experiment.
+# Runs only on the exact first workflow-creating commit. No automatic rerun.
+on:
+  push:
+    branches:
+      - research/g0-multicase-real-ab-20261026
+    paths:
+      - .github/workflows/g0-multicase-real-ab-one-shot.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: g0-multicase-real-ab-20261026
+  cancel-in-progress: false
+
+jobs:
+  no-network-preflight:
+    if: github.event.before == '00cdd5e5803552e0e38bdeed82cf1d1790ed4e50' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install locked packages and research
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+      - name: Full tests without API access
+        run: |
+          uv run --no-sync python -m pytest -q research/tests
+      - name: Preflight exact six-case no-scripted-winner protocol
+        run: |
+          uv run --no-sync python - <<'PY'
+          import json
+          from pathlib import Path
+          from shadowseed_research.benchmark.g0_multicase_real_ab import (
+              validate_design, CASE_COUNT, ARMS, CALL_CAP, TOKEN_CAP,
+              EXPLORATORY_INSTRUCTIONS,
+          )
+          d=json.loads(Path('research/fixtures/g0_multicase_real_ab_v1.json').read_text(encoding='utf-8'))
+          cs=validate_design(d)
+          assert len(cs)==CASE_COUNT==6 and ARMS==('A','B')
+          assert CALL_CAP==14 and TOKEN_CAP==65000
+          assert "maximaal twee" in EXPLORATORY_INSTRUCTIONS
+          assert d["status"]=="EXPLORATORY_NOT_G0_CONFIRMED"
+          print("PRE-API PASS: 6 cases, 3 turns, real canonical birth, no scripted winner, balanced randomized A/B")
+          PY
+
+  bounded-real-gpt5:
+    needs: no-network-preflight
+    if: github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    environment:
+      name: OpenAI key
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install exactly locked research runtime
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+          mkdir -p research-artifacts/multicase-ab
+      - name: Validate protected credential is present, never print it
+        shell: bash
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::Scoped GitHub Environment OPENAI_KEY unavailable; no paid calls"
+            exit 1
+          fi
+      - name: Execute all six actual-engine T0-T2 trials and randomized A/B inquiry
+        run: |
+          uv run --no-sync python -m shadowseed_research.benchmark.g0_multicase_real_ab \
+            --fixture research/fixtures/g0_multicase_real_ab_v1.json \
+            --output research-artifacts/multicase-ab/observed.json \
+            --blind-output research-artifacts/multicase-ab/blind-review.json \
+            --owner-output research-artifacts/multicase-ab/owner-unblind.json
+      - name: Verify full case census and falsifiability; partial is NOT a completed study
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('research-artifacts/multicase-ab')
+          d=json.loads((root/'observed.json').read_text(encoding='utf-8'))
+          assert d['schema']=='shadowseed-multicase-real-ab-exploratory-v1'
+          assert d['G0']=='NOT_PASSED'
+          assert d['study_counts']['cases_attempted']==6
+          assert d['study_counts']['provider_model_calls']<=84
+          assert d['study_counts']['provider_embedding_calls']<=144
+          assert d['study_counts']['provider_reported_tokens']<=390000
+          assert d['q2_new_later_investigability_proven'] is False
+          assert d['independent_semantic_review_completed'] is False
+          assert d['allocation_frozen_before_first_provider_call'] is True
+          alloc=d['recorded_allocation']
+          assert len(alloc)==6
+          assert sorted(x[0] for x in alloc.values())==['A']*3+['B']*3
+          counts=d['study_counts']
+          assert counts['case_pairs_completed']+counts['no_birth_opportunities']+counts['failed_or_incomplete']==6
+          print(json.dumps({'status':d['status'],'counts':counts,'G0':d['G0']}))
+          assert counts['failed_or_incomplete']==0, 'Partial case(s) remain, no confirmatory or completed AB claim'
+          PY
+      - name: Save owner raw observations including failed turns
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: multicase-real-ab-raw-owner-${{ github.run_id }}
+          path: |
+            research-artifacts/multicase-ab/observed.json
+            research-artifacts/multicase-ab/owner-unblind.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Separately save blinded ratings without owner map
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: multicase-real-ab-blind-${{ github.run_id }}
+          path: research-artifacts/multicase-ab/blind-review.json
+          if-no-files-found: warn
+          retention-days: 30

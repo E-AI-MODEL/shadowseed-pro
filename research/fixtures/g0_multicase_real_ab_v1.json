@@ -1,0 +1,152 @@
+{
+  "schema": "shadowseed-multicase-rf-ab-prospect-v1",
+  "design_date": "2026-10-26",
+  "status": "EXPLORATORY_NOT_G0_CONFIRMED",
+  "model": "gpt-5",
+  "feedback_regime": "RF",
+  "purpose": "Investigate original Q1 unselected possibilities and Q2 dependent later inquiry, not simple memory echo",
+  "unselected_candidate_selection": "first_real_canonical_weightless_T0_birth_no_cherrypicking",
+  "prompt_template": "shared_strong_search_with_same_ordinary_notes_A_NONE_B_REAL_SEED",
+  "case_count": 6,
+  "case_order": [
+    "AB26-C01",
+    "AB26-C02",
+    "AB26-C03",
+    "AB26-C04",
+    "AB26-C05",
+    "AB26-C06"
+  ],
+  "all_cases_public_investigator_authored_not_sealed": true,
+  "cases": [
+    {
+      "id": "AB26-C01",
+      "family": "condition_reframing",
+      "context": "Een fictief laboratorium vergelijkt twee metingen van hetzelfde monster met verschillende instrumenten. De gemiddelde waarden lijken overeen te komen, maar bij afzonderlijke meetseries lopen uitslagen soms uiteen. Er is geen onafhankelijke ijkwaarde. Het meetprotocol noemt geen vaste volgorde van de instrumenten. Het team onderzoekt het verschil zonder te weten waar het vandaan komt.",
+      "turns": [
+        {
+          "question": "Welke verklaringen zijn nu redelijk om open te houden en welke waarnemingen ontbreken?",
+          "new_observation": ""
+        },
+        {
+          "question": "Welke mogelijke onderzoeksvraag is na de nieuwe waarneming zinvol?",
+          "new_observation": "Bij een extra meetserie zijn de grote verschillen minder vaak aanwezig wanneer instrument twee als eerste wordt gebruikt. De omgevingstemperatuur is niet apart geregistreerd."
+        },
+        {
+          "question": "Wat is na deze aanvullende informatie nog onderzoekbaar?",
+          "new_observation": "De bewaarde logbestanden tonen dat de meetserie met een andere bediener is uitgevoerd. Er bestaat nog geen dataset waarin volgorde en bediener afzonderlijk variëren."
+        }
+      ]
+    },
+    {
+      "id": "AB26-C02",
+      "family": "condition_reframing",
+      "context": "Twee historische catalogi van een fictief stadsarchief beschrijven dezelfde verzameling documenten. De catalogi geven een verschillend aantal unieke dossiers en gebruiken niet dezelfde dateringswijze. De originele stukken zijn deels nog niet gedigitaliseerd. De onderzoekers hebben geen geverifieerde koppeling tussen alle beschrijvingen.",
+      "turns": [
+        {
+          "question": "Welke niet-bewezen verklaringen en mogelijke onderscheidingen verdienen voorlopig aandacht?",
+          "new_observation": ""
+        },
+        {
+          "question": "Welke onderzoeksvraag zou na deze extra informatie zelfstandig toetsbaar zijn?",
+          "new_observation": "Een nieuw overzicht toont dat de twee catalogi documenten van twee opslaglocaties in verschillende perioden hebben ingevoerd. Niet duidelijk is of de teldefinities destijds gelijk waren."
+        },
+        {
+          "question": "Welke vervolgvraag verandert mogelijk door de laatste waarneming?",
+          "new_observation": "In steekproeven ontbreken sommige fysieke dossierkaften, terwijl digitale scanreeksen soms meerdere versies van één stuk bevatten. Een volledige koppeling blijft onbekend."
+        }
+      ]
+    },
+    {
+      "id": "AB26-C03",
+      "family": "instrument_affordance",
+      "context": "Een fictieve organisatie onderzoekt vertragingen in de responstijd van een intern testsysteem met een webserver, wachtrij en achtergrondtaken. Alleen samengevoegde minuutgemiddelden zijn beschikbaar; de ruwe timing van afzonderlijke verzoeken ontbreekt. Er is geen bewezen oorzaak en er mogen geen onderdelen direct worden vervangen.",
+      "turns": [
+        {
+          "question": "Welke mogelijke verklaringen zijn nu verdedigbaar zonder één oorzaak te kiezen?",
+          "new_observation": ""
+        },
+        {
+          "question": "Welke nieuwe onderzoeksrichting is na deze waarneming zinvol?",
+          "new_observation": "De hogere gemiddelden vallen vaak in minuten waarin ook een achtergrondtaak draait. De klok van de wachtrij is niet vergeleken met de klok van de webserver."
+        },
+        {
+          "question": "Welke vervolgtest zou nu nieuwe informatie kunnen opleveren?",
+          "new_observation": "De achtergrondtaak blijkt bij twee proefruns evenveel berichten te verwerken, terwijl slechts één run hogere responstijden toont. Het ontbreekt aan verzoekniveaugegevens."
+        }
+      ]
+    },
+    {
+      "id": "AB26-C04",
+      "family": "instrument_affordance",
+      "context": "In een fictief natuurgebied worden nachtelijke geluidsopnamen gemaakt met twee verschillende microfoons. Automatische tellingen van diersoorten lopen soms uiteen, maar er bestaat nog geen handmatig gevalideerde referentieset. De microfoons staan in verschillende kasten en er zijn windgegevens per uur, niet per fragment.",
+      "turns": [
+        {
+          "question": "Welke hypotheses en blinde vlekken moeten onderzoekers openlaten?",
+          "new_observation": ""
+        },
+        {
+          "question": "Welke vraag zou nu onderzocht kunnen worden zonder ontbrekende feiten in te vullen?",
+          "new_observation": "Op windrijke nachten zijn de verschillen tussen de automatische tellingen gemiddeld groter. De opnameapparaten hadden in die periode niet dezelfde microfoonoriëntatie."
+        },
+        {
+          "question": "Welke nieuwe vraag wordt door de aanvullende waarneming denkbaar of juist minder goed toetsbaar?",
+          "new_observation": "Bij drie gecontroleerde fragmenten blijken sommige signalen door de ene classifier verkeerd gelabeld. Van de overige fragmenten zijn geen handmatige labels beschikbaar."
+        }
+      ]
+    },
+    {
+      "id": "AB26-C05",
+      "family": "relational_dependency",
+      "context": "In een fictieve werkplaats worden gereviseerde onderdelen geclassificeerd als geschikt of nader te onderzoeken. Twee teams gebruiken dezelfde checklist, maar hun beslissingen verschillen soms. De checklist is alleen als eindcategorie geregistreerd en het is niet bekend welke aanwijzing voor elke beslissing doorslaggevend was.",
+      "turns": [
+        {
+          "question": "Welke nog onbewezen verklaringen kunnen verschil in de beslissingen begrijpelijk maken?",
+          "new_observation": ""
+        },
+        {
+          "question": "Welke nieuwe toets of onderzoeksvraag is na deze waarneming zinvol?",
+          "new_observation": "Een steekproef toont dat de verschillen zich vaker voordoen bij onderdelen die in de avond zijn beoordeeld. De steekproef bevat weinig metingen van het werkelijke onderdeelgedrag."
+        },
+        {
+          "question": "Hoe verandert een mogelijke onderzoeksvraag bij deze nieuwe informatie?",
+          "new_observation": "Beide teams blijken bij een aantal gedeelde onderdelen dezelfde eindcategorie te kiezen maar verschillende toelichtingen te geven. Er is nog geen onafhankelijke beoordeling van die onderdelen."
+        }
+      ]
+    },
+    {
+      "id": "AB26-C06",
+      "family": "negative_no_opportunity",
+      "context": "Een fictief administratief archief vergelijkt twee automatisch gemaakte exportlijsten van dezelfde afgesloten inventaris. Iedere regel, tijdstempel en som komt overeen in de eerste beschikbare controle. Er is geen concreet verschil gemeld en geen aanwijzing voor een probleem. De onderzoekers moeten ook kunnen besluiten dat verder onderzoek niet zinvol is.",
+      "turns": [
+        {
+          "question": "Welke vraag is hier op basis van de informatie werkelijk onderzoekbaar, of ontbreekt aanleiding voor een nieuwe vraag?",
+          "new_observation": ""
+        },
+        {
+          "question": "Is er na deze controle een zinvolle nieuwe onderzoeksvraag, of juist niet?",
+          "new_observation": "Een tweede vergelijking van de exports meldt opnieuw geen verschillen. De vergelijking controleerde dezelfde velden en gebruikte geen nieuwe gegevensbronnen."
+        },
+        {
+          "question": "Wat kan er met deze gegevens nog verantwoord onderzocht worden, of is NONE passend?",
+          "new_observation": "Een extra geautomatiseerde controle vindt wederom volledige overeenstemming op dezelfde geregistreerde velden. Er zijn geen nieuwe externe waarnemingen."
+        }
+      ]
+    }
+  ],
+  "study_invariants": {
+    "ordinary_host_never_see_weightless_seed": true,
+    "authority_weight_always_zero": true,
+    "auto_gate_change_forbidden": true,
+    "per_case_max_model_calls": 14,
+    "per_case_max_embedding_calls": 24,
+    "per_case_max_tokens": 65000,
+    "one_shot_no_retry": true
+  },
+  "claims_not_supported": [
+    "G0_PASS",
+    "Q1 internal representation",
+    "Q2 actual changed investigability",
+    "independent scientific novelty",
+    "causal seed effect without independent human review"
+  ]
+}
