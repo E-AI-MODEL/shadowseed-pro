@@ -47,8 +47,7 @@ EMBED_CAP = 24
 TOKEN_CAP = 65000
 OUTPUT_CAP = 4096
 ALL_CALL_CAP = CASE_COUNT * CALL_CAP
-AB_ORDERS = (("A", "B"), ("B", "A"), ("B", "A"),
-             ("A", "B"), ("B", "A"), ("A", "B"))
+ALLOCATION_MODE = "balanced_random_allocation_before_first_model_call"
 ALLOWED_FAMILIES = {
     "condition_reframing", "instrument_affordance",
     "relational_dependency", "negative_no_opportunity",
@@ -224,7 +223,10 @@ def _provider_receipts(provider: BoundedProvider) -> dict:
 
 
 def run_case(case: dict, provider: BoundedProvider,
-             *, on_change: Callable[[dict], None] | None = None) -> dict:
+             *, arm_order: tuple[str, str],
+             on_change: Callable[[dict], None] | None = None) -> dict:
+    if sorted(arm_order) != list(ARMS):
+        raise ValueError("each paired case requires a complete A/B allocation")
     if (provider.model_call_cap != CALL_CAP
         or provider.embedding_call_cap != EMBED_CAP
         or provider.all_token_cap != TOKEN_CAP
@@ -249,6 +251,8 @@ def run_case(case: dict, provider: BoundedProvider,
         "birth": None, "turns": [], "ordinary_t0_samples": [],
         "ordinary_note": None, "research_arms": [],
         "ordinary_answer_seed_influence": False,
+        "T1_randomized_first_arm": arm_order[0],
+        "T2_first_arm": arm_order[1],
         "G0": "NOT_PASSED", "provider": {},
     }
 
@@ -392,8 +396,7 @@ def run_case(case: dict, provider: BoundedProvider,
             }
             if frozen_seed in prompts["A"]:
                 raise RuntimeError("exact seed text leaked into ordinary arm")
-            for arm in AB_ORDERS[(int(case["id"][-2:]) - 1)] \
-                    if i == 1 else tuple(reversed(AB_ORDERS[int(case["id"][-2:]) - 1])):
+            for arm in arm_order if i == 1 else tuple(reversed(arm_order)):
                 out = provider.generate(
                     stage=f"inquiry_T{i}_{arm}", case_id=case["id"],
                     prompt=prompts[arm],
@@ -423,8 +426,20 @@ def run_case(case: dict, provider: BoundedProvider,
 
 
 def run_study(d: dict, provider_factory: Callable[[str], BoundedProvider],
-              *, on_change: Callable[[dict], None] | None = None) -> dict:
+              *, on_change: Callable[[dict], None] | None = None,
+              allocation: dict[str, tuple[str, str]] | None = None) -> dict:
     cases = validate_design(d)
+    if allocation is None:
+        first = ["A"] * (CASE_COUNT // 2) + ["B"] * (CASE_COUNT // 2)
+        secrets.SystemRandom().shuffle(first)
+        allocation = {
+            c["id"]: (arm, "B" if arm == "A" else "A")
+            for c, arm in zip(cases, first)
+        }
+    if (set(allocation) != {c["id"] for c in cases}
+        or sorted(x[0] for x in allocation.values()) != ["A"] * 3 + ["B"] * 3
+        or any(sorted(x) != list(ARMS) for x in allocation.values())):
+        raise ValueError("must preallocate randomized balanced A/B before calls")
     result = {
         "schema": OUTPUT_SCHEMA, "status": "running",
         "G0": "NOT_PASSED", "model": MODEL, "feedback_regime": "RF",
@@ -433,6 +448,11 @@ def run_study(d: dict, provider_factory: Callable[[str], BoundedProvider],
         "source_cases_public_not_sealed": True,
         "same_model_and_normal_notes_both_conditions": True,
         "only_seed_slot_differs_between_AB": True,
+        "allocation_mode": ALLOCATION_MODE,
+        "allocation_frozen_before_first_provider_call": True,
+        "recorded_allocation": {
+            cid: list(pair) for cid, pair in allocation.items()
+        },
         "later_questions_are_model_generated": True,
         "no_real_derived_action_feedback": True,
         "q1_internal_activation_not_observed": True,
@@ -456,7 +476,8 @@ def run_study(d: dict, provider_factory: Callable[[str], BoundedProvider],
             case_output.update(snapshot)
             save()
         try:
-            run_case(case, provider, on_change=save_case)
+            run_case(case, provider, arm_order=allocation[case["id"]],
+                     on_change=save_case)
         except Exception as exc:
             # Continue the other predeclared cases but preserve each failed
             # attempted trajectory. No automatic retry, zero as outcome,
