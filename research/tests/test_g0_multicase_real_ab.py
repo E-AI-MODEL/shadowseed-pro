@@ -15,7 +15,7 @@ import numpy as np
 import pytest
 
 from shadowseed_research.benchmark.g0_multicase_real_ab import (
-    AB_ORDERS, ARMS, CALL_CAP, CASE_COUNT, EMBED_CAP, OUTPUT_CAP,
+    ALLOCATION_MODE, ARMS, CALL_CAP, CASE_COUNT, EMBED_CAP, OUTPUT_CAP,
     TOKEN_CAP, _parse_research, research_prompt, run_case, run_study,
     review_packets, validate_design,
 )
@@ -106,16 +106,14 @@ def test_fixture_families_no_preselected_winner_and_original_thesis_preserved():
     cs = validate_design(d)
     assert len(cs) == 6 and cs[-1]["family"] == "negative_no_opportunity"
     assert len({c["family"] for c in cs}) == 4
-    assert len(AB_ORDERS) == len(cs)
-    assert sum(x[0] == "A" for x in AB_ORDERS) == 3
-    assert sum(x[0] == "B" for x in AB_ORDERS) == 3
+    assert ALLOCATION_MODE == "balanced_random_allocation_before_first_model_call"
     assert not any("winner" in c or "expected_seed" in c for c in cs)
 
 
 def test_one_real_engine_three_turns_exact_exposure_and_own_prior_questions():
     c = validate_design(fixture())[0]
     p = FakeProvider(c["id"])
-    result = run_case(c, p)
+    result = run_case(c, p, arm_order=("A", "B"))
     assert result["status"] == "completed_exploratory_pair"
     assert result["first_seed"]["weight"] == 0
     assert result["first_seed"]["birth_turn"] == 0
@@ -151,7 +149,7 @@ def test_one_real_engine_three_turns_exact_exposure_and_own_prior_questions():
 def test_negative_no_opportunity_does_not_get_a_fake_seed_or_AB_pair():
     c = validate_design(fixture())[-1]
     p = FakeProvider(c["id"], no_birth=True)
-    d = run_case(c, p)
+    d = run_case(c, p, arm_order=("B", "A"))
     assert d["status"] == "completed_no_T0_seed_no_AB_opportunity"
     assert d["first_seed"] is None
     assert not any(t["research_arms"] for t in d["turns"])
@@ -174,6 +172,10 @@ def test_every_predeclared_case_attempted_even_when_one_fails():
     assert result["study_counts"]["no_birth_opportunities"] == 1
     assert result["study_counts"]["failed_or_incomplete"] == 1
     assert result["status"] == "completed_exploratory_with_gaps"
+    assert result["allocation_frozen_before_first_provider_call"] is True
+    assert sorted(pair[0] for pair in result["recorded_allocation"].values()) == (
+        ["A"] * 3 + ["B"] * 3
+    )
     failed = result["cases"][1]
     assert failed["status"] == "failed_incomplete_not_zero_effect"
     assert failed["not_an_independent_negative_finding"] is True
