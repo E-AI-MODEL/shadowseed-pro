@@ -10,7 +10,15 @@ import pytest
 
 from test_g0_multicase_real_ab import FakeProvider, fixture
 from shadowseed_research.benchmark.g0_multicase_real_ab import run_study
-from shadowseed_research.benchmark.g0_multicase_ab_integrity import audit
+import importlib.util
+from pathlib import Path
+
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "g0_multicase_ab_integrity.py"
+SPEC = importlib.util.spec_from_file_location("g0_multicase_ab_integrity_check", SCRIPT)
+assert SPEC and SPEC.loader
+AUDIT_MODULE = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(AUDIT_MODULE)
+audit = AUDIT_MODULE.audit
 
 
 def _fake_study(with_failure: bool = False):
