@@ -1,0 +1,55 @@
+name: Research - multi-case A/B preflight (NO MODEL CALLS)
+
+# One-off offline check. This workflow has no secrets and cannot spend tokens.
+on:
+  push:
+    branches:
+      - research/g0-multicase-real-ab-20261026
+    paths:
+      - .github/workflows/g0-multicase-real-ab-offline.yml
+
+permissions:
+  contents: read
+
+jobs:
+  no-network-preflight:
+    if: github.event.before == '8d654640c17d2274d6445b7a681e51c96bc57485' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout isolated research branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Pinned uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install locked test and research dependencies
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+      - name: Test real Engine, first birth, T1/T2, fair A/B allocation and no-birth paths
+        run: |
+          uv run --no-sync python -m pytest -q research/tests/test_g0_multicase_real_ab.py -x
+      - name: Full existing research regression suite
+        run: |
+          uv run --no-sync python -m pytest -q research/tests
+      - name: Confirm frozen cases have no prescribed winner or simulated real outcome
+        run: |
+          uv run --no-sync python - <<'PY'
+          import json
+          from pathlib import Path
+          from shadowseed_research.benchmark.g0_multicase_real_ab import (
+              validate_design, CASE_COUNT, ARMS, CALL_CAP, TOKEN_CAP,
+          )
+          d=json.loads(Path('research/fixtures/g0_multicase_real_ab_v1.json').read_text(encoding='utf-8'))
+          cases=validate_design(d)
+          assert len(cases)==CASE_COUNT==6 and ARMS==('A','B')
+          assert CALL_CAP==14 and TOKEN_CAP==65000
+          assert len({c['family'] for c in cases})>=4
+          assert cases[-1]['family']=='negative_no_opportunity'
+          print('Offline method checks PASS; no OpenAI API key accessed, no model calls')
+          PY
