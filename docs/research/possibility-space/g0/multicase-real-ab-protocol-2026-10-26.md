@@ -18,7 +18,7 @@ De nieuwe proef verbetert de doelvariabele. Een model mag **nul, één of maxima
 
 Voor **iedere** casus: twee gewone T0-antwoordvarianten (Q1 geobserveerde selectie, niet interne afwezigheid), nog een gewone hostreactie, dezelfde bestaande `OpenAIDetectorBackend(current_pair)`, canonieke intake, eerste *werkelijk geaccepteerde* gewichtloze geboorte op T0 en daarna echte `ShadowseedEngine.prepare_turn → host → observe_turn`-beurten op T1 en T2. Op elk latere turn wordt de originele seed met de bestaande `freeze_weightless_followup` gecontroleerd. **Geen onderzoeker-verzonnen seed**, geen herstel van mislukte geboorte, geen bypass van de Gate, geen bewijs/weight/authority, geen seed in gewone antwoorden.
 
-De zes casussen in [de vastgelegde fixture](../../../research/fixtures/g0_multicase_real_ab_v1.json) bestrijken twee voorbeelden van conditionele herinterpretatie, twee voorbeelden van andere meet-/waarnemingsmogelijkheden, één relationele afhankelijkheid en één expliciete negatieve situatie zonder duidelijke nieuwe aanleiding. Dat zijn door onderzoekers geschreven **RF-waarnemingen**. Geen van de casussen bevat een doelvraag, winnende arm, voorgeschreven seedgeboorte of uitgevoerde latere test.
+De zes casussen in [de vastgelegde fixture](../../../../research/fixtures/g0_multicase_real_ab_v1.json) bestrijken twee voorbeelden van conditionele herinterpretatie, twee voorbeelden van andere meet-/waarnemingsmogelijkheden, één relationele afhankelijkheid en één expliciete negatieve situatie zonder duidelijke nieuwe aanleiding. Dat zijn door onderzoekers geschreven **RF-waarnemingen**. Geen van de casussen bevat een doelvraag, winnende arm, voorgeschreven seedgeboorte of uitgevoerde latere test.
 
 ### De A/B-behandeling
 
