@@ -1,0 +1,62 @@
+name: Research - G0 next inquiry readiness (offline, no model calls)
+
+# Readiness only. No OpenAI Environment, no secrets, no paid runs.
+# It does not trigger the historical v1 one-shot research workflow.
+on:
+  push:
+    branches:
+      - research/g0-method-readiness-20261027
+    paths:
+      - .github/workflows/g0-next-inquiry-readiness-offline.yml
+  pull_request:
+    paths:
+      - research/src/shadowseed_research/benchmark/g0_next_inquiry_readiness.py
+      - research/tests/test_g0_next_inquiry_readiness.py
+      - research/src/shadowseed_research/benchmark/g0_next_seed_hidden_review.py
+      - research/tests/test_g0_next_seed_hidden_review.py
+      - .github/workflows/g0-next-inquiry-readiness-offline.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: g0-next-readiness-20261027
+  cancel-in-progress: true
+
+jobs:
+  next-study-offline-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact research branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Pinned uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install locked product tests and local research sidecar
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+      - name: New prompt contract, untouched v1 and integrity audit regressions
+        run: |
+          uv run --no-sync python -m pytest -q \
+            research/tests/test_g0_next_inquiry_readiness.py \
+            research/tests/test_g0_next_seed_hidden_review.py \
+            research/tests/test_g0_multicase_real_ab.py \
+            research/tests/test_g0_multicase_ab_integrity.py
+      - name: Verify no paid credentials are needed
+        run: |
+          uv run --no-sync python - <<'PY'
+          from shadowseed_research.benchmark.g0_next_inquiry_readiness import (
+              MAX_CHARS, check_output_contract
+          )
+          from shadowseed_research.benchmark.real_model_stage1_exploratory import MAX_PROMPT_CHARS
+          assert MAX_CHARS == MAX_PROMPT_CHARS == 12500
+          check_output_contract()
+          print("OFFLINE PASS: product gate and prior v1 outputs unchanged; G0 NOT PASSED")
+          PY
