@@ -7,7 +7,6 @@ reviewers have independently committed their first-phase assessments.
 """
 from __future__ import annotations
 
-from copy import deepcopy
 import secrets
 from typing import Any, Callable
 
@@ -27,7 +26,6 @@ _REVIEW_FIELDS = (
     "different_inquiry_family",
     "independently_testable_action",
     "T2_depends_on_T1_inquiry",
-    "actually_executed_external_result",
     "inconclusive_or_not_scorable",
     "reason",
 )
@@ -139,7 +137,9 @@ def create_seed_hidden_review(
         # context as a literal text. If it does, keep the case in the owner
         # census but do NOT pretend it can be blind-scored.
         common = {
-            "initial_context": case.get("source_context", None),
+            # Exact stored T0 ordinary input contains the original case
+            # context. No unreliable reconstruction or investigator summary.
+            "canonical_T0_user_input_verbatim": turns[0].get("user_input"),
             "chronological_ordinary_dialogue": [{
                 "turn": t["turn"],
                 "question": t["question"],
@@ -147,10 +147,12 @@ def create_seed_hidden_review(
                 "ordinary_host_answer": t["host_answer"],
             } for t in turns],
         }
-        # The v1 result does not include source_context as its own field.
-        # The canonical user's T0 question includes it; reconstructing it
-        # from raw strings is forbidden here. Caller may supply a verifiable
-        # source_context in future study snapshots.
+        # The original context is preserved inside the recorded T0 input.
+        # Reject missing context rather than asking reviewers to judge an
+        # unintelligible fragment. Literal baseline contamination means that
+        # this episode cannot be presented as seed-hidden phase-one scoring.
+        if not isinstance(common["canonical_T0_user_input_verbatim"], str):
+            raise ValueError("recorded ordinary T0 context missing")
         common_text = str(common)
         if seed["text"] in common_text:
             census_row["first_phase_exclusion_reason"] = (
@@ -166,6 +168,7 @@ def create_seed_hidden_review(
                 "two_turn_chain": [{
                     "turn": t["turn"],
                     "model_output_unedited": t["research_arms"][arm]["text"],
+                    "external_research_action_executed": False,
                     "reviewer_1": _empty_review(),
                     "reviewer_2": _empty_review(),
                 } for t in turns[1:]],
