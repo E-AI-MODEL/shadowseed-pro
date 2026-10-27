@@ -48,7 +48,8 @@ jobs:
             research/tests/test_g0_multicase_ab_integrity.py \
             research/tests/test_g0_next_inquiry_readiness.py \
             research/tests/test_g0_next_seed_hidden_review.py \
-            research/tests/test_g0_late_birth_real_rf.py             research/tests/test_g0_late_birth_blind_review.py
+            research/tests/test_g0_late_birth_real_rf.py \
+            research/tests/test_g0_late_birth_blind_review.py
       - name: Validate no scripted expected seeds or future observations
         run: |
           uv run --no-sync python - <<'PY'
