@@ -49,6 +49,6 @@ For a new test, first predeclare an ordinary same-model baseline (multiple sampl
 
 - [Research branch and pull-request map](research-branch-map-2026-10-27.md), including outstanding stacked experiments.
 - [Foundational thesis](../possibility-space-thesis.md) and [first-principles review](first-principles-reorientation-2026-10-25.md).
-- [Research status](../status.md) and [product-vs-research distinction](../README.md).
+- [Research status](../status.md) and [product-vs-research distinction](../../../README.md).
 - [Canonical baseline/review fixtures](../../../benchmarks/README.md).
 - Source TARs, Git bundles, original Actions ZIPs and the private archive inventory are held outside the public repository. Do not infer their contents from a workflow's success badge.
