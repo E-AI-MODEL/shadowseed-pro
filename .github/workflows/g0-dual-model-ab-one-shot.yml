@@ -1,0 +1,142 @@
+name: Research - one-shot real GPT-5 vs GPT-6 Luna A/B
+
+# Explicit one-shot exploratory research: G0 remains NOT PASSED.
+# Only workflow-creation push from the exact fully tested source commit.
+# Branch updates, manual reruns and PR updates must not spend money.
+on:
+  push:
+    branches:
+      - research/g0-dual-model-gpt5-luna-ab-20261027
+    paths:
+      - .github/workflows/g0-dual-model-ab-one-shot.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: g0-dual-model-gpt5-luna-one-shot-20261027
+  cancel-in-progress: false
+
+jobs:
+  no-network-preflight:
+    if: ${{ github.event.before == 'd9bb488f8d83febb473c647096b6b7f7ffce3025' && github.run_attempt == 1 }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact research source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Pinned uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install locked dependencies, no credentials
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+      - name: No-network factor, provenance, late birth and legacy regression
+        run: |
+          uv run --no-sync python -m pytest -q \
+            research/tests/test_g0_dual_model_ab.py \
+            research/tests/test_g0_birth_cohort_v2.py \
+            research/tests/test_g0_next_inquiry_readiness.py \
+            research/tests/test_g0_next_seed_hidden_review.py \
+            research/tests/test_g0_multicase_real_ab.py \
+            research/tests/test_g0_multicase_ab_integrity.py
+      - name: Check exact frozen case list and provider budgets
+        run: |
+          uv run --no-sync python - <<'PY'
+          import json
+          from pathlib import Path
+          from shadowseed_research.benchmark.g0_dual_model_ab import (
+              validate_trial, MODEL_IDS, MODEL_CALL_CAP,
+              EMBEDDING_CAP, TOKEN_CAP, CASE_COUNT
+          )
+          doc=json.loads(Path('research/fixtures/g0_gpt5_luna_dual_model_v1.json').read_text(encoding='utf-8'))
+          assert len(validate_trial(doc))==CASE_COUNT==6
+          assert MODEL_IDS==('gpt-5-2025-08-07', 'gpt-6-luna')
+          assert (MODEL_CALL_CAP,EMBEDDING_CAP,TOKEN_CAP)==(16,24,65000)
+          assert doc['independent_evaluation_completed'] is False
+          print('PRE-API PASS: 6 new cases, 2 real model-specific pipelines, strict one-shot caps')
+          PY
+
+  bounded-real-model-study:
+    needs: no-network-preflight
+    if: ${{ github.run_attempt == 1 }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 115
+    environment:
+      name: OpenAI key
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Pinned uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install exactly locked dependencies
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+          mkdir -p research-artifacts/g0-dual-model
+      - name: Verify protected secret exists without printing
+        shell: bash
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::OpenAI key environment has no OPENAI_KEY; no paid calls"
+            exit 1
+          fi
+      - name: Run all 12 actual model-case trajectories with true longitudinal seeds
+        run: |
+          uv run --no-sync python -m shadowseed_research.benchmark.g0_dual_model_ab \
+            --fixture research/fixtures/g0_gpt5_luna_dual_model_v1.json \
+            --output research-artifacts/g0-dual-model/observed.json \
+            --blind-output research-artifacts/g0-dual-model/blind-review.json \
+            --owner-output research-artifacts/g0-dual-model/owner-unblind.json
+      - name: Confirm every source case retained and hard caps honored
+        run: |
+          uv run --no-sync python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('research-artifacts/g0-dual-model/observed.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          assert d['schema']=='shadowseed-g0-dual-model-gpt5-luna-observed-v1'
+          assert d['G0']=='NOT_PASSED'
+          assert not d['q2_new_later_investigability_proven']
+          assert not d['independent_human_review_completed']
+          assert len(d['cases'])==12 and d['counts']['all_model_case_trajectories_attempted']==12
+          counts=d['counts']
+          assert counts['provider_model_calls_attempted']<=192
+          assert counts['provider_embedding_calls_attempted']<=288
+          assert counts['provider_reported_tokens']<=780000
+          print(json.dumps({'G0':d['G0'],'counts':counts},ensure_ascii=False))
+          # A partial trial is useful evidence but NOT a completed, valid A/B.
+          assert counts['status_counts']['failed_partial_not_zero']==0, 'Incomplete cases remain; no completed AB study claim'
+          PY
+      - name: Preserve immutable source raw owner observations including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: g0-dual-model-raw-owner-${{ github.run_id }}
+          path: |
+            research-artifacts/g0-dual-model/observed.json
+            research-artifacts/g0-dual-model/owner-unblind.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Separately preserve only seed/model/arm-blind reviewer packets
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: g0-dual-model-blind-review-${{ github.run_id }}
+          path: research-artifacts/g0-dual-model/blind-review.json
+          if-no-files-found: warn
+          retention-days: 30

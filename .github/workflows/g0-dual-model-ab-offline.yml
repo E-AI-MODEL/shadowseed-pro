@@ -1,0 +1,67 @@
+name: Research - GPT-5 vs GPT-6 Luna factorial A/B offline preflight
+
+# NO secrets, NO paid models. Mandatory before any live one-shot.
+on:
+  push:
+    branches:
+      - research/g0-dual-model-gpt5-luna-ab-20261027
+    paths:
+      - .github/workflows/g0-dual-model-ab-offline.yml
+  pull_request:
+    paths:
+      - research/src/shadowseed_research/benchmark/g0_dual_model_ab.py
+      - research/tests/test_g0_dual_model_ab.py
+      - research/fixtures/g0_gpt5_luna_dual_model_v1.json
+      - .github/workflows/g0-dual-model-ab-offline.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: g0-dual-model-offline-20261027
+  cancel-in-progress: true
+
+jobs:
+  no-network-real-engine-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact research branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Pinned uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Locked dependencies, test only
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+      - name: New real-Engine fake-provider and all G0 precursor tests
+        run: |
+          uv run --no-sync python -m pytest -q \
+            research/tests/test_g0_dual_model_ab.py \
+            research/tests/test_g0_birth_cohort_v2.py \
+            research/tests/test_g0_next_inquiry_readiness.py \
+            research/tests/test_g0_next_seed_hidden_review.py \
+            research/tests/test_g0_multicase_real_ab.py \
+            research/tests/test_g0_multicase_ab_integrity.py
+      - name: Recheck frozen model IDs, caps and real unknown-outcome semantics
+        run: |
+          uv run --no-sync python - <<'PY'
+          import json
+          from pathlib import Path
+          from shadowseed_research.benchmark.g0_dual_model_ab import (
+              validate_trial, MODEL_IDS, MODEL_CALL_CAP, TOKEN_CAP,
+          )
+          d=json.loads(Path('research/fixtures/g0_gpt5_luna_dual_model_v1.json').read_text(encoding='utf-8'))
+          cases=validate_trial(d)
+          assert len(cases)==6
+          assert MODEL_IDS==('gpt-5-2025-08-07','gpt-6-luna')
+          assert MODEL_CALL_CAP==16 and TOKEN_CAP==65000
+          assert d['status']=='EXPLORATORY_NOT_G0_CONFIRMED'
+          print('OFFLINE PASS: prospective dual model A/B, G0 NOT PASSED, no credentials')
+          PY
