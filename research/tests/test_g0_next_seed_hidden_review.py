@@ -59,11 +59,12 @@ def test_seed_hidden_first_phase_retains_longitudinal_questions_and_census():
         assert seed not in blind_text
     for name in (
         "first_seed_text_owner_only", "source_t0_first_seed",
-        "ordinary_note", "real_arm", "research_seed_exposure",
+        "real_arm", "research_seed_exposure",
         "parser_status", "owner_track_mapping",
     ):
         assert name not in blind_text
     for group in blind["phase1_groups"]:
+        assert "ordinary_note" not in group["common_case_without_seed_or_ordinary_note"]
         assert "BEGIN FICTIEVE ONDERZOEKSSITUATIE" in group[
             "common_case_without_seed_or_ordinary_note"
         ]["canonical_T0_user_input_verbatim"]
