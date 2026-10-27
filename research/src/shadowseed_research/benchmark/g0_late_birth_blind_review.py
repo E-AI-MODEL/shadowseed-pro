@@ -7,7 +7,6 @@ Original public case content cannot be retroactively made independent.
 """
 from __future__ import annotations
 
-from copy import deepcopy
 import secrets
 from typing import Any, Callable
 
@@ -23,7 +22,7 @@ def _review_blank() -> dict[str, Any]:
     return {
         "different_inquiry_family": None,
         "independent_test_described": None,
-        "T2_question_depends_on_T1": None,
+        "second_inquiry_depends_on_first": None,
         "repetition_without_new_test": None,
         "not_judgeable": None,
         "concrete_evidence_for_decision": None,
@@ -113,7 +112,6 @@ def create_blinded_triplets(
             "ordinary_dialogue_unaltered": [{
                 "turn": t["turn"],
                 "user_input": t.get("user_input"),
-                "external_observation": t["canonical_report"]["question"],
                 "ordinary_host_answer": t.get("host_answer"),
             } for t in turns[:inquiry_indices[-1] + 1]],
             "inquiry_turn_indices": list(inquiry_indices),
@@ -144,7 +142,7 @@ def create_blinded_triplets(
                     "reviewer_1": _review_blank(),
                     "reviewer_2": _review_blank(),
                 })
-            tracks.append({"anonymous_track": track_id, "own_T1_T2_chain": own})
+            tracks.append({"anonymous_track": track_id, "two_post_birth_inquiry_turns": own})
             mapping[track_id] = {
                 "case_id_owner_only": cid, "group_id": group_id,
                 "arm_owner_only": arm, "seed_text_owner_only": first_seed,
