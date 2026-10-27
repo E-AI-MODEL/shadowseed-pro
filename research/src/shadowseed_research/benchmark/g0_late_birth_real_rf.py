@@ -473,10 +473,17 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--fixture", type=Path, required=True)
     ap.add_argument("--output", type=Path, required=True)
+    ap.add_argument("--blind-output", type=Path, required=True)
+    ap.add_argument("--owner-output", type=Path, required=True)
     args = ap.parse_args()
+    if len({str(x.resolve()) for x in (
+        args.output, args.blind_output, args.owner_output,
+    )}) != 3:
+        raise ValueError("raw observations, blind scores and owner key must be separate")
     d = json.loads(args.fixture.read_text(encoding="utf-8"))
     validate_design(d)
-    args.output.parent.mkdir(parents=True, exist_ok=True)
+    for p in (args.output, args.blind_output, args.owner_output):
+        p.parent.mkdir(parents=True, exist_ok=True)
     def persist(snapshot: dict) -> None:
         args.output.write_text(
             json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n",
@@ -489,9 +496,26 @@ def main() -> None:
             all_token_cap=TOKEN_CAP, output_token_cap=OUTPUT_CAP,
         )
     result = run_study(d, provider_factory, on_change=persist)
+    # Separate the treatment map from the human phase-one packet.
+    # Local import avoids an unnecessary module cycle.
+    from shadowseed_research.benchmark.g0_late_birth_blind_review import (
+        create_blinded_triplets,
+    )
+    blind, owner = create_blinded_triplets(result)
+    args.blind_output.write_text(
+        json.dumps(blind, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    args.owner_output.write_text(
+        json.dumps(owner, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    args.owner_output.chmod(0o600)
     print(json.dumps({
         "G0": "NOT_PASSED", "status": result["status"],
         "counts": result["counts"], "independent_review": False,
+        "phase1_anonymous_groups": blind["phase1_reviewable_groups"],
+        "raw_and_owner_map_kept_separate": True,
     }), flush=True)
 
 
