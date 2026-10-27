@@ -1,0 +1,36 @@
+name: Research - late birth cohort offline checks
+on:
+  push:
+    branches:
+      - research/g0-late-birth-two-followups-20261027
+    paths:
+      - .github/workflows/g0-late-birth-offline.yml
+  pull_request:
+    paths:
+      - research/src/shadowseed_research/benchmark/g0_birth_cohort_v2.py
+      - research/tests/test_g0_birth_cohort_v2.py
+      - research/src/shadowseed_research/benchmark/g0_next_inquiry_readiness.py
+      - .github/workflows/g0-late-birth-offline.yml
+permissions:
+  contents: read
+concurrency:
+  group: g0-late-birth-offline
+  cancel-in-progress: true
+jobs:
+  offline-method:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+      - run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+      - run: |
+          uv run --no-sync python -m pytest -q             research/tests/test_g0_birth_cohort_v2.py             research/tests/test_g0_next_inquiry_readiness.py             research/tests/test_g0_next_seed_hidden_review.py             research/tests/test_g0_multicase_real_ab.py             research/tests/test_g0_multicase_ab_integrity.py
+      - run: echo "G0 NOT PASSED; no paid calls, no independent effect claim"

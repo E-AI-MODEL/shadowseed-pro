@@ -1,0 +1,221 @@
+{
+  "schema": "shadowseed-g0-prospective-birth-rf-v2",
+  "design_date": "2026-10-27",
+  "status": "EXPLORATORY_NOT_G0_APPROVED",
+  "model": "gpt-5",
+  "feedback_regime": "RF",
+  "outcome": "NOT_RUN",
+  "description": "Public researcher-written fictional five-turn open calibration for real T0 vs later T1/T2 birth. No pre-specified seed or winner; never count model output as executed external action.",
+  "case_count": 6,
+  "case_order": [
+    "LB27-C01",
+    "LB27-C02",
+    "LB27-C03",
+    "LB27-C04",
+    "LB27-C05",
+    "LB27-C06"
+  ],
+  "predeclared_cohorts": {
+    "T0_ONLY": 2,
+    "T1_T2_ONLY": 4
+  },
+  "treatment_arms": [
+    "A_NONE",
+    "B_REAL_SEED",
+    "C_NEUTRAL_CHAR_MATCHED_PLACEBO"
+  ],
+  "status_policy": {
+    "select_earliest_eligible_real_birth": true,
+    "two_inquiry_turns_after_birth": true,
+    "record_noneligible_and_too_late_births": true,
+    "no_seed_and_failed_paths_keep_original_denominator": true,
+    "no_semantic_or_causal_effect_without_independent_review": true
+  },
+  "limits": {
+    "max_model_calls_per_case": 19,
+    "max_embeddings_per_case": 48,
+    "max_provider_tokens_per_case": 65000,
+    "max_prompt_chars": 12500,
+    "max_output_tokens": 4096,
+    "no_retry": true
+  },
+  "cases": [
+    {
+      "id": "LB27-C01",
+      "family": "instrument_affordance",
+      "selection_window": "T0_ONLY",
+      "context": "In een fictieve kustproef vergelijken twee onderzoekers meetreeksen van bodemvocht met sensoren die op verschillende dieptes staan. Gemiddelden lijken overeen te komen, maar korte pieken zijn onregelmatig. Kalibratiedata zijn slechts gedeeltelijk bewaard. Er bestaat geen onafhankelijk vastgestelde oorzaak voor de afwijkingen.",
+      "turns": [
+        {
+          "question": "Welke mogelijke verklaring verdient aandacht zonder de ontbrekende metingen zelf aan te vullen?",
+          "new_observation": ""
+        },
+        {
+          "question": "Welke volgende onderzoeksvraag is na deze nieuwe informatie controleerbaar?",
+          "new_observation": "Een extra logboek vermeldt dat sommige sensoren niet op hetzelfde tijdstip zijn opgestart. Het is nog onbekend welke individuele pieken daarbij horen."
+        },
+        {
+          "question": "Welke verschillende test zou nu zinvol kunnen worden?",
+          "new_observation": "Een onafhankelijke tijdstempelcontrole toont een verschuiving tussen twee meetklokken, maar laat de fysieke sensorrespons ongemeten."
+        },
+        {
+          "question": "Welke vraag blijft na deze waarneming open voor vervolgonderzoek?",
+          "new_observation": "Bij een kort proefmoment zijn drie sensoren uitgelezen, maar er zijn geen gelijktijdige referentiemetingen van de bodem gedaan."
+        },
+        {
+          "question": "Welke nieuwe relatie of beperking valt nu te onderzoeken?",
+          "new_observation": "Een latere controle vindt verschillen tussen sensorbehuizingen. De onderzochte sensoren hebben niet allemaal dezelfde montagegeschiedenis."
+        }
+      ]
+    },
+    {
+      "id": "LB27-C02",
+      "family": "condition_reframing",
+      "selection_window": "T0_ONLY",
+      "context": "Twee fictieve onderzoeksbibliotheken tellen dezelfde collectie kaarten en vinden verschillende totalen. Sommige kaarten hebben losse bijlagen en andere meerdere drukversies. Geen van beide organisaties heeft de tellingen onafhankelijk gereconcilieerd. Historische beschrijvingen zijn niet systematisch op elkaar afgestemd.",
+      "turns": [
+        {
+          "question": "Wat zouden onderzoekers nog kunnen onderzoeken zonder de verschillen vooraf te verklaren?",
+          "new_observation": ""
+        },
+        {
+          "question": "Welke vervolgrelatie wordt met deze informatie misschien toetsbaar?",
+          "new_observation": "Een inventaris noemt bij enkele kaartseries twee uitgaven met dezelfde cataloguscode. Voor het grootste deel is de uitgavestatus onbekend."
+        },
+        {
+          "question": "Welke aanvullende toets zou onderscheid maken tussen mogelijke verklaringen?",
+          "new_observation": "Een steekproef toont dat het ene archief sommige bijlagen als afzonderlijk item telt. Van de andere kaartseries ontbreken steekproeven."
+        },
+        {
+          "question": "Welke onzekerheid kan na deze nieuwe waarneming nader onderzocht worden?",
+          "new_observation": "Een export uit het oudste systeem bevat ontbrekende verwijzingen voor een kleine groep beschadigde kaarten."
+        },
+        {
+          "question": "Welke volgende vraag heeft nu een waarneembare uitkomst nodig?",
+          "new_observation": "Een handmatige steekproef vindt meerdere oudere namen voor één kaartserie, maar er is nog geen onafhankelijke lijst van alle naamswijzigingen."
+        }
+      ]
+    },
+    {
+      "id": "LB27-C03",
+      "family": "instrument_affordance",
+      "selection_window": "T1_T2_ONLY",
+      "context": "Een fictief onderzoeksteam probeert soorten te herkennen aan korte trillingssignalen in een gesloten gebouw. De ruwe opnamen hebben alleen globale tijdlabels en er is geen handmatig gevalideerde referentieset. Het team wil geen verband tussen signaal en soort aannemen voordat het afzonderlijk is getoetst.",
+      "turns": [
+        {
+          "question": "Welke verklaringen blijven open op basis van de eerste waarnemingen?",
+          "new_observation": ""
+        },
+        {
+          "question": "Welke onderzoeksvraag is nu redelijk op basis van deze eerste aanvulling?",
+          "new_observation": "Een verzameling opnamen bevat onverwachte perioden zonder signaal. Niet bekend is of de opnemer in die perioden actief was."
+        },
+        {
+          "question": "Welke toets wordt na een tweede externe waarneming interessant?",
+          "new_observation": "Een tweede microfoon had tijdens een van de stille perioden wel activiteit, maar beide opnameapparaten hebben geen gezamenlijke klokcontrole."
+        },
+        {
+          "question": "Welke vervolgvraag is met de huidige middelen zelfstandig toetsbaar?",
+          "new_observation": "Bij nieuwe metingen is de aan/uitstatus van één apparaat geregistreerd, maar die van het andere apparaat nog niet."
+        },
+        {
+          "question": "Welke relatie kan met een volgende test worden onderscheiden?",
+          "new_observation": "De apparatuur heeft nu twee gescheiden testopnames geleverd; de grondwaarheid van de signaalbron ontbreekt nog."
+        }
+      ]
+    },
+    {
+      "id": "LB27-C04",
+      "family": "relational_dependency",
+      "selection_window": "T1_T2_ONLY",
+      "context": "In een fictieve assemblagehal geven twee controleteams bij dezelfde producten soms verschillende eindoordelen. De productiegegevens bevatten alleen eindcodes, geen onderliggende stappen. Beide teams gebruiken een beschrijving van dezelfde procedure, maar de feitelijke controlehandelingen zijn niet apart geregistreerd.",
+      "turns": [
+        {
+          "question": "Wat kan voorzichtig worden gezegd over mogelijke verklaringen?",
+          "new_observation": ""
+        },
+        {
+          "question": "Welke vervolgvraag is na deze aanvullende observatie te onderzoeken?",
+          "new_observation": "Een nieuwe steekproef vindt dat verschillen vaker voorkomen bij producten die twee werkstations hebben doorlopen. Volgorde en teamindeling zijn nog niet apart gemeten."
+        },
+        {
+          "question": "Welke test kan nu onderscheid maken zonder een oorzaak te verzinnen?",
+          "new_observation": "Het onderhoudslogboek toont dat één werkstation in een deel van de steekproef is hersteld, maar de exacte herstelmomenten ontbreken."
+        },
+        {
+          "question": "Welke nieuwe afhankelijkheid is na deze informatie nog toetsbaar?",
+          "new_observation": "Een apart productregister vermeldt dezelfde seriecode voor meerdere productiepartijen. Niet alle partijen zijn volledig traceerbaar."
+        },
+        {
+          "question": "Welke vraag vergt nu een nieuwe waarneming in plaats van een aanname?",
+          "new_observation": "Een proefinspectie vindt overeenkomende eindoordelen met verschillende motiveringen. Er is geen onafhankelijk gemeten kwaliteitsoordeel."
+        }
+      ]
+    },
+    {
+      "id": "LB27-C05",
+      "family": "condition_reframing",
+      "selection_window": "T1_T2_ONLY",
+      "context": "In een fictief simulatieproject schatten drie teams de doorlooptijd van een wachtrij met dezelfde set invoerbestanden. Een team gebruikt perioden van een uur en de anderen kwartieren. Hun gemiddelde uitkomsten lijken op elkaar, maar piekgedrag verschilt. De ruwe gebeurtenissen zijn niet overal beschikbaar.",
+      "turns": [
+        {
+          "question": "Welke onderzoekslijnen zijn mogelijk zonder te veel zekerheid te suggereren?",
+          "new_observation": ""
+        },
+        {
+          "question": "Welke relatie wordt na deze nieuwe observatie misschien toetsbaar?",
+          "new_observation": "Twee teams blijken verschillende regels te gebruiken om geannuleerde verzoeken te tellen. Hoe vaak dat gebeurt is nog onbekend."
+        },
+        {
+          "question": "Welke toets zou na de aanvullende gegevens inzicht kunnen geven?",
+          "new_observation": "Een beperkte eventexport bevat wachttijden per verzoek, maar geen duidelijke koppeling met de annuleringscodes."
+        },
+        {
+          "question": "Welke vervolgvraag kan met nog een meting worden onderscheiden?",
+          "new_observation": "De teams hebben nu dezelfde aggregatievensters gebruikt en zien kleinere verschillen, maar niet alle oorspronkelijke gebeurtenissen zijn herleidbaar."
+        },
+        {
+          "question": "Welke relatie blijft voor een zelfstandige toets over?",
+          "new_observation": "Een tweede export toont dat sommige verzoeken na middernacht opnieuw een volgnummer krijgen. Het effect op daggemiddelden is niet berekend."
+        }
+      ]
+    },
+    {
+      "id": "LB27-C06",
+      "family": "negative_no_opportunity",
+      "selection_window": "T1_T2_ONLY",
+      "context": "Een fictief administratief kantoor vergelijkt twee exports van dezelfde afgesloten inventaris. Alle zichtbare regels, bedragen en tijdstippen zijn gelijk. Er is geen reden om aan te nemen dat de exports afwijken en er wordt geen nieuwe bron of afwijkend proces gemeld. Een onderzoeksvoorstel mag dus ook ontbreken.",
+      "turns": [
+        {
+          "question": "Is er nu een concrete onderzoeksvraag of juist geen aanleiding?",
+          "new_observation": ""
+        },
+        {
+          "question": "Levert deze controle een toetsbare nieuwe onderzoeksvraag op?",
+          "new_observation": "Een tweede vergelijking met dezelfde software vindt op alle gecontroleerde velden dezelfde inhoud. Er is geen andere bron gebruikt."
+        },
+        {
+          "question": "Is er na deze extra vergelijking iets aantoonbaar anders onderzoekbaar?",
+          "new_observation": "Ook een derde herhaling vindt geen verschil. De gecontroleerde variabelen en bestanden zijn ongewijzigd gebleven."
+        },
+        {
+          "question": "Welke vervolgvraag zou zinvol zijn, of blijft een negatief antwoord passend?",
+          "new_observation": "De controlesoftware herhaalt dezelfde uitkomst onder dezelfde instellingen. Er is geen melding van een fout of nieuwe gegevens."
+        },
+        {
+          "question": "Is nu iets anders te toetsen of moeten onderzoekers terecht stoppen?",
+          "new_observation": "De laatste controle gebruikt dezelfde afgesloten gegevens, dezelfde berekening en dezelfde grenzen. Nieuwe waarnemingen ontbreken."
+        }
+      ]
+    }
+  ],
+  "prohibited_claims": [
+    "G0_PASS",
+    "Q1_internal_absence",
+    "Q2_world_expansion",
+    "independent_holdout",
+    "placebo_semantically_equal",
+    "real_RI_feedback",
+    "positive_result_inferred_from_questions"
+  ]
+}

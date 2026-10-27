@@ -1,0 +1,68 @@
+name: Research - G0 T0 and late-birth five-turn ABC (offline)
+
+# No OpenAI secret, no Environment, no paid model calls, no Q1/Q2 claim.
+on:
+  push:
+    branches:
+      - research/g0-late-birth-two-followups-20261027
+    paths:
+      - .github/workflows/g0-late-birth-five-turn-offline.yml
+  pull_request:
+    paths:
+      - research/src/shadowseed_research/benchmark/g0_next_inquiry_readiness.py
+      - research/src/shadowseed_research/benchmark/g0_late_birth_cohort.py
+      - research/src/shadowseed_research/benchmark/g0_late_birth_real_rf.py
+      - research/src/shadowseed_research/benchmark/g0_late_birth_blind_review.py
+      - research/fixtures/g0_late_birth_rf_v2.json
+      - research/tests/test_g0_late_birth_real_rf.py
+      - research/tests/test_g0_late_birth_blind_review.py
+      - .github/workflows/g0-late-birth-five-turn-offline.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: g0-late-birth-5turn-20261027
+  cancel-in-progress: true
+
+jobs:
+  no-network-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install locked test runtime and research sidecar
+        run: |
+          uv sync --locked --extra test
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+      - name: Run original and late-birth real-Engine FakeProvider regressions
+        run: |
+          uv run --no-sync python -m pytest -q \
+            research/tests/test_g0_multicase_real_ab.py \
+            research/tests/test_g0_multicase_ab_integrity.py \
+            research/tests/test_g0_next_inquiry_readiness.py \
+            research/tests/test_g0_next_seed_hidden_review.py \
+            research/tests/test_g0_late_birth_real_rf.py \
+            research/tests/test_g0_late_birth_blind_review.py
+      - name: Validate no scripted expected seeds or future observations
+        run: |
+          uv run --no-sync python - <<'PY'
+          import json
+          from pathlib import Path
+          from shadowseed_research.benchmark.g0_late_birth_real_rf import (
+              validate_design, MODEL_CAP, CASE_COUNT, TOKEN_CAP
+          )
+          data=json.loads(Path('research/fixtures/g0_late_birth_rf_v2.json').read_text(encoding='utf-8'))
+          cases=validate_design(data)
+          assert len(cases)==CASE_COUNT==6
+          assert MODEL_CAP==19 and TOKEN_CAP==65000
+          assert data['outcome']=='NOT_RUN'
+          assert data['feedback_regime']=='RF'
+          print('OFFLINE PASS: predeclared five-turn T0/T1/T2 cohorts, two followups and ABC controls; G0 NOT PASSED')
+          PY

@@ -141,9 +141,9 @@ def _common_history(case: dict, prior: list[tuple[str, str]],
     return "\n".join(parts) + "\n"
 
 
-def _tail(earlier: dict | None, turn: int) -> str:
+def _tail(earlier: dict | None, turn: int, *, first_inquiry_turn: int = 1) -> str:
     parts = []
-    if turn > 1:
+    if turn > first_inquiry_turn:
         parts.extend([
             "EIGEN EERDERE ONDERZOEKSVRAGEN (NIET UITGEVOERD):",
             json.dumps(earlier, sort_keys=True, ensure_ascii=False)
@@ -161,20 +161,28 @@ def prepare_inquiry_pair(
     case: dict, prior: list[tuple[str, str]], ordinary_note: str,
     real_seed: str, turn: int,
     earlier_by_arm: dict[str, dict | None],
+    *, first_inquiry_turn: int = 1,
 ) -> dict[str, Any]:
     """Build paired research prompts with an explicit fail-closed hard cap.
 
-    At T1 the marked candidate slot is the only difference. At T2/T3 the
-    arms also legitimately differ in their OWN earlier generated questions.
-    Never mistake these questions for independently observed RI feedback.
+    On the FIRST inquiry after genuine birth (T0, T1 or T2), the marked
+    candidate slot is the ONLY difference. One turn later, arms also differ
+    by their OWN earlier generated questions. No RI result is fabricated.
+    The default first_inquiry_turn=1 preserves earlier T0-birth API behavior.
     """
     check_output_contract()
     if not isinstance(real_seed, str) or not real_seed.strip():
         raise ValueError("real canonical seed text required")
     if set(earlier_by_arm) != {"A", "B"}:
         raise ValueError("two segregated earlier question tracks required")
-    if turn == 1 and any(x is not None for x in earlier_by_arm.values()):
-        raise ValueError("T1 cannot inherit future inquiry questions")
+    if (type(first_inquiry_turn) is not int
+        or first_inquiry_turn not in (1, 2, 3)
+        or turn not in (first_inquiry_turn, first_inquiry_turn + 1)):
+        raise ValueError("inquiry turn must follow the selected birth horizon")
+    if turn == first_inquiry_turn and any(
+        x is not None for x in earlier_by_arm.values()
+    ):
+        raise ValueError("first inquiry cannot inherit nonexistent prior research")
     common = _common_history(case, prior, ordinary_note, turn)
     if real_seed in common:
         raise ValueError("literal seed already in ordinary control context")
@@ -183,7 +191,7 @@ def prepare_inquiry_pair(
         earlier = earlier_by_arm[arm]
         if earlier is not None and not isinstance(earlier, dict):
             raise ValueError("earlier questions must be a validated object")
-        suffix = _tail(earlier, turn)
+        suffix = _tail(earlier, turn, first_inquiry_turn=first_inquiry_turn)
         prompt = common + slot + suffix
         if arm == "A" and real_seed in prompt:
             raise ValueError("literal seed present in control's own earlier questions")
@@ -196,13 +204,13 @@ def prepare_inquiry_pair(
             "prompt_sha256": _sha_json(prompt),
             "prompt_chars": len(prompt),
             "arm": arm, "turn": turn,
-            "own_prior_questions_only": turn > 1,
+            "own_prior_questions_only": turn > first_inquiry_turn,
             "external_action_executed": False,
         }
-    if turn == 1:
+    if turn == first_inquiry_turn:
         expected_b = prompts["A"]["prompt"].replace(
-            common + "NONE" + _tail(None, turn),
-            common + real_seed + _tail(None, turn),
+            common + "NONE" + _tail(None, turn, first_inquiry_turn=first_inquiry_turn),
+            common + real_seed + _tail(None, turn, first_inquiry_turn=first_inquiry_turn),
         )
         if expected_b != prompts["B"]["prompt"]:
             raise ValueError("unmatched T1 arms")
@@ -215,6 +223,7 @@ def prepare_inquiry_pair(
         "ordinary_context_sha256": _sha_json(common),
         "shared_instructions_sha256": _sha_json(INQUIRY_INSTRUCTIONS_V2),
         "not_external_RI_feedback": True,
+        "first_inquiry_turn": first_inquiry_turn,
         "prompts": prompts,
     }
 
