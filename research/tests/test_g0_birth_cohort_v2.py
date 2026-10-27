@@ -86,6 +86,10 @@ def test_new_first_inquiry_after_T1_birth_has_no_prior_questions():
 
 def test_second_inquiry_uses_only_its_own_prior_track():
     case, prior, note = study_inputs(turn=3)
+    # Bounded realistic fixture for arm isolation; separate tests already
+    # prove that oversized complete history fails closed without truncation.
+    for i, (question, answer) in enumerate(prior):
+        prior[i] = (question, answer[:240])
     pair = prepare_inquiry_pair(
         case, prior, note, SEED, 3,
         {"A": {"tag": "ARM_A_QUESTION"}, "B": {"tag": "ARM_B_QUESTION"}},
