@@ -18,6 +18,7 @@
 
 - [Verified raw-data evidence map](retrospective-evidence-map-2026-10-27.md) — source identifiers, candidate/intake counts, actual seed exposure, review provenance and what each result can establish.
 - [Active branch and PR map](research-branch-map-2026-10-27.md) — separate seven-PR Q1/Q2 research stack and two-PR legacy/SSOT safety stack, with original bases retained.
+- [Publication-readiness and reviewer status](publication-readiness-2026-10-27.md) — what is verified, what remains independent human work, and which files must stay private.
 
 These documents catalogue evidence; they do not approve G0, revise the fundamental thesis, replace this historical research reading order, or merge experimental code into `main`.
 
