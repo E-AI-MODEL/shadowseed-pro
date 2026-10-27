@@ -12,6 +12,8 @@ on:
     paths:
       - research/src/shadowseed_research/benchmark/g0_next_inquiry_readiness.py
       - research/tests/test_g0_next_inquiry_readiness.py
+      - research/src/shadowseed_research/benchmark/g0_next_seed_hidden_review.py
+      - research/tests/test_g0_next_seed_hidden_review.py
       - .github/workflows/g0-next-inquiry-readiness-offline.yml
 
 permissions:
@@ -44,6 +46,7 @@ jobs:
         run: |
           uv run --no-sync python -m pytest -q \
             research/tests/test_g0_next_inquiry_readiness.py \
+            research/tests/test_g0_next_seed_hidden_review.py \
             research/tests/test_g0_multicase_real_ab.py \
             research/tests/test_g0_multicase_ab_integrity.py
       - name: Verify no paid credentials are needed
