@@ -1,6 +1,6 @@
 # Shadowseed possibility-space research — questions, sources, rival mechanisms
 
-> **Stand van deze index: 25 oktober 2026.** De tekst hieronder is de toenmalige onderzoeksstand, inclusief de historische keuzes en beperkingen. Latere resultaten en interpretaties vervangen deze versie niet. Begin voor de **momentopname van 28 oktober 2026** bij [de actuele onderzoeksingang](../README.md) en het [volledige branchregister](branch-register-2026-10-28.md). Open onderzoek of voorstellen in concept-PR's zijn niet automatisch geaccepteerd.
+> **Oorspronkelijke indexstand: 25 oktober 2026.** De oorspronkelijke onderdelen hieronder blijven letterlijk behouden als onderzoeksstand van die datum. Aanvullingen uit latere concept-PR's, waaronder de bronkaart van 27 oktober en het afzonderlijke 48-call-verslag van 28 oktober, houden bij eventuele integratie hun eigen datum en bronverwijzingen. De [actuele onderzoeksingang](../README.md) en het [branchregister](branch-register-2026-10-28.md) verbinden deze versies. Een technisch label of oudere onderzoeksconclusie bepaalt niet op voorhand de betekenis van een oorspronkelijke waarneming.
 
 > **Status:** open research program; no demonstrated Q1/Q2 efficacy or accepted architecture change.
 > **Updated:** 2026-10-25 following first-principles review.
