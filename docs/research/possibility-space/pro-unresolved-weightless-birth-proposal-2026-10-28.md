@@ -22,6 +22,8 @@ This unresolved seed:
 - may be encountered again by **exact text**, preserving its ID and recording `unresolved_reobserved` without changing occurrence credit or Gate authority; a repeated item in the **same** batch gives no extra credit;
 - is **excluded** from ordinary embedding-based seed deduplication and accepted-seed recurrence clustering so the structure of a different bounded seed cannot silently overwrite or reinforce it;
 - **cannot receive positive weight, evidence-count authority or promoted status** while unresolved, even if a strong exploratory or verified-evidence Gate policy is invoked;
+- never enters automatic per-turn Gate review, even when the configured minimum occurrence threshold is one; explicit attempted Gate signals are blocked and remain auditable;
+- receives no reward through the historical probe-feedback path, including when lifecycle state has become `ACTIVE`;
 - is excluded by `current_gate_authorizes` and normal point-of-use, so the host receives no unresolved seed prompt text, injected retrieval, influence or permission to act.
 
 This is an *actual birth and lifecycle*, not another independent review queue. Yet it is **not** autonomous content growth or evidence that the model has found a new kind of relation.
@@ -36,7 +38,7 @@ Session state schema advances to v4. New v4 session restores fail closed if a sa
 
 ## Evidence and boundaries
 
-**Mechanics tested locally, no new model calls:** All 46 previously excluded raw sentences became 46 distinct unresolved, weight-zero Pro seeds in a deterministic replay: 46 stored and zero Gate events. Seven new targeted tests check birth, source identity, same-ID observation, multi-turn travel, TTL/TrTL, session round-trip, v4 scope omission tampering, Gate policies and separation from bounded seeds. Existing selected Gate and product tests pass.
+**Mechanics tested locally, no new model calls:** All 46 previously excluded raw sentences became 46 distinct unresolved, weight-zero Pro seeds in a deterministic replay: 46 stored and zero Gate events. Nine new targeted tests check birth, source identity, same-ID observation, multi-turn travel, TTL/TrTL, session round-trip, v4 scope omission tampering, Gate policies and separation from bounded seeds. Existing selected Gate and product tests pass.
 
 **Full test status:** the broader suite was run in parts. Three Gradio UI tests fail because the installed version does not support `Markdown(..., scale=4)`. They failed identically on the original unmodified checkout, so are not caused by this change. The normal repository CI must still pass before merging. `ruff` is not installed in the local execution environment.
 
