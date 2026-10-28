@@ -117,7 +117,7 @@ from shadowseed_agent import (
     can_seed_trigger_retrieval,
 )
 
-SESSION_STATE_SCHEMA_VERSION = 3
+SESSION_STATE_SCHEMA_VERSION = 4
 
 
 @dataclass(frozen=True)
@@ -2196,7 +2196,7 @@ class ShadowChatSession:
         """
 
         schema_version = int(state.get("schema_version", 1))
-        if schema_version not in {1, 2, SESSION_STATE_SCHEMA_VERSION}:
+        if schema_version not in {1, 2, 3, SESSION_STATE_SCHEMA_VERSION}:
             raise ValueError("unsupported ShadowChatSession state schema")
         config = dict(state.get("session_config", {}))
         # Sessions saved before model recognition keep embedding recognition,
@@ -2218,6 +2218,13 @@ class ShadowChatSession:
             embedding_fn=embedding_fn,
         )
         manager_data = dict(state.get("manager", {}))
+        if schema_version >= 4:
+            # A v4 weightless, unresolved seed must not silently turn into a
+            # historically bounded seed if its status is omitted from a saved
+            # snapshot. Older v1-v3 snapshots legitimately lacked this field.
+            for item in manager_data.get("seeds", []):
+                if "scope_status" not in item:
+                    raise ValueError("v4 seed snapshot missing scope_status")
         core_config_data = dict(manager_data.get("config", {}))
         if (
             schema_version == 1
