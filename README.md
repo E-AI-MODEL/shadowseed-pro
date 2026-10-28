@@ -1,5 +1,11 @@
 # Shadowseed Pro
 
+**Wat had hier kúnnen staan?** Met die vraag begon Shadow Seed Learning. Een antwoord laat zien welke richting een taalmodel koos. Shadowseed onderzoekt wat er kan gebeuren met een mogelijk verband dat buiten die keuze bleef: gewichtloos bewaren, in een later gesprek terugvinden en onderzoeken of daardoor een andere vraag ontstaat.
+
+**What could have been there?** That question started Shadow Seed Learning. An answer shows which continuation a language model selected. Shadowseed follows possibilities outside that choice: retaining a candidate without granting authority, revisiting it in later context, and investigating whether another question becomes possible.
+
+[**De schaduw die meereist | The shadow that travels. Filosofie, onderzoek en originele bronnen.**](docs/research/archives/2026-10-27/README.md)
+
 <p align="center">
   <strong>A model-independent, auditable memory and validation engine for language-model applications.</strong>
 </p>

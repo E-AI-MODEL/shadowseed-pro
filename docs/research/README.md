@@ -14,6 +14,7 @@ De volledige [oorspronkelijke onderzoeksbestanden, antwoorden, reviewbestanden, 
 
 ## Leesvolgorde
 
+- **Het waarom en de onderzoeksweg (Nederlands / English):** [De mogelijkheden die buiten beeld bleven](archives/2026-10-27/README.md). Met de oorspronkelijke onderzoeksvraag, onze ontwerpkeuzes, het historische archief, de oorspronkelijke inventaris en een controleerbare download van de release van 27 oktober.
 - **Oorspronkelijke vraag en grenzen:** [possibility-space-thesis.md](possibility-space-thesis.md). Deze tekst blijft leidend; ook de tweede helft van de vraag.
 - **Ontwikkeling van de methode tot 25 oktober:** [onderzoeksindex, stand 25 oktober](possibility-space/README.md) en [heroriëntatie op de eerste principes](possibility-space/first-principles-reorientation-2026-10-25.md).
 - **Wat nu rechtstreeks geobserveerd is:** [de uitgebreide samenvatting boven in de hoofd-README](../../README.md#what-we-understand-now-28-october-2026), met verwijzingen naar primaire runs en hun grenzen.
