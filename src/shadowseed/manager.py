@@ -509,6 +509,7 @@ class SSLManager:
         deduplicate: bool = True,
         min_seed_words: int = 0,
         origin: SeedOrigin | None = None,
+        retain_unresolved: bool = True,
     ) -> dict[str, Any]:
         """Compatibility facade for canonical candidate intake."""
 
@@ -521,6 +522,7 @@ class SSLManager:
             deduplicate=deduplicate,
             min_seed_words=min_seed_words,
             origin=origin,
+            retain_unresolved=retain_unresolved,
         )
 
     def _maybe_deduplicate_seed(
