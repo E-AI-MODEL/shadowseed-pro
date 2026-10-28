@@ -193,6 +193,7 @@ def ingest_detection_candidates(
     deduplicate: bool = True,
     min_seed_words: int = 0,
     origin: SeedOrigin | None = None,
+    retain_unresolved: bool = True,
 ) -> dict[str, Any]:
     """Normalize and ingest once, with an observational per-item path.
 
@@ -213,9 +214,11 @@ def ingest_detection_candidates(
     )
     accepted: list[dict[str, str]] = []
     rejected: list[dict[str, str]] = []
+    unresolved: list[dict[str, str]] = []
     lineage: list[dict[str, Any]] = []
     seen_texts: set[str] = set()
     accepted_ids: set[str] = set()
+    seen_unresolved_in_batch: set[str] = set()
 
     for normalized_index, candidate in enumerate(normalized):
         row: dict[str, Any] = {
@@ -250,8 +253,56 @@ def ingest_detection_candidates(
                 suppress_reinforcement_for=accepted_ids,
             )
         except ValueError:
-            rejected.append({"text": candidate, "reason": "not_atomic"})
+            # A lexical or structural *intake* judgment is not permission to
+            # erase an otherwise nonempty epistemic possibility. Keep the
+            # original expression as an actual travelling, weightless seed,
+            # explicitly barred from Gate authority and cluster reinforcement.
+            # Manager subclass errors unrelated to atomicity are not masked.
+            if not retain_unresolved or manager.is_atomic_seed(candidate):
+                rejected.append({"text": candidate, "reason": "not_atomic"})
+                row["reason"] = "not_atomic"
+                continue
+            source_index = source_indices[normalized_index]
+            raw_text = (
+                str(raw_candidates[source_index]).strip()
+                if source_index is not None else candidate
+            )
+            if not raw_text:
+                rejected.append({"text": candidate, "reason": "empty"})
+                row["reason"] = "empty"
+                continue
+            # Exact repetition preserves identity but is never counted as
+            # external evidence, authority, or recognized semantic recurrence.
+            # Near-duplicates remain separate until genuinely examined.
+            previous = next((seed for seed in manager.seeds.values()
+                             if seed.scope_status == "unresolved"
+                             and seed.status != SeedStatus.EXPIRED
+                             and seed.text == raw_text), None)
+            if previous is not None:
+                seed_id = previous.id
+                if raw_text in seen_unresolved_in_batch:
+                    transition = "reobserved_same_batch_no_credit"
+                else:
+                    previous.trace = min(previous.trace + 0.5, manager.max_trace)
+                    manager._touch_seed(previous)
+                    manager._record_and_sync(
+                        "unresolved_reobserved", seed_id,
+                        original_text=raw_text, authority_contribution=0.0,
+                    )
+                    transition = "reobserved_unresolved"
+            else:
+                seed_id = manager._create_seed(
+                    raw_text, manager.get_embedding(raw_text),
+                    trigger_keywords, origin=origin, scope_status="unresolved",
+                )
+                transition = "created_unresolved"
+            seen_unresolved_in_batch.add(raw_text)
+            unresolved.append({"seed_id": seed_id, "text": raw_text,
+                               "reason": "not_atomic", "transition": transition})
+            row["outcome"] = "born_unresolved" if transition == "created_unresolved" else "reobserved_unresolved"
             row["reason"] = "not_atomic"
+            row["seed_id"] = seed_id
+            row["seed_transition"] = transition
             continue
         if seed_id in accepted_ids:
             rejected.append({"text": candidate, "reason": "duplicate"})
@@ -297,6 +348,7 @@ def ingest_detection_candidates(
         "normalized_candidates": normalized,
         "accepted": accepted,
         "rejected": rejected,
+        "unresolved": unresolved,
         "lineage_schema": "candidate-intake-lineage-v1",
         "lineage_status": mapping_status,
         "lineage": lineage,
@@ -310,7 +362,7 @@ def maybe_deduplicate_seed(
 
     best_match: tuple[str, float] | None = None
     for seed_id, seed in manager._seeds.items():
-        if seed.status == SeedStatus.EXPIRED:
+        if seed.status == SeedStatus.EXPIRED or seed.scope_status == "unresolved":
             continue
         similarity = float(np.dot(new_embedding, seed.embedding))
         if best_match is None or similarity > best_match[1]:
@@ -346,6 +398,7 @@ def create_seed(
     embedding: np.ndarray,
     trigger_keywords: Iterable[str] | None,
     origin: SeedOrigin | None = None,
+    scope_status: str = "bounded",
 ) -> str:
     """Create one weightless seed and record the creation event."""
 
@@ -362,12 +415,14 @@ def create_seed(
         trigger_keywords=list(trigger_keywords or []),
         trace=manager.config.trace_start,
         origin=origin,
+        scope_status=scope_status,
     )
     manager._record_and_sync(
         "created",
         seed_id,
         text=text,
         origin=origin.to_dict() if origin is not None else None,
+        scope_status=scope_status,
     )
     return seed_id
 
