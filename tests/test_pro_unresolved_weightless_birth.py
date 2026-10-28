@@ -236,3 +236,20 @@ def test_probe_reward_cannot_raise_unresolved_weight_in_active_state():
     assert result.delta_applied == 0
     assert manager.seeds[sid].weight == 0
     assert manager.gate_events == []
+
+
+def test_minimum_gate_threshold_does_not_evaluate_unresolved_at_birth():
+    from shadowseed.core_config import SSLCoreConfig
+
+    e = ShadowseedEngine(
+        detector_backend=OnceDetector(BATTERY),
+        embedding_fn=embedding,
+        recurrence_mode="pairwise",
+        gate_policy_id="exploratory",
+        core_config=SSLCoreConfig(min_occurrences_for_gate=1),
+    )
+    _prepared, result = progress(e)
+    assert result["seeds_born_unresolved"]
+    assert result["promoted_this_turn"] == []
+    assert e.export_state()["manager"]["gate_events"] == []
+    assert e.inspect()["seeds"][0]["weight"] == 0
