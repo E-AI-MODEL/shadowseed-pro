@@ -1,0 +1,12 @@
+{
+  "study": "q1q2-two-point-48-exploratory",
+  "source_sha256": "0a5094e38ab2fdcf8c68dc8d6a3c75d29eeffd49e1f6c8e138589ed73ca36bbf",
+  "attempted_calls": 48,
+  "successful_calls": 48,
+  "reported_tokens": 187255,
+  "status": "complete_exploratory_unreviewed",
+  "completed_human_reviews": 0,
+  "raw_owner_text_public": false,
+  "independent_case_count": 1,
+  "estimated_effect_size": null
+}

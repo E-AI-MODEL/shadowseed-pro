@@ -1,0 +1,101 @@
+{
+  "status": "complete_exploratory_unreviewed",
+  "attempted_calls": 48,
+  "successful_calls": 48,
+  "provider_reported_tokens": 187255,
+  "independent_case_count": 1,
+  "human_reviews_completed": 0,
+  "new_relations_established": null,
+  "causal_Q2_effect_established": false,
+  "note": "Mechanics and surface-form only. Do not infer value from word overlap.",
+  "arm_summary": [
+    {
+      "moment": "battery_after_T3",
+      "arm": "deliberate_search",
+      "tracks_attempted": 3,
+      "complete_pairs": 3,
+      "calls": 6,
+      "input_tokens": 11689,
+      "output_tokens": 3692,
+      "mean_visible_chars_first": 1431.3,
+      "mean_first_second_jaccard": 0.2756
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "ordinary",
+      "tracks_attempted": 3,
+      "complete_pairs": 3,
+      "calls": 6,
+      "input_tokens": 11084,
+      "output_tokens": 2791,
+      "mean_visible_chars_first": 1180.3,
+      "mean_first_second_jaccard": 0.2632
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "placebo",
+      "tracks_attempted": 3,
+      "complete_pairs": 3,
+      "calls": 6,
+      "input_tokens": 11540,
+      "output_tokens": 2655,
+      "mean_visible_chars_first": 1001.3,
+      "mean_first_second_jaccard": 0.2457
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "shadow_candidate",
+      "tracks_attempted": 3,
+      "complete_pairs": 3,
+      "calls": 6,
+      "input_tokens": 11628,
+      "output_tokens": 2625,
+      "mean_visible_chars_first": 1180,
+      "mean_first_second_jaccard": 0.3501
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "deliberate_search",
+      "tracks_attempted": 3,
+      "complete_pairs": 3,
+      "calls": 6,
+      "input_tokens": 20740,
+      "output_tokens": 16097,
+      "mean_visible_chars_first": 6065.3,
+      "mean_first_second_jaccard": 0.2506
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "ordinary",
+      "tracks_attempted": 3,
+      "complete_pairs": 3,
+      "calls": 6,
+      "input_tokens": 18791,
+      "output_tokens": 12428,
+      "mean_visible_chars_first": 4047.7,
+      "mean_first_second_jaccard": 0.2748
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "placebo",
+      "tracks_attempted": 3,
+      "complete_pairs": 3,
+      "calls": 6,
+      "input_tokens": 19412,
+      "output_tokens": 10789,
+      "mean_visible_chars_first": 4065.7,
+      "mean_first_second_jaccard": 0.2854
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "shadow_candidate",
+      "tracks_attempted": 3,
+      "complete_pairs": 3,
+      "calls": 6,
+      "input_tokens": 19702,
+      "output_tokens": 11592,
+      "mean_visible_chars_first": 4466.3,
+      "mean_first_second_jaccard": 0.2683
+    }
+  ]
+}
