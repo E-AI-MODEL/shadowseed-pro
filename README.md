@@ -1,10 +1,10 @@
 # Shadowseed Pro
 
-Een taalmodel laat zien welk antwoord het gaf. We onderzoeken wat er gebeurt met een mogelijk verband dat buiten dat antwoord bleef: kun je het zonder oordeel bewaren, en kan het later aanleiding geven tot een andere vraag?
+**Wat had hier kúnnen staan?** Met die vraag begon Shadow Seed Learning. Een antwoord laat zien welke richting een taalmodel koos. Shadowseed onderzoekt wat er kan gebeuren met een mogelijk verband dat buiten die keuze bleef: gewichtloos bewaren, in een later gesprek terugvinden en onderzoeken of daardoor een andere vraag ontstaat.
 
-A language model shows us the answer it gave. We investigate what happens to a possible relation that did not appear there: can we retain it without passing judgement, and might it lead to a different question later?
+**What could have been there?** That question started Shadow Seed Learning. An answer shows which continuation a language model selected. Shadowseed follows possibilities outside that choice: retaining a candidate without granting authority, revisiting it in later context, and investigating whether another question becomes possible.
 
-[**De filosofie, de aanpak en de oorspronkelijke onderzoeksarchieven | The philosophy, our method and the original research archives**](docs/research/archives/2026-10-27/README.md)
+[**De schaduw die meereist | The shadow that travels. Filosofie, onderzoek en originele bronnen.**](docs/research/archives/2026-10-27/README.md)
 
 <p align="center">
   <strong>A model-independent, auditable memory and validation engine for language-model applications.</strong>
