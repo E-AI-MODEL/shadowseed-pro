@@ -209,6 +209,12 @@ class SSOTManager:
         """
         validations: list[dict[str, Any]] = []
         for seed_id, seed in self.ssl.seeds.items():
+            # An unresolved possibility can be inspected in a separate,
+            # read-only research path, but its unknown scope cannot be treated
+            # as one verified proposition by this automatic authority workflow.
+            # In particular, do not offer composite-source matches to the Gate.
+            if seed.scope_status == "unresolved":
+                continue
             if seed.status in {SeedStatus.PROMOTED, SeedStatus.EXPIRED}:
                 continue
             if seed.weight != 0.0:
