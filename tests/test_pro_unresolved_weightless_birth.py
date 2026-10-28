@@ -221,3 +221,18 @@ def test_v4_state_cannot_downgrade_scope_by_omitting_field():
         legacy, detector_backend=OnceDetector(None), embedding_fn=embedding
     )
     assert restored.inspect()["seeds"][0]["scope_status"] == "bounded"
+
+
+def test_probe_reward_cannot_raise_unresolved_weight_in_active_state():
+    from shadowseed.models import ProbeOutcome, ProbeType
+    manager = SSLManager(embedding_fn=embedding)
+    sid = manager.ingest_detection_candidates(
+        [BATTERY], split_broad=False, expand_short_fragments=False
+    )["unresolved"][0]["seed_id"]
+    manager._set_authority(manager.seeds[sid], status=SeedStatus.ACTIVE)
+    result = manager.apply_probe_feedback(sid, ProbeOutcome.REWARD, ProbeType.GENERAL)
+    assert result.skipped is True
+    assert "unresolved" in result.skip_reason
+    assert result.delta_applied == 0
+    assert manager.seeds[sid].weight == 0
+    assert manager.gate_events == []
