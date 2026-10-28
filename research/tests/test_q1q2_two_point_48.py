@@ -10,6 +10,8 @@ from research.scripts import q1q2_two_point_48 as p
 class TwoPointTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        if not os.environ.get("LOCAL_OBSERVED"):
+            raise unittest.SkipTest("SHA-pinned original Actions archive not available in routine CI")
         cls.source=p.original(os.environ["LOCAL_OBSERVED"])
         cls.cases,cls.order=p.plan(cls.source)
 
