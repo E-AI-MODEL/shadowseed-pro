@@ -21,6 +21,16 @@ pipeline and never calls a language model. The local Workbench is the first
 complete client of that pipeline: it provides chat, inspection, comparison,
 feedback, export, and standalone packaging.
 
+## Research evidence update (29 October 2026)
+
+Shadowseed Pro has advanced from a foundational research question to a **working, inspectable research instrument**. The engine implements weightless candidate persistence, separates remembered presence from authority, and records lifecycle and Gate decisions. Original model outputs and their subsequent processing can now be examined with source provenance instead of inferred from aggregate scores. This is substantive progress in both research design and software.
+
+The [public 27 October original-source release](https://github.com/E-AI-MODEL/shadowseed-pro/releases/tag/research-archive-2026-10-27) preserves **four repository histories, four source snapshots and 62 original Actions artifact ZIPs**. Its [archive guide](docs/research/archives/2026-10-27/README.md) records the exact ZIP checksum, contents and recovery approach. The [separate 28 October 48-call study](research/datasets/2026-10-28-q1q2-48/README.md) also has complete public source records. The older preprint assumption that these sources were unavailable is no longer true.
+
+The most useful *observed* research findings are now more precise: source candidates can be traced across model output and intake; recorded rejection is sometimes sensitive to punctuation and form; weightless candidates can persist without obtaining influence; and genuine multi-turn experiments expose where the model did or did not actually receive a candidate. A **different answer**, a **recorded seed**, a **source-level rejection** and a **causally changed research opportunity** remain distinct outcomes.
+
+This is not a claim that we have proved an inaccessible internal “idea” or a general improvement over strong ordinary-model baselines. Equally, heterogeneous historical AI ratings and non-discriminating pilots do not erase the real observations. Earlier preprint categories such as “valuable residue” stay explicitly exploratory until independently adjudicated. Read the [29 October preprint evidence position](docs/research/preprint-evidence-position-2026-10-29.md) for the supported positive claims, the earlier assumptions that must remain historical, and the scientific question we can now test more rigorously.
+
 ## What we understand now (28 October 2026)
 
 **Open research source archive (28 October):** the [complete 48-call pilot records and original ZIP packages](research/datasets/2026-10-28-q1q2-48/README.md) are now directly readable in GitHub, with immutable source checksums. Public release includes the historical one-off decryption key and treatment-unblinding mappings: the original blind-review allocation is therefore no longer concealed. These records do not claim a Q1/Q2 effect.

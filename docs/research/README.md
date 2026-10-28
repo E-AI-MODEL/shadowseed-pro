@@ -2,6 +2,12 @@
 
 > **Momentopname, geen vastgestelde onderzoeksuitkomst.** Dit overzicht is geschreven op 28 oktober 2026 en ordent de op dat moment zichtbare bronbestanden, uitgevoerde metingen, niet-afgeronde beoordelingen en open voorstellen. De bronbestanden en oudere conclusies blijven ongewijzigd. Later bewijs hoort als nieuwe, gedateerde laag naast deze momentopname.
 
+## Research update — 29 October 2026
+
+The [27 October public source release](https://github.com/E-AI-MODEL/shadowseed-pro/releases/tag/research-archive-2026-10-27) preserves four Git histories, four source snapshots and 62 original Actions ZIPs. [Archive guide and verified SHA-256](archives/2026-10-27/README.md). The original outputs of the [48-call pilot from 28 October](../../research/datasets/2026-10-28-q1q2-48/README.md) are separately preserved in `main`. These are primary sources, **not** 62 or 48 independent measurements of scientific effect.
+
+The [preprint evidence position](preprint-evidence-position-2026-10-29.md) maps the historical working-draft assumptions to what the raw records and current implementation actually support. It explicitly describes the **real progress**—working weightless memory, observable multi-turn candidate histories, an audited form-sensitive intake boundary and improved source traceability—without treating single-AI-rater value labels, different answers or zero-exposure controls as proof of a Q1/Q2 effect. The earlier 25–28 October texts remain below unchanged as dated research history.
+
 ## De vraag blijft leidend
 
 > Kunnen we de waarschijnlijkheidsgerichte werking van een taalmodel gebruiken om niet alleen te onderzoeken wat het model weet, niet weet of niet genereert, maar ook welke relaties en mogelijkheden er zouden kunnen zijn buiten de gebruikelijke generatie? En kunnen we onderzoeken hoe nieuwe mogelijkheden ontstaan die de ruimte van wat daarna denkbaar is zelf veranderen?
