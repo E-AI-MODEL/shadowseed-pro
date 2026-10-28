@@ -1,5 +1,11 @@
 # Shadowseed Pro
 
+Een taalmodel laat zien welk antwoord het gaf. We onderzoeken wat er gebeurt met een mogelijk verband dat buiten dat antwoord bleef: kun je het zonder oordeel bewaren, en kan het later aanleiding geven tot een andere vraag?
+
+A language model shows us the answer it gave. We investigate what happens to a possible relation that did not appear there: can we retain it without passing judgement, and might it lead to a different question later?
+
+[**De filosofie, de aanpak en de oorspronkelijke onderzoeksarchieven | The philosophy, our method and the original research archives**](docs/research/archives/2026-10-27/README.md)
+
 <p align="center">
   <strong>A model-independent, auditable memory and validation engine for language-model applications.</strong>
 </p>
