@@ -200,3 +200,24 @@ def test_bounded_seed_does_not_semantically_deduplicate_into_unresolved():
     assert bounded_sid != unresolved_sid
     assert manager.seeds[bounded_sid].scope_status == "bounded"
     assert manager.seeds[unresolved_sid].scope_status == "unresolved"
+
+
+def test_v4_state_cannot_downgrade_scope_by_omitting_field():
+    e = engine(BATTERY)
+    progress(e)
+    original = e.export_state()
+    assert original["schema_version"] == 4
+    tampered = deepcopy(original)
+    tampered["manager"]["seeds"][0].pop("scope_status")
+    with pytest.raises(ValueError, match="v4 seed snapshot missing scope_status"):
+        ShadowseedEngine.from_state(
+            tampered, detector_backend=OnceDetector(None), embedding_fn=embedding
+        )
+    # Older v3 sessions genuinely lacked scope_status and remain readable.
+    legacy = deepcopy(original)
+    legacy["schema_version"] = 3
+    legacy["manager"]["seeds"][0].pop("scope_status")
+    restored = ShadowseedEngine.from_state(
+        legacy, detector_backend=OnceDetector(None), embedding_fn=embedding
+    )
+    assert restored.inspect()["seeds"][0]["scope_status"] == "bounded"
