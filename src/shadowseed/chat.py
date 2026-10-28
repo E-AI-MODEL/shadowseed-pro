@@ -1348,6 +1348,10 @@ class ShadowChatSession:
         for accepted in ingest.get("accepted", []):
             self.born_turn.setdefault(accepted["seed_id"], turn)
             born.append(accepted["seed_id"])
+        for pending in ingest.get("unresolved", []):
+            if pending["transition"] == "created_unresolved":
+                self.born_turn.setdefault(pending["seed_id"], turn)
+                born.append(pending["seed_id"])
 
         if self.clusterer is not None:
             self._register_cluster_observations(
@@ -1599,6 +1603,7 @@ class ShadowChatSession:
             "intake_diagnostics": {
                 "normalized_candidates": list(ingest.get("normalized_candidates", [])),
                 "accepted": [dict(item) for item in ingest.get("accepted", [])],
+                "unresolved": [dict(item) for item in ingest.get("unresolved", [])],
                 "rejected": [dict(item) for item in ingest.get("rejected", [])],
                 "lineage_schema": ingest.get("lineage_schema"),
                 "lineage_status": ingest.get("lineage_status", "unavailable"),
@@ -1643,6 +1648,8 @@ class ShadowChatSession:
                 observation.to_dict() for observation in turn_observations
             ],
             "seeds_born_weightless": born,
+            "seeds_born_unresolved": [item["seed_id"] for item in ingest.get("unresolved", [])
+                                       if item["transition"] == "created_unresolved"],
             "prompt_boundary_markers": [
                 dict(item) for item in prepared.prompt_boundary_markers
             ],
@@ -1766,6 +1773,10 @@ class ShadowChatSession:
         for accepted in ingest.get("accepted", []):
             self.born_turn.setdefault(accepted["seed_id"], turn)
             born.append(accepted["seed_id"])
+        for pending in ingest.get("unresolved", []):
+            if pending["transition"] == "created_unresolved":
+                self.born_turn.setdefault(pending["seed_id"], turn)
+                born.append(pending["seed_id"])
 
         # 5. Credit semantic recurrence to one cluster representative.
         if self.clusterer is not None:
@@ -1830,6 +1841,7 @@ class ShadowChatSession:
             "intake_diagnostics": {
                 "normalized_candidates": list(ingest.get("normalized_candidates", [])),
                 "accepted": [dict(item) for item in ingest.get("accepted", [])],
+                "unresolved": [dict(item) for item in ingest.get("unresolved", [])],
                 "rejected": [dict(item) for item in ingest.get("rejected", [])],
                 "lineage_schema": ingest.get("lineage_schema"),
                 "lineage_status": ingest.get("lineage_status", "unavailable"),
@@ -1854,6 +1866,8 @@ class ShadowChatSession:
                 observation.to_dict() for observation in turn_observations
             ],
             "seeds_born_weightless": born,
+            "seeds_born_unresolved": [item["seed_id"] for item in ingest.get("unresolved", [])
+                                       if item["transition"] == "created_unresolved"],
             "prompt_boundary_markers": apply_prompt_boundary(surfaced)[1] if surfaced else [],
             "promoted_this_turn": promoted_now,
             "authority_review_seed_ids": [],
@@ -1936,6 +1950,10 @@ class ShadowChatSession:
             seed_id = accepted["seed_id"]
             self.born_turn.setdefault(seed_id, -1)
             born.append(seed_id)
+        for pending in ingest.get("unresolved", []):
+            if pending["transition"] == "created_unresolved":
+                self.born_turn.setdefault(pending["seed_id"], -1)
+                born.append(pending["seed_id"])
 
         if self.clusterer is not None:
             self._register_cluster_observations(
@@ -1993,6 +2011,7 @@ class ShadowChatSession:
             "intake_diagnostics": {
                 "normalized_candidates": list(ingest.get("normalized_candidates", [])),
                 "accepted": [dict(item) for item in ingest.get("accepted", [])],
+                "unresolved": [dict(item) for item in ingest.get("unresolved", [])],
                 "rejected": [dict(item) for item in ingest.get("rejected", [])],
                 "lineage_schema": ingest.get("lineage_schema"),
                 "lineage_status": ingest.get("lineage_status", "unavailable"),
@@ -2005,6 +2024,8 @@ class ShadowChatSession:
             },
             "candidate_observations": [item.to_dict() for item in observations],
             "seeds_born_weightless": born,
+            "seeds_born_unresolved": [item["seed_id"] for item in ingest.get("unresolved", [])
+                                       if item["transition"] == "created_unresolved"],
             "promoted_this_observation": promoted_now,
             "authority_review_seed_ids": authority_review_seed_ids,
             "authority_runtime": self.authority_runtime.to_dict(),
@@ -2086,6 +2107,7 @@ class ShadowChatSession:
                     "id": sid,
                     "text": seed.text,
                     "weight": seed.weight,
+                    "scope_status": seed.scope_status,
                     "trace": round(seed.trace, 3),
                     "status": seed.status.value,
                     "occurrence_count": seed.occurrence_count,
