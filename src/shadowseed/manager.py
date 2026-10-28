@@ -239,6 +239,8 @@ class SSLManager:
         """Return historical authorization, optionally rechecked against today's Gate."""
 
         seed = self._seeds[seed_id]
+        if seed.scope_status == "unresolved":
+            return False
         if not enforce_current_gate:
             return (
                 seed.status == SeedStatus.PROMOTED
@@ -535,6 +537,7 @@ class SSLManager:
         embedding: np.ndarray,
         trigger_keywords: Iterable[str] | None,
         origin: SeedOrigin | None = None,
+        scope_status: str = "bounded",
     ) -> str:
         return intake_engine.create_seed(
             self,
@@ -542,6 +545,7 @@ class SSLManager:
             embedding,
             trigger_keywords,
             origin=origin,
+            scope_status=scope_status,
         )
 
     def add_or_update_seed(
