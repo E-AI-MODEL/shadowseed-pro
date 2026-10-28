@@ -7,6 +7,20 @@
 
 The GitHub release asset's own SHA-256 digest matches the original ZIP checked during archival review. Unlike an expiring Actions run artifact, this is a **release asset** with no seven-day Actions retention setting. Its future availability still depends on keeping the public repository and release accessible.
 
+## Nederlandse toelichting — waarom bewaren we deze bronnen?
+
+Shadowseed onderzoekt iets wat een gewoon modelantwoord vaak uit beeld laat: mogelijke verbanden, twijfel of vragen die niet werden geselecteerd. Een niet-gekozen mogelijkheid is daarmee nog geen verborgen waarheid en ook niet automatisch waardevol. De vraag is of we zo'n mogelijkheid **zonder sturende bevoegdheid** kunnen waarnemen en bewaren, en of er in latere gespreksturns werkelijk nieuwe onderzoeksvragen door ontstaan.
+
+In de ontwikkeling van Shadow Seed Learning naar Shadowseed Pro zijn we van vroege gap-proeven naar **herleidbare meerbeurtenobservaties** gegaan. Het systeem kan een kandidaat onthouden (`trace > 0`) terwijl die geen bevoegdheid heeft om antwoorden te sturen (`weight = 0`). De oorspronkelijke modeltekst, detectoruitspraak, intakekeuze, het verdere verloop en een eventuele daadwerkelijke invloed moeten daarom afzonderlijk bekeken worden. Die technische scheiding is een concreet onderzoeksresultaat; het is nog geen bewijs dat een model een nieuwe mogelijkhedenruimte heeft gevormd.
+
+**Wat dit archief daadwerkelijk bevat:** de bronmomentopname en Git-geschiedenis van vier repositories plus 62 originele, destijds op te halen GitHub Actions-ZIP's. `INVENTORY.json` bevat de individuele bestandsnamen en SHA-256-controlesommen. Dit zijn **62 bewaarde artifacts, geen 62 onafhankelijke experimenten of 62 positieve uitkomsten**. Ook onvolledige proeven, beperkingen en vroegere methodische aannames zijn relevant. Door ze te bewaren kunnen we achteraf de werkelijke onderzoeksgeschiedenis lezen in plaats van één huidige conclusie op het verleden te projecteren.
+
+Het oorspronkelijke ZIP-bestand is op de [publieke onderzoeksrelease](https://github.com/E-AI-MODEL/shadowseed-pro/releases/tag/research-archive-2026-10-27) beschikbaar. De apart gepubliceerde [48-call-proef van 28 oktober](../../../../research/datasets/2026-10-28-q1q2-48/README.md) is **een latere, afzonderlijke broncollectie** en mag niet zonder herkomstcontrole bij de 62 artifacts worden opgeteld.
+
+**De kern:** we zijn ver gekomen in het observeerbaar maken van kandidaten, bewaargeschiedenis en onderzoekspaden. Of het bewaren van een ongekozen mogelijkheid vervolgens verandert wat *later denkbaar en onderzoekbaar wordt*, blijft de richtinggevende onderzoeksvraag. Daarom bewaren we de oorspronkelijke antwoorden en beslissingen eerst, vóór we ze beoordelen.
+
+---
+
 ## Why these sources matter
 
 Shadow Seed Learning asks what happens to a possible relation that does *not* appear in a model's selected answer: whether it can be noticed, retained without claiming truth, revisited in later turns, and perhaps change what becomes investigable next. That is a research question, not a statement that an LLM introspects every ungenerated possibility.
