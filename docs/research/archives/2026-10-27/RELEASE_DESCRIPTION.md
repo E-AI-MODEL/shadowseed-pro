@@ -1,25 +1,29 @@
-# Shadowseed: de mogelijkheden die buiten beeld bleven | The possibilities we did not select
+# Shadowseed: de schaduw die meereist | The shadow that travels
 
 ## Nederlands
 
-Een taalmodel geeft ons een antwoord. Wat we meestal niet zien, zijn de andere verbanden, vragen of twijfels die geen plaats kregen in dat antwoord. Niet alles wat ontbreekt is interessant. Maar wat gebeurt er als we een mogelijkheid bewaren zonder haar meteen waar, goed of bruikbaar te noemen? Kan die mogelijkheid later een vraag laten ontstaan die anders niet gesteld zou zijn?
+**Wat had hier kúnnen staan?**
 
-Vanuit die vraag is Shadowseed ontwikkeld. We begonnen met het zoeken naar ontbrekende relaties, bouwden een systeem dat kandidaten zonder sturende bevoegdheid kan onthouden en leerden gaandeweg beter kijken naar de oorspronkelijke modeluitvoer, de detector, de intake en wat er over meerdere beurten werkelijk gebeurt. We hebben ook de proeven bewaard die ons nog geen duidelijk antwoord gaven. Daaruit leer je minstens zoveel over de aanpak.
+Een taalmodel laat een antwoord zien. Maar in die keuze blijven andere verbanden, twijfels en mogelijke vragen buiten beeld. Het begon voor ons met een eenvoudig verschil: wat *had* er moeten staan, en wat *had er kunnen staan*? Dat laatste is een andere manier van kijken. Een mogelijkheid hoeft niet meteen juist of bruikbaar te zijn. Misschien krijgt een vermoeden pas betekenis als het gesprek verdergaat. Misschien verandert dat zelfs de vraag die daarna gesteld kan worden.
 
-Deze release bewaart **vier repositorygeschiedenissen en bronmomentopnamen**, samen met **62 oorspronkelijke GitHub Actions-artifacts**. De originele bestanden zijn niet herschreven. `INVENTORY.json` bevat de herkomst en controlesommen. Het gaat om 62 artifacts, niet om 62 onafhankelijke experimenten.
+Vanuit die gedachte ontstond Shadow Seed Learning. We bouwden een manier om een kandidaat als **gewichtloze schaduw** te bewaren: wel vastgelegd, nog zonder bevoegdheid om het volgende antwoord te sturen. Later is die scheiding tussen aanwezigheid en invloed uitgewerkt in Shadowseed Pro. Inmiddels onderzoeken we de hele route, vanaf de oorspronkelijke modeluitvoer tot de vraag of een kandidaat werkelijk een nieuwe onderzoekbare richting heeft geopend.
 
-We hebben inmiddels een werkend systeem en veel echte onderzoeksgegevens. De vraag hoe een ongekozen mogelijkheid later de ruimte voor nieuwe vragen kan veranderen, blijft ons onderzoek sturen.
+Deze release bewaart hoe we daar zijn gekomen. **Vier oorspronkelijke repositorygeschiedenissen en bronmomentopnamen**, samen met **62 originele GitHub Actions-artifacts**. De bestanden zijn niet herschreven. Het archief bevat ook de proeven waarin een methode niet werkte, een kandidaat werd afgewezen of het gewone model dezelfde relatie al vond. Ook dat is onderzoeksgeschiedenis.
 
-[Lees de toelichting in het Nederlands en Engels](https://github.com/E-AI-MODEL/shadowseed-pro/blob/main/docs/research/archives/2026-10-27/README.md) · [Download het volledige oorspronkelijke archief](https://github.com/E-AI-MODEL/shadowseed-pro/releases/download/research-archive-2026-10-27/shadowseed_alle_raw_artifacts_20261027.zip)
+De 62 artifacts zijn geen 62 onafhankelijke experimenten. In de [uitgebreide toelichting](https://github.com/E-AI-MODEL/shadowseed-pro/blob/main/docs/research/archives/2026-10-27/README.md) staan de oorspronkelijke onderzoeksvraag, de ontwikkeling van de aanpak en de bestandsinventaris. Het archief laat zien hoe ver we zijn gekomen en maakt het mogelijk de vragen die nog openstaan vanuit de bron te onderzoeken.
+
+[Lees het verhaal en de inventaris](https://github.com/E-AI-MODEL/shadowseed-pro/blob/main/docs/research/archives/2026-10-27/README.md) · [Download het oorspronkelijke archief (87,8 MB)](https://github.com/E-AI-MODEL/shadowseed-pro/releases/download/research-archive-2026-10-27/shadowseed_alle_raw_artifacts_20261027.zip)
 
 ## English
 
-A language model gives us an answer. What we usually cannot see are the other relations, questions or doubts that did not make it into that answer. Not every omission matters. But what happens if we retain a possibility without treating it as true, good or useful? Could it lead to a question that would not otherwise have been asked?
+**What could have been there?**
 
-That question led to Shadowseed. We began by looking for missing relations, developed a system that can remember a candidate without allowing it to steer the next answer, and gradually learned to examine the original model output, the detector, the intake decision and what actually happens across turns. We have kept the experiments that did not give us a clear answer, too. They are part of how the method developed.
+A language model shows us one answer. Other relations, doubts and possible questions are left out of that selection. Shadow Seed Learning began with a distinction that became central to our work: what *should* an answer have included, and what *could* have been there? A possible relation need not be true, useful or complete at the moment it is first formulated. It may become relevant as the conversation changes. It may even prompt a different kind of question later.
 
-This release preserves **four repository histories and source snapshots** alongside **62 original GitHub Actions artifact ZIPs**. The original files have not been rewritten. `INVENTORY.json` records their provenance and checksums. Sixty-two artifacts are not 62 independent experiments.
+We developed shadow seeds to retain such candidates without giving them authority over the next answer. Presence and influence were deliberately kept apart. In Shadowseed Pro, that separation is implemented and inspectable. Our research now follows the original output, the detector's proposal, what survives the intake process and what actually happens across later turns.
 
-We now have a working system and a substantial record of actual model research. Whether retaining an unselected possibility can change which questions become possible later remains the question guiding this work.
+This release preserves that development: source snapshots and Git histories from **four repositories**, together with **62 original GitHub Actions artifact ZIPs**. The files remain unchanged. Partial experiments, rejected candidates and comparisons where an ordinary model reached the same relation are part of the record. Sixty-two archived artifacts are not 62 independent trials.
 
-[Read the full explanation in Dutch and English](https://github.com/E-AI-MODEL/shadowseed-pro/blob/main/docs/research/archives/2026-10-27/README.md) · [Download the original archive](https://github.com/E-AI-MODEL/shadowseed-pro/releases/download/research-archive-2026-10-27/shadowseed_alle_raw_artifacts_20261027.zip)
+The [full bilingual account](https://github.com/E-AI-MODEL/shadowseed-pro/blob/main/docs/research/archives/2026-10-27/README.md) explains the philosophy, the research process and the provenance of the files. The archive lets us return to the original observations, including the ones that never made it into a final answer.
+
+[Read the story and inventory](https://github.com/E-AI-MODEL/shadowseed-pro/blob/main/docs/research/archives/2026-10-27/README.md) · [Download the original archive (87.8 MB)](https://github.com/E-AI-MODEL/shadowseed-pro/releases/download/research-archive-2026-10-27/shadowseed_alle_raw_artifacts_20261027.zip)
