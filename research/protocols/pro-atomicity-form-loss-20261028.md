@@ -60,6 +60,21 @@ PYTHONPATH=src pytest -q research/tests/test_pro_atomicity_fate_audit.py
 
 Het script eist de exacte SHA-256 van het originele artifact en schrijft alleen geaggregeerde tellingen in de gewone uitvoer. De optie `--private-items` schrijft de oorspronkelijke kandidaatteksten uitsluitend naar een door de auteur gekozen niet-publieke map. **Upload `observed.json`, `PRIVATE_item_fate.json`, de blinde reviewbestanden of owner-unblind nooit naar een publieke PR.**
 
+## Uitgevoerde bronherstelactie (alleen onderzoeksadministratie)
+
+Er is daarnaast een zelfstandige **read-only, author-only reinspection queue** toegevoegd:
+`research/scripts/pro_reinspection_queue.py`. Die neemt uitsluitend geregistreerde `rejected/not_atomic` detectorobservaties uit de oorspronkelijke bron, met model, turn, original observation-ID, originele kandidaattekst, kandidaat-hash en de volledige hostvoorgeschiedenis tot dat punt. De velden voor één afhankelijkheid, meerdere vragen of onbekend zijn **leeg**. Er is geen classificatie, seedgeboorte of invloed toegekend.
+
+De queue is uitgevoerd op de originele, via SHA gecontroleerde bron en produceert **46 onbeoordeelde records**. Het bronbestand, de originele teksten en de queue blijven buiten GitHub. De synthetische regressietests van de twee onderzoeksinstrumenten zijn lokaal gedraaid; er zijn geen betaalde modelcalls geweest.
+
+```bash
+PYTHONPATH=src:. python research/scripts/pro_reinspection_queue.py \
+  --observed /restricted/observed.json \
+  --private-output /restricted/PRIVATE_unjudged_reinspection_queue.json
+```
+
+Deze queue is geen extra product-geheugenlaag en geen status in de live levenscyclus. Een toekomstig voorstel om zo'n onderzoeksbuffer aan een Pro-sessie te koppelen heeft eigen herkomst-, privacy-, lifecycle- en autorisatiecontroles nodig.
+
 ## Beslissing voor deze PR
 
 **Documenteren en afzonderlijk instrumenteren: JA.**  
