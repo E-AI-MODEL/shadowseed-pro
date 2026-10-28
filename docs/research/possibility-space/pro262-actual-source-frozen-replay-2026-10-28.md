@@ -64,5 +64,5 @@ Use the actual Pro session, source-origin attribution and multi-turn persistence
 
 - [Pro source and proposal — PR #262](https://github.com/E-AI-MODEL/shadowseed-pro/pull/262)
 - [Source-fate audit — PR #261](https://github.com/E-AI-MODEL/shadowseed-pro/pull/261)
-- [Full possibility-space thesis](../../docs/research/possibility-space-thesis.md)
+- [Full possibility-space thesis](../possibility-space-thesis.md)
 - Unpublished author-only runtime replay files: `run_actual_pro262_replay.py`, `Pro262_actual_48_turns_94_seeds_replay_20261028.json`, `PRIVATE_Pro262_frozen_replay_94_lineage.csv`.
