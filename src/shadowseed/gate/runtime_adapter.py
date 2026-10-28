@@ -675,7 +675,7 @@ def apply_probe_feedback(
     weight_before = seed.weight
 
     feedbackable = {SeedStatus.ACTIVE, SeedStatus.PROMOTED}
-    if seed.status not in feedbackable:
+    if seed.status not in feedbackable or seed.scope_status == "unresolved":
         result = ProbeFeedbackResult(
             seed_id=seed_id,
             probe_type=probe_type_enum.value,
@@ -687,7 +687,11 @@ def apply_probe_feedback(
             status_after=status_before,
             demoted=False,
             skipped=True,
-            skip_reason=f"status '{seed.status.value}' does not accept feedback",
+            skip_reason=(
+                "unresolved seed has no authority for probe feedback"
+                if seed.scope_status == "unresolved"
+                else f"status '{seed.status.value}' does not accept feedback"
+            ),
         )
         manager.feedback_log.append(result)
         return result
