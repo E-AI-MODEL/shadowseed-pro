@@ -41,7 +41,7 @@ def test_manager_ingest_detection_candidates_keeps_accept_reject_split():
     result = manager.ingest_detection_candidates([
         "Koloniaal kapitaal als financieringsbron voor Britse fabrieksinvesteringen.",
         "Security, privacy en schaalbaarheid ontbreken.",
-    ])
+    ], retain_unresolved=False)
 
     assert len(result["accepted"]) == 1
     assert result["accepted"][0]["seed_id"] == "ss_001"

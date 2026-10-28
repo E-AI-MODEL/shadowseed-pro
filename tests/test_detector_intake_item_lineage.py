@@ -113,7 +113,12 @@ def test_preexisting_dedup_and_rejection_reasons_have_separate_paths() -> None:
     assert rows[0]["seed_transition"] == "deduplicated"
     assert rows[1]["reason"] == "not_atomic"
     assert rows[2]["reason"] == "too_vague"
-    assert rows[1]["seed_id"] is rows[2]["seed_id"] is None
+    assert rows[1]["outcome"] == "born_unresolved"
+    assert rows[1]["seed_transition"] == "created_unresolved"
+    assert rows[1]["seed_id"] is not None
+    assert manager.get_seed(rows[1]["seed_id"]).scope_status == "unresolved"
+    assert manager.get_seed(rows[1]["seed_id"]).weight == 0
+    assert rows[2]["seed_id"] is None
     assert manager.get_seed(initial).occurrence_count == 2
     assert not manager.gate_events
 

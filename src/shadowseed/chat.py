@@ -117,7 +117,7 @@ from shadowseed_agent import (
     can_seed_trigger_retrieval,
 )
 
-SESSION_STATE_SCHEMA_VERSION = 3
+SESSION_STATE_SCHEMA_VERSION = 4
 
 
 @dataclass(frozen=True)
@@ -1348,6 +1348,10 @@ class ShadowChatSession:
         for accepted in ingest.get("accepted", []):
             self.born_turn.setdefault(accepted["seed_id"], turn)
             born.append(accepted["seed_id"])
+        for pending in ingest.get("unresolved", []):
+            if pending["transition"] == "created_unresolved":
+                self.born_turn.setdefault(pending["seed_id"], turn)
+                born.append(pending["seed_id"])
 
         if self.clusterer is not None:
             self._register_cluster_observations(
@@ -1366,7 +1370,11 @@ class ShadowChatSession:
         recurrence_threshold = self.manager.config.min_occurrences_for_gate
         for seed_id in sorted(changed_seed_ids):
             seed = self.manager.seeds[seed_id]
-            if seed.status == SeedStatus.EXPIRED or seed.occurrence_count < recurrence_threshold:
+            if (
+                seed.status == SeedStatus.EXPIRED
+                or seed.scope_status == "unresolved"
+                or seed.occurrence_count < recurrence_threshold
+            ):
                 continue
             if self.clusterer is not None:
                 cluster_id = self.seed_to_cluster.get(seed_id)
@@ -1599,6 +1607,7 @@ class ShadowChatSession:
             "intake_diagnostics": {
                 "normalized_candidates": list(ingest.get("normalized_candidates", [])),
                 "accepted": [dict(item) for item in ingest.get("accepted", [])],
+                "unresolved": [dict(item) for item in ingest.get("unresolved", [])],
                 "rejected": [dict(item) for item in ingest.get("rejected", [])],
                 "lineage_schema": ingest.get("lineage_schema"),
                 "lineage_status": ingest.get("lineage_status", "unavailable"),
@@ -1643,6 +1652,8 @@ class ShadowChatSession:
                 observation.to_dict() for observation in turn_observations
             ],
             "seeds_born_weightless": born,
+            "seeds_born_unresolved": [item["seed_id"] for item in ingest.get("unresolved", [])
+                                       if item["transition"] == "created_unresolved"],
             "prompt_boundary_markers": [
                 dict(item) for item in prepared.prompt_boundary_markers
             ],
@@ -1766,6 +1777,10 @@ class ShadowChatSession:
         for accepted in ingest.get("accepted", []):
             self.born_turn.setdefault(accepted["seed_id"], turn)
             born.append(accepted["seed_id"])
+        for pending in ingest.get("unresolved", []):
+            if pending["transition"] == "created_unresolved":
+                self.born_turn.setdefault(pending["seed_id"], turn)
+                born.append(pending["seed_id"])
 
         # 5. Credit semantic recurrence to one cluster representative.
         if self.clusterer is not None:
@@ -1782,7 +1797,7 @@ class ShadowChatSession:
         # weightless.
         promoted_now: list[str] = []
         for seed_id, seed in list(self.manager.seeds.items()):
-            if seed.status == SeedStatus.EXPIRED:
+            if seed.status == SeedStatus.EXPIRED or seed.scope_status == "unresolved":
                 continue
             if self.clusterer is not None:
                 cluster_id = self.seed_to_cluster.get(seed_id)
@@ -1830,6 +1845,7 @@ class ShadowChatSession:
             "intake_diagnostics": {
                 "normalized_candidates": list(ingest.get("normalized_candidates", [])),
                 "accepted": [dict(item) for item in ingest.get("accepted", [])],
+                "unresolved": [dict(item) for item in ingest.get("unresolved", [])],
                 "rejected": [dict(item) for item in ingest.get("rejected", [])],
                 "lineage_schema": ingest.get("lineage_schema"),
                 "lineage_status": ingest.get("lineage_status", "unavailable"),
@@ -1854,6 +1870,8 @@ class ShadowChatSession:
                 observation.to_dict() for observation in turn_observations
             ],
             "seeds_born_weightless": born,
+            "seeds_born_unresolved": [item["seed_id"] for item in ingest.get("unresolved", [])
+                                       if item["transition"] == "created_unresolved"],
             "prompt_boundary_markers": apply_prompt_boundary(surfaced)[1] if surfaced else [],
             "promoted_this_turn": promoted_now,
             "authority_review_seed_ids": [],
@@ -1936,6 +1954,10 @@ class ShadowChatSession:
             seed_id = accepted["seed_id"]
             self.born_turn.setdefault(seed_id, -1)
             born.append(seed_id)
+        for pending in ingest.get("unresolved", []):
+            if pending["transition"] == "created_unresolved":
+                self.born_turn.setdefault(pending["seed_id"], -1)
+                born.append(pending["seed_id"])
 
         if self.clusterer is not None:
             self._register_cluster_observations(
@@ -1959,7 +1981,11 @@ class ShadowChatSession:
         recurrence_threshold = self.manager.config.min_occurrences_for_gate
         for seed_id in sorted(changed_seed_ids):
             seed = self.manager.seeds[seed_id]
-            if seed.status == SeedStatus.EXPIRED or seed.occurrence_count < recurrence_threshold:
+            if (
+                seed.status == SeedStatus.EXPIRED
+                or seed.scope_status == "unresolved"
+                or seed.occurrence_count < recurrence_threshold
+            ):
                 continue
             if self.clusterer is not None:
                 cluster_id = self.seed_to_cluster.get(seed_id)
@@ -1993,6 +2019,7 @@ class ShadowChatSession:
             "intake_diagnostics": {
                 "normalized_candidates": list(ingest.get("normalized_candidates", [])),
                 "accepted": [dict(item) for item in ingest.get("accepted", [])],
+                "unresolved": [dict(item) for item in ingest.get("unresolved", [])],
                 "rejected": [dict(item) for item in ingest.get("rejected", [])],
                 "lineage_schema": ingest.get("lineage_schema"),
                 "lineage_status": ingest.get("lineage_status", "unavailable"),
@@ -2005,6 +2032,8 @@ class ShadowChatSession:
             },
             "candidate_observations": [item.to_dict() for item in observations],
             "seeds_born_weightless": born,
+            "seeds_born_unresolved": [item["seed_id"] for item in ingest.get("unresolved", [])
+                                       if item["transition"] == "created_unresolved"],
             "promoted_this_observation": promoted_now,
             "authority_review_seed_ids": authority_review_seed_ids,
             "authority_runtime": self.authority_runtime.to_dict(),
@@ -2086,6 +2115,7 @@ class ShadowChatSession:
                     "id": sid,
                     "text": seed.text,
                     "weight": seed.weight,
+                    "scope_status": seed.scope_status,
                     "trace": round(seed.trace, 3),
                     "status": seed.status.value,
                     "occurrence_count": seed.occurrence_count,
@@ -2174,7 +2204,7 @@ class ShadowChatSession:
         """
 
         schema_version = int(state.get("schema_version", 1))
-        if schema_version not in {1, 2, SESSION_STATE_SCHEMA_VERSION}:
+        if schema_version not in {1, 2, 3, SESSION_STATE_SCHEMA_VERSION}:
             raise ValueError("unsupported ShadowChatSession state schema")
         config = dict(state.get("session_config", {}))
         # Sessions saved before model recognition keep embedding recognition,
@@ -2196,6 +2226,13 @@ class ShadowChatSession:
             embedding_fn=embedding_fn,
         )
         manager_data = dict(state.get("manager", {}))
+        if schema_version >= 4:
+            # A v4 weightless, unresolved seed must not silently turn into a
+            # historically bounded seed if its status is omitted from a saved
+            # snapshot. Older v1-v3 snapshots legitimately lacked this field.
+            for item in manager_data.get("seeds", []):
+                if "scope_status" not in item:
+                    raise ValueError("v4 seed snapshot missing scope_status")
         core_config_data = dict(manager_data.get("config", {}))
         if (
             schema_version == 1

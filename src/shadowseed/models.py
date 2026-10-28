@@ -244,6 +244,15 @@ def validate_seed_snapshot(data: Mapping[str, Any]) -> None:
                 f"got {type(context_ref).__name__}"
             )
 
+    scope_status = data.get("scope_status", "bounded")
+    if scope_status not in {"bounded", "unresolved"} or not isinstance(scope_status, str):
+        raise ValueError("seed scope_status must be bounded or unresolved")
+    if scope_status == "unresolved":
+        if (data.get("weight", 0.0) != 0.0 or
+            data.get("evidence_count", 0) != 0 or
+            status == SeedStatus.PROMOTED):
+            raise ValueError("unresolved seed snapshot cannot contain authority")
+
     # --- cross-field invariant: an EXPIRED seed is terminal with zero weight ---
     if status == SeedStatus.EXPIRED and "weight" in data and data["weight"] != 0:
         raise ValueError(
@@ -264,6 +273,10 @@ class ShadowSeed:
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now().isoformat())
     origin: SeedOrigin | None = None
+    # 'unresolved' is a real, travelling, weight-zero shadow seed, not a Gate-
+    # eligible atomic claim. It is not a quality/truth score. Keeping it here
+    # (rather than in a detached review queue) preserves actual TTL/TrTL state.
+    scope_status: str = "bounded"
     # Authority fields are init=False: they cannot be set through the
     # constructor, closing the construction bypass. A seed is always born
     # weightless; authority is reached only through the Gate, and tests use
@@ -279,11 +292,15 @@ class ShadowSeed:
     _authority_sealed: bool = field(default=False, repr=False, compare=False, init=False)
 
     def __post_init__(self) -> None:
+        if self.scope_status not in {"bounded", "unresolved"}:
+            raise ValueError("scope_status must be bounded or unresolved")
         # Seal after construction so field defaults can be set during init, but
         # later direct assignments are guarded.
         object.__setattr__(self, "_authority_sealed", True)
 
     def __setattr__(self, name: str, value: Any) -> None:
+        if name == "scope_status" and getattr(self, "_authority_sealed", False):
+            raise AttributeError("scope_status is immutable; create a new attributed seed")
         if name in AUTHORITY_FIELDS and getattr(self, "_authority_sealed", False):
             raise AttributeError(
                 f"'{name}' is authority state and cannot be assigned directly. "
@@ -304,6 +321,11 @@ class ShadowSeed:
         an unchanged rewrite, and not on a pure lifecycle status move.
         """
 
+        if self.scope_status == "unresolved":
+            if (changes.get("weight", 0.0) > 0.0 or
+                changes.get("evidence_count", 0) > 0 or
+                changes.get("status") == SeedStatus.PROMOTED):
+                raise ValueError("unresolved seed may never receive authority")
         promoted_before = self.status == SeedStatus.PROMOTED
         value_changed = False
         for name, value in changes.items():
@@ -415,6 +437,7 @@ class ShadowSeed:
             created_at=data.get("created_at") or datetime.now().isoformat(),
             updated_at=data.get("updated_at") or datetime.now().isoformat(),
             origin=origin,
+            scope_status=data.get("scope_status", "bounded"),
         )
         seed._restore_authority(
             weight=data.get("weight", 0.0),
