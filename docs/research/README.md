@@ -15,6 +15,7 @@ Dit is de letterlijke Nederlandse onderzoeksvraag uit [de oorspronkelijke these]
 - **Wat nu rechtstreeks geobserveerd is:** [de uitgebreide samenvatting boven in de hoofd-README](../../README.md#what-we-understand-now-28-october-2026), met verwijzingen naar primaire runs en hun grenzen.
 - **Alle branches en open PR's:** [branchregister van 28 oktober](possibility-space/branch-register-2026-10-28.md). Bevat alle 166 op het moment van inventarisatie aanwezige remote branchrefs en de afzonderlijke open PR-ketens.
 - **Historisch archief en preprintgrenzen:** [concept-PR #259](https://github.com/E-AI-MODEL/shadowseed-pro/pull/259) met bron-resultatenkaart, PR-navigatie en publicatiebeperkingen. De branch is nog niet in `main` opgenomen.
+- **Controle van overlappende indexwijzigingen:** [PR #259, #260 en #264 naast elkaar](possibility-space/index-samenvoegcontrole-2026-10-28.md), met een gecontroleerde tekstuele samenvoeging en een veilige volgorde voor latere integratie.
 
 ## Wat de bronrecords wel en niet zeggen
 
