@@ -16,6 +16,14 @@
 - **[Eerste seedgeboorte met exact herleidbaar detectoritem](step1-to-weightless-inquiry-handoff-2026-10-25.md)** — read-only onderzoekscheck op de nieuwe canonieke item-herkomst, echte `created`-event en gewichtloze seed, via meerdere turns. Weigert legacy of beschadigde herkomst. Geen modelcall, autonome inquiry of Q1/Q2-resultaat.
 - **[Methodische EAI Blindspot-audit van Q1/Q2 en stap 1](step1-eai-blindspot-method-audit-2026-10-25.md)** — uitsluitend een interne controle op bronfit, rol/herkomst, parser- en evaluatorselectie, latere causaliteit, gewichtloos onderzoek en de verschillende feedbackregels in de protocollen. Geen EAI-rubric als gapfilter, geen nieuwe proef, geen onafhankelijke G0-goedkeuring.
 
+## Retrospective research inventory (27 October 2026)
+
+- [Verified raw-data evidence map](retrospective-evidence-map-2026-10-27.md) — source identifiers, candidate/intake counts, actual seed exposure, review provenance and what each result can establish.
+- [Active branch and PR map](research-branch-map-2026-10-27.md) — separate seven-PR Q1/Q2 research stack and two-PR legacy/SSOT safety stack, with original bases retained.
+- [Publication-readiness and reviewer status](publication-readiness-2026-10-27.md) — what is verified, what remains independent human work, and which files must stay private.
+
+These documents catalogue evidence; they do not approve G0, revise the fundamental thesis, replace this historical research reading order, or merge experimental code into `main`.
+
 ## Current reading order (start here)
 
 1. **[Fundamental question](../possibility-space-thesis.md)** — canonical, literal Dutch wording and honest scientific claim boundary.
