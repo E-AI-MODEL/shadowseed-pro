@@ -16,6 +16,10 @@
 - **[Eerste seedgeboorte met exact herleidbaar detectoritem](step1-to-weightless-inquiry-handoff-2026-10-25.md)** — read-only onderzoekscheck op de nieuwe canonieke item-herkomst, echte `created`-event en gewichtloze seed, via meerdere turns. Weigert legacy of beschadigde herkomst. Geen modelcall, autonome inquiry of Q1/Q2-resultaat.
 - **[Methodische EAI Blindspot-audit van Q1/Q2 en stap 1](step1-eai-blindspot-method-audit-2026-10-25.md)** — uitsluitend een interne controle op bronfit, rol/herkomst, parser- en evaluatorselectie, latere causaliteit, gewichtloos onderzoek en de verschillende feedbackregels in de protocollen. Geen EAI-rubric als gapfilter, geen nieuwe proef, geen onafhankelijke G0-goedkeuring.
 
+## New exploratory two-checkpoint inquiry pilot (28 October 2026)
+
+The [source-checked 48-call result](../../../research/experiments/20261028/RESULTS_STATUS.md) reports 24 complete two-turn trajectories under four controlled research conditions, across two different checkpoints of one fictional buoy case. The [protocol](../../../research/protocols/q1q2-two-point-48-20261028.md) records source SHA, original model histories, limitations and privacy boundaries. This is **not** a demonstrated Q1/Q2 effect, a model-internal knowledge finding, or a product-Gate test. No independent human review has yet been completed.
+
 ## Current reading order (start here)
 
 1. **[Fundamental question](../possibility-space-thesis.md)** — canonical, literal Dutch wording and honest scientific claim boundary.
