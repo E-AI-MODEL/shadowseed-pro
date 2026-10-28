@@ -44,7 +44,12 @@ def test_manager_ingest_detection_candidates_keeps_accept_reject_split():
 
     assert len(result["accepted"]) == 1
     assert result["accepted"][0]["seed_id"] == "ss_001"
-    assert len(result["rejected"]) == 3
+    assert result["rejected"] == []
+    assert len(result["unresolved"]) == 3
+    assert all(manager.get_seed(item["seed_id"]).weight == 0
+               for item in result["unresolved"])
+    assert all(manager.get_seed(item["seed_id"]).scope_status == "unresolved"
+               for item in result["unresolved"])
 
 
 def test_expand_short_fragments_default_adds_ontbreekt_to_broad_categories():
