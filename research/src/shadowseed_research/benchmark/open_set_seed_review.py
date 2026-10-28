@@ -168,6 +168,10 @@ def run_open_set_seed_review(
             split_broad=not is_model,
             deduplicate=not is_model,
             min_seed_words=4 if is_model else 0,
+            # Keep open-review-0.2's historical accepted/rejected denominator.
+            # This research-only switch does NOT change Pro's live default,
+            # where non-atomic possibilities remain real weightless seeds.
+            retain_unresolved=False,
         )
         raw_candidate_count += ingest["input_count"]
         normalized_candidate_count += len(ingest["normalized_candidates"])
