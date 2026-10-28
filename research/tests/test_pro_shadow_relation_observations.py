@@ -51,3 +51,37 @@ def test_unknown_seed_and_nonweightless_record_rejected():
     args["source_seed_ids"] = ["unknown"]
     with pytest.raises(ValueError, match="unknown source"):
         record_observation(**args)
+
+
+def test_actual_pro_engine_checkpoint_observation_does_not_change_seed_state():
+    import numpy as np
+    from shadowseed import ShadowseedEngine
+
+    class FrozenCandidate:
+        name = "offline-replay"
+        prompt_variant = "current_pair"
+
+        def detect_seeds(self, _item, max_seeds=5):
+            return ["De camera kan afwijken. De bewegingssensor gebruikt mogelijk een gedeelde voeding."]
+
+    engine = ShadowseedEngine(
+        detector_backend=FrozenCandidate(),
+        embedding_fn=lambda _text: np.array([1.0, 0.0]),
+        recurrence_mode="pairwise",
+        gate_policy_id="evidence_backed",
+    )
+    p = engine.prepare_turn("Wat zegt de bron?")
+    assert p.model_context == ""
+    observed = engine.observe_turn(p, "Een voorlopige technische beschrijving zonder bewijs.")
+    assert len(observed["seeds_born_unresolved"]) == 1
+    sid = observed["seeds_born_unresolved"][0]
+    before = engine.export_state()
+    event = record_observation(
+        pro_state=engine.inspect(), source_seed_ids=[sid],
+        observer="independent_research_sidecar_test", source_ref="synthetic:followup:1",
+        turn_index=1, event_index=0, proposed_text=None,
+    )
+    assert event["event_type"] == "no_proposal"
+    assert engine.export_state() == before
+    assert engine.inspect()["seeds"][0]["weight"] == 0
+    assert engine.audit() == 0
