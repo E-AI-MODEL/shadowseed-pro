@@ -1370,7 +1370,11 @@ class ShadowChatSession:
         recurrence_threshold = self.manager.config.min_occurrences_for_gate
         for seed_id in sorted(changed_seed_ids):
             seed = self.manager.seeds[seed_id]
-            if seed.status == SeedStatus.EXPIRED or seed.occurrence_count < recurrence_threshold:
+            if (
+                seed.status == SeedStatus.EXPIRED
+                or seed.scope_status == "unresolved"
+                or seed.occurrence_count < recurrence_threshold
+            ):
                 continue
             if self.clusterer is not None:
                 cluster_id = self.seed_to_cluster.get(seed_id)
@@ -1793,7 +1797,7 @@ class ShadowChatSession:
         # weightless.
         promoted_now: list[str] = []
         for seed_id, seed in list(self.manager.seeds.items()):
-            if seed.status == SeedStatus.EXPIRED:
+            if seed.status == SeedStatus.EXPIRED or seed.scope_status == "unresolved":
                 continue
             if self.clusterer is not None:
                 cluster_id = self.seed_to_cluster.get(seed_id)
@@ -1977,7 +1981,11 @@ class ShadowChatSession:
         recurrence_threshold = self.manager.config.min_occurrences_for_gate
         for seed_id in sorted(changed_seed_ids):
             seed = self.manager.seeds[seed_id]
-            if seed.status == SeedStatus.EXPIRED or seed.occurrence_count < recurrence_threshold:
+            if (
+                seed.status == SeedStatus.EXPIRED
+                or seed.scope_status == "unresolved"
+                or seed.occurrence_count < recurrence_threshold
+            ):
                 continue
             if self.clusterer is not None:
                 cluster_id = self.seed_to_cluster.get(seed_id)
