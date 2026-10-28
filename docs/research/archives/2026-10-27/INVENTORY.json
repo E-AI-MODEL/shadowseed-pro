@@ -1,0 +1,457 @@
+{
+  "schema": "shadowseed-raw-collection-20261027",
+  "source_repositories": {
+    "E-AI-MODEL/shadow-seed-study": {
+      "repository": "E-AI-MODEL/shadow-seed-study",
+      "git_bundle": "downloaded",
+      "main_snapshot": "downloaded",
+      "main_commit": "ff639cc8c079cabef06c4d8cd9bcfb90c72a3b40",
+      "branch_count": 3
+    },
+    "E-AI-MODEL/shadowseed": {
+      "repository": "E-AI-MODEL/shadowseed",
+      "git_bundle": "downloaded",
+      "main_snapshot": "downloaded",
+      "main_commit": "5c0211114993a9cc47f16a669b38960598a50f27",
+      "branch_count": 5
+    },
+    "E-AI-MODEL/shadowseed-agent-lab": {
+      "repository": "E-AI-MODEL/shadowseed-agent-lab",
+      "git_bundle": "downloaded",
+      "main_snapshot": "downloaded",
+      "main_commit": "d50971ac8aed51e1f4442ff3baac9328e36ad75e",
+      "branch_count": 2
+    },
+    "E-AI-MODEL/shadowseed-pro": {
+      "repository": "E-AI-MODEL/shadowseed-pro",
+      "git_bundle": "downloaded",
+      "main_snapshot": "downloaded",
+      "main_commit": "1a8e0947ff09f5bfe09b939a2dd4345a7ae2bb18",
+      "branch_count": 159
+    }
+  },
+  "original_github_artifact_zip_count": 62,
+  "items": [
+    {
+      "path": "repositories/shadow-seed-study/shadow-seed-study-main-source.tar",
+      "size": 5201920,
+      "sha256": "8a195bae8dd3d1046262acff6d5b46d1ed623ee805007745dab1a1796a5a7ce4",
+      "collection": "git_repository"
+    },
+    {
+      "path": "repositories/shadow-seed-study/shadow-seed-study.git.bundle",
+      "size": 2739589,
+      "sha256": "119887c523d3147872ab587c4c46d6c47600c15d65c2ba54c93f807cac9db480",
+      "collection": "git_repository"
+    },
+    {
+      "path": "repositories/shadowseed/shadowseed-main-source.tar",
+      "size": 7137280,
+      "sha256": "7eceb4e8583749021d445d2c14efebee2ac2635b5009dad4feb8a5ce3e6eaa8a",
+      "collection": "git_repository"
+    },
+    {
+      "path": "repositories/shadowseed/shadowseed.git.bundle",
+      "size": 3252682,
+      "sha256": "b942341bb823008cbf7b6306b666b023527c1a6e983308f3600493b5aca3b61f",
+      "collection": "git_repository"
+    },
+    {
+      "path": "repositories/shadowseed-agent-lab/shadowseed-agent-lab-main-source.tar",
+      "size": 174080,
+      "sha256": "f1b9ff7fc86c15c81bf4d31a345c4e762f2de49996658b5123da048864e492ba",
+      "collection": "git_repository"
+    },
+    {
+      "path": "repositories/shadowseed-agent-lab/shadowseed-agent-lab.git.bundle",
+      "size": 102388,
+      "sha256": "09edabaf9969031a664aca3f3ed92996a9860667c4cf1bd578bd7394a0e8031c",
+      "collection": "git_repository"
+    },
+    {
+      "path": "repositories/shadowseed-pro/shadowseed-pro-main-source.tar",
+      "size": 27432960,
+      "sha256": "72042d113765b5e9017b054776e5d258617ee6665ec9104557cd242328835ab9",
+      "collection": "git_repository"
+    },
+    {
+      "path": "repositories/shadowseed-pro/shadowseed-pro.git.bundle",
+      "size": 40626996,
+      "sha256": "d6083372b2f62ef677520572127b891311ef002291197f0ad62ba63c25bfe28b",
+      "collection": "git_repository"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-11284324288.zip",
+      "size": 2363,
+      "sha256": "41af97499a5477558806378d13d483c63161773d0d3f1fc2c734626e53878bea",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-11284639733.zip",
+      "size": 5205,
+      "sha256": "fe97304dc2360a827c7560555a5f993d7018cf30508c8ea2a49ee426256d6a06",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-11284863760.zip",
+      "size": 3458,
+      "sha256": "544821fcec4f446bff12669dac41d92a9a0f0a8500f910b15ef30ae4373f164e",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-11285356829.zip",
+      "size": 4961,
+      "sha256": "371dd8ce9d88b5be6d32445a35515705f564062d6958341e035e89d8e5bf8187",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-11286195661.zip",
+      "size": 7830,
+      "sha256": "a9650df411d67e13796fbcd397f8bf73e9edce7531fb5c1f5c484d276c82be27",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-11286450311.zip",
+      "size": 4056,
+      "sha256": "205d882eb911bfddfa1814fc0621ee963a85da3844f79fd1440a2ece808ff0d9",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-11297823040.zip",
+      "size": 8640,
+      "sha256": "802617b00bcb87c2a04f8991c0213147bcc674c42b27c8235a46a6905fc1f871",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-11297914688.zip",
+      "size": 6020,
+      "sha256": "5a25f9ee38335693f3ae8698573c1a3b3e8e058cc08695d825593f121fd0545c",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-11298173657.zip",
+      "size": 7669,
+      "sha256": "c123b037821c96bd6dfb519333ebb9d50a4737ad1de269fb0a74794c62b28a2a",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-11298564543.zip",
+      "size": 6058,
+      "sha256": "d2a0b48bc0091c19cfd09875872ac44cddca38f63ba142737ca1c79b21a932aa",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-11298806052.zip",
+      "size": 37732,
+      "sha256": "0f12671365bd947556fc98f1678e0f6c19cb38647a9617305d01ad6fcd3cee4d",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-11300515458.zip",
+      "size": 6435,
+      "sha256": "f942d417808a1853df85f6266dceb84e83e4d56ec0fbd2a5968d833badcdd2e4",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12457962428.zip",
+      "size": 8209,
+      "sha256": "3f5437967fa937c3c8cd615b96fb154c9d5e1363c855bf3e77434d41a3a1b38d",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12460822224.zip",
+      "size": 5618,
+      "sha256": "04a5630176dd3331210471f29f8b003c01a9ca2698318e13dcffa36590fa2d88",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12461261381.zip",
+      "size": 432,
+      "sha256": "618a4f10df0ed42a599647bef921007a687f8a3820c41a34f120ab36b3af1400",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12461607944.zip",
+      "size": 2090,
+      "sha256": "9bf1ebff51014aff01227975fbfe0b05a0a652a8c751fa6e2ad931acfbec9a7f",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12461658215.zip",
+      "size": 475,
+      "sha256": "0715c160ef4e1f705f1b466111e4bd8b417ac96ca6be284840bc5dea2fdaaf18",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12461867843.zip",
+      "size": 3731,
+      "sha256": "46cc3e71de072757784b1e0103f1d6d4cb1ceb020d9e8feaacf62c82e765a748",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12461973260.zip",
+      "size": 3902,
+      "sha256": "82371d71b88d8a1924875d1806c8fa42ae0ed02a3c59462c62e6f9ad19dbf368",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12462680453.zip",
+      "size": 475,
+      "sha256": "72f3db9a7ce6d373d23d58ab739036d052290c1bd8bdcf90ad032c0ecd8672c1",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12462845580.zip",
+      "size": 2190,
+      "sha256": "82b079098ba1e5e33a8efe444e4055c92083d2cf6045530416a05fd30314e82d",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12462989835.zip",
+      "size": 3811,
+      "sha256": "7dcfb65b291c823fe021e25d5b8744462e6f625c14bea0cf2c61ddd5ed428ad0",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12463118827.zip",
+      "size": 2205,
+      "sha256": "0bedb0a55a0971e1b272e7792ac424eb5dd0c8fa9106774a113e951d90541bb3",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12463283392.zip",
+      "size": 484,
+      "sha256": "091ec32cfd26dd7372ad5bbbe3787f07eafb55d97410d0d69970faf296091bb4",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12463728275.zip",
+      "size": 3904,
+      "sha256": "c4d297d3cd8aa47ba8fba76fcb14077a4f8c6581debfbdc02ea27d4dbfea6cdc",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12463748821.zip",
+      "size": 2145,
+      "sha256": "27058eaa24997ec23f789604cfc2fa0eaf170583c83b55686e2cef761e520539",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12463908973.zip",
+      "size": 476,
+      "sha256": "55e8d7dc9eba06c1a65b5497986f330d7c59c74174edf55a164c41e80006586c",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12464013646.zip",
+      "size": 2187,
+      "sha256": "4e51f2d622ba9bfce0a40acb58ea9214a1a5b6479694ecc0221dac4cac1f18ee",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12464083047.zip",
+      "size": 476,
+      "sha256": "88e95c459890e370db7778ed072fb6d7a9e3e1d88e1629e393c9a241f9f81889",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12464191412.zip",
+      "size": 2156,
+      "sha256": "2a56a419715a8df063eb28f79de74837f7e63124c6379c5283cdc71058c3d152",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12464265797.zip",
+      "size": 3903,
+      "sha256": "0ded9fda954d5452370f607bd1dfb2a503489bcea4ac4fe8bf8431153e5f740c",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12464495366.zip",
+      "size": 484,
+      "sha256": "a4dca8a304acf40a669e4eeaeed420ba72b7f4b8cd67faab65d15dab14d49417",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12464740613.zip",
+      "size": 3811,
+      "sha256": "b006728c9093cd27abb9e695d28c399a082590e78cef06c09e53e74072d6d122",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12468118930.zip",
+      "size": 4219,
+      "sha256": "db4cbb51ab34cfbe016069dc1de8813be93a5f55f6f70acaf2f44613bb01d37b",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12469233102.zip",
+      "size": 9142,
+      "sha256": "aaff16d4fa08061b4f9c4d3c9fc15b10369a775fdb69fc5db9f225bba2d729bc",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12469542497.zip",
+      "size": 1721,
+      "sha256": "5d7f795cd50b8207750d45a66692056e77658bfe93e492627e7265267f6a8d93",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12469856581.zip",
+      "size": 25958,
+      "sha256": "e00576961736783d4f8cd2800f4248abd0704ead8e7cf68a338a0a1844cfc52c",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12494727587.zip",
+      "size": 25408,
+      "sha256": "fc8c674852baf76d5424017da78ca1cc0de166e5be446be56d83703cb9bbb327",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12494848845.zip",
+      "size": 45940,
+      "sha256": "691fa24337a12723b57335335a5b612a0fa5687684a87996b97abb87fbb44618",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12495100500.zip",
+      "size": 32139,
+      "sha256": "78cf45cf24a35a315422cbe8ef5701af3bc0e113ed02412ee7bb1d775cef487b",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12495860373.zip",
+      "size": 36154,
+      "sha256": "01a4b6338e02d6e99eccb877b94d2067e7efcede72c2fbb402d483354cfd4cc7",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12498617077.zip",
+      "size": 60121,
+      "sha256": "486b7d611b4a54a77b6d18acca350cceadfc1e2df6fad0bf47e8ecd0849cd2ce",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12498945630.zip",
+      "size": 59079,
+      "sha256": "c6fc1ed4ff45f6483afc568b9a407a5d7f8ee59d90289bc4cbae3543b6d7069c",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12500183045.zip",
+      "size": 58477,
+      "sha256": "db2b9dbeec85402f258af6569b703e9b2ab87e9e0a267ed2109ea80341b4dedd",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12501426606.zip",
+      "size": 5365,
+      "sha256": "81be97596dd043c90c40557f703e100fa2d0e3a4a3c0bdee9297d9dbdad09366",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12502009754.zip",
+      "size": 76671,
+      "sha256": "c8bf5aadd63b673082c657d6bc268a1441da25e4cb6fff19c1e28645e8c979c0",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12557125885.zip",
+      "size": 25306,
+      "sha256": "e22086c9599546dddec4a0f48bae4febe3df329d16bf875a9d25386fca1f3be7",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12557350048.zip",
+      "size": 18004,
+      "sha256": "bb4d8869a017ba620ec1e1bc8bbf94a61cb5ad0a33d98ba50ff1a83fc524698f",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12557578208.zip",
+      "size": 24825,
+      "sha256": "44c000f7f8e7754e3ba16cd6ab767fe181c5f24b060048f88e79a2f18c919a57",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12559200891.zip",
+      "size": 23809,
+      "sha256": "1e1052704ff272b19d1c22986508b6079314b8305eacbdd9537dfda640860b9a",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12576778199.zip",
+      "size": 520,
+      "sha256": "7badd4cdcfe8317903852a33c5e3f22d1e214947f8a0fd2ec4950635c39145e3",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12589181261.zip",
+      "size": 2576,
+      "sha256": "da6da1315b2384cc2ff5826920f3a6d3197ac1cd45b6191d99bd4284e1d3557b",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12589546508.zip",
+      "size": 4503,
+      "sha256": "f7a43857fe6fc438c8292516dc051e926ed5397f4d6cb6ff95f66531653210f8",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12607731589.zip",
+      "size": 25557,
+      "sha256": "55ba3cbdfae5789496788b5a31bbe31304ceb8f3f044de709d76f7f45d335dc8",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12609532785.zip",
+      "size": 12793,
+      "sha256": "a579c2e1ec4d35e24ce7bb50d9a6e5ef0ae9d987eb88a5800376db77e956be20",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12611245347.zip",
+      "size": 20069,
+      "sha256": "fd5e19c75d110054c84ded447437d48ef1ca332df3c8b3979f08f38edd245839",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12613458217.zip",
+      "size": 4787,
+      "sha256": "5922bde092c0b84b8c8e4ba06eac034e187d3bd8f1cb8325116fa6ee69f7e168",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12613842508.zip",
+      "size": 8256,
+      "sha256": "e87418a66dda74173a282dcb39743122e0d5834fa6f00230b87eebceb3232fca",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12691362232.zip",
+      "size": 107653,
+      "sha256": "05be196ffa6fb7ee0e1880730ef26021cb3ae2fa05b04ea49e05a07f4d623422",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12691427191.zip",
+      "size": 12757,
+      "sha256": "223f81827219ff77b539837ebc01e20ba788b9adc77388fce99a694568c421da",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12752894866.zip",
+      "size": 42110,
+      "sha256": "d8e532e9f52622cfa528d1121ef095ba45b6bb1f3c6bc9b615d251f990beb926",
+      "collection": "workflow_artifact_zip"
+    },
+    {
+      "path": "actions/original-github-action-zips/github-actions-artifact-12754935105.zip",
+      "size": 210245,
+      "sha256": "ced7b832ed940eccc73394f2f9551eb82409a8dd38faec75caa6976e9d019ca7",
+      "collection": "workflow_artifact_zip"
+    }
+  ],
+  "coverage_note": "Repository archives include all refs at collection time. Action artifacts are the 62 originally downloaded zips; unavailable/expired artifacts are not included. No semantic assessment or alterations."
+}
