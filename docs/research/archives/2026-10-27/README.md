@@ -77,7 +77,7 @@ There is already a working system, real multi-turn material and a substantial so
 **Exact ZIP:** [shadowseed_alle_raw_artifacts_20261027.zip](https://github.com/E-AI-MODEL/shadowseed-pro/releases/download/research-archive-2026-10-27/shadowseed_alle_raw_artifacts_20261027.zip)  
 **Size:** 87,841,733 bytes  
 **SHA-256:** `0c2fac002613e88dd74a8d305cb7c8078d6349fbc2c76b11042982cdeaf921d8`  
-**Inventory:** `INVENTORY.json` in the original ZIP, recording SHA-256 for all 70 archived members.
+**Inventory:** [`INVENTORY.json`](INVENTORY.json), reproduced byte-for-byte from the original ZIP, with SHA-256 for all 70 archived members.
 
 The outer ZIP contains 71 entries: four `*-main-source.tar` snapshots, four `*.git.bundle` histories, 62 original Actions artifact ZIPs, and the inventory. The complete original ZIP is retained byte-for-byte. The inventory records repository refs as they existed on 27 October 2026 and explicitly notes that already expired or unavailable Actions artifacts are not included.
 
