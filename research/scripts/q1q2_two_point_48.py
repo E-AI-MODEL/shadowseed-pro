@@ -24,7 +24,7 @@ DESIGN_SEED = 20261028
 ARMS = ("ordinary", "deliberate_search", "shadow_candidate", "placebo")
 CAP_CALLS = 48
 CAP_TOKENS = 360000
-MAX_OUTPUT = 1900
+MAX_OUTPUT = 4096
 MAX_CHARS = 25000
 INSTRUCTIONS = (
     "Je onderzoekt een fictieve wetenschappelijke meetcasus. Stel toetsbare vragen "
@@ -186,7 +186,7 @@ def provider(model,prompt_text,key):
         if isinstance(piece,dict) and piece.get("type")=="output_text"
         and isinstance(piece.get("text"),str)).strip()
     if result.get("status")!="completed" or not answer:
-        raise RuntimeError("incomplete or empty model answer")
+        raise RuntimeError("incomplete_or_empty_visible_answer: status="+str(result.get("status"))+" output_tokens="+str(usage.get("output_tokens"))+"; no_retry")
     receipt=dict(response_id=result.get("id"),model_requested=model,
         model_returned=returned,prompt_sha256=sha(prompt_text),
         answer_sha256=sha(answer),input_tokens=usage["input_tokens"],
