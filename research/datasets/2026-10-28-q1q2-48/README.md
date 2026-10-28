@@ -1,31 +1,31 @@
-# Original raw research archive: two-checkpoint, 48-call pilot (28 October 2026)
+# Original research records: 48-call Q1/Q2 pilot (28 October 2026)
 
-This directory contains **unaltered research source files** and original ZIPs. The owner requested persistent, openly accessible source preservation on GitHub. GitHub Git history has no seven-day Actions-artifact retention timer, although public availability still depends on keeping the repository and its history accessible.
+This folder contains readable, original, **unaltered** source files from the 48-completed-answer, 24-two-turn-track pilot. The study contains two checkpoints within a single fictional case and does not imply two independent cases, proof of novelty, or completed independent human reviews.
 
-## Observations, not conclusions
+## Where to start
 
-- The original GitHub Actions run `40616375653` completed 48 provider responses in 24 two-turn trajectories across four arms, three repeats, two model-specific moments of **one fictitious case**. Provider-reported usage: 187,255 tokens. No independent human semantic review was completed at publication time.
-- `original-author-kit/OWNER/observed-owner.json` contains the original model outputs and provenance; `OWNER/plan.json` contains allocation/planning; `SOURCE/original-observed_sha256_0a5094e3.json` contains the pinned historical source.
-- `original-author-kit/ANALYSIS/` holds dated, *derived* results and interpretations. They do not replace raw observations.
-- `original-author-kit/REVIEW/` holds blinded and **unblinded** track IDs and reviewer assignment tables. The owner explicitly asked for public, complete preservation; making these files public **ends the original blinding**. Any later independent blinded review must use a new isolation process and cannot claim to have remained blinded to this public mapping.
-- `original-author-kit/OWNER/owner-private-20261028.pem` is the **one-off RSA private key** for the historic encrypted GitHub artifact. It is published alongside the complete owner data solely for reproducibility of that archive. This key must never be reused for confidential data.
-- The original encrypted Actions ZIP is preserved as `original-zip-archives/PR260-GitHub-Actions-artifact-12786191379.zip`. In the history of the archived one-shot workflow, the Actions copy itself was assigned `retention-days: 7`, expiring on 4 November 2026. The Git-tracked archived copy does not use the Actions retention clock.
-- The original author-only ZIP, author results ZIP, reviewer-A ZIP, 46-candidate source ZIP and technical control ZIP are preserved verbatim under `original-zip-archives/`. Repetitions across these ZIPs are intentionally kept as distinct *historical packages*, not independent observations.
+- [Original model answers, 24 two-turn tracks](original-author-kit/OWNER/observed-owner.json) (48 model responses with provider receipts).
+- [Exact original source observations](original-author-kit/SOURCE/original-observed_sha256_0a5094e3.json) (prior raw detector and host records, pinned SHA-256).
+- [Experimental plan and arm order](original-author-kit/OWNER/plan.json).
+- [Original blinded reviewer packet](original-author-kit/OWNER/blind-human-review.json) and [individual reviewer packets](original-author-kit/REVIEW/).
+- [Analysis scripts](original-author-kit/CODE/), [mechanical outputs](original-author-kit/ANALYSIS/), and [read-only HTML explorer](original-author-kit/RAW_EXPLORER_AUTHOR_ONLY.html).
 
-## Integrity and provenance
+These are *original file bytes* from the owner research archive. One original helper runner, `CODE/runner_local_two_point_pilot.py`, is kept with the complete owner ZIP rather than mirrored in this public folder. The executed source runner is separately available on PR #260. Inferences and researcher interpretations should be placed in separate dated files, not written back into these source records. The historical terms `accepted`, `rejected`, `not_atomic` and `surfaced` belong to the original pipeline; they are not evaluations of the underlying text.
 
-- `SHA256SUMS` records per-file SHA-256 of all original files and archived ZIPs; it does not hash itself.
-- Original GitHub Actions artifact ID: `12786191379`, workflow run: `40616375653`.
+## Provenance and checksums
+
+- GitHub Actions completed run: https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40616375653 .
+- Original owner artifact ID: `12786191379`; historic filename `q1q2-48-encrypted-owner-40616375653`.
+- Original encrypted artifact SHA-256: `587c582f40af5e7cab9639bef3938b4b57650f0c878af8bf1e1a1b8749cd1d2b`. The unchanged encrypted ZIP is separately backed up, but is **not** a Git-tracked file in this directory.
+- Full unchanged original author ZIP SHA-256: `aecf3bc94987b685e6348437af5a815c39a7f6bd3417d686f44c7c5234592475`. Its unaltered, complete source remains backed up outside this public repository.
 - Source `observed.json` SHA-256: `0a5094e38ab2fdcf8c68dc8d6a3c75d29eeffd49e1f6c8e138589ed73ca36bbf`.
-- On 28 October 2026 the one-off RSA private key was used locally to decrypt that artifact. All four recovered files (`observed-owner.json`, `blind-human-review.json`, `owner-unblind.json`, `plan.json`) matched byte-for-byte the copies in the original author kit.
-- Original historical outputs and recorded labels are **not** semantic judgements about truth, novelty, value, or later emergence. No Q1/Q2 causal claim is asserted by this archive.
+- The [SHA256SUMS](SHA256SUMS) file lists all source files actually included in this directory (excluding this README and the checksum file itself).
+- Git commits preserve content history. The 7-day retention on the original GitHub Actions artifact does not govern these Git-tracked readable research files.
 
-## Scope note
+## Scope and access
 
-A separate ~84 MB archive of original research histories and 62 Actions ZIPs from 27 October is **not contained here**. It is a separate multi-repository package, not the 48-call original artifact. Do not confuse it with this fully recovered 48-call dataset or silently overwrite either source; verify privacy and provenance separately before publishing that larger package.
+The original author ZIP also includes the one-off RSA private key, an owner-to-arm unblinding map, and a reviewer identity map. Those **three files** are preserved intact with the owner archive but not part of this public collection. The incomplete blinded review must not be silently relabeled as independently assessed. This publication does **not** publish model API credentials, the RSA private key, or the unblinding identity.
 
-## Reference
+No model calls have been rerun to reconstruct missing content. This is a faithful byte-level preservation of 22 source files and two new documentation files, not a generated substitute for the originals.
 
-- Study [PR #260](https://github.com/E-AI-MODEL/shadowseed-pro/pull/260)
-- Preservation [issue #266](https://github.com/E-AI-MODEL/shadowseed-pro/issues/266)
-- Original run [40616375653](https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40616375653)
+See [PR #260](https://github.com/E-AI-MODEL/shadowseed-pro/pull/260) and [archive issue #266](https://github.com/E-AI-MODEL/shadowseed-pro/issues/266).
