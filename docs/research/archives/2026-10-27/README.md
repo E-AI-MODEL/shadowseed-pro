@@ -1,75 +1,105 @@
-# Shadowseed: de mogelijkheden die buiten beeld bleven | The possibilities we did not select
+# Shadowseed: de schaduw die meereist | The shadow that travels
 
-**Onderzoeksarchief van 27 oktober 2026 · Research archive, 27 October 2026**  
-[Nederlands](#nederlands) · [English](#english) · [Bronbestanden en herkomst / Source files and provenance](#bronbestanden-en-herkomst--source-files-and-provenance)
+**Onderzoeksarchief 27 oktober 2026 · Research archive, 27 October 2026**  
+[Nederlands](#nederlands) · [English](#english) · [Bronbestanden en herkomst](#bronbestanden-en-herkomst--source-files-and-provenance)
 
 ## Nederlands
 
-### Waarom we dit onderzoeken
+### Wat had hier kunnen staan?
 
-Een taalmodel geeft een antwoord. Soms een uitstekend antwoord. Maar wat we lezen, is altijd een selectie. Andere verbanden, vragen of twijfels verschijnen niet. Misschien waren ze niet relevant. Misschien waren ze onzin. En misschien hadden ze iets kunnen veranderen aan de vraag die we daarna zouden stellen.
+Een taalmodel geeft een antwoord. Vaak een goed antwoord, soms een onverwacht goed antwoord. Maar het antwoord dat we lezen, is een keuze uit vele mogelijke vervolgen. Wat geen plaats krijgt in die keuze, verdwijnt meestal uit beeld.
 
-Dat laatste interesseert ons. Niet alleen wat het model weet of niet weet, maar wat er nog *zou kunnen* ontstaan wanneer je een niet-gekozen mogelijkheid niet meteen laat verdwijnen. Kan een verband dat nu weinig betekenis lijkt te hebben, later een andere vraag oproepen? En kan die vraag op haar beurt veranderen wat er vervolgens onderzocht kan worden?
+Daar begon Shadow Seed Learning. In de eerste versies onderzochten we vooral wat in een antwoord leek te ontbreken: een voorwaarde, een verband, een andere verklaring. Dat leverde bruikbare kandidaten op. Toch bleef iets wringen. Als je alleen zoekt naar wat er volgens een maatstaf *had moeten staan*, kom je gemakkelijk uit bij een completer antwoord op dezelfde vraag.
 
-De oorspronkelijke onderzoeksvraag luidt:
+In [ons visiedocument van juni 2026](https://github.com/E-AI-MODEL/shadowseed/blob/main/docs/research/vision-generative-seeds.md) schreven we daarom een andere vraag op:
+
+> **Wat had hier kúnnen staan?**
+
+Dat kleine verschil heeft veel veranderd. Een verband hoeft nog nergens bij te horen. Een twijfel hoeft niet meteen te worden opgelost. Een gedachte die nu weinig oplevert, kan in een andere context ineens een interessante voorwaarde of nieuwe vraag worden. Het kan ook nergens toe leiden. We willen beide kunnen waarnemen.
+
+Later hebben we die gedachte verder uitgewerkt. Het onderzoek gaat inmiddels ook over het moment waarop een mogelijke relatie aanleiding geeft tot een volgende mogelijkheid. Niet alleen een ander antwoord, of meer varianten, maar een verandering in wat daarna zinvol onderzocht kan worden. De oorspronkelijke vraag is bewust in het Nederlands bewaard:
 
 > Kunnen we de waarschijnlijkheidsgerichte werking van een taalmodel gebruiken om niet alleen te onderzoeken wat het model weet, niet weet of niet genereert, maar ook welke relaties en mogelijkheden er zouden kunnen zijn buiten de gebruikelijke generatie? En kunnen we onderzoeken hoe nieuwe mogelijkheden ontstaan die de ruimte van wat daarna denkbaar is zelf veranderen?
 
-Hiermee beweren we niet dat een model verborgen waarheden kan opvragen of precies weet welke gedachten het heeft overgeslagen. Ook gaat het niet om het verzamelen van zo veel mogelijk alternatieven. We onderzoeken wat we daadwerkelijk kunnen waarnemen, bewaren en in latere beurten opnieuw tegenkomen.
+We veronderstellen daarbij niet dat een taalmodel toegang heeft tot een geheime voorraad ongekozen ideeën. Wat een model niet genereert, kunnen we niet rechtstreeks aflezen. Een detector kan wel een andere relatie of twijfel *formuleren*. Dat geeft ons iets om te onderzoeken, geen bewijs dat we iets uit een verborgen modelgeheugen hebben gehaald.
 
-### Van een vraag naar iets dat we kunnen onderzoeken
+### Waarom een schaduw?
 
-In *Shadow Seed Learning* begonnen we met het observeren van mogelijke ontbrekende relaties. Gaandeweg werd duidelijk dat een detectoruitspraak nog geen waarheid is, en ook geen bewijs dat een verband waardevol of werkelijk nieuw is. Daarom moesten we leren onderscheiden: wat gaf het model zelf als antwoord, wat opperde de detector, wat liet de verwerking door, en wat gebeurde er in een volgende beurt?
+De naam beschrijft wat we wilden bouwen. Een shadow seed is een mogelijke relatie, vraag of twijfel die in het gesprek kan blijven bestaan zonder het gesprek al te sturen.
 
-Die scheiding zit inmiddels ook in de software. Een kandidaat kan worden vastgelegd zonder dat hij het volgende antwoord mag sturen. `trace > 0` betekent dat er iets is onthouden. `weight = 0` betekent dat het geen bevoegdheid heeft om het antwoord te bepalen. Een afzonderlijke Validation Gate en een controle op het moment van gebruik regelen eventuele latere invloed. Dat is werkende techniek, geen bewijs dat de grote onderzoeksvraag daarmee al beantwoord is.
+Daarom hebben we twee dingen uit elkaar gehaald: *aanwezigheid* en *invloed*. Een geregistreerde seed kan een spoor hebben (`trace > 0`) terwijl de bevoegdheid om een antwoord te sturen ontbreekt (`weight = 0`). De latere context kan opnieuw aanleiding geven om naar een seed te kijken. Soms wordt een vraag concreter. Soms blijkt een vermoeden ongegrond. Soms vervaagt het spoor.
 
-We hebben vervolgens echte modelantwoorden, detectorkandidaten, meerbeurtentrajecten en vergelijkingen naast elkaar gelegd. Soms ontstond er een nieuwe onderzoeksvraag. Soms noemde een gewoon model dezelfde relatie al zonder Shadowseed. Soms kwam een kandidaat nooit in een later antwoord terecht. We zagen ook dat een vormregel bij de intake een uiting kon tegenhouden, zonder dat daarmee iets over de inhoud was vastgesteld. Juist zulke verschillen zijn interessant. Ze laten zien waar een mogelijkheid verloren gaat, bewaard blijft of opnieuw onderzocht wordt.
+In het [oorspronkelijke visiedocument](https://github.com/E-AI-MODEL/shadowseed/blob/main/docs/research/vision-generative-seeds.md) noemden we dat *de schaduw die meereist*. Het is een beeld voor een technisch onderscheid dat inmiddels in Shadowseed Pro werkt. De Validation Gate en een aparte controle op het moment van gebruik bepalen of een kandidaat ooit invloed mag krijgen. Ook een terugkerende seed krijgt niet vanzelf gelijk.
 
-De methoden werden daarbij regelmatig bijgesteld. Van vroege experimenten met ontbrekende informatie naar het volgen van kandidaten over meerdere beurten. Van alleen geaccepteerde seeds naar ook de oorspronkelijke afgewezen uitingen. Van een verschil tussen twee antwoorden naar de moeilijkere vraag wat dat verschil eigenlijk betekent. We bewaren eerdere aannames, tussenstappen en mislukte proeven, omdat je anders achteraf niet meer ziet hoe het onderzoek zich heeft ontwikkeld.
+Het uitstellen van dat oordeel is belangrijk voor het onderzoek. Een kansrijke gedachte kan er bij de eerste formulering rommelig uitzien. Toen we de ruwe modeluitvoer naast de intakebesluiten legden, zagen we hoe sommige kandidaten op hun *vorm* werden afgewezen. Een technisch afwijslabel vertelt ons nog niet of een mogelijkheid later betekenis zou kunnen krijgen. Daarom bewaren we ook de tekst die níét als seed door mocht.
 
-### Waarom dit archief bestaat
+### Hoe we verder zijn gekomen
 
-Deze release bewaart de bronbestanden van **vier repositories** (`shadow-seed-study`, `shadowseed`, `shadowseed-agent-lab` en `shadowseed-pro`), met van elk een bronmomentopname en een Git-bundle. Daarnaast bevat zij **62 oorspronkelijk gedownloade GitHub Actions-artifacts**. Het bestand `INVENTORY.json` vermeldt de afzonderlijke bestanden, grootte, herkomst en SHA-256-controlesommen.
+We hebben onderweg onze eigen onderzoeksmethoden moeten corrigeren. Een ontbrekende verbinding in een vooraf getekende graaf bleek niet hetzelfde als een nieuwe onderzoekbare mogelijkheid. Een antwoord dat anders klinkt, hoeft inhoudelijk geen andere richting te openen. En wanneer het model zonder Shadowseed dezelfde relatie formuleert, moeten we dat serieus nemen.
 
-Dat zijn 62 bewaarde artifactbestanden, geen 62 onafhankelijke experimenten en evenmin 62 geslaagde proeven. Sommige resultaten zijn onvolledig of laten zien dat een gekozen meetmethode onze vraag niet goed kon beantwoorden. Beschikbaar betekent ook niet volledig: artifacts die bij de verzameling al ontbraken of verlopen waren, zitten er niet alsnog in. De archiefmomentopnamen zijn geen actuele versies van de vier repositories.
+Daarom kijken we nu naar de hele gang van zaken. Wat antwoordde het model? Wat formuleerde de detector letterlijk? Wat werd vastgelegd of tegengehouden? Welke kandidaten bleven in latere beurten beschikbaar? Werd een kandidaat daadwerkelijk getoond of gebruikt? En welke vervolgvraag ontstond daarna? Die momenten kun je niet allemaal vervangen door één score.
 
-Dit archief geeft onderzoekers de mogelijkheid terug te gaan naar de oorspronkelijke waarnemingen. Niet om er achteraf één succespercentage uit te halen, maar om te kunnen volgen hoe een modeluiting door de verschillende stappen ging, welke keuzes invloed hadden en wat we nog niet kunnen zeggen. De afzonderlijk gepubliceerde [48-call-proef van 28 oktober](https://github.com/E-AI-MODEL/shadowseed-pro/tree/main/research/datasets/2026-10-28-q1q2-48) hoort bij de latere onderzoeksontwikkeling en is geen extra onderdeel van deze 62 artifacts.
+Het resultaat is inmiddels behoorlijk concreet. Shadowseed Pro bevat een werkende geheugen- en validatielaag, onderzoeksinstrumenten en echte meerbeurtentrajecten. We hebben oorspronkelijke antwoorden, kandidatuitspraken, tussenstappen en gedeeltelijke proeven vastgelegd. Juist het terugkijken naar die bronnen heeft ons scherper laten zien wat het systeem doet en wat we er nog niet uit kunnen afleiden.
 
-Het onderzoek is ver gekomen: er is software die de route zichtbaar maakt, er zijn echte meerbeurtentrajecten en er is bronmateriaal waarmee de oorspronkelijke keuzes opnieuw bekeken kunnen worden. Of het bewaren van een ongekozen mogelijkheid ook werkelijk verandert wat later denkbaar en onderzoekbaar wordt, blijft de vraag die we zorgvuldig willen beantwoorden.
+De vraag of een ongekozen mogelijkheid *zelf* een nieuwe onderzoekbare richting kan laten ontstaan, blijft open. Dat is geen reden om de eerdere stappen klein te maken. Het is de reden om ze zo goed mogelijk te bewaren.
+
+### Waarom dit archief openbaar is
+
+Een groot deel van het werk stond verspreid over repositories, branches en tijdelijke GitHub Actions-artifacts. Voor wie de totstandkoming wil begrijpen, is de volledige geschiedenis relevant. Ook wanneer een proef vroeg stopte, een detector een kandidaat afwees of een model zonder extra hulp al hetzelfde verband vond.
+
+Deze release bevat vier repositorygeschiedenissen en bronmomentopnamen van `shadow-seed-study`, `shadowseed`, `shadowseed-agent-lab` en `shadowseed-pro`, plus **62 oorspronkelijke GitHub Actions-artifactbestanden**. De bestanden zijn ongewijzigd bewaard. De [bestandsinventaris](INVENTORY.json) bevat herkomst, grootte en SHA-256-controlesommen.
+
+De 62 artifacts zijn geen 62 onafhankelijke experimenten. Sommige uitvoeringen zijn onvolledig; al eerder verlopen artifacts zitten niet in deze verzameling. De bronmomentopnamen zijn evenmin een actuele kopie van de code. De afzonderlijke [48-call-proef van 28 oktober](https://github.com/E-AI-MODEL/shadowseed-pro/tree/main/research/datasets/2026-10-28-q1q2-48) is later gepubliceerd en hoort niet bij deze 62 bestanden.
+
+We bewaren deze geschiedenis om het onderzoek bij de oorspronkelijke waarneming te kunnen hervatten. Ook bij een uiting die destijds nergens meer terechtkwam. Misschien gebeurt er later niets mee. Misschien verandert juist zo'n uiting welke vraag we daarna stellen. Dat verschil willen we kunnen onderzoeken.
 
 ## English
 
-### Why we started asking
+### What could have been there?
 
-A language model produces an answer. Sometimes a very good one. But the answer we read is a selection. Other relations, questions or doubts do not appear. They may have been irrelevant. They may have been nonsense. Or they might have changed the question we would ask next.
+A language model produces an answer. Often a good one, sometimes a remarkably good one. Yet the answer we see is one selected continuation among many. The paths that were not selected usually leave no visible record.
 
-That last possibility is what interests us. We want to investigate not only what a model knows or fails to generate, but what *might become possible* when an unselected thought is not immediately discarded. Could a relation that seems unimportant now lead to a different question later? Could that question, in turn, change what can be investigated?
+This is where Shadow Seed Learning began. Early versions looked for possible omissions: an unstated condition, a missing connection, an alternative explanation. These were useful things to examine. But measuring what an answer *should have included* kept pulling us back towards a more complete answer to the same question.
 
-A working English translation of our original Dutch research question is:
+In our [June 2026 vision](https://github.com/E-AI-MODEL/shadowseed/blob/main/docs/research/vision-generative-seeds.md), we framed the question differently:
+
+> **What could have been there?**
+
+A possible relation does not need an established place in the current answer. A doubt may remain unresolved. Something that seems unpromising today may matter under conditions we have not yet encountered. It may also lead nowhere. Both outcomes belong in the research record.
+
+That idea eventually took us further. We began asking whether a newly considered possibility could make *other* questions or relations available for investigation. A different answer would be interesting, but it would not by itself answer that question. The full research question, first formulated in Dutch, is preserved above. A working translation is:
 
 > Can we use the probability-oriented way a language model works to investigate not only what it knows, does not know or does not generate, but also which relations and possibilities might exist outside its usual generation? And can we investigate how new possibilities emerge that themselves change what becomes thinkable next?
 
-This is not a claim that a model can reveal hidden truths or accurately report every idea it did not select. Nor are we trying to generate as many alternatives as possible. We want to observe what can actually be recorded, retained and revisited over subsequent turns. The [original Dutch wording](../../possibility-space-thesis.md) remains the reference for the research question.
+We do not assume that a model can inspect a hidden list of ideas it chose not to express. A detector can formulate another candidate relation, question or doubt. That gives us something observable to follow. It does not establish that the candidate was recovered from some inaccessible internal store.
 
-### Turning the question into research
+### The shadow that travels
 
-*Shadow Seed Learning* began by looking for potentially missing relations. We soon had to distinguish a detector's suggestion from evidence, and a plausible hypothesis from a genuinely new possibility. A detector output does not tell us whether a candidate is true, useful or novel. We therefore track the original answer, the detector's raw text, its processing and intake decision, and what happens in later turns as separate events.
+The name captures an important design choice. A shadow seed is a possible relation, question or doubt that can remain part of a conversation's recorded history without being allowed to steer what comes next.
 
-This separation is now part of the working software. A candidate can be remembered without acquiring the authority to shape the next answer. `trace > 0` means something remains in memory. `weight = 0` means it has no steering authority. A separate Validation Gate and a point-of-use decision control whether it may influence an answer later. Implementing that distinction is substantial engineering progress. It is not, by itself, proof of our wider hypothesis.
+We separated *presence* from *authority*. A seed can have a trace (`trace > 0`) while its ability to influence an answer remains zero (`weight = 0`). Later context may bring the candidate back into view, sharpen the question or leave the idea behind. A Validation Gate and a separate point-of-use check control any subsequent influence. Recurrence alone is not confirmation.
 
-We went on to compare actual model answers, candidate records and multi-turn trajectories. Sometimes a later answer explored a relation that had appeared in a candidate. Sometimes an ordinary model reached the same relation without Shadowseed. Sometimes a candidate was never shown in a later answer. We also saw that an intake rule could reject a candidate because of its written form, without settling anything about the idea itself. Those distinctions matter: they tell us where an option was lost, retained or revisited.
+We called this [“the shadow that travels”](https://github.com/E-AI-MODEL/shadowseed/blob/main/docs/research/vision-generative-seeds.md). The metaphor expresses an actual separation now implemented in Shadowseed Pro. It also explains why we cannot judge every candidate at birth. A tentative relation may be awkwardly phrased or difficult to reduce to a single neat item. When we revisited the original detector output, we found intake decisions that depended on written form. A rejection at that stage is part of the record, not an independent verdict on what the candidate could have become.
 
-Our approach changed as we learned from the records. Early experiments concentrated on missing information. Later work followed candidates through multiple turns, preserved rejected as well as accepted source text, and separated a different-looking answer from the harder question of whether a new avenue of investigation had become available. We kept the earlier assumptions, failed tests and partial runs. Without them, the research would look much more settled than it was.
+### Following the whole route
 
-### Why we published the archive
+The research has changed because the early tests taught us what *not* to confuse. Finding a missing edge in a predefined graph does not show that a new kind of inquiry has become possible. Two different-looking answers are not necessarily two different ideas. And if an ordinary model can reach the same relation without Shadowseed, that belongs in the comparison.
 
-This release preserves source snapshots and Git bundles for **four repositories** (`shadow-seed-study`, `shadowseed`, `shadowseed-agent-lab` and `shadowseed-pro`), together with **62 original GitHub Actions artifact ZIPs**. Inside the download, `INVENTORY.json` lists the files, their provenance, sizes and SHA-256 checksums.
+We therefore follow each step separately: the original model response, the detector's literal proposal, the intake decision, the recorded seed, what survives across turns, whether a candidate is actually shown or used, and what happens afterwards. Keeping those distinctions visible matters more than arriving quickly at an attractive percentage.
 
-Sixty-two preserved artifacts do not mean 62 independent experiments, and a successful workflow is not the same as a validated research result. Some runs were partial; some tested a narrower question than the one we ultimately care about. The collection includes only artifacts that were available for download when it was assembled. The repository snapshots record that date, not the current state of the code.
+There is substantial work behind this archive. Shadowseed Pro has a functioning memory and validation engine. We have real model runs, multi-turn records, original candidate text, partial experiments and source-level reconstruction. Returning to those materials has improved both the software and the questions we ask of it.
 
-We publish this material so that someone can return to the original observations and ask better questions about them: what the model actually produced, what the detector proposed, where an item was filtered out, and what could be traced across turns. The separately published [48-call study from 28 October](https://github.com/E-AI-MODEL/shadowseed-pro/tree/main/research/datasets/2026-10-28-q1q2-48) belongs to a later step and is not an additional item among these 62 artifacts.
+Whether retaining an unselected possibility can *cause* a new direction of inquiry to become available remains under investigation. We are further along precisely because we can now examine the process rather than rely on a promising story about the outcome.
 
-There is already a working system, real multi-turn material and a substantial source record. What remains open is the question that made us start: can retaining an unselected possibility change what becomes conceivable and investigable afterwards? The archive lets that question remain open without losing the work already done.
+### Why this archive belongs in public
+
+Earlier work was scattered across repositories, branches and short-lived GitHub Actions artifacts. That history includes decisions that shaped the design, experiments that stopped early and candidates that never reached a later turn. All of it matters if someone wants to understand how the project developed.
+
+This release preserves source snapshots and Git bundles from **four repositories**: `shadow-seed-study`, `shadowseed`, `shadowseed-agent-lab` and `shadowseed-pro`. It also contains **62 original GitHub Actions artifact ZIPs**. The original files are unchanged, and the [inventory](INVENTORY.json) records their provenance, sizes and SHA-256 checksums.
+
+Those 62 artifacts are not 62 independent experiments. Some runs are partial, and the collection cannot restore artifacts that had already expired or were unavailable. The source snapshots describe an earlier point in time. The separately released [48-call study of 28 October](https://github.com/E-AI-MODEL/shadowseed-pro/tree/main/research/datasets/2026-10-28-q1q2-48) is not an additional item in this collection.
+
+We made the archive public so that the work can be read from its original observations. Including the candidates that were set aside. A possibility may fade without changing anything. Another may become relevant much later. The research depends on being able to tell those histories apart.
 
 ## Bronbestanden en herkomst / Source files and provenance
 
