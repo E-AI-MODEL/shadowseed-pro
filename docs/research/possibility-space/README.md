@@ -1,5 +1,7 @@
 # Shadowseed possibility-space research — questions, sources, rival mechanisms
 
+> **Oorspronkelijke indexstand: 25 oktober 2026.** De oorspronkelijke onderdelen hieronder blijven letterlijk behouden als onderzoeksstand van die datum. Aanvullingen uit latere concept-PR's, waaronder de bronkaart van 27 oktober en het afzonderlijke 48-call-verslag van 28 oktober, houden bij eventuele integratie hun eigen datum en bronverwijzingen. De [actuele onderzoeksingang](../README.md) en het [branchregister](branch-register-2026-10-28.md) verbinden deze versies. Een technisch label of oudere onderzoeksconclusie bepaalt niet op voorhand de betekenis van een oorspronkelijke waarneming.
+
 > **Status:** open research program; no demonstrated Q1/Q2 efficacy or accepted architecture change.
 > **Updated:** 2026-10-25 following first-principles review.
 > **Question authority:** [Verbatim Dutch thesis](../possibility-space-thesis.md), with **both clauses** intact. No narrower paraphrase or experiment can replace it.
