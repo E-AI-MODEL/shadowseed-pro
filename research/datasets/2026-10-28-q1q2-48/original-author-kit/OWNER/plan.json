@@ -1,0 +1,164 @@
+{
+  "source_artifact": 12754935105,
+  "source_sha256": "0a5094e38ab2fdcf8c68dc8d6a3c75d29eeffd49e1f6c8e138589ed73ca36bbf",
+  "source_case": "DM26-C02",
+  "independent_cases": 1,
+  "research_moments": 2,
+  "models": [
+    "gpt-5-2025-08-07",
+    "gpt-6-luna"
+  ],
+  "arms": [
+    "ordinary",
+    "deliberate_search",
+    "shadow_candidate",
+    "placebo"
+  ],
+  "replicates": 3,
+  "followup_turns": 2,
+  "planned_calls": 48,
+  "hard_call_cap": 48,
+  "hard_token_cap": 360000,
+  "design_seed": 20261028,
+  "human_reviews_completed": 0,
+  "product_Gate_promotion_tested": false,
+  "control_histories_model_specific": true,
+  "original_candidates": [
+    {
+      "moment": "horizon_after_T2",
+      "candidate_sha256": "bcf6d58aad2e66f72441524402756a52542ff9057f24c7df24a981a90b2f72a2",
+      "placebo_sha256": "d2ecc58da9da93c5781a475312b5f6f5b2576d0ea927b5ae3fcf5b307a0b2863",
+      "historical_outcome": "accepted",
+      "source_observation_id": "obs_5d29036b65624d8ab5fcc0e0"
+    },
+    {
+      "moment": "battery_after_T3",
+      "candidate_sha256": "18f9bce85d8166d3c4db31e7cbe65b45d8977d220d3b158a7fb6649d193e9cbc",
+      "placebo_sha256": "82889a1e32025128d616b8069974c78442fd96c887e9728919950338b98a9a5e",
+      "historical_outcome": "rejected",
+      "source_observation_id": "obs_4d8605e61f172e82427d239d"
+    }
+  ],
+  "call_order": [
+    {
+      "moment": "horizon_after_T2",
+      "arm": "deliberate_search",
+      "replicate": 2
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "shadow_candidate",
+      "replicate": 1
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "placebo",
+      "replicate": 3
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "ordinary",
+      "replicate": 3
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "shadow_candidate",
+      "replicate": 3
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "placebo",
+      "replicate": 3
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "shadow_candidate",
+      "replicate": 1
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "ordinary",
+      "replicate": 1
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "shadow_candidate",
+      "replicate": 3
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "deliberate_search",
+      "replicate": 3
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "placebo",
+      "replicate": 1
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "placebo",
+      "replicate": 2
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "ordinary",
+      "replicate": 1
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "ordinary",
+      "replicate": 2
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "deliberate_search",
+      "replicate": 1
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "ordinary",
+      "replicate": 2
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "placebo",
+      "replicate": 1
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "ordinary",
+      "replicate": 3
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "shadow_candidate",
+      "replicate": 2
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "deliberate_search",
+      "replicate": 3
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "deliberate_search",
+      "replicate": 1
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "shadow_candidate",
+      "replicate": 2
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "deliberate_search",
+      "replicate": 2
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "placebo",
+      "replicate": 2
+    }
+  ]
+}
