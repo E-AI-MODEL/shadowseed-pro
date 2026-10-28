@@ -23,6 +23,8 @@ feedback, export, and standalone packaging.
 
 ## What we understand now (28 October 2026)
 
+**Research navigation (28 October):** Start with the [dated research entry](docs/research/README.md) and the [complete remote-branch register](docs/research/possibility-space/branch-register-2026-10-28.md). The older [possibility-space index](docs/research/possibility-space/README.md) keeps its 25 October context. A candidate's intake label is not a semantic judgement, and weightless persistence is not a demonstrated effect.
+
 Shadowseed is far beyond a concept sketch. The engine, weightless candidate memory, lifecycle, audit trail and separation between observation and authority are implemented. The repository also contains real model runs, multi-turn records and candidate histories. We can now investigate the path from an original response to a recorded candidate and its later opportunities for use. That is substantial progress, even while the larger research question remains open.
 
 ### The accumulated record is substantial, and it must stay intact
