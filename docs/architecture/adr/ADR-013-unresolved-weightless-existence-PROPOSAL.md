@@ -69,6 +69,12 @@ An unresolved seed must **not** be rewritten in place into a "better" bounded se
 | Distinct `ShadowPossibility` entity outside the seed registry | May offer cleaner long-term semantics, but requires duplicated/rebuilt TTL/TrTL, ID and audit plumbing; still a viable alternative for reviewers |
 | **Proposed: `ShadowSeed(scope_status="unresolved")`** | Reuses the real lifecycle and enforces Gate exclusion, but is a substantial extension to the meaning of the seed model and requires compatibility/security review |
 
+## Relational-development boundary in the current Pro runtime
+
+The existing `vector_workflows.find_constellations` builds clusters only from **PROMOTED** seeds, and vector-near `find_uncertain_region` is a retrieval/inspection helper, not an autonomous relation constructor. The weightless `unresolved` seed can now survive across turns, but **the product does not thereby generate or trace a semantically new inter-seed relationship**. Repeated text, vector proximity and TrTL activation must not be relabeled as relational growth.
+
+Any future research-only relation observation must have original seed IDs, chronological source/context references, actor identity, an unchanged original candidate string, separately recorded proposed new content and an audit of how the proposed link came to exist. The value and reality of that link are evaluated later, without suppressing the earlier observation at birth. A separate sidecar model call counts as a **research intervention**, never spontaneous activity of the ordinary host.
+
 ## Current verification and pending review
 
 Mechanical verification from frozen, source-pinned Pro replay: **12 persistent sessions × four turns**, original 94 detector candidates, **48 bounded + 46 unresolved** actual births, **94 retained**, zero positive weights/promotions/normal prompt exposures, 12/12 export/restore checks passed. Source model outputs were frozen and embeddings were a deterministic toy hash, so **no semantic development or Q2 effect was observed**. Regresstion tests cover Gate, re-observation and restore. SSOT's *automatic Gate-evidence route* now excludes unresolved items; direct read-only SSOT search is still possible. This is one additional defense, not final sign-off.
