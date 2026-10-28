@@ -152,6 +152,7 @@ def replay(source: dict) -> dict:
             ids_now = {seed["id"] for seed in current}
             if not before_ids.issubset(ids_now):
                 raise AssertionError("seed vanished from short live replay")
+            new_ids = ids_now - before_ids
             before_ids = ids_now
             unresolved_now = {
                 seed["id"] for seed in current if seed["scope_status"] == "unresolved"
@@ -172,14 +173,11 @@ def replay(source: dict) -> dict:
                 ),
                 "accepted": len(intake["accepted"]),
                 "rejected_now": len(intake["rejected"]),
-                "new_seed_ids": len(
-                    ids_now - (set() if index == 0 else previous_ids)
-                ),
+                "new_seed_ids": len(new_ids),
                 "reactivated_trtl": len(prepared.reactivated_trtl),
                 "host_seed_exposures": len(prepared.surfaced_seed_ids),
                 "nonzero_weight_seeds": sum(seed["weight"] != 0 for seed in current),
             })
-            previous_ids = ids_now
             aggregate.update(part)
             case_total.update(part)
             by_model[case["model_id"]].update(part)
