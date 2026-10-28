@@ -399,6 +399,21 @@ def submit_signals(
         manager, seed_id, signal_list
     )
     selected_policy = policy_id or "exploratory"
+    seed = manager._seeds[seed_id]
+    if seed.scope_status == "unresolved" and seed.status.value != "EXPIRED":
+        # Unresolved scope is NOT a negative quality assessment: it is a
+        # retention state without claim-level authority. Even verified support
+        # cannot accidentally turn a composite observation into one fact.
+        if selected_policy != LEGACY_POLICY_ID:
+            resolve_policy(selected_policy)  # unknown policies still fail closed
+        return manager._record_gate_event(
+            seed, GateDecision.BLOCKED, signal_list,
+            policy_id=selected_policy,
+            status_before=seed.status.value,
+            weight_before=seed.weight,
+            contradiction_before=manager._contradiction_state(seed),
+            reason="unresolved seed has no authority; retain for inquiry",
+        )
     if selected_policy == LEGACY_POLICY_ID:
         return _submit_legacy_signals(
             manager,
