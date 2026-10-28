@@ -12,6 +12,10 @@ Dit is de letterlijke Nederlandse onderzoeksvraag uit [de oorspronkelijke these]
 
 De volledige [oorspronkelijke onderzoeksbestanden, antwoorden, reviewbestanden, herstelcode en ZIP-archieven](../../research/datasets/2026-10-28-q1q2-48/README.md) zijn in de publieke GitHub-geschiedenis opgenomen, inclusief SHA-256-controlebestand. De onderzoeker heeft ook vrijgave van de historische RSA-herstelcode en ontblindingskoppelingen gevraagd. **De oorspronkelijk blinde toewijzing is hiermee openbaar**, zodat een latere beoordeling niet als blind ten opzichte van dit vrijgegeven bestand kan worden beschreven. Dit verandert niets aan de oorspronkelijke 48 modelantwoorden of het feit dat er toen nul onafhankelijke menselijke semantische beoordelingen waren.
 
+## Openbare historische bronarchieven (27 oktober 2026)
+
+Het [oorspronkelijke pakket met 62 GitHub Actions-artifacts en vier repositorygeschiedenissen](https://github.com/E-AI-MODEL/shadowseed-pro/releases/tag/research-archive-2026-10-27) is inmiddels als volledige, ongewijzigde ZIP openbaar gepubliceerd. Het archief is 87.841.733 bytes en heeft een [geverifieerde SHA-256 en een bronregister](possibility-space/historical-source-archive-release-2026-10-28.md). **Dit is een afzonderlijk historisch archief** naast de leesbaar opgenomen 48-call-proef van 28 oktober; geen van beide wordt opgeteld tot nieuwe onafhankelijke experimenten.
+
 ## Leesvolgorde
 
 - **Oorspronkelijke vraag en grenzen:** [possibility-space-thesis.md](possibility-space-thesis.md). Deze tekst blijft leidend; ook de tweede helft van de vraag.

@@ -23,6 +23,8 @@ feedback, export, and standalone packaging.
 
 ## What we understand now (28 October 2026)
 
+**Original historical raw research archive (27 October):** the [public GitHub release](https://github.com/E-AI-MODEL/shadowseed-pro/releases/tag/research-archive-2026-10-27) contains the unchanged 87.8 MB ZIP with 62 original GitHub Actions artifact ZIPs and four historical repository source and Git-bundle pairs. See the [source archive receipt](docs/research/possibility-space/historical-source-archive-release-2026-10-28.md) for the download link, SHA-256 and provenance. This is distinct from the 48-call pilot records already in Git.
+
 **Open research source archive (28 October):** the [complete 48-call pilot records and original ZIP packages](research/datasets/2026-10-28-q1q2-48/README.md) are now directly readable in GitHub, with immutable source checksums. Public release includes the historical one-off decryption key and treatment-unblinding mappings: the original blind-review allocation is therefore no longer concealed. These records do not claim a Q1/Q2 effect.
 
 **Research navigation (28 October):** Start with the [dated research entry](docs/research/README.md) and the [complete remote-branch register](docs/research/possibility-space/branch-register-2026-10-28.md). The older [possibility-space index](docs/research/possibility-space/README.md) keeps its 25 October context. A candidate's intake label is not a semantic judgement, and weightless persistence is not a demonstrated effect.
