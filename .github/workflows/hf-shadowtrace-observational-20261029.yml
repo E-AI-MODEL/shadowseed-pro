@@ -1,0 +1,47 @@
+name: Research - HF Shadow Trace observational pilot (one shot)
+on:
+  push:
+    branches:
+      - research/hf-shadowtrace-feasibility-20261029
+    paths:
+      - research/scripts/hf_shadowtrace_observational_20261029.py
+      - .github/workflows/hf-shadowtrace-observational-20261029.yml
+permissions:
+  contents: read
+jobs:
+  observational-shadowtrace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      SHADOWTRACE_MODEL: Qwen/Qwen2.5-0.5B-Instruct
+      SHADOWTRACE_TURNS: "6"
+      SHADOWTRACE_CASES: "3"
+      SHADOWTRACE_OUT: ${{ github.workspace }}/output/shadowtrace_hf.json
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install CPU-only torch
+        run: |
+          python -m pip install torch==2.7.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Install the unchanged Shadowseed Pro and model adapters
+        run: |
+          python -m pip install -e . "sentence-transformers>=2.7" "transformers>=4.51,<5" "huggingface_hub>=0.35,<1"
+      - name: Static source check
+        run: |
+          python -m py_compile research/scripts/hf_shadowtrace_observational_20261029.py
+          python -c "from shadowseed.engine import ShadowseedEngine; from shadowseed.adapters.models import HFTransformersBackend; from shadowseed.detection.model_detector import HFTransformersDetectorBackend; print('canonical source import OK')"
+      - name: Run bounded HF model feasibility probe
+        run: |
+          python research/scripts/hf_shadowtrace_observational_20261029.py
+      - name: Preserve synthetic raw prompts and turns even on partial failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hf-shadowtrace-synthetic-raw-20261029
+          path: output/shadowtrace_hf.json
+          retention-days: 7
+          if-no-files-found: warn
