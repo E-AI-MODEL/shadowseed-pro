@@ -268,6 +268,7 @@ def parse_numbered_seeds_with_diagnostics(
     seen: set[str] = set()
     diagnostics: dict[str, int | bool] = {
         "explicit_none": False,
+        "mixed_none_output": False,
         "nonblank_lines": 0,
         "numbered_lines": 0,
         "unnumbered_nonblank_lines": 0,
@@ -281,9 +282,19 @@ def parse_numbered_seeds_with_diagnostics(
         "truncated_after_max_seeds": False,
     }
     nonblank = [line.strip() for line in raw_output.splitlines() if line.strip()]
-    if len(nonblank) == 1 and nonblank[0].upper() == "NONE":
+    # The detector contract has mutually exclusive outputs: NONE or a numbered
+    # candidate list. A small model can start with NONE, then append an
+    # explanation containing numbered examples. Treat that as NO candidates,
+    # not as permission to create seeds from its self-contradictory explanation.
+    # Preserve the raw output upstream and identify malformed mixed responses.
+    first_line = nonblank[0].lstrip("*_\x60 ") if nonblank else ""
+    if re.match(r"^NONE(?:\\b|$)", first_line, flags=re.IGNORECASE):
+        numbered_count = sum(bool(_NUMBERED_LINE.match(line)) for line in nonblank)
         diagnostics["explicit_none"] = True
-        diagnostics["nonblank_lines"] = 1
+        diagnostics["mixed_none_output"] = len(nonblank) != 1 or first_line.upper() != "NONE"
+        diagnostics["nonblank_lines"] = len(nonblank)
+        diagnostics["numbered_lines"] = numbered_count
+        diagnostics["unnumbered_nonblank_lines"] = len(nonblank) - numbered_count
         return [], diagnostics
 
     for line in raw_output.splitlines():
