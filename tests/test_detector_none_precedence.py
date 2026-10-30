@@ -17,10 +17,10 @@ from shadowseed.detection.model_detector import (
 @pytest.mark.parametrize(
     "raw",
     [
-        "NONE\\n\\nExplanation: no distinct gap.\\n1. What remains unmeasured?\\n2. Is a prior question unanswered?",
-        "  **NONE**\\n\\nThere are two hypothetical gaps.\\n1. What remains unmeasured?",
-        "NONE: no distinct candidates\\n1. What remains unmeasured?",
-        "NONE The draft already covers the subject.\\n1. What remains unmeasured?",
+        "NONE\n\nExplanation: no distinct gap.\n1. What remains unmeasured?\n2. Is a prior question unanswered?",
+        "  **NONE**\n\nThere are two hypothetical gaps.\n1. What remains unmeasured?",
+        "NONE: no distinct candidates\n1. What remains unmeasured?",
+        "NONE The draft already covers the subject.\n1. What remains unmeasured?",
     ],
 )
 def test_leading_none_mixed_with_numbered_explanation_fails_closed(raw: str) -> None:
