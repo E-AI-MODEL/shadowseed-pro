@@ -287,8 +287,8 @@ def parse_numbered_seeds_with_diagnostics(
     # explanation containing numbered examples. Treat that as NO candidates,
     # not as permission to create seeds from its self-contradictory explanation.
     # Preserve the raw output upstream and identify malformed mixed responses.
-    first_line = nonblank[0].lstrip("*_\x60 ") if nonblank else ""
-    if re.match(r"^NONE(?:\\b|$)", first_line, flags=re.IGNORECASE):
+    first_line = nonblank[0].lstrip("*_` ") if nonblank else ""
+    if re.match(r"^NONE(?:[^A-Za-z0-9_]|$)", first_line, flags=re.IGNORECASE):
         numbered_count = sum(bool(_NUMBERED_LINE.match(line)) for line in nonblank)
         diagnostics["explicit_none"] = True
         diagnostics["mixed_none_output"] = len(nonblank) != 1 or first_line.upper() != "NONE"
