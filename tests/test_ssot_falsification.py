@@ -1,125 +1,133 @@
-from shadowseed.text_similarity import lexical_embedding
+"""SSOT negative controls: an authored contradiction is not SUPPORT evidence.
+
+All content and relations in this test are fictional researcher inputs.
+"""
+
+from shadowseed.gate.signals import SignalDirection, SignalKind, ValidationSignal
 from shadowseed.manager import SSLManager, SeedStatus
-from shadowseed.ssot import SSOTManager
+from shadowseed.ssot import SSOTManager, SSOTRelation
+from shadowseed.text_similarity import lexical_embedding
 from shadowseed.vector_constellation import VectorConstellation
 from shadowseed.vectorstore import InMemoryVectorStore
 
 
-def make_manager_and_ssot():
-    seed_constellation = VectorConstellation(InMemoryVectorStore())
+SEED_TEXT = "Mogelijk beïnvloedt de blauwe klep de druk in kamer B."
+OPPOSING = "De blauwe klep beïnvloedt de druk in kamer B niet."
+
+
+def setup():
     manager = SSLManager(
         embedding_fn=lexical_embedding,
-        vector_constellation=seed_constellation,
+        vector_constellation=VectorConstellation(InMemoryVectorStore()),
         validation_increment=0.2,
         promotion_threshold=0.5,
     )
     ssot = SSOTManager(InMemoryVectorStore(), manager)
-    return manager, ssot
+    seed_id = manager.add_or_update_seed(SEED_TEXT)
+    manager.add_or_update_seed(SEED_TEXT)
+    manager.add_or_update_seed(SEED_TEXT)
+    return manager, ssot, seed_id
 
 
-def prepare_open_seed(manager: SSLManager, seed_text: str) -> str:
-    seed_id = manager.add_or_update_seed(seed_text)
-    manager.add_or_update_seed(seed_text)
-    manager.add_or_update_seed(seed_text)
-    assert manager.get_seed(seed_id).occurrence_count >= 3
-    assert manager.get_seed(seed_id).weight == 0.0
-    return seed_id
-
-
-def test_bad_ssot_document_does_not_promote_unrelated_seed():
-    manager, ssot = make_manager_and_ssot()
-    seed_id = prepare_open_seed(
-        manager,
-        "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
-    )
-
-    ssot.ingest_document(
-        "De hoofdstad van Frankrijk is Milaan. "
-        "Deze tekst gaat over aardrijkskunde en bevat geen juridische onderbouwing. "
-        "Er staat niets over toepasselijk recht of consumentencontracten.",
-        doc_id="bad_doc_001",
-        chunk_words=12,
-    )
-
-    validations = ssot.validate_open_seeds_against_ssot(
-        threshold=0.70,
-        top_k=5,
-        max_evidence_per_seed=4,
-    )
-
+def test_explicit_opposition_is_retrieved_but_not_promoted():
+    manager, ssot, seed_id = setup()
+    for i in range(4):
+        doc_id = f"synthetic_opposition_{i}"
+        ssot.ingest_document(OPPOSING, doc_id=doc_id)
+        ssot.attest_document_relation(
+            seed_id, doc_id, relation=SSOTRelation.OPPOSES,
+            reviewer="synthetic-author", rationale="Author-labelled fictional denial.",
+        )
+    assert len(ssot.search(SEED_TEXT, top_k=8)) == 4
+    assert ssot.validate_open_seeds_against_ssot(threshold=0, top_k=8) == []
     seed = manager.get_seed(seed_id)
-    assert validations == []
-    assert seed.status != SeedStatus.PROMOTED
-    assert seed.weight == 0.0
-    assert seed.evidence_count == 0
+    assert seed.weight == 0 and seed.evidence_count == 0
+    assert seed.status is not SeedStatus.PROMOTED
+    # Neither a SUPPORT signal nor an automatic CONTRADICTION was constructed.
+    assert manager.gate_events == []
 
 
-def test_llm_proposed_chunks_do_not_validate_until_verified():
-    manager, ssot = make_manager_and_ssot()
-    seed_id = prepare_open_seed(
-        manager,
-        "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
+def test_unreviewed_opposition_cannot_be_counted_as_support():
+    manager, ssot, seed_id = setup()
+    for i in range(4):
+        ssot.ingest_document(OPPOSING, doc_id=f"unreviewed_{i}")
+    assert ssot.validate_open_seeds_against_ssot(threshold=0, top_k=8) == []
+    assert manager.get_seed(seed_id).weight == 0
+    assert manager.gate_events == []
+
+
+def test_verified_llm_proposal_with_asserted_relation_remains_read_only():
+    manager, ssot, seed_id = setup()
+    chunks = ssot.ingest_from_llm_output(
+        "De blauwe klep beïnvloedt de druk in kamer B. " * 3,
+        doc_id="llm_proposal", chunk_words=10,
     )
-
-    chunk_ids = ssot.ingest_from_llm_output(
-        "Bij een grensoverschrijdend consumentencontract moet het toepasselijk recht worden vastgesteld. "
-        "Het toepasselijk recht bepaalt welke consumentenregels gelden.",
-        doc_id="llm_proposal_001",
-        chunk_words=8,
-    )
-
-    validations_before_verification = ssot.validate_open_seeds_against_ssot(
-        threshold=0.0,
-        top_k=5,
-        max_evidence_per_seed=4,
-    )
-    seed_before = manager.get_seed(seed_id)
-
-    assert chunk_ids
-    assert validations_before_verification == []
-    assert seed_before.status != SeedStatus.PROMOTED
-    assert seed_before.weight == 0.0
-    assert seed_before.evidence_count == 0
-
-    for chunk_id in chunk_ids:
+    assert chunks
+    assert ssot.validate_open_seeds_against_ssot(threshold=0, top_k=8) == []
+    for chunk_id in chunks:
         ssot.verify_chunk(chunk_id, verifier="test_human")
-
-    validations_after_verification = ssot.validate_open_seeds_against_ssot(
-        threshold=0.0,
-        top_k=5,
-        max_evidence_per_seed=4,
+    # Source verification alone still does not verify the seed-specific relation.
+    assert ssot.validate_open_seeds_against_ssot(threshold=0, top_k=8) == []
+    ssot.attest_document_relation(
+        seed_id, "llm_proposal", relation="supports", reviewer="test_human",
+        rationale="Only an asserted relation in a synthetic test.",
     )
-    seed_after = manager.get_seed(seed_id)
+    result = ssot.validate_open_seeds_against_ssot(threshold=0, top_k=8)
+    assert len(result) == 1
+    assert len(result[0]["review_candidates"]) == 1
+    assert result[0]["review_candidates"][0]["gate_authorized"] is False
+    assert manager.gate_events == []
+    assert manager.get_seed(seed_id).evidence_count == 0
+    assert manager.get_seed(seed_id).weight == 0
 
-    assert validations_after_verification
-    assert seed_after.evidence_count > 0
-    assert seed_after.weight > 0.0
-    assert seed_after.status in {SeedStatus.ACTIVE, SeedStatus.PROMOTED}
 
-
-def test_rejected_llm_chunk_never_validates_seed():
-    manager, ssot = make_manager_and_ssot()
-    seed_id = prepare_open_seed(
-        manager,
-        "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer.",
-    )
-
-    chunk_ids = ssot.ingest_from_llm_output(
-        "EU-consumentenrecht is altijd automatisch afdwingbaar tegenover iedere niet-EU retailer.",
-        doc_id="llm_bad_claim_001",
-        chunk_words=10,
-    )
-    for chunk_id in chunk_ids:
+def test_rejected_chunk_never_qualifies_even_with_support_review():
+    manager, ssot, seed_id = setup()
+    chunks = ssot.ingest_from_llm_output(OPPOSING, doc_id="rejected")
+    assert chunks
+    for chunk_id in chunks:
         ssot.reject_chunk(chunk_id, verifier="test_human")
-
-    validations = ssot.validate_open_seeds_against_ssot(
-        threshold=0.0,
-        top_k=5,
-        max_evidence_per_seed=4,
+    ssot.attest_document_relation(
+        seed_id, "rejected", relation="supports", reviewer="test_human",
+        rationale="Intentionally false research attestation to test trust boundary.",
     )
+    assert ssot.validate_open_seeds_against_ssot(threshold=0) == []
+    assert manager.get_seed(seed_id).weight == 0
+    assert manager.gate_events == []
 
-    seed = manager.get_seed(seed_id)
-    assert validations == []
-    assert seed.status != SeedStatus.PROMOTED
-    assert seed.weight == 0.0
-    assert seed.evidence_count == 0
+
+def test_unrelated_ssot_document_does_not_become_evidence():
+    manager, ssot, seed_id = setup()
+    ssot.ingest_document(
+        "De hoofdstad van Frankrijk is Milaan. Dit gaat over aardrijkskunde.",
+        doc_id="unrelated",
+    )
+    assert ssot.validate_open_seeds_against_ssot(threshold=0.9) == []
+    assert manager.get_seed(seed_id).weight == 0
+
+
+def test_old_similarity_only_gate_event_stays_immutable_and_blocks_recertification():
+    manager, ssot, seed_id = setup()
+    # Represent a historical pre-fix evidence event. No repair may rewrite it.
+    manager.run_validation_gate(
+        seed_id, external_evidence=True,
+        signals=[
+            ValidationSignal(
+                kind=SignalKind.SSOT, direction=SignalDirection.SUPPORT,
+                source_ref="legacy_doc::chunk_001", verified=True,
+                independent=True, strength=0.99,
+                reason="verified SSOT chunk legacy_doc::chunk_001",
+            )
+        ],
+    )
+    old_ledger = tuple(event.to_dict() for event in manager.gate_events)
+    for i in range(4):
+        doc_id = f"new_doc_{i}"
+        ssot.ingest_document("De blauwe klep beïnvloedt de druk in kamer B.", doc_id=doc_id)
+        ssot.attest_document_relation(
+            seed_id, doc_id, relation="supports", reviewer="test_human",
+            rationale="Fictional after-the-fact source review.",
+        )
+    assert ssot.validate_open_seeds_against_ssot(threshold=0, top_k=8) == []
+    assert tuple(event.to_dict() for event in manager.gate_events) == old_ledger
+    assert manager.get_seed(seed_id).weight == 0

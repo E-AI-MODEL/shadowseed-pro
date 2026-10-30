@@ -1,125 +1,67 @@
-from shadowseed_research.benchmark.ssl45_gap_suite import lexical_embedding
-from shadowseed.manager import SSLManager, SeedStatus
-from shadowseed.ssot import SSOTManager
+"""Research regression: SSOT retrieval alone cannot authorise seed evidence."""
+
+from shadowseed.text_similarity import lexical_embedding
+from shadowseed.manager import SSLManager
+from shadowseed.ssot import SSOTManager, SSOTRelation
 from shadowseed.vector_constellation import VectorConstellation
 from shadowseed.vectorstore import InMemoryVectorStore
 
 
 def make_manager_and_ssot():
-    seed_constellation = VectorConstellation(InMemoryVectorStore())
     manager = SSLManager(
         embedding_fn=lexical_embedding,
-        vector_constellation=seed_constellation,
+        vector_constellation=VectorConstellation(InMemoryVectorStore()),
         validation_increment=0.2,
         promotion_threshold=0.5,
     )
     ssot = SSOTManager(InMemoryVectorStore(), manager)
-    return manager, ssot
-
-
-def prepare_open_seed(manager: SSLManager, seed_text: str) -> str:
+    seed_text = "Mogelijk beïnvloedt de blauwe klep de druk in kamer B."
     seed_id = manager.add_or_update_seed(seed_text)
     manager.add_or_update_seed(seed_text)
     manager.add_or_update_seed(seed_text)
-    assert manager.get_seed(seed_id).occurrence_count >= 3
-    assert manager.get_seed(seed_id).weight == 0.0
-    return seed_id
+    return manager, ssot, seed_id, seed_text
 
 
-def test_bad_ssot_document_does_not_promote_unrelated_seed():
-    manager, ssot = make_manager_and_ssot()
-    seed_id = prepare_open_seed(
-        manager,
-        "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
-    )
-
+def test_retrieved_trusted_document_does_not_claim_relation_without_review():
+    manager, ssot, seed_id, seed_text = make_manager_and_ssot()
     ssot.ingest_document(
-        "De hoofdstad van Frankrijk is Milaan. "
-        "Deze tekst gaat over aardrijkskunde en bevat geen juridische onderbouwing. "
-        "Er staat niets over toepasselijk recht of consumentencontracten.",
-        doc_id="bad_doc_001",
-        chunk_words=12,
+        "De blauwe klep beïnvloedt de druk in kamer B niet.", doc_id="contrary"
     )
+    assert ssot.retrieve_context(seed_text, threshold=0, top_k=5)
+    assert ssot.validate_open_seeds_against_ssot(threshold=0) == []
+    assert manager.get_seed(seed_id).weight == 0
+    assert manager.gate_events == []
 
-    validations = ssot.validate_open_seeds_against_ssot(
-        threshold=0.70,
-        top_k=5,
-        max_evidence_per_seed=4,
+
+def test_reviewed_opposition_never_becomes_support_or_auto_contradiction():
+    manager, ssot, seed_id, seed_text = make_manager_and_ssot()
+    for index in range(4):
+        doc_id = f"fictional_negative_{index}"
+        ssot.ingest_document(
+            "De blauwe klep beïnvloedt de druk in kamer B niet.", doc_id=doc_id
+        )
+        ssot.attest_document_relation(
+            seed_id, doc_id, relation=SSOTRelation.OPPOSES,
+            reviewer="investigator-not-independent",
+            rationale="The research author wrote this opposition, not a fact-check.",
+        )
+    assert ssot.search(seed_text, top_k=5)
+    assert ssot.validate_open_seeds_against_ssot(
+        threshold=0, top_k=8, max_evidence_per_seed=4
+    ) == []
+    assert manager.get_seed(seed_id).evidence_count == 0
+    assert manager.gate_events == []
+
+
+def test_unverified_llm_proposal_cannot_pass_with_fake_support_attestation():
+    manager, ssot, seed_id, _ = make_manager_and_ssot()
+    chunks = ssot.ingest_from_llm_output(
+        "De blauwe klep beïnvloedt de druk in kamer B.", doc_id="unverified"
     )
-
-    seed = manager.get_seed(seed_id)
-    assert validations == []
-    assert seed.status != SeedStatus.PROMOTED
-    assert seed.weight == 0.0
-    assert seed.evidence_count == 0
-
-
-def test_llm_proposed_chunks_do_not_validate_until_verified():
-    manager, ssot = make_manager_and_ssot()
-    seed_id = prepare_open_seed(
-        manager,
-        "Toepasselijk recht bij een grensoverschrijdend consumentencontract.",
+    assert chunks
+    ssot.attest_document_relation(
+        seed_id, "unverified", relation="supports", reviewer="investigator",
+        rationale="Synthetic claim, deliberately not verified.",
     )
-
-    chunk_ids = ssot.ingest_from_llm_output(
-        "Bij een grensoverschrijdend consumentencontract moet het toepasselijk recht worden vastgesteld. "
-        "Het toepasselijk recht bepaalt welke consumentenregels gelden.",
-        doc_id="llm_proposal_001",
-        chunk_words=8,
-    )
-
-    validations_before_verification = ssot.validate_open_seeds_against_ssot(
-        threshold=0.0,
-        top_k=5,
-        max_evidence_per_seed=4,
-    )
-    seed_before = manager.get_seed(seed_id)
-
-    assert chunk_ids
-    assert validations_before_verification == []
-    assert seed_before.status != SeedStatus.PROMOTED
-    assert seed_before.weight == 0.0
-    assert seed_before.evidence_count == 0
-
-    for chunk_id in chunk_ids:
-        ssot.verify_chunk(chunk_id, verifier="test_human")
-
-    validations_after_verification = ssot.validate_open_seeds_against_ssot(
-        threshold=0.0,
-        top_k=5,
-        max_evidence_per_seed=4,
-    )
-    seed_after = manager.get_seed(seed_id)
-
-    assert validations_after_verification
-    assert seed_after.evidence_count > 0
-    assert seed_after.weight > 0.0
-    assert seed_after.status in {SeedStatus.ACTIVE, SeedStatus.PROMOTED}
-
-
-def test_rejected_llm_chunk_never_validates_seed():
-    manager, ssot = make_manager_and_ssot()
-    seed_id = prepare_open_seed(
-        manager,
-        "Afdwingbaarheid van EU-consumentenrecht tegenover een niet-EU retailer.",
-    )
-
-    chunk_ids = ssot.ingest_from_llm_output(
-        "EU-consumentenrecht is altijd automatisch afdwingbaar tegenover iedere niet-EU retailer.",
-        doc_id="llm_bad_claim_001",
-        chunk_words=10,
-    )
-    for chunk_id in chunk_ids:
-        ssot.reject_chunk(chunk_id, verifier="test_human")
-
-    validations = ssot.validate_open_seeds_against_ssot(
-        threshold=0.0,
-        top_k=5,
-        max_evidence_per_seed=4,
-    )
-
-    seed = manager.get_seed(seed_id)
-    assert validations == []
-    assert seed.status != SeedStatus.PROMOTED
-    assert seed.weight == 0.0
-    assert seed.evidence_count == 0
+    assert ssot.validate_open_seeds_against_ssot(threshold=0) == []
+    assert manager.get_seed(seed_id).weight == 0

@@ -115,6 +115,45 @@ def has_logged_promotion(seed_id: str, gate_log: Iterable[Any]) -> bool:
     return False
 
 
+
+def has_unreviewed_ssot_support(seed_id: str, gate_log: Iterable[Any]) -> bool:
+    """Flag historical SSOT support lacking a product authorization ledger.
+
+    Identify the specific legacy *automated SSOT producer* by its recorded
+    reason ('verified SSOT chunk ...'), source_ref ('...::chunk_...'), or the
+    intermediate self-attestation ('relation-attested:ssot:...'). A differently
+    sourced, explicitly operator/researcher-submitted SSOT signal is a separate
+    provenance channel: do not silently relabel that study as the same defect.
+    The producer lacked a workspace-authorized source/seed relationship.
+    Fail closed for known legacy paths at new point of use, but never rewrite
+    old Gate events, weights or archived decisions. This is not proof a source
+    was false. Unknown historical provenance needs its own explicit audit.
+    """
+    for event in gate_log:
+        if str(_value(event, "seed_id", "")) != seed_id:
+            continue
+        for signal in _value(event, "signals", ()) or ():
+            kind = _value(signal, "kind", "")
+            direction = _value(signal, "direction", "support")
+            kind_name = str(getattr(kind, "value", kind))
+            direction_name = str(getattr(direction, "value", direction))
+            reason = str(_value(signal, "reason", "") or "")
+            source_ref = str(_value(signal, "source_ref", "") or "")
+            known_legacy_producer = (
+                reason.startswith("verified SSOT chunk ")
+                or reason.startswith("relation-attested:ssot:")
+                or "::chunk_" in source_ref
+            )
+            if (
+                kind_name == "ssot"
+                and direction_name == "support"
+                and _as_bool(_value(signal, "verified", False))
+                and known_legacy_producer
+            ):
+                return True
+    return False
+
+
 def evidence_can_support_gate(evidence_ref: Any) -> bool:
     """Return whether an evidence reference is eligible for gate support.
 
@@ -193,6 +232,14 @@ class AgentSafetyContract:
         # requires a live current-version GateEvent link in ``decide_and_record``.
         if not has_logged_promotion(seed_id, gate_log):
             return InfluenceDecision(seed_id, action_value, False, "missing_logged_promotion")
+
+        # Known historical similarity-only SSOT support could have inflated
+        # weight. Deny NEW influence from that producer without breaking
+        # separately submitted research/operator evidence channels or replay.
+        if has_unreviewed_ssot_support(seed_id, gate_log):
+            return InfluenceDecision(
+                seed_id, action_value, False, "legacy_ssot_requires_review"
+            )
 
         return InfluenceDecision(seed_id, action_value, True, "allowed_promoted_gate_logged")
 
