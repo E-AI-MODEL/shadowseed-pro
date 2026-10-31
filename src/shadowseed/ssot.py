@@ -328,7 +328,6 @@ class SSOTManager:
             and any(
                 signal.kind is SignalKind.SSOT
                 and signal.direction is SignalDirection.SUPPORT
-                and not (signal.reason or "").startswith("relation-attested:ssot:")
                 for signal in event.signals
             )
             for event in self.ssl.gate_events
