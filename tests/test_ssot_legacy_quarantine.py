@@ -235,9 +235,10 @@ def test_read_only_inspection_labels_quarantined_legacy_seed() -> None:
     assert len(manager.gate_events) == 4
 
 
-def test_distinct_research_submitted_ssot_evidence_is_not_legacy_producer() -> None:
-    # A separately authored evaluation signal is not a similarity-search hit.
-    # The test establishes channel separation, not genuine source truth.
+def test_research_ssot_attestation_without_actor_cannot_authorize_live_agent() -> None:
+    # Researcher-submitted Gate SSOT signals can remain in the immutable
+    # experimental trace, but their provenance does not establish the actor
+    # authorization required by the product boundary.
     manager = SSLManager(embedding_fn=lexical_embedding)
     seed_id = manager.add_or_update_seed("An atomic alternative worth testing")
     for i in range(3):
@@ -249,20 +250,68 @@ def test_distinct_research_submitted_ssot_evidence_is_not_legacy_producer() -> N
                     direction=SignalDirection.SUPPORT,
                     verified=True,
                     source_ref=f"fixture://predeclared-research-source/{i}",
-                    reason="independently predeclared researcher attestation for test",
+                    reason="researcher attestation, no product actor ledger",
                 )
             ],
             policy_id="evidence_backed",
         )
     seed = manager.get_seed(seed_id)
     assert seed.status is SeedStatus.PROMOTED
-    assert not has_unreviewed_ssot_support(seed_id, manager.gate_events)
+    assert has_unreviewed_ssot_support(seed_id, manager.gate_events)
+    history_before = [event.to_dict() for event in manager.gate_events]
     ledger: list = []
     outcome = AgentSafetyContract().decide_and_record(
         seed, InfluenceAction.ANSWER_MODIFICATION,
-        gate_events=manager.gate_events, ledger=ledger, contradiction_blocking=False,
+        gate_events=manager.gate_events, ledger=ledger,
+        contradiction_blocking=False,
     )
-    assert outcome.allowed is True
+    assert outcome.allowed is False
+    assert outcome.reason == "legacy_ssot_requires_review"
+    assert [event.to_dict() for event in manager.gate_events] == history_before
+
+
+def test_unknown_legacy_ssot_support_is_quarantined_without_string_matching() -> None:
+    manager = SSLManager(embedding_fn=lexical_embedding)
+    seed_id = manager.add_or_update_seed("A measurable uncertainty")
+    for i in range(3):
+        manager.submit_signals(
+            seed_id,
+            [
+                ValidationSignal(
+                    kind=SignalKind.SSOT,
+                    direction=SignalDirection.SUPPORT,
+                    verified=True,
+                    source_ref=f"unknown-old-source-{i}",
+                    reason="archived-import-variant",
+                )
+            ],
+            policy_id="evidence_backed",
+        )
+    assert manager.get_seed(seed_id).status is SeedStatus.PROMOTED
+    restored = [GateEvent.from_dict(e.to_dict()) for e in manager.gate_events]
+    assert has_unreviewed_ssot_support(seed_id, restored)
+    record = AgentSafetyContract().decide_and_record(
+        manager.get_seed(seed_id),
+        InfluenceAction.ANSWER_MODIFICATION,
+        gate_events=restored, ledger=[], contradiction_blocking=False,
+    )
+    assert record.allowed is False
+    assert record.reason == "legacy_ssot_requires_review"
+
+
+def test_unverified_ssot_support_does_not_gain_point_of_use_authority() -> None:
+    # Any SSOT support in the old Gate-event schema lacks an authenticated
+    # product ledger binding, even if metadata says unverified.
+    manager, seed_id = _legacy_promoted_manager()
+    gate_log = [e.to_dict() for e in manager.gate_events]
+    for event in gate_log:
+        for signal in event["signals"]:
+            if signal["kind"] == SignalKind.SSOT.value:
+                signal["verified"] = False
+                signal["reason"] = None
+                signal["source_ref"] = "nonstandard-import"
+    assert has_unreviewed_ssot_support(seed_id, gate_log)
+    assert not has_unreviewed_ssot_support("unrelated-seed", gate_log)
 
 
 def test_intermediate_relation_attested_ssot_signal_is_not_product_auth() -> None:
