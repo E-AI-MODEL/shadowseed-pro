@@ -191,6 +191,8 @@ def test_live_submits_gate_event_only_for_changed_recurrence(monkeypatch):
 
 
 def test_live_suppresses_self_attributed_recurrence(monkeypatch):
+    # Synthetic human-feedback setup, not a product actor attestation.
+
     seed_text = "Privacy as a missing decision boundary."
     session, _model = _session(
         monkeypatch,
@@ -202,7 +204,7 @@ def test_live_suppresses_self_attributed_recurrence(monkeypatch):
     for index in range(3):
         session.manager.submit_signals(
             seed_id,
-            [ValidationSignal(kind=SignalKind.SSOT, verified=True, source_ref=f"source:{index}")],
+            [ValidationSignal(kind=SignalKind.HUMAN_FEEDBACK, verified=True, source_ref=f"fixture-review:{index}")],
             policy_id="evidence_backed",
         )
     seed = session.manager.seeds[seed_id]
@@ -229,9 +231,9 @@ def test_live_suppresses_semantically_distinct_candidate_after_ssl_influence(mon
         session.submit_evidence(
             seed_id,
             ValidationSignal(
-                kind=SignalKind.SSOT,
+                kind=SignalKind.HUMAN_FEEDBACK,
                 verified=True,
-                source_ref=f"source:{index}",
+                source_ref=f"fixture-review:{index}",
             ),
         )
 
@@ -366,7 +368,7 @@ def test_evaluation_mode_keeps_baseline_history_isolation(monkeypatch):
     for index in range(3):
         session.manager.submit_signals(
             seed_id,
-            [ValidationSignal(kind=SignalKind.SSOT, verified=True, source_ref=f"source:{index}")],
+            [ValidationSignal(kind=SignalKind.HUMAN_FEEDBACK, verified=True, source_ref=f"fixture-review:{index}")],
             policy_id="evidence_backed",
         )
 
