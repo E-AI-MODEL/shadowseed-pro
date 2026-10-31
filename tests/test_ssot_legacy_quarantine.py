@@ -269,6 +269,20 @@ def test_research_ssot_attestation_without_actor_cannot_authorize_live_agent() -
     assert outcome.reason == "legacy_ssot_requires_review"
     assert [event.to_dict() for event in manager.gate_events] == history_before
 
+    # The offline study's explicit evaluation-only instrumentation can still
+    # replay its historical synthetic Gate outcome without changing the live
+    # contract or persisting a bypass flag in the contract dataclass.
+    evaluation_ledger: list = []
+    simulated = AgentSafetyContract().decide_and_record(
+        seed, InfluenceAction.ANSWER_MODIFICATION,
+        gate_events=manager.gate_events, ledger=evaluation_ledger,
+        contradiction_blocking=False, _research_evaluation_only=True,
+    )
+    assert simulated.allowed is True
+    assert simulated.gate_event_ref is not None
+    assert "research_evaluation" not in AgentSafetyContract.__dataclass_fields__
+    assert [event.to_dict() for event in manager.gate_events] == history_before
+
 
 def test_unknown_legacy_ssot_support_is_quarantined_without_string_matching() -> None:
     manager = SSLManager(embedding_fn=lexical_embedding)
