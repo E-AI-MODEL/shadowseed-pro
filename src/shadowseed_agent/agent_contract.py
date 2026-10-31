@@ -191,6 +191,7 @@ class AgentSafetyContract:
         gate_log: Iterable[Any] = (),
         *,
         contradiction_blocking: bool | None = None,
+        _research_evaluation_only: bool = False,
     ) -> InfluenceDecision:
         """Internal decision logic. Does not record. Use ``decide_and_record``.
 
@@ -223,10 +224,11 @@ class AgentSafetyContract:
         if not has_logged_promotion(seed_id, gate_log):
             return InfluenceDecision(seed_id, action_value, False, "missing_logged_promotion")
 
-        # Known historical similarity-only SSOT support could have inflated
-        # weight. Deny NEW influence from that producer without breaking
-        # separately submitted research/operator evidence channels or replay.
-        if has_unreviewed_ssot_support(seed_id, gate_log):
+        # Production never trusts SSOT Gate provenance without an authenticated
+        # actor ledger. The explicit offline evaluation runtime may continue
+        # exercising historical synthetic Gate mechanics; that is NOT product
+        # authorization and cannot be enabled by a stored contract flag.
+        if not _research_evaluation_only and has_unreviewed_ssot_support(seed_id, gate_log):
             return InfluenceDecision(
                 seed_id, action_value, False, "legacy_ssot_requires_review"
             )
@@ -290,6 +292,7 @@ class AgentSafetyContract:
         contradiction_blocking: bool,
         context_ref: str | None = None,
         now: str | None = None,
+        _research_evaluation_only: bool = False,
     ):
         """Decide and record one influence attempt as a single atomic step.
 
@@ -305,6 +308,11 @@ class AgentSafetyContract:
         field, but setting it to ``False`` never bypasses the logged-promotion or
         current-version Gate-event requirements.
 
+        ``_research_evaluation_only`` is an ephemeral flag passed only by
+        ``ShadowChatSession`` in offline evaluation mode to reproduce archived
+        synthetic Gate studies. It is never persisted or set by the live product.
+        Such a result is research instrumentation, not product authorization.
+
         Returns the recorded ``AgentInfluenceRecord``.
         """
 
@@ -315,7 +323,9 @@ class AgentSafetyContract:
         current_version = _value(seed, "authority_version", None)
 
         decision = self._decide(
-            seed, action, events, contradiction_blocking=contradiction_blocking
+            seed, action, events,
+            contradiction_blocking=contradiction_blocking,
+            _research_evaluation_only=_research_evaluation_only,
         )
         allowed = decision.allowed
         reason = decision.reason
