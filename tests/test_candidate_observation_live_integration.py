@@ -54,13 +54,15 @@ def _session(monkeypatch, *, detector_seed: str | None, answer: str) -> ShadowCh
 
 
 def _promote(session: ShadowChatSession, seed_id: str) -> None:
+    # Synthetic human-feedback evidence isolates the candidate-contamination
+    # behavior being tested. It does NOT claim real product-actor verification.
     for index in range(3):
         session.submit_evidence(
             seed_id,
             ValidationSignal(
-                kind=SignalKind.SSOT,
+                kind=SignalKind.HUMAN_FEEDBACK,
                 verified=True,
-                source_ref=f"source:{index}",
+                source_ref=f"fixture-review:{index}",
             ),
         )
     assert session.manager.seeds[seed_id].status is SeedStatus.PROMOTED
