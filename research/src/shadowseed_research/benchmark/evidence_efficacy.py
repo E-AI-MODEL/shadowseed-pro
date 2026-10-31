@@ -35,7 +35,7 @@ from shadowseed_research.benchmark.capability_scaling import (
     _write_json,
 )
 from shadowseed_research.benchmark.ssl45_model_benefit_suite import blind_order
-from shadowseed.chat import ShadowChatSession
+from shadowseed.chat import ShadowChatSession, _OFFLINE_RESEARCH_CAPABILITY
 from shadowseed.core_config import SSLCoreConfig
 from shadowseed.detection.model_detector import (
     CURRENT_PAIR_DETECTOR_ID,
@@ -623,6 +623,9 @@ def run_evidence_efficacy(
                 else float(conversation["cluster_threshold"])
             ),
             runtime_mode="evaluation",
+            # Explicit process-local consent to replay synthetic Gate mechanics.
+            # This is never a live product authorization or stored session flag.
+            _offline_research_capability=_OFFLINE_RESEARCH_CAPABILITY,
             gate_policy_id="evidence_backed",
             core_config=core_config,
             model_backend=model,

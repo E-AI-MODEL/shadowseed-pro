@@ -118,6 +118,8 @@ from shadowseed_agent import (
 )
 
 SESSION_STATE_SCHEMA_VERSION = 3
+# Process-local capability. Neither JSON nor session restoration can grant this.
+_OFFLINE_RESEARCH_CAPABILITY = object()
 
 
 @dataclass(frozen=True)
@@ -209,6 +211,7 @@ class ShadowChatSession:
         detector_backend: DetectorBackend | None = None,
         embedding_fn: EmbedFn | None = None,
         core_config: SSLCoreConfig | None = None,
+        _offline_research_capability: object | None = None,
     ) -> None:
         self.backend = backend
         self.model_id = model_id
@@ -247,6 +250,15 @@ class ShadowChatSession:
         if runtime_mode not in {"evaluation", "live"}:
             raise ValueError("runtime_mode must be 'evaluation' or 'live'")
         self.runtime_mode = runtime_mode
+        if _offline_research_capability is not None and (
+            runtime_mode != "evaluation"
+            or _offline_research_capability is not _OFFLINE_RESEARCH_CAPABILITY
+        ):
+            raise ValueError("offline research capability is invalid for this runtime")
+        self._offline_research_enabled = (
+            runtime_mode == "evaluation"
+            and _offline_research_capability is _OFFLINE_RESEARCH_CAPABILITY
+        )
         self.authority_runtime = resolve_authority_runtime(
             authority_profile_id,
             runtime_mode=runtime_mode,
@@ -394,6 +406,10 @@ class ShadowChatSession:
                 context_ref=f"turn:{self._turn}",
                 now=self.manager._now_iso(),
                 contradiction_blocking=self.manager.is_blocking_contradiction(seed_id),
+                # Synthetic evaluation uses documented, predeclared Gate inputs
+                # without making a claim of product operator authorization.
+                # Live sessions NEVER set this ephemeral allowance.
+                _research_evaluation_only=self._offline_research_enabled,
             )
             if record.allowed:
                 allowed.append((similarity, seed_id, text))

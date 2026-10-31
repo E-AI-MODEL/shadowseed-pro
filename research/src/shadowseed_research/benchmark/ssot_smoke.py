@@ -1,4 +1,4 @@
-"""Smoke runner for SSOT-backed Shadow Seed validation."""
+"""Smoke runner for read-only SSOT candidate inspection, never Gate validation."""
 
 from __future__ import annotations
 
@@ -53,6 +53,19 @@ def run_ssot_smoke(output_path: str, backend: str = "memory") -> Path:
         top_k=3,
         threshold=threshold,
     )
+    validations_without_review = ssot.validate_open_seeds_against_ssot(
+        threshold=threshold,
+        top_k=8,
+        max_evidence_per_seed=4,
+    )
+    seed_after_retrieval = manager.get_seed(seed_id).to_dict()
+    # Simulated explicit relation review is authored inside this fixture.
+    # This is NOT independent source verification or evidence of truth.
+    ssot.attest_document_relation(
+        seed_id, "legal_protocol_001", relation="supports",
+        reviewer="fixture_researcher_not_independent",
+        rationale="Synthetic relation claim for read-only inspection only.",
+    )
     validations = ssot.validate_open_seeds_against_ssot(
         threshold=threshold,
         top_k=8,
@@ -67,6 +80,10 @@ def run_ssot_smoke(output_path: str, backend: str = "memory") -> Path:
         "chunk_count": len(chunks),
         "retrieved_context_count": len(retrieved_context),
         "validations": len(validations),
+        "validations_without_review": len(validations_without_review),
+        "fixture_relation_review_not_independent": True,
+        "ssot_review_is_not_production_authorized": True,
+        "gate_events_created": len(manager.gate_events),
         "before_status": seed_before_ssot["status"],
         "before_weight": seed_before_ssot["weight"],
         "before_evidence_count": seed_before_ssot["evidence_count"],
@@ -77,9 +94,18 @@ def run_ssot_smoke(output_path: str, backend: str = "memory") -> Path:
             len(chunks) >= 4
             and len(retrieved_context) >= 1
             and seed_before_ssot["weight"] == 0.0
-            and seed_after_ssot["status"] == SeedStatus.PROMOTED.value
-            and seed_after_ssot["weight"] >= 0.5
-            and seed_after_ssot["evidence_count"] >= 4
+            and not validations_without_review
+            and seed_after_retrieval["weight"] == 0.0
+            and seed_after_retrieval["evidence_count"] == 0
+            and len(validations) == 1
+            and len(validations[0]["review_candidates"]) == 1
+            and validations[0]["gate_authorized"] is False
+            and validations[0]["review_candidates"][0]["gate_authorized"] is False
+            and validations[0]["review_candidates"][0]["requires_authorized_submission"]
+            and seed_after_ssot["status"] != SeedStatus.PROMOTED.value
+            and seed_after_ssot["weight"] == 0.0
+            and seed_after_ssot["evidence_count"] == 0
+            and not manager.gate_events
         ),
     }
 
@@ -88,6 +114,8 @@ def run_ssot_smoke(output_path: str, backend: str = "memory") -> Path:
         "ssot": ssot.to_dict(),
         "seed_before_ssot": seed_before_ssot,
         "retrieved_context": retrieved_context,
+        "validations_without_review": validations_without_review,
+        "seed_after_retrieval": seed_after_retrieval,
         "validations": validations,
         "seed_after_ssot": seed_after_ssot,
         "ssl_state": manager.to_dict(),

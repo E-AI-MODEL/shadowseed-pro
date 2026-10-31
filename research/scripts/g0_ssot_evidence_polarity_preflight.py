@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Model-free characterization of real SSOT evidence polarity in the product.
+"""Model-free SSOT relation handoff on the real product manager.
 
-This experiment is a *synthetic falsification probe*, not a scientific truth
-assessment, production policy change, EAI score, Q1/Q2 result, or independent
-source-verification run. It uses the canonical SSLManager, SSOTManager, VectorStore
-and Validation Gate. The experiment author supplies both opposite statements;
-the product's similarity search receives no external polarity verdict.
+PR #240 keeps the original, now-fixed product defect in an archived Actions
+trace. PR #243 initially let fabricated 'reviewer' labels reach the real Gate;
+this revision makes ALL relation inspection read-only. The true product
+evidence.verify boundary is separate. All test texts/reviews are researcher
+authored; this is not G0 or a new model result.
 """
 
 from __future__ import annotations
@@ -15,7 +15,7 @@ import json
 from pathlib import Path
 
 from shadowseed.manager import SSLManager
-from shadowseed.ssot import SSOTManager
+from shadowseed.ssot import SSOTManager, SSOTRelation
 from shadowseed.text_similarity import lexical_embedding
 from shadowseed.vectorstore import InMemoryVectorStore
 
@@ -34,142 +34,155 @@ NEGATING = (
     "De blauwe klep beïnvloedt volgens proefmetingen de druk in kamer B niet.",
 )
 
+HISTORIC_BUG_RUN = (
+    "https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40176388209"
+)
 
-def _case(name: str, texts: tuple[str, ...], *, proposed: bool = False) -> dict:
+
+def _case(
+    name: str,
+    texts: tuple[str, ...],
+    *,
+    relation: SSOTRelation | None = None,
+    proposed: bool = False,
+) -> dict:
     manager = SSLManager(embedding_fn=lexical_embedding)
     ssot = SSOTManager(InMemoryVectorStore(), manager)
-    # Repetition here is intentional frozen *researcher input*. It is NOT
-    # independently observed model recurrence or verified external evidence.
     seed_id = manager.add_or_update_seed(HYPOTHESIS)
     manager.add_or_update_seed(HYPOTHESIS)
     manager.add_or_update_seed(HYPOTHESIS)
-    seed = manager.get_seed(seed_id)
-    assert seed.weight == 0.0 and seed.evidence_count == 0
-    assert seed.occurrence_count == 3
+    seed_before = manager.get_seed(seed_id)
+    assert seed_before.weight == 0 and seed_before.evidence_count == 0
 
     for index, text in enumerate(texts, start=1):
         doc_id = f"g0_{name}_{index:02d}"
         if proposed:
-            ssot.ingest_from_llm_output(text, doc_id=doc_id, source="investigator_simulated_unverified")
+            ssot.ingest_from_llm_output(
+                text, doc_id=doc_id, source="investigator_simulated_unverified"
+            )
         else:
-            # Only the *metadata* is marked user_verified: there is NO
-            # independent human fact-check. This is precisely the trust
-            # assumption we seek to separate from semantic entailment.
+            # Verified is intentionally *synthetic metadata*, not a real review.
             ssot.ingest_document(
-                text,
-                doc_id=doc_id,
+                text, doc_id=doc_id,
                 source="investigator_simulated_verified_metadata",
                 trust_level="user_verified",
             )
+        if relation is not None:
+            # Review is also simulated by the experiment AUTHOR; not a
+            # genuine human assessment, independent truth, or provenance proof.
+            ssot.attest_document_relation(
+                seed_id, doc_id, relation=relation,
+                reviewer="synthetic_investigator_not_independent",
+                rationale="Authored explicit relationship for falsification test.",
+            )
 
-    hits = ssot.search(HYPOTHESIS, top_k=10)
-    hit_rows = [
-        {
-            "chunk_id": chunk_id,
-            "similarity": round(float(score), 6),
-            "chunk_text": str(metadata["text"]),
-            "status": metadata["status"],
-            "trust_level": metadata["trust_level"],
-        }
-        for chunk_id, score, metadata in hits
-    ]
-    actual = ssot.validate_open_seeds_against_ssot(
+    retrieved = ssot.search(HYPOTHESIS, top_k=10)
+    observed = ssot.validate_open_seeds_against_ssot(
         threshold=0.65, top_k=10, max_evidence_per_seed=4
     )
-    seed = manager.get_seed(seed_id)
-    events = [
-        {
-            "decision": event.decision.value,
-            "policy_id": event.policy_id,
-            "source_refs": [s.source_ref for s in event.signals],
-            "directions": [s.direction.value for s in event.signals],
-            "signal_kinds": [s.kind.value for s in event.signals],
-            "verified_flags": [s.verified for s in event.signals],
-        }
-        for event in manager.gate_events
-    ]
+    final_seed = manager.get_seed(seed_id)
     return {
-        "name": name,
-        "input_polarity_author_label_not_model_judgment": (
-            "proposed_unverified" if proposed else name
+        "case": name,
+        "relation_author_label_not_model_judgment": (
+            relation.value if relation is not None else "not_reviewed"
         ),
-        "simulated_verified_metadata_only": not proposed,
-        "retrieval_hits": hit_rows,
-        "similarity_cutoff": 0.65,
-        "accepted_evidence_count": sum(len(x["applied_evidence"]) for x in actual),
-        "gate_decisions": events,
+        "source_status_is_test_metadata_not_independent_verification": True,
+        "reviewer_is_experiment_author_not_independent": True,
+        "retrieval_hits": [
+            {
+                "chunk_id": chunk_id,
+                "similarity": round(float(score), 6),
+                "status": meta["status"],
+                "chunk_text": meta["text"],
+            }
+            for chunk_id, score, meta in retrieved
+        ],
+        "review_candidate_count": sum(
+            len(record["review_candidates"]) for record in observed
+        ),
+        "gate_authorized": any(
+            record["gate_authorized"] for record in observed
+        ),
+        "candidate_review_required": all(
+            not candidate["gate_authorized"]
+            and candidate["requires_authorized_submission"]
+            for record in observed
+            for candidate in record["review_candidates"]
+        ),
+        "gate_events": [
+            {
+                "decision": event.decision.value,
+                "policy_id": event.policy_id,
+                "signal_kinds": [s.kind.value for s in event.signals],
+                "directions": [s.direction.value for s in event.signals],
+                "source_refs": [s.source_ref for s in event.signals],
+            }
+            for event in manager.gate_events
+        ],
         "final_seed": {
-            "text": seed.text,
-            "status": seed.status.value,
-            "weight": seed.weight,
-            "evidence_count": seed.evidence_count,
-            "occurrence_count": seed.occurrence_count,
-            "trace": seed.trace,
+            "status": final_seed.status.value,
+            "weight": final_seed.weight,
+            "evidence_count": final_seed.evidence_count,
+            "occurrence_count": final_seed.occurrence_count,
         },
     }
 
 
 def build_result() -> dict:
-    confirming = _case("author_affirms", AFFIRMING)
-    denying = _case("author_negates", NEGATING)
-    unverified = _case("author_negates_unverified", NEGATING, proposed=True)
-    assert len(confirming["retrieval_hits"]) == 4
-    assert len(denying["retrieval_hits"]) == 4
-    assert len(unverified["retrieval_hits"]) == 4
-    assert min(x["similarity"] for x in confirming["retrieval_hits"]) > 0.65
-    assert min(x["similarity"] for x in denying["retrieval_hits"]) > 0.65
+    cases = {
+        "affirmation_without_relation": _case("affirm_unreviewed", AFFIRMING),
+        "affirmation_with_author_support": _case(
+            "affirm_reviewed", AFFIRMING, relation=SSOTRelation.SUPPORTS
+        ),
+        "explicit_negation_with_author_opposition": _case(
+            "negate_reviewed", NEGATING, relation=SSOTRelation.OPPOSES
+        ),
+        "unverified_with_author_support": _case(
+            "unverified_reviewed", NEGATING,
+            relation=SSOTRelation.SUPPORTS, proposed=True
+        ),
+    }
+    for case in cases.values():
+        assert len(case["retrieval_hits"]) == 4
+        assert min(row["similarity"] for row in case["retrieval_hits"]) > 0.65
 
-    # Characterize what the existing code ACTUALLY does, not what it ought
-    # to do. Any failure indicates an upstream change and needs re-auditing.
-    assert confirming["accepted_evidence_count"] == 4
-    assert denying["accepted_evidence_count"] == 4
-    assert unverified["accepted_evidence_count"] == 0
-    assert all(
-        sum(kind == "ssot" for kind in event["signal_kinds"]) == 1
-        and any(
-            kind == "ssot" and direction == "support"
-            for kind, direction in zip(event["signal_kinds"], event["directions"])
-        )
-        for record in (confirming, denying)
-        for event in record["gate_decisions"]
-    )
-    # The legacy Gate ALSO creates a separate recurrence signal. It must
-    # not be mistaken for SSOT evidence, in either the audit or conclusions.
-    assert all(
-        "recurrence" in event["signal_kinds"]
-        for record in (confirming, denying)
-        for event in record["gate_decisions"]
-    )
-    assert not unverified["gate_decisions"]
-    assert confirming["final_seed"]["weight"] > 0
-    assert denying["final_seed"]["weight"] > 0
-    assert unverified["final_seed"]["weight"] == 0
-    assert denying["final_seed"]["evidence_count"] == 4
+    affirmative = cases["affirmation_with_author_support"]
+    assert affirmative["review_candidate_count"] == 4
+    for name, case in cases.items():
+        assert case["gate_authorized"] is False
+        assert case["candidate_review_required"] is True
+        assert case["gate_events"] == []
+        assert case["final_seed"]["weight"] == 0.0
+        assert case["final_seed"]["evidence_count"] == 0
+        assert case["final_seed"]["status"] != "PROMOTED"
+        if name != "affirmation_with_author_support":
+            assert case["review_candidate_count"] == 0
 
     return {
-        "schema": "g0-ssot-polarity-mechanical-characterization-v0",
-        "status": "existing_product_code_characterized_not_repaired",
+        "schema": "g0-ssot-polarity-read-only-handoff-v2",
+        "status": "researcher_asserted_relations_read_only_no_gate_authority",
+        "historic_pre_fix_result": {
+            "source": HISTORIC_BUG_RUN,
+            "original_git_commit": "4c433c6e95733491e4b4720950bf997f5f1af634",
+            "affirmation": {"ssot_support": 4, "final_weight": 0.6},
+            "explicit_negation": {"ssot_support": 4, "final_weight": 0.6},
+            "unverified_negation": {"ssot_support": 0, "final_weight": 0},
+            "note": "Archival observation, not re-executed in this revision.",
+        },
+        "current_product_code_executed": True,
+        "authorized_actor_submissions": 0,
+        "intermediate_unsafe_attestation_run": (
+            "https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40182789691"
+        ),
         "input_provenance": "INVESTIGATOR_AUTHORED_FICTIONAL_POLARITIES",
-        "observations_are_not_independent_truth_labels": True,
-        "model_calls": 0,
         "human_verifiers": 0,
-        "product_code_changed": False,
-        "experimental_policy_changed": False,
-        "gate_logic_changed": False,
+        "model_calls": 0,
+        "no_research_gate_or_polarity_classifier": True,
+        "observations_are_not_independent_truth_labels": True,
+        "G0_passed": False,
         "Q1_tested": False,
         "Q2_tested": False,
-        "G0_passed": False,
-        "hypothesis": HYPOTHESIS,
-        "finding_scope": (
-            "SSOT similarity and 'verified' metadata drive SUPPORT signals "
-            "without textual polarity/entailment evaluation; negating statements "
-            "in this frozen synthetic contrast are treated as positive evidence."
-        ),
-        "cases": {
-            "affirmation": confirming,
-            "explicit_negation": denying,
-            "unverified_negation": unverified,
-        },
+        "cases": cases,
     }
 
 
@@ -184,9 +197,10 @@ def main() -> None:
         encoding="utf-8",
     )
     print(
-        "G0 SSOT polarity: canonical product characterized. "
-        "Opposite author-polarity statements both generated SUPPORT and weight; "
-        "unverified proposals did not. No LLM or independent assessment."
+        "SSOT polarity read-only handoff: real product SSOT, no Gate event. "
+        "Researcher-asserted support produces review candidates, never authority. "
+        "Historical defect and intermediate regression remain cited, not rerun. "
+        "No independent evidence, G0 or Q1/Q2 finding."
     )
 
 

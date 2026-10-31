@@ -115,6 +115,35 @@ def has_logged_promotion(seed_id: str, gate_log: Iterable[Any]) -> bool:
     return False
 
 
+
+def has_unreviewed_ssot_support(seed_id: str, gate_log: Iterable[Any]) -> bool:
+    """Quarantine any SSOT SUPPORT whose product authorization is not proven.
+
+    Historic SSOT GateEvent signals carry no authenticated source-to-seed
+    authorization ledger reference. Reason/source_ref strings, a reviewer
+    label, `verified`, a document digest, or a model assertion cannot prove
+    identity or authorization. This includes known similarity-only producers,
+    intermediate relation attestations and unrecognised old signal formats.
+
+    The product's authorized evidence.verify path records HUMAN_FEEDBACK with
+    an ActorContext and separate atomic ledger; it does not rely on raw SSOT
+    signals. A future authenticated SSOT submission contract must introduce
+    a verifiable ledger binding before any SSOT support can be allowed again.
+    This conservatively blocks fresh influence, not archived Gate history.
+    """
+    for event in gate_log:
+        if str(_value(event, "seed_id", "")) != seed_id:
+            continue
+        for signal in _value(event, "signals", ()) or ():
+            kind = _value(signal, "kind", "")
+            direction = _value(signal, "direction", "support")
+            kind_name = str(getattr(kind, "value", kind))
+            direction_name = str(getattr(direction, "value", direction))
+            if kind_name == "ssot" and direction_name == "support":
+                return True
+    return False
+
+
 def evidence_can_support_gate(evidence_ref: Any) -> bool:
     """Return whether an evidence reference is eligible for gate support.
 
@@ -162,6 +191,7 @@ class AgentSafetyContract:
         gate_log: Iterable[Any] = (),
         *,
         contradiction_blocking: bool | None = None,
+        _research_evaluation_only: bool = False,
     ) -> InfluenceDecision:
         """Internal decision logic. Does not record. Use ``decide_and_record``.
 
@@ -193,6 +223,15 @@ class AgentSafetyContract:
         # requires a live current-version GateEvent link in ``decide_and_record``.
         if not has_logged_promotion(seed_id, gate_log):
             return InfluenceDecision(seed_id, action_value, False, "missing_logged_promotion")
+
+        # Production never trusts SSOT Gate provenance without an authenticated
+        # actor ledger. The explicit offline evaluation runtime may continue
+        # exercising historical synthetic Gate mechanics; that is NOT product
+        # authorization and cannot be enabled by a stored contract flag.
+        if not _research_evaluation_only and has_unreviewed_ssot_support(seed_id, gate_log):
+            return InfluenceDecision(
+                seed_id, action_value, False, "legacy_ssot_requires_review"
+            )
 
         return InfluenceDecision(seed_id, action_value, True, "allowed_promoted_gate_logged")
 
@@ -253,6 +292,7 @@ class AgentSafetyContract:
         contradiction_blocking: bool,
         context_ref: str | None = None,
         now: str | None = None,
+        _research_evaluation_only: bool = False,
     ):
         """Decide and record one influence attempt as a single atomic step.
 
@@ -268,6 +308,11 @@ class AgentSafetyContract:
         field, but setting it to ``False`` never bypasses the logged-promotion or
         current-version Gate-event requirements.
 
+        ``_research_evaluation_only`` is an ephemeral flag passed only by
+        ``ShadowChatSession`` in offline evaluation mode to reproduce archived
+        synthetic Gate studies. It is never persisted or set by the live product.
+        Such a result is research instrumentation, not product authorization.
+
         Returns the recorded ``AgentInfluenceRecord``.
         """
 
@@ -278,7 +323,9 @@ class AgentSafetyContract:
         current_version = _value(seed, "authority_version", None)
 
         decision = self._decide(
-            seed, action, events, contradiction_blocking=contradiction_blocking
+            seed, action, events,
+            contradiction_blocking=contradiction_blocking,
+            _research_evaluation_only=_research_evaluation_only,
         )
         allowed = decision.allowed
         reason = decision.reason
