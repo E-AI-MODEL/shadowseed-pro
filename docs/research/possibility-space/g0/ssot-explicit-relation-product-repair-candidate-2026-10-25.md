@@ -43,6 +43,8 @@ Deze maatregel geldt ook voor een onafhankelijk gedocumenteerd onderzoekssignaal
 
 Deze conservatieve blokkering is geen bewijs dat alle oude SSOT-bronnen onjuist zijn. Ook correct onderbouwde oude steun kan tijdelijk buiten nieuwe invloed blijven. Dit is bewust totdat productautorisatie bewijsbaar is.
 
+**Onderzoeksuitzondering, niet voor het product:** de bestaande offline evaluatie met `runtime_mode="evaluation"` blijft de historische synthetische Gate-proef kunnen reconstrueren. Alleen die onderzoeksroute geeft bij `decide_and_record` het tijdelijke interne argument `_research_evaluation_only=True` door; dit argument staat niet in opgeslagen sessie-/contractinstellingen. De live runtime geeft altijd `False` door en blijft weigeren, ook bij gemanipuleerde bronmetadata. Een onderzoeksscore of geslaagde A/B-simulatie is geen productie-autorisatie. Voor de uiteindelijke release moet de productgrens afzonderlijk worden getest.
+
 ## Testafbakening
 
 - Producttests: geen promotie door zoekovereenkomst, fake reviewers of vier `supports`-claims; bronduplicaten, conflicten, veranderde tekst, onvolledig geverifieerde documenten, modelvoorstellen en oude logboeken.
