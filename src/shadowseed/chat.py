@@ -394,6 +394,10 @@ class ShadowChatSession:
                 context_ref=f"turn:{self._turn}",
                 now=self.manager._now_iso(),
                 contradiction_blocking=self.manager.is_blocking_contradiction(seed_id),
+                # Synthetic evaluation uses documented, predeclared Gate inputs
+                # without making a claim of product operator authorization.
+                # Live sessions NEVER set this ephemeral allowance.
+                _research_evaluation_only=self.runtime_mode == "evaluation",
             )
             if record.allowed:
                 allowed.append((similarity, seed_id, text))
