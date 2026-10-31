@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- SSOT safety (pending release): document similarity and a user-supplied
+  `reviewer` label never grant evidence authority. The former
+  `validate_open_seeds_against_ssot` API now returns read-only
+  `review_candidates` rather than submitting Gate events; callers expecting
+  `applied_evidence` or promotion results must adapt. Any historical
+  `SSOT SUPPORT` without an authenticated product ledger is quarantined for
+  new point-of-use influence, including unknown legacy formats and
+  researcher-asserted SSOT signals. Earlier records remain unchanged.
+  Product evidence submission continues through the authorized
+  `evidence.verify` route. See PR #243 and issue #241.
+- Detector: mixed output beginning with `NONE` followed by numbered
+  explanatory examples cannot create candidates (PR #274, merged).
+  Existing raw detector output remains inspectable; no new efficacy claim.
+
 - Release process: the 24-hour soak after publication is removed. The
   production-ready/local declaration needs the recorded use cycle with
   `shadowseed doctor` on the published release and no open P0/P1 finding, with
