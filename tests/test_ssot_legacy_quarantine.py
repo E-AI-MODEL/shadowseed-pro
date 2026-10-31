@@ -403,3 +403,32 @@ def test_real_live_prepare_turn_denies_legacy_promoted_seed_before_model_context
     session.abort_turn(prepared)
     assert session.manager.get_seed(seed_id).to_dict() == seed_before
     assert [event.to_dict() for event in session.manager.gate_events] == history_before
+
+def test_offline_research_capability_cannot_be_recreated_by_json_restore() -> None:
+    from shadowseed.chat import ShadowChatSession, _OFFLINE_RESEARCH_CAPABILITY
+
+    session = ShadowChatSession(
+        runtime_mode="evaluation",
+        backend="fixture",
+        embedding_backend="lexical",
+        _offline_research_capability=_OFFLINE_RESEARCH_CAPABILITY,
+    )
+    assert session._offline_research_enabled is True
+
+    serialized = session.to_state()
+    assert "_offline_research_capability" not in serialized
+    assert "_offline_research_capability" not in serialized["session_config"]
+    restored = ShadowChatSession.from_state(serialized)
+    assert restored.runtime_mode == "evaluation"
+    assert restored._offline_research_enabled is False
+
+    # Serialized input can never impersonate the live in-process capability.
+    tainted = dict(serialized)
+    tainted["session_config"] = {
+        **serialized["session_config"],
+        "_offline_research_capability": "evaluation",
+    }
+    import pytest
+
+    with pytest.raises(ValueError, match="offline research capability"):
+        ShadowChatSession.from_state(tainted)
