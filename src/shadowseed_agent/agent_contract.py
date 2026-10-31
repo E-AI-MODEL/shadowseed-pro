@@ -117,17 +117,19 @@ def has_logged_promotion(seed_id: str, gate_log: Iterable[Any]) -> bool:
 
 
 def has_unreviewed_ssot_support(seed_id: str, gate_log: Iterable[Any]) -> bool:
-    """Flag historical SSOT support lacking a product authorization ledger.
+    """Quarantine any SSOT SUPPORT whose product authorization is not proven.
 
-    Identify the specific legacy *automated SSOT producer* by its recorded
-    reason ('verified SSOT chunk ...'), source_ref ('...::chunk_...'), or the
-    intermediate self-attestation ('relation-attested:ssot:...'). A differently
-    sourced, explicitly operator/researcher-submitted SSOT signal is a separate
-    provenance channel: do not silently relabel that study as the same defect.
-    The producer lacked a workspace-authorized source/seed relationship.
-    Fail closed for known legacy paths at new point of use, but never rewrite
-    old Gate events, weights or archived decisions. This is not proof a source
-    was false. Unknown historical provenance needs its own explicit audit.
+    Historic SSOT GateEvent signals carry no authenticated source-to-seed
+    authorization ledger reference. Reason/source_ref strings, a reviewer
+    label, `verified`, a document digest, or a model assertion cannot prove
+    identity or authorization. This includes known similarity-only producers,
+    intermediate relation attestations and unrecognised old signal formats.
+
+    The product's authorized evidence.verify path records HUMAN_FEEDBACK with
+    an ActorContext and separate atomic ledger; it does not rely on raw SSOT
+    signals. A future authenticated SSOT submission contract must introduce
+    a verifiable ledger binding before any SSOT support can be allowed again.
+    This conservatively blocks fresh influence, not archived Gate history.
     """
     for event in gate_log:
         if str(_value(event, "seed_id", "")) != seed_id:
@@ -137,19 +139,7 @@ def has_unreviewed_ssot_support(seed_id: str, gate_log: Iterable[Any]) -> bool:
             direction = _value(signal, "direction", "support")
             kind_name = str(getattr(kind, "value", kind))
             direction_name = str(getattr(direction, "value", direction))
-            reason = str(_value(signal, "reason", "") or "")
-            source_ref = str(_value(signal, "source_ref", "") or "")
-            known_legacy_producer = (
-                reason.startswith("verified SSOT chunk ")
-                or reason.startswith("relation-attested:ssot:")
-                or "::chunk_" in source_ref
-            )
-            if (
-                kind_name == "ssot"
-                and direction_name == "support"
-                and _as_bool(_value(signal, "verified", False))
-                and known_legacy_producer
-            ):
+            if kind_name == "ssot" and direction_name == "support":
                 return True
     return False
 
