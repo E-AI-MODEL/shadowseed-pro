@@ -1,5 +1,7 @@
 # Shadowseed possibility-space research — questions, sources, rival mechanisms
 
+> **Oorspronkelijke indexstand: 25 oktober 2026.** De oorspronkelijke onderdelen hieronder blijven letterlijk behouden als onderzoeksstand van die datum. Aanvullingen uit latere concept-PR's, waaronder de bronkaart van 27 oktober en het afzonderlijke 48-call-verslag van 28 oktober, houden bij eventuele integratie hun eigen datum en bronverwijzingen. De [actuele onderzoeksingang](../README.md) en het [branchregister](branch-register-2026-10-28.md) verbinden deze versies. Een technisch label of oudere onderzoeksconclusie bepaalt niet op voorhand de betekenis van een oorspronkelijke waarneming.
+
 > **Status:** open research program; no demonstrated Q1/Q2 efficacy or accepted architecture change.
 > **Updated:** 2026-10-25 following first-principles review.
 > **Question authority:** [Verbatim Dutch thesis](../possibility-space-thesis.md), with **both clauses** intact. No narrower paraphrase or experiment can replace it.
@@ -10,7 +12,17 @@
 - **[Bronnen en bewijsoverzicht voor stap 1](step1-evidence-register-2026-10-25.md)** — onderscheid tussen uitgevoerde proeven, beoordelingen door andere LLM's, oude nulresultaten, niet-gemergede prototypes en nog ontbrekende onafhankelijke controles.
 - **[Technische vergelijking met H-Neurons](step1-h-neurons-method-crosswalk-2026-10-25.md)** — originele activatiemeetmethode, CETT, nieuwe kritische controles, E1 versus E2 en de eis dat kandidaat/label pas na originele generatieactivaties ontstaat. Dit is een onderzoeksvoorstel, geen neuronresultaat.
 - **[Stap-1 meetinstrument met echte detector/intake](step1-gap-birth-instrument-2026-10-25.md)** — offline, volledig vooraf vastgelegde model- en detectorantwoorden; daadwerkelijke productparser, observe_turn, intake, gewichtloze seedgeboorte, eventlogs en oorspronkelijke promptversies. Geen werkelijke modeldetectie, geen modelcalls en geen wetenschappelijke effectclaim.
+- **[Herkomst per detectoritem tot intakebesluit](step1-detector-intake-item-lineage-2026-10-25.md)** — productinstrumentatie voor ruwe kandidaatindex, normalisatie, splitsen, afwijzing, echte seed-ID/created/deduplicated en bestaande observatie-ID. Aangepaste normalizers blijven expliciet onopgelost. Geen semantische waarheid of Q1/Q2-uitkomst.
+- **[Eerste seedgeboorte met exact herleidbaar detectoritem](step1-to-weightless-inquiry-handoff-2026-10-25.md)** — read-only onderzoekscheck op de nieuwe canonieke item-herkomst, echte `created`-event en gewichtloze seed, via meerdere turns. Weigert legacy of beschadigde herkomst. Geen modelcall, autonome inquiry of Q1/Q2-resultaat.
 - **[Methodische EAI Blindspot-audit van Q1/Q2 en stap 1](step1-eai-blindspot-method-audit-2026-10-25.md)** — uitsluitend een interne controle op bronfit, rol/herkomst, parser- en evaluatorselectie, latere causaliteit, gewichtloos onderzoek en de verschillende feedbackregels in de protocollen. Geen EAI-rubric als gapfilter, geen nieuwe proef, geen onafhankelijke G0-goedkeuring.
+
+## Retrospective research inventory (27 October 2026)
+
+- [Verified raw-data evidence map](retrospective-evidence-map-2026-10-27.md) — source identifiers, candidate/intake counts, actual seed exposure, review provenance and what each result can establish.
+- [Active branch and PR map](research-branch-map-2026-10-27.md) — separate seven-PR Q1/Q2 research stack and two-PR legacy/SSOT safety stack, with original bases retained.
+- [Publication-readiness and reviewer status](publication-readiness-2026-10-27.md) — what is verified, what remains independent human work, and which files must stay private.
+
+These documents catalogue evidence; they do not approve G0, revise the fundamental thesis, replace this historical research reading order, or merge experimental code into `main`.
 
 ## Current reading order (start here)
 

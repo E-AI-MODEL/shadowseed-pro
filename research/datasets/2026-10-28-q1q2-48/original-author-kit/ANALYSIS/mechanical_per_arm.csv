@@ -1,0 +1,9 @@
+moment,arm,tracks_attempted,complete_pairs,calls,input_tokens,output_tokens,mean_visible_chars_first,mean_first_second_jaccard
+battery_after_T3,deliberate_search,3,3,6,11689,3692,1431.3,0.2756
+battery_after_T3,ordinary,3,3,6,11084,2791,1180.3,0.2632
+battery_after_T3,placebo,3,3,6,11540,2655,1001.3,0.2457
+battery_after_T3,shadow_candidate,3,3,6,11628,2625,1180,0.3501
+horizon_after_T2,deliberate_search,3,3,6,20740,16097,6065.3,0.2506
+horizon_after_T2,ordinary,3,3,6,18791,12428,4047.7,0.2748
+horizon_after_T2,placebo,3,3,6,19412,10789,4065.7,0.2854
+horizon_after_T2,shadow_candidate,3,3,6,19702,11592,4466.3,0.2683

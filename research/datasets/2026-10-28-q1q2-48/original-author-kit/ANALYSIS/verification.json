@@ -1,0 +1,21 @@
+{
+  "verified": true,
+  "attempted": 48,
+  "complete_calls": 48,
+  "complete_trajectories": 24,
+  "source_checksum": "0a5094e38ab2fdcf8c68dc8d6a3c75d29eeffd49e1f6c8e138589ed73ca36bbf",
+  "reported_tokens": 187255,
+  "unique_provider_response_ids": 48,
+  "product_gate_seed_exposures": 0,
+  "reviewed_human": 0,
+  "group_counts": {
+    "('battery_after_T3', 'deliberate_search')": 3,
+    "('battery_after_T3', 'ordinary')": 3,
+    "('battery_after_T3', 'placebo')": 3,
+    "('battery_after_T3', 'shadow_candidate')": 3,
+    "('horizon_after_T2', 'deliberate_search')": 3,
+    "('horizon_after_T2', 'ordinary')": 3,
+    "('horizon_after_T2', 'placebo')": 3,
+    "('horizon_after_T2', 'shadow_candidate')": 3
+  }
+}

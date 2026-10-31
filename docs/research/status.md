@@ -1,5 +1,11 @@
 # Research Status
 
+## New public source archive and preprint evidence position (29 October 2026)
+
+The 27 October original research archive is now [publicly released](archives/2026-10-27/README.md) with four Git histories, four snapshots, 62 saved original Actions artifact ZIPs, a 70-file SHA-256 inventory and a release-asset digest that matches the verified original ZIP. The 28 October [48-call source bundle](../../research/datasets/2026-10-28-q1q2-48/README.md) is separately available, with the original model responses and documented reviewer/unblinding state.
+
+These sources strengthen the programme's **observability and reproducibility**, rather than adding independent causal effect sizes. The [preprint framing update](preprint-evidence-position-2026-10-29.md) sets out the supported positive claims and separates earlier single-AI-rater candidate-value categories, instrumented memory behaviour and downstream effect evidence. Historical status claims and original experimental reports below are retained as the state recorded at their dates.
+
 ## Defensible status
 
 The repository is **research-ready, locally mass-testable, able to produce structured privacy-minimized tester datasets, and equipped for preregistered evidence-backed paired efficacy studies**. Core mechanics, benchmark harnesses, a broad regression suite, a chat-first local Workbench, standalone build contracts, verifiable exports, support-bundle aggregation, candidate review packets, and influence-opportunity accounting are present. This status does not by itself imply `production-ready/local` or general answer-quality benefit.

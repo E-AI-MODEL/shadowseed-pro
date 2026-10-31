@@ -1,0 +1,43 @@
+# Shadowseed Pro: what the evidence now supports, and how to frame the preprint
+
+**Research-editorial position — 29 October 2026.** This is a dated synthesis for the repository README and an exploratory preprint, **not** a replacement for historic reports, original outputs, or an accepted scientific conclusion. The source archive has now been publicly released. The earlier working manuscripts remain their own historical versions.
+
+## The progress we can positively and precisely claim
+
+**1. A functioning research instrument, not just a metaphor.** The Engine records model-/detector-generated candidate observations, maintains weightless memory across turns, and distinguishes trace from steering authority. Lifecycle, Validation Gate and later point-of-use checks have implemented and tested boundaries. These are substantive engineering findings. They are *not*, by themselves, a general guarantee of safety, semantic truth or better model answers.
+
+**2. The source record now has exceptional practical value.** The [27 October release](https://github.com/E-AI-MODEL/shadowseed-pro/releases/tag/research-archive-2026-10-27) preserves four Git histories, four source snapshots and 62 original Actions ZIPs, with [inventory and SHA-256 provenance](archives/2026-10-27/README.md). The [28 October 48-call experiment](../../research/datasets/2026-10-28-q1q2-48/README.md) is separately published with its raw responses and owner records. Earlier archive-unavailability statements in preprint drafts now describe a **past limitation**, not the current availability of those sources.
+
+**3. We can inspect where observations enter, survive or stop.** In the 27 October dual-model source audit, 94/94 numbered source candidates were traced to canonical intake; 48 were accepted and 46 rejected as `not_atomic`. The 46 rejections shared a lexical-separator condition, and a final-punctuation change alone would pass that check. That is an informative, reproducible **form-sensitivity** finding, not a judgment about all 46 candidates' semantic value. See [source-fate audit, PR #261](https://github.com/E-AI-MODEL/shadowseed-pro/pull/261).
+
+**4. Real multi-turn material and methodological counterexamples exist.** A source-preserving **derived** register documents 220 recorded turns across 40 trajectories with 1,224 candidate occurrences; it has explicit unmatched-source categories and must not be passed off as an independent audit of every ZIP. [PR #263](https://github.com/E-AI-MODEL/shadowseed-pro/pull/263) records its boundaries. The 48-call pilot contains 24 two-turn continuations over four arms and two moments of one fictional case. It demonstrates what happened when candidate text was offered as an *experimental note*; it does not test automatic production-Gate exposure and had no completed independent human semantic review at the time of execution. These results can enrich a preprint without collapsing different datasets into a single effect percentage.
+
+**5. Negative and non-discriminating results improved the question.** The fixed22 comparison recorded differing answers but zero surfaced seeds; it is not a valid downstream seed-effect estimate. Earlier compression/notes controls sometimes reached the same later inquiry without Shadowseed; this is a design-specific non-discrimination, not a disproof of every possible shadow-memory effect. Some real multi-turn trials exposed context asymmetry or stopped before the critical continuation. The separate model-internal H-Neurons/activation line reported a bounded null or non-replication under its tested small-model/probe conditions; do not generalise it to LLM introspection or assimilate it to the Pro mechanism.
+
+## What older preprint language should *not* become a README claim
+
+The earlier *After Six Months* working draft grouped **627** detector candidate occurrences, introduced labels such as “residue” and “valuable residue,” and discussed a possible positive subset. Those novelty/value labels relied substantially on **one AI rater** in a heterogeneous, nested observational sample. They can remain explicitly attributed exploratory annotations and candidate examples; they cannot establish a measured population rate of otherwise unthinkable or scientifically valuable relations.
+
+Likewise, earlier **82–88%** ordinary-generation overlap figures came from specific historical review tasks with different prompting. They are neither a universal ceiling on Shadowseed nor a general proof that strong models already discover every relevant possibility. The archived **57/83 helpful** versus **39/83 preferred** review labels are reported outcomes under changing review designs, not a clean general efficacy estimate or uniform independently verified human trial.
+
+The later *Exploratory Research-Programme Synthesis and Reproducible Audit* working preprint takes a more defensible approach: it explicitly treats the programme as a **retrospective source audit**, not a quantitative meta-analysis of independent causal effect sizes, and keeps technical integrity, candidate wording, stored traces, actual exposure and blinded downstream evaluation distinct. That correction should guide current README and publication language. Older drafts, diagrams, tables and first interpretations remain historical source material rather than being deleted or silently rewritten.
+
+The visual material is worth retaining: diagrams of the trajectory from model output to candidate and shadow-memory states communicate a real process. **Every figure caption should identify its observational unit, source run, date, denominator and reviewer status**. A compelling depiction of a possibility or a different-looking answer is an illustration, not a measured Q2 effect.
+
+## The original scientific target remains ambitious
+
+> Kunnen we de waarschijnlijkheidsgerichte werking van een taalmodel gebruiken om niet alleen te onderzoeken wat het model weet, niet weet of niet genereert, maar ook welke relaties en mogelijkheden er zouden kunnen zijn buiten de gebruikelijke generatie? En kunnen we onderzoeken hoe nieuwe mogelijkheden ontstaan die de ruimte van wat daarna denkbaar is zelf veranderen?
+
+**Q1:** Under defined, strong ordinary-generation and deliberate-search comparisons, can detector-assisted observation reveal specific, meaningful relations **not selected in the sampled baseline**? “Outside ordinary generation” needs a specified sampling protocol; it does not imply model self-knowledge of ungenerated thoughts.
+
+**Q2:** If a candidate persists as a weightless shadow and later becomes eligible for use, does that process change the **subsequent investigable possibilities** compared with no candidate, an unrelated candidate, an ordinary note and deliberate search? Change may remove a bad research path, expose a confound or alter the conditions for a test; counting more questions is not an adequate endpoint.
+
+These questions are not answered by a single positive anecdote, a novel relation label, an attractive diagram or aggregate candidate counts. But the programme has already produced what is needed to study them more seriously: a functioning instrument, preserved raw trajectories, specific failure modes, access to original archives, stronger controls and an explicit causal target. That is the justified positive scientific position.
+
+## Editorial boundary and publication status
+
+Describe Shadowseed Pro as an **implemented and actively studied approach** to recording and investigating unselected candidate relations without automatically granting them answer authority. Describe the 27 October preprint as an **exploratory, non-peer-reviewed research synthesis**; retain the newer visual structure, and correct its source links for the subsequently published archives. Do not turn it into a population meta-analysis, claim a completed independent human review where none was documented, claim that G0 administrative status prevents source examination, or equate form-based rejection with lack of meaning.
+
+The next preprint revision should cite the original [archive](archives/2026-10-27/README.md), the [public 48-call source set](../../research/datasets/2026-10-28-q1q2-48/README.md), the [intake audit](https://github.com/E-AI-MODEL/shadowseed-pro/pull/261) and the [trajectory reconstruction](https://github.com/E-AI-MODEL/shadowseed-pro/pull/263) separately, noting which work is in `main` and which remains a draft. These are complementary evidence layers, not replicates of one experiment.
+
+Existing manuscripts, labels and historic conclusions are preserved in their own original files and history. This page adds current interpretation; it does not change an original outcome, product policy or recorded observation.

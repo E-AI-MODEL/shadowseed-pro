@@ -1,0 +1,173 @@
+{
+  "owner_only": true,
+  "unblind": [
+    {
+      "track": "493df5360d440bda8a21f333",
+      "model": "gpt-5-2025-08-07",
+      "moment": "horizon_after_T2",
+      "replicate": 1,
+      "arm": "shadow_candidate"
+    },
+    {
+      "track": "d267e490ac390caf861a9a72",
+      "model": "gpt-5-2025-08-07",
+      "moment": "horizon_after_T2",
+      "replicate": 1,
+      "arm": "placebo"
+    },
+    {
+      "track": "c841ed48b52e18d0063ada80",
+      "model": "gpt-5-2025-08-07",
+      "moment": "horizon_after_T2",
+      "replicate": 1,
+      "arm": "ordinary"
+    },
+    {
+      "track": "78a85b4484c5cc19687e82e3",
+      "model": "gpt-5-2025-08-07",
+      "moment": "horizon_after_T2",
+      "replicate": 1,
+      "arm": "deliberate_search"
+    },
+    {
+      "track": "5110474de8fc61e93c87b62c",
+      "model": "gpt-5-2025-08-07",
+      "moment": "horizon_after_T2",
+      "replicate": 2,
+      "arm": "deliberate_search"
+    },
+    {
+      "track": "505a14aaf1126b36e0f5c87d",
+      "model": "gpt-5-2025-08-07",
+      "moment": "horizon_after_T2",
+      "replicate": 2,
+      "arm": "placebo"
+    },
+    {
+      "track": "bf56ab2fd1ae03e23bf3e56e",
+      "model": "gpt-5-2025-08-07",
+      "moment": "horizon_after_T2",
+      "replicate": 2,
+      "arm": "ordinary"
+    },
+    {
+      "track": "62858928ab1a405d8288f579",
+      "model": "gpt-5-2025-08-07",
+      "moment": "horizon_after_T2",
+      "replicate": 2,
+      "arm": "shadow_candidate"
+    },
+    {
+      "track": "4590985316242db60c35fdff",
+      "model": "gpt-5-2025-08-07",
+      "moment": "horizon_after_T2",
+      "replicate": 3,
+      "arm": "ordinary"
+    },
+    {
+      "track": "df2b04d592bee0ea3dc63b65",
+      "model": "gpt-5-2025-08-07",
+      "moment": "horizon_after_T2",
+      "replicate": 3,
+      "arm": "placebo"
+    },
+    {
+      "track": "f31cd9fc53e838b60f9239c1",
+      "model": "gpt-5-2025-08-07",
+      "moment": "horizon_after_T2",
+      "replicate": 3,
+      "arm": "shadow_candidate"
+    },
+    {
+      "track": "8205894319d81dc4aebec9b7",
+      "model": "gpt-5-2025-08-07",
+      "moment": "horizon_after_T2",
+      "replicate": 3,
+      "arm": "deliberate_search"
+    },
+    {
+      "track": "62dbc4de008ce81784c192e5",
+      "model": "gpt-6-luna",
+      "moment": "battery_after_T3",
+      "replicate": 1,
+      "arm": "shadow_candidate"
+    },
+    {
+      "track": "2b2e45ae8208d7741f1e3895",
+      "model": "gpt-6-luna",
+      "moment": "battery_after_T3",
+      "replicate": 1,
+      "arm": "ordinary"
+    },
+    {
+      "track": "b60527c49d0c3ad60f586bae",
+      "model": "gpt-6-luna",
+      "moment": "battery_after_T3",
+      "replicate": 1,
+      "arm": "deliberate_search"
+    },
+    {
+      "track": "2bce94f47cc34bb357660607",
+      "model": "gpt-6-luna",
+      "moment": "battery_after_T3",
+      "replicate": 1,
+      "arm": "placebo"
+    },
+    {
+      "track": "18126651b650ac2292601a94",
+      "model": "gpt-6-luna",
+      "moment": "battery_after_T3",
+      "replicate": 2,
+      "arm": "ordinary"
+    },
+    {
+      "track": "659468c0f086e7fd7b08de75",
+      "model": "gpt-6-luna",
+      "moment": "battery_after_T3",
+      "replicate": 2,
+      "arm": "shadow_candidate"
+    },
+    {
+      "track": "d2acd0340d90662f54a97d2a",
+      "model": "gpt-6-luna",
+      "moment": "battery_after_T3",
+      "replicate": 2,
+      "arm": "deliberate_search"
+    },
+    {
+      "track": "4c043f6387ca5d4dbb1d5771",
+      "model": "gpt-6-luna",
+      "moment": "battery_after_T3",
+      "replicate": 2,
+      "arm": "placebo"
+    },
+    {
+      "track": "cea5cc9dc0deb1f08ed5af98",
+      "model": "gpt-6-luna",
+      "moment": "battery_after_T3",
+      "replicate": 3,
+      "arm": "placebo"
+    },
+    {
+      "track": "5a8a2ed759b2625dd10b708e",
+      "model": "gpt-6-luna",
+      "moment": "battery_after_T3",
+      "replicate": 3,
+      "arm": "shadow_candidate"
+    },
+    {
+      "track": "3e3da036d2343274914fcfa7",
+      "model": "gpt-6-luna",
+      "moment": "battery_after_T3",
+      "replicate": 3,
+      "arm": "ordinary"
+    },
+    {
+      "track": "963a0e78555f6c23091c2b0d",
+      "model": "gpt-6-luna",
+      "moment": "battery_after_T3",
+      "replicate": 3,
+      "arm": "deliberate_search"
+    }
+  ]
+}

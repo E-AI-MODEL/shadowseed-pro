@@ -1,0 +1,345 @@
+{
+  "owner_only": true,
+  "reviewer_tracks": {
+    "A": [
+      {
+        "track": "ed6c9b0336b3cead08f918ce",
+        "arm": "shadow_candidate",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 1
+      },
+      {
+        "track": "b3065785c06ac9a9391ada3b",
+        "arm": "placebo",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 1
+      },
+      {
+        "track": "caabac3248246f745856c914",
+        "arm": "ordinary",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 1
+      },
+      {
+        "track": "3e316b450254719f6bbe9edb",
+        "arm": "deliberate_search",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 1
+      },
+      {
+        "track": "d616a98693b050120c663ab7",
+        "arm": "deliberate_search",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 2
+      },
+      {
+        "track": "1ecfd4f1c94c9f16aa2b387b",
+        "arm": "placebo",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 2
+      },
+      {
+        "track": "cbdf4903b3b0c4e07174510d",
+        "arm": "ordinary",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 2
+      },
+      {
+        "track": "ae0c2d9d4eb379b3707f9ec6",
+        "arm": "shadow_candidate",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 2
+      },
+      {
+        "track": "72703de7113610f2ba9d694f",
+        "arm": "ordinary",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 3
+      },
+      {
+        "track": "382f1a37daa8cf3139c5b667",
+        "arm": "placebo",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 3
+      },
+      {
+        "track": "22ab901c41d97daddfce39ae",
+        "arm": "shadow_candidate",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 3
+      },
+      {
+        "track": "cd11a841d5c284a2180d4eea",
+        "arm": "deliberate_search",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 3
+      },
+      {
+        "track": "2011a7ca01cf31bc59124d0a",
+        "arm": "shadow_candidate",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 1
+      },
+      {
+        "track": "9eec4f0b4395062395a7167a",
+        "arm": "ordinary",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 1
+      },
+      {
+        "track": "b7a0cfc42c0a7596b5b6d8e1",
+        "arm": "deliberate_search",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 1
+      },
+      {
+        "track": "6e00f2cef1e6bc72b1422a07",
+        "arm": "placebo",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 1
+      },
+      {
+        "track": "ca75a67b878b9feb92085969",
+        "arm": "ordinary",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 2
+      },
+      {
+        "track": "448575ba290ef52b4a40457a",
+        "arm": "shadow_candidate",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 2
+      },
+      {
+        "track": "bc9d453b5dba83eb8ece3060",
+        "arm": "deliberate_search",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 2
+      },
+      {
+        "track": "5f423c03d3815c758c972125",
+        "arm": "placebo",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 2
+      },
+      {
+        "track": "2a2e44631da8870e8a45feee",
+        "arm": "placebo",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 3
+      },
+      {
+        "track": "ca54847d4a628ca85eeab024",
+        "arm": "shadow_candidate",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 3
+      },
+      {
+        "track": "cc4fd3582663fdf2ff4e78ae",
+        "arm": "ordinary",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 3
+      },
+      {
+        "track": "8f41d66b651111ced303c225",
+        "arm": "deliberate_search",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 3
+      }
+    ],
+    "B": [
+      {
+        "track": "e7c7a1717135fe6eb71ad0f8",
+        "arm": "shadow_candidate",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 1
+      },
+      {
+        "track": "9b1ba186cce4fd419b15dab4",
+        "arm": "placebo",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 1
+      },
+      {
+        "track": "f438f12076af48601451c935",
+        "arm": "ordinary",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 1
+      },
+      {
+        "track": "8e97aa524c3035e56e2ac21a",
+        "arm": "deliberate_search",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 1
+      },
+      {
+        "track": "9d30f692a4db4d73381ada47",
+        "arm": "deliberate_search",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 2
+      },
+      {
+        "track": "784481a96bd7e0712c1771c4",
+        "arm": "placebo",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 2
+      },
+      {
+        "track": "ec2d1030d5043e318d7f19eb",
+        "arm": "ordinary",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 2
+      },
+      {
+        "track": "a58aa12b5171a08e741135a0",
+        "arm": "shadow_candidate",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 2
+      },
+      {
+        "track": "4ef836dd0a749102fedef1a5",
+        "arm": "ordinary",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 3
+      },
+      {
+        "track": "7de2eb3d0922c2d2f4dcf139",
+        "arm": "placebo",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 3
+      },
+      {
+        "track": "dc46bc0a3ea1bb8d4895f063",
+        "arm": "shadow_candidate",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 3
+      },
+      {
+        "track": "10cd8274aa8d5437e9ced710",
+        "arm": "deliberate_search",
+        "model": "gpt-5-2025-08-07",
+        "moment": "horizon_after_T2",
+        "replicate": 3
+      },
+      {
+        "track": "a84c2bf134c00d0483cd5549",
+        "arm": "shadow_candidate",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 1
+      },
+      {
+        "track": "a1cdbcf7e228425d1401ffe4",
+        "arm": "ordinary",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 1
+      },
+      {
+        "track": "a08b7edb9fa615a2de455fd4",
+        "arm": "deliberate_search",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 1
+      },
+      {
+        "track": "f533f329d5f0dfccfde852f4",
+        "arm": "placebo",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 1
+      },
+      {
+        "track": "30c854f631c558b500835021",
+        "arm": "ordinary",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 2
+      },
+      {
+        "track": "53c69ab0ba29ee25f57f8c23",
+        "arm": "shadow_candidate",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 2
+      },
+      {
+        "track": "ced2c37597b9ab48232a24a6",
+        "arm": "deliberate_search",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 2
+      },
+      {
+        "track": "cd578e214c24268b293682d4",
+        "arm": "placebo",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 2
+      },
+      {
+        "track": "1c26c5b52a530673cd54dfbf",
+        "arm": "placebo",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 3
+      },
+      {
+        "track": "34b3a381540c89a75bba6edc",
+        "arm": "shadow_candidate",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 3
+      },
+      {
+        "track": "1ec68ecabf893afbf1b61185",
+        "arm": "ordinary",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 3
+      },
+      {
+        "track": "bf4bfb785e2557782b5e8d03",
+        "arm": "deliberate_search",
+        "model": "gpt-6-luna",
+        "moment": "battery_after_T3",
+        "replicate": 3
+      }
+    ]
+  }
+}

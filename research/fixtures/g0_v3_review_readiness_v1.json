@@ -1,0 +1,60 @@
+{
+  "schema": "g0-v3-review-readiness-v1",
+  "review_subject": "dynamic_inquiry_E1_E2",
+  "review_scope": "CONSTRUCT_ACCEPTANCE_FOR_FEASIBILITY_ONLY",
+  "repository": "E-AI-MODEL/shadowseed-pro",
+  "product_main_sha": "a5ec14ecc52adcacf85fa9503a22e3fe91527b06",
+  "exploratory_sources": [
+    {
+      "pr": 250,
+      "head_sha": "abff8a02ea866313f33e6ec4f34724d5706e596b",
+      "run_id": 40215854335,
+      "interpretation": "real_host_and_detector_feasibility_context_asymmetric"
+    },
+    {
+      "pr": 251,
+      "head_sha": "53646efdad883c4b268ed92435c7d446fabe4699",
+      "run_id": 40224494313,
+      "interpretation": "real_weightless_seed_T1_five_model_questions_T2_checkpoint_failure"
+    }
+  ],
+  "reviews": {
+    "technical": {
+      "issue": 234,
+      "reviewer": null,
+      "independence_verified_by_human": false,
+      "review_record": null
+    },
+    "conceptual": {
+      "issue": 235,
+      "reviewer": null,
+      "independence_verified_by_human": false,
+      "review_record": null
+    }
+  },
+  "environments": {
+    "E1": {
+      "general_unscripted_evaluator_executed_and_independently_verified": false,
+      "pinned_upstream_revision": null,
+      "negative_cases_independent_verified": false,
+      "technical_decision": null,
+      "conceptual_decision": null
+    },
+    "E2": {
+      "general_unscripted_evaluator_executed_and_independently_verified": false,
+      "pinned_upstream_revision": null,
+      "negative_cases_independent_verified": false,
+      "technical_decision": null,
+      "conceptual_decision": null
+    }
+  },
+  "sequestered_confirmatory_cases_created_by_independent_case_owner": false,
+  "evaluator_allowlisted_safe_execution_verified": false,
+  "later_RI_effect_independently_validated": false,
+  "known_T2_checkpoint_failure_resolved": false,
+  "ssot_evidence_polarity_issue_241_open": true,
+  "G0": "NOT_PASSED",
+  "automatic_G0_pass_allowed": false,
+  "instructions": "This is public review coordination metadata, not private holdout data or a reviewer decision. Independent human verdicts must be separately authenticated out of band.",
+  "holdout_creation_protocol_independently_approved": false
+}
