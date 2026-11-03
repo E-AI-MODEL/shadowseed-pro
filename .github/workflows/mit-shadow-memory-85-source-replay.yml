@@ -1,0 +1,51 @@
+name: Research MIT all 85 source hypotheses
+
+on:
+  push:
+    branches: [research/mit-shadow-memory-replay-20261103]
+    paths:
+      - ".github/workflows/mit-shadow-memory-85-source-replay.yml"
+      - "research/experiments/mit_shadow_memory_20261103/replay_85_source_hypotheses.py"
+      - "research/experiments/mit_shadow_memory_20261103/test_replay_85_source_hypotheses.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  chronological-source-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "3"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: Install research dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . "pytest>=8" "sentence-transformers>=3,<6" "huggingface_hub>=0.28,<1"
+      - name: Test source extraction and chronological controls
+        run: python -m pytest -q research/experiments/mit_shadow_memory_20261103/test_replay_85_source_hypotheses.py
+      - name: Download exact MIT experiment and verify Git blob
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p mit-data/exp8_math/runs/p50c/readable
+          curl -fL --retry 4 \
+            https://raw.githubusercontent.com/RikiyaT/lm_understand-logs/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/readable/trajectory.md \
+            -o mit-data/exp8_math/runs/p50c/readable/trajectory.md
+          test "$(git hash-object mit-data/exp8_math/runs/p50c/readable/trajectory.md)" = "caa2d040547e81677f98cccb1854769b1057f3b7"
+      - name: Real ShadowseedEngine 158-turn replay and plain-notes baseline
+        run: PYTHONPATH=. python -u research/experiments/mit_shadow_memory_20261103/replay_85_source_hypotheses.py
+      - name: Upload source-matched recurrence, baselines and raw audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mit-85-chronological-source-replay
+          path: mit-85-recurrence-output/
+          if-no-files-found: warn
