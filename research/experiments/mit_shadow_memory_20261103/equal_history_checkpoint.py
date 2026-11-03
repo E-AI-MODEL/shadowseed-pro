@@ -54,7 +54,7 @@ SYSTEM = (
     "REASON: <one sentence grounded only in the supplied notes>. "
     "No code or extra commentary."
 )
-PICK = re.compile(r"(?m)^\s*PICK\s*:\s*(\d+|NONE)\s*$",re.I)
+PICK = re.compile(r"(?m)^\s*PICK\s*:\s*(?:t)?(\d+|NONE)\s*$",re.I)
 REL = re.compile(r"(?m)^\s*RELATION\s*:\s*(SAME_CLAIM|RELATED_DISTINCT|NO_CLEAR_DIRECT_LINK|UNCERTAIN)\s*$",re.I)
 REASON = re.compile(r"(?m)^\s*REASON\s*:\s*(.+?)\s*$",re.I)
 
@@ -66,7 +66,8 @@ def parse_response(raw, earlier_turns):
     rels=REL.findall(raw)
     reasons=REASON.findall(raw)
     if len(picks)!=1 or len(rels)!=1 or len(reasons)!=1:
-        return {"valid":False,"reason_code":"invalid_format","pick":None,"relation":None,"explanation":None}
+        reason = "unstructured_none" if raw.strip().upper()=="NONE" else "invalid_format"
+        return {"valid":False,"reason_code":reason,"pick":None,"relation":None,"explanation":None}
     pick = None if picks[0].upper()=="NONE" else int(picks[0])
     relation = rels[0].upper()
     if (pick is not None and pick not in earlier_turns) or (
