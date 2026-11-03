@@ -1,0 +1,52 @@
+name: Research MIT Shadow Memory v2
+
+on:
+  push:
+    branches: [research/mit-shadow-memory-replay-20261103]
+    paths:
+      - ".github/workflows/mit-shadow-memory-replay-v2.yml"
+      - "research/experiments/mit_shadow_memory_20261103/run_replay_v2.py"
+      - "research/experiments/mit_shadow_memory_20261103/test_replay_v2.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  research-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      OMP_NUM_THREADS: "4"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      MAX_NOTES: "5"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install isolated research dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . "pytest>=8" "sentence-transformers>=3,<6" "transformers>=4.51,<5" "huggingface_hub>=0.28,<1"
+      - name: Run regression tests before model execution
+        run: python -m pytest -q research/experiments/mit_shadow_memory_20261103/test_replay_v2.py
+      - name: Download and verify immutable MIT trajectory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p mit-data/exp8_math/runs/p50c/readable
+          curl -fL --retry 3 \
+            https://raw.githubusercontent.com/RikiyaT/lm_understand-logs/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/readable/trajectory.md \
+            -o mit-data/exp8_math/runs/p50c/readable/trajectory.md
+          test "$(git hash-object mit-data/exp8_math/runs/p50c/readable/trajectory.md)" = "caa2d040547e81677f98cccb1854769b1057f3b7"
+      - name: Run chat-templated model + genuine ShadowseedEngine
+        run: python -u research/experiments/mit_shadow_memory_20261103/run_replay_v2.py
+      - name: Upload exact audit records even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mit-shadow-memory-v2-audit
+          path: mit-v2-output/
+          if-no-files-found: warn
