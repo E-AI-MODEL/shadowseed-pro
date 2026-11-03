@@ -1,12 +1,6 @@
 name: Research MIT Shadow Memory replay
 
 on:
-  push:
-    branches:
-      - research/mit-shadow-memory-replay-20261103
-    paths:
-      - ".github/workflows/mit-shadow-memory-replay.yml"
-      - "research/experiments/mit_shadow_memory_20261103/**"
   workflow_dispatch:
 
 permissions:
