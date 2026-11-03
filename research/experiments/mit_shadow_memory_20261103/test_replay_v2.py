@@ -15,7 +15,7 @@ def test_only_actual_hypothesis_not_code_is_read():
 def test_extraction_does_not_invent_or_paraphrase():
     reply = "Observed alternative mechanism in layer 19; results require independent testing."
     assert extract_observation(reply) is None
-    assert extract_observation("We attempted to separate repetition from useful mathematical reasoning. Our observations were inconclusive, and we proposed comparing independent held-out cases.")[:50] == "We attempted to separate repetition from useful math"
+    assert extract_observation("We attempted to separate repetition from useful mathematical reasoning. Our observations were inconclusive, and we proposed comparing independent held-out cases.").startswith("We attempted to separate repetition from useful mathematical reasoning.")
 
 def test_parser_keeps_fail_closed_none_mixed():
     seeds, diagnostics = parse_numbered_seeds_with_diagnostics("NONE\n1. Additional speculative angle",max_seeds=2)
