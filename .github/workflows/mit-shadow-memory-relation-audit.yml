@@ -1,0 +1,59 @@
+name: Research MIT distinct versus related hypotheses
+
+on:
+  push:
+    branches: [research/mit-shadow-memory-replay-20261103]
+    paths:
+      - ".github/workflows/mit-shadow-memory-relation-audit.yml"
+      - "research/experiments/mit_shadow_memory_20261103/evaluate_relation_links.py"
+      - "research/experiments/mit_shadow_memory_20261103/test_evaluate_relation_links.py"
+      - "research/experiments/mit_shadow_memory_20261103/causal_pair_reference.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: research-mit-relations-v1
+  cancel-in-progress: true
+
+jobs:
+  relation-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "4"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: Install pinned-scope research dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . "pytest>=8" "sentence-transformers>=3,<6" "transformers>=4.51,<5" "huggingface_hub>=0.28,<1"
+      - name: Verify relation, chronology and parser regressions
+        run: |
+          PYTHONPATH=. python -m pytest -q \
+            research/experiments/mit_shadow_memory_20261103/test_evaluate_relation_links.py \
+            research/experiments/mit_shadow_memory_20261103/test_replay_85_source_hypotheses.py
+      - name: Fetch immutable MIT source and verify Git blob
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p mit-data/exp8_math/runs/p50c/readable
+          curl -fL --retry 4 \
+            https://raw.githubusercontent.com/RikiyaT/lm_understand-logs/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/readable/trajectory.md \
+            -o mit-data/exp8_math/runs/p50c/readable/trajectory.md
+          test "$(git hash-object mit-data/exp8_math/runs/p50c/readable/trajectory.md)" = "caa2d040547e81677f98cccb1854769b1057f3b7"
+      - name: Execute direct Qwen pair judge and inspect existing ShadowSeed relations
+        run: PYTHONPATH=. python -u research/experiments/mit_shadow_memory_20261103/evaluate_relation_links.py
+      - name: Preserve all pair judgments and nonconforming model responses
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mit-shadowseed-relation-comparison
+          path: mit-relation-audit-output/
+          if-no-files-found: warn
