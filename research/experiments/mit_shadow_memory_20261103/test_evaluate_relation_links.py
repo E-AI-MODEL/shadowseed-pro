@@ -41,7 +41,7 @@ def test_case_generation_is_chronological_and_deduplicated():
             {"id": "b", "turn_a": 81,"turn_b": 82,"same_specific_test":"candidate_same"},
         ],
     }
-    available = {i:"placeholder" for i in (13,60,81,82,44,62,16,131,154,34,27,123,74,98)}
+    available = {i:"placeholder" for i in (13,60,81,82,44,62,16,131,154,34,27,123,74,98,121,122)}
     pairs = build_cases(source,available)
     assert len({(r["a"],r["b"]) for r in pairs}) == len(pairs)
     assert all(r["a"] < r["b"] for r in pairs)
