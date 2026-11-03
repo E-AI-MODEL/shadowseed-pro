@@ -69,6 +69,14 @@ def verify_replay_source(text: str) -> list[tuple[int, str]]:
     return turns
 
 
+def recurrent_cluster_ids(clusterer) -> list[int]:
+    """Include idempotently re-observed seeds even with a single stored member."""
+    return [
+        i for i in range(len(clusterer.members))
+        if clusterer.recurrence(i) >= 2
+    ]
+
+
 def build_lexical_baseline(records: list[dict]) -> list[dict]:
     """No future-dependent fit: hashing vocabulary and weights are stateless."""
     vectorizer = HashingVectorizer(
@@ -169,9 +177,8 @@ def run() -> None:
     for seen in clusterer.seen_observation_refs:
         assert len(seen) == len(set(seen))
     clusters = []
-    for i, members in enumerate(clusterer.members):
-        if len(members) < 2:
-            continue
+    for i in recurrent_cluster_ids(clusterer):
+        members = clusterer.members[i]
         involved = [
             row["mit_turn"]
             for row in records
@@ -196,6 +203,7 @@ def run() -> None:
         "engine_seeds_stored": len(stored),
         "engine_semantic_clusters_total": len(clusterer.members),
         "engine_semantic_recurrent_clusters": len(clusters),
+        "all_engine_recurrence_followups": sum(max(0, clusterer.recurrence(i) - 1) for i in range(len(clusterer.members))),
         "engine_cluster_observations_in_recurrent_clusters": sum(c["observations"] for c in clusters),
         "baseline_exact_repeat_occurrences": sum(a["kind"] == "exact" for a in baseline),
         "baseline_hashing_ngram_0_6_matches": sum(a["kind"] == "hashing_ngram_0.6" for a in baseline),
