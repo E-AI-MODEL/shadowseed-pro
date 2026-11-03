@@ -20,7 +20,7 @@ from sentence_transformers import SentenceTransformer
 from huggingface_hub import model_info
 
 from research.experiments.mit_shadow_memory_20261103.run_replay_v2 import (
-    MIT_SHA, EMBEDDING_ID, parse_turns,
+    MIT_COMMIT as MIT_SHA, EMBED_ID as EMBEDDING_ID, parse_turns,
 )
 from research.experiments.mit_shadow_memory_20261103.replay_85_source_hypotheses import (
     extract_hypotheses,
