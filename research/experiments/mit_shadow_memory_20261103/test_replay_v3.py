@@ -1,5 +1,5 @@
 """Acceptance checks for the MIT-specific method-fit screen."""
-from research.experiments.mit_shadow_memory_20261103.run_replay_v3 import quality_reasons
+from research.experiments.mit_shadow_memory_20261103.run_replay_v3 import quality_reasons, normalize_research_numbered_output
 
 def test_control_with_measurable_outcome_can_enter_weightless_intake():
     candidate = (
@@ -30,3 +30,30 @@ def test_generic_questions_are_not_accepted():
 def test_scope_rejection_does_not_mark_good_control_invalid():
     candidate = "Compare sparse top64 weight suppression versus the unchanged model and measure whitespace cutoff errors."
     assert quality_reasons(candidate) == []
+
+
+def test_recovery_preserves_real_qwen_labeled_outcome():
+    raw = (
+        "1. **Compare** the performance of the original unedited weights with "
+        "those after applying the specific weight edit across all 32 math tasks "
+        "using an independent dataset for evaluation.\n"
+        "   - **Specific Outcome**: Accuracy improvement or degradation on the "
+        "held-out tasks compared to the tuned version.\n"
+        "2. **Measure** the impact of the weight edit by comparing the perplexity "
+        "scores before and after the edit when generating new sequences."
+    )
+    normalized = normalize_research_numbered_output(raw)
+    assert len(normalized.splitlines()) == 2
+    assert "Measured outcome: Accuracy" in normalized
+    assert quality_reasons(normalized.splitlines()[0]) == []
+    assert quality_reasons(normalized.splitlines()[1]) == []
+
+def test_none_is_never_reinterpreted_as_a_candidate():
+    mixed = "NONE\n1. Compare model versus baseline and measure accuracy on unseen math."
+    assert normalize_research_numbered_output(mixed) == mixed
+
+def test_orphan_metric_is_never_promoted_as_candidate():
+    raw = "- Specific Outcome: Accuracy improved\n1. Compare directions versus baseline and measure token errors."
+    normalized = normalize_research_numbered_output(raw)
+    assert "Accuracy improved" not in normalized
+    assert len(normalized.splitlines()) == 1
