@@ -1,170 +1,285 @@
 {
-  "title": "MIT experiment 8: same-causal-question diagnostic pairs",
+  "title": "MIT exp8: relation detection and hypothesis equivalence are different judgments",
   "source_commit": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f",
-  "preparation": "Selected after inspection of 85 source notes and an earlier ShadowSeed clustering run. This is a retrospective diagnostic reference, not blinded independent ground truth.",
-  "label_definition": "SAME only if the two statements concern the same specific testable intervention/claim and its measured question. Related components, edit strength, error categories, or implementation variants are DIFFERENT.",
-  "caveats": "Provisional expert labels by the same analyst, not independently adjudicated; some comparisons are borderline. Do not describe the counts as model accuracy on an unseen benchmark.",
+  "preparation": "Source-derived post hoc illustration. Labels are judgments by the author, not independent reference truth. Distinguish meaningful cross-hypothesis links from exact recurrence.",
+  "label_definition": "RELATED means the notes can inform one another within the research problem, even if the interventions differ. SAME means the exact intervention/question being tested recurs. Neither label by itself implies independent evidence or authorizes Gate promotion.",
+  "caveats": "Retrospectively selected, author-provisional examples. All pairs belong to MIT experiment 8. RELATED is not evidence of independent confirmation. Binary SAME/DIFFERENT labels from earlier draft are not a valid false-positive verdict for thematic clustering. A blind evaluation needs independent annotation and actual unrelated controls.",
   "cases": [
     {
       "id": "P01",
       "turn_a": 13,
       "turn_b": 17,
       "reference_label": "SAME",
-      "rationale_nl": "Dezelfde eenlaagse MLP-richtingsverwijdering tegenover neuronablatie."
+      "rationale_nl": "Dezelfde eenlaagse MLP-richtingsverwijdering tegenover neuronablatie.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "candidate_same",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P02",
       "turn_a": 19,
       "turn_b": 21,
       "reference_label": "SAME",
-      "rationale_nl": "Dezelfde causale ingreep in de MLP-richting van laag 19."
+      "rationale_nl": "Dezelfde causale ingreep in de MLP-richting van laag 19.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "candidate_same",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P03",
       "turn_a": 21,
       "turn_b": 23,
       "reference_label": "SAME",
-      "rationale_nl": "Dezelfde L19-richtingsingreep; effect op herhaling en nuttig redeneren."
+      "rationale_nl": "Dezelfde L19-richtingsingreep; effect op herhaling en nuttig redeneren.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "candidate_same",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P04",
       "turn_a": 19,
       "turn_b": 25,
       "reference_label": "SAME",
-      "rationale_nl": "Dezelfde L19-causale proef; de tweede notitie vraagt herstel van de uitslag."
+      "rationale_nl": "Dezelfde L19-causale proef; de tweede notitie vraagt herstel van de uitslag.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "candidate_same",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P05",
       "turn_a": 81,
       "turn_b": 82,
       "reference_label": "SAME",
-      "rationale_nl": "Letterlijk dezelfde vastgelegde afweging van alpha2 versus alpha4."
+      "rationale_nl": "Letterlijk dezelfde vastgelegde afweging van alpha2 versus alpha4.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "candidate_same",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P06",
       "turn_a": 121,
       "turn_b": 122,
       "reference_label": "SAME",
-      "rationale_nl": "Letterlijk dezelfde vastgelegde transferclaim."
+      "rationale_nl": "Letterlijk dezelfde vastgelegde transferclaim.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "candidate_same",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P07",
       "turn_a": 117,
       "turn_b": 138,
       "reference_label": "SAME",
-      "rationale_nl": "Herhaalde claim over transfer van de bevroren ingreep naar nieuwe opgaven."
+      "rationale_nl": "Herhaalde claim over transfer van de bevroren ingreep naar nieuwe opgaven.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "candidate_same",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P08",
       "turn_a": 129,
       "turn_b": 148,
       "reference_label": "SAME",
-      "rationale_nl": "Herhaalde claim over reproduceerbare winst in onafhankelijke batches."
+      "rationale_nl": "Herhaalde claim over reproduceerbare winst in onafhankelijke batches.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "candidate_same",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P09",
       "turn_a": 134,
       "turn_b": 152,
       "reference_label": "SAME",
-      "rationale_nl": "Herhaalde claim over stabiele nettowinst bij batchvariatie."
+      "rationale_nl": "Herhaalde claim over stabiele nettowinst bij batchvariatie.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "candidate_same",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P10",
       "turn_a": 110,
       "turn_b": 115,
       "reference_label": "SAME",
-      "rationale_nl": "Herhaalde claim dat de ingreep herhaling verhelpt zonder nuttig redeneren te verkorten."
+      "rationale_nl": "Herhaalde claim dat de ingreep herhaling verhelpt zonder nuttig redeneren te verkorten.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "candidate_same",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P11",
       "turn_a": 88,
       "turn_b": 92,
       "reference_label": "SAME",
-      "rationale_nl": "Dezelfde normgematchte willekeurige controlemutatie als specificiteitstoets."
+      "rationale_nl": "Dezelfde normgematchte willekeurige controlemutatie als specificiteitstoets.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "candidate_same",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P12",
       "turn_a": 13,
       "turn_b": 60,
       "reference_label": "DIFFERENT",
-      "rationale_nl": "MLP-richtingsverwijdering en attention-head mechanisme zijn verschillende ingrepen."
+      "rationale_nl": "MLP-richtingsverwijdering en attention-head mechanisme zijn verschillende ingrepen.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "different_or_uncertain",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P13",
       "turn_a": 26,
       "turn_b": 60,
       "reference_label": "DIFFERENT",
-      "rationale_nl": "Een gecombineerde MLP-ingreep is niet hetzelfde als een attention-head hypothese."
+      "rationale_nl": "Een gecombineerde MLP-ingreep is niet hetzelfde als een attention-head hypothese.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "different_or_uncertain",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P14",
       "turn_a": 13,
       "turn_b": 26,
       "reference_label": "DIFFERENT",
-      "rationale_nl": "Eenlaagse L19-ingreep tegenover tweelaagse L15+L19-ingreep."
+      "rationale_nl": "Eenlaagse L19-ingreep tegenover tweelaagse L15+L19-ingreep.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "different_or_uncertain",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P15",
       "turn_a": 21,
       "turn_b": 37,
       "reference_label": "DIFFERENT",
-      "rationale_nl": "Basis-L19-ingreep tegenover dosisverhoging van diezelfde ingreep."
+      "rationale_nl": "Basis-L19-ingreep tegenover dosisverhoging van diezelfde ingreep.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "different_or_uncertain",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P16",
       "turn_a": 27,
       "turn_b": 84,
       "reference_label": "DIFFERENT",
-      "rationale_nl": "Terughalen van experimenttoestand tegenover selectiviteit van dosiseffect."
+      "rationale_nl": "Terughalen van experimenttoestand tegenover selectiviteit van dosiseffect.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "different_or_uncertain",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P17",
       "turn_a": 88,
       "turn_b": 100,
       "reference_label": "DIFFERENT",
-      "rationale_nl": "Orthogonale randomcontrole tegenover beperken tot 64 schrijvers."
+      "rationale_nl": "Orthogonale randomcontrole tegenover beperken tot 64 schrijvers.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "different_or_uncertain",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P18",
       "turn_a": 98,
       "turn_b": 100,
       "reference_label": "DIFFERENT",
-      "rationale_nl": "Causale lokalisatie van MLP-neuronen tegenover sparse-edit trade-off."
+      "rationale_nl": "Causale lokalisatie van MLP-neuronen tegenover sparse-edit trade-off.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "different_or_uncertain",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P19",
       "turn_a": 4,
       "turn_b": 34,
       "reference_label": "DIFFERENT",
-      "rationale_nl": "Lexicaal gematchte mechanismeproef tegenover algemene residuele-richtingsclaim."
+      "rationale_nl": "Lexicaal gematchte mechanismeproef tegenover algemene residuele-richtingsclaim.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "different_or_uncertain",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P20",
       "turn_a": 70,
       "turn_b": 80,
       "reference_label": "DIFFERENT",
-      "rationale_nl": "Alpha2-accuratesse tegenover alpha4-selectiviteit en overcorrectie."
+      "rationale_nl": "Alpha2-accuratesse tegenover alpha4-selectiviteit en overcorrectie.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "different_or_uncertain",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P21",
       "turn_a": 110,
       "turn_b": 142,
       "reference_label": "DIFFERENT",
-      "rationale_nl": "Nonterminatie herstellen tegenover overblijvende formatteringsfouten."
+      "rationale_nl": "Nonterminatie herstellen tegenover overblijvende formatteringsfouten.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "different_or_uncertain",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P22",
       "turn_a": 54,
       "turn_b": 90,
       "reference_label": "DIFFERENT",
-      "rationale_nl": "Numerieke geldigheid en attentiondiagnostiek tegenover fouttypen bij sterkere dosis."
+      "rationale_nl": "Numerieke geldigheid en attentiondiagnostiek tegenover fouttypen bij sterkere dosis.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "different_or_uncertain",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     },
     {
       "id": "P23",
       "turn_a": 3,
       "turn_b": 142,
       "reference_label": "DIFFERENT",
-      "rationale_nl": "Oorspronkelijke repetitieve nonterminatie tegenover resterende fouten na ingreep."
+      "rationale_nl": "Oorspronkelijke repetitieve nonterminatie tegenover resterende fouten na ingreep.",
+      "semantic_relation": "RELATED",
+      "same_specific_test": "different_or_uncertain",
+      "evidence_for_same_hypothesis": "NOT_ESTABLISHED",
+      "false_positive_for_thematic_link": false,
+      "label_limit": "Review required; candidate_same is not verified equivalence"
     }
   ]
 }
