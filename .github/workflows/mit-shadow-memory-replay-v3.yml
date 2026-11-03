@@ -1,0 +1,58 @@
+name: Research MIT Shadow Memory v3 method-fit
+
+on:
+  push:
+    branches: [research/mit-shadow-memory-replay-20261103]
+    paths:
+      - ".github/workflows/mit-shadow-memory-replay-v3.yml"
+      - "research/experiments/mit_shadow_memory_20261103/run_replay_v3.py"
+      - "research/experiments/mit_shadow_memory_20261103/test_replay_v3.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mit-method-fit-20261103
+  cancel-in-progress: true
+
+jobs:
+  methodological-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      OMP_NUM_THREADS: "4"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: Install isolated research dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . "pytest>=8" "sentence-transformers>=3,<6" "transformers>=4.51,<5" "huggingface_hub>=0.28,<1"
+      - name: Regression checks for existing safe parser and method-fit rules
+        run: |
+          python -m pytest -q \
+            research/experiments/mit_shadow_memory_20261103/test_replay_v2.py \
+            research/experiments/mit_shadow_memory_20261103/test_replay_v3.py
+      - name: Download and verify published trajectory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p mit-data/exp8_math/runs/p50c/readable
+          curl -fL --retry 3 \
+            https://raw.githubusercontent.com/RikiyaT/lm_understand-logs/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/readable/trajectory.md \
+            -o mit-data/exp8_math/runs/p50c/readable/trajectory.md
+          test "$(git hash-object mit-data/exp8_math/runs/p50c/readable/trajectory.md)" = "caa2d040547e81677f98cccb1854769b1057f3b7"
+      - name: Model-driven research-note replay with explicit quality rejection
+        run: python -u research/experiments/mit_shadow_memory_20261103/run_replay_v3.py
+      - name: Preserve positive and negative research evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mit-shadow-memory-v3-method-fit
+          path: mit-v3-output/
+          if-no-files-found: warn
