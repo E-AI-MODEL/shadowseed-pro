@@ -48,7 +48,7 @@ jobs:
             -o mit-data/exp8_math/runs/p50c/readable/trajectory.md
           test "$(git hash-object mit-data/exp8_math/runs/p50c/readable/trajectory.md)" = "caa2d040547e81677f98cccb1854769b1057f3b7"
       - name: Model-driven research-note replay with explicit quality rejection
-        run: python -u research/experiments/mit_shadow_memory_20261103/run_replay_v3.py
+        run: PYTHONPATH=. python -u research/experiments/mit_shadow_memory_20261103/run_replay_v3.py
       - name: Preserve positive and negative research evidence
         if: always()
         uses: actions/upload-artifact@v4
