@@ -19,7 +19,8 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from huggingface_hub import model_info
 
 from shadowseed.recurrence_recognition import recognize, OpenQuestion
-from research.experiments.mit_shadow_memory_20261103.run_replay_v2 import parse_turns, extract_observation, INPUT
+from research.experiments.mit_shadow_memory_20261103.run_replay_v2 import parse_turns, INPUT
+from research.experiments.mit_shadow_memory_20261103.replay_85_source_hypotheses import extract_hypotheses
 
 MODEL_ID = "Qwen/Qwen2.5-1.5B-Instruct"
 OUT = Path("mit-identity-pilot-output")
@@ -52,7 +53,7 @@ def build_source_rows(text: str) -> dict[int, str]:
     return {
         n: hypothesis
         for n, reply in parse_turns(text)
-        for hypothesis in extract_observation(reply) and [extract_observation(reply)] or []
+        for hypothesis in extract_hypotheses(reply)
     }
 
 
