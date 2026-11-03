@@ -51,8 +51,36 @@ UNSPECIFIC = [
     (r"\b(diverse tasks|diverse domains|downstream tasks|different tasks)\b", "generic_transfer_question"),
     (r"\b(ability to generalize|generalize across diverse)\b", "generic_transfer_question"),
 ]
-CONTRAST = re.compile(r"\b(compare|versus|vs\.?|relative to|with and without|baseline|control|ablat|edited and original|original and edited)\b", re.I)
-MEASURE = re.compile(r"\b(accuracy|correct|cutoff|cut.off|truncat|token|log.?prob|likelihood|repetition|repeat|error|failure rate|rescues|regressions|box(?:ed)?|whitespace|latency|generation length)\b", re.I)
+CONTRAST = re.compile(r"\b(compar(?:e|ing|ison)|versus|vs\.?|relative to|with and without|baseline|control|ablat(?:e|ion|ing)|edited and original|original and edited)\b", re.I)
+MEASURE = re.compile(r"\b(accuracy|correct|cutoff|cut.off|truncat|token|log.?prob|likelihood|repetition|repeat|error|perplexity|failure rate|rescues|regressions|box(?:ed)?|whitespace|latency|generation length)\b", re.I)
+
+def normalize_research_numbered_output(raw: str) -> str:
+    """Preserve numbered proposals, joining only labeled measurement continuations.
+
+    This does not reinterpret NONE and does not turn explanatory prose into
+    candidate evidence. Raw text is retained separately for review.
+    """
+    lines = raw.splitlines()
+    if lines and lines[0].strip().upper().startswith("NONE"):
+        return raw
+    numbered = re.compile(r"^\s*(\d+)[.)]\s*(.+?)\s*$")
+    continuation = re.compile(
+        r"^\s*[-*]?\s*(?:\*\*)?(?:Specific Outcome|Measured Outcome|Outcome|Metric)(?:\*\*)?\s*:\s*(.+?)\s*$",
+        re.I,
+    )
+    result: list[str] = []
+    for line in lines:
+        match = numbered.match(line)
+        if match:
+            value = re.sub(r"\*\*(.*?)\*\*", r"\1", match.group(2))
+            result.append(f"{match.group(1)}. {value}")
+            continue
+        extra = continuation.match(line)
+        if extra and result:
+            value = re.sub(r"\*\*(.*?)\*\*", r"\1", extra.group(1))
+            result[-1] += " Measured outcome: " + value
+    return "\n".join(result)
+
 
 def quality_reasons(candidate: str) -> list[str]:
     reasons = []
@@ -89,7 +117,8 @@ class ScopedMITDetector(MITChatDetector):
             pad_token_id=self.tokenizer.eos_token_id,
         )
         raw = self.tokenizer.decode(generated[0, inputs.shape[-1]:], skip_special_tokens=True).strip()
-        parsed, diag = parse_numbered_seeds_with_diagnostics(raw,max_seeds=max_seeds,source_text=note)
+        normalized = normalize_research_numbered_output(raw)
+        parsed, diag = parse_numbered_seeds_with_diagnostics(normalized,max_seeds=max_seeds,source_text=note)
         accepted = []
         rejected = []
         for candidate in parsed:
@@ -99,6 +128,7 @@ class ScopedMITDetector(MITChatDetector):
             else:
                 accepted.append(candidate)
         self.last_raw_output = raw
+        self.last_normalized_output = normalized
         self.last_parse_diagnostics = diag
         self.last_accepted = accepted
         self.last_rejected = rejected
@@ -143,6 +173,7 @@ def main():
     )},max_seeds=2)
     calibration = {
         "raw": detector.last_raw_output,
+        "normalized": detector.last_normalized_output,
         "accepted": detector.last_accepted,
         "rejected": detector.last_rejected,
         "parse": detector.last_parse_diagnostics,
@@ -165,6 +196,7 @@ def main():
             record = {
                 "mit_turn":n,"source_observation":note,
                 "raw_output":detector.last_raw_output,
+                "normalized_output":detector.last_normalized_output,
                 "parsed":detector.last_parse_diagnostics,
                 "method_fit_candidates":detector.last_accepted,
                 "method_fit_rejections":detector.last_rejected,
