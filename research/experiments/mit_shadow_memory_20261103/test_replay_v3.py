@@ -57,3 +57,30 @@ def test_orphan_metric_is_never_promoted_as_candidate():
     normalized = normalize_research_numbered_output(raw)
     assert "Accuracy improved" not in normalized
     assert len(normalized.splitlines()) == 1
+
+
+def test_actual_qwen_measurable_outcome_continuation_kept():
+    raw = (
+        "1. **Baseline**: A random weight edit with no specific tuning.\n"
+        "   - **Measurable Outcome**: Accuracy on an independent set of 32 math tasks.\n"
+        "2. **Control**: A weight edit tuned specifically for a different set of 32 math tasks.\n"
+        "   - **Measurable Outcome**: Accuracy on the same 32 math tasks compared to the original task set."
+    )
+    normalized = normalize_research_numbered_output(raw)
+    lines = normalized.splitlines()
+    assert len(lines) == 2
+    assert all("Measured outcome: Accuracy" in line for line in lines)
+    # A baseline and an outcome by themselves are not a specified contrast.
+    assert "missing_explicit_comparison" in quality_reasons(lines[0])
+
+def test_true_comparison_and_measure_is_accepted():
+    from shadowseed.detection.model_detector import parse_numbered_seeds_with_diagnostics
+    raw = (
+        "1. Compare the targeted layer 19 weight edit versus the original model, "
+        "and measure repeated-token probability on held-out math questions."
+    )
+    candidates, diagnostics = parse_numbered_seeds_with_diagnostics(
+        normalize_research_numbered_output(raw), max_seeds=2,
+    )
+    assert diagnostics["accepted_candidates"] == 1
+    assert quality_reasons(candidates[0]) == []
