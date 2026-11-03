@@ -40,3 +40,11 @@ De detector kan onderzoeksideeën voorstellen. Alleen de opslag, herhaling en he
 Leg vooraf een moment in de MIT-historie vast, inclusief uitsluitend kennis van vóór dat moment. Laat een blinde beoordelaar de kandidaten toetsen op: (a) specificiteit, (b) feitelijke nieuwheid vergeleken met de reeds zichtbare MIT-documentatie, en (c) uitvoerbaarheid binnen het beschikbare experiment. Gebruik dezelfde detector, hetzelfde aantal modelaanroepen en dezelfde informatie in een baseline met een gewone lijst onderzoeksnotities. Publiceer ook nulbevindingen.
 
 Alleen bij een positief blind beoordeelde kandidaat is het zinvol de MIT-run opnieuw te testen of de onderzoekers te benaderen. Behoud de afzonderlijke branch en herstel nooit op productcode enkel om onderzoekscijfers op te hogen.
+
+## Afgesloten v3-proef, feitelijke uitkomst
+
+Op commit `04088bd2c601b4ee015bff397d0b8cd16136c51b` draaide GitHub Actions-run [41727811847](https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/41727811847). De echte modelproef verwerkte vijf vooraf gekozen bronbeurten; 14 regressietests slaagden. Er waren **9 methodisch afgewezen voorstellen**, **1 voorlopig door de onderzoeksfilter geaccepteerd voorstel**, maar **0 door de canonieke ShadowSeed-intake geaccepteerde seeds**. De laatste kandidaat kreeg de concrete afwijsreden `not_atomic` (meer dan één voorstel in dezelfde seed). De workflow rapporteerde terecht `failure` wegens geen bruikbare kandidaat. Het artifact `mit-shadow-memory-v3-method-fit` bevat `records.json`, de afwijzingen en `summary.json`.
+
+Conclusie: de eigen intake van ShadowSeed is niet defect aangetoond. De voor dit MIT-onderzoek gebouwde kleine Qwen-detector gaf onvoldoende taakpassende, afzonderlijke voorstellen. Ook een hypothetische opname zou geen wetenschappelijke nieuwheid bewijzen.
+
+Een los onderzoek toetst nu alle **85 exact gelogde hypotheses** chronologisch, zonder modelgegenereerde kandidaattekst, tegen letterlijke en woordgebaseerde herhalingsdetectie. Dit is alleen een meting van terugkerende onderzoeksnotities, niet van nieuwe ontdekkingen of de effectiviteit van aangepast modelgewicht.
