@@ -1,7 +1,7 @@
 """Real-source extraction, chronology and exact/lexical control regressions."""
 from research.experiments.mit_shadow_memory_20261103.replay_85_source_hypotheses import (
     extract_hypotheses, normalized_literal, source_records,
-    build_lexical_baseline, verify_replay_source,
+    build_lexical_baseline, verify_replay_source, recurrent_cluster_ids,
 )
 from shadowseed.detection.model_detector import parse_numbered_seeds_with_diagnostics
 
@@ -48,3 +48,23 @@ def test_refuse_nonpinned_or_partial_trajectory():
         assert False, "A partial log should fail instead of returning incomplete evidence"
     except ValueError:
         pass
+
+
+def test_exact_repeat_counts_as_recurrent_cluster_even_with_one_member():
+    from shadowseed.recurrence_clustering import RecurrenceClusterer
+    import numpy as np
+    clusterer = RecurrenceClusterer()
+    cid = clusterer.add(
+        "The same explicit MIT hypothesis.",
+        np.array([1.0,0.0]),
+        observation_ref="mit-turn-81",
+    )
+    assert len(clusterer.members[cid]) == 1
+    assert recurrent_cluster_ids(clusterer) == []
+    # The exact same stored seed reappears at a *different* MIT turn.
+    clusterer.bump(cid, observation_ref="mit-turn-82")
+    assert clusterer.recurrence(cid) == 2
+    assert len(clusterer.members[cid]) == 1
+    assert recurrent_cluster_ids(clusterer) == [cid]
+    clusterer.bump(cid, observation_ref="mit-turn-82")
+    assert clusterer.recurrence(cid) == 2
