@@ -8,7 +8,6 @@ costly runs. Historic replay auditing is separate from prospective readiness.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 from collections import Counter
@@ -127,13 +126,61 @@ def check_plan(plan: dict) -> dict:
     }
 
 
-def audit_historical_replay(results: list) -> dict:
+# Minimal, source-bounded version of the format repair already documented in
+# research/experiments/mit_shadow_memory_20261103/EQUAL_HISTORY_REANALYSIS.md.
+# The corrected reader never overwrites the original recorded parser outcome.
+SAVED_RESPONSE = re.compile(
+    r"\A\s*PICK\s*:\s*(?P<pick>(?:t)?[0-9]+|NONE)[ \t]*\n"
+    r"[ \t]*RELATION\s*:\s*(?P<relation>SAME_CLAIM|RELATED_DISTINCT|"
+    r"NO_CLEAR_DIRECT_LINK|UNCERTAIN)[ \t]*\n"
+    r"[ \t]*REASON\s*:\s*(?P<reason>[^\n]+?)\s*\Z",
+    re.IGNORECASE,
+)
+
+
+def reparse_saved_qwen(raw: str, prior_turns: set[int]) -> dict:
+    """Reparse stored text without model calls or semantic correctness claims."""
+    require(isinstance(raw, str), "raw model response must be text")
+    match = SAVED_RESPONSE.fullmatch(raw)
+    if match is None:
+        reason = "unstructured_none" if raw.strip().upper() == "NONE" else "invalid_format"
+        return {"valid": False, "reason_code": reason, "pick": None, "relation": None}
+    selected = match.group("pick")
+    picked = None if selected.upper() == "NONE" else int(selected.lstrip("tT"))
+    relation = match.group("relation").upper()
+    if (picked is not None and picked not in prior_turns) or (
+        (picked is None) != (relation in {"NO_CLEAR_DIRECT_LINK", "UNCERTAIN"})
+    ):
+        return {"valid": False, "reason_code": "invalid_turn_or_relation",
+                "pick": picked, "relation": relation}
+    return {"valid": True, "reason_code": None, "pick": picked,
+            "relation": relation}
+
+
+def source_turns_before(notes: list, checkpoint_turn: int) -> set[int]:
+    require(isinstance(notes, list) and notes, "original source hypotheses unavailable")
+    seen: set[int] = set()
+    for note in notes:
+        require(isinstance(note, dict), "invalid source hypothesis")
+        n = note.get("mit_turn")
+        require(type(n) is int and n > 0 and n not in seen,
+                "duplicate or invalid source hypothesis turn")
+        require(isinstance(note.get("text"), str) and note["text"].strip(),
+                "source hypothesis missing text")
+        seen.add(n)
+    require(checkpoint_turn in seen, "checkpoint not part of original hypothesis set")
+    return {n for n in seen if n < checkpoint_turn}
+
+
+def audit_historical_replay(results: list, source_notes: list | None = None) -> dict:
     """Count technical validity, not scientific success or statistical effects."""
     require(isinstance(results, list) and results, "historical replay missing checkpoints")
     observed = set()
     invalid = Counter()
     same_history = 0
     valid = 0
+    recovered = 0
+    corrected_invalid = Counter()
     for row in results:
         require(isinstance(row, dict), "malformed checkpoint record")
         turn = row.get("checkpoint_turn")
@@ -152,7 +199,14 @@ def audit_historical_replay(results: list) -> dict:
             reason = parsed.get("reason_code")
             require(isinstance(reason, str) and reason, "missing invalid-reason code")
             invalid[reason] += 1
-    return {
+        if source_notes is not None:
+            corrected = reparse_saved_qwen(row["ordinary_llm_raw"],
+                                          source_turns_before(source_notes, turn))
+            if corrected["valid"]:
+                recovered += 1
+            else:
+                corrected_invalid[corrected["reason_code"]] += 1
+    report = {
         "schema": "shadowseed-replay-diagnostic-v1",
         "status": "RETROSPECTIVE_TECHNICAL_AUDIT_ONLY",
         "checkpoints": len(results),
@@ -163,6 +217,15 @@ def audit_historical_replay(results: list) -> dict:
         "relative_method_effect_estimated": False,
         "g0_status": "NOT_PASSED",
     }
+    if source_notes is not None:
+        report["source_checked_reparse"] = {
+            "format_valid_count": recovered,
+            "still_invalid_count": len(results) - recovered,
+            "still_invalid_reasons": dict(sorted(corrected_invalid.items())),
+            "semantic_relation_correctness_checked": False,
+            "model_calls_added": 0,
+        }
+    return report
 
 
 def main(argv=None):
@@ -174,10 +237,16 @@ def main(argv=None):
     p = sub.add_parser("audit-history", help="count invalid historical model outputs")
     p.add_argument("--input", required=True, type=Path)
     p.add_argument("--report", required=True, type=Path)
+    p.add_argument("--source-notes", type=Path, help="original source_hypotheses.json, for source-checked format reparse")
     args = parser.parse_args(argv)
-    require(args.input.resolve() != args.report.resolve(), "never overwrite input")
+    source_notes_path = getattr(args, "source_notes", None)
+    require(args.input.resolve() != args.report.resolve() and
+            (source_notes_path is None or source_notes_path.resolve() != args.report.resolve()),
+            "never overwrite input")
     payload = load_json(args.input)
-    report = check_plan(payload) if args.command == "check-plan" else audit_historical_replay(payload)
+    report = check_plan(payload) if args.command == "check-plan" else audit_historical_replay(
+        payload, load_json(source_notes_path) if source_notes_path else None
+    )
     args.report.parent.mkdir(parents=True, exist_ok=True)
     with args.report.open("x", encoding="utf-8") as stream:
         json.dump(report, stream, ensure_ascii=False, sort_keys=True, indent=2)
