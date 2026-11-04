@@ -1,0 +1,67 @@
+name: Research - Archive first live frontier replies
+
+# One-time archive of completed fictional model outputs. No OpenAI calls.
+on:
+  push:
+    branches:
+      - research/frontier-jewels-live-20261104
+    paths:
+      - .github/workflows/archive-frontier-jewels-20261104.yml
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: archive-frontier-jewels-20261104
+  cancel-in-progress: false
+
+jobs:
+  archive-records:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout research branch with branch-local write permission
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Fetch original run 41911815815, not regenerated model text
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: frontier-jewels-live-20261104
+          run-id: 41911815815
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: research/atlas/sources/live-frontier-2026-11-04
+      - name: Verify source count and hashes without changing answers
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          d=Path('research/atlas/sources/live-frontier-2026-11-04')
+          p=d/'provider_events.jsonl'
+          events=[json.loads(x) for x in p.read_text(encoding='utf-8').splitlines() if x.strip()]
+          responses=[x for x in events if x['kind']=='response']
+          starts=[x for x in events if x['kind']=='request_start']
+          assert len(responses)==len(starts)==20
+          assert all(x['model_returned']=='gpt-6.1-sol' and x['response_status']=='completed' for x in responses)
+          assert all(hashlib.sha256(x['text'].encode()).hexdigest()==x['text_sha256'] for x in responses)
+          summary=json.loads((d/'summary.json').read_text())
+          assert summary['status']=='PROVIDER_COMPLETED' and summary['received_responses']==20
+          assert (d/'blind_review.csv').exists() and (d/'PRIVATE_MAPPING.json').exists()
+          manifest={
+            'source_run':'https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/41911815815',
+            'status':'verified_exact_run_archive',
+            'response_count':20,
+            'source_artifact_id':13363122258,
+            'original_sha256':{f.name:hashlib.sha256(f.read_bytes()).hexdigest() for f in d.iterdir() if f.is_file()},
+            'review_note':'Historical raw output contains treatment labels. Give the blinded CSV only to new independent reviewers; do not supply the private mapping.',
+          }
+          (d/'archive_manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+          print('PASS: 20 real responses preserved with original hashes; zero new model calls')
+          PY
+      - name: Commit immutable source archive to research branch
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/atlas/sources/live-frontier-2026-11-04
+          git commit -m "research(atlas): archive 20 verified GPT-6.1 Sol frontier responses"
+          git push origin HEAD:research/frontier-jewels-live-20261104
