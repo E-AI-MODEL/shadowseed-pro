@@ -338,7 +338,8 @@
       "observation": "Vormfilters kunnen materiaal verwijderen voordat de inhoud is beoordeeld.",
       "alternative": "De 22 nuttig beoordeelde afgewezen kandidaten uit fixed22 zijn niet dezelfde 46 als de andere bronreplay.",
       "existing_material": "Ja, inhoudelijk beperkt; blinde externe beoordeling ontbreekt.",
-      "status": "research_hypothesis"
+      "status": "research_hypothesis",
+      "check": "Kunnen de 46 originele teksten op hun afzonderlijke betekenis worden geannoteerd, zonder de oude intakeuitspraak te herschrijven?"
     },
     {
       "id": "R02",
@@ -351,7 +352,8 @@
       "observation": "De eerste geaccepteerde kandidaat kan na T0 verschijnen, maar selectie op T0 stopt een vergelijking eerder.",
       "alternative": "Later geboren betekent niet dat een onzichtbare nieuwe onderzoekskans is ontstaan.",
       "existing_material": "Ja, voor de gedocumenteerde runs.",
-      "status": "research_hypothesis"
+      "status": "research_hypothesis",
+      "check": "Welke latere bronnen worden uitgesloten door een op T0 vastgezette inclusieregel?"
     },
     {
       "id": "R03",
@@ -364,7 +366,8 @@
       "observation": "Een modelherkenner onderscheidde herhalingen preciezer dan cosine; MIT-clusters bevatten vaak andere claims.",
       "alternative": "Andere modelversies, embeddings, datasets en retrospectief geselecteerde paren.",
       "existing_material": "Deels, met originele MIT-teksten en bestaande beoordeling.",
-      "status": "research_hypothesis"
+      "status": "research_hypothesis",
+      "check": "Welke relaties zijn echt dezelfde onbeantwoorde claim, en welke verbinden verschillende onderzoeksvragen?"
     },
     {
       "id": "R04",
@@ -376,7 +379,8 @@
       "observation": "De ene beoordelaar formuleerde uit dezelfde notitieparen veel meer concrete vervolgtesten dan de andere.",
       "alternative": "Een formulier kan uitnodigen tot extrapolatie; een voorstel is nog geen valide wetenschappelijk nieuw inzicht.",
       "existing_material": "Deels, via bronvergelijking; externe vaktoets nog ontbrekend.",
-      "status": "research_hypothesis"
+      "status": "research_hypothesis",
+      "check": "Welke van die voorgestelde toetsen is werkelijk nieuw en onafhankelijk uitvoerbaar?"
     },
     {
       "id": "R05",
@@ -389,7 +393,8 @@
       "observation": "Records kunnen behouden blijven zonder Gate-bevoegdheid of product-surfacing.",
       "alternative": "Dit bewijst dat niet-toegelaten records later het antwoord zouden verbeteren.",
       "existing_material": "Ja, technisch; semantisch effect niet in de replay.",
-      "status": "research_hypothesis"
+      "status": "research_hypothesis",
+      "check": "Welke gegevens zijn zichtbaar tijdens replay, en welke inhoud bereikt een modelantwoord daadwerkelijk?"
     },
     {
       "id": "R06",
@@ -401,7 +406,8 @@
       "observation": "Extra bronbewaring is meetbaar; een gewone samenvatting behield in een andere proef ook de relevante hypothese.",
       "alternative": "Verschillende contexten en geheugenvormen; geen direct gepaarde langetermijnvergelijking.",
       "existing_material": "Nog niet uit deze twee rapportages als causaal contrast.",
-      "status": "research_hypothesis"
+      "status": "research_hypothesis",
+      "check": "Welk specifiek relevant materiaal verliest gewone context wel en behoudt ShadowSeed?"
     },
     {
       "id": "R07",
@@ -414,7 +420,8 @@
       "observation": "Een kandidaat kan een formulering veranderen en in een tweede beurt een richting vasthouden.",
       "alternative": "De kandidaattekst stond tweemaal in de prompt; geen onafhankelijke nieuwe toets werd uitgevoerd.",
       "existing_material": "Gedeeltelijk met bestaande antwoorden; nieuw causaal bewijs niet aanwezig.",
-      "status": "research_hypothesis"
+      "status": "research_hypothesis",
+      "check": "Is de afwijkende onderzoeksrichting meer dan de twee keer aangeboden tekst?"
     },
     {
       "id": "R08",
@@ -427,7 +434,8 @@
       "observation": "Sommige geselecteerde analyses krijgen voorkeur, terwijl andere antwoorden door seeds vernauwen.",
       "alternative": "Verschillende modellen, seeds, beoordelaars en instellingen; geen gemeenschappelijke effectgrootte.",
       "existing_material": "Deels, met bestaande formulieren; onafhankelijke blinde hercodering nog nodig.",
-      "status": "research_hypothesis"
+      "status": "research_hypothesis",
+      "check": "Kan kwaliteit van vraag-seed-aansluiting uit de oorspronkelijke tekst worden beoordeeld zonder de gewenste uitkomst te kennen?"
     },
     {
       "id": "R09",
@@ -439,7 +447,8 @@
       "observation": "In ronde 031 begint hinder op t05 (3/6), nog voor de meeste herhaalde t06-blootstelling (5/6).",
       "alternative": "De t05-hinder kan ook op een eerder gebruikte seed betrekking hebben; het dossier toont niet de exclusieve oorzaak.",
       "existing_material": "Deels; requires surfacing-events per seed, niet alleen reviewerlabels.",
-      "status": "research_hypothesis"
+      "status": "research_hypothesis",
+      "check": "Verschilt de hinder voor eerste surfacing en herhaalde surfacing van precies dezelfde seed?"
     },
     {
       "id": "R10",
@@ -452,7 +461,8 @@
       "observation": "Sommige geregistreerde nulstatussen volgden uit vroege selectie, validatorregels of te strikte parser.",
       "alternative": "Leesbare output kan nog steeds inhoudelijk slecht zijn en was niet noodzakelijk contractgeldig.",
       "existing_material": "Ja voor bepaalde archieven; niet voor alle onbekende verloren stukken.",
-      "status": "research_hypothesis"
+      "status": "research_hypothesis",
+      "check": "Kan iedere historische nul worden toegeschreven aan detector, parser, intake, evaluator of echt ontbreken van output?"
     },
     {
       "id": "R11",
@@ -465,7 +475,8 @@
       "observation": "Archieven, branches en afgeleide kandidaatvoorkomens vergroten auditbaarheid maar niet onafhankelijkheid.",
       "alternative": "Niet ieder verdwenen bestand of oude Git-ref is onderzocht.",
       "existing_material": "Ja, via manifests en hashes, voor toegankelijke bestanden.",
-      "status": "research_hypothesis"
+      "status": "research_hypothesis",
+      "check": "Welke oorspronkelijke observatie-IDs keren in meerdere publicatiebestanden terug?"
     },
     {
       "id": "R12",
@@ -478,7 +489,8 @@
       "observation": "CI, echt modelgebruik en agent-harness bewijzen verschillende vormen van werking.",
       "alternative": "Dat een engine correct draait toont geen nieuwe onderzoeksmogelijkheid.",
       "existing_material": "Ja, via tests en runinformatie; geen causaal effect uit CI.",
-      "status": "research_hypothesis"
+      "status": "research_hypothesis",
+      "check": "Welke ketenstap is werkelijk getest: opslag, Gate of kennisinhoud van latere antwoorden?"
     },
     {
       "id": "R13",
@@ -491,7 +503,8 @@
       "observation": "Een mislukte neurale replicatie weerlegt niet noodzakelijk een lokaal effect van aangeboden kandidaattekst.",
       "alternative": "Een extern promptverschil zegt niets rechtstreeks over waar modelkennis intern is gerepresenteerd.",
       "existing_material": "Geen interne conclusie op basis van deze bestanden.",
-      "status": "research_hypothesis"
+      "status": "research_hypothesis",
+      "check": "Welke Q1-vraag over interne activiteit hoort los van Q2-antwoordonderzoek te staan?"
     }
   ],
   "trajectories": [
