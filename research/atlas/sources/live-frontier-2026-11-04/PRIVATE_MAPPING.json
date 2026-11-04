@@ -1,0 +1,42 @@
+{
+  "B01": {
+    "case": "F04",
+    "arm": "ordinary"
+  },
+  "B02": {
+    "case": "F02",
+    "arm": "candidate_early"
+  },
+  "B03": {
+    "case": "F02",
+    "arm": "placebo"
+  },
+  "B04": {
+    "case": "F04",
+    "arm": "placebo"
+  },
+  "B05": {
+    "case": "F04",
+    "arm": "candidate_delayed"
+  },
+  "B06": {
+    "case": "F02",
+    "arm": "ordinary"
+  },
+  "B07": {
+    "case": "F02",
+    "arm": "ordinary_note"
+  },
+  "B08": {
+    "case": "F04",
+    "arm": "candidate_early"
+  },
+  "B09": {
+    "case": "F02",
+    "arm": "candidate_delayed"
+  },
+  "B10": {
+    "case": "F04",
+    "arm": "ordinary_note"
+  }
+}

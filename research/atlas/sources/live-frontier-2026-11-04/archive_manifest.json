@@ -1,0 +1,13 @@
+{
+  "source_run": "https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/41911815815",
+  "status": "verified_exact_run_archive",
+  "response_count": 20,
+  "source_artifact_id": 13363122258,
+  "original_sha256": {
+    "blind_review.csv": "2e4a58be697bc0430a5a8128b6f420756e5891a5d97839435453504d0169bb3b",
+    "PRIVATE_MAPPING.json": "498e84138affb3bf98c77f059ba1e16f4a6e3e2bc451fa02756f7fb6e1e6995d",
+    "summary.json": "e61b0551dba768f47328716ba5ffc0ed348496bc8d45243b75801c91acdeacd7",
+    "provider_events.jsonl": "7d08612623af9bd7227272935e618937ecd04c88fc3160b98040c977033d1065"
+  },
+  "review_note": "Historical raw output contains treatment labels. Give the blinded CSV only to new independent reviewers; do not supply the private mapping."
+}

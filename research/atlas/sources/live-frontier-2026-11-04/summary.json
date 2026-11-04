@@ -1,0 +1,23 @@
+{
+  "status": "PROVIDER_COMPLETED",
+  "expected_provider_calls": 20,
+  "received_responses": 20,
+  "t2_answers": 10,
+  "model_requested": "gpt-6.1-sol",
+  "estimated_spend_usd": 0.101872,
+  "budget_usd": 0.5,
+  "cases": [
+    "F02",
+    "F04"
+  ],
+  "arms": [
+    "ordinary",
+    "ordinary_note",
+    "candidate_early",
+    "candidate_delayed",
+    "placebo"
+  ],
+  "independent_human_review_completed": false,
+  "causal_shadowseed_memory_effect_established": false,
+  "notes": "Researcher-authored hypothetical candidates. The active treatment is prompt exposure, not validated ShadowSeed memory or Gate activation."
+}
