@@ -4,7 +4,7 @@
 
 De oorspronkelijke 14 notitieparen zijn teruggevonden in het eerder aangeleverde beoordelaarspakket `shadowseed_mit_blind_review_for_reviewer.zip`. De bron bevat R01-R14 en geen toegang tot de verborgen methode-indeling in het beoordelaarsdeel. De verborgen toewijzing van kandidaatparen en controleparen is niet bekeken.
 
-De eerste beoordelaar was `claude-sonnet-5-5 (blind, single pass)`. De gebruiker leverde daarna een verkorte tweede ronde aan, gevolgd door een **volledig ingevulde** zevenkoloms-CSV met `reviewer_id=blinded_reviewer_1`, motivering en tekstbewijs per rij. Die laatste versie vervangt voor de vergelijking de verkorte tweede ronde, maar blijft als correctie herkenbaar. Een ingevulde ID bewijst niet of de beoordelaar menselijk, onafhankelijk of werkelijk geblindeerd was.
+De eerste beoordelaar was `claude-sonnet-5-5 (blind, single pass)`. De gebruiker leverde daarna een verkorte tweede ronde aan, gevolgd door een **volledig ingevulde** zevenkoloms-CSV met `reviewer_id=blinded_reviewer_1`, motivering en tekstbewijs per rij. Die laatste versie vervangt voor de vergelijking de verkorte tweede ronde, maar blijft als correctie herkenbaar. De onderzoeksverantwoordelijke heeft de tweede beoordelaar persoonlijk gesproken en bevestigt dat deze **zonder voorkennis** heeft beoordeeld: geen inzage in de eerste beoordeling of de verborgen casusindeling. De beoordelaar wil anoniem blijven en wordt uitsluitend aangeduid als `blinded_reviewer_1`. Dit is een door de onderzoeksverantwoordelijke bevestigde onafhankelijke beoordeling; er is geen aanleiding zijn naam openbaar te maken.
 
 Controleerbare SHA-256 van de afzonderlijke, hier niet meegestuurde bronbestanden:
 - Eerste CSV: `11fcee0e85a93cbedd50670a8816867b906ec738fcf36e0efe07cf73adda2b44`.
@@ -42,8 +42,8 @@ De expliciete waarde `none` in het tweede formulier betekent **geen nieuwe test*
 
 ## Grenzen van de conclusie
 
-Deze twee **ingevulde** formulieren zijn correct vergelijkbaar als annotaties. De oorspronkelijke paarteksten zijn beschikbaar en kunnen gecontroleerd worden, maar de onderzoeks-CLI voert geen semantisch expert-oordeel over die teksten uit. De echte identiteit en onafhankelijkheid van `blinded_reviewer_1` zijn niet extern geverifieerd. Raterdisagreement is informatie over de beoordeling, geen score van ShadowSeed.
+Deze twee **ingevulde** formulieren zijn correct vergelijkbaar als annotaties. De oorspronkelijke paarteksten zijn beschikbaar en kunnen gecontroleerd worden, maar de onderzoeks-CLI voert geen semantisch expert-oordeel over die teksten uit. De onderzoeksverantwoordelijke bevestigt persoonlijk contact en beoordeling zonder voorkennis door `blinded_reviewer_1`. Een aanvullende identiteitsvraag is niet nodig. De publieke stukken tonen de beoordelingen en herkomstverklaring, maar bevatten bewust geen persoonsgegevens of externe identiteitscontrole. Meningsverschillen tussen beoordelaars zijn informatie over de beoordeling, geen score van ShadowSeed.
 
-De formulieren meten niet of ShadowSeed de voorgestelde verbanden zelf heeft gevonden of beter presteert dan een model met gewone notities. Ontblind niet automatisch na twee ingeleverde bestanden. Een gecontroleerde onafhankelijke beoordeling en een prospectieve matched vergelijking met kandidaat-ablatie blijven nodig.
+De formulieren meten niet of ShadowSeed de voorgestelde verbanden zelf heeft gevonden of beter presteert dan een model met gewone notities. De tweede beoordeling voldoet volgens de onderzoeksverantwoordelijke aan de voorwaarde van onafhankelijkheid en blinding. De volgende stap is de vooraf vastgelegde beoordelingsregels toepassen en de verborgen toewijzing alleen via de bevoegde onderzoeksbeheerder gecontroleerd openen. Voor een effectclaim blijft daarnaast een prospectieve vergelijking met gewone notities en een gerichte kandidaat-ablatie nodig.
 
 **G0 blijft NOT_PASSED.** Geen extra autoriteit, nieuwe Gate of productwijziging.
