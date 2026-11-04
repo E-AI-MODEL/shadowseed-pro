@@ -28,10 +28,13 @@
 | Held-out case secrecy and leakage check | **PENDING** | **PENDING** |
 | Disagreements and resolution trace | **PENDING** | **PENDING** |
 
-### Stop/proceed logic
+### Stop/proceed logic: review verdict, not a blanket research stop
 
-- **If either independent reviewer rejects a required construct, the relevant environment remains NO-GO.** Do not substitute a friendly LLM opinion for the reviewer.
-- **If either E1 or E2 lacks an independently implementable general validator or false-positive negative cases, G0 v3 remains NOT PASSED.**
+G0 is an independent verdict on whether a version-pinned design is acceptable for **confirmatory** investigation. Missing or negative reviews do not cancel separately authorized exploratory work, technical debugging, offline replications, trial analysis or publication of clearly labeled null/negative/partial observations. Preserve permitted, sanitized research data and reviewer decisions after an evaluator failure or rejected construct. Never retain or publish credentials, personal data, confidential references or sealed holdouts against security, access or deletion requirements; see the [research evidence handling rules](adapter-evaluation-contract-2026-10-25.md#g0-decision-scope-research-continues-while-independent-confirmation-is-pending). Do not recode `NOT PASSED` as a scientific negative result. Concrete security, spend, authorization and integrity stops still apply to the affected action.
+
+
+- **If either independent reviewer rejects a required construct, the relevant environment remains NO-GO for confirmatory use under that design.** Revise and investigate alternatives as exploratory work; keep the rejected cases and reviewer rationale. Do not substitute a friendly LLM opinion for the reviewer.
+- **If either E1 or E2 lacks an independently implementable general validator or false-positive negative cases, G0 v3 remains NOT PASSED for confirmatory acceptance.** Log the limitation and continue bounded diagnostic work where independently authorized.
 - **If both pass a future review**, mark only **DESIGN CONSTRUCT ACCEPTED FOR FEASIBILITY**, then preregister model/compute budgets and independent holdouts. That is **not** evidence that Shadowseed works, and it does not green-light an automatic paid-model workflow.
 - The existing Gate and accepted ADRs are unchanged, irrespective of verdict.
 - **This method audit and any LLM-generated review are not independent reviewer signatures.** Even though B8 has been resolved as a *proposed split*, both G0 reviewer approvals remain outstanding.

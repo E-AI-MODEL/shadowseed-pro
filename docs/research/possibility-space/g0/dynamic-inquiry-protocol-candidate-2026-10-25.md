@@ -57,7 +57,7 @@ The full two-clause question remains intact: at T0 observe the ordinary generati
 
 **Evaluator boundary:** an unexpected question that exceeds the independent evaluator's expressivity is **not testable by this evaluator**, not automatically wrong or trivial. Keep accepted, rejected, unsupported, no-opportunity and ambiguous outcomes in the denominator and send important out-of-scope questions to a blinded expert. Neither the proposing model's own rating nor a hard-coded answer chain is sufficient.
 
-A study must specify RF or RI before later evidence is released, and require separate G0 approvals, independent general-evaluator design, holdouts, safety reviews, budgets, measurement targets and stop rules before any new model calls. This is still an *unapproved* design proposal.
+A **confirmatory** study must specify RF or RI before later evidence is released and obtain separate G0 approvals, an independent evaluator, protected holdouts, safety review, fixed budgets, measurement targets and stop rules before its model calls. This is still an *unapproved* confirmatory design proposal. Separately approved bounded exploratory model calls may proceed under the [G0 research-scope clarification](README.md#what-g0-would-and-would-not-authorize), without treating the resulting observations as G0-approved evidence.
 
 ## Planned controlled arms
 
@@ -86,6 +86,6 @@ The version-specific [independent G0 v3 reviewer form](dynamic-inquiry-independe
 - **v1 F1/F2:** stop as thesis tests; preserve historical controls.
 - **v2 F3/F4:** formal examples survive arithmetic self-check, but they are recognized ordinary compositional/feature engineering cases; retain as challenger/control candidates.
 - **v3:** proposed *method* for prospectively generated inquiry; **not a proven design or approved experiment**. It is still possible an external reviewer will conclude that this is just ordinary open-ended active learning.
-- **Next task:** independent construct review of E1/E2 and a separate evaluator author who can assess unscripted questions. **No paid API calls, runtime code, weakened Gate or accepted ADRs until G0 construct validity is independently established.**
+- **Next task:** independent construct review of E1/E2 and a separate evaluator author who can assess unscripted questions. **No confirmatory model/API trial, production Gate weakening or accepted ADR on the basis of this proposal until G0 validity is independently established.** Bounded exploratory model calls or diagnostic research code are possible only with their own explicit authorization, budget and safety/data controls; no paid or automatic work is authorized by this document.
 
 No model evidence, approval or production functionality is asserted in this file.

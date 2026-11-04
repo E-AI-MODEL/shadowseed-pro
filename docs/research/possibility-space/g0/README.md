@@ -2,6 +2,8 @@
 
 > **G0 v1: RETIRED AS PRIMARY THESIS TESTS after internal adversarial review; G0 overall: NOT PASSED.** Two different, inspectable synthetic case families were specified. Their facts and falsification conditions are author-defined and **have not received independent external review**. No model calls, experiment implementation or production change is authorized by this file.
 >
+> **Scope clarification (4 November 2026):** G0 remains **NOT PASSED** for confirmatory Q1/Q2 claims and trials. It does not impose a research-wide stop on separately authorized exploratory analysis, model-free testing or diagnostic development. A paid exploratory run requires its **own explicit approval**, manual opt-in, defined spend limit, safety checks and protected data handling; no document or passing CI authorizes one. This clarification governs the older broad stop wording in this G0 package. See the [adapter research contract](adapter-evaluation-contract-2026-10-25.md#g0-decision-scope-research-continues-while-independent-confirmation-is-pending). The original 25 October decisions on the retired v1 cases and independent confirmatory review remain in force.
+
 > **Date:** 2026-10-25. **Program authority:** [fundamental thesis](../../possibility-space-thesis.md), [first-principles mechanisms H0–H5](../first-principles-reorientation-2026-10-25.md), [revised Q1/Q2 protocol](../revised-q1-q2-experiment-2026-10-25.md), [initial failed model trial](https://github.com/E-AI-MODEL/shadowseed-pro/pull/220).
 
 ## Current decision as of 2026-10-25
@@ -73,7 +75,7 @@ These G0 cases assess whether the **meaning of the measurements** is sound. They
 
 - **Now available:** two concrete, challengeable study designs; their information-flow boundaries and falsification conditions; a reviewer packet.
 - **Not yet available:** independent approval of either case's construct validity; sealed confirmatory cases; actual model/LLM results; probability-distribution evidence; evidence that weightless SSL has any benefit.
-- **Before any paid or automatic run:** complete the [review checklist](g0-independent-review.md) with signed independent outcomes, remove any leak/hint problems, confirm non-tautological value, establish held-out-case protection, and then preregister budgets and primary measures. **G0 remains NOT PASSED until that is done.** The [independent reviewer rubric](g0-independent-review.md) includes explicit **C11**: second-order dependence. A desk-check of the toy equations is not independent construct review.
+- **Before any confirmatory Q1/Q2 trial:** complete the [review checklist](g0-independent-review.md) with signed independent outcomes, remove leak/hint problems, protect new held-out cases, and preregister budgets and primary measures. **G0 remains NOT PASSED until that is done.** The reviewer rubric includes **C11**: second-order dependence. For separately authorized exploratory calls, record the approval, manually opt in, cap spend and preserve only safe research metadata and permitted source artifacts. Neither route allows unapproved paid or automatic runs, production Gate changes or claims of confirmed efficacy.
 
 No change to accepted ADRs, trace/weight, recurrence, Gate, point-of-use controls, production packages or the retired v0 fixed-edge workflow is needed.
 
