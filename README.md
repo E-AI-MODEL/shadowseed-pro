@@ -21,10 +21,6 @@ pipeline and never calls a language model. The local Workbench is the first
 complete client of that pipeline: it provides chat, inspection, comparison,
 feedback, export, and standalone packaging.
 
-## Onderzoek terugvinden (4 november 2026)
-
-De [Research Atlas](research/atlas/README.md) ordent 34 bestaande bevindingen en 13 nieuwe onderzoeksverbanden met controleerbare bronverwijzingen. Het overzicht is afgeleid onderzoeksmateriaal en vervangt geen primaire data of onafhankelijke beoordeling.
-
 ## Research evidence update (29 October 2026)
 
 Shadowseed Pro has advanced from a foundational research question to a **working, inspectable research instrument**. The engine implements weightless candidate persistence, separates remembered presence from authority, and records lifecycle and Gate decisions. Original model outputs and their subsequent processing can now be examined with source provenance instead of inferred from aggregate scores. This is substantive progress in both research design and software.
@@ -39,7 +35,7 @@ This is not a claim that we have proved an inaccessible internal “idea” or a
 
 **Open research source archive (28 October):** the [complete 48-call pilot records and original ZIP packages](research/datasets/2026-10-28-q1q2-48/README.md) are now directly readable in GitHub, with immutable source checksums. Public release includes the historical one-off decryption key and treatment-unblinding mappings: the original blind-review allocation is therefore no longer concealed. These records do not claim a Q1/Q2 effect.
 
-**Research navigation (28 October):** Start with the [dated research entry](docs/research/README.md) and the [complete remote-branch register](docs/research/possibility-space/branch-register-2026-10-28.md). The older [possibility-space index](docs/research/possibility-space/README.md) keeps its 25 October context. A candidate's intake label is not a semantic judgement, and weightless persistence is not a demonstrated effect.
+**Research navigation (28 October; updated 4 November):** Start with the [Research Atlas](research/atlas/README.md) for the cross-study index, then the [dated research entry](docs/research/README.md) and the [complete remote-branch register](docs/research/possibility-space/branch-register-2026-10-28.md). The older [possibility-space index](docs/research/possibility-space/README.md) keeps its 25 October context. A candidate's intake label is not a semantic judgement, and weightless persistence is not a demonstrated effect.
 
 Shadowseed is far beyond a concept sketch. The engine, weightless candidate memory, lifecycle, audit trail and separation between observation and authority are implemented. The repository also contains real model runs, multi-turn records and candidate histories. We can now investigate the path from an original response to a recorded candidate and its later opportunities for use. That is substantial progress, even while the larger research question remains open.
 

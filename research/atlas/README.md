@@ -8,9 +8,9 @@ De Atlas maakt historische experimenten en hun uitkomsten vindbaar. De 34 bevind
 
 | Wat zoek je? | Bestand |
 | --- | --- |
-| 34 bevindingen (S01-S34), elk met bron, meetstap en bewijsgrens | [Onderzoeksregister](data/atlas.json) |
-| 13 verbanden (R01-R13), met tegenverklaringen en vervolgvraag | [Verbanden in hetzelfde register](data/atlas.json) |
-| 24 historische trajecten, samengevat als acht groepen | [Vergelijkingsgegevens](data/atlas.json) |
+| 34 bevindingen (S01-S34), elk met bron, meetstap en bewijsgrens | [Onderzoeksregister](data/atlas.json), [originele CSV](sources/34_bevindingen_bronafhankelijkheid_2026-11-04.csv) |
+| 13 verbanden (R01-R13), met tegenverklaringen en vervolgvraag | [Verbanden in hetzelfde register](data/atlas.json), [originele CSV](sources/verbindingskaart_tussen_34_bevindingen_2026-11-04.csv) |
+| 24 historische trajecten, samengevat als acht groepen | [Vergelijkingsgegevens](data/atlas.json), [originele CSV](sources/24_trajecten_vergelijkingsmatrix_2026-11-04.csv) |
 | De inhoudelijke kruisanalyse, inclusief negatieve resultaten | [Onderzoeksnotitie van 4 november](notes/synthese-2026-11-04.md) |
 | De oorspronkelijke 48 modelantwoorden en herstelbestanden | [Bronarchief 28 oktober](../datasets/2026-10-28-q1q2-48/README.md) |
 | Vier Git-histories, vier snapshots en 62 originele Actions-artifacts | [Bronarchief 27 oktober](../../docs/research/archives/2026-10-27/README.md) |
@@ -21,7 +21,7 @@ De Atlas maakt historische experimenten en hun uitkomsten vindbaar. De 34 bevind
 
 De productcode blijft onder src/shadowseed/. De scripts en tests van het onderzoek blijven onder research/. De originele modeluitvoer blijft onder research/datasets/ en in de aangewezen archieven. Eerdere beoordelingsrondes blijven onder benchmarks/. Gedateerde onderzoeksverslagen blijven onder docs/research/.
 
-Onder research/atlas/ verzamelen we uitsluitend **afgeleide registers en nieuwe analyses**. We verplaatsen geen historische bronbestanden, wijzigen geen brondata en breken geen bestaande links. De [uitleg bij de data](data/README.md) beschrijft hoe de velden tot stand kwamen.
+Onder research/atlas/ bewaren we **afgeleide registers, de oorspronkelijke CSV-werkbestanden van deze analyse en gedateerde notities**. De ruwe modelantwoorden blijven in hun oorspronkelijke archief. We verplaatsen geen historische bronbestanden, wijzigen geen brondata en breken geen bestaande links. De [uitleg bij de data](data/README.md) beschrijft hoe de velden tot stand kwamen.
 
 ## Nieuwe bevinding toevoegen
 
