@@ -1,0 +1,144 @@
+{
+  "schema": "shadowseed-matched-inquiry-calibration-v1",
+  "mode": "mechanics_calibration_only",
+  "feedback_regime": "RF",
+  "g0_authorized": false,
+  "cases": [
+    {
+      "case_id": "SYN-01",
+      "provenance": "synthetic_calibration",
+      "shared": {
+        "history_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "t0_context_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "feedback_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "model_id": "fake-calibration-model",
+        "model_revision": "pinned-test-revision",
+        "decoding": {
+          "temperature": 0
+        },
+        "budget": {
+          "max_model_calls": 3,
+          "max_model_tokens": 4000,
+          "max_tool_calls": 2,
+          "max_retrieval_calls": 2
+        }
+      },
+      "candidate": {
+        "id": "seed_test",
+        "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "birth_turn": 0,
+        "exposure_turn": 1,
+        "weight": 0,
+        "authority": false,
+        "token_count": 25
+      },
+      "arms": [
+        {
+          "history_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "t0_context_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "feedback_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "model_id": "fake-calibration-model",
+          "model_revision": "pinned-test-revision",
+          "decoding": {
+            "temperature": 0
+          },
+          "budget": {
+            "max_model_calls": 3,
+            "max_model_tokens": 4000,
+            "max_tool_calls": 2,
+            "max_retrieval_calls": 2
+          },
+          "arm": "A",
+          "candidate_visibility": "absent",
+          "candidate_sha256": null,
+          "sham_sha256": null,
+          "extra_tokens": 0
+        },
+        {
+          "history_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "t0_context_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "feedback_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "model_id": "fake-calibration-model",
+          "model_revision": "pinned-test-revision",
+          "decoding": {
+            "temperature": 0
+          },
+          "budget": {
+            "max_model_calls": 3,
+            "max_model_tokens": 4000,
+            "max_tool_calls": 2,
+            "max_retrieval_calls": 2
+          },
+          "arm": "B",
+          "candidate_visibility": "absent",
+          "candidate_sha256": null,
+          "sham_sha256": null,
+          "extra_tokens": 0
+        },
+        {
+          "history_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "t0_context_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "feedback_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "model_id": "fake-calibration-model",
+          "model_revision": "pinned-test-revision",
+          "decoding": {
+            "temperature": 0
+          },
+          "budget": {
+            "max_model_calls": 3,
+            "max_model_tokens": 4000,
+            "max_tool_calls": 2,
+            "max_retrieval_calls": 2
+          },
+          "arm": "C",
+          "candidate_visibility": "absent",
+          "candidate_sha256": null,
+          "sham_sha256": null,
+          "extra_tokens": 0
+        },
+        {
+          "history_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "t0_context_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "feedback_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "model_id": "fake-calibration-model",
+          "model_revision": "pinned-test-revision",
+          "decoding": {
+            "temperature": 0
+          },
+          "budget": {
+            "max_model_calls": 3,
+            "max_model_tokens": 4000,
+            "max_tool_calls": 2,
+            "max_retrieval_calls": 2
+          },
+          "arm": "D",
+          "candidate_visibility": "frozen_weightless",
+          "candidate_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "sham_sha256": null,
+          "extra_tokens": 25
+        },
+        {
+          "history_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "t0_context_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "feedback_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "model_id": "fake-calibration-model",
+          "model_revision": "pinned-test-revision",
+          "decoding": {
+            "temperature": 0
+          },
+          "budget": {
+            "max_model_calls": 3,
+            "max_model_tokens": 4000,
+            "max_tool_calls": 2,
+            "max_retrieval_calls": 2
+          },
+          "arm": "E",
+          "candidate_visibility": "sham_ablation",
+          "candidate_sha256": null,
+          "sham_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "extra_tokens": 25
+        }
+      ]
+    }
+  ]
+}
