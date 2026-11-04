@@ -147,3 +147,40 @@ def test_cli_write_protects_source_and_output(tmp_path):
         PRE.main(["check-plan", "--input", str(source), "--report", str(report)])
     with pytest.raises(PRE.PreflightError, match="never overwrite"):
         PRE.main(["check-plan", "--input", str(source), "--report", str(source)])
+
+
+def test_reparse_saved_qwen_accepts_t_prefix_without_semantic_scoring():
+    raw = "PICK: t019\nRELATION: SAME_CLAIM\nREASON: Specific earlier note."
+    parsed = PRE.reparse_saved_qwen(raw, {13, 19, 21})
+    assert parsed == {"valid": True, "reason_code": None, "pick": 19, "relation": "SAME_CLAIM"}
+    assert PRE.reparse_saved_qwen(raw, {13, 21})["reason_code"] == "invalid_turn_or_relation"
+
+
+def test_reparse_rejects_unstructured_none_and_duplicate_answer():
+    assert PRE.reparse_saved_qwen("NONE", {13})["reason_code"] == "unstructured_none"
+    repeated = "PICK: 19\nRELATION: RELATED_DISTINCT\nREASON: earlier.\nPICK: 19"
+    assert PRE.reparse_saved_qwen(repeated, {19})["reason_code"] == "invalid_format"
+
+
+def test_corrected_diagnostic_is_separate_from_recorded_parser_outcome():
+    data = [{"checkpoint_turn": 26, "ordinary_llm_raw": "PICK: t019\nRELATION: SAME_CLAIM\nREASON: earlier.",
+             "ordinary_llm_parsed": {"valid": False, "reason_code": "invalid_format"},
+             "same_prior_notes_in_both_arms": True},
+            {"checkpoint_turn": 60, "ordinary_llm_raw": "NONE",
+             "ordinary_llm_parsed": {"valid": False, "reason_code": "invalid_format"},
+             "same_prior_notes_in_both_arms": True}]
+    notes = [{"mit_turn": 19, "text": "the earlier note"},
+             {"mit_turn": 26, "text": "current 26"},
+             {"mit_turn": 60, "text": "current 60"}]
+    report = PRE.audit_historical_replay(data, notes)
+    assert report["parseable_qwen_results"] == 0
+    assert report["source_checked_reparse"]["format_valid_count"] == 1
+    assert report["source_checked_reparse"]["still_invalid_reasons"] == {"unstructured_none": 1}
+    assert report["relative_method_effect_estimated"] is False
+
+
+def test_reparse_refuses_source_duplicate_or_missing_checkpoint():
+    with pytest.raises(PRE.PreflightError, match="duplicate"):
+        PRE.source_turns_before([{"mit_turn": 1, "text": "a"}, {"mit_turn": 1, "text": "b"}], 1)
+    with pytest.raises(PRE.PreflightError, match="not part"):
+        PRE.source_turns_before([{"mit_turn": 1, "text": "a"}], 2)
