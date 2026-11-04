@@ -4,7 +4,7 @@
 
 De oorspronkelijke 12 gesprekken, met elk vier beurten, bevatten **94 detectorwaarnemingen**. De oude intake liet er 48 toe en wees 46 af als `not_atomic`. Alle 94 zijn aan hun oorspronkelijke observatie, beurt en teksthash gekoppeld; de 46 afwijzingen zijn bovendien vergeleken met de afzonderlijke auteur-audit.
 
-Die oorspronkelijke gegevens geven samen **140 latere beurtvensters**. Voor 16 kandidaten van de laatste beurt bestaat geen vervolg in de bron, wat geen mislukte herinnering is. De sessies gebruiken zes fictieve casussen met twee verschillende modellen en zijn niet onafhankelijk.
+Die oorspronkelijke gegevens geven samen **140 latere beurtvensters**. Voor 24 kandidaatvoorkomens op de laatste beurt bestaat geen vervolg in de bron, wat geen mislukte herinnering is. De sessies gebruiken zes fictieve casussen met twee verschillende modellen en zijn niet onafhankelijk.
 
 ## Wat we daadwerkelijk terugvonden
 
