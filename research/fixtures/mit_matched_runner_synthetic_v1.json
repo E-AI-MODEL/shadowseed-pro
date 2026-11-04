@@ -1,0 +1,159 @@
+{
+  "schema": "shadowseed-matched-runner-calibration-v1",
+  "allocation_seed": 1947,
+  "plan": {
+    "schema": "shadowseed-matched-inquiry-calibration-v1",
+    "mode": "mechanics_calibration_only",
+    "feedback_regime": "RF",
+    "g0_authorized": false,
+    "cases": [
+      {
+        "case_id": "SYN-01",
+        "provenance": "synthetic_calibration",
+        "shared": {
+          "history_sha256": "99596134fb8099276d2350c910c01aa180fd6251023a0fcfbecd64e61b5f368c",
+          "t0_context_sha256": "e4a5483f62d17d67f4cada6a8d4dc3ce8e4b6f5204b58cb3739b5419c0392892",
+          "feedback_sha256": "b518a6a1fc65b680e625deb8841a042c0e3ed6e21666064e7381825056551162",
+          "model_id": "fake-calibration-model",
+          "model_revision": "pinned-test-revision",
+          "decoding": {
+            "temperature": 0
+          },
+          "budget": {
+            "max_model_calls": 3,
+            "max_model_tokens": 4000,
+            "max_tool_calls": 2,
+            "max_retrieval_calls": 2
+          }
+        },
+        "candidate": {
+          "id": "seed_test",
+          "sha256": "87b5249dec663ee97817c99d2256483d1f896bc628d78108a1ce55ed1d8c1afa",
+          "birth_turn": 0,
+          "exposure_turn": 1,
+          "weight": 0,
+          "authority": false,
+          "token_count": 10
+        },
+        "arms": [
+          {
+            "history_sha256": "99596134fb8099276d2350c910c01aa180fd6251023a0fcfbecd64e61b5f368c",
+            "t0_context_sha256": "e4a5483f62d17d67f4cada6a8d4dc3ce8e4b6f5204b58cb3739b5419c0392892",
+            "feedback_sha256": "b518a6a1fc65b680e625deb8841a042c0e3ed6e21666064e7381825056551162",
+            "model_id": "fake-calibration-model",
+            "model_revision": "pinned-test-revision",
+            "decoding": {
+              "temperature": 0
+            },
+            "budget": {
+              "max_model_calls": 3,
+              "max_model_tokens": 4000,
+              "max_tool_calls": 2,
+              "max_retrieval_calls": 2
+            },
+            "arm": "A",
+            "candidate_visibility": "absent",
+            "candidate_sha256": null,
+            "sham_sha256": null,
+            "extra_tokens": 0
+          },
+          {
+            "history_sha256": "99596134fb8099276d2350c910c01aa180fd6251023a0fcfbecd64e61b5f368c",
+            "t0_context_sha256": "e4a5483f62d17d67f4cada6a8d4dc3ce8e4b6f5204b58cb3739b5419c0392892",
+            "feedback_sha256": "b518a6a1fc65b680e625deb8841a042c0e3ed6e21666064e7381825056551162",
+            "model_id": "fake-calibration-model",
+            "model_revision": "pinned-test-revision",
+            "decoding": {
+              "temperature": 0
+            },
+            "budget": {
+              "max_model_calls": 3,
+              "max_model_tokens": 4000,
+              "max_tool_calls": 2,
+              "max_retrieval_calls": 2
+            },
+            "arm": "B",
+            "candidate_visibility": "absent",
+            "candidate_sha256": null,
+            "sham_sha256": null,
+            "extra_tokens": 0
+          },
+          {
+            "history_sha256": "99596134fb8099276d2350c910c01aa180fd6251023a0fcfbecd64e61b5f368c",
+            "t0_context_sha256": "e4a5483f62d17d67f4cada6a8d4dc3ce8e4b6f5204b58cb3739b5419c0392892",
+            "feedback_sha256": "b518a6a1fc65b680e625deb8841a042c0e3ed6e21666064e7381825056551162",
+            "model_id": "fake-calibration-model",
+            "model_revision": "pinned-test-revision",
+            "decoding": {
+              "temperature": 0
+            },
+            "budget": {
+              "max_model_calls": 3,
+              "max_model_tokens": 4000,
+              "max_tool_calls": 2,
+              "max_retrieval_calls": 2
+            },
+            "arm": "C",
+            "candidate_visibility": "absent",
+            "candidate_sha256": null,
+            "sham_sha256": null,
+            "extra_tokens": 0
+          },
+          {
+            "history_sha256": "99596134fb8099276d2350c910c01aa180fd6251023a0fcfbecd64e61b5f368c",
+            "t0_context_sha256": "e4a5483f62d17d67f4cada6a8d4dc3ce8e4b6f5204b58cb3739b5419c0392892",
+            "feedback_sha256": "b518a6a1fc65b680e625deb8841a042c0e3ed6e21666064e7381825056551162",
+            "model_id": "fake-calibration-model",
+            "model_revision": "pinned-test-revision",
+            "decoding": {
+              "temperature": 0
+            },
+            "budget": {
+              "max_model_calls": 3,
+              "max_model_tokens": 4000,
+              "max_tool_calls": 2,
+              "max_retrieval_calls": 2
+            },
+            "arm": "D",
+            "candidate_visibility": "frozen_weightless",
+            "candidate_sha256": "87b5249dec663ee97817c99d2256483d1f896bc628d78108a1ce55ed1d8c1afa",
+            "sham_sha256": null,
+            "extra_tokens": 10
+          },
+          {
+            "history_sha256": "99596134fb8099276d2350c910c01aa180fd6251023a0fcfbecd64e61b5f368c",
+            "t0_context_sha256": "e4a5483f62d17d67f4cada6a8d4dc3ce8e4b6f5204b58cb3739b5419c0392892",
+            "feedback_sha256": "b518a6a1fc65b680e625deb8841a042c0e3ed6e21666064e7381825056551162",
+            "model_id": "fake-calibration-model",
+            "model_revision": "pinned-test-revision",
+            "decoding": {
+              "temperature": 0
+            },
+            "budget": {
+              "max_model_calls": 3,
+              "max_model_tokens": 4000,
+              "max_tool_calls": 2,
+              "max_retrieval_calls": 2
+            },
+            "arm": "E",
+            "candidate_visibility": "sham_ablation",
+            "candidate_sha256": null,
+            "sham_sha256": "c26d9ea2049e1db9a0194b4e48237d47af2cff940d826f7dcb7019c66edd4cd0",
+            "extra_tokens": 10
+          }
+        ]
+      }
+    ]
+  },
+  "payloads": [
+    {
+      "case_id": "SYN-01",
+      "history": "In a fictional sensor study, two instruments measure temperature. Neither instrument has been independently checked.",
+      "t0_context": "Why do the sensor readings disagree at the same timestamp?",
+      "feedback": "A third fictional instrument returns a stable temperature during the same interval.",
+      "candidate_text": "Perhaps the sensors sample different locations in the fictional chamber.",
+      "sham_text": "Perhaps the sensors carry different labels in the fictional manual.",
+      "ordinary_notes": "Earlier notes raised calibration, timestamp alignment, and sensor placement as possibilities."
+    }
+  ]
+}
