@@ -38,3 +38,15 @@ def test_last_turn_candidate_is_not_scored_as_missed():
     assert output["source_observations"] == 1
     assert output["later_windows"] == 0
     assert output["matched_windows"] == 0
+
+
+def test_original_48_turn_archive_can_be_read_without_raw_text_output():
+    import json
+    source = (Path(__file__).resolve().parents[1]
+              / "research/datasets/2026-10-28-q1q2-48/original-author-kit/SOURCE/"
+              / "original-observed_sha256_0a5094e3.json")
+    result = module.screen(json.loads(source.read_text(encoding="utf-8")))
+    assert result["source_observations"] == 94
+    assert result["later_windows"] == 140
+    assert result["matched_candidate_occurrences"] <= result["matched_windows"]
+    assert result["matched_windows"] <= result["later_windows"]
