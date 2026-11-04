@@ -1,0 +1,92 @@
+{
+  "schema": "shadowseed-historical-candidate-window-audit-v1",
+  "date": "2026-11-04",
+  "source_sha256": "0a5094e38ab2fdcf8c68dc8d6a3c75d29eeffd49e1f6c8e138589ed73ca36bbf",
+  "crosscheck_46_author_only_zip_sha256": "b2eb0b64a981612ee3ea3f1d5e2723d834c46eecf9eab73b697229a80a03f051",
+  "provenance": "Historical candidate and host texts already exist in a Git-tracked source on this public repository. This aggregate and PR do not copy those individual texts. The separate author-review bundle is kept outside this PR.",
+  "observations": {
+    "case_families": 4,
+    "model_sessions": 12,
+    "turns": 48,
+    "candidate_occurrences": 94,
+    "accepted": 48,
+    "rejected_not_atomic": 46,
+    "accepted_birth_by_turn": [
+      9,
+      12,
+      11,
+      16
+    ],
+    "rejected_birth_by_turn": [
+      15,
+      10,
+      13,
+      8
+    ],
+    "seed_surfacing_events": 0,
+    "seed_influence_decisions": 0,
+    "gate_promotions": 0,
+    "distinct_case_ids": 6
+  },
+  "later_windows": {
+    "accepted": 62,
+    "rejected": 78,
+    "total": 140
+  },
+  "lexical_checks": {
+    "full_candidate_literal_appears_in_later_host_answer": {
+      "accepted": 0,
+      "rejected": 0
+    },
+    "exact_detector_candidate_reobservation": {
+      "accepted": 0,
+      "rejected": 0
+    },
+    "at_least_one_unprompted_novel_six_char_stem": {
+      "accepted": 27,
+      "rejected": 42
+    },
+    "at_least_two_rare_unprompted_stems": {
+      "accepted": 11,
+      "rejected": 13
+    },
+    "rare_unprompted_adjacent_stem_bigram": {
+      "accepted": 7,
+      "rejected": 2,
+      "total": 9,
+      "distinct_candidate_occurrences": 8
+    }
+  },
+  "model_balance": {
+    "gpt_5_2025_08_07": {
+      "candidates": 72,
+      "accepted": 34,
+      "rejected": 38,
+      "later_windows": 108,
+      "rare_bigram_windows": 7
+    },
+    "gpt_6_luna": {
+      "candidates": 22,
+      "accepted": 14,
+      "rejected": 8,
+      "later_windows": 32,
+      "rare_bigram_windows": 2
+    }
+  },
+  "method": {
+    "tokenization": "Unicode normalized and casefolded, terms length >=4, common stopwords omitted, stems truncated to first 6 letters",
+    "new": "Absent from both birth user's input and contemporaneous host answer",
+    "unprompted": "Also absent from later user input",
+    "two_rare_stems": "Two distinct such stems, each in <=10 of the 94 candidate texts, co-occur in one later host answer",
+    "rare_bigram": "Two adjacent filtered stems in <=3 of 94 candidate texts, absent as a pair from birth user input, birth host answer and later user input, present in later host answer"
+  },
+  "limitations": [
+    "All semantic relation and useful-new-test judgments remain unassessed",
+    "Screens include generic or task-dependent word matches",
+    "Accepted/rejected groups are not randomized or independently sampled",
+    "T3 candidates have no later turns",
+    "Host responses were never exposed to the candidates during these 48 recorded turns",
+    "No actual seed memory benefit or Q2 causal effect was tested",
+    "Original candidate texts and author-only inspection queue not published in this PR"
+  ]
+}
