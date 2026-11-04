@@ -4,13 +4,13 @@
 
 ## Wat we hebben gemeten
 
-De historische equal-history-replay bevat vijf checkpoints. In het originele GitHub Actions-bestand is `ordinary_llm_parsed.valid` bij alle vijf `false`, met foutreden `invalid_format`. De uitgevoerde diagnose meldt daarom **vijf niet-beoordeelbare Qwen-antwoorden**. Zij zijn niet automatisch vijf inhoudelijke missers.
+De historische equal-history-replay bevat vijf checkpoints. De **oorspronkelijk opgeslagen parseruitkomst** was vijfmaal `invalid_format`, maar de afzonderlijke [historische heranalyse op de MIT-onderzoeksbranch](https://github.com/E-AI-MODEL/shadowseed-pro/blob/research/mit-shadow-memory-replay-20261103/research/experiments/mit_shadow_memory_20261103/EQUAL_HISTORY_REANALYSIS.md) had de fout al gevonden: het model gebruikte `t019` waar de parser het voorvoegsel `t` afwees. Met het bewaarde ruwe antwoord én de 85 originele bronnotities zijn nu **vier van de vijf antwoorden opnieuw als structureel geldig bevestigd**. Het vijfde, losse `NONE`, blijft een ongestructureerde onthouding. De oorspronkelijke uitkomst wordt niet overschreven, en de vier verwijzingen zijn niet automatisch inhoudelijk juist.
 
 Het eerder uitgevoerde retrospectieve blindonderzoek blijft apart. Acht geselecteerde relaties werden verdeeld over vier ShadowSeed- en vier Qwen-vondsten. De anonieme beoordelaar vond beide routes bij alle vier bruikbaar. Dit is geen rechtstreekse toets van een unieke ShadowSeed-bijdrage.
 
 ## Nieuwe technische preflight
 
-`research/scripts/mit_matched_preflight.py` gebruikt alleen Python-standaardbibliotheken en heeft twee commando's. `audit-history` telt technische parserfouten in bestaande checkpointdata. `check-plan` controleert een **synthetische** onderzoeksopzet en stopt bij ongelijkheid. Geen taalmodelaanroep, geen gebruik van de oorspronkelijke privé-ontblindingssleutel en geen wijziging aan de product-Gate.
+`research/scripts/mit_matched_preflight.py` gebruikt alleen Python-standaardbibliotheken en heeft twee commando's. `audit-history` telt de oorspronkelijke technische parserfouten en kan met de originele `source_hypotheses.json` bovendien een gecontroleerde, afzonderlijke herparse uitvoeren. Bij die herstelstap blijven de originele uitkomst en de gecorrigeerde uitkomst naast elkaar bestaan. `check-plan` controleert een **synthetische** onderzoeksopzet en stopt bij ongelijkheid. Geen taalmodelaanroep, geen gebruik van de oorspronkelijke privé-ontblindingssleutel en geen wijziging aan de product-Gate.
 
 Het programma weigert een onvolledige set onderzoeksarmen, ongelijke modelidentiteit, decoding, geschiedenis, begincontext of call-/token-/tool-/retrievallimieten. De ShadowSeed-kandidaat in D moet vóór de blootstelling bestaan en gewichtloos blijven. In E moet precies die kandidaat ontbreken en een lengte-gematchte, anders gehashte schijnnotitie staan. De controle verifieert alleen **opgegeven metadata**: niet dat de echte modelpayloads deze hashes hebben of dat de neutraliteit van de schijnnotitie bewezen is.
 
@@ -45,10 +45,11 @@ python3 research/scripts/mit_matched_preflight.py check-plan \
 
 python3 research/scripts/mit_matched_preflight.py audit-history \
   --input /secure/checkpoint_results.json \
+  --source-notes /secure/source_hypotheses.json \
   --report /tmp/mit_historical_diagnostic.json
 ```
 
-Lokaal zijn **11 tests geslaagd** en is de historische Actions-JSON opnieuw door de audit gehaald: 5 checkpoints, 5 ongeldige parseruitkomsten en 0 inhoudelijk vergelijkbare Qwen-uitkomsten volgens het oorspronkelijke parsecontract. Deze gegevens bewijzen geen methodisch verschil.
+Lokaal zijn na aanvulling **15 tests geslaagd**. De brongebonden herparse van de historische Actions-JSON geeft 5 oorspronkelijk ongeldige parseruitkomsten, **4 structureel herstelde verwijzingen** en 1 ongestructureerd `NONE`. De controle bevestigt alleen format en historische brontoewijzing; geen enkele van de vier `SAME_CLAIM`-beoordelingen is hiermee wetenschappelijk gevalideerd. Deze gegevens bewijzen geen methodisch verschil.
 
 ## Wat nodig blijft voor een volgende live proef
 
