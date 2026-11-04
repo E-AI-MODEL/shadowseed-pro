@@ -1,0 +1,9 @@
+moment,arm,trajectories,new_factor,refinement,no_case_test,families_count,families,mean_word_jaccard,label_provenance
+horizon_after_T2,ordinary,3,2,1,0,3,image-mechanism (1); proxy-validation (1); temporal (1),0.275,"post-hoc, niet-blinde codering van antwoorden"
+horizon_after_T2,deliberate_search,3,3,0,0,2,causal-selection (1); temporal (2),0.251,"post-hoc, niet-blinde codering van antwoorden"
+horizon_after_T2,shadow_candidate,3,0,3,0,1,proxy-validation (3),0.268,"post-hoc, niet-blinde codering van antwoorden"
+horizon_after_T2,placebo,3,3,0,0,2,image-mechanism (1); temporal (2),0.285,"post-hoc, niet-blinde codering van antwoorden"
+battery_after_T3,ordinary,3,3,0,0,1,camera-output (3),0.263,"post-hoc, niet-blinde codering van antwoorden"
+battery_after_T3,deliberate_search,3,2,1,0,1,electrical-confounder (3),0.276,"post-hoc, niet-blinde codering van antwoorden"
+battery_after_T3,shadow_candidate,3,3,0,0,1,sensor-clock (3),0.35,"post-hoc, niet-blinde codering van antwoorden"
+battery_after_T3,placebo,3,0,0,3,1,abstention (3),0.246,"post-hoc, niet-blinde codering van antwoorden"
