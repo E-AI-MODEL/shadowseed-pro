@@ -1,0 +1,52 @@
+{
+  "schema": "shadowseed-real-stage1-exploratory-v2",
+  "provenance": "POST_V1_EXPLORATORY_CONTEXT_PARITY_CORRECTION_PUBLIC_NOT_HOLDOUT_OR_CONFIRMATORY",
+  "model": "gpt-5",
+  "embedding_model": "text-embedding-3-small",
+  "cases": [
+    {
+      "id": "MEASUREMENT",
+      "context": "In een fictieve werkplaats worden elke minuut waarden van twee onafhankelijke meetkanalen vastgelegd. Sinds kort toont het eerste kanaal af en toe een scherpe uitschieter. De twee kanalen meten hetzelfde materiaal met verschillende sensortechnieken. De technische ploeg heeft vorige week firmware bijgewerkt en een extra regelkast aangesloten. Het logboek bevat alleen tijdstempels van het dataverzamelprogramma; het bevat geen ruwe tijdstempels van de afzonderlijke sensoren. Er is nog niets gecontroleerd met een extern meetinstrument. Het team moet nu een voorlopige analyse maken, zonder onderdelen te vervangen of een oorzaak als bewezen te presenteren.",
+      "turns": [
+        {
+          "question": "Welke voorlopige verklaringen zijn verdedigbaar op basis van deze waarnemingen, en wat kunnen we nog niet vaststellen?",
+          "new_observation": ""
+        },
+        {
+          "question": "Wat verandert deze nieuwe waarneming aan het beeld, en wat blijft onzeker?",
+          "new_observation": "In een nieuwe test laat het tweede meetkanaal geen vergelijkbare uitschieters zien. De uitschieters van kanaal één vallen vooral op tijdens tijdvakken waarin de regelkast actief is. De firmware blijft gedurende de nieuwe test ongewijzigd."
+        },
+        {
+          "question": "Welke aannames kunnen we nu uitsluiten en welke onzekerheid blijft over?",
+          "new_observation": "Een herhaalde meting met dezelfde opstelling laat zien dat de afzonderlijke sensoren volgens een handmatig afgelezen klok niet exact tegelijk registreren. De richting en omvang van het tijdverschil zijn nog niet onafhankelijk gemeten."
+        },
+        {
+          "question": "Welke volgende controle zou je voorstellen zonder vooruit te lopen op de uitslag ervan?",
+          "new_observation": "Het team kan de sensoren de komende ronde elk afzonderlijk laten registreren en desgewenst een apart tijdreferentiesignaal gebruiken. Er zijn nog geen uitkomsten van deze controles."
+        }
+      ]
+    },
+    {
+      "id": "STERILE",
+      "context": "Een fictieve onderzoeksruimte bevat een afsluitbare voorraadkast met twintig identiek gecodeerde, lege testdozen. De medewerker heeft alle twintig dozen geteld, hetzelfde aantal op de inventarislijst gevonden en gecontroleerd of de etiketten leesbaar zijn. In deze casus zijn geen metingen van de dozen zelf nodig. De vraag is alleen hoe het dagelijkse tellingsoverzicht zorgvuldig kan worden bijgehouden. Er is geen verzoek om een nieuwe verklaring van een onbekend verschijnsel te vinden.",
+      "turns": [
+        {
+          "question": "Welke vaststellingen mogen in het dagelijkse tellingsoverzicht worden opgenomen op basis van deze controle?",
+          "new_observation": ""
+        },
+        {
+          "question": "Is deze nieuwe waarneming voldoende om het tellingsoverzicht bij te werken, en wat blijft nog onbekend?",
+          "new_observation": "Een tweede medewerker telt dezelfde twintig lege testdozen en bevestigt dat de kast volgens de lokale inventarislijst twintig vakken heeft. Er zijn geen verschillen genoteerd."
+        },
+        {
+          "question": "Wat zou je nu feitelijk rapporteren zonder aanvullende aannames?",
+          "new_observation": "De volgende dag meldt een onafhankelijke teller opnieuw twintig testdozen. De kastenindeling, etiketten en inventarislijst zijn ongewijzigd."
+        },
+        {
+          "question": "Wat is een passende administratieve afronding op basis van de beschikbare gegevens?",
+          "new_observation": "De administratie bevestigt dat het overzicht volledig is ingediend en dat er voor dit telmoment geen verdere gegevens worden gevraagd."
+        }
+      ]
+    }
+  ]
+}
