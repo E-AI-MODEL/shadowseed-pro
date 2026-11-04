@@ -1,0 +1,58 @@
+name: Research - Claude Opus 5.5 real five-arm ShadowSeed inquiry
+
+# One-shot push on a research branch. One public fictional case, at most 12
+# Copilot model prompts. No unattended retries, no product Gate change.
+# Org-billed Copilot GitHub token, no external OpenAI embedding API.
+on:
+  push:
+    branches:
+      - research/copilot-opus-five-arm-20261104
+    paths:
+      - .github/workflows/mit-copilot-opus-five-arm-once.yml
+
+permissions:
+  contents: read
+  copilot-requests: write
+
+concurrency:
+  group: research-copilot-opus-five-arm-20261104
+  cancel-in-progress: false
+
+jobs:
+  real-five-arm-exploratory:
+    if: github.event.before == '0e2dc0c43a82f5cb81ace53973f61ce2658f5ae6'
+    runs-on: ubuntu-latest
+    timeout-minutes: 48
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install unchanged product and research, plus Copilot SDK
+        run: |
+          uv sync --locked --extra test --extra build
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+          uv pip install --python .venv/bin/python github-copilot-sdk
+          .venv/bin/python -m copilot download-runtime
+      - name: Run offline experiment-contract tests
+        run: |
+          .venv/bin/python -m pytest -q research/tests/test_mit_copilot_opus_live.py
+          .venv/bin/python -m py_compile research/scripts/mit_copilot_opus_live.py
+      - name: Run one bounded real Opus experiment
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p owner-artifacts
+          .venv/bin/python research/scripts/mit_copilot_opus_live.py \
+            --output owner-artifacts/one_case_opus_trace.json
+      - name: Archive actual trace including incomplete outcomes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: opus55-five-arm-one-shot-${{ github.run_id }}
+          path: owner-artifacts/one_case_opus_trace.json
+          if-no-files-found: warn
+          retention-days: 21
