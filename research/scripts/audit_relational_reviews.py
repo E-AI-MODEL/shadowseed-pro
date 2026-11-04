@@ -66,7 +66,7 @@ def read_review(path: str | Path) -> dict:
         normalized[case_id] = {
             "relation": relation,
             "usefulness": int(value),
-            "test_proposed": bool(row["specific_new_test_if_any"].strip()),
+            "test_proposed": row["specific_new_test_if_any"].strip().casefold() not in {"", "none", "n/a", "na"},
         }
     if len(reviewers) != 1:
         raise ValueError("one CSV must contain exactly one reviewer_id")
@@ -121,14 +121,33 @@ def make_audit(first: dict, second: dict | None = None) -> dict:
                     "usefulness_disagrees": first_row["usefulness"] != other_row["usefulness"],
                     "test_proposal_disagrees": first_row["test_proposed"] != other_row["test_proposed"],
                 })
+        second_relation_count = Counter(row["relation"] for row in second["cases"].values())
+        second_usefulness_count = Counter(str(row["usefulness"]) for row in second["cases"].values())
         report["second_review"] = {
             "reviewer_id": second["reviewer_id"],
             "sha256": second["sha256"],
             "case_count": len(second["cases"]),
+            "relations": {key: second_relation_count[key] for key in sorted(RELATIONS)},
+            "usefulness": {str(i): second_usefulness_count[str(i)] for i in range(4)},
+            "test_proposal_case_ids": [
+                case_id for case_id, row in second["cases"].items() if row["test_proposed"]
+            ],
         }
         report["comparison"] = {
             "same_annotations": len(cases) - len(differences),
             "different_annotations": len(differences),
+            "same_relation": sum(
+                cases[case_id]["relation"] == second["cases"][case_id]["relation"]
+                for case_id in cases
+            ),
+            "same_usefulness": sum(
+                cases[case_id]["usefulness"] == second["cases"][case_id]["usefulness"]
+                for case_id in cases
+            ),
+            "same_test_proposal": sum(
+                cases[case_id]["test_proposed"] == second["cases"][case_id]["test_proposed"]
+                for case_id in cases
+            ),
             "differences": differences,
             "independent_review_completed": False,
         }
