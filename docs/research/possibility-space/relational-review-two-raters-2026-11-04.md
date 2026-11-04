@@ -2,45 +2,48 @@
 
 **4 november 2026. Onderzoeksnotitie, geen effectmeting of ontblinding.**
 
-De oorspronkelijke 14 gepaarde notities zijn teruggevonden in het eerder gemaakte beoordelaarspakket `shadowseed_mit_blind_review_for_reviewer.zip` (R01-R14). De verborgen toewijzing van kandidaatparen en controleparen is niet bekeken. Het eerste formulier is ingevuld door `claude-sonnet-5-5 (blind, single pass)`. Een tweede, verkorte beoordeling is via de gebruiker uit een e-mailtekst aangeleverd. De tweede reactie bevat geen beoordelaarsidentiteit en geen afzonderlijke onderbouwing per rij.
+De oorspronkelijke 14 notitieparen zijn teruggevonden in het eerder aangeleverde beoordelaarspakket `shadowseed_mit_blind_review_for_reviewer.zip`. De bron bevat R01-R14 en geen toegang tot de verborgen methode-indeling in het beoordelaarsdeel. De verborgen toewijzing van kandidaatparen en controleparen is niet bekeken.
 
-## Overeenkomst en verschil
+De eerste beoordelaar was `claude-sonnet-5-5 (blind, single pass)`. De gebruiker leverde daarna een verkorte tweede ronde aan, gevolgd door een **volledig ingevulde** zevenkoloms-CSV met `reviewer_id=blinded_reviewer_1`, motivering en tekstbewijs per rij. Die laatste versie vervangt voor de vergelijking de verkorte tweede ronde, maar blijft als correctie herkenbaar. Een ingevulde ID bewijst niet of de beoordelaar menselijk, onafhankelijk of werkelijk geblindeerd was.
 
-| Veld | Eerste beoordeling | Tweede beoordeling |
+Controleerbare SHA-256 van de afzonderlijke, hier niet meegestuurde bronbestanden:
+- Eerste CSV: `11fcee0e85a93cbedd50670a8816867b906ec738fcf36e0efe07cf73adda2b44`.
+- Volledig tweede CSV, letterlijk uit het gebruikersbericht: `166624be1caf438db901d3e7649db0d6f1eee0ed81fd3f00fb285a5fd8b7c220`.
+
+## Verschillen per beoordelingsdimensie
+
+| Veld | Eerste beoordeling | Volledige tweede beoordeling |
 | --- | ---: | ---: |
 | SAME_CLAIM | 1 | 1 |
-| BROAD_ONLY | 4 | 0 |
-| RELATED_DISTINCT | 9 | 13 |
+| BROAD_ONLY | 4 | 1 |
+| RELATED_DISTINCT | 9 | 12 |
 | Bruikbaarheid 0 / 1 / 2 / 3 | 1 / 7 / 6 / 0 | 1 / 2 / 9 / 2 |
-| Expliciete voorstellen voor een nieuwe test | 3 | 10 |
+| Expliciete voorstellen voor een nieuwe test | 3 | 11 |
 
-Overeenkomst over het soort relatie: **10/14**. Overeenkomst over bruikbaarheid: **7/14**. Overeenkomst over aanwezigheid van een nieuw testvoorstel: **7/14**. Op alle drie de velden tegelijk: **3/14**. Dit zijn beschrijvende tellingen, geen betrouwbaarheids- of validiteitsscore.
+- Relaties gelijk bij **11/14**. Verschillen: **R02, R04, R13**.
+- Bruikbaarheid gelijk bij **7/14**. Verschillen: **R02, R07, R08, R10, R12, R13, R14**.
+- Wel/geen testvoorstel gelijk bij **6/14**. Verschillen: **R02, R03, R06, R07, R08, R12, R13, R14**.
+- Alle drie gelijk bij **4/14**: **R01, R05, R09 en R11**.
+- Beide beoordelaars noemen **R05, R10 en R11** een nieuw testvoorstel.
 
-- Relatieverschillen: **R02, R04, R09, R13**.
-- Scoreverschillen: **R02, R07, R08, R10, R12, R13, R14**.
-- Verschillen over een nieuw testvoorstel: **R02, R03, R06, R07, R12, R13, R14**.
-- Beide beoordelaars noemen **R05, R10 en R11** expliciet als mogelijke bron van een nieuwe test.
+De expliciete waarde `none` in het tweede formulier betekent **geen nieuwe test**, niet een test genaamd "none". De onderzoeks-CLI heeft hiervoor een correctie en regressietest gekregen. Het eerdere rapport op basis van de verkorte tabel telde R09 als relatieverschil; in het volledige formulier staat R09 terecht als `BROAD_ONLY`. Dit is geen bevestiging van een wetenschappelijke uitkomst.
 
-## Wat nog moet worden uitgezocht
+## Wat de verschillen betekenen
 
-**R02 en R13:** de tweede beoordelaar vertaalt eerdere methodische mogelijkheden naar concrete proeven met het huidige resultaat. Dat kan nuttig zijn, maar de paarteksten laten niet zien dat de eerdere methode al op het huidige resultaat is toegepast. De eerste beoordelaar is terughoudender. Het verschil vraagt om een gemotiveerde keuze, niet om een automatische meerderheid.
+**R02 en R13:** de tweede beoordeling stelt voor bestaande methoden (disjuncte validatieset respectievelijk aandachtsdiagnostiek) op een latere claim toe te passen. Het eerdere bewijs laat niet zien dat deze nieuwe test al is uitgevoerd. Een methodische koppeling is nog geen extra causaal resultaat.
 
-**R04 en R09:** de eerdere en huidige notitie horen bij hetzelfde onderzoek; de precieze experimentele koppeling staat er niet. Het verschil betreft de uitleg van `RELATED_DISTINCT` versus `BROAD_ONLY`.
+**R04:** de tweede beoordelaar ziet een specifiek methodisch verband rond het reconstrueren van de beste ingreep en het later geteste bevroren resultaat. Claude kwalificeerde die relatie als breed omdat de tekst de identiteit van beide ingrepen niet vastlegt.
 
-**R08:** de score 3 zonder nieuw testvoorstel is niet automatisch tegenstrijdig. Een vergelijking tussen het effect van één MLP-ingreep en een voorspelde grotere ingreep bij twee lagen is in beginsel toetsbaar; de combinatie hoeft geen extra test te bedenken die niet al in de huidige notitie wordt gesuggereerd. De exacte meetgegevens en gemeenschappelijke testconditie staan niet in het paar.
+**R08 en R10:** de tweede beoordeling geeft score 3 door concrete interventievergelijkingen, maar een meetbare uitkomst is niet hetzelfde als een reeds gemeten effect. De scorer moet de vergelijking en identieke experimentele condities expliciet vastleggen.
 
-**R10:** de tweede beoordeling noemt de vergelijking tussen één neuron, richtingverwijdering in laag 19 en richtingverwijdering in laag 15+19 rechtstreeks toetsbaar (score 3); de eerste geeft score 2, omdat uitkomstmaat en vergelijkingsvoorwaarden nog onvoldoende zijn vastgelegd.
+**R11:** beide formulieren suggereren een controle voor een ingreep op 64 neuronen. Norm-matched random richtingsverwijdering en random neuronselectie zijn niet vanzelf hetzelfde. Controleer de werkelijk toegepaste ingreep alvorens uit een controlegroep conclusies te trekken.
 
-**R11:** beide suggereren een controle bij de ingreep op 64 neuronen. Een willekeurige richting met dezelfde norm is niet hetzelfde experiment als een willekeurige selectie van 64 neuronen. De controle moet overeenkomen met de feitelijke ingreep.
+**R05 en R12:** vergelijk uitkomsten slechts als taakverzameling, model, versie, interventie en protocollen daadwerkelijk overeenkomen. Bij R05 is nog niet aangetoond dat de vroege 85/96-truncatiemeting en latere foutcategorieën dezelfde conditie beschrijven.
 
-**R05, R12:** vergelijk alleen cijfers en interventies die aantoonbaar op dezelfde taken, versies en experimentele condities betrekking hebben.
+## Grenzen van de conclusie
 
-## Niet verder gaan dan het bewijs
+Deze twee **ingevulde** formulieren zijn correct vergelijkbaar als annotaties. De oorspronkelijke paarteksten zijn beschikbaar en kunnen gecontroleerd worden, maar de onderzoeks-CLI voert geen semantisch expert-oordeel over die teksten uit. De echte identiteit en onafhankelijkheid van `blinded_reviewer_1` zijn niet extern geverifieerd. Raterdisagreement is informatie over de beoordeling, geen score van ShadowSeed.
 
-Het tweede formulier is niet volledig volgens het oorspronkelijke protocol. Het mist `evidence_for_relation`, `reason_for_rating` en `reviewer_id`. Dat de tekst per e-mail binnenkwam, bewijst niet wie de beoordeling heeft gemaakt of dat die onafhankelijk tot stand kwam. De bestaande audit-CLI weigert terecht om zo'n verkorte CSV als een volledig onafhankelijk formulier te accepteren; ontbrekende velden mogen niet namens de afzender worden ingevuld.
+De formulieren meten niet of ShadowSeed de voorgestelde verbanden zelf heeft gevonden of beter presteert dan een model met gewone notities. Ontblind niet automatisch na twee ingeleverde bestanden. Een gecontroleerde onafhankelijke beoordeling en een prospectieve matched vergelijking met kandidaat-ablatie blijven nodig.
 
-De inhoudelijke beoordeling van twee notities gaat bovendien niet over de toeschrijving aan ShadowSeed. Het is nog niet vastgesteld dat ShadowSeed deze verbanden heeft gevonden, dat gewone notities dat niet zouden doen, of dat een voorgestelde proef een nieuw toetsbaar resultaat oplevert. **G0 blijft NOT_PASSED.**
-
-Vervolg: vraag de afzender om het volledige oorspronkelijke formulier, een eigen motivering en bevestiging van de gebruikte broninformatie, zonder de verborgen casustoewijzing te delen. Leg vervolgens de meningsverschillen en beslisregels vooraf vast. Ontblind pas volgens het bestaande protocol en gebruik de uitkomsten om een prospectieve vergelijking met een gewone-notitiesarm en een gerichte kandidaat-ablatie te ontwerpen.
-
-Geen wijziging aan productcode, recurrence, Validation Gate of point-of-use.
+**G0 blijft NOT_PASSED.** Geen extra autoriteit, nieuwe Gate of productwijziging.
