@@ -67,3 +67,20 @@ Voor een nieuwe betaalde modelrun geldt afzonderlijke toestemming met kostenplaf
 ## Werkelijke status
 
 **In dit document uitgevoerd:** onderzoeksopzet en beoordelingsvelden vastgelegd op een aparte onderzoeksbranch. **Niet uitgevoerd:** selectie en vastpinnen van de exacte negen ruwe reviewregels in deze PR, nieuwe willekeurige toewijzing, menselijke beoordeling, vergelijkende modelproef, onafhankelijke Q1/Q2-confirmatie. De bestaande Atlas-, PR- en bronbestanden blijven ongewijzigd.
+
+
+
+## Herhaalbare woordcontrole in dezelfde onderzoeksbranch
+
+Het bestand [`inspect_lexical_windows.py`](../scripts/inspect_lexical_windows.py) berekent een **aparte** letterlijke screening op de oorspronkelijke JSON. Het gebruikt een expliciete stopwoordenlijst en maakt zesletterwoordstammen. Het vergelijkt kandidaatteksten met latere modelantwoorden, sluit woordparen uit die al in de eerdere vraag of het eerdere antwoord staan, en sluit ook woordparen uit die de latere gebruiker zelf aanlevert.
+
+Deze methode is niet aantoonbaar byte-voor-byte gelijk aan de oorspronkelijke privé-analyse van PR #283. Een eerste afzonderlijke doorlezing van de bron met vergelijkbare regels vond **10** vensters uit **8** kandidaatwaarnemingen (7 oorspronkelijk geaccepteerd, 3 afgewezen), tegenover **9** vensters uit **8** kandidaten (7/2) in PR #283. De afwijking kan door tokenisatie, stopwoorden of een ander selectiedetail komen. **Nog geen correctie van de historische telling:** reconstrueer eerst de exacte oorspronkelijke zoekregel en controleer het verschil op observation-ID en beurt. Tot dat moment zijn beide uitkomsten methodegebonden.
+
+Voor een lokale controle vanuit de repository:
+
+```bash
+python research/atlas/scripts/inspect_lexical_windows.py research/datasets/2026-10-28-q1q2-48/original-author-kit/SOURCE/original-observed_sha256_0a5094e3.json
+python -m pytest -q tests/test_research_atlas_lexical_window_screen.py
+```
+
+Het script geeft **geen volledige kandidaat-, gebruikers- of hostteksten** uit, maar uitsluitend technische bron-ID's, beurtnummers en woordstamparen. De output is nog geen beoordelingsset: `intake_outcome` staat in het technische overzicht en hoort **niet** bij de geblindeerde beoordelaar terecht te komen. De drie kleine scriptproeven zijn lokaal uitgevoerd; de nieuwe bronbestandtest en de GitHub-CI op de actuele PR-head zijn nog niet afgerond. Deze paragraaf is een eigen technische controle, geen onafhankelijke menselijke beoordeling.
