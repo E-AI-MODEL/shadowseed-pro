@@ -1,0 +1,146 @@
+id,domain,later_observation,later_question,answer,executable_test,falsifier,tunnel_vision,comment
+B01,Reparatie van keramische onderdelen,"Nieuwe informatie: de scheuren komen vooral voor bij onderdelen met een brede steunrand, zelfs in dezelfde ovenbatch. Een foto toont dat de onderste contactvlakken verschillen. Er zijn geen temperatuurmetingen aan afzonderlijke oppervlakken.",Welk nieuw experiment kan contactgeometrie van algemene droogbelasting onderscheiden? Welke uitkomst zou die verklaring verzwakken?,"**Doe een gekruiste proef: contactgeometrie × droogprogramma.**
+
+Neem proefstukken met dezelfde brede steunrand, uit dezelfde materiaalbatch en met vergelijkbaar beginvocht. Varieer uitsluitend de ondersteuning:
+- volledig vlakcontact;
+- contact op enkele kleine steunpunten.
+
+Gebruik hetzelfde steunmateriaal en houd steunhoogte en positie zo gelijk mogelijk. Test beide contactvormen onder zowel het oude als het nieuwe droogprogramma, verdeeld over meerdere cycli. Verdeel ovenposities willekeurig en neem beide contactvormen in elke cyclus op.
+
+**Benodigde waarnemingen:** leg het werkelijke contactvlak vast; registreer massaverlies en het tijdstip en de plaats van eerste scheuren. Meet indien mogelijk lokaal de temperatuur bij de steunrand en op een vrij oppervlak. Laat gecodeerde foto’s op vaste momenten blind beoordelen.
+
+**Onderscheidende uitkomst:**
+- Een reproduceerbaar verschil tussen contactvormen **binnen hetzelfde programma** ondersteunt een bijdrage van contactgeometrie.
+- Meer scheuren onder het nieuwe programma bij **beide contactvormen**, zonder relevant contacteffect, past beter bij algemene droogbelasting.
+- Alleen extra scheuren bij vlakcontact onder het nieuwe programma wijst op een mogelijke wisselwerking.
+
+De **contactgeometrieverklaring wordt verzwakt** als duidelijk verschillende contactvlakken bij voldoende herhalingen geen relevant verschil in scheurvorming geven, terwijl het programma-effect wel terugkeert. Zonder lokale metingen blijft bovendien onzeker of een eventueel contacteffect ontstaat door warmteoverdracht, vochttransport of mechanische belemmering.",,,,
+B02,Waterverbruik in een proefkas,Nieuwe informatie: tijdens een handmatige controle stonden alle meters op dezelfde diepte. Een technicus ontdekte dat de voedingsspanning van een meetgroep tijdelijk lager was. Onafhankelijke weegmetingen van de bakken ontbreken nog.,Welke proef kan meetfout en werkelijk waterverlies uit elkaar houden? Wat zou de proef onderuit halen?,"**Doe een gekruiste spanningsproef met onafhankelijke weging.** De gelijke diepte bij de controle verzwakt de dieptehypothese voor dat moment. De lagere voedingsspanning is een nieuwe kandidaat, nog geen bewezen oorzaak.
+
+1. Zet enkele bakken op nauwkeurige weegschalen. Houd sproeien en drainage tijdens de korte proef tegen; controleer verdamping met een vergelijkbare controlebak.
+2. Wissel bij dezelfde meters de voeding tussen nominale spanning en de waargenomen lagere spanning, binnen veilige specificaties. Herhaal in afwisselende volgorde, zonder de sensoren te verplaatsen.
+3. Registreer gelijktijdig bakmassa, werkelijke voedingsspanning bij de meters, temperatuur en **ruwe vochtwaarden**. Uurgemiddelden zijn onvoldoende om snelle reacties te beoordelen.
+4. Voer ook een gecontroleerde uitdroogfase bij constante nominale spanning uit. Vergelijk de vochtwaarden met het gemeten massaverlies.
+
+**Onderscheidende uitkomsten**
+- Verandert de vochtwaarde direct en omkeerbaar met de spanning, terwijl de massa stabiel blijft? Dat ondersteunt een spanningsafhankelijke meetfout.
+- Daalt de massa bij constante spanning en verandert de vochtwaarde mee? Dat ondersteunt werkelijk waterverlies.
+- Beide patronen kunnen tegelijk optreden.
+
+**Wat verzwakt de verklaringen of maakt de proef onbeslisbaar?**
+- Geen reproduceerbaar spanningseffect bij stabiele massa verzwakt de spanningshypothese.
+- Een stabiele massa ondanks dalende vochtwaarden verzwakt werkelijk waterverlies als verklaring, maar sluit lokale herverdeling van water niet uit.
+- Onvoldoende nauwkeurige weging, ongeregistreerd sproeien of drainage, of alleen uurgemiddelden maakt de proef onbeslisbaar.
+- Zonder herhaling van het oorspronkelijke spanningsniveau kan een negatieve uitkomst de historische spanningshypothese niet overtuigend uitsluiten.",,,,
+B03,Waterverbruik in een proefkas,Nieuwe informatie: tijdens een handmatige controle stonden alle meters op dezelfde diepte. Een technicus ontdekte dat de voedingsspanning van een meetgroep tijdelijk lager was. Onafhankelijke weegmetingen van de bakken ontbreken nog.,Welke proef kan meetfout en werkelijk waterverlies uit elkaar houden? Wat zou de proef onderuit halen?,"**Voer een gekruiste spanningsproef uit, met onafhankelijke weging als referentie.** De lagere spanning is een aanwijzing voor mogelijke meetfout, nog geen bewezen oorzaak. Gelijke meetdiepte sluit andere meetfouten niet uit.
+
+1. Leg vóór hernummering de koppeling tussen bak, sensor en meetgroep vast.
+2. Zet enkele bakken op geschikte weegschalen. Registreer gelijktijdig **bakmassa, ruwe sensorwaarden, werkelijke voedingsspanning en tijdstip**, dus niet alleen uurgemiddelden.
+3. Test binnen de toegestane specificaties afwisselend de normale en de eerder aangetroffen lagere spanning. Wissel de volgorde tussen meetgroepen en herhaal de proef. Houd tijdens de korte spanningswissels sproeien achterwege en vang eventueel drainagewater apart op.
+4. Volg vervolgens een langere periode zonder watertoevoer om na te gaan of sensorveranderingen samengaan met onafhankelijk gemeten massaverlies.
+
+**Onderscheidende uitkomsten**
+- Verandert de sensorwaarde herhaalbaar met de spanning, terwijl de massa gelijk blijft, dan ondersteunt dat een spanningsafhankelijke meetfout.
+- Daalt de massa zonder andere materiaalverliezen en volgt de sensor die daling ook bij stabiele normale spanning, dan ondersteunt dat werkelijk waterverlies.
+- Beide kunnen tegelijk optreden.
+
+**Wat verzwakt de verklaringen of maakt de proef onbeslisbaar?**
+- Geen herhaalbaar spanningseffect bij gelijke massa verzwakt de spanningshypothese.
+- Geen meetbaar massaverlies verzwakt werkelijk waterverlies als verklaring, mits de weegschaal gevoelig genoeg is.
+- Onvoldoende nauwkeurige weging, onbekende drainage, niet-geregistreerde watertoevoer, veranderende omstandigheden tegelijk met de spanning of foutieve sensorkoppelingen maken de proef onbeslisbaar.
+
+Weging meet het totale waterverlies van de bak; zij bewijst niet dat het vocht rond de sensor overal hetzelfde verandert.",,,,
+B04,Reparatie van keramische onderdelen,"Nieuwe informatie: de scheuren komen vooral voor bij onderdelen met een brede steunrand, zelfs in dezelfde ovenbatch. Een foto toont dat de onderste contactvlakken verschillen. Er zijn geen temperatuurmetingen aan afzonderlijke oppervlakken.",Welk nieuw experiment kan contactgeometrie van algemene droogbelasting onderscheiden? Welke uitkomst zou die verklaring verzwakken?,"**Voer een gekruiste proef uit: contactgeometrie × droogprogramma.**
+
+- Gebruik proefstukken met dezelfde brede steunrand, uit dezelfde materiaalpartij en met vergelijkbaar beginvocht.
+- Verdeel ze willekeurig over twee ondersteuningen: **volledig contact met een vlakke ondergrond** versus **contact via enkele kleine steunpunten**. Houd steunmateriaal, steunhoogte en oriëntatie zo veel mogelijk gelijk.
+- Test beide ondersteuningen onder zowel het oude als het nieuwe droogprogramma. Neem beide contactcondities samen op in elke ovenbatch, randomiseer hun posities en herhaal over onafhankelijke batches.
+
+**Benodigde waarnemingen:** leg het werkelijke contactvlak vooraf vast; meet massaverlies op vaste momenten en temperatuur nabij het onderste contactvlak én op een vrij oppervlak. Registreer ontstaan, plaats en omvang van scheuren met gestandaardiseerde beelden, geblindeerd beoordeeld.
+
+**Onderscheid:** een reproduceerbaar verschil tussen ondersteuningen binnen hetzelfde programma ondersteunt een bijdrage van contactgeometrie. Een programma-effect dat bij beide ondersteuningen ongeveer gelijk is, past bij algemene droogbelasting. Beide effecten kunnen ook samen optreden.
+
+**Wat verzwakt de contactverklaring?** Geen reproduceerbaar verschil in scheurvorming tussen de duidelijk verschillende contactcondities, terwijl het nieuwe programma bij beide meer scheuren geeft. De huidige foto alleen bewijst geen contacteffect; zonder lokale metingen blijft ook onduidelijk of een eventueel effect thermisch, vochtgerelateerd of mechanisch is.",,,,
+B05,Reparatie van keramische onderdelen,"Nieuwe informatie: de scheuren komen vooral voor bij onderdelen met een brede steunrand, zelfs in dezelfde ovenbatch. Een foto toont dat de onderste contactvlakken verschillen. Er zijn geen temperatuurmetingen aan afzonderlijke oppervlakken.",Welk nieuw experiment kan contactgeometrie van algemene droogbelasting onderscheiden? Welke uitkomst zou die verklaring verzwakken?,"**Experiment: varieer het contact met de steunplaat binnen beide droogprogramma’s.**
+
+Gebruik vergelijkbare proefstukken met een brede steunrand uit dezelfde materiaalbatch en met gelijk beginvocht. Wijs ze willekeurig toe aan vier groepen:
+- oud programma, volledig randcontact;
+- oud programma, contact via enkele identieke kleine steunpunten;
+- nieuw programma, volledig randcontact;
+- nieuw programma, dezelfde kleine steunpunten.
+
+Houd steunmateriaal, belading en overige omstandigheden gelijk. Meng beide contactvormen binnen elke ovenbatch, randomiseer de posities en herhaal over meerdere batches.
+
+**Benodigde waarnemingen**
+- Controleer en fotografeer het werkelijke contactvlak.
+- Meet massaverlies op vaste tijdstippen.
+- Meet bij representatieve proefstukken lokaal temperatuur en vocht nabij de steunrand en op een vrij oppervlak; globale ovenmetingen volstaan hiervoor niet.
+- Bepaal tijdstip en plaats van scheurvorming met gestandaardiseerde beelden en geblindeerde beoordeling.
+
+**Interpretatie:** een verschil tussen contactvormen binnen hetzelfde programma ondersteunt een contacteffect. Grotere lokale droogverschillen bij de contactvorm met meer scheuren ondersteunen specifiek de hypothese van een lokaal afwijkend droogverloop. Alleen een verschil in scheuren bewijst dat mechanisme niet: ook mechanische belemmering kan meespelen.
+
+**Verzwakkende uitkomst:** de contactwijziging is aantoonbaar gerealiseerd, maar levert bij voldoende herhalingen geen relevant verschil in lokaal droogverloop of scheurvorming op, terwijl het nieuwe programma bij beide contactvormen meer scheuren veroorzaakt. Dat verzwakt de contactverklaring en past beter bij een algemene programma-invloed.",,,,
+B06,Waterverbruik in een proefkas,Nieuwe informatie: tijdens een handmatige controle stonden alle meters op dezelfde diepte. Een technicus ontdekte dat de voedingsspanning van een meetgroep tijdelijk lager was. Onafhankelijke weegmetingen van de bakken ontbreken nog.,Welke proef kan meetfout en werkelijk waterverlies uit elkaar houden? Wat zou de proef onderuit halen?,"**Voer een gekruiste spanningsproef uit, met gelijktijdige weging.** De lagere spanning is een aanwijzing voor mogelijke meetfout, nog geen bewezen oorzaak. Gelijke meetdiepte sluit andere meetproblemen niet uit.
+
+### Uitvoering
+1. Zet meerdere bakken afzonderlijk op voldoende nauwkeurige weegschalen. Geef tijdens de korte proef geen water en vang eventueel drainagewater apart op.
+2. Registreer per meter de **ruwe meetwaarde, werkelijke voedingsspanning en het bakgewicht**, met dezelfde tijdstempels; gebruik niet alleen uurgemiddelden.
+3. Laat dezelfde meters afwisselend werken bij normale spanning en de eerder waargenomen lagere spanning, uitsluitend als dat elektrisch veilig is. Wissel de volgorde tussen meetgroepen en herhaal de omschakelingen.
+4. Volg daarna bij stabiele, normale spanning gedurende langere tijd de meterwaarden, bakgewichten en drainage.
+
+### Onderscheidende uitkomsten
+- **Meetfout door spanning:** de meterwaarde verandert herhaalbaar en omkeerbaar met de spanning, terwijl het gewicht niet overeenkomstig verandert. Geen reproduceerbaar spanningseffect zou deze verklaring verzwakken.
+- **Werkelijk waterverlies:** het bakgewicht daalt aantoonbaar en de vochtindicatie volgt dat bij stabiele spanning. Geen gewichtsverlies binnen de meetnauwkeurigheid verzwakt deze verklaring voor die proefperiode.
+- **Beide kunnen tegelijk optreden.** Een dalend gewicht bewijst bovendien niet dat het watergehalte precies rond de sensor even sterk daalt.
+
+### Wat zou de proef onderuit halen?
+Onvoldoende nauwkeurige weegschalen, niet-gelijke tijdstempels, ongemeten watergift of drainage, of spanningswisselingen die tegelijk de pomp of gegevensregistratie veranderen. Dan zijn spanningseffect en waterverlies niet betrouwbaar te scheiden. Een effect dat alleen bij een nooit eerder opgetreden spanning verschijnt, verklaart de oorspronkelijke verschillen evenmin.",,,,
+B07,Waterverbruik in een proefkas,Nieuwe informatie: tijdens een handmatige controle stonden alle meters op dezelfde diepte. Een technicus ontdekte dat de voedingsspanning van een meetgroep tijdelijk lager was. Onafhankelijke weegmetingen van de bakken ontbreken nog.,Welke proef kan meetfout en werkelijk waterverlies uit elkaar houden? Wat zou de proef onderuit halen?,"Voer een **gekruiste proef met onafhankelijke weging** uit. De lagere voedingsspanning is een aanwijzing, nog geen bewezen oorzaak. Gelijke sensordiepte sluit bovendien andere plaatsingsverschillen niet uit.
+
+1. **Weeg elke bak** op een geschikte, gecontroleerde weegschaal, vóór en na een vaste meetperiode. Geef in die periode geen water en vang eventuele drainage apart op. Zo meet je waterverlies onafhankelijk van de vochtmeters.
+2. **Vergelijk normale en lagere voedingsspanning** binnen de toegestane bedrijfsgrenzen. Wissel de spanningstoestand tussen meetgroepen en wissel ook sensoren tussen bakken. Varieer de volgorde, zodat spanning niet samenvalt met verstreken tijd.
+3. **Registreer ruwe meetwaarden**, voedingsspanning bij de sensoren, tijdstippen en bakmassa; niet alleen uurgemiddelden. Houd positie en substraatcontact zo gelijk mogelijk.
+
+**Onderscheidende uitkomsten**
+- Verandert de uitlezing direct en omkeerbaar met de spanning, terwijl de bakmassa niet aantoonbaar verandert? Dat ondersteunt een spanningsafhankelijke meetfout.
+- Verliezen bakken aantoonbaar massa en volgen de vochtmetingen dat verlies ook bij stabiele spanning en na sensorwisseling? Dat ondersteunt werkelijk waterverlies.
+- Beide effecten kunnen tegelijk optreden. Geen spanningseffect verzwakt alleen de spanningshypothese, niet alle mogelijke meetfouten.
+
+**Wat zou de proef onderuit halen?**
+Onvoldoende nauwkeurige weging, niet-geregistreerde watergift of drainage, of een proef waarin lage spanning steeds bij dezelfde bakken of later in de tijd voorkomt. Dan blijven oorzaken verstrengeld. Ook meet een weegschaal de hele bak: gelijkblijvende massa sluit lokale herverdeling van water rond een sensor niet uit.",,,,
+B08,Reparatie van keramische onderdelen,"Nieuwe informatie: de scheuren komen vooral voor bij onderdelen met een brede steunrand, zelfs in dezelfde ovenbatch. Een foto toont dat de onderste contactvlakken verschillen. Er zijn geen temperatuurmetingen aan afzonderlijke oppervlakken.",Welk nieuw experiment kan contactgeometrie van algemene droogbelasting onderscheiden? Welke uitkomst zou die verklaring verzwakken?,"**Voer een gekruist experiment uit: steuncontact × droogprogramma.**
+
+- Gebruik proefstukken met dezelfde brede steunrand, uit hetzelfde materiaal en met vergelijkbaar beginvocht.
+- Wijs ze willekeurig toe aan twee steunwijzen: volledig randcontact of contact op enkele kleine steunpunten. Houd steunmateriaal en stand gelijk.
+- Test beide steunwijzen onder zowel het oude als het nieuwe droogprogramma, met herhaalde ovenbatches. Verdeel de posities willekeurig binnen elke batch.
+
+**Benodigde waarnemingen:** leg de werkelijke contactvlakken vast, meet lokaal de oppervlaktetemperatuur bij de steunrand en op een vrij oppervlak, volg het massaverlies en registreer scheurtijd en scheurlocatie met geblindeerd beoordeelde foto’s.
+
+**Onderscheidende uitkomst:** als de steunwijze binnen hetzelfde programma en dezelfde batch reproduceerbaar verschil maakt, ondersteunt dat een bijdrage van contactgeometrie. Een effect dat alleen onder het nieuwe programma optreedt, wijst mogelijk op een wisselwerking tussen contact en droogbelasting.
+
+**Wat verzwakt de contactverklaring?** Als een aantoonbaar veranderde contactgeometrie geen reproduceerbaar verschil oplevert in lokale droging of scheurvorming, terwijl het droogprogramma bij beide steunwijzen wel hetzelfde scheureffect heeft. Dat pleit eerder voor algemene droogbelasting, zonder die daarmee definitief te bewijzen.",,,,
+B09,Waterverbruik in een proefkas,Nieuwe informatie: tijdens een handmatige controle stonden alle meters op dezelfde diepte. Een technicus ontdekte dat de voedingsspanning van een meetgroep tijdelijk lager was. Onafhankelijke weegmetingen van de bakken ontbreken nog.,Welke proef kan meetfout en werkelijk waterverlies uit elkaar houden? Wat zou de proef onderuit halen?,"**Voer een spanningswisselproef uit met gelijktijdige weging van de bakken.** De lagere voedingsspanning is een aanwijzing, nog geen bewezen oorzaak.
+
+- Weeg elke bak met een voldoende nauwkeurige, onafhankelijke weegschaal en registreer tegelijk de ruwe sensorwaarden en de spanning bij de meters.
+- Wissel per meetgroep kort tussen normale spanning en de aangetroffen lagere spanning, binnen de veilige specificaties. Herhaal dit in wisselende volgorde en houd sensorplaatsing en sproeien gelijk.
+- Meet vervolgens gedurende een langere periode bakmassa, toegediend water en opgevangen drainage. Houd overige omstandigheden zo constant mogelijk.
+
+**Onderscheidende uitkomsten**
+- Verandert de vochtwaarde direct en omkeerbaar met de spanning, terwijl de bakmassa gelijk blijft, dan ondersteunt dat een spanningsafhankelijke meetfout.
+- Daalt de bakmassa bij stabiele spanning, rekening houdend met watergift en drainage, dan ondersteunt dat werkelijk waterverlies. Beide effecten kunnen tegelijk optreden.
+
+**Wat zou de toets onderuit halen?**  
+Een weegschaal die de verwachte massaverandering niet kan onderscheiden, ongemeten watergift of drainage, of spanningswisselingen die ook pompen of andere apparatuur beïnvloeden. Dan zijn meetfout en waterverlies niet betrouwbaar te scheiden. Blijft een sensoreffect uit bij herhaalde spanningswissels, dan verzwakt specifiek de spanningsverklaring.
+
+**De eerdere dieptehypothese** wordt door de handmatige controle verzwakt voor dat controlemoment. Ze verklaart eerdere verschillen alleen nog als er aanwijzingen zijn dat de diepten toen wél verschilden; neem haar niet als vastgesteld uitgangspunt.",,,,
+B10,Reparatie van keramische onderdelen,"Nieuwe informatie: de scheuren komen vooral voor bij onderdelen met een brede steunrand, zelfs in dezelfde ovenbatch. Een foto toont dat de onderste contactvlakken verschillen. Er zijn geen temperatuurmetingen aan afzonderlijke oppervlakken.",Welk nieuw experiment kan contactgeometrie van algemene droogbelasting onderscheiden? Welke uitkomst zou die verklaring verzwakken?,"Voer een **gekruiste proef met contactgeometrie en droogprogramma** uit:
+
+- Gebruik onderdelen met dezelfde brede steunrand, uit dezelfde kleibatch en met vergelijkbaar beginvocht.
+- Wijs ze willekeurig toe aan twee ondersteuningen: **breed, aaneengesloten contact** en **onderbroken contact op kleine steunpunten**. Houd materiaal en steunhoogte gelijk en zorg dat beide voldoende mechanische steun geven.
+- Test beide ondersteuningen onder zowel het oude als het gewijzigde droogprogramma, met herhaalde ovenruns. Verdeel de ondersteuningen in elke run over willekeurige ovenposities.
+
+**Benodigde waarnemingen:** werkelijk contactoppervlak, massaverlies door de tijd, temperatuur bij de onderzijde en een vrij oppervlak, en tijdstip en plaats van scheurvorming. Laat scheuren op gecodeerde foto’s geblindeerd beoordelen.
+
+**Onderscheid:** een reproduceerbaar verschil tussen ondersteuningen *binnen hetzelfde programma* ondersteunt een rol van contactgeometrie. Een verschil tussen programma’s dat bij beide ondersteuningen ongeveer gelijk is, ondersteunt eerder een algemene droogbelasting. Beide effecten kunnen ook samen optreden.
+
+**Verzwakkende uitkomst:** als de contactgeometrie aantoonbaar verschilt, maar bij voldoende herhalingen geen relevant verschil in scheurvorming oplevert, terwijl het programma-effect bij beide ondersteuningen blijft bestaan, verzwakt dat de contactverklaring. Alleen geen temperatuurverschil vinden is onvoldoende: contact kan ook vochttransport of mechanische belemmering beïnvloeden.",,,,
