@@ -136,12 +136,12 @@ def test_24_source_trajectories_match_their_documented_answer_hashes():
     assert len(codings) == 24
     by_id = {item["case_id"]: item for item in codings}
     assert len(by_id) == 24
-    sections = re.split(r"^## ([BH]-[DOPS]\\d) \\|", dossier, flags=re.MULTILINE)
+    sections = re.split(r"^## ([BH]-[DOPS]\d) \|", dossier, flags=re.MULTILINE)
     assert len(sections) == 49
     for case_id, section in zip(sections[1::2], sections[2::2]):
         assert case_id in by_id
         hashes = re.findall(
-            r"^### (Eerste|Tweede) modelbeurt \\| SHA-256 \`([0-9a-f]{64})\`",
+            r"^### (Eerste|Tweede) modelbeurt \| SHA-256 `([0-9a-f]{64})`",
             section,
             re.MULTILINE,
         )
