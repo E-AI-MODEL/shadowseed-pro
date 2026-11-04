@@ -21,6 +21,10 @@ pipeline and never calls a language model. The local Workbench is the first
 complete client of that pipeline: it provides chat, inspection, comparison,
 feedback, export, and standalone packaging.
 
+## Onderzoek terugvinden (4 november 2026)
+
+De [Research Atlas](research/atlas/README.md) ordent 34 bestaande bevindingen en 13 nieuwe onderzoeksverbanden met controleerbare bronverwijzingen. Het overzicht is afgeleid onderzoeksmateriaal en vervangt geen primaire data of onafhankelijke beoordeling.
+
 ## Research evidence update (29 October 2026)
 
 Shadowseed Pro has advanced from a foundational research question to a **working, inspectable research instrument**. The engine implements weightless candidate persistence, separates remembered presence from authority, and records lifecycle and Gate decisions. Original model outputs and their subsequent processing can now be examined with source provenance instead of inferred from aggregate scores. This is substantive progress in both research design and software.

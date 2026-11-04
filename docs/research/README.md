@@ -1,5 +1,7 @@
 # Onderzoek Shadowseed Pro: waar beginnen? (28 oktober 2026)
 
+**Aanvulling 4 november 2026:** de [Research Atlas](../../research/atlas/README.md) verbindt de eerdere resultaten met 34 brongebonden bevindingen, 13 onderzoeksverbanden en 24 beschreven trajecten. Het oorspronkelijke overzicht hieronder blijft een momentopname van 28 oktober.
+
 > **Momentopname, geen vastgestelde onderzoeksuitkomst.** Dit overzicht is geschreven op 28 oktober 2026 en ordent de op dat moment zichtbare bronbestanden, uitgevoerde metingen, niet-afgeronde beoordelingen en open voorstellen. De bronbestanden en oudere conclusies blijven ongewijzigd. Later bewijs hoort als nieuwe, gedateerde laag naast deze momentopname.
 
 ## Research update — 29 October 2026
