@@ -1,0 +1,595 @@
+{
+  "schema_version": "1.0.0",
+  "snapshot_date": "2026-11-04",
+  "scope": "Retrospectieve onderzoekskaart. Dit zijn geen onafhankelijke experimenten of bevestigde effectmetingen.",
+  "provenance": {
+    "findings": {
+      "filename": "34_bevindingen_bronafhankelijkheid_2026-11-04.csv",
+      "sha256": "b7c69246f5f7b3799db838506eba50ec96028fa9660a315d6f2e2caed4e56014"
+    },
+    "relations": {
+      "filename": "verbindingskaart_tussen_34_bevindingen_2026-11-04.csv",
+      "sha256": "b3f7610a3862790da96041ef601c2fb58ea0bb5b070508198a5f9a564cdbe87d"
+    },
+    "trajectories": {
+      "filename": "24_trajecten_vergelijkingsmatrix_2026-11-04.csv",
+      "sha256": "f5dec37fb3a878a5a381f24f49e39f0f1d35db624c93431b6df1a7f1ab78a50c"
+    }
+  },
+  "findings": [
+    {
+      "id": "S01",
+      "source_family": "fixed22",
+      "stage": "herkenning",
+      "observation": "Op 52 door Claude gelabelde duidelijke paren herkende Qwen 2.5 7B dezelfde 7/8 echte herhalingen als embeddings, met 1/44 foutieve samenvoegingen in plaats van 10/44. Nauwkeurigheid 50/52 = 96,2% versus 41/52 = 78,8%.",
+      "boundary": "Aantoonbare verbetering van herhalingsherkenning op deze referentieset, zonder verlies aan gevonden herhalingen.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/7427181c50fabae8f9cbd112c3e549e752edf914/benchmarks/seed_calibration/results/recurrence_judge_qwen2.5_7b.json",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S02",
+      "source_family": "fixed22",
+      "stage": "detectie",
+      "observation": "51/60 kandidaten op GPT-5/GPT-6.1-sol in een gestratificeerd steekproefonderzoek als bruikbare open vraag aangemerkt; 6 niet bruikbaar, 3 onduidelijk.",
+      "boundary": "Een sterke AI-beoordeelde kandidaatkwaliteit bij deze grotere modellen en taken.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/7427181c50fabae8f9cbd112c3e549e752edf914/benchmarks/seed_calibration/results/claude_seed_labels.json",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S03",
+      "source_family": "fixed22",
+      "stage": "toelating",
+      "observation": "Een herziening van het Engelse intakefilter accepteert 189/196 eerder gegenereerde teksten in plaats van 99/196 onder de oude regels.",
+      "boundary": "Concrete reparatie van tekstvormgevoelige uitval van kandidaten.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/7427181c50fabae8f9cbd112c3e549e752edf914/docs/research/seed-calibration.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S04",
+      "source_family": "qwen_detector_calibration",
+      "stage": "detectie",
+      "observation": "Op Qwen 7B geeft detectorprompt v0.8 in 96 beurten 258 toegelaten kandidaten in plaats van 42 onder productprompt v0.6; nuttigheid in beoordelingssteekproef 20/60 in plaats van 11/42. Lege detecties 10/96 in plaats van 82/96.",
+      "boundary": "De promptkeuze verandert detectieopbrengst fors, met enig hoger percentage bruikbare output.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/7427181c50fabae8f9cbd112c3e549e752edf914/benchmarks/detector_calibration/run2_candidate_v0.8/summary.json",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S05",
+      "source_family": "review_round006",
+      "stage": "beoordeling",
+      "observation": "Op 54 door de beheerder blind beoordeelde kandidaten waren mens/AI het 44/54 (81,5%) eens; Cohen's kappa 0,627. Mens accepteerde 32/54.",
+      "boundary": "Op deze taak zijn AI-oordelen over bruikbaarheid niet willekeurig: er is behoorlijke overeenstemming met een mens.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/7427181c50fabae8f9cbd112c3e549e752edf914/benchmarks/open_review/rounds/round_006/batch1/human_review/RESULTS.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S06",
+      "source_family": "review_round013",
+      "stage": "antwoordgebruik",
+      "observation": "In ronde 013 werden volgens het vastgelegde verslag 9/9 gapscenario's gunstiger beoordeeld voor SSL, met 1 gelijkspel op do-no-harmcontrole. Vier beoordelaars zouden unaniem zijn geweest.",
+      "boundary": "Een positief, door de beheerder gerapporteerd effect van vooraf aangeleverde correcte gapinformatie in deze auteursscenario's.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/7427181c50fabae8f9cbd112c3e549e752edf914/benchmarks/open_review/rounds/round_013/human_review/RESULTS.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S07",
+      "source_family": "review_round019",
+      "stage": "antwoordgebruik",
+      "observation": "In ronde 019 kreeg het SSL-antwoord in de AI-beoordeling 8/10 voorkeuren, naast 2 ties, in een echte cross-turn-onderzoekspijplijn.",
+      "boundary": "Positief verkennend signaal voor gewichtloze cross-turn-kandidaten die onder onderzoeksinstellingen later een antwoord sturen.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/7427181c50fabae8f9cbd112c3e549e752edf914/benchmarks/open_review/rounds/round_019/human_review/RESULTS.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S08",
+      "source_family": "review_round025",
+      "stage": "antwoordgebruik",
+      "observation": "In ronde 025 (GPT-4.1, drie domeinen) koos iedere blinde reviewer 5/7 maal SSL; 4/7 consensus SSL, 1/7 consensus baseline en 2/7 split. Op de drie reflectie-/valkuilvragen waren alle 6/6 blinde stemmen voor SSL. Geen afgekapte antwoorden.",
+      "boundary": "Een **daadwerkelijk uit de scorebestanden narekenbaar positief antwoordkwaliteitsresultaat**, vooral bij vragen die om analyse van valkuilen vragen.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/7427181c50fabae8f9cbd112c3e549e752edf914/benchmarks/open_review/rounds/round_025/human_review/RESULTS.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S09",
+      "source_family": "review_round022_023",
+      "stage": "antwoordgebruik",
+      "observation": "Ronde 023 rapporteert minder seed-gerelateerde ruis na gebruiksdrempel en promptaanpassing: ongeveer 3/8 eerder ruisgelabelde seed-antwoorden in ronde 022, tegenover 1 milde SSL-zijdige ruisvermelding op 30 reviewer-items in ronde 023.",
+      "boundary": "Gericht gebruiksbeleid kan de zichtbare ruis in een geselecteerde testset verminderen.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/7427181c50fabae8f9cbd112c3e549e752edf914/benchmarks/open_review/rounds/round_023/human_review/RESULTS.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S10",
+      "source_family": "review_round029",
+      "stage": "antwoordgebruik",
+      "observation": "Ronde 029 met GPT-4o: 4 SSL-win / 4 baseline-win / 1 tie, en in een aparte seed-effectvraag 6/9 'helpt'. Publiek-gezondheidsvragen 3/3 SSL.",
+      "boundary": "Het mogelijke voordeel is model- en vraagafhankelijk; er zijn ook positieve voorbeelden op een ander model.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/7427181c50fabae8f9cbd112c3e549e752edf914/benchmarks/open_review/rounds/round_029/human_review/RESULTS.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S11",
+      "source_family": "review_round031",
+      "stage": "antwoordgebruik",
+      "observation": "Ronde 031 laat een relevante negatieve grens zien: 8/14 reviewerlabels noemen hinder of vernauwing bij herhaald gebruik van seeds. De primaire bestanden zijn bewaard.",
+      "boundary": "Onderzoeksinstrument lokaliseert ook schadelijke effecten van te vaak terugkerende context; geen universele 'do no harm'.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/7427181c50fabae8f9cbd112c3e549e752edf914/benchmarks/open_review/rounds/round_031/human_review/RESULTS.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S12",
+      "source_family": "candidates94_intake_replay",
+      "stage": "toelating",
+      "observation": "De oorspronkelijke 94 detectieteksten uit 12 trajecten konden alle 94 naar intake worden gevolgd; 48 geaccepteerd, 46 afgewezen, alle 46 afwijzingen door een terugkerende vormregel.",
+      "boundary": "Modeloutput, parserbeslissing en werkelijk opgeslagen kandidaat zijn observeerbaar en herleidbaar; concrete tekstvormfout gevonden.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/7427181c50fabae8f9cbd112c3e549e752edf914/docs/research/preprint-evidence-position-2026-10-29.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S13",
+      "source_family": "historical_trajectories40",
+      "stage": "herkomst",
+      "observation": "Een afgeleid trajectregister bevat 220 beurten, 40 trajecten en 1.224 kandidaatvoorkomens, met expliciete bronrelaties en missende broncategorieen.",
+      "boundary": "Er is meerbeurtige observatie van kandidaten op echte modeltrajecten, niet alleen een architectuurplaat.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/7427181c50fabae8f9cbd112c3e549e752edf914/docs/research/preprint-evidence-position-2026-10-29.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S14",
+      "source_family": "gpt5_compression30",
+      "stage": "bewaren_gebruik",
+      "observation": "Een echte GPT-5-compressieproef registreerde 30/30 complete modelantwoorden, 18 follow-ups, echte embeddings, en liet alle kandidaten gewichtloos zonder Gate-events. Bij een ongerelateerde vervolgvraag kwam geen onterechte kandidaatcontext naar voren.",
+      "boundary": "Echte model-/geheugenintegratie en een beperkte negatieve veiligheidscontrole werken.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/40145161574",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S15",
+      "source_family": "two_point_pilot48",
+      "stage": "onderzoeksvragen",
+      "observation": "Een afzonderlijke 48-call live proefsessie leverde 24 twee-turn-trajecten en bewaarde oorspronkelijke modelantwoorden, met broncontroles.",
+      "boundary": "Werkelijke modeluitvoering met herleidbaar experimenteel verloop.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/7427181c50fabae8f9cbd112c3e549e752edf914/research/datasets/2026-10-28-q1q2-48/README.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S16",
+      "source_family": "historical_archive27oct",
+      "stage": "herkomst",
+      "observation": "De 27-oktober bronpublicatie bewaart vier Git-histories, vier snapshots, 62 oorspronkelijke Actions-archieven en individuele SHA-256-controles.",
+      "boundary": "Historische claims zijn beter terug te volgen en te corrigeren; bronnen raken niet alleen met een verlopen CI-artifact verloren.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/7427181c50fabae8f9cbd112c3e549e752edf914/docs/research/archives/2026-10-27/README.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S17",
+      "source_family": "qwen_capability43",
+      "stage": "bevoegdheid",
+      "observation": "De Qwen-capabilityrun registreerde 43 echte kandidaten, geen parserverwerpingen, geen directe positieve gewichtstoekenningen en geen ongeautoriseerde surfacing.",
+      "boundary": "Trace, selectie en beperkingen worden per modelbeurt onderscheiden. De afgesproken autoriteitsgrens hield in deze run stand.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/7427181c50fabae8f9cbd112c3e549e752edf914/benchmarks/results/capability_scaling/qwen2.5_7b_q4km_post_alignment_v2_2026-08-18/summary.json",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S18",
+      "source_family": "ci_product_tests",
+      "stage": "software",
+      "observation": "Op hoofdbranch-SHA `742718...` meldde [CI-run #41245731290](https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/41245731290) 1.248 geslaagde tests op Python 3.12, 5 skipped, 85,25% gemeten branch-aware testdekking. Python 3.10 gaf eveneens 1.248 pass; lokale productiecontroles op Ubuntu (188 pass), Windows en macOS waren groen.",
+      "boundary": "Een omvangrijk, daadwerkelijk getest softwareproject met een controleerbare grens tussen bewaren, bewijs, bevoegdheid en gebruik.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/41245731290",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S19",
+      "source_family": "h_neurons_study",
+      "stage": "activaties_neuraal",
+      "observation": "H-Neurons/activatieproef: een veelbelovend ongewijzigd p-signaal (0,014) werd na multiple-testing correctie niet goedgekeurd en op een nieuwe caseset niet gerepliceerd. De twee vastgepinde herhalingsruns rapporteerden identieke cijfers.",
+      "boundary": "Reproduceerbaar experimenteel meetinstrument dat een aantrekkelijke, maar niet bevestigde claim tegenhoudt.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/7427181c50fabae8f9cbd112c3e549e752edf914/benchmarks/open_review/rounds/round_032/RESULTS.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S20",
+      "source_family": "opus_strong_model",
+      "stage": "modelintegratie",
+      "observation": "Op [Opus 5.5-run #41779572097](https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/41779572097) voltooide een echt sterk model 12 verzoeken; de Engine legde een canoniek gewichtloos geboren kandidaat vast en alle 10 vijfarmige antwoordobjecten waren parseerbaar.",
+      "boundary": "Een echte sterke-model-integratie met echte kandidaatvorming en twee onderzoeksbeurten per arm, niet alleen een fake provider.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/41779572097",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S21",
+      "source_family": "exact_candidate_ablation16",
+      "stage": "onderzoeksvragen",
+      "observation": "Exacte verwijdering van een echt geboren kandidaat, 16/16 GPT-5-calls en 16/16 geldige JSON-antwoorden. De uitdrukking `ruimtelijke offset` stond in 2/4 onzekerheidsvelden van de kandidaatarm en in 0/12 van de drie controlearmen. Alle 16 hoofdvragen onderzochten echter dezelfde tijd-/schakelrichting.",
+      "boundary": "**Positief, klein tekstconditioneringseffect** van de specifieke bewaarde kandidaat. Geen aangetoond nieuwe hoofdonderzoeksvraag, niet geblindeerd beoordeeld, één vooraf gekende casus. Geen algemene nulconclusie.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/research/g0-exact-seed-ablation-20261025/docs/research/possibility-space/g0/exact-seed-ablation-first-results-2026-10-25.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S22",
+      "source_family": "gpt5_engine20",
+      "stage": "geboorte",
+      "observation": "Echte GPT-5-meerturn-Engine: 20 afgeronde Responses, 19 embeddings, 8 echte hostbeurten; 24 detectorvoorstellen, 11 nieuwe gewichtloze seeds, die over vervolgstappen bewaard bleven zonder bevoegdheid.",
+      "boundary": "De daadwerkelijke technische overgang van modeluitvoer naar bewaard gewichtloos geheugen werkt. In deze opzet miste de detector een deel van de context die de host wel zag. Kandidaatkwaliteit en unieke inhoudelijke opbrengst dus niet bewezen.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/research/g0-exploratory-real-model-stage1-20261025/docs/research/possibility-space/g0/real-model-stage1-observations-2026-10-25.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S23",
+      "source_family": "real_seed_rf9",
+      "stage": "geboorte",
+      "observation": "Drie geaccepteerde nieuwe kandidaten na T0 in de afzonderlijke RF-proef: bij drie host-/detectiebeurten produceerde GPT-5 negen parserbare voorstellen, met 0 geaccepteerde seeds op T0, 2 op T1, 1 op T2.",
+      "boundary": "Dit bewijst dat kandidaatvorming **later** in een gesprek voorkomt, niet alleen bij de eerste vraag. Geen vijfarmige effectmeting uitgevoerd, omdat de vooraf geselecteerde eerste T0-seed niet ontstond.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/research/q1-q2-real-seed-rf-20261025/docs/research/possibility-space/g0/real-seed-rf-result-and-lexical-intake-audit-2026-10-25.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S24",
+      "source_family": "six_cases67",
+      "stage": "onderzoeksvragen",
+      "observation": "Zes-casus echte modeluitvoering: zes scenario's aangeboden, 67 GPT-5-calls, 36 embeddings, 13 opgeslagen vraagantwoorden in geldig JSON. Twee volledig afgewerkte A/B-trajecten. In twee andere scenario's ontstonden pas na T0 nieuwe seeds.",
+      "boundary": "Echte verkennende trajecten en een gemeten laat-geboortepatroon. De vier overige trajecten leverden door selectie-/technische fouten geen volledige vergelijking; de zes ongeldig verklaarde validatorrecords waren wel leesbare onderzoeksvragen. Geen zinvolle algemene win-rate uit deze run.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/research/g0-multicase-real-ab-20261026/docs/research/possibility-space/g0/multicase-real-ab-first-audit-2026-10-26.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S25",
+      "source_family": "two_point_pilot48",
+      "stage": "onderzoeksvragen",
+      "observation": "48 complete echte modelantwoorden, 24 complete twee-beurt-onderzoekstrajecten, 187.255 gemeten tokens, vier onderzoeksarmen en twee model/checkpointcombinaties (GPT-5 en GPT-6 Luna). Alle 48 antwoorden hebben afzonderlijke response-ID's en hashes.",
+      "boundary": "Grote, werkelijke modeluitvoering met meerdere controlecondities. Verschillen tussen vragen zijn wel zichtbaar, maar één fictieve casus, twee verschillende modelmomenten en geen onafhankelijke semantische beoordeling. Geen bewezen onderscheidende winst door ShadowSeed.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/research/q1q2-two-point-48-20261028/research/experiments/20261028/RESULTS_STATUS.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S26",
+      "source_family": "candidates94_intake_replay",
+      "stage": "toelating",
+      "observation": "94/94 originele kandidaatteksten gevolgd door parser, normalisatie en intake. 48 geaccepteerd, 46 historisch afgewezen als `not_atomic`, zonder onverklaard verlies tussen raw en parser.",
+      "boundary": "Een precies aangetoonde vormgevoelige uitsluitingsplaats. De 46 afwijzingen zijn niet automatisch 46 waardevolle nieuwe mogelijkheden.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/research/pro-atomicity-fate-audit-20261028/research/protocols/pro-raw-to-intake-fate-and-next-step-20261028.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S27",
+      "source_family": "candidates94_intake_replay",
+      "stage": "bewaren",
+      "observation": "Conceptverbetering van werkelijk geheugen: in PR 262 werden 46 eerder geweigerde teksten als `unresolved` gewichtloze seeds bewaard naast 48 bestaande bounded seeds. 94/94 behielden na vier beurten hun identiteit, 12/12 sessies konden hersteld worden; 0 Gate-/invloedsevenementen.",
+      "boundary": "Dit is **een echte positieve technische verbetering ten opzichte van de bestaande intake** op een brongebonden replay. Nog alleen op draft-branch. Fictieve/toy embeddings en bevroren hostteksten; nog geen verbeterd modelantwoord. ADR-002 en compatibiliteit moeten vóór eventuele merge worden beoordeeld.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/feature/pro-weightless-unresolved-birth-20261028/docs/research/possibility-space/pro262-actual-source-frozen-replay-2026-10-28.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S28",
+      "source_family": "historical_trajectories40",
+      "stage": "herkomst",
+      "observation": "40 gedocumenteerde trajecten, 220 beurten en 1.224 kandidaatvoorkomens uit een historisch, afgeleid register bewaard. 368 exacte bronbeurt-koppelingen, 96 modelnaamverschillen, 760 kandidaten zonder bijbehorende beurtregel in dit specifieke register.",
+      "boundary": "Belangrijk reproduceerbaar *observatiemateriaal*, niet 40 onafhankelijke effectstudies en niet 1.224 nieuwe ontdekkingen. Het register is afgeleid, niet een volledige verificatie van alle originele ZIP's.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/research/raw-stage-trajectory-reconstruction-20261028/docs/research/possibility-space/raw-stage-trajectory-reconstruction-2026-10-28.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S29",
+      "source_family": "mit_158_turn_replay",
+      "stage": "herkenning",
+      "observation": "MIT-chronologische replay: 158 originele beurten, 85 hypotheseobservaties, 83 unieke opgeslagen seeds, 2 letterlijke dubbelen, 46 clusters; 13 clusters telden meerdere bronobservaties.",
+      "boundary": "Echt brongebonden geheugen-/clusteringgedrag, inclusief doublureherkenning. Bij dezelfde embedding had gewone semantische retrieval eveneens 39 hits; geen uniek retrievalvoordeel uit deze uitkomst. De modelherkenner uit S01 was hier niet de gebruikte route.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/research/mit-shadow-memory-replay-20261103/research/experiments/mit_shadow_memory_20261103/MIT_85_RESULT_AUDIT.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S30",
+      "source_family": "mit_158_turn_replay",
+      "stage": "relaties",
+      "observation": "29 echte modelbeoordelingen van MIT-notitieparen, allemaal parserbaar: 4 `SAME_CLAIM`, 25 `RELATED_DISTINCT`; van 16 paren uit hetzelfde ShadowSeed-cluster waren 13 volgens de beoordelaar verwant maar verschillend.",
+      "boundary": "Concrete waarschuwing dat een nuttig *verband* niet dezelfde causale hypothese hoeft te zijn. Het model gebruikte `NO_CLEAR_DIRECT_LINK` geen enkele keer; de 29 paren waren achteraf gekozen.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/research/mit-shadow-memory-replay-20261103/research/experiments/mit_shadow_memory_20261103/LINK_AUDIT_RESULTS.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S31",
+      "source_family": "mit_158_turn_replay",
+      "stage": "meetfout",
+      "observation": "Historische parserfout gecorrigeerd: op vijf MIT-checkpoints waren volgens de oorspronkelijke parser 0/5 gewone Qwen-antwoorden geldig. Brongebonden herparse geeft 4/5 structureel geldige verwijzingen, één ongestructureerd `NONE`.",
+      "boundary": "Dit is een succesvolle bronreparatie die een onterechte negatieve beoordeling van de **baseline** terugdraait. Niet als winst voor ShadowSeed tellen; juist essentieel voor eerlijke vergelijking.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/research/mit-shadow-memory-replay-20261103/research/experiments/mit_shadow_memory_20261103/EQUAL_HISTORY_REANALYSIS.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S32",
+      "source_family": "mit_158_turn_replay",
+      "stage": "relatiebeoordeling",
+      "observation": "Twee ingevulde blinde beoordelingen van 14 MIT-paren, met 11/14 identieke relatiecategorieën. Bij de tweede reviewer staan 11 concrete voorstellen voor vervolgtesten tegenover 3 bij de eerste. De anonieme reviewer had volgens de onderzoeksverantwoordelijke geen voorkennis.",
+      "boundary": "Een meetbaar resultaat over bruikbaarheid en beoordelingsvariatie van dezelfde **gepresenteerde** verbindingen. Niet aangetoond welke methode de beste paren vond, noch dat die nieuwe experimenten al zijn uitgevoerd. De anonimiteit van reviewer 2 blijft gerespecteerd.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/research/relational-review-audit-20261104/docs/research/possibility-space/relational-review-two-raters-2026-11-04.md",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S33",
+      "source_family": "gap_resilience_local_models",
+      "stage": "detectie",
+      "observation": "Verkennende gap-resilience-runs op lokaal Qwen, DeepSeek, Gemma en Llama zijn als oorspronkelijke JSON's bewaard op een aparte benchmarkbranch. Voor Qwen v0.6 meldde het eerste vaste scenario 0/25 expected-gap-hits en 5/5 negatieve controleonthoudingen; na andere prompt 1/10 hits en 0/2 negatieve controleonthoudingen.",
+      "boundary": "Ook tegenstrijdige negatieve/positieve signalen zijn werkelijk gemeten en bewaard. De kleinere lokale modellen bleven beperkt; niet gebruiken als effectmaat voor sterke modellen of als bewijs voor een unieke geheugencapaciteit.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-pro/blob/bench/qwen7b-gap-resilience-live1/benchmarks/results/gap_resilience/qwen2.5_7b_q4km_v06_live1.json",
+      "status": "reported_in_source"
+    },
+    {
+      "id": "S34",
+      "source_family": "agent_lab",
+      "stage": "autorisatie",
+      "observation": "Modelonafhankelijke agent-lus in afzonderlijke `shadowseed-agent-lab` met een detecteer-/bewijs-/Gate-interface, grens op iteraties, fixpoint en audit-replay. Testcode controleert onder meer dat gewichtloze seeds geen probes krijgen en dat identiteit van beslissing, seed en Gate overeenkomt.",
+      "boundary": "Werkende code en aanwezige concrete tests. Ik heb deze tests **in deze ronde niet opnieuw gedraaid**; geen live onderzoeksvoordeel geclaimd.",
+      "source_url": "https://github.com/E-AI-MODEL/shadowseed-agent-lab/blob/main/shadowseed_agent_lab/harness.py",
+      "status": "reported_in_source"
+    }
+  ],
+  "relations": [
+    {
+      "id": "R01",
+      "finding_ids": [
+        "S02",
+        "S03",
+        "S12",
+        "S26",
+        "S27"
+      ],
+      "question": "Toelating van observaties",
+      "observation": "Vormfilters kunnen materiaal verwijderen voordat de inhoud is beoordeeld.",
+      "alternative": "De 22 nuttig beoordeelde afgewezen kandidaten uit fixed22 zijn niet dezelfde 46 als de andere bronreplay.",
+      "existing_material": "Ja, inhoudelijk beperkt; blinde externe beoordeling ontbreekt.",
+      "status": "research_hypothesis"
+    },
+    {
+      "id": "R02",
+      "finding_ids": [
+        "S22",
+        "S23",
+        "S24"
+      ],
+      "question": "Moment van ontstaan",
+      "observation": "De eerste geaccepteerde kandidaat kan na T0 verschijnen, maar selectie op T0 stopt een vergelijking eerder.",
+      "alternative": "Later geboren betekent niet dat een onzichtbare nieuwe onderzoekskans is ontstaan.",
+      "existing_material": "Ja, voor de gedocumenteerde runs.",
+      "status": "research_hypothesis"
+    },
+    {
+      "id": "R03",
+      "finding_ids": [
+        "S01",
+        "S29",
+        "S30"
+      ],
+      "question": "Herhaling tegenover samenhang",
+      "observation": "Een modelherkenner onderscheidde herhalingen preciezer dan cosine; MIT-clusters bevatten vaak andere claims.",
+      "alternative": "Andere modelversies, embeddings, datasets en retrospectief geselecteerde paren.",
+      "existing_material": "Deels, met originele MIT-teksten en bestaande beoordeling.",
+      "status": "research_hypothesis"
+    },
+    {
+      "id": "R04",
+      "finding_ids": [
+        "S30",
+        "S32"
+      ],
+      "question": "Relaties en testvoorstellen",
+      "observation": "De ene beoordelaar formuleerde uit dezelfde notitieparen veel meer concrete vervolgtesten dan de andere.",
+      "alternative": "Een formulier kan uitnodigen tot extrapolatie; een voorstel is nog geen valide wetenschappelijk nieuw inzicht.",
+      "existing_material": "Deels, via bronvergelijking; externe vaktoets nog ontbrekend.",
+      "status": "research_hypothesis"
+    },
+    {
+      "id": "R05",
+      "finding_ids": [
+        "S12",
+        "S17",
+        "S27"
+      ],
+      "question": "Bewaren tegenover toelaten tot gebruik",
+      "observation": "Records kunnen behouden blijven zonder Gate-bevoegdheid of product-surfacing.",
+      "alternative": "Dit bewijst dat niet-toegelaten records later het antwoord zouden verbeteren.",
+      "existing_material": "Ja, technisch; semantisch effect niet in de replay.",
+      "status": "research_hypothesis"
+    },
+    {
+      "id": "R06",
+      "finding_ids": [
+        "S14",
+        "S27"
+      ],
+      "question": "Behoud tegenover uniek nut",
+      "observation": "Extra bronbewaring is meetbaar; een gewone samenvatting behield in een andere proef ook de relevante hypothese.",
+      "alternative": "Verschillende contexten en geheugenvormen; geen direct gepaarde langetermijnvergelijking.",
+      "existing_material": "Nog niet uit deze twee rapportages als causaal contrast.",
+      "status": "research_hypothesis"
+    },
+    {
+      "id": "R07",
+      "finding_ids": [
+        "S21",
+        "S15",
+        "S25"
+      ],
+      "question": "Promptinvloed tegenover nieuwe onderzoekshandeling",
+      "observation": "Een kandidaat kan een formulering veranderen en in een tweede beurt een richting vasthouden.",
+      "alternative": "De kandidaattekst stond tweemaal in de prompt; geen onafhankelijke nieuwe toets werd uitgevoerd.",
+      "existing_material": "Gedeeltelijk met bestaande antwoorden; nieuw causaal bewijs niet aanwezig.",
+      "status": "research_hypothesis"
+    },
+    {
+      "id": "R08",
+      "finding_ids": [
+        "S08",
+        "S10",
+        "S11"
+      ],
+      "question": "Relevantie verschilt per vraag",
+      "observation": "Sommige geselecteerde analyses krijgen voorkeur, terwijl andere antwoorden door seeds vernauwen.",
+      "alternative": "Verschillende modellen, seeds, beoordelaars en instellingen; geen gemeenschappelijke effectgrootte.",
+      "existing_material": "Deels, met bestaande formulieren; onafhankelijke blinde hercodering nog nodig.",
+      "status": "research_hypothesis"
+    },
+    {
+      "id": "R09",
+      "finding_ids": [
+        "S09",
+        "S11"
+      ],
+      "question": "Eerste hinder tegenover herhalingshinder",
+      "observation": "In ronde 031 begint hinder op t05 (3/6), nog voor de meeste herhaalde t06-blootstelling (5/6).",
+      "alternative": "De t05-hinder kan ook op een eerder gebruikte seed betrekking hebben; het dossier toont niet de exclusieve oorzaak.",
+      "existing_material": "Deels; requires surfacing-events per seed, niet alleen reviewerlabels.",
+      "status": "research_hypothesis"
+    },
+    {
+      "id": "R10",
+      "finding_ids": [
+        "S23",
+        "S24",
+        "S31"
+      ],
+      "question": "Meetfout tegenover geen modelvoorstel",
+      "observation": "Sommige geregistreerde nulstatussen volgden uit vroege selectie, validatorregels of te strikte parser.",
+      "alternative": "Leesbare output kan nog steeds inhoudelijk slecht zijn en was niet noodzakelijk contractgeldig.",
+      "existing_material": "Ja voor bepaalde archieven; niet voor alle onbekende verloren stukken.",
+      "status": "research_hypothesis"
+    },
+    {
+      "id": "R11",
+      "finding_ids": [
+        "S13",
+        "S16",
+        "S28"
+      ],
+      "question": "Veel bestanden tegenover veel onafhankelijk bewijs",
+      "observation": "Archieven, branches en afgeleide kandidaatvoorkomens vergroten auditbaarheid maar niet onafhankelijkheid.",
+      "alternative": "Niet ieder verdwenen bestand of oude Git-ref is onderzocht.",
+      "existing_material": "Ja, via manifests en hashes, voor toegankelijke bestanden.",
+      "status": "research_hypothesis"
+    },
+    {
+      "id": "R12",
+      "finding_ids": [
+        "S18",
+        "S20",
+        "S34"
+      ],
+      "question": "Softwarewerking tegenover onderzoekseffect",
+      "observation": "CI, echt modelgebruik en agent-harness bewijzen verschillende vormen van werking.",
+      "alternative": "Dat een engine correct draait toont geen nieuwe onderzoeksmogelijkheid.",
+      "existing_material": "Ja, via tests en runinformatie; geen causaal effect uit CI.",
+      "status": "research_hypothesis"
+    },
+    {
+      "id": "R13",
+      "finding_ids": [
+        "S19",
+        "S21",
+        "S25"
+      ],
+      "question": "Neurale representaties tegenover zichtbaar tekstgedrag",
+      "observation": "Een mislukte neurale replicatie weerlegt niet noodzakelijk een lokaal effect van aangeboden kandidaattekst.",
+      "alternative": "Een extern promptverschil zegt niets rechtstreeks over waar modelkennis intern is gerepresenteerd.",
+      "existing_material": "Geen interne conclusie op basis van deze bestanden.",
+      "status": "research_hypothesis"
+    }
+  ],
+  "trajectories": [
+    {
+      "moment": "horizon_after_T2",
+      "arm": "ordinary",
+      "n": 3,
+      "new_factor": 2,
+      "refinement": 1,
+      "no_case_test": 0,
+      "families_count": 3,
+      "families": "image-mechanism (1); proxy-validation (1); temporal (1)",
+      "mean_word_jaccard": 0.275,
+      "coding": "post-hoc, niet-blinde codering van antwoorden"
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "deliberate_search",
+      "n": 3,
+      "new_factor": 3,
+      "refinement": 0,
+      "no_case_test": 0,
+      "families_count": 2,
+      "families": "causal-selection (1); temporal (2)",
+      "mean_word_jaccard": 0.251,
+      "coding": "post-hoc, niet-blinde codering van antwoorden"
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "shadow_candidate",
+      "n": 3,
+      "new_factor": 0,
+      "refinement": 3,
+      "no_case_test": 0,
+      "families_count": 1,
+      "families": "proxy-validation (3)",
+      "mean_word_jaccard": 0.268,
+      "coding": "post-hoc, niet-blinde codering van antwoorden"
+    },
+    {
+      "moment": "horizon_after_T2",
+      "arm": "placebo",
+      "n": 3,
+      "new_factor": 3,
+      "refinement": 0,
+      "no_case_test": 0,
+      "families_count": 2,
+      "families": "image-mechanism (1); temporal (2)",
+      "mean_word_jaccard": 0.285,
+      "coding": "post-hoc, niet-blinde codering van antwoorden"
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "ordinary",
+      "n": 3,
+      "new_factor": 3,
+      "refinement": 0,
+      "no_case_test": 0,
+      "families_count": 1,
+      "families": "camera-output (3)",
+      "mean_word_jaccard": 0.263,
+      "coding": "post-hoc, niet-blinde codering van antwoorden"
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "deliberate_search",
+      "n": 3,
+      "new_factor": 2,
+      "refinement": 1,
+      "no_case_test": 0,
+      "families_count": 1,
+      "families": "electrical-confounder (3)",
+      "mean_word_jaccard": 0.276,
+      "coding": "post-hoc, niet-blinde codering van antwoorden"
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "shadow_candidate",
+      "n": 3,
+      "new_factor": 3,
+      "refinement": 0,
+      "no_case_test": 0,
+      "families_count": 1,
+      "families": "sensor-clock (3)",
+      "mean_word_jaccard": 0.35,
+      "coding": "post-hoc, niet-blinde codering van antwoorden"
+    },
+    {
+      "moment": "battery_after_T3",
+      "arm": "placebo",
+      "n": 3,
+      "new_factor": 0,
+      "refinement": 0,
+      "no_case_test": 3,
+      "families_count": 1,
+      "families": "abstention (3)",
+      "mean_word_jaccard": 0.246,
+      "coding": "post-hoc, niet-blinde codering van antwoorden"
+    }
+  ]
+}
