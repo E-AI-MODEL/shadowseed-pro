@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   one_real_inquiry:
-    if: github.event.before == '3c43da64908b0b13d80f94cb7625bbf3aa5c55f7'
+    if: github.event.before == 'ff8aeb1b87541a1d46d5a9904ef764c0da2a653b'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -64,7 +64,7 @@ jobs:
               outputs = []
               def deny_all(request, invocation):
                   return PermissionDecisionReject(feedback="Research task: no tools allowed")
-              async with CopilotClient(mode="empty") as client:
+              async with CopilotClient(mode="empty", base_directory="./owner-artifacts/copilot-state") as client:
                   async with await client.create_session(
                       model=MODEL, available_tools=[], tools=[],
                       on_permission_request=deny_all,
