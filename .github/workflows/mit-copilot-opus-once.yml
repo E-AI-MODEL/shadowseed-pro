@@ -1,0 +1,105 @@
+name: Research - Opus 5.5 via GitHub Copilot access check
+
+# A single research prompt, not a G0 effect test. Org-billed Copilot request.
+# This workflow is triggered only by its first addition to this branch.
+on:
+  push:
+    branches:
+      - research/copilot-opus-five-arm-20261104
+    paths:
+      - .github/workflows/mit-copilot-opus-once.yml
+
+permissions:
+  contents: read
+  copilot-requests: write
+
+concurrency:
+  group: research-copilot-opus-20261104
+  cancel-in-progress: false
+
+jobs:
+  one_real_inquiry:
+    if: github.event.before == '3c43da64908b0b13d80f94cb7625bbf3aa5c55f7'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Install Copilot SDK runtime
+        run: |
+          python -m pip install github-copilot-sdk
+          python -m copilot download-runtime
+      - name: Ask one genuine Claude Opus 5.5 research question
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p owner-artifacts
+          python - <<'PY'
+          import asyncio
+          import importlib.metadata
+          import json
+          from pathlib import Path
+          from copilot import CopilotClient
+          from copilot.session_events import AssistantMessageData, SessionIdleData
+          from copilot.rpc import PermissionDecisionReject
+
+          MODEL = "claude-opus-5.5"
+          PROMPT = (
+              "Consider this fictional scientific situation: two sensors measure "
+              "the same material. After a controller update, one sometimes spikes. "
+              "Only application timestamps are available and no external reference "
+              "meter has been used. No causal explanation is verified. "
+              "Provide one concrete, independently testable research question "
+              "that discriminates at least two explanations. Return exactly JSON "
+              "with string fields question, experiment, expected_result. "
+              "No tool use, no invented observations."
+          )
+
+          async def main():
+              done = asyncio.Event()
+              outputs = []
+              def deny_all(request, invocation):
+                  return PermissionDecisionReject(feedback="Research task: no tools allowed")
+              async with CopilotClient(mode="empty") as client:
+                  async with await client.create_session(
+                      model=MODEL, available_tools=[], tools=[],
+                      on_permission_request=deny_all,
+                      enable_session_store=False,
+                      infinite_sessions={"enabled": False},
+                      streaming=False,
+                  ) as session:
+                      def on_event(event):
+                          if isinstance(event.data, AssistantMessageData):
+                              outputs.append(event.data.content)
+                          if isinstance(event.data, SessionIdleData):
+                              done.set()
+                      session.on(on_event)
+                      await session.send(PROMPT)
+                      await asyncio.wait_for(done.wait(), 180)
+              answer = "\n".join(str(x) for x in outputs if x)
+              if not answer:
+                  raise RuntimeError("Copilot returned no visible answer")
+              p = Path("owner-artifacts/opus_first_response.json")
+              p.write_text(json.dumps({
+                  "schema":"opus-one-response-exploratory-v1",
+                  "model_requested":MODEL,"source":"github-copilot-org-token",
+                  "prompt":PROMPT,"answer":answer,
+                  "sdk_version":importlib.metadata.version("github-copilot-sdk"),
+                  "scientific_effect_measured":False,"G0":"NOT_PASSED"
+              },indent=2),encoding="utf-8")
+              print(json.dumps({"status":"response_recorded","model_requested":MODEL,
+                                "answer_length":len(answer),"G0":"NOT_PASSED"}))
+          asyncio.run(main())
+          PY
+      - name: Save actual response or explicit failure artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: opus55-access-response-${{ github.run_id }}
+          path: owner-artifacts/opus_first_response.json
+          if-no-files-found: warn
+          retention-days: 14
