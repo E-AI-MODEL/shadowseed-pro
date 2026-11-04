@@ -11,6 +11,7 @@ De Atlas maakt historische experimenten en hun uitkomsten vindbaar. De 34 bevind
 | 34 bevindingen (S01-S34), elk met bron, meetstap en bewijsgrens | [Onderzoeksregister](data/atlas.json), [originele CSV](sources/34_bevindingen_bronafhankelijkheid_2026-11-04.csv) |
 | 13 verbanden (R01-R13), met tegenverklaringen en vervolgvraag | [Verbanden in hetzelfde register](data/atlas.json), [originele CSV](sources/verbindingskaart_tussen_34_bevindingen_2026-11-04.csv) |
 | 24 historische trajecten, samengevat als acht groepen | [Vergelijkingsgegevens](data/atlas.json), [kruistabel](sources/24_trajecten_vergelijkingsmatrix_2026-11-04.csv), [alle T1/T2-antwoorden](sources/24_trajecten_T1_T2_originele_teksten_2026-11-04.md) en [codering per traject](sources/24_trajecten_T2_beoordeling_2026-11-04.csv) |
+| Historische kandidaatopslag en later terugkerende woorden, 94 kandidaten | [Nieuwe onderzoeksnotitie](notes/seed_recurrence_94_2026-11-04.md), [geaggregeerde tellingen](data/seed_recurrence_94_aggregate_2026-11-04.json) |
 | De inhoudelijke kruisanalyse, inclusief negatieve resultaten | [Onderzoeksnotitie van 4 november](notes/synthese-2026-11-04.md) |
 | De oorspronkelijke 48 modelantwoorden en herstelbestanden | [Bronarchief 28 oktober](../datasets/2026-10-28-q1q2-48/README.md) |
 | Vier Git-histories, vier snapshots en 62 originele Actions-artifacts | [Bronarchief 27 oktober](../../docs/research/archives/2026-10-27/README.md) |
