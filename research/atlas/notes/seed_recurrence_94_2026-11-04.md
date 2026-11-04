@@ -20,7 +20,7 @@ De brede regel met twee losse woordstammen vond 24 vensters. Een striktere regel
 
 De oorspronkelijke hostantwoorden kregen **nul** van de kandidaten terug als seed-context. De opgeslagen uitvoer bevat ook **nul invloedbesluiten en nul Gate-promoties**. In alle 48 beurten bleef het gewone hostantwoord gelijk aan het vastgelegde antwoord. De gevonden woordovereenkomsten kunnen in deze bronrun dus niet zijn veroorzaakt door een opnieuw aangeboden ShadowSeed-kandidaat.
 
-Dat is de interessante waarneming: een inhoudelijk onderwerp kan in een later antwoord terugkomen **zonder enige blootstelling aan het opgeslagen seed-record**. De studie meet niet of de opslag later ook iets toevoegt.
+Dat is een beperkte, letterlijke waarneming: sommige woordstammen en gefilterde woordparen komen in latere hostantwoorden voor **zonder dat het model de opgeslagen kandidaat als seed-context ontving**. Zonder onafhankelijke inhoudelijke beoordeling weten we niet of het om dezelfde gedachte of een bruikbare nieuwe toets gaat. Een geheugeneffect is niet gemeten.
 
 ## Hoe is gezocht?
 
