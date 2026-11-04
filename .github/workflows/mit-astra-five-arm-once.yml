@@ -1,0 +1,88 @@
+name: Research - GPT-6 Astra five-arm exploratory one-shot
+
+# Runs only on this workflow's creation commit. Fictional public research case.
+# Maximum 12 model requests, 52k total tokens. G0 remains NOT_PASSED.
+on:
+  push:
+    branches:
+      - research/g6-astra-real-five-arm-20261104
+    paths:
+      - .github/workflows/mit-astra-five-arm-once.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: g6-astra-five-arm-20261104
+  cancel-in-progress: false
+
+jobs:
+  offline-preflight:
+    if: github.event.before == '6bd693e0ceeb1652f93e7a13378c08e371aa5fb9'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install pinned dependencies
+        run: |
+          uv sync --locked --extra test --extra build
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+      - name: Validate Astra-only runner before any calls
+        run: |
+          uv run --no-sync python -m py_compile research/scripts/mit_g6_astra_live.py
+          uv run --no-sync python -m pytest -q research/tests/test_mit_g6_astra_live.py
+          uv run --no-sync python - <<'PY'
+          import sys
+          sys.path.insert(0, "research/scripts")
+          import mit_g6_astra_live as m
+          assert m.MODEL == "gpt-6-astra"
+          assert m.MAX_CALLS == 12 and m.MAX_TOKENS == 52000
+          print("Offline ready; no paid call.")
+          PY
+
+  real-astra-pilot:
+    needs: offline-preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    environment:
+      name: OpenAI key
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.1.4
+      - name: Install isolated research dependencies
+        run: |
+          uv sync --locked --extra test --extra build
+          uv pip install --python .venv/bin/python --no-deps -e ./research
+          mkdir -p owner-artifacts
+      - name: Verify scoped credential exists without printing it
+        shell: bash
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::Scoped environment credential unavailable; zero model calls."
+            exit 1
+          fi
+      - name: Run capped real Astra five-arm inquiry
+        run: |
+          uv run --no-sync python research/scripts/mit_g6_astra_live.py \
+            --output owner-artifacts/one_case_trace.json
+      - name: Preserve trace even on unsuccessful experiment
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: g6-astra-five-arm-one-shot-${{ github.run_id }}
+          path: owner-artifacts/one_case_trace.json
+          if-no-files-found: warn
+          retention-days: 21
