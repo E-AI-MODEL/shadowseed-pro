@@ -104,3 +104,25 @@ def test_invalid_relation_is_not_silently_classified(tmp_path):
     path.write_text(path.read_text().replace("BROAD_ONLY", "NEW_DISCOVERY"), encoding="utf-8")
     with pytest.raises(ValueError, match="invalid relation"):
         AUDIT.read_review(path)
+
+
+def test_none_sentinel_is_not_a_test_proposal(tmp_path):
+    source = tmp_path / "review.csv"
+    _write(source)
+    text = source.read_text(encoding="utf-8")
+    text = text.replace("SAME_CLAIM,0,,", "SAME_CLAIM,0,none,")
+    text = text.replace("BROAD_ONLY,1,,", "BROAD_ONLY,1,NONE,")
+    source.write_text(text, encoding="utf-8")
+    result = AUDIT.make_audit(AUDIT.read_review(source))
+    assert result["first_review"]["test_proposal_case_ids"] == ["R03"]
+
+
+def test_second_reviewer_proposals_count_and_agreement(tmp_path):
+    source_a, source_b = tmp_path / "first.csv", tmp_path / "second.csv"
+    _write(source_a)
+    _write(source_b, "b", different=True)
+    result = AUDIT.make_audit(AUDIT.read_review(source_a), AUDIT.read_review(source_b))
+    assert result["second_review"]["test_proposal_case_ids"] == ["R03"]
+    assert result["comparison"]["same_relation"] == 2
+    assert result["comparison"]["same_usefulness"] == 2
+    assert result["comparison"]["same_test_proposal"] == 3
