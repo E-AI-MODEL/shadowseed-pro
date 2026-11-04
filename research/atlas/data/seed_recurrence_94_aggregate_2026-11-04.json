@@ -3,9 +3,9 @@
   "date": "2026-11-04",
   "source_sha256": "0a5094e38ab2fdcf8c68dc8d6a3c75d29eeffd49e1f6c8e138589ed73ca36bbf",
   "crosscheck_46_author_only_zip_sha256": "b2eb0b64a981612ee3ea3f1d5e2723d834c46eecf9eab73b697229a80a03f051",
-  "provenance": "historical source-frozen 12 conversations x 4 turns; original model answers and candidate text kept author-only",
+  "provenance": "Historical candidate and host texts already exist in a Git-tracked source on this public repository. This aggregate and PR do not copy those individual texts. The separate author-review bundle is kept outside this PR.",
   "observations": {
-    "case_families": 6,
+    "case_families": 4,
     "model_sessions": 12,
     "turns": 48,
     "candidate_occurrences": 94,
@@ -25,7 +25,8 @@
     ],
     "seed_surfacing_events": 0,
     "seed_influence_decisions": 0,
-    "gate_promotions": 0
+    "gate_promotions": 0,
+    "distinct_case_ids": 6
   },
   "later_windows": {
     "accepted": 62,

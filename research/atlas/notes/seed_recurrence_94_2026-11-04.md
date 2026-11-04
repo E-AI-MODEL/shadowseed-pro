@@ -2,7 +2,7 @@
 
 **Onderzoeksnotitie, 4 november 2026.** Dit is een historische, brongebonden herlezing. Er zijn geen nieuwe modelaanroepen of onafhankelijke inhoudelijke beoordelingen uitgevoerd.
 
-De oorspronkelijke 12 gesprekken, met elk vier beurten, bevatten **94 detectorwaarnemingen**. De oude intake liet er 48 toe en wees 46 af als `not_atomic`. Alle 94 zijn aan hun oorspronkelijke observatie, beurt en teksthash gekoppeld; de 46 afwijzingen zijn bovendien vergeleken met de afzonderlijke auteur-audit.
+De oorspronkelijke 12 gesprekken, uit zes fictieve casussen en vier verschillende onderzoekstypen, met elk vier beurten, bevatten **94 detectorwaarnemingen**. De oude intake liet er 48 toe en wees 46 af als `not_atomic`. Alle 94 zijn aan hun oorspronkelijke observatie, beurt en teksthash gekoppeld; de 46 afwijzingen zijn bovendien vergeleken met de afzonderlijke auteur-audit.
 
 Die oorspronkelijke gegevens geven samen **140 latere beurtvensters**. Voor 24 kandidaatvoorkomens op de laatste beurt bestaat geen vervolg in de bron, wat geen mislukte herinnering is. De sessies gebruiken zes fictieve casussen met twee verschillende modellen en zijn niet onafhankelijk.
 
@@ -34,9 +34,9 @@ De modellen leverden verschillende aantallen kandidaten: GPT-5 leverde 72 waarne
 
 ## Waar zijn de oorspronkelijke teksten?
 
-In de [28-oktoberbronverzameling](../../datasets/2026-10-28-q1q2-48/README.md) en de [replay van PR #262](https://github.com/E-AI-MODEL/shadowseed-pro/blob/feature/pro-weightless-unresolved-birth-20261028/docs/research/possibility-space/pro262-actual-source-frozen-replay-2026-10-28.md) staan de historische context en herkomst. De oorspronkelijke 46-kandidaten-bijlage heeft de aanduiding **AUTHOR-ONLY, do not publish**.
+In de [28-oktoberbronverzameling](../../datasets/2026-10-28-q1q2-48/README.md) en de [replay van PR #262](https://github.com/E-AI-MODEL/shadowseed-pro/blob/feature/pro-weightless-unresolved-birth-20261028/docs/research/possibility-space/pro262-actual-source-frozen-replay-2026-10-28.md) staan de historische context en herkomst. De aparte 46-kandidaten-reviewbijlage draagt de aanduiding **AUTHOR-ONLY, do not publish**. **Let op:** de oorspronkelijke modeluitvoer met kandidaatzinnen staat al in de openbare Git-geschiedenis van deze repository. Het label is geen toegangsbeveiliging. Deze PR kopieert de oorspronkelijke teksten niet opnieuw.
 
-De brongetrouwe beoordeling per kandidaat is daarom apart aan de auteur geleverd en **niet** in deze openbare PR opgenomen. Dat dossier bevat de 94 exacte kandidaatteksten, alle 140 latere antwoordvensters, bronhashes, het offline analysescript en negen oningevulde beoordelingsformulieren. De publiek leesbare [aggregaten](../data/seed_recurrence_94_aggregate_2026-11-04.json) zijn gebaseerd op die private bron; zonder toegang tot die bron kan een externe lezer de telling niet zelfstandig volledig reproduceren.
+Het uitgebreide lees- en beoordelingsdossier is afzonderlijk aan de auteur geleverd en **niet** in deze openbare PR opgenomen. Dat dossier bevat de 94 exacte kandidaatteksten, alle 140 latere antwoordvensters, bronhashes, het offline analysescript en negen oningevulde beoordelingsformulieren. De publiek leesbare [aggregaten](../data/seed_recurrence_94_aggregate_2026-11-04.json) zijn gebaseerd op die private bron; zonder toegang tot die bron kan een externe lezer de telling niet zelfstandig volledig reproduceren.
 
 ## Voorgestelde volgende proef, nog niet uitgevoerd
 
