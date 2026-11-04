@@ -6,6 +6,7 @@ Er worden geen ruwe kandidaat- of hostteksten uitgevoerd of uitgegeven.
 from __future__ import annotations
 
 import argparse
+import hashlib
 from collections import Counter
 import json
 from pathlib import Path
@@ -24,6 +25,7 @@ de het een en of is zijn wordt worden van voor door met over niet geen deze die
  both some much many upon across than also only just each when then and the are
  for not but was who why what how case after before between
 """.split())
+EXPECTED_SOURCE_SHA256 = "0a5094e38ab2fdcf8c68dc8d6a3c75d29eeffd49e1f6c8e138589ed73ca36bbf"
 WORD = re.compile(r"[^\W\d_]{4,}", re.UNICODE)
 
 
@@ -67,7 +69,6 @@ def screen(source: dict) -> dict:
                     "birth_turn": born["turn"],
                     "later_turn": later["turn"],
                     "intake_outcome": status,
-                    "matched_stem_pairs": shared,
                 })
     return {
         "schema": "shadowseed-independent-lexical-screen-v1",
@@ -87,7 +88,12 @@ def main() -> None:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("source", type=Path, help="Originele observer-JSON, lokaal aanwezig")
     args = p.parse_args()
-    result = screen(json.loads(args.source.read_text(encoding="utf-8")))
+    raw = args.source.read_bytes()
+    digest = hashlib.sha256(raw).hexdigest()
+    if digest != EXPECTED_SOURCE_SHA256:
+        p.error(f"SHA-256 wijkt af van het originele bronbestand: {digest}")
+    result = screen(json.loads(raw.decode("utf-8")))
+    result["source_sha256"] = digest
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 
