@@ -40,13 +40,50 @@ def test_last_turn_candidate_is_not_scored_as_missed():
     assert output["matched_windows"] == 0
 
 
-def test_original_48_turn_archive_can_be_read_without_raw_text_output():
+def test_original_archive_gives_frozen_matched_window_identities():
+    import hashlib
     import json
+
     source = (Path(__file__).resolve().parents[1]
               / "research/datasets/2026-10-28-q1q2-48/original-author-kit/SOURCE/"
               / "original-observed_sha256_0a5094e3.json")
-    result = module.screen(json.loads(source.read_text(encoding="utf-8")))
+    raw = source.read_bytes()
+    assert hashlib.sha256(raw).hexdigest() == module.EXPECTED_SOURCE_SHA256
+    result = module.screen(json.loads(raw.decode("utf-8")))
+
     assert result["source_observations"] == 94
     assert result["later_windows"] == 140
-    assert result["matched_candidate_occurrences"] <= result["matched_windows"]
-    assert result["matched_windows"] <= result["later_windows"]
+    assert result["matched_windows"] == 10
+    assert result["matched_candidate_occurrences"] == 8
+    assert result["accepted_matches"] == 7
+    assert result["rejected_matches"] == 3
+    observed = {(v["observation_id"], v["later_turn"]) for v in result["matches"]}
+    assert observed == {
+        ("obs_43487e11e602d3976fcc141a", 3),
+        ("obs_14c6ab2837a3573ad9581b79", 3),
+        ("obs_46e290bca95aa3bf0438eff2", 2),
+        ("obs_46e290bca95aa3bf0438eff2", 3),
+        ("obs_6475cc01142a1e43077263a3", 3),
+        ("obs_2f6b382c6734b93c84f0ccba", 2),
+        ("obs_325a022862288fd97988afee", 3),
+        ("obs_97e6a57f67aed41df6b50dad", 2),
+        ("obs_d099710502a6149d666c400b", 2),
+        ("obs_d099710502a6149d666c400b", 3),
+    }
+    assert all("matched_stem_pairs" not in v for v in result["matches"])
+    assert all("raw_text" not in v and "host_answer" not in v for v in result["matches"])
+
+
+def test_cli_rejects_an_unpinned_source_and_shows_no_original_text(tmp_path):
+    import subprocess
+    import sys
+
+    source = tmp_path / "changed.json"
+    source.write_text('{"cases": [], "private_value": "DO_NOT_ECHO"}', encoding="utf-8")
+    process = subprocess.run(
+        [sys.executable, str(SCRIPT), str(source)],
+        capture_output=True, text=True, check=False,
+    )
+    assert process.returncode != 0
+    assert "SHA-256 wijkt af" in process.stderr
+    assert "DO_NOT_ECHO" not in process.stderr + process.stdout
