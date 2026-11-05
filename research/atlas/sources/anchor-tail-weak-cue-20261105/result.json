@@ -1,0 +1,46 @@
+{
+  "summary": {
+    "status": "COMPLETE",
+    "actual_calls": 8,
+    "estimated_spend_usd": 0.01366,
+    "max_usd": 0.2,
+    "model": "gpt-4.1",
+    "posthoc_design": true,
+    "original_run": "https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/41979466955",
+    "note": "Weak-cue posthoc followup, not a preregistered confirmatory trial. Old model-created summary and anchors unchanged. Ordinary-note and weightless arms receive additional content; not a controlled effect of autonomous seed genesis."
+  },
+  "trials": [
+    {
+      "case": "METERS",
+      "lead": "C",
+      "tail": "A",
+      "tail_seed": "Een probleem in de nieuwe software.",
+      "lead_probability": 1.0,
+      "tail_probability": 7.725190540408963e-16,
+      "hint": "Nog geen aanvullend hard bewijs: twee modules piekten opnieuw. De exacte tijden en de ruwe logbestanden ontbreken. Het onderhoud omvatte zowel softwarewerk als het verplaatsen van kabels; welk onderdeel causaal is, is onbekend.",
+      "task": "Welk EEN onderscheidend experiment voer je als eerste uit? Noem de resultaten die de bestaande werkhypothese zouden verzwakken.",
+      "answers": {
+        "ordinary_note": "Het meest onderscheidende experiment dat je als eerste uitvoert, is het fysiek afschermen (bijvoorbeeld met afschermfolie of een metalen buis) van de motorkabels tegen elektromagnetische straling, zonder verdere wijzigingen aan de software of andere bekabeling. Vervolgens observeer je of de pieken nog steeds optreden onder dezelfde omstandigheden als voorheen.\n\nResultaten die de bestaande werkhypothese zouden verzwakken:\n- De pieken treden nog steeds op, ondanks de afscherming van de motorkabels.\n- Er is geen verschil in frequentie of intensiteit van de pieken vóór en na het afschermen.\n- De pieken treden op bij modules die fysiek ver van de motorkabels af liggen.\n\nDeze uitkomsten zouden erop wijzen dat elektromagnetische verstoring door de motorkabels waarschijnlijk niet de (enige) oorzaak is van de pieken, en dat verder onderzoek naar andere oorzaken (zoals softwareproblemen) nodig is.",
+        "reflect": "**Eén onderscheidend experiment:**\nVoer een gecontroleerde test uit waarbij je de motorkabel fysiek afschermt tegen elektromagnetische straling (bijvoorbeeld met een metalen buis of folie, goed geaard) terwijl het systeem in bedrijf is. Observeer of de pieken in de modules nog steeds optreden.\n\n**Resultaten die de werkhypothese zouden verzwakken:**\n- De pieken blijven optreden, ook als de motorkabel volledig afgeschermd is.\n- De frequentie of het patroon van de pieken verandert niet na afscherming.\n- Pieken treden op bij modules die fysiek ver van de motorkabel verwijderd zijn.\n\n**Controle op te snelle uitsluiting van andere mogelijkheden:**\nDe huidige werkkeuze sluit andere oorzaken (zoals softwarefouten, andere kabels, of storingen door onderhoud) voorlopig uit. Dit is logisch voor focus, maar het risico bestaat dat een andere oorzaak (bijvoorbeeld een software-update of een andere kabel die verplaatst is) over het hoofd wordt gezien. Het is daarom belangrijk om, als het experiment de hypothese verzwakt, direct ook andere mogelijke oorzaken te heroverwegen.",
+        "shadow_weightless": "Het meest onderscheidende eerste experiment is:  \n**De motorkabel fysiek afschermen of tijdelijk loskoppelen (indien veilig mogelijk) tijdens een testcyclus waarin normaal gesproken pieken optreden, terwijl verder alle omstandigheden gelijk blijven.**\n\n**Resultaten die de werkhypothese zouden verzwakken:**  \n- De pieken blijven optreden, ook als de motorkabel volledig is afgeschermd of losgekoppeld.\n- Er is geen verschil in het aantal of de aard van de pieken tussen de situatie met en zonder afgeschermde/losgekoppelde motorkabel.\n\nDeze uitkomsten zouden erop wijzen dat elektromagnetische verstoring door de motorkabel waarschijnlijk niet de oorzaak is van de pieken.",
+        "regular": "Het meest onderscheidende eerste experiment is:  \n**De motorkabel fysiek afschermen (bijvoorbeeld met een metalen buis of afschermfolie) en vervolgens het systeem onder identieke omstandigheden laten draaien als tijdens de eerdere pieken.**\n\n**Resultaten die de werkhypothese zouden verzwakken:**  \n- Als de pieken nog steeds optreden, ondanks de afscherming van de motorkabel, wijst dit erop dat elektromagnetische verstoring door de motorkabel waarschijnlijk niet de oorzaak is.  \n- Als het patroon, de frequentie en de intensiteit van de pieken onveranderd blijven, ondanks de afscherming, wordt de werkhypothese verder verzwakt.  \n- Als pieken optreden op momenten dat de motorkabel niet actief is of niet in de buurt van gevoelige modules ligt, ondermijnt dit ook de hypothese.\n\nKortom: als afscherming geen effect heeft op de pieken, is dat overtuigend bewijs tegen de huidige werkhypothese."
+      }
+    },
+    {
+      "case": "BIBLIOTHEEK",
+      "lead": "A",
+      "tail": "C",
+      "tail_seed": "Een herkenbare miniscène vanuit een bezoeker.",
+      "lead_probability": 0.9715208807465617,
+      "tail_probability": 0.0005719880164364611,
+      "hint": "Er is nog geen aanvullend lezersonderzoek. Het team wil dat de nieuwe avondopenstelling juist wordt vermeld én dat de eerste alinea mensen nieuwsgierig maakt; er zijn nog geen cijfers over het bereik van verschillende stijlen.",
+      "task": "Schrijf een openingsalinea van 65 tot 90 woorden voor het publieksbericht. Gebruik '[dagen en tijden]' als plaatsaanduiding; verzin geen openingstijden. Geen toelichting op je schrijfkeuze.",
+      "answers": {
+        "regular": "Met ingang van [dagen en tijden] is onze locatie ook in de avonduren geopend. Hiermee bieden wij u extra gelegenheid om ons te bezoeken op een moment dat het u uitkomt. Wij nodigen u van harte uit om gebruik te maken van deze verruimde openingstijden. Ontdek het gemak van een bezoek in de avond en ervaar onze dienstverlening op een tijdstip dat aansluit bij uw agenda. Meer informatie over de nieuwe openingstijden vindt u hieronder.",
+        "shadow_weightless": "Met ingang van [dagen en tijden] is onze locatie ook in de avonduren geopend. Hiermee bieden wij u extra gelegenheid om ons te bezoeken op een moment dat het u uitkomt. Wij nodigen u van harte uit om gebruik te maken van deze verruimde openingstijden en zo op een rustig tijdstip kennis te maken met ons aanbod. Houd onze website in de gaten voor meer informatie over de nieuwe avondopenstelling en eventuele aanvullende activiteiten.",
+        "reflect": "Met ingang van [dagen en tijden] is onze locatie voortaan ook in de avonduren geopend. Hiermee bieden wij u extra gelegenheid om ons te bezoeken op momenten die u het beste uitkomen. Wij nodigen u van harte uit om gebruik te maken van deze verruimde openingstijden. Ontdek wat onze locatie u in de avonduren te bieden heeft en plan uw bezoek op een tijdstip dat bij uw agenda past. Meer informatie vindt u op onze website.",
+        "ordinary_note": "Vanaf [dagen en tijden] is onze locatie ook in de avonduren geopend. Dit biedt u de mogelijkheid om op een moment dat het u uitkomt, onze diensten te bezoeken en gebruik te maken van onze faciliteiten. Of u nu na uw werk langskomt of liever in de rustige avonduren uw zaken regelt, wij staan voor u klaar. Ontdek zelf het gemak van onze verruimde openingstijden en plan uw bezoek wanneer het u het beste uitkomt."
+      }
+    }
+  ]
+}
