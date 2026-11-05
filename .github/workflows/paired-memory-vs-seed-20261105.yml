@@ -1,0 +1,68 @@
+name: Research - Matched ordinary memory versus weightless seeds
+
+# One-time paid research job on isolated branch.
+on:
+  push:
+    branches:
+      - research/paired-memory-vs-seed-20261105
+    paths:
+      - .github/workflows/paired-memory-vs-seed-20261105.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: paired-memory-vs-seed-one-shot-20261105
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Validate script, cases, matched prompts and output budgets
+        run: |
+          python -m py_compile research/scripts/paired_memory_vs_seed_20261105.py
+          python research/scripts/paired_memory_vs_seed_20261105.py --preflight
+
+  paired-live:
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: OpenAI key
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Verify authorized API environment without printing key
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::OpenAI Environment key not available"
+            exit 1
+          fi
+      - name: Install canonical ShadowSeed engine and API SDK
+        run: python -m pip install --disable-pip-version-check -e . "openai>=2,<4"
+      - name: Run four genuinely separate conversations and two context conditions
+        run: |
+          python -u research/scripts/paired_memory_vs_seed_20261105.py --out research-artifacts/paired-memory-vs-seed-20261105
+      - name: Preserve real results, including partial provider failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: paired-memory-vs-seed-20261105
+          path: research-artifacts/paired-memory-vs-seed-20261105/
+          if-no-files-found: warn
+          retention-days: 30
