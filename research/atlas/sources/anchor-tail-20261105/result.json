@@ -1,0 +1,90 @@
+{
+  "summary": {
+    "status": "COMPLETE",
+    "trials_completed": 2,
+    "real_model_calls": 16,
+    "planned_calls": 16,
+    "model": "gpt-4.1",
+    "estimated_spend_usd": 0.018618,
+    "cost_cap_usd": 0.5,
+    "arms": [
+      "regular",
+      "reflect",
+      "ordinary_note",
+      "shadow_weightless"
+    ],
+    "technical_limitations": [
+      "First-token option probabilities, not probabilities of entire answers or truth.",
+      "Researcher-written alternatives; not autonomous Shadowseed candidate birth.",
+      "Experimental delayed weightless note; does not exercise canonical ShadowseedEngine or Gate.",
+      "Tail-targeted new evidence, small selected fictional cases, no blind human ratings.",
+      "One trajectory per case/arm; no statistical effect inference.",
+      "Ordinary-note and shadow arms get extra information not in the regular arm."
+    ]
+  },
+  "trials": [
+    {
+      "case": "METERS",
+      "opening": "In een proefopstelling tonen zes identieke meetmodules na onderhoud sporadisch korte pieken. Alle modules kregen tegelijk nieuwe software, de voeding is gedeeld, bedrading ligt vlak langs een bewegende motor en de temperatuur varieert per behuizing. Ruwe tijdreeksen en onafhankelijke referentiemetingen zijn nog niet beschikbaar. Er is tijd voor één eerste onderzoeksspoor.",
+      "choices": {
+        "A": "Een probleem in de nieuwe software.",
+        "B": "Korte spanningsdalingen in de gedeelde voeding.",
+        "C": "Elektromagnetische verstoring langs de motorkabel.",
+        "D": "Temperatuurafhankelijke drift van meetmodules."
+      },
+      "model": "gpt-4.1",
+      "lead": "C",
+      "tail": "A",
+      "probabilities_first_token": {
+        "C": 1.0,
+        "B": 1.2084231185883008e-14,
+        "A": 7.725190540408963e-16
+      },
+      "tail_seed": "Een probleem in de nieuwe software.",
+      "first_rank_answer": "C",
+      "compression": "Voorlopige hoofdkeuze is onderzoek naar elektromagnetische verstoring door de motorkabel als oorzaak van de pieken; andere oorzaken worden voorlopig niet onderzocht.",
+      "anchor1": "We blijven ons richten op elektromagnetische verstoring door de motorkabel als oorzaak van de pieken, totdat er overtuigend bewijs is dat deze hypothese onjuist is.",
+      "anchor2": "Focussen op elektromagnetische verstoring door motorkabel als oorzaak pieken; andere oorzaken worden voorlopig niet onderzocht.",
+      "late_observation": "Nieuwe observatie: de pieken verdwijnen na een gerichte rollback op één module; bij de andere modules bleven ze aanwezig. Er zijn nog geen dubbelblinde metingen.",
+      "answers": {
+        "shadow_weightless": "De meest zinvolle volgende stap is: voer een gerichte test uit waarbij je de rollback op de betreffende module herhaalt, en vergelijk systematisch de aanwezigheid van pieken vóór en na de rollback. Dit bevestigt of de pieken daadwerkelijk verdwijnen door de rollback, en dus samenhangen met deze module.\n\nDeze toets is concreet en sluit aan bij de nieuwe observatie dat de pieken verdwenen na een rollback op één module, terwijl ze bij andere modules bleven. Hiermee kun je de hypothese van elektromagnetische verstoring door de motorkabel toetsen: als de pieken verdwijnen door een softwarematige aanpassing (rollback), wordt de verklaring van elektromagnetische verstoring minder waarschijnlijk.\n\nEen andere mogelijkheid (zoals een softwareprobleem) hoeft nu nog niet onderzocht te worden, tenzij deze test uitwijst dat de pieken structureel verdwijnen door de rollback.",
+        "regular": "De meest zinvolle volgende stap is het uitvoeren van een gerichte test waarbij de module waarop de rollback is uitgevoerd, systematisch wordt vergeleken met de andere modules. Dit kan door de rollback op andere modules toe te passen en te observeren of de pieken daar ook verdwijnen. \n\nDeze toets is concreet en direct: als de pieken verdwijnen na de rollback op andere modules, wijst dit op een software- of moduleprobleem in plaats van elektromagnetische verstoring door de motorkabel. Blijven de pieken alleen weg bij de oorspronkelijke module, dan moet verder worden onderzocht wat deze module uniek maakt.\n\nDubbelblinde metingen zijn nog niet uitgevoerd, maar zijn op basis van de huidige informatie niet de eerstvolgende stap. De nieuwe observatie geeft aanleiding om de focus tijdelijk te verleggen naar het effect van de rollback, omdat dit direct relevant is voor de verklaring van de pieken.",
+        "ordinary_note": "De meest zinvolle volgende stap is: **een gerichte test uitvoeren waarbij de betreffende module opnieuw wordt uitgerold en vervolgens weer wordt teruggerold, terwijl je systematisch meet of de pieken terugkeren of verdwijnen**. Dit bevestigt of de software van deze module samenhangt met de pieken.\n\n**Onderbouwing:**  \nDe pieken verdwijnen na een rollback van één specifieke module, terwijl ze bij andere modules blijven. Dit wijst op een mogelijk softwareprobleem in die module, niet direct op elektromagnetische verstoring door de motorkabel. Een gerichte herintroductie en rollback van de module kan de relatie tussen de software en de pieken bevestigen of verzwakken.\n\n**Andere mogelijkheid:**  \nDe nieuwe observatie geeft aanleiding om het softwareprobleem als serieuze alternatieve oorzaak te beschouwen. Het is zinvol om deze hypothese nu te toetsen, gezien het directe effect van de rollback.",
+        "reflect": "De meest zinvolle volgende stap is het uitvoeren van een gerichte test waarbij de module waarop de rollback is uitgevoerd, systematisch wordt vergeleken met de andere modules. Dit kan door de rollback op andere modules toe te passen en te observeren of de pieken daar ook verdwijnen. Hiermee toets je of de pieken samenhangen met de software van de module in plaats van met elektromagnetische verstoring door de motorkabel.\n\nDeze stap is belangrijk omdat de nieuwe observatie (piekverdwijnen na rollback) een alternatieve verklaring suggereert: een softwareprobleem in plaats van elektromagnetische verstoring. Door deze test uit te voeren, voorkom je dat je te snel andere oorzaken uitsluit en kun je de huidige verklaring (elektromagnetische verstoring) daadwerkelijk bevestigen of verzwakken op basis van het resultaat."
+      },
+      "note": "Tail is least frequent among OBSERVED first-token option labels; not a correct-answer probability. All hypotheses were researcher-supplied. Tail-targeted later evidence is designed to favor the selected tail."
+    },
+    {
+      "case": "BIBLIOTHEEK",
+      "opening": "Een bibliotheek wil een publieksbericht schrijven over nieuwe avondopenstelling. De tekst moet toegankelijk zijn, de juiste tijden vermelden en interesse wekken. Een neutrale aankondiging lijkt veilig. Er zijn vier mogelijke schrijfvormen; er is nog geen lezersonderzoek.",
+      "choices": {
+        "A": "Een formele en zakelijke mededeling.",
+        "B": "Een korte vraag-en-antwoordtekst.",
+        "C": "Een herkenbare miniscène vanuit een bezoeker.",
+        "D": "Een speelse uitnodiging met lichte humor."
+      },
+      "model": "gpt-4.1",
+      "lead": "A",
+      "tail": "C",
+      "probabilities_first_token": {
+        "A": 0.9715208807465617,
+        "B": 0.021463691967387507,
+        "D": 0.006444569008266203,
+        "C": 0.0005719880164364611
+      },
+      "tail_seed": "Een herkenbare miniscène vanuit een bezoeker.",
+      "first_rank_answer": "A",
+      "compression": "De voorlopige hoofdkeuze is om het publieksbericht als een formele en zakelijke mededeling op te stellen, met duidelijke vermelding van de nieuwe avondopenstelling en openingstijden. Onzekerheid over de beste toon blijft bestaan.",
+      "anchor1": "We blijven het publieksbericht formeel en zakelijk opstellen, totdat er overtuigend bewijs is dat een andere toon effectiever is voor onze doelgroep.",
+      "anchor2": "Publieksbericht blijft formeel en zakelijk, tenzij overtuigend bewijs toont dat een andere toon beter werkt voor de doelgroep.",
+      "late_observation": "Nieuwe observatie: bij een kleine leestest herinneren proeflezers zich vooral de herkenbare situatie van iemand die na het werk nog naar de bibliotheek gaat; kale aankondigingen bleven nauwelijks hangen.",
+      "answers": {
+        "reflect": "De meest zinvolle volgende stap is een gerichte A/B-test uitvoeren: verspreid twee versies van het publieksbericht onder een representatieve groep uit de doelgroep. Eén versie blijft formeel en zakelijk, de andere bevat een herkenbare, verhalende situatie (zoals iemand die na het werk naar de bibliotheek gaat). Meet vervolgens welke versie beter wordt onthouden en gewaardeerd.\n\nDeze toets bevestigt of verzwakt de huidige verklaring dat een formele toon het beste werkt, door direct te vergelijken met een alternatieve toon die volgens de nieuwe observatie mogelijk effectiever is. Dit sluit andere verklaringen niet te snel uit, omdat het expliciet test of de toon van het bericht invloed heeft op de effectiviteit, in plaats van alleen uit te gaan van de bestaande aanname.",
+        "ordinary_note": "De meest zinvolle volgende stap is om een concrete toets uit te voeren waarbij je twee versies van het publieksbericht vergelijkt: één formeel en zakelijk, en één met een herkenbare miniscène vanuit een bezoeker (zoals eerder als alternatief genoemd). Laat beide versies door een representatieve groep proeflezers lezen en meet welke versie beter wordt onthouden en gewaardeerd.\n\nDeze toets sluit direct aan bij de nieuwe observatie: proeflezers herinneren zich vooral de herkenbare situatie, niet de kale aankondiging. Door beide stijlen te vergelijken, kun je objectief vaststellen of de huidige formele toon inderdaad minder effectief is dan een meer verhalende, herkenbare aanpak. Zo bevestig of verzwak je de huidige verklaring met gericht bewijs.",
+        "shadow_weightless": "De meest zinvolle volgende stap is een gerichte toets waarbij je twee versies van het publieksbericht vergelijkt: één formeel-zakelijke versie en één versie met een herkenbare miniscène vanuit een bezoeker. De nieuwe observatie geeft hier aanleiding toe, omdat proeflezers zich vooral de herkenbare situatie herinnerden en niet de kale aankondiging. Door beide versies voor te leggen aan een representatieve groep uit de doelgroep en te meten welke boodschap beter blijft hangen, kun je de huidige verklaring bevestigen of verzwakken.",
+        "regular": "De meest zinvolle volgende stap is een gerichte test uitvoeren waarin je twee versies van het publieksbericht vergelijkt: één formeel en zakelijk, en één met een herkenbare, verhalende insteek (zoals de situatie van iemand die na het werk naar de bibliotheek gaat). Meet vervolgens bij de doelgroep welke versie beter blijft hangen en beter wordt gewaardeerd.\n\nDeze concrete toets sluit direct aan bij de nieuwe observatie uit de leestest, die suggereert dat een herkenbare situatie meer effect heeft dan een kale, zakelijke aankondiging. Zo kun je objectief vaststellen of de huidige voorkeur voor een formele toon nog houdbaar is, of dat een andere toon effectiever is."
+      },
+      "note": "Tail is least frequent among OBSERVED first-token option labels; not a correct-answer probability. All hypotheses were researcher-supplied. Tail-targeted later evidence is designed to favor the selected tail."
+    }
+  ]
+}
