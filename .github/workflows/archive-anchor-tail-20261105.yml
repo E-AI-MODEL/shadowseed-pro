@@ -1,0 +1,49 @@
+name: Research - Archive original anchor-tail responses 2026-11-05
+on:
+  push:
+    branches:
+      - research/anchor-tail-live-pilot-20261105
+    paths:
+      - .github/workflows/archive-anchor-tail-20261105.yml
+permissions:
+  contents: write
+  actions: read
+jobs:
+  preserve-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: anchor-tail-20261105
+          run-id: 41979466955
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: research/atlas/sources/anchor-tail-20261105
+      - name: Confirm original provider receipts and answer checksums
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,hashlib
+          p=Path('research/atlas/sources/anchor-tail-20261105')
+          r=json.loads((p/'result.json').read_text())
+          lines=[json.loads(s) for s in (p/'calls.jsonl').read_text().splitlines() if s.strip()]
+          got=[x for x in lines if x['event']=='response']
+          assert len(got)==16 and len(r['trials'])==2
+          assert r['summary']['status']=='COMPLETE'
+          assert all(hashlib.sha256(x['answer'].encode()).hexdigest()==x['answer_sha256'] for x in got)
+          (p/'archive_manifest.json').write_text(json.dumps({
+            'source_run':'https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/41979466955',
+            'source_artifact_id':13393217519,
+            'responses':len(got),
+            'sha256':{x.name:hashlib.sha256(x.read_bytes()).hexdigest() for x in p.iterdir() if x.is_file()}
+          },indent=2)+'\n')
+          print('SOURCE_VERIFIED 16 real responses; no new model calls')
+          PY
+      - name: Commit raw research records on isolated branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/atlas/sources/anchor-tail-20261105
+          git commit -m "research: archive exact anchor-tail first-token probabilities and 16 responses"
+          git push origin HEAD:research/anchor-tail-live-pilot-20261105
