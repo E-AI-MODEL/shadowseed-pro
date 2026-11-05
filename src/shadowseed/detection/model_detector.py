@@ -288,6 +288,9 @@ def parse_numbered_seeds_with_diagnostics(
     # not as permission to create seeds from its self-contradictory explanation.
     # Preserve the raw output upstream and identify malformed mixed responses.
     first_line = nonblank[0].lstrip("*_` ") if nonblank else ""
+    # Legacy backends prepend "1. " to the model continuation. Recognize
+    # NONE in that scaffold too, before parsing subsequent numbered lines.
+    first_line = re.sub(r"^1[.)]\s*", "", first_line).lstrip("*_` ")
     if re.match(r"^NONE(?:[^A-Za-z0-9_]|$)", first_line, flags=re.IGNORECASE):
         numbered_count = sum(bool(_NUMBERED_LINE.match(line)) for line in nonblank)
         diagnostics["explicit_none"] = True
