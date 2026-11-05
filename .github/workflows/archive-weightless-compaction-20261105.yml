@@ -1,0 +1,56 @@
+name: Research - Archive raw weightless compaction pilot 2026-11-05
+
+# One-time archive only. No paid inference, no production writes.
+on:
+  push:
+    branches:
+      - research/weightless-at-compaction-20261105
+    paths:
+      - .github/workflows/archive-weightless-compaction-20261105.yml
+permissions:
+  contents: write
+  actions: read
+jobs:
+  verify-and-preserve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: weightless-compaction-live-20261105
+          run-id: 41981167823
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: research/atlas/sources/weightless-compaction-20261105
+      - name: Verify original outputs and zero authority
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,hashlib
+          p=Path('research/atlas/sources/weightless-compaction-20261105')
+          r=json.loads((p/'result.json').read_text(encoding='utf8'))
+          e=[json.loads(x) for x in (p/'events.jsonl').read_text(encoding='utf8').splitlines() if x.strip()]
+          answers=[x for x in e if x.get('type')=='response']
+          assert r['summary']['status']=='COMPLETE'
+          assert len(r['cases'])==2 and len(answers)==54
+          assert sum(len(x['outcomes']) for x in r['cases'])==12
+          assert [len(x['seeds']) for x in r['cases']]==[8,7]
+          assert all(s['weight']==0 and s['evidence_count']==0 for x in r['cases'] for s in x['seeds'])
+          assert all('compaction' in x['compaction_output_types'] for x in r['cases'])
+          assert all(hashlib.sha256(x['text'].encode()).hexdigest()==x['text_sha256']
+                     for x in answers if 'text' in x)
+          m={'source_run':'https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/41981167823',
+             'artifact_id':13394475903,'model_calls_including_embeddings':len(answers),
+             'final_probe_answers':12,'zero_weight_seeds':15,
+             'source_sha256':{f.name:hashlib.sha256(f.read_bytes()).hexdigest()
+                              for f in p.iterdir() if f.is_file()}}
+          (p/'archive_manifest.json').write_text(json.dumps(m,ensure_ascii=False,indent=2)+'\n')
+          print('PASS: original 54 provider receipts; two true compactions; 15 weight-zero seeds; 12 continuation answers')
+          PY
+      - name: Commit immutable source files on isolated research branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/atlas/sources/weightless-compaction-20261105
+          git commit -m "research: archive source receipts for actual compaction and zero-weight memory pilot"
+          git push origin HEAD:research/weightless-at-compaction-20261105
