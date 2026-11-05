@@ -1,0 +1,61 @@
+name: Research - Anchor-tail weak-cue sensitivity 2026-11-05
+on:
+  push:
+    branches:
+      - research/anchor-tail-live-pilot-20261105
+    paths:
+      - .github/workflows/anchor-tail-weak-cue-20261105.yml
+permissions:
+  contents: read
+concurrency:
+  group: anchor-tail-weak-cue-20261105
+  cancel-in-progress: false
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: Validate frozen source and conditions
+        run: |
+          python -m py_compile research/scripts/anchor_tail_weak_cue_20261105.py
+          python research/scripts/anchor_tail_weak_cue_20261105.py --preflight
+  live:
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: OpenAI key
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: Require secure key
+        shell: bash
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::Missing environment key; no inference"
+            exit 1
+          fi
+      - name: Install SDK
+        run: python -m pip install --disable-pip-version-check "openai>=2,<4"
+      - name: Execute eight real weak-cue probes
+        run: python research/scripts/anchor_tail_weak_cue_20261105.py --out research-artifacts/anchor-tail-weak-cue-20261105
+      - name: Preserve original answers
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: anchor-tail-weak-cue-20261105
+          path: research-artifacts/anchor-tail-weak-cue-20261105
+          if-no-files-found: warn
+          retention-days: 30
