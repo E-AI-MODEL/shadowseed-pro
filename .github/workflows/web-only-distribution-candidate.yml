@@ -81,6 +81,7 @@ jobs:
         working-directory: apps/web
         run: |
           npm install --ignore-scripts
+          npm audit --audit-level=high
           npm run build
       - name: Synchronize static assets
         run: python scripts/sync_web_assets.py
