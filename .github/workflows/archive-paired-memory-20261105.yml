@@ -1,0 +1,60 @@
+name: Research - Archive original paired-memory pilot receipts
+on:
+  push:
+    branches:
+      - research/paired-memory-vs-seed-20261105
+    paths:
+      - .github/workflows/archive-paired-memory-20261105.yml
+permissions:
+  contents: write
+  actions: read
+jobs:
+  verify-and-archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: paired-memory-vs-seed-20261105
+          run-id: 41982542768
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: research/atlas/sources/paired-memory-vs-seed-20261105
+      - name: Verify original responses, seeds, compaction, and matched conditions
+        run: |
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          p=Path('research/atlas/sources/paired-memory-vs-seed-20261105')
+          j=json.loads((p/'result.json').read_text(encoding='utf-8'))
+          e=[json.loads(x) for x in (p/'events.jsonl').read_text(encoding='utf-8').splitlines() if x.strip()]
+          r=[x for x in e if x['type']=='response']
+          assert j['summary']['status']=='COMPLETE'
+          assert len(r)==j['summary']['provider_calls']==108
+          assert len(j['cases'])==4
+          assert all(len(c['outcomes'])==8 for c in j['cases'])
+          assert sum(len(c['outcomes']) for c in j['cases'])==32
+          assert sum(len(c['all_seeds']) for c in j['cases'])==24
+          assert all(s['weight']==0 and s['evidence_count']==0 for c in j['cases'] for s in c['all_seeds'])
+          assert all('compaction' in c['compaction_output_types'] for c in j['cases'])
+          assert all(hashlib.sha256(x['text'].encode()).hexdigest()==x['text_sha256'] for x in r if 'text' in x)
+          usage={x['label']:x['usage'] for x in r}
+          for c in j['cases']:
+            for ctx in ('full','provider_compacted'):
+              a=usage[c['case']+'/'+ctx+'/matched_note']['input_tokens']
+              b=usage[c['case']+'/'+ctx+'/weightless_review']['input_tokens']
+              assert a==b,(c['case'],ctx,a,b)
+          manifest={'run_url':'https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/41982542768',
+                    'artifact_id':13395170928,'provider_receipts':108,'final_answers':32,
+                    'cases':4,'seeds':24,'matched_token_pairs':8,
+                    'source_sha256':{x.name:hashlib.sha256(x.read_bytes()).hexdigest() for x in p.iterdir() if x.is_file()}}
+          (p/'archive_manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8')
+          print('VERIFY_OK 108 provider receipts; 32 continuation answers; 24 zero-weight seeds; 8 token-exact pairs')
+          PY
+      - name: Commit immutable raw evidence to research branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/atlas/sources/paired-memory-vs-seed-20261105
+          git commit -m "research: archive original matched memory versus weightless run"
+          git push origin HEAD:research/paired-memory-vs-seed-20261105
