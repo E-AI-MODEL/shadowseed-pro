@@ -1,0 +1,70 @@
+name: Research - Real ShadowSeed weightless re-evaluation at provider compaction
+
+# One-shot on a separate research branch: no scheduled or manual repetitions.
+on:
+  push:
+    branches:
+      - research/weightless-at-compaction-20261105
+    paths:
+      - .github/workflows/weightless-at-compaction-live-20261105.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: research-weightless-provider-compaction-20261105
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: Syntax and offline research-condition checks
+        run: |
+          python -m py_compile research/scripts/weightless_compaction_live_20261105.py
+          python research/scripts/weightless_compaction_live_20261105.py --preflight
+
+  live:
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment:
+      name: OpenAI key
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: Confirm secret binding without exposing it
+        shell: bash
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::Protected OPENAI_KEY absent; no calls."
+            exit 1
+          fi
+      - name: Install canonical ShadowSeed engine and current OpenAI SDK
+        run: |
+          python -m pip install --disable-pip-version-check -e . "openai>=2,<4"
+      - name: Execute actual provider compaction and paired research conditions
+        run: |
+          python research/scripts/weightless_compaction_live_20261105.py --out research-artifacts/weightless-compaction-20261105
+      - name: Preserve complete or partial real provider receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: weightless-compaction-live-20261105
+          path: research-artifacts/weightless-compaction-20261105/
+          if-no-files-found: warn
+          retention-days: 30
