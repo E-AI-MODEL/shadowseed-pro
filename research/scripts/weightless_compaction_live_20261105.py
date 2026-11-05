@@ -80,7 +80,7 @@ def received(label,model,kind,response,text=None,extras=None):
  TALLY["provider_calls"]+=1
  item={"type":"response","label":label,"model_requested":model,
        "model_returned":getattr(response,"model",model),
-       "response_id":response.id,"usage":usage,
+       "response_id":getattr(response,"id",None),"usage":usage,
        "spent_cumulative_estimated_usd":round(TALLY["estimated_usd"],6),
        "kind":kind}
  if text is not None:
