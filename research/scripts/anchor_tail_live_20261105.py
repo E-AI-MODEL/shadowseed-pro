@@ -15,7 +15,6 @@ from pathlib import Path
 import random
 import re
 from datetime import datetime, timezone
-from openai import OpenAI
 
 MODEL = "gpt-4.1"
 LIMIT_USD = 0.50
@@ -172,6 +171,7 @@ def main():
     if args.preflight:return
     if not os.environ.get("OPENAI_API_KEY"):
         raise SystemExit("BLOCKED_NO_KEY")
+    from openai import OpenAI
     client=OpenAI(timeout=120.0,max_retries=0)
     output=Path(args.out)
     output.mkdir(parents=True,exist_ok=True)
