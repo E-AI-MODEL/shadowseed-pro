@@ -1,0 +1,48 @@
+name: Research - Archive anchor-tail weak-cue responses 2026-11-05
+on:
+  push:
+    branches:
+      - research/anchor-tail-live-pilot-20261105
+    paths:
+      - .github/workflows/archive-anchor-tail-weak-cue-20261105.yml
+permissions:
+  contents: write
+  actions: read
+jobs:
+  preserve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: anchor-tail-weak-cue-20261105
+          run-id: 41979848919
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: research/atlas/sources/anchor-tail-weak-cue-20261105
+      - name: Verify original responses and hashes
+        run: |
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          p=Path('research/atlas/sources/anchor-tail-weak-cue-20261105')
+          j=json.loads((p/'result.json').read_text())
+          e=[json.loads(s) for s in (p/'calls.jsonl').read_text().splitlines()]
+          r=[x for x in e if x['event']=='response']
+          assert j['summary']['status']=='COMPLETE' and len(r)==8
+          assert all(hashlib.sha256(x['text'].encode()).hexdigest()==x['text_sha256'] for x in r)
+          (p/'archive_manifest.json').write_text(json.dumps({
+            'source_run':'https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/41979848919',
+            'source_artifact_id':13394005062,
+            'responses':len(r),
+            'sha256':{x.name:hashlib.sha256(x.read_bytes()).hexdigest() for x in p.iterdir() if x.is_file()}
+          },indent=2)+'\n')
+          print('SOURCE_VERIFIED 8 real responses')
+          PY
+      - name: Commit raw source to research branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/atlas/sources/anchor-tail-weak-cue-20261105
+          git commit -m "research: archive eight weak-cue sensitivity responses"
+          git push origin HEAD:research/anchor-tail-live-pilot-20261105
