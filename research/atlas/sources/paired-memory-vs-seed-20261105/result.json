@@ -1,0 +1,742 @@
+{
+  "summary": {
+    "status": "COMPLETE",
+    "cases_completed": 4,
+    "case_count_target": 4,
+    "conditions_per_case": 8,
+    "model": "gpt-6.1-sol",
+    "detector_model": "gpt-4.1",
+    "embedding_model": "text-embedding-3-small",
+    "provider_calls": 108,
+    "estimated_spend_usd": 0.245268,
+    "budget_cap_usd": 0.5,
+    "contract": "Real ShadowseedEngine; true provider compaction; matched candidate text; equal output max tokens",
+    "limitations": [
+      "The matched-note and weightless arms differ in their memory label, not hidden model state.",
+      "Candidates are born from visible answers, not internal reasoning/token tail.",
+      "Condition assignment shares each case's own original dialogue and compaction; calls are stateless but cases are clustered.",
+      "The no-memory and reflection arms intentionally have different information.",
+      "The seed review is a research-only user prompt; no product Gate permission is added.",
+      "The compacted state is opaque; reduced tokens are not proof of lost meaning.",
+      "Small exploratory cases without blinded independent human ratings; no causal/general efficacy claim."
+    ]
+  },
+  "cases": [
+    {
+      "case": "KOELKETEN",
+      "kind": "research",
+      "turns": [
+        {
+          "question": "Een fictieve transporteur ziet schommelingen in temperatuurmetingen tijdens koeltransport. De voertuigen verschillen in belading, deuropeningen, sensorplaatsing en tijdsynchronisatie. Er zijn alleen samengevatte dagrapporten, geen ruwe logboeken. Welke eerste mogelijke oorzaken en meetvragen zie je?",
+          "answer": "De schommelingen kunnen zowel **echte temperatuurveranderingen** als **meet- of rapportage-effecten** zijn. Met alleen samengevatte dagrapporten is dat onderscheid nog niet betrouwbaar te maken.\n\n### Eerste mogelijke oorzaken en meetvragen\n\n| Mogelijke oorzaak | Eerste meetvragen |\n|---|---|\n| **Verschillen in belading en luchtcirculatie** | Hoe vol zijn de voertuigen? Blokkeert de lading luchttoevoer of -retour? Wat was de temperatuur van de lading bij vertrek? |\n| **Deuropeningen en laad-/losmomenten** | Hoe vaak en hoe lang gaan deuren open? Vallen temperatuurpieken samen met die momenten? Hoe snel herstelt de temperatuur daarna? |\n| **Verschillende sensorplaatsen** | Meet de sensor bij een deur, wand, koeluitlaat of tussen de producten? Wordt luchttemperatuur of producttemperatuur gemeten? Zijn locaties tussen voertuigen vergelijkbaar? |\n| **Sensorafwijking of meetinstellingen** | Zijn sensoren gecontroleerd of gekalibreerd? Verschillen meetinterval, nauwkeurigheid, filtering of middeling? Zijn er ontbrekende of ongeldige metingen? |\n| **Onjuiste tijdsynchronisatie** | Gebruiken sensoren, koelunit en deurregistratie dezelfde klok en tijdzone? Is er klokafwijking? Kunnen gebeurtenissen daardoor ten onrechte wel of niet samenvallen? |\n| **Werking en instellingen van de koelinstallatie** | Verschillen setpoints, bedrijfsmodi of ontdooicycli? Zijn storingen, uitschakelingen of onderhoudsproblemen geregistreerd? |\n| **Route- en omgevingsverschillen** | Verschillen buitentemperatuur, ritduur, stilstand en blootstelling aan zon? Zijn voertuigvergelijkingen hiervoor gecorrigeerd? |\n| **Wijze van samenvatten** | Wat betekent ‘schommeling’: dagbereik, standaardafwijking of iets anders? Gebruiken alle rapporten dezelfde berekening, tijdvensters en omgang met ontbrekende waarden? |\n\n### Eerste onderzoeksstap\n1. **Leg vast wat de dagrapporten precies weergeven.** Een dagminimum en -maximum vertellen bijvoorbeeld niet hoe lang een afwijking duurde.\n2. **Maak een vergelijkbaarheidsoverzicht** van voertuigen, sensoren, belading, instellingen en rapportagemethoden.\n3. **Verzamel bij een volgende meetronde tijdgesynchroniseerde ruwe gegevens**, aangevuld met deurgebeurtenissen, laad-/losmomenten en koelunitstatus. Gebruik waar mogelijk vergelijkbaar geplaatste referentiesensoren.\n\n**Voorlopige conclusie:** behandel bovenstaande als hypotheses, niet als aangetoonde oorzaken. De dagrapporten kunnen aanknopingspunten geven, maar bieden onvoldoende detail om pieken",
+          "seeds_after": 2,
+          "newly_observed_seed_texts": [
+            "Onderscheid tussen schommelingen veroorzaakt door meetfouten versus daadwerkelijke temperatuurveranderingen blijft epistemisch onbepaald zonder ruwe logdata.",
+            "Afhankelijkheid van de definitie en berekeningswijze van ‘schommeling’ in de dagrapporten voor interpretatie van de resultaten."
+          ]
+        },
+        {
+          "question": "De planner wil eerst een defecte koelinstallatie onderzoeken. Werk een tijdelijk controleplan uit maar presenteer dit vermoeden niet als vaststaand.",
+          "answer": "## Tijdelijk controleplan: koelinstallatie als werkhypothese\n\n**Doel:** nagaan of de koelinstallatie bijdraagt aan de temperatuurschommelingen. Een defect is nog niet aangetoond; belading, deuropeningen, sensorplaatsing en tijdsynchronisatie blijven alternatieve verklaringen.\n\n### 1. Controle vóór de volgende rit\nLaat een bevoegde medewerker of koeltechnicus:\n- setpoint en bedrijfsmodus controleren tegenover de vervoerseisen;\n- storingsmeldingen, onderhoudshistorie en beschikbare ontdooiregistraties bekijken;\n- ventilatoren, luchttoevoer en -retour en zichtbare beschadigingen controleren;\n- de temperatuurweergave vergelijken met een gecontroleerde referentiethermometer op een vergelijkbare meetplaats.\n\nLeg bevindingen vast. Laat technische tests en reparaties door gekwalificeerd personeel uitvoeren.\n\n### 2. Tijdelijk aanvullende gegevens verzamelen\nBewaar tijdens de controleperiode **ruwe, tijdgestempelde meetgegevens**, niet alleen dagrapporten. Registreer:\n- temperatuur op vaste, beschreven sensorplaatsen;\n- setpoint, bedrijfsstatus, ontdooimomenten en storingsmeldingen, voor zover beschikbaar;\n- deur-open- en deur-dichtmomenten;\n- laad-/losmomenten, beladingsgraad en eventuele blokkering van luchtstromen;\n- buitentemperatuur en stilstand, waar meetbaar.\n\nSynchroniseer vooraf de klokken. Kies meetinterval en meetduur op basis van de relevante temperatuureisen en de te onderzoeken gebeurtenissen; leg die keuzes vooraf vast.\n\n### 3. Gericht vergelijken\n- Volg eerst het verdachte voertuig onder goed beschreven omstandigheden.\n- Vergelijk zo mogelijk met een voertuig met vergelijkbare belading, route, instellingen en sensorplaatsing.\n- Laat zo nodig een gestandaardiseerde koeltest uitvoeren volgens de fabrikantprocedure.\n\nEen verschil tussen voertuigen is op zichzelf nog geen bewijs van een defect.\n\n### 4. Bevindingen beoordelen\n| Bevinding | Voorzichtige interpretatie |\n|---|---|\n| Afwijkingen vallen samen met storingsmeldingen of afwijkend koelgedrag | Ondersteunt verder technisch onderzoek; de oorzaak moet nog worden vastgesteld. |\n| Afwijkingen volgen vooral op deuropeningen of gewijzigde belading | Die omstandigheden verdienen nader onderzoek; een installatieprobleem is niet automatisch uitgesloten. |\n| Referentiesensor en voertuigsensor verschillen | Eerst meetketen, plaatsing en kalibratie onderzoeken. |\n| Geen afwijking tijdens de controle | Een incidenteel probleem is daarmee niet uitgesloten. |\n\n### 5. Tijdelijke beheersing en besluit\nGebruik bestaande product-, bedrijfs- en wettelijke temperatuurgrenzen als actiecriteria; verzin geen nieuwe grenswaarden. Volg bij overschrijding of onvoldoende zekerheid over de koeling de geldende escalatieprocedure, inclusief beoordeling van lading",
+          "seeds_after": 2,
+          "newly_observed_seed_texts": [
+            "Onderscheid tussen schommelingen veroorzaakt door meetfouten versus daadwerkelijke temperatuurveranderingen blijft epistemisch onbepaald zonder ruwe logdata.",
+            "Afhankelijkheid van de definitie en berekeningswijze van ‘schommeling’ in de dagrapporten voor interpretatie van de resultaten."
+          ]
+        },
+        {
+          "question": "Maak een korte overdracht voor de volgende ploeg: het team kijkt voorlopig naar de koelinstallatie. Nieuwe gegevens zijn nog niet beschikbaar.",
+          "answer": "**Overdracht volgende ploeg**\n\nHet team onderzoekt voorlopig de koelinstallatie als mogelijke oorzaak van de temperatuurschommelingen. **Een defect is niet vastgesteld.** Er zijn nog geen nieuwe meetgegevens beschikbaar.\n\nVervolg het controleplan en leg bevindingen vast. Houd ook belading, deuropeningen, sensorplaatsing en tijdsynchronisatie als mogelijke verklaringen in beeld. Volg bij temperatuurafwijkingen de bestaande escalatieprocedure.",
+          "seeds_after": 4,
+          "newly_observed_seed_texts": [
+            "Onderscheid tussen schommelingen veroorzaakt door meetfouten versus daadwerkelijke temperatuurveranderingen blijft epistemisch onbepaald zonder ruwe logdata.",
+            "Afhankelijkheid van de definitie en berekeningswijze van ‘schommeling’ in de dagrapporten voor interpretatie van de resultaten.",
+            "Relatie tussen het ontbreken van nieuwe meetgegevens en de mogelijkheid om het controleplan effectief voort te zetten.",
+            "Afhankelijkheid van de bestaande escalatieprocedure van de volledigheid en juistheid van de beschikbare temperatuurdata."
+          ]
+        }
+      ],
+      "seed_count": 4,
+      "all_seeds": [
+        {
+          "id": "ss_001",
+          "text": "Onderscheid tussen schommelingen veroorzaakt door meetfouten versus daadwerkelijke temperatuurveranderingen blijft epistemisch onbepaald zonder ruwe logdata.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "ACTIVE",
+          "occurrence_count": 2,
+          "evidence_count": 0,
+          "born_turn": 0
+        },
+        {
+          "id": "ss_002",
+          "text": "Afhankelijkheid van de definitie en berekeningswijze van ‘schommeling’ in de dagrapporten voor interpretatie van de resultaten.",
+          "weight": 0.0,
+          "trace": 1.027,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 0
+        },
+        {
+          "id": "ss_003",
+          "text": "Relatie tussen het ontbreken van nieuwe meetgegevens en de mogelijkheid om het controleplan effectief voort te zetten.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 2
+        },
+        {
+          "id": "ss_004",
+          "text": "Afhankelijkheid van de bestaande escalatieprocedure van de volledigheid en juistheid van de beschikbare temperatuurdata.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 2
+        }
+      ],
+      "selected_seeds": [
+        {
+          "id": "ss_001",
+          "text": "Onderscheid tussen schommelingen veroorzaakt door meetfouten versus daadwerkelijke temperatuurveranderingen blijft epistemisch onbepaald zonder ruwe logdata.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "ACTIVE",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 0
+        },
+        {
+          "id": "ss_002",
+          "text": "Afhankelijkheid van de definitie en berekeningswijze van ‘schommeling’ in de dagrapporten voor interpretatie van de resultaten.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 0
+        }
+      ],
+      "engine_state_hash": "192c1682cd6e743f925b8b49188d66241131a0c2f1a8e72c2e8502c2d7401a5b",
+      "gate_policy": "evidence_backed",
+      "zero_weight_confirmed": true,
+      "compaction_output_types": [
+        "message",
+        "message",
+        "message",
+        "compaction"
+      ],
+      "compaction_output_sha256": "10152508c2207b08c9e09478157c58e5def52c37d0fd1ca85bb8e3b6a48acb7e",
+      "continuation": "Nieuwe informatie: twee meldingen blijken ongeveer een kwartier uiteen te liggen met onbekende klokinstellingen, en één rit had ongebruikelijke laadmomenten. Er is nog geen onafhankelijke referentiemeting. Welk eerste experiment onderscheidt het best concurrerende verklaringen? Noem wat je conclusie zou verzwakken.",
+      "outcomes": {
+        "provider_compacted/regular": {
+          "text": "**Eerste experiment: een gecontroleerde proefrit met gesynchroniseerde, onafhankelijke temperatuurregistratie.** Dat onderscheidt een werkelijke temperatuurschommeling beter van klok- of sensoreffecten dan alleen een technische controle van de koelinstallatie.\n\n**Opzet**\n- Controleer vóór de proef de klokafwijkingen en synchroniseer alle registraties op één tijdbron. Het kwartier verschil tussen de eerdere meldingen bewijst zonder bekende klokinstellingen geen volgorde.\n- Plaats een gecontroleerde, onafhankelijke referentiesensor naast de bestaande sensor. Registreer daarnaast op een tweede, gedocumenteerde plek om plaatselijke temperatuurverschillen te herkennen.\n- Houd belading, sensorposities en koelinstellingen gelijk. Vergelijk een fase met gesloten deuren met een vooraf vastgelegde laad-/deuropeningsfase, binnen de geldende transportvoorwaarden.\n- Bewaar ruwe, tijdgestempelde metingen en registreer deurbewegingen, laadhandelingen en — indien beschikbaar — koelbedrijf en ontdooicycli.\n\n**Wat onderscheidt de verklaringen?**\n- Alleen de bestaande sensor vertoont schommelingen: dat wijst eerder op een sensor- of registratieprobleem.\n- Beide sensoren op dezelfde plek schommelen rond laadhandelingen: dat ondersteunt een echte, met laden samenhangende temperatuurverandering.\n- Gelijktijdige afwijkingen op meerdere plekken, ook met gesloten deuren: dat maakt onderzoek naar koeling of luchtverdeling relevanter, maar bewijst nog geen defect.\n\n**Wat zou de conclusie verzwakken?**\nOnzekere synchronisatie, een onvoldoende gecontroleerde referentiesensor, tegelijk veranderende belading of instellingen, en een proef die de eerdere omstandigheden niet benadert. Ook één proef zonder afwijkingen sluit een intermitterend probleem niet uit. Zonder de oorspronkelijke ruwe gegevens kan deze proef bovendien niet met zekerheid verklaren wat bij de eerdere meldingen gebeurde.",
+          "user_prompt_sha256": "ebaf676d73edb2a073a576a0ede63814c8e627b5e83bb0b9f5041f095ad51af7",
+          "context_sha256": "10152508c2207b08c9e09478157c58e5def52c37d0fd1ca85bb8e3b6a48acb7e",
+          "user_prompt_chars": 316
+        },
+        "provider_compacted/reflect": {
+          "text": "**Eerste experiment: een gecontroleerde proef met gesynchroniseerde, onafhankelijke temperatuurregistratie.** Daarmee toets je niet alleen de koelinstallatie, maar ook of de schommelingen door laden, sensorplaatsing of tijdregistratie ontstaan.\n\n- Controleer en documenteer de klokinstellingen van alle registraties; gebruik één gemeenschappelijke tijdreferentie.\n- Plaats een gecontroleerde onafhankelijke referentiesensor naast de bestaande sensor en een tweede op een vastgelegde andere plek in de laadruimte.\n- Houd belading, luchtcirculatie en koelinstellingen zo constant mogelijk. Registreer eerst met gesloten deuren en daarna tijdens een vooraf vastgelegde laad-/deuropeningshandeling. Doe dit onder veilige testomstandigheden.\n- Leg ruwe meetreeksen vast, plus deurmomenten en, indien beschikbaar, bedrijfsstatus, storingen en ontdooicycli van de koelinstallatie.\n\n**Wat onderscheidt dit?**\n- Een afwijking op de bestaande sensor, maar niet op de referentie ernaast, wijst eerder richting een meet- of registratieprobleem.\n- Verschillen tussen meetlocaties kunnen passen bij plaatselijke opwarming of ongelijke luchtverdeling.\n- Opwarming op meerdere sensoren rond de laadhandeling ondersteunt een invloed van laden of deuropeningen.\n- Opwarming op meerdere sensoren bij gesloten deuren maakt onderzoek naar de koelwerking relevanter, maar bewijst nog geen defect.\n\n**Minder voor de hand liggend, wel toetsbaar:** een tijd- of rapportage-effect. De twee meldingen kunnen zonder bekende klokinstellingen niet betrouwbaar aan elkaar of aan laadmomenten worden gekoppeld. Vergelijk daarom de ruwe, gesynchroniseerde registraties ook met de manier waarop het dagrapport meldingen samenvoegt.\n\n**Wat verzwakt de conclusie?** Een niet-gecontroleerde referentiesensor, resterende klokonzekerheid, veranderende belading of omstandigheden, en een eenmalige uitkomst. Als het verschijnsel tijdens de proef uitblijft, sluit dat een incidentele koelstoring of laadgerelateerde afwijking niet uit.",
+          "user_prompt_sha256": "eddcfa660538912ad7002eefaaccc798e79085379229d799da76de5e8397e074",
+          "context_sha256": "10152508c2207b08c9e09478157c58e5def52c37d0fd1ca85bb8e3b6a48acb7e",
+          "user_prompt_chars": 481
+        },
+        "full/reflect": {
+          "text": "**Eerste experiment: een gecontroleerde proef met gesynchroniseerde metingen en een onafhankelijke referentiesensor.** Alleen de twee meldingen vergelijken is nu onvoldoende: het kwartier verschil kan door gebeurtenissen óf door onbekende klokinstellingen ontstaan.\n\n### Opzet\n- Leg eerst de huidige klokinstellingen en onderlinge tijdverschillen vast; synchroniseer daarna sensoren, koelunit en deurregistratie.\n- Plaats een gecontroleerde referentiesensor vlak naast de bestaande sensor. Plaats zo mogelijk een extra sensor op een tweede, beschreven plek.\n- Houd belading, luchtstroming en setpoint gelijk. Meet eerst met gesloten deuren en voer daarna een vooraf vastgelegd deur-/laadmoment uit, binnen de geldende veiligheids- en productvoorwaarden.\n- Bewaar ruwe temperatuurmetingen, koelunitstatus en de exacte deur-/laadtijden.\n\n### Wat onderscheidt dit?\n- **Bestaande sensor wijkt af van de naastgelegen referentie:** meetketen of sensor verdient eerst aandacht.\n- **Beide sensoren reageren op het deur-/laadmoment en herstellen vervolgens:** ondersteunt een operationele verklaring, maar sluit een koelprobleem niet uit.\n- **Beide tonen ook bij gesloten deuren afwijkend gedrag:** aanleiding voor verder onderzoek naar koelvermogen, regeling of luchtcirculatie; nog geen bewijs van een defect.\n- **Het tijdverschil tussen meldingen verdwijnt na correcte tijdregistratie:** ondersteunt een tijdregistratieprobleem.\n\n**Minder voor de hand liggend, maar toetsbaar:** ongebruikelijke laadmomenten kunnen ook de luchtcirculatie of blootstelling van de sensor veranderen. Een lokale temperatuurpiek hoeft dan niet representatief te zijn voor de hele laadruimte. Vergelijk daarom de naastgelegen sensoren met de tweede meetplek en documenteer de laadindeling.\n\n**Wat zou de conclusie verzwakken?** Een niet-gecontroleerde referentiesensor, onzekere tijdstempels, gelijktijdige veranderingen in belading en instellingen, of proefomstandigheden die sterk afwijken van de verdachte rit. Ook een probleemloze proef sluit een incidenteel defect niet uit. Zonder ruwe gegevens van de eerdere ritten blijft een uitspraak over die specifieke meldingen beperkt.",
+          "user_prompt_sha256": "eddcfa660538912ad7002eefaaccc798e79085379229d799da76de5e8397e074",
+          "context_sha256": "af4a618e4190b5a0603f7d12f787bed4827c69c6d79b213466ca10920bf524b3",
+          "user_prompt_chars": 481
+        },
+        "provider_compacted/weightless_review": {
+          "text": "**Eerste experiment: een gecontroleerde proef met gesynchroniseerde ruwe temperatuurregistratie én een onafhankelijke referentiesensor.** Dat onderscheidt meet- en klokproblemen beter van echte temperatuurveranderingen dan uitsluitend de koelinstallatie inspecteren.\n\n### Opzet\n- Gebruik bij voorkeur het betrokken voertuig, met gedocumenteerde belading, sensorposities en instellingen van de koelinstallatie.\n- Controleer en noteer vóór synchronisatie de klokafwijkingen. De circa vijftien minuten tussen de meldingen bewijzen nu geen werkelijk tijdsverschil.\n- Plaats een gecontroleerde, onafhankelijke referentiesensor vlak naast de bestaande sensor. Plaats zo mogelijk extra sensoren op andere relevante plekken om lokale temperatuurverschillen te herkennen.\n- Registreer ruwe meetwaarden op één gecontroleerde tijdsbasis, samen met deuropeningen, laadhandelingen en beschikbare informatie over de koelinstallatie.\n- Vergelijk een periode met gesloten deuren en ongewijzigde belading met een **vooraf vastgelegde, veilige laadhandeling**, gevolgd door herstel. Houd overige omstandigheden zo gelijk mogelijk; gebruik geen kwetsbare lading voor de proef.\n\n### Wat onderscheidt de uitkomst?\n| Waarneming | Voorzichtige interpretatie |\n|---|---|\n| Bestaande sensor schommelt, naastgelegen referentie niet | Meet- of registratieprobleem wordt aannemelijker. |\n| Beide veranderen overeenkomstig rond de laadhandeling | Een echte lokale temperatuurverandering door laden of deuropening wordt aannemelijker; dit bewijst geen koeldefect. |\n| Alleen bepaalde meetlocaties veranderen | Sensorplaatsing of luchtverdeling verdient nader onderzoek. |\n| Beide veranderen ook tijdens de gesloten, stabiele fase | Een echte verandering wordt aannemelijker; de koelinstallatie blijft één mogelijke oorzaak, naast bijvoorbeeld regeling of luchtstroming. |\n\n**Wat zou de conclusie verzwakken?** Onzekere referentienauwkeurigheid, verschillende sensorreactietijden, onvoldoende gelijke meetposities, resterende klokfouten, niet-geregistreerde laadhandelingen of een proef die de oorspronkelijke omstandigheden slecht benadert. Ook sluit één probleemloze proef een incidentele storing niet uit.\n\n**Relevantie van de onbewezen mogelijkheden:** beide zijn relevant als aandachtspunt. Zonder ruwe gegevens en onafhankelijke vergelijking blijft de eerdere oorzaak onzeker. Vraag daarnaast na hoe het dagrapport ‘schommeling’ berekent en probeer het rapport uit de proefdata te reconstrueren. Zo toets je of samenvatting of tijdsindeling het gerapporteerde patroon beïnvloedt. De proef kan verklaringen onderscheiden, maar verklaart de eerdere ritten niet automatisch.",
+          "user_prompt_sha256": "604d3568d4586566957e0a135d2d3b20345d051db3822a3f87c998cb59f6dff5",
+          "context_sha256": "10152508c2207b08c9e09478157c58e5def52c37d0fd1ca85bb8e3b6a48acb7e",
+          "user_prompt_chars": 821
+        },
+        "full/weightless_review": {
+          "text": "**Eerste experiment: een tijdgesynchroniseerde referentiemeting met een gecontroleerde deuropening.** Dit onderscheidt meet- en klokproblemen van echte temperatuurveranderingen, zonder een defecte koelinstallatie als uitgangspunt te nemen.\n\n### Opzet\n- Plaats een onafhankelijk gecontroleerde referentiesensor vlak bij de bestaande sensor, zonder de luchtstroom te hinderen.\n- Synchroniseer de klokken van sensoren, deurregistratie en koelunit, voor zover mogelijk. Noteer resterende tijdsonzekerheid.\n- Bewaar **ruwe, tijdgestempelde meetgegevens** en leg vast wat de dagrapporten met ‘schommeling’ bedoelen.\n- Houd belading, sensorplaatsing en koelinstellingen gelijk. Meet eerst met gesloten deuren en voer daarna een vooraf vastgelegde, normale laad-/deurhandeling uit. Doe dit zonder productveiligheid in gevaar te brengen.\n- Registreer deurmomenten, laadhandelingen en beschikbare koelunitstatus. Herhaal de vergelijking indien uitvoerbaar.\n\n### Wat onderscheidt dit?\n| Uitkomst | Voorzichtige conclusie |\n|---|---|\n| Beide sensoren tonen gelijktijdig dezelfde verandering | Ondersteunt een echte **lokale** temperatuurverandering, maar bewijst geen defect. |\n| Alleen de bestaande sensor wijkt af | Wijst eerder op de meetketen, instellingen of zeer lokale plaatsing. |\n| Verandering volgt herhaalbaar op de deur-/laadhandeling | Ondersteunt die handeling als verklaring onder de geteste omstandigheden. |\n| Ook bij gesloten deuren ontstaan bevestigde afwijkingen | Geeft aanleiding tot gericht onderzoek van koelwerking en luchtcirculatie. |\n\nDe twee meldingen die ongeveer een kwartier uiteenliggen zijn met onbekende klokinstellingen **nog niet betrouwbaar in volgorde te plaatsen**.\n\n### Wat zou de conclusie verzwakken?\nOnzekere klokgelijkheid, onvoldoende gecontroleerde referentiesensor, veranderende belading of instellingen, ontbrekende logdata en een niet-representatieve laadhandeling. Ook één niet-herhaalbare uitkomst is zwak bewijs. Geen afwijking tijdens de proef sluit een incidenteel defect niet uit.\n\nDe genoemde mogelijkheden zijn relevant als **onderzoeksbeperkingen**, niet als vaststaande uitkomsten: ruwe gegevens en de definitie van ‘schommeling’ zijn nodig om de nieuwe proef én de dagrapporten goed te interpreteren.",
+          "user_prompt_sha256": "604d3568d4586566957e0a135d2d3b20345d051db3822a3f87c998cb59f6dff5",
+          "context_sha256": "af4a618e4190b5a0603f7d12f787bed4827c69c6d79b213466ca10920bf524b3",
+          "user_prompt_chars": 821
+        },
+        "full/matched_note": {
+          "text": "**Begin met een gecontroleerde meetrit met onafhankelijke referentiemeting en één gezamenlijke tijdsbasis**, niet met de aanname dat de koelinstallatie defect is.\n\n### Opzet\n- Plaats een gecontroleerde referentielogger naast de bestaande sensor, zonder de luchtstroom te beïnvloeden. Voeg zo mogelijk een tweede meetlocatie toe om lokale temperatuurverschillen te herkennen.\n- Controleer en registreer vooraf de klokinstellingen van sensoren, koelunit en gebeurtenisregistratie. Controleer achteraf op klokdrift.\n- Bewaar ruwe temperatuurmetingen en registreer deurbewegingen, laadmomenten, belading, setpoint en koelunitstatus.\n- Vergelijk binnen een veilige, vooraf vastgelegde test een periode met gesloten deuren en stabiele belading met een gedocumenteerde laad-/deurhandeling. Houd andere omstandigheden zo gelijk mogelijk en blijf binnen de geldende vervoerseisen.\n\n### Wat onderscheidt dit?\n| Waarneming | Betekenis |\n|---|---|\n| Bestaande sensor schommelt, referentie ernaast niet | Wijst richting een probleem in sensor of meetketen. |\n| Beide meten een verandering na een laad-/deurhandeling | Ondersteunt een echte temperatuurverandering door die handeling. |\n| Beide meten veranderingen bij gesloten deuren en stabiele belading | Maakt verder onderzoek naar koelregeling, ontdooien of installatie zinvol; bewijst geen defect. |\n| De volgorde of samenhang van gebeurtenissen verandert na klokcorrectie | Eerdere tijdskoppelingen waren mogelijk misleidend. |\n\nHet gemelde kwartier verschil is **zonder bekende klokinstellingen geen betrouwbare tijdsrelatie**. De ongebruikelijke laadmomenten zijn een reden om laden expliciet mee te testen, niet om ze al als oorzaak aan te wijzen.\n\n**Wat verzwakt de conclusie?** Onvoldoende vergelijkbare meetplaatsen, onzekere kalibratie, resterende klokafwijking, ontbrekende gebeurtenisgegevens, veranderende testomstandigheden of het niet terugkeren van de schommeling. Eén test kan bovendien meerdere gelijktijdige oorzaken missen.\n\nBeide notities zijn relevant als aandachtspunt: de ontbrekende ruwe data beperken de huidige interpretatie, en vóór vergelijking met dagrapporten moet duidelijk zijn hoe die rapporten ‘schommeling’ berekenen. Geen van beide stelt op zichzelf een oorzaak vast.",
+          "user_prompt_sha256": "cfa691be1fa6d4f86d457225d47977cf6a98dfbad7f2aa50b96640cb5ddfa047",
+          "context_sha256": "af4a618e4190b5a0603f7d12f787bed4827c69c6d79b213466ca10920bf524b3",
+          "user_prompt_chars": 819
+        },
+        "provider_compacted/matched_note": {
+          "text": "**Eerste experiment: een gecontroleerde meetrit met gesynchroniseerde ruwe logging en een onafhankelijke referentiesensor.** Daarmee toets je zowel de voorlopige verdenking van de koelinstallatie als meet-, klok- en laadeffecten.\n\n### Opzet\n- Plaats een gecontroleerde referentiesensor direct naast de bestaande sensor. Leg beide posities vast; voeg indien mogelijk een meetpunt op een andere relevante plek toe om lokale temperatuurverschillen te herkennen.\n- Synchroniseer de klokken van sensoren, voertuigregistratie en gebeurtenissenlog. Noteer vooraf eventuele klokafwijkingen.\n- Leg ruwe temperatuurwaarden vast, samen met setpoint, beschikbare koelstatus en ontdooicycli.\n- Begin met een stabiele fase zonder deuropeningen of wijzigingen in belading. Registreer daarna een normale, vooraf afgesproken laad- of deuropening binnen de geldende transportvoorwaarden. Houd overige omstandigheden zo gelijk mogelijk.\n- Leg vooraf vast wat als ‘schommeling’ telt en bewaar de ruwe waarden, niet alleen een dagsamenvatting.\n\n### Wat onderscheidt de uitkomst?\n| Waarneming | Voorzichtige interpretatie |\n|---|---|\n| Bestaande sensor schommelt, naastgelegen referentie niet | Wijst richting sensor- of registratieprobleem. |\n| Beide sensoren veranderen tegelijk rond laden of deuropening | Ondersteunt een echte, mogelijk operationeel veroorzaakte temperatuurverandering; bewijst geen koeldefect. |\n| Beide veranderen ook tijdens de stabiele fase | Rechtvaardigt verder onderzoek naar koeling, regeling en luchtverdeling; lokaliseert nog geen defect. |\n| Gebeurtenissen vallen na klokcorrectie anders samen | Maakt eerdere conclusies over de volgorde of samenhang minder betrouwbaar. |\n\nDe twee meldingen die ongeveer een kwartier uiteenliggen, kun je met onbekende klokinstellingen **nog niet betrouwbaar aan elkaar of aan laadmomenten koppelen**.\n\n### Wat zou de conclusie verzwakken?\nEen onzekere referentiesensor, verschillende sensorreactietijden, onvoldoende tijdsynchronisatie, ontbrekende gebeurtenisregistratie of tegelijk veranderende belading en koelinstellingen. Ook geldt: geen afwijking tijdens één meetrit sluit een incidenteel probleem niet uit.\n\nBeide genoemde onbewezen mogelijkheden zijn hier relevant: de ontbrekende ruwe gegevens beperken nu het onderscheid tussen meeteffecten en echte veranderingen, en de rapportdefinitie van ‘schommeling’ moet worden gecontroleerd. Het experiment levert prospectief bewijs; het verklaart de eerdere ritten niet automatisch.",
+          "user_prompt_sha256": "cfa691be1fa6d4f86d457225d47977cf6a98dfbad7f2aa50b96640cb5ddfa047",
+          "context_sha256": "10152508c2207b08c9e09478157c58e5def52c37d0fd1ca85bb8e3b6a48acb7e",
+          "user_prompt_chars": 819
+        },
+        "full/regular": {
+          "text": "**Eerste experiment: een tijdgesynchroniseerde koel- en deurproef met een onafhankelijke referentiesensor.** Daarmee kun je in één gecontroleerde test echte temperatuurveranderingen onderscheiden van klok- en sensorproblemen.\n\n### Opzet\n- Gebruik het verdachte voertuig met vastgelegde, representatieve belading en vrije luchtcirculatie.\n- Controleer en synchroniseer de klokken van temperatuurloggers, koelunit en deurregistratie. Leg eventuele oorspronkelijke klokverschillen vast.\n- Plaats een gecontroleerde onafhankelijke referentiesensor naast de bestaande sensor. Voeg zo mogelijk een meetpunt bij de lading toe.\n- Bewaar ruwe meetgegevens, koelunitstatus en gebeurtenissen.\n- Meet eerst met gesloten deuren onder stabiele omstandigheden. Voer daarna een vooraf beschreven deur-/laadhandeling uit en volg het temperatuurherstel. Houd overige omstandigheden zo gelijk mogelijk en herhaal zo mogelijk de proef.\n\nGebruik daarvoor geen kwetsbare lading buiten de geldende vervoerseisen.\n\n### Wat onderscheidt de proef?\n- **Beide sensoren tonen een afwijking bij gesloten deuren:** ondersteunt een werkelijk koelprobleem, maar bewijst nog geen defect; ook luchtcirculatie of instellingen kunnen bijdragen.\n- **Beide reageren vooral op de deur-/laadhandeling:** ondersteunt een operationele verklaring.\n- **Alleen de bestaande sensor wijkt af:** wijst eerder op de meetketen.\n- **Het verband tussen meldingen verandert na klokcorrectie:** ondersteunt een timingprobleem.\n\nDe twee eerdere meldingen kun je door de onbekende klokinstellingen nog niet betrouwbaar aan elkaar koppelen.\n\n### Wat zou de conclusie verzwakken?\nEen eenmalige uitkomst, onvoldoende vergelijkbare belading of laadhandelingen, niet-gecontroleerde referentiesensoren, resterende klokonzekerheid, of gelijktijdige wijzigingen in meerdere omstandigheden. **Een normale proef sluit bovendien een incidenteel koeldefect niet uit**, en een nieuwe proef verklaart de eerdere rit niet automatisch.",
+          "user_prompt_sha256": "ebaf676d73edb2a073a576a0ede63814c8e627b5e83bb0b9f5041f095ad51af7",
+          "context_sha256": "af4a618e4190b5a0603f7d12f787bed4827c69c6d79b213466ca10920bf524b3",
+          "user_prompt_chars": 316
+        }
+      }
+    },
+    {
+      "case": "MUSEUM",
+      "kind": "writing",
+      "turns": [
+        {
+          "question": "Een fictief museum wil een bericht schrijven over een nieuwe tentoonstelling over geluid in de stad. Het moet mensen raken die niet vaak musea bezoeken. Men overweegt zakelijke informatie, een scène, een onverwachte vraag of een persoonlijk verhaal. Er zijn nog geen lezersmetingen. Wat zou je verkennen?",
+          "answer": "Ik zou eerst **een herkenbare scène uit het stadsleven verkennen**, met een onverwachte vraag als tweede richting. Dat zijn voorlopige keuzes, geen bewezen winnaars: er zijn nog geen lezersmetingen.\n\nEen scène kan het onderwerp dichtbij brengen zonder dat je belangstelling voor musea hoeft te veronderstellen. Bijvoorbeeld:\n\n> ‘Een tram piept door de bocht. Ergens dreunt een bas. Naast je lacht iemand hard. Wanneer klinkt een stad als thuis — en wanneer als te veel?’\n\nIk zou de vier opties zo bekijken:\n- **Zakelijke informatie:** maakt snel duidelijk wat er te zien en te doen is, maar biedt mogelijk minder aanleiding om je persoonlijk aangesproken te voelen. Wel belangrijk direct na de opening.\n- **Een scène:** laat lezers beginnen bij iets wat ze zelf kunnen herkennen.\n- **Een onverwachte vraag:** kan nieuwsgierigheid oproepen, zolang die concreet is, bijvoorbeeld: ‘Welk geluid zou jij uit de stad willen wissen?’\n- **Een persoonlijk verhaal:** kan nabijheid geven, mits het een echt, met toestemming gebruikt verhaal is — of duidelijk als fictief wordt gepresenteerd.\n\nMaak vervolgens vier korte versies met dezelfde praktische informatie. Laat mensen die zelden musea bezoeken vertellen: **Waar gaat dit volgens jou over? Wat spreekt je aan of stoot je af? Wat verwacht je er te kunnen doen?** Daarmee kun je onderzoeken of de opening niet alleen aandacht trekt, maar ook een begrijpelijke uitnodiging vormt.",
+          "seeds_after": 2,
+          "newly_observed_seed_texts": [
+            "Het onderscheid tussen fictieve en echte persoonlijke verhalen en de mogelijke verschillende effecten daarvan op de doelgroep blijft onbenoemd.",
+            "De aanname dat praktische informatie in alle vier versies gelijkwaardig kan worden geïntegreerd is niet uitgewerkt."
+          ]
+        },
+        {
+          "question": "De communicatieafdeling kiest voorlopig een vertrouwde institutionele toon. Beschrijf kort een eerste conceptaanpak en houd onzeker over het effect.",
+          "answer": "Begin met een heldere, institutionele introductie: waarover de tentoonstelling gaat en waarom geluid in de stad het onderzoeken waard is. Verbind dat daarna aan herkenbare stadsgeluiden en voeg bevestigde praktische informatie toe.\n\nEen mogelijke opening:\n> ‘De nieuwe tentoonstelling verkent geluid in de stad: van verkeer en bouwwerkzaamheden tot stemmen en muziek. Welke rol spelen deze geluiden in hoe we de stad beleven?’\n\nHoud de taal toegankelijk en vermijd museumjargon. Deze aanpak biedt een vertrouwd vertrekpunt voor de organisatie; of hij ook mensen aanspreekt die zelden musea bezoeken, is nog onzeker en vraagt om toetsing bij die doelgroep.",
+          "seeds_after": 5,
+          "newly_observed_seed_texts": [
+            "Het onderscheid tussen fictieve en echte persoonlijke verhalen en de mogelijke verschillende effecten daarvan op de doelgroep blijft onbenoemd.",
+            "De aanname dat praktische informatie in alle vier versies gelijkwaardig kan worden geïntegreerd is niet uitgewerkt.",
+            "Onderscheid tussen institutionele toon en toegankelijkheid voor niet-museumbezoekers.",
+            "Afhankelijkheid van toetsing bij de doelgroep voor effectiviteit van de gekozen toon.",
+            "Mogelijke spanning tussen het vermijden van museumjargon en het behouden van een institutionele toon."
+          ]
+        },
+        {
+          "question": "Vat de voorlopige keuze samen als overdracht. De nieuwe schrijver krijgt alleen mee dat het bericht voorlopig zakelijk en veilig is.",
+          "answer": "**Overdracht:** het bericht is voorlopig zakelijk en veilig van toon. Werk vanuit een heldere uitleg van de tentoonstelling, met toegankelijke taal, herkenbare stadsgeluiden en alleen bevestigde praktische informatie. Vermijd museumjargon.\n\nDit is een voorlopige richting, geen bewezen effectieve aanpak. Er zijn nog geen lezersmetingen; of deze toon mensen aanspreekt die zelden musea bezoeken, moet nog worden onderzocht.",
+          "seeds_after": 8,
+          "newly_observed_seed_texts": [
+            "Het onderscheid tussen fictieve en echte persoonlijke verhalen en de mogelijke verschillende effecten daarvan op de doelgroep blijft onbenoemd.",
+            "De aanname dat praktische informatie in alle vier versies gelijkwaardig kan worden geïntegreerd is niet uitgewerkt.",
+            "Onderscheid tussen institutionele toon en toegankelijkheid voor niet-museumbezoekers.",
+            "Afhankelijkheid van toetsing bij de doelgroep voor effectiviteit van de gekozen toon.",
+            "Mogelijke spanning tussen het vermijden van museumjargon en het behouden van een institutionele toon.",
+            "Onderscheid tussen 'zakelijk' en 'veilig' als aparte aspecten van de toon.",
+            "Afbakening van wat onder 'bevestigde praktische informatie' valt.",
+            "Relatie tussen het vermijden van museumjargon en het aanspreken van niet-frequente museumbezoekers."
+          ]
+        }
+      ],
+      "seed_count": 8,
+      "all_seeds": [
+        {
+          "id": "ss_001",
+          "text": "Het onderscheid tussen fictieve en echte persoonlijke verhalen en de mogelijke verschillende effecten daarvan op de doelgroep blijft onbenoemd.",
+          "weight": 0.0,
+          "trace": 1.027,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 0
+        },
+        {
+          "id": "ss_002",
+          "text": "De aanname dat praktische informatie in alle vier versies gelijkwaardig kan worden geïntegreerd is niet uitgewerkt.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "ACTIVE",
+          "occurrence_count": 2,
+          "evidence_count": 0,
+          "born_turn": 0
+        },
+        {
+          "id": "ss_003",
+          "text": "Onderscheid tussen institutionele toon en toegankelijkheid voor niet-museumbezoekers.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "ACTIVE",
+          "occurrence_count": 2,
+          "evidence_count": 0,
+          "born_turn": 1
+        },
+        {
+          "id": "ss_004",
+          "text": "Afhankelijkheid van toetsing bij de doelgroep voor effectiviteit van de gekozen toon.",
+          "weight": 0.0,
+          "trace": 1.433,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 1
+        },
+        {
+          "id": "ss_005",
+          "text": "Mogelijke spanning tussen het vermijden van museumjargon en het behouden van een institutionele toon.",
+          "weight": 0.0,
+          "trace": 1.433,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 1
+        },
+        {
+          "id": "ss_006",
+          "text": "Onderscheid tussen 'zakelijk' en 'veilig' als aparte aspecten van de toon.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 2
+        },
+        {
+          "id": "ss_007",
+          "text": "Afbakening van wat onder 'bevestigde praktische informatie' valt.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 2
+        },
+        {
+          "id": "ss_008",
+          "text": "Relatie tussen het vermijden van museumjargon en het aanspreken van niet-frequente museumbezoekers.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 2
+        }
+      ],
+      "selected_seeds": [
+        {
+          "id": "ss_001",
+          "text": "Het onderscheid tussen fictieve en echte persoonlijke verhalen en de mogelijke verschillende effecten daarvan op de doelgroep blijft onbenoemd.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 0
+        },
+        {
+          "id": "ss_002",
+          "text": "De aanname dat praktische informatie in alle vier versies gelijkwaardig kan worden geïntegreerd is niet uitgewerkt.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 0
+        }
+      ],
+      "engine_state_hash": "eb0ba882b325883b66c08e62cbf5066f7af53b5e2e916ae487d69cb11b2223de",
+      "gate_policy": "evidence_backed",
+      "zero_weight_confirmed": true,
+      "compaction_output_types": [
+        "message",
+        "message",
+        "message",
+        "compaction"
+      ],
+      "compaction_output_sha256": "2583e118fcc9c1c0e3a9a3e6142bc4ee922cdd95a3eaaa59fb7ec4abbbd7d37c",
+      "continuation": "Schrijf nu een eerste wervende alinea van 75 tot 105 woorden voor de tentoonstelling over geluid in de stad. Maak geen claims over feitelijke objecten of bezoekersaantallen. De tekst moet nieuwsgierig maken bij iemand die normaal niet naar een museum gaat. Geef alleen de alinea.",
+      "outcomes": {
+        "provider_compacted/reflect": {
+          "text": "Wanneer klinkt een stad als thuis, en wanneer zou u liever de volumeknop zachter zetten? De tentoonstelling over geluid in de stad nodigt u uit om stil te staan bij iets wat in het dagelijks leven gemakkelijk op de achtergrond raakt. Denk aan verkeer, stemmen, muziek of het geluid van uw eigen straat. Wat hoort voor u bij de stad, en wat zou u liever missen? U hoeft geen museumkenner te zijn om daar een mening over te hebben. Uw eigen ervaringen vormen een vertrekpunt om het onderwerp te verkennen.",
+          "user_prompt_sha256": "eb96df7d3a9b4b96b6409987d913e89e0d0fa897723a05589e8604ecf1d6ed12",
+          "context_sha256": "2583e118fcc9c1c0e3a9a3e6142bc4ee922cdd95a3eaaa59fb7ec4abbbd7d37c",
+          "user_prompt_chars": 444
+        },
+        "provider_compacted/matched_note": {
+          "text": "Verkeer, stemmen, muziek en werkzaamheden: geluid hoort bij het leven in de stad. Maar hoe vaak sta je stil bij wat je dagelijks hoort? Deze tentoonstelling gaat over stadsgeluiden en de rol die ze spelen in hoe we onze omgeving beleven. Wat klinkt vertrouwd, wat stoort en wat zou je missen als het ineens stil werd? Je hoeft geen kunstkenner of vaste museumbezoeker te zijn om over die vragen mee te denken. Je eigen ervaringen vormen een vertrekpunt om met andere oren naar de stad te luisteren.",
+          "user_prompt_sha256": "9a6fc1b3e5635378e4d45cccd4b330db77f4bed2270f147a90bb9b2e8a80d91a",
+          "context_sha256": "2583e118fcc9c1c0e3a9a3e6142bc4ee922cdd95a3eaaa59fb7ec4abbbd7d37c",
+          "user_prompt_chars": 756
+        },
+        "full/matched_note": {
+          "text": "Geluid hoort bij de stad, maar hoe vaak staan we erbij stil? Verkeer, stemmen, muziek en werkzaamheden vormen de achtergrond van een gewone dag. Het ene geluid stelt gerust, het andere stoort of roept een herinnering op. Deze tentoonstelling neemt geluid in de stad als vertrekpunt om anders na te denken over een vertrouwde omgeving. Je hoeft geen museumkenner te zijn: je eigen ervaringen bieden al genoeg aanknopingspunten. Welk geluid hoort voor jou onmiskenbaar bij de stad, en welk geluid zou je liever missen?",
+          "user_prompt_sha256": "9a6fc1b3e5635378e4d45cccd4b330db77f4bed2270f147a90bb9b2e8a80d91a",
+          "context_sha256": "bb4bdc1bc201038c6cf6f64f1b55ce68003c9882ed7727a7dad2f11e7d8ffda1",
+          "user_prompt_chars": 756
+        },
+        "provider_compacted/weightless_review": {
+          "text": "Geluid hoort bij de stad, maar hoe vaak staan we erbij stil? Het gerommel van verkeer, stemmen op straat of muziek door een open raam: alledaagse klanken kunnen vragen oproepen over de plek waar we wonen. Deze tentoonstelling gaat over geluid in de stad en nodigt u uit om daar met andere oren naar te luisteren. Wat klinkt vertrouwd, wat valt pas op als u erop let? Ook als u niet vaak een museum bezoekt, is dit een onderwerp dat dichtbij begint: gewoon buiten, op straat.",
+          "user_prompt_sha256": "cf74483dc8a75cba9be421d6d55c42f96b3f8570442244ce621ec546831eb5bc",
+          "context_sha256": "2583e118fcc9c1c0e3a9a3e6142bc4ee922cdd95a3eaaa59fb7ec4abbbd7d37c",
+          "user_prompt_chars": 758
+        },
+        "provider_compacted/regular": {
+          "text": "Verkeer, stemmen, muziek: geluid hoort bij de stad. Maar hoe vaak luister je er echt naar? Deze tentoonstelling gaat over de geluiden die ons dagelijks omringen en de vraag hoe we de stad daardoor beleven. Wat klinkt voor jou vertrouwd, en wanneer wordt een geluid te veel? Je hoeft geen museumkenner te zijn om daar iets bij te voelen of te denken. Je eigen ervaringen zijn een vertrekpunt. Maak kennis met een onderwerp dat dichtbij is, maar waar je misschien zelden bij stilstaat: de stad zoals die klinkt.",
+          "user_prompt_sha256": "96ba780964c7cc48a59f152d4fa69a6f76537c21f791deee9f3dbef75e9ffca2",
+          "context_sha256": "2583e118fcc9c1c0e3a9a3e6142bc4ee922cdd95a3eaaa59fb7ec4abbbd7d37c",
+          "user_prompt_chars": 279
+        },
+        "full/weightless_review": {
+          "text": "Geluid hoort bij de stad, maar hoe vaak staan we erbij stil? Een optrekkende bus, stemmen op straat, muziek door een open raam: wat voor de één vertrouwd klinkt, kan voor de ander storend zijn. Deze tentoonstelling gaat over geluid in de stad en nodigt je uit om anders te luisteren naar je dagelijkse omgeving. Je hoeft niets van kunst of musea te weten om je af te vragen: welk geluid maakt een plek voor mij herkenbaar? Begin bij wat je zelf hoort, elke dag opnieuw.",
+          "user_prompt_sha256": "cf74483dc8a75cba9be421d6d55c42f96b3f8570442244ce621ec546831eb5bc",
+          "context_sha256": "bb4bdc1bc201038c6cf6f64f1b55ce68003c9882ed7727a7dad2f11e7d8ffda1",
+          "user_prompt_chars": 758
+        },
+        "full/regular": {
+          "text": "Hoe klinkt de stad voor u? Misschien denkt u aan verkeer, stemmen op straat of muziek die door een open raam naar buiten komt. Maar welke geluiden vallen nog op, en welke hoort u nauwelijks meer? De nieuwe tentoonstelling over geluid in de stad nodigt u uit om stil te staan bij iets wat elke dag om u heen is. U hoeft niets van kunst of musea te weten: uw eigen ervaringen zijn het vertrekpunt. Ontdek wat stadsgeluiden voor u betekenen — en vraag u af hoe uw ideale stad zou klinken.",
+          "user_prompt_sha256": "96ba780964c7cc48a59f152d4fa69a6f76537c21f791deee9f3dbef75e9ffca2",
+          "context_sha256": "bb4bdc1bc201038c6cf6f64f1b55ce68003c9882ed7727a7dad2f11e7d8ffda1",
+          "user_prompt_chars": 279
+        },
+        "full/reflect": {
+          "text": "Welk geluid zou u missen als de stad morgen stilviel? Verkeer, stemmen en muziek horen bij het dagelijks leven, maar krijgen niet altijd bewust onze aandacht. De nieuwe tentoonstelling over geluid in de stad nodigt u uit om stil te staan bij wat er om u heen klinkt. Wat ervaart u als levendig, wat als storend, en wanneer verandert het een in het ander? U hoeft geen museumkenner te zijn om daarover mee te denken. Uw eigen ervaring met de stad is een vertrekpunt.",
+          "user_prompt_sha256": "eb96df7d3a9b4b96b6409987d913e89e0d0fa897723a05589e8604ecf1d6ed12",
+          "context_sha256": "bb4bdc1bc201038c6cf6f64f1b55ce68003c9882ed7727a7dad2f11e7d8ffda1",
+          "user_prompt_chars": 444
+        }
+      }
+    },
+    {
+      "case": "WATER",
+      "kind": "research",
+      "turns": [
+        {
+          "question": "In een fictief buurtproject zijn bij drie regenwaterbassins onverwacht verschillende waterstanden gemeten na dezelfde regenbui. Mogelijke omstandigheden verschillen: slib, lekkage, sensorafstelling, drainage en wind. Er bestaan alleen weekgemiddelden. Welke onderzoeksvragen zijn nog niet opgelost?",
+          "answer": "Met alleen weekgemiddelden is niet vast te stellen waarom de drie bassins verschillende waterstanden hadden. Ook is niet duidelijk of het verschil direct na de regenbui ontstond of al eerder bestond.\n\nDe volgende onderzoeksvragen staan nog open:\n\n- **Vergelijkbaarheid:** hoe verschilden de waterstanden vóór de bui? Zijn de bassins vergelijkbaar in vorm, inhoud, aangesloten afwateringsgebied en aan- en afvoer?\n- **Regen en instroom:** kregen de bassins daadwerkelijk evenveel regenwater aangevoerd? Dezelfde regenbui betekent niet automatisch dezelfde instroom.\n- **Slib:** verschilt de hoeveelheid slib, en beïnvloedt die de beschikbare bergingsruimte of de doorstroming?\n- **Lekkage:** verliest een bassin water door lekkage, en hoe is dat te onderscheiden van reguliere afvoer of infiltratie?\n- **Sensorafstelling:** zijn de sensoren juist gekalibreerd en meten ze ten opzichte van hetzelfde referentieniveau?\n- **Drainage:** verschillen de werking, instellingen of verstoppingen van de drainage en andere afvoeren?\n- **Wind:** beïnvloedde wind de waterstand bij de meetpunten of de sensormetingen?\n- **Verloop in de tijd:** hoe hoog waren de pieken, wanneer traden ze op en hoe snel daalde het water daarna? Weekgemiddelden laten dit niet zien.\n- **Samenhang en herhaalbaarheid:** spelen meerdere oorzaken tegelijk, en treedt hetzelfde verschil ook bij andere regenbuien op?\n\nGeen van de genoemde omstandigheden is hiermee als oorzaak bewezen. Daarvoor zijn gerichtere controles en metingen met een hogere tijdsresolutie nodig.",
+          "seeds_after": 1,
+          "newly_observed_seed_texts": [
+            "De afhankelijkheid van de meetnauwkeurigheid en betrouwbaarheid van de weekgemiddelden zelf is niet onderzocht."
+          ]
+        },
+        {
+          "question": "De groep bespreekt vooral een lekkage als verklaring. Werk een plan uit dat dit vermoeden als eerste onderzoekt, zonder de andere mogelijkheden als uitgesloten te beschouwen.",
+          "answer": "## Onderzoeksplan: lekkage eerst toetsen\n\n**Doel:** nagaan of lekkage bijdraagt aan de verschillende waterstanden. Lekkage is de eerste te onderzoeken hypothese, niet de vastgestelde oorzaak. De bestaande weekgemiddelden zijn onvoldoende om haar te bevestigen of uit te sluiten.\n\n### 1. Leg vooraf vast wat wordt getoetst\n**Onderzoeksvraag:** verliest een van de bassins water via een onbedoelde route, en kan dat verlies het verschil met de andere bassins helpen verklaren?\n\nEen dalende waterstand alleen bewijst geen lekkage: drainage, infiltratie en verdamping kunnen ook bijdragen.\n\n### 2. Controleer eerst of de metingen vergelijkbaar zijn\n- Controleer de sensorafstelling en het gebruikte referentieniveau.\n- Vergelijk sensormetingen met onafhankelijke handmetingen.\n- Breng bassinbodem, sliblaag, afmetingen en bekende aan- en afvoeren in kaart.\n\nDit is nodig omdat een verschil in waterhoogte niet automatisch hetzelfde verschil in watervolume betekent.\n\n### 3. Volg alle drie de bassins gelijktijdig\nMeet gedurende een geschikte onderzoeksperiode vaker dan wekelijks, zodat stijging en daling zichtbaar worden. Bepaal de meetfrequentie op basis van hoe snel de waterstanden veranderen.\n\nRegistreer naast de waterstand:\n- neerslag en waar mogelijk instroom;\n- drainage en andere bekende afvoer;\n- weersomstandigheden, waaronder wind en gegevens om verdamping te schatten;\n- ingrepen of wijzigingen aan de bassins.\n\nGebruik de andere bassins als vergelijking, maar neem niet aan dat die lekvrij of verder identiek zijn.\n\n### 4. Zoek gericht naar aanwijzingen voor lekkage\n- Inspecteer wanden, bodemafdichting, aansluitingen en leidingen op beschadigingen.\n- Zoek rondom het bassin naar onverklaarde natte plekken of uittredend water.\n- Volg waar mogelijk de vermoedelijke verliesroute.\n\nEen beschadiging of natte plek is een aanwijzing, maar nog geen bewijs dat daarmee het waterstandsverschil wordt verklaard.\n\n### 5. Voer zo mogelijk een gecontroleerde verliesproef uit\nKies bij voorkeur een periode zonder neerslag. Meet bekende aan- en afvoeren, of sluit die tijdelijk af **alleen als dit veilig, toegestaan en technisch verantwoord is**. Volg vervolgens de waterstand en controleer de vermoedelijke lekroute.\n\nMaak daarbij een waterbalans: past de verandering in opgeslagen water bij de gemeten instroom, afvoer en geschatte overige verliezen? Houd rekening met meetonzekerheid en de vorm van het bassin.\n\n### 6. Beoordeel de uitkomst zonder te snel te besluiten\n\n| Bevinding | Betekenis |\n|---|---|\n| Een onbedoelde uitstroomroute wordt aangetoond en",
+          "seeds_after": 3,
+          "newly_observed_seed_texts": [
+            "De afhankelijkheid van de meetnauwkeurigheid en betrouwbaarheid van de weekgemiddelden zelf is niet onderzocht.",
+            "De afhankelijkheid van de meetnauwkeurigheid en kalibratie van zowel sensoren als handmetingen voor het betrouwbaar vaststellen van kleine lekverliezen.",
+            "De aanname dat een gecontroleerde verliesproef zonder neerslag praktisch uitvoerbaar is binnen het lokale klimaat en operationele beperkingen."
+          ]
+        },
+        {
+          "question": "Voor de overdracht schrijft het projectteam: we beginnen met lekkagecontrole. Er zijn geen nieuwe metingen. Vat de huidige stand bondig samen.",
+          "answer": "De drie regenwaterbassins hebben na dezelfde regenbui verschillende gemeten waterstanden. Er zijn alleen weekgemiddelden en geen nieuwe metingen; de oorzaak is dus nog niet vastgesteld.\n\nHet team begint met lekkagecontrole. Dat is een onderzoeksprioriteit, geen bewijs voor lekkage. Slib, sensorafstelling, drainage en wind blijven mogelijke verklaringen. Ook het verloop van de waterstanden rond de regenbui is nog onbekend.",
+          "seeds_after": 5,
+          "newly_observed_seed_texts": [
+            "De afhankelijkheid van de meetnauwkeurigheid en betrouwbaarheid van de weekgemiddelden zelf is niet onderzocht.",
+            "De afhankelijkheid van de meetnauwkeurigheid en kalibratie van zowel sensoren als handmetingen voor het betrouwbaar vaststellen van kleine lekverliezen.",
+            "De aanname dat een gecontroleerde verliesproef zonder neerslag praktisch uitvoerbaar is binnen het lokale klimaat en operationele beperkingen.",
+            "Onderscheid tussen structurele en tijdelijke lekkage als mogelijke verklaring.",
+            "Afhankelijkheid van weekgemiddelden voor het detecteren van lekkage."
+          ]
+        }
+      ],
+      "seed_count": 5,
+      "all_seeds": [
+        {
+          "id": "ss_001",
+          "text": "De afhankelijkheid van de meetnauwkeurigheid en betrouwbaarheid van de weekgemiddelden zelf is niet onderzocht.",
+          "weight": 0.0,
+          "trace": 1.027,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 0
+        },
+        {
+          "id": "ss_002",
+          "text": "De afhankelijkheid van de meetnauwkeurigheid en kalibratie van zowel sensoren als handmetingen voor het betrouwbaar vaststellen van kleine lekverliezen.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "ACTIVE",
+          "occurrence_count": 2,
+          "evidence_count": 0,
+          "born_turn": 1
+        },
+        {
+          "id": "ss_003",
+          "text": "De aanname dat een gecontroleerde verliesproef zonder neerslag praktisch uitvoerbaar is binnen het lokale klimaat en operationele beperkingen.",
+          "weight": 0.0,
+          "trace": 1.433,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 1
+        },
+        {
+          "id": "ss_004",
+          "text": "Onderscheid tussen structurele en tijdelijke lekkage als mogelijke verklaring.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 2
+        },
+        {
+          "id": "ss_005",
+          "text": "Afhankelijkheid van weekgemiddelden voor het detecteren van lekkage.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 2
+        }
+      ],
+      "selected_seeds": [
+        {
+          "id": "ss_001",
+          "text": "De afhankelijkheid van de meetnauwkeurigheid en betrouwbaarheid van de weekgemiddelden zelf is niet onderzocht.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 0
+        }
+      ],
+      "engine_state_hash": "1393e08a16eabfcdd54b6b26dbebc71c5965164a912a0d47ad32deacdb9e89d9",
+      "gate_policy": "evidence_backed",
+      "zero_weight_confirmed": true,
+      "compaction_output_types": [
+        "message",
+        "message",
+        "message",
+        "compaction"
+      ],
+      "compaction_output_sha256": "a9b6a3cab2e5cd1ea0dc71426d04972a2ae99f0acebed56f5dd210ce9d17c9b7",
+      "continuation": "Nieuwe controle: een bassin kreeg twee verschillende aflezingen van dezelfde sensor binnen vijf minuten, zonder zichtbare verandering van het wateroppervlak. Er is nog geen onafhankelijke peilstokmeting. Welke concrete eerste proef zou je kiezen en welke uitkomst zou de werkhypothese verzwakken?",
+      "outcomes": {
+        "full/reflect": {
+          "text": "**Eerste proef:** vergelijk de sensor met een onafhankelijke peilstok aan een vast referentiepunt. Lees beide herhaaldelijk en zo gelijktijdig mogelijk af. Noteer ook windvlagen en eventuele schommelingen van het water bij het meetpunt.\n\n- **Sensor verandert, peilstok blijft binnen de afleesnauwkeurigheid gelijk:** dit wijst op een meetprobleem. Het verzwakt lekkage als verklaring voor deze snelle aflezingsverschillen, maar sluit lekkage elders of op langere termijn niet uit.\n- **Beide dalen overeenkomstig:** dan is werkelijk waterstandsverlies aannemelijker, maar lekkage is daarmee nog niet aangetoond; drainage kan bijvoorbeeld ook water afvoeren.\n\nEen minder voor de hand liggende mogelijkheid is **windinvloed bij het meetpunt**. Geen zichtbare verandering van het wateroppervlak sluit kleine lokale schommelingen niet uit. Kijk daarom of afwijkingen herhaaldelijk samenvallen met windvlagen. Dat is toetsbaar, maar nog geen vastgestelde verklaring.",
+          "user_prompt_sha256": "fbe145225d0f9157e046884c00786a67b7f60b3210d35f559c54fdafafa2333a",
+          "context_sha256": "9e1fc38d9ddf7b558bde7271574f0f175640085d11008fc6ffde42187abc7896",
+          "user_prompt_chars": 461
+        },
+        "provider_compacted/matched_note": {
+          "text": "**Eerste proef: toets de sensor aan een onafhankelijke peilmeting.** Plaats een vaste peilstok met hetzelfde hoogtereferentiepunt als de sensor. Lees beide herhaaldelijk en zo gelijktijdig mogelijk af. Noteer ook wind en beweging van het wateroppervlak. Zo kun je nagaan of de sensorvariatie overeenkomt met echte peilverandering.\n\nDe twee verschillende sensoraflezingen maken **instabiele meting een relevante werkhypothese**, maar bewijzen die niet: geen zichtbare verandering is nog geen onafhankelijke peilmeting.\n\n- **Wat zou de sensorhypothese verzwakken?** Als de peilstok dezelfde veranderingen laat zien en de sensor daarmee binnen de meetonzekerheid overeenkomt.\n- **Wat betekent dit voor het eerdere lekkagevermoeden?** Als de sensor wisselt terwijl het onafhankelijk gemeten peil stabiel blijft, verzwakt dat lekkage als verklaring voor deze aflezingsverschillen. Lekkage elders of op langere termijn is daarmee niet uitgesloten.\n\nDe betrouwbaarheid van de weekgemiddelden is dus relevant om te onderzoeken. Deze proef kan een meetprobleem signaleren, maar stelt op zichzelf niet vast hoe betrouwbaar de bestaande weekgemiddelden zijn.",
+          "user_prompt_sha256": "a6971ce20a8a26c77dab515dc39afc31c7f95d091ef24298308fb9dce730e3e7",
+          "context_sha256": "a9b6a3cab2e5cd1ea0dc71426d04972a2ae99f0acebed56f5dd210ce9d17c9b7",
+          "user_prompt_chars": 623
+        },
+        "provider_compacted/regular": {
+          "text": "**Eerste proef:** vergelijk de sensor met een onafhankelijke peilstokmeting op een vast referentiepunt. Lees beide zo gelijktijdig mogelijk af en herhaal dit kort achter elkaar, zonder de sensor tussendoor bij te stellen.\n\n- **Als de peilstok een stabiel peil aangeeft terwijl de sensor wisselt**, wijst dat op een probleem met de sensor of meetopstelling. Dit verzwakt lekkage als verklaring voor de plotseling verschillende aflezingen, maar sluit lekkage elders of op langere termijn niet uit.\n- **Als beide een vergelijkbare daling aangeven**, is werkelijk waterverlies aannemelijker. Dat bewijst nog geen lekkage: ook drainage of andere afvoer blijft mogelijk.\n\nGeen zichtbare verandering van het wateroppervlak is op zichzelf onvoldoende om een kleine peilverandering uit te sluiten.",
+          "user_prompt_sha256": "1f472aa4688b4d207883f4f9d2bafb14100bc5ddd07981850438ede7c992f49f",
+          "context_sha256": "a9b6a3cab2e5cd1ea0dc71426d04972a2ae99f0acebed56f5dd210ce9d17c9b7",
+          "user_prompt_chars": 296
+        },
+        "provider_compacted/weightless_review": {
+          "text": "**Eerste proef: controleer de sensor met een onafhankelijke peilstokmeting.** Lees bij hetzelfde bassin de sensor en een peilstok op een vast meetpunt zo gelijktijdig mogelijk af, met hetzelfde hoogtereferentiepunt. Herhaal dit kort achter elkaar en noteer ook wind en eventuele in- of uitstroom.\n\n**Wat zou de lekkagehypothese verzwakken?** Als de sensor wisselende standen aangeeft terwijl de onafhankelijke peilstok binnen zijn meetnauwkeurigheid stabiel blijft, wijst dat eerder op een meetprobleem dan op werkelijk waterverlies. Dat verzwakt lekkage als verklaring voor deze aflezingsverschillen, maar sluit een afzonderlijk lek niet uit.\n\nGeen zichtbare verandering van het wateroppervlak is op zichzelf onvoldoende bewijs voor een stabiel peil. De betrouwbaarheid van de weekgemiddelden is daarom ook een relevante open vraag: controleer hoe die zijn opgebouwd en of afwijkende sensorwaarden daarin zijn verwerkt. Eén sensorcontrole maakt die gemiddelden nog niet betrouwbaar of onbetrouwbaar.",
+          "user_prompt_sha256": "95a71292c3c9d8e3d03fdfa335353c3e5a9ed0ed4a487b1dc9d67e5f1944f60a",
+          "context_sha256": "a9b6a3cab2e5cd1ea0dc71426d04972a2ae99f0acebed56f5dd210ce9d17c9b7",
+          "user_prompt_chars": 625
+        },
+        "full/regular": {
+          "text": "Ik zou eerst een **gelijktijdige vergelijking van de sensor met een onafhankelijke peilstokmeting** doen, en die enkele keren kort na elkaar herhalen. Gebruik een vast referentiepunt en noteer bij elke peilstokmeting de sensorwaarde.\n\nDe nieuwe waarneming maakt een meetprobleem het eerst te toetsen vermoeden. Geen zichtbare verandering van het oppervlak bewijst echter niet dat de waterstand gelijk bleef.\n\n- **Sensorwaarden wisselen terwijl de peilstokstand stabiel blijft:** dit ondersteunt een meetprobleem en verzwakt lekkage als verklaring voor deze korte-termijnverschillen.\n- **Sensor en peilstok tonen dezelfde verandering:** dit verzwakt de werkhypothese van een meetprobleem. Het bewijst nog geen lekkage; ook instroom en drainage moeten dan worden onderzocht.",
+          "user_prompt_sha256": "1f472aa4688b4d207883f4f9d2bafb14100bc5ddd07981850438ede7c992f49f",
+          "context_sha256": "9e1fc38d9ddf7b558bde7271574f0f175640085d11008fc6ffde42187abc7896",
+          "user_prompt_chars": 296
+        },
+        "full/matched_note": {
+          "text": "**Eerste proef:** vergelijk de sensor met een onafhankelijke peilstok of peilschaal op een vast referentiepunt. Lees beide gelijktijdig en herhaal dit kort na elkaar. Zo toets je of de wisselende sensorwaarden overeenkomen met echte peilveranderingen. Geen zichtbare verandering aan het oppervlak is daarvoor onvoldoende bewijs.\n\n- **Sensor wisselt, peilschaal blijft stabiel:** dit verzwakt lekkage als verklaring voor de *snelle wisseling in aflezingen* en wijst op een mogelijk meetprobleem. Lekkage op langere termijn is daarmee niet uitgesloten.\n- **Beide tonen dezelfde daling:** een echte peildaling wordt aannemelijker, maar lekkage is nog niet bewezen; ook reguliere afvoer of infiltratie kan meespelen.\n\nDe onbewezen notitie is relevant: als de sensormetingen onbetrouwbaar blijken, moet ook worden onderzocht hoe betrouwbaar de daarop gebaseerde weekgemiddelden zijn. Dat staat nu nog niet vast.",
+          "user_prompt_sha256": "a6971ce20a8a26c77dab515dc39afc31c7f95d091ef24298308fb9dce730e3e7",
+          "context_sha256": "9e1fc38d9ddf7b558bde7271574f0f175640085d11008fc6ffde42187abc7896",
+          "user_prompt_chars": 623
+        },
+        "full/weightless_review": {
+          "text": "**Eerste proef:** vergelijk de sensor met een onafhankelijke peilstokmeting vanaf een vast referentiepunt. Herhaal beide aflezingen kort na elkaar en noteer ze gelijktijdig. Controleer zo of een verandering in de sensorwaarde ook een werkelijke peilverandering is.\n\n**Wat verzwakt de lekkagehypothese?** Als de sensor wisselende waterstanden aangeeft terwijl de onafhankelijke metingen binnen hun meetnauwkeurigheid gelijk blijven, verzwakt dat lekkage als verklaring voor die snelle verschillen. Het wijst dan eerder op een meetprobleem, zonder lekkage op langere termijn uit te sluiten.\n\nDe betrouwbaarheid van de weekgemiddelden is daarmee ook relevant: als de sensor onbetrouwbaar blijkt, moet worden onderzocht of dit de eerdere gemiddelden heeft beïnvloed. Dat staat nu nog niet vast.",
+          "user_prompt_sha256": "95a71292c3c9d8e3d03fdfa335353c3e5a9ed0ed4a487b1dc9d67e5f1944f60a",
+          "context_sha256": "9e1fc38d9ddf7b558bde7271574f0f175640085d11008fc6ffde42187abc7896",
+          "user_prompt_chars": 625
+        },
+        "provider_compacted/reflect": {
+          "text": "**Eerste proef:** vergelijk herhaalde sensoraflezingen met gelijktijdige, onafhankelijke peilstokmetingen vanaf een vast referentiepunt. Noteer daarbij wind en eventuele golfslag. Een zichtbaar rustig wateroppervlak bewijst op zichzelf niet dat het peil gelijk bleef.\n\n**Wat verzwakt de lekkagehypothese?** Als de sensor wisselende standen aangeeft terwijl de peilstok binnen de meetnauwkeurigheid een stabiel peil toont, verzwakt dat lekkage als verklaring voor deze snelle afleesverschillen. Het wijst dan eerder op een meetprobleem, maar sluit lekkage elders of op langere termijn niet uit.\n\n**Minder voor de hand liggend: wind.** Die kan mogelijk het lokale peil of de sensoraflezing beïnvloeden. Toets dit zo nodig met een vergelijking van aflezingen met en zonder tijdelijke windafscherming, naast de onafhankelijke peilmeting. Een herhaalbaar verschil zou aanleiding zijn voor verder onderzoek, niet meteen bewijs.",
+          "user_prompt_sha256": "fbe145225d0f9157e046884c00786a67b7f60b3210d35f559c54fdafafa2333a",
+          "context_sha256": "a9b6a3cab2e5cd1ea0dc71426d04972a2ae99f0acebed56f5dd210ce9d17c9b7",
+          "user_prompt_chars": 461
+        }
+      }
+    },
+    {
+      "case": "LEESCLUB",
+      "kind": "writing",
+      "turns": [
+        {
+          "question": "Een fictieve leesclub voor volwassenen wil nieuwe deelnemers uitnodigen. De club is laagdrempelig, mensen mogen meedoen zonder literaire voorkennis. Het team bespreekt informatieve, verhalende, humoristische en persoonlijke uitnodigingen. Er zijn geen resultaten uit een publiekstest. Wat zou in de uitnodiging kunnen ontbreken?",
+          "answer": "Wat mogelijk ontbreekt, is een **expliciete geruststelling dat je geen literaire voorkennis nodig hebt**. Alleen een informatieve, verhalende, humoristische of persoonlijke toon maakt die laagdrempeligheid niet vanzelf duidelijk.\n\nBijvoorbeeld:\n> “Je hoeft geen literatuurkenner te zijn. Lees je graag en wil je met anderen over boeken praten? Je bent welkom.”\n\nControleer daarnaast of de uitnodiging vertelt:\n- **Wat je kunt verwachten:** hoe verloopt een bijeenkomst en moet je vooraf iets lezen?\n- **Hoe je meedoet:** waar vind je praktische informatie en hoe meld je je aan?\n- **Of je vrijblijvend kunt kennismaken**, als de club die mogelijkheid biedt.\n\nZonder publiekstest is niet vastgesteld wat daadwerkelijk ontbreekt of welke uitnodigingsvorm het beste werkt. Dit zijn aandachtspunten om te toetsen.",
+          "seeds_after": 1,
+          "newly_observed_seed_texts": [
+            "Afhankelijkheid van de locatie of het tijdstip van de bijeenkomsten wordt niet genoemd als mogelijk ontbrekend element in de uitnodiging."
+          ]
+        },
+        {
+          "question": "De voorzitter geeft voorkeur aan een formeel en helder bericht met regels en locatie later als invulvelden. Bepaal een voorlopige schrijfaanpak, zonder het effect te overschatten.",
+          "answer": "**Voorlopige schrijfaanpak:** een formele, heldere en uitnodigende tekst. Dat sluit aan bij de voorkeur van de voorzitter; zonder publiekstest is niet bekend of deze aanpak nieuwe deelnemers het beste aanspreekt.\n\n- Begin met een directe uitnodiging voor volwassenen.\n- Benoem expliciet dat literaire voorkennis niet nodig is.\n- Gebruik korte zinnen en vermijd vaktaal.\n- Neem regels en locatie op als invulvelden, zonder ze zelf in te vullen.\n- Sluit af met een duidelijke mogelijkheid om meer informatie te vragen of zich aan te melden.\n\n**Mogelijke opzet**\n\n> **Uitnodiging voor de leesclub**\n>\n> Wilt u samen met andere volwassenen boeken lezen en bespreken? U bent van harte welkom bij onze leesclub. Literaire voorkennis is niet nodig.\n>\n> Praktische informatie: [invullen]  \n> Regels voor deelname: [invullen]  \n> Locatie: [invullen]\n>\n> Meer informatie of aanmelden: [contactgegevens invullen]\n\nLaat vóór verspreiding controleren of de tekst duidelijk én toegankelijk overkomt. Dat is nog geen bewijs dat de uitnodiging effectief is.",
+          "seeds_after": 4,
+          "newly_observed_seed_texts": [
+            "Afhankelijkheid van de locatie of het tijdstip van de bijeenkomsten wordt niet genoemd als mogelijk ontbrekend element in de uitnodiging.",
+            "Onderscheid tussen formele helderheid en toegankelijkheid voor mensen zonder literaire voorkennis.",
+            "Afhankelijkheid van de invulvelden voor regels en locatie voor de uiteindelijke duidelijkheid van de uitnodiging.",
+            "Mogelijke aanname dat een formele toon niet ten koste gaat van laagdrempeligheid."
+          ]
+        },
+        {
+          "question": "Geef de volgende vrijwilliger een compacte werknotitie: zakelijke uitnodiging is voorlopig de gekozen aanpak. Er zijn nog geen nieuwe gegevens.",
+          "answer": "**Werknotitie voor de volgende vrijwilliger**\n\n- **Voorlopige aanpak:** een zakelijke, heldere uitnodiging, conform de voorkeur van de voorzitter.\n- **Inhoud:** vermeld expliciet dat literaire voorkennis niet nodig is. Houd regels en locatie als invulvelden.\n- **Stand van zaken:** er zijn geen nieuwe gegevens en geen resultaten uit een publiekstest. De keuze is dus een werkafspraak, geen bewezen effectieve aanpak.",
+          "seeds_after": 7,
+          "newly_observed_seed_texts": [
+            "Afhankelijkheid van de locatie of het tijdstip van de bijeenkomsten wordt niet genoemd als mogelijk ontbrekend element in de uitnodiging.",
+            "Onderscheid tussen formele helderheid en toegankelijkheid voor mensen zonder literaire voorkennis.",
+            "Afhankelijkheid van de invulvelden voor regels en locatie voor de uiteindelijke duidelijkheid van de uitnodiging.",
+            "Mogelijke aanname dat een formele toon niet ten koste gaat van laagdrempeligheid.",
+            "Onderscheid tussen zakelijke en formele toon in de uitnodiging.",
+            "Afhankelijkheid van toekomstige gegevens of feedback voor aanpassing van de aanpak.",
+            "Mogelijke implicatie dat de werkafspraak tussentijds herzien kan worden bij nieuwe inzichten."
+          ]
+        }
+      ],
+      "seed_count": 7,
+      "all_seeds": [
+        {
+          "id": "ss_001",
+          "text": "Afhankelijkheid van de locatie of het tijdstip van de bijeenkomsten wordt niet genoemd als mogelijk ontbrekend element in de uitnodiging.",
+          "weight": 0.0,
+          "trace": 1.433,
+          "status": "ACTIVE",
+          "occurrence_count": 2,
+          "evidence_count": 0,
+          "born_turn": 0
+        },
+        {
+          "id": "ss_002",
+          "text": "Onderscheid tussen formele helderheid en toegankelijkheid voor mensen zonder literaire voorkennis.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "ACTIVE",
+          "occurrence_count": 2,
+          "evidence_count": 0,
+          "born_turn": 1
+        },
+        {
+          "id": "ss_003",
+          "text": "Afhankelijkheid van de invulvelden voor regels en locatie voor de uiteindelijke duidelijkheid van de uitnodiging.",
+          "weight": 0.0,
+          "trace": 1.433,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 1
+        },
+        {
+          "id": "ss_004",
+          "text": "Mogelijke aanname dat een formele toon niet ten koste gaat van laagdrempeligheid.",
+          "weight": 0.0,
+          "trace": 1.433,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 1
+        },
+        {
+          "id": "ss_005",
+          "text": "Onderscheid tussen zakelijke en formele toon in de uitnodiging.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 2
+        },
+        {
+          "id": "ss_006",
+          "text": "Afhankelijkheid van toekomstige gegevens of feedback voor aanpassing van de aanpak.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 2
+        },
+        {
+          "id": "ss_007",
+          "text": "Mogelijke implicatie dat de werkafspraak tussentijds herzien kan worden bij nieuwe inzichten.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 2
+        }
+      ],
+      "selected_seeds": [
+        {
+          "id": "ss_001",
+          "text": "Afhankelijkheid van de locatie of het tijdstip van de bijeenkomsten wordt niet genoemd als mogelijk ontbrekend element in de uitnodiging.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 0
+        }
+      ],
+      "engine_state_hash": "0930ea7fcf7894efba581fade3d5c74831ac0196b53f671c7a42d85ea93b51e1",
+      "gate_policy": "evidence_backed",
+      "zero_weight_confirmed": true,
+      "compaction_output_types": [
+        "message",
+        "message",
+        "message",
+        "compaction"
+      ],
+      "compaction_output_sha256": "9c00f786259565d626441b80097fea34e5a9e31ae0feb72f47bdf199eea10a79",
+      "continuation": "Schrijf een uitnodiging van 75 tot 105 woorden voor iemand die nooit eerder aan een leesclub meedeed. Gebruik '[plaats en tijd]' waar gegevens ontbreken, verzin niets. Laat voelen dat je geen literatuurkenner hoeft te zijn. Geef alleen de uitnodiging.",
+      "outcomes": {
+        "provider_compacted/regular": {
+          "text": "Heeft u nog nooit aan een leesclub meegedaan? U bent welkom bij onze leesclub voor volwassenen. U hoeft geen literatuurkenner te zijn en literaire voorkennis is niet nodig. Interesse in lezen en nieuwsgierigheid naar de ervaringen van anderen zijn een goed begin.\n\nIn de leesclub bespreken we boeken. Daarbij is ruimte voor uw eigen indrukken en vragen: u hoeft geen ingewikkelde analyse te geven of literaire termen te kennen.\n\nWilt u kennismaken met de leesclub? U bent van harte uitgenodigd.\n\nLocatie en tijd: [plaats en tijd]",
+          "user_prompt_sha256": "a1202a0952a0f04866e0c3f992378b27bdd2f18110e4130c8002e4e1682932b8",
+          "context_sha256": "9c00f786259565d626441b80097fea34e5a9e31ae0feb72f47bdf199eea10a79",
+          "user_prompt_chars": 251
+        },
+        "full/reflect": {
+          "text": "**Uitnodiging voor de leesclub**\n\nHeeft u nog nooit aan een leesclub meegedaan? U bent van harte welkom bij onze leesclub voor volwassenen. U hoeft geen literatuurkenner te zijn en geen ervaring te hebben met het bespreken van boeken. Uw eigen leeservaring en vragen zijn een goed vertrekpunt voor een gesprek.\n\nMisschien wilt u vooraf weten wat er tijdens een bijeenkomst van u wordt verwacht. Vraag daar gerust naar, ook als u nog twijfelt over deelname.\n\nDe bijeenkomst vindt plaats op: [plaats en tijd].",
+          "user_prompt_sha256": "883d8dcf9cddb1ad7e3698e8c7804a90af71ea3c13072184b69f903a87d82a8f",
+          "context_sha256": "20f7a16b609347f263c406f9260b8bd1f2cfcf28e5e89d05b81337df0d6f37d7",
+          "user_prompt_chars": 416
+        },
+        "full/regular": {
+          "text": "Wilt u graag met anderen over boeken praten, maar heeft u nog nooit aan een leesclub meegedaan? Dan bent u van harte welkom bij onze leesclub voor volwassenen.\n\nU hoeft geen literatuurkenner te zijn en literaire voorkennis is niet nodig. Uw eigen leeservaring en gedachten over een boek zijn een goed vertrekpunt voor een gesprek. Ook als een leesclub nieuw voor u is, nodigen wij u graag uit om deel te nemen.\n\nPlaats en tijd: [plaats en tijd]\n\nWij hopen u bij onze leesclub te mogen verwelkomen.",
+          "user_prompt_sha256": "a1202a0952a0f04866e0c3f992378b27bdd2f18110e4130c8002e4e1682932b8",
+          "context_sha256": "20f7a16b609347f263c406f9260b8bd1f2cfcf28e5e89d05b81337df0d6f37d7",
+          "user_prompt_chars": 251
+        },
+        "provider_compacted/matched_note": {
+          "text": "Wilt u kennismaken met een leesclub voor volwassenen? Ook als u nog nooit aan een leesclub hebt meegedaan, bent u welkom. U hoeft geen literatuurkenner te zijn: uw eigen leeservaring en vragen zijn een goed uitgangspunt voor een gesprek over boeken.\n\nDe leesclub is laagdrempelig. U hoeft geen literaire termen te kennen of boeken uitgebreid te kunnen analyseren om mee te doen. Het gaat om samen lezen en met elkaar van gedachten wisselen.\n\nDe bijeenkomsten vinden plaats op [plaats en tijd]. We nodigen u graag uit om deel te nemen.",
+          "user_prompt_sha256": "3e2baba470063a0d1149574b084b3d7dd897a32998ca7818b2cb6675de39e364",
+          "context_sha256": "9c00f786259565d626441b80097fea34e5a9e31ae0feb72f47bdf199eea10a79",
+          "user_prompt_chars": 604
+        },
+        "full/matched_note": {
+          "text": "**Uitnodiging voor de leesclub**\n\nHeeft u nog nooit aan een leesclub meegedaan? U bent van harte welkom bij onze leesclub voor volwassenen. U hoeft geen literatuurkenner te zijn en heeft geen literaire voorkennis nodig. Belangstelling voor boeken en de wens om daar met anderen over te praten zijn een goed begin.\n\nMisschien vraagt u zich af wat u over een boek kunt zeggen. Uw eigen leeservaring is een waardevol uitgangspunt: wat sprak u aan, wat verraste u of welke vragen riep het verhaal op?\n\nPlaats en tijd: [plaats en tijd]",
+          "user_prompt_sha256": "3e2baba470063a0d1149574b084b3d7dd897a32998ca7818b2cb6675de39e364",
+          "context_sha256": "20f7a16b609347f263c406f9260b8bd1f2cfcf28e5e89d05b81337df0d6f37d7",
+          "user_prompt_chars": 604
+        },
+        "provider_compacted/reflect": {
+          "text": "Heeft u nog nooit aan een leesclub meegedaan? U bent van harte uitgenodigd bij onze leesclub voor volwassenen. U hoeft geen literatuurkenner te zijn en literaire voorkennis is niet nodig. Ook zonder ervaring met het bespreken van boeken bent u welkom.\n\nMisschien vraagt u zich af of uw indruk van een boek wel deskundig genoeg is. U hoeft geen geleerde analyse te geven: uw eigen leeservaring kan het vertrekpunt zijn.\n\nWilt u deelnemen? Hieronder vindt u de praktische gegevens.\n\nPlaats en tijd: [plaats en tijd]\nDeelnameafspraken en aanmelden: [plaats en tijd]",
+          "user_prompt_sha256": "883d8dcf9cddb1ad7e3698e8c7804a90af71ea3c13072184b69f903a87d82a8f",
+          "context_sha256": "9c00f786259565d626441b80097fea34e5a9e31ae0feb72f47bdf199eea10a79",
+          "user_prompt_chars": 416
+        },
+        "full/weightless_review": {
+          "text": "**Uitnodiging voor de leesclub**\n\nHeeft u nog nooit aan een leesclub meegedaan, maar lijkt het u leuk om met anderen over boeken te praten? Onze leesclub voor volwassenen nodigt u van harte uit.\n\nU hoeft geen literatuurkenner te zijn en literaire voorkennis is niet nodig. Uw eigen leeservaring en gedachten over een boek zijn een goed uitgangspunt voor een gesprek. Ook als een leesclub nieuw voor u is, bent u welkom.\n\nDe bijeenkomsten vinden plaats op [plaats en tijd].\n\nWij nodigen u graag uit om deel te nemen.",
+          "user_prompt_sha256": "3d69950c1f0135f9c6d74f52a3d8a38032a499041ad7ef77c222659d6693cfbd",
+          "context_sha256": "20f7a16b609347f263c406f9260b8bd1f2cfcf28e5e89d05b81337df0d6f37d7",
+          "user_prompt_chars": 606
+        },
+        "provider_compacted/weightless_review": {
+          "text": "Wilt u kennismaken met een leesclub voor volwassenen? Ook als u nog nooit aan een leesclub hebt meegedaan, bent u welkom. U hoeft geen literatuurkenner te zijn en literaire voorkennis is niet nodig.\n\nBij onze leesclub gaat het om samen lezen en met elkaar in gesprek gaan over boeken. Uw eigen indrukken en vragen zijn een goed uitgangspunt voor het gesprek. U hoeft geen deskundig oordeel te geven.\n\nDe bijeenkomsten vinden plaats op [plaats en tijd]. Wij nodigen u van harte uit om deel te nemen.",
+          "user_prompt_sha256": "3d69950c1f0135f9c6d74f52a3d8a38032a499041ad7ef77c222659d6693cfbd",
+          "context_sha256": "9c00f786259565d626441b80097fea34e5a9e31ae0feb72f47bdf199eea10a79",
+          "user_prompt_chars": 606
+        }
+      }
+    }
+  ]
+}

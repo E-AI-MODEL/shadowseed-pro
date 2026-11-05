@@ -1,0 +1,13 @@
+{
+  "run_url": "https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/41982542768",
+  "artifact_id": 13395170928,
+  "provider_receipts": 108,
+  "final_answers": 32,
+  "cases": 4,
+  "seeds": 24,
+  "matched_token_pairs": 8,
+  "source_sha256": {
+    "events.jsonl": "92bc1bef42d3981c585623699a5dc12016fc1641e070c3a87a73eb0c20383618",
+    "result.json": "a481740f23031f419471d23972549355e773a0f31c30324d37befa027af59e84"
+  }
+}
