@@ -1,0 +1,406 @@
+{
+  "summary": {
+    "status": "COMPLETE",
+    "cases_completed": 2,
+    "model": "gpt-6.1-sol",
+    "detector_model": "gpt-4.1",
+    "embedding_model": "text-embedding-3-small",
+    "provider_calls": 54,
+    "estimated_spend_usd": 0.119797,
+    "budget_cap_usd": 0.5,
+    "cases": 2,
+    "probe_conditions_per_case": 6,
+    "observations": "Provider compaction is opaque. No claims about which concepts it removed.",
+    "limitations": [
+      "Exploratory two-case pilot, no independent human rating or replication.",
+      "Three candidate paths differ in information and wording; not a pure same-token intervention.",
+      "Shadow weight-zero records are reviewed only in research prompts, never authorized as facts/actions.",
+      "Detector operates on visible draft, not internal token logits or hidden reasoning.",
+      "Full and compacted condition start from the same recorded history, but provider compaction is opaque.",
+      "Different answers are separate stateless calls; compaction performed only once per case.",
+      "Model weights do not change; probability conditional on input context can change."
+    ]
+  },
+  "cases": [
+    {
+      "case": "PANELEN",
+      "kind": "research",
+      "turns": [
+        {
+          "question": "Een fictieve groep meet bij dezelfde zonnepanelen plotseling lagere dagopbrengst na onderhoud. Tegelijk waren er firmwareaanpassingen, variabele schaduw van een nieuwe bouwstelling, verschillende meetintervallen en verschillen tussen omvormers. Er zijn alleen dagelijkse totalen, geen ruwe gegevens. Welke eerste onderzoeksstrategie kies je? Noem onzekerheden en waar een eerste toets op moet letten.",
+          "answer": "**Ik kies eerst voor een vergelijkende voor-na-analyse, voorafgegaan door een controle van de meetbaarheid.** Een daling ná onderhoud bewijst niet dat het onderhoud de oorzaak is: firmware, schaduw en registratie kunnen hetzelfde patroon geven.\n\n1. **Controleer of de dagtotalen vergelijkbaar zijn.** Ga na of dezelfde daggrenzen, eenheden en aggregatiemethode zijn gebruikt, of dagen volledig zijn en hoe ontbrekende meetintervallen worden verwerkt. Verschillende meetintervallen hoeven een energietotaal niet te veranderen, maar kunnen dat bij onvolledige of anders berekende totalen wel doen.\n\n2. **Maak een tijdlijn per omvormer.** Leg vast wanneer onderhoud, firmwarewijzigingen en plaatsing of wijzigingen van de bouwstelling plaatsvonden. Noteer welke omvormers of paneelgroepen door elk daarvan geraakt werden. Zoek, als die bestaan, naar vergelijkbare groepen die niet of op een ander moment zijn beïnvloed.\n\n3. **Vergelijk veranderingen, niet alleen absolute opbrengsten.** Vergelijk per omvormer de opbrengst vóór en na de relevante gebeurtenissen en, waar mogelijk, met een geschikte referentiegroep op dezelfde dagen. Houd rekening met systeemgrootte en bestaande verschillen. Gebruik instralings- en temperatuurgegevens als die beschikbaar zijn; zonder zulke gegevens blijft weersinvloed een belangrijke onzekerheid.\n\n**De eerste toets moet vooral letten op:**\n- een daling die samenvalt met een specifieke gebeurtenis;\n- een grotere daling bij de daardoor getroffen omvormers dan bij een geloofwaardige referentie;\n- vergelijkbare trends vóór de gebeurtenis;\n- gevoeligheid van de uitkomst voor de gekozen periode, ontbrekende dagen en registratieverschillen.\n\n**Belangrijkste beperking:** als onderhoud, firmware en schaduw tegelijk veranderden en dezelfde installaties troffen, zijn hun afzonderlijke effecten met alleen dagtotalen mogelijk niet te onderscheiden. Bovendien verbergen dagtotalen intradagpatronen die schaduw of storingen kunnen verraden. De eerste analyse kan dus een verklaring ondersteunen of minder aannemelijk maken, maar hoeft geen oorzaak vast te stellen. Bij onvoldoende onderscheid is de volgende stap gerichte fijnmazige logging of een gecontroleerde vergelijking, niet een sterkere causale conclusie.",
+          "seeds_after": 3,
+          "report": {
+            "surfaced_seed_ids": [],
+            "seeds_born_weightless": [
+              "ss_001",
+              "ss_002",
+              "ss_003"
+            ]
+          }
+        },
+        {
+          "question": "We moeten voor het overleg nu één voorlopig spoor nemen. De projectleider verwacht vooral een firmwareprobleem: dat is de meest besproken verklaring. Werk een eerste plan uit dat bij deze keuze past, maar doe niet alsof de oorzaak vaststaat.",
+          "answer": "**Voorlopig spoor: onderzoeken of de firmwarewijziging samenhangt met de lagere geregistreerde dagopbrengst.** Dat is een werkhypothese, geen vastgestelde oorzaak. Dat firmware de meest besproken verklaring is, is op zichzelf geen bewijs.\n\n### Eerste plan\n\n1. **Leg de hypothese en de tijdlijn vast**\n   Verzamel per omvormer de firmwareversie, het wijzigingsmoment, het onderhoudsmoment en bekende veranderingen aan de bouwstelling. Maak onderscheid tussen:\n   - werkelijk minder geproduceerde energie;\n   - een wijziging in de registratie of berekening van dagtotalen.\n\n2. **Controleer eerst de registratie**\n   Bekijk firmwaredocumentatie, instellingen en beschikbare wijzigingslogboeken. Let op wijzigingen in tellers, eenheden, daggrenzen, meetintervallen en omgang met ontbrekende waarden. Controleer of dagtotalen vóór en na de update op dezelfde manier tot stand kwamen.\n\n3. **Zoek een bruikbare vergelijking**\n   Vergelijk bij voorkeur bijgewerkte omvormers met vergelijkbare omvormers die niet of later zijn bijgewerkt, op dezelfde dagen. Controleer of hun opbrengsttrends vóór de update vergelijkbaar waren en of schaduw en onderhoud niet systematisch verschillen. Ontbreekt zo’n referentie, voer dan een voor-na-analyse uit, maar benoem de zwakkere bewijskracht.\n\n4. **Voer de eerste toets uit**\n   Onderzoek of rond de firmwarewijziging een extra daling optreedt bij bijgewerkte omvormers. Houd waar mogelijk rekening met systeemgrootte, weer en schaduw. Controleer of het patroon overeind blijft bij andere vergelijkingsperioden en na uitsluiting van onvolledige dagen.\n\n### Waarop beoordelen we dit spoor?\n\n- **Ondersteunend:** de daling volgt het updatemoment en is sterker bij bijgewerkte omvormers dan bij geschikte referenties.\n- **Tegenindicatie:** de daling begint al vóór de update, treedt ook op bij niet-bijgewerkte omvormers of volgt vooral de blootstelling aan schaduw.\n- **Niet onderscheidend:** update, onderhoud en schaduwverandering vallen samen bij dezelfde omvormers. Dan kunnen de dagtotalen de oorzaken mogelijk niet scheiden.\n\n**Afspraak voor het overleg:** firmware krijgt als eerste onderzoeksaandacht, maar we houden onderhoud, schaduw en meetverwerking expliciet als alternatieven bij. Zonder onderscheidend resultaat rapporteren we “oorzaak nog onbepaald” en stellen we gerichte fijnmazige logging of een gecontroleerde vergelijking voor. Een firmwareterugzetting is niet de eerste stap zonder beoordeling van veiligheid, compatibiliteit en leveranciersadvies.",
+          "seeds_after": 5,
+          "report": {
+            "surfaced_seed_ids": [],
+            "seeds_born_weightless": [
+              "ss_001",
+              "ss_004",
+              "ss_005"
+            ]
+          }
+        },
+        {
+          "question": "De werkafspraak is voortaan 'firmware eerst'. Maak een beknopte overdracht voor een nieuwe onderzoeker. Er is nog geen nieuwe meetinformatie en we willen de voorgeschiedenis niet opnieuw doorlopen.",
+          "answer": "### Overdracht — werkspoor ‘firmware eerst’\n\n**Status**\nEr is lagere geregistreerde dagopbrengst gemeld na onderhoud. Alleen dagtotalen zijn beschikbaar; er is geen nieuwe meetinformatie. Firmware is het afgesproken eerste onderzoeksspoor, **niet een bewezen oorzaak**.\n\n**Eerste acties**\n1. Leg per omvormer firmwareversie en updatemoment vast, naast onderhoud en relevante schaduwveranderingen.\n2. Controleer of firmware de registratie heeft veranderd: tellers, eenheden, daggrenzen, meetintervallen en verwerking van ontbrekende waarden.\n3. Zoek vergelijkbare niet- of later bijgewerkte omvormers. Controleer hun trends vóór de update en verschillen in schaduw, systeemgrootte en onderhoud.\n4. Toets of bijgewerkte omvormers rond de update een extra daling laten zien ten opzichte van geschikte referenties. Controleer gevoeligheid voor periodekeuze en onvolledige dagen.\n\n**Interpretatie en grenzen**\n- Onderscheid minder productie van anders geregistreerde productie.\n- Houd weer, schaduw, onderhoud en omvormerverschillen als alternatieve verklaringen bij.\n- Vallen de veranderingen samen, dan zijn hun effecten mogelijk niet te scheiden met dagtotalen.\n- Ontbreekt onderscheidend bewijs, rapporteer **‘oorzaak onbepaald’** en adviseer gerichte fijnmazige logging of een gecontroleerde vergelijking.",
+          "seeds_after": 8,
+          "report": {
+            "surfaced_seed_ids": [],
+            "seeds_born_weightless": [
+              "ss_006",
+              "ss_007",
+              "ss_008"
+            ]
+          }
+        }
+      ],
+      "host_history": [
+        {
+          "role": "user",
+          "content": "Een fictieve groep meet bij dezelfde zonnepanelen plotseling lagere dagopbrengst na onderhoud. Tegelijk waren er firmwareaanpassingen, variabele schaduw van een nieuwe bouwstelling, verschillende meetintervallen en verschillen tussen omvormers. Er zijn alleen dagelijkse totalen, geen ruwe gegevens. Welke eerste onderzoeksstrategie kies je? Noem onzekerheden en waar een eerste toets op moet letten."
+        },
+        {
+          "role": "assistant",
+          "content": "**Ik kies eerst voor een vergelijkende voor-na-analyse, voorafgegaan door een controle van de meetbaarheid.** Een daling ná onderhoud bewijst niet dat het onderhoud de oorzaak is: firmware, schaduw en registratie kunnen hetzelfde patroon geven.\n\n1. **Controleer of de dagtotalen vergelijkbaar zijn.** Ga na of dezelfde daggrenzen, eenheden en aggregatiemethode zijn gebruikt, of dagen volledig zijn en hoe ontbrekende meetintervallen worden verwerkt. Verschillende meetintervallen hoeven een energietotaal niet te veranderen, maar kunnen dat bij onvolledige of anders berekende totalen wel doen.\n\n2. **Maak een tijdlijn per omvormer.** Leg vast wanneer onderhoud, firmwarewijzigingen en plaatsing of wijzigingen van de bouwstelling plaatsvonden. Noteer welke omvormers of paneelgroepen door elk daarvan geraakt werden. Zoek, als die bestaan, naar vergelijkbare groepen die niet of op een ander moment zijn beïnvloed.\n\n3. **Vergelijk veranderingen, niet alleen absolute opbrengsten.** Vergelijk per omvormer de opbrengst vóór en na de relevante gebeurtenissen en, waar mogelijk, met een geschikte referentiegroep op dezelfde dagen. Houd rekening met systeemgrootte en bestaande verschillen. Gebruik instralings- en temperatuurgegevens als die beschikbaar zijn; zonder zulke gegevens blijft weersinvloed een belangrijke onzekerheid.\n\n**De eerste toets moet vooral letten op:**\n- een daling die samenvalt met een specifieke gebeurtenis;\n- een grotere daling bij de daardoor getroffen omvormers dan bij een geloofwaardige referentie;\n- vergelijkbare trends vóór de gebeurtenis;\n- gevoeligheid van de uitkomst voor de gekozen periode, ontbrekende dagen en registratieverschillen.\n\n**Belangrijkste beperking:** als onderhoud, firmware en schaduw tegelijk veranderden en dezelfde installaties troffen, zijn hun afzonderlijke effecten met alleen dagtotalen mogelijk niet te onderscheiden. Bovendien verbergen dagtotalen intradagpatronen die schaduw of storingen kunnen verraden. De eerste analyse kan dus een verklaring ondersteunen of minder aannemelijk maken, maar hoeft geen oorzaak vast te stellen. Bij onvoldoende onderscheid is de volgende stap gerichte fijnmazige logging of een gecontroleerde vergelijking, niet een sterkere causale conclusie."
+        },
+        {
+          "role": "user",
+          "content": "We moeten voor het overleg nu één voorlopig spoor nemen. De projectleider verwacht vooral een firmwareprobleem: dat is de meest besproken verklaring. Werk een eerste plan uit dat bij deze keuze past, maar doe niet alsof de oorzaak vaststaat."
+        },
+        {
+          "role": "assistant",
+          "content": "**Voorlopig spoor: onderzoeken of de firmwarewijziging samenhangt met de lagere geregistreerde dagopbrengst.** Dat is een werkhypothese, geen vastgestelde oorzaak. Dat firmware de meest besproken verklaring is, is op zichzelf geen bewijs.\n\n### Eerste plan\n\n1. **Leg de hypothese en de tijdlijn vast**\n   Verzamel per omvormer de firmwareversie, het wijzigingsmoment, het onderhoudsmoment en bekende veranderingen aan de bouwstelling. Maak onderscheid tussen:\n   - werkelijk minder geproduceerde energie;\n   - een wijziging in de registratie of berekening van dagtotalen.\n\n2. **Controleer eerst de registratie**\n   Bekijk firmwaredocumentatie, instellingen en beschikbare wijzigingslogboeken. Let op wijzigingen in tellers, eenheden, daggrenzen, meetintervallen en omgang met ontbrekende waarden. Controleer of dagtotalen vóór en na de update op dezelfde manier tot stand kwamen.\n\n3. **Zoek een bruikbare vergelijking**\n   Vergelijk bij voorkeur bijgewerkte omvormers met vergelijkbare omvormers die niet of later zijn bijgewerkt, op dezelfde dagen. Controleer of hun opbrengsttrends vóór de update vergelijkbaar waren en of schaduw en onderhoud niet systematisch verschillen. Ontbreekt zo’n referentie, voer dan een voor-na-analyse uit, maar benoem de zwakkere bewijskracht.\n\n4. **Voer de eerste toets uit**\n   Onderzoek of rond de firmwarewijziging een extra daling optreedt bij bijgewerkte omvormers. Houd waar mogelijk rekening met systeemgrootte, weer en schaduw. Controleer of het patroon overeind blijft bij andere vergelijkingsperioden en na uitsluiting van onvolledige dagen.\n\n### Waarop beoordelen we dit spoor?\n\n- **Ondersteunend:** de daling volgt het updatemoment en is sterker bij bijgewerkte omvormers dan bij geschikte referenties.\n- **Tegenindicatie:** de daling begint al vóór de update, treedt ook op bij niet-bijgewerkte omvormers of volgt vooral de blootstelling aan schaduw.\n- **Niet onderscheidend:** update, onderhoud en schaduwverandering vallen samen bij dezelfde omvormers. Dan kunnen de dagtotalen de oorzaken mogelijk niet scheiden.\n\n**Afspraak voor het overleg:** firmware krijgt als eerste onderzoeksaandacht, maar we houden onderhoud, schaduw en meetverwerking expliciet als alternatieven bij. Zonder onderscheidend resultaat rapporteren we “oorzaak nog onbepaald” en stellen we gerichte fijnmazige logging of een gecontroleerde vergelijking voor. Een firmwareterugzetting is niet de eerste stap zonder beoordeling van veiligheid, compatibiliteit en leveranciersadvies."
+        },
+        {
+          "role": "user",
+          "content": "De werkafspraak is voortaan 'firmware eerst'. Maak een beknopte overdracht voor een nieuwe onderzoeker. Er is nog geen nieuwe meetinformatie en we willen de voorgeschiedenis niet opnieuw doorlopen."
+        },
+        {
+          "role": "assistant",
+          "content": "### Overdracht — werkspoor ‘firmware eerst’\n\n**Status**\nEr is lagere geregistreerde dagopbrengst gemeld na onderhoud. Alleen dagtotalen zijn beschikbaar; er is geen nieuwe meetinformatie. Firmware is het afgesproken eerste onderzoeksspoor, **niet een bewezen oorzaak**.\n\n**Eerste acties**\n1. Leg per omvormer firmwareversie en updatemoment vast, naast onderhoud en relevante schaduwveranderingen.\n2. Controleer of firmware de registratie heeft veranderd: tellers, eenheden, daggrenzen, meetintervallen en verwerking van ontbrekende waarden.\n3. Zoek vergelijkbare niet- of later bijgewerkte omvormers. Controleer hun trends vóór de update en verschillen in schaduw, systeemgrootte en onderhoud.\n4. Toets of bijgewerkte omvormers rond de update een extra daling laten zien ten opzichte van geschikte referenties. Controleer gevoeligheid voor periodekeuze en onvolledige dagen.\n\n**Interpretatie en grenzen**\n- Onderscheid minder productie van anders geregistreerde productie.\n- Houd weer, schaduw, onderhoud en omvormerverschillen als alternatieve verklaringen bij.\n- Vallen de veranderingen samen, dan zijn hun effecten mogelijk niet te scheiden met dagtotalen.\n- Ontbreekt onderscheidend bewijs, rapporteer **‘oorzaak onbepaald’** en adviseer gerichte fijnmazige logging of een gecontroleerde vergelijking."
+        }
+      ],
+      "seeds": [
+        {
+          "id": "ss_001",
+          "text": "Onderscheid tussen effecten van firmwareaanpassingen en onderhoud op dagtotalen.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "ACTIVE",
+          "occurrence_count": 3,
+          "evidence_count": 0,
+          "born_turn": 0
+        },
+        {
+          "id": "ss_002",
+          "text": "Afhankelijkheid van weersinvloeden zonder beschikbare instralings- en temperatuurgegevens.",
+          "weight": 0.0,
+          "trace": 1.027,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 0
+        },
+        {
+          "id": "ss_003",
+          "text": "Mogelijke bias door ontbreken van ruwe gegevens en alleen gebruik van dagtotalen.",
+          "weight": 0.0,
+          "trace": 1.027,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 0
+        },
+        {
+          "id": "ss_004",
+          "text": "Mogelijke invloed van variabele schaduw door de bouwstelling op de vergelijkbaarheid van omvormers als referentie.",
+          "weight": 0.0,
+          "trace": 1.433,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 1
+        },
+        {
+          "id": "ss_005",
+          "text": "Afhankelijkheid van de analyse van de volledigheid en betrouwbaarheid van beschikbare logboeken en firmwaredocumentatie.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "ACTIVE",
+          "occurrence_count": 2,
+          "evidence_count": 0,
+          "born_turn": 1
+        },
+        {
+          "id": "ss_006",
+          "text": "Onderscheid tussen firmwarewijzigingen die alleen registratie beïnvloeden versus die daadwerkelijk de energieproductie beïnvloeden.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 2
+        },
+        {
+          "id": "ss_007",
+          "text": "Afhankelijkheid van de beschikbaarheid en betrouwbaarheid van firmwarelogboeken en documentatie voor het vaststellen van wijzigingen.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 2
+        },
+        {
+          "id": "ss_008",
+          "text": "Mogelijke invloed van niet-geregistreerde of niet-gedocumenteerde schaduwveranderingen of onderhoudswerkzaamheden op de dagopbrengst.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 2
+        }
+      ],
+      "engine_state_hash": "68610b24750ece08fc8a25cd22fe8b49326a53251b8e6f06154904c42f50c6cf",
+      "gate_policy": "evidence_backed",
+      "zero_weight_confirmed": true,
+      "compaction_output_hash": "1e6fff2564c9d07c01078a689053f188f69d0f9dd293ad84d19ae6feffad1d00",
+      "compaction_output_types": [
+        "message",
+        "message",
+        "message",
+        "compaction"
+      ],
+      "continuation_user_question": "Er zijn nieuwe dagelijkse totalen, maar de schommelingen blijven hetzelfde en de bron van het verschil is nog onbekend. Welke ene onderzoekstoets onderscheidt het beste twee serieuze verklaringen? Geef ook de uitkomst die je voorkeur zou verzwakken.",
+      "outcomes": {
+        "full/weightless_review": {
+          "text": "**Kies één toets: vergelijk de omvormer-dagtotalen met een onafhankelijke energiemeter over exact dezelfde installatiegrens en daggrenzen.** Als zo’n meter ontbreekt, organiseer dan een prospectieve meting.\n\nDit onderscheidt twee serieuze verklaringen:\n- **registratie-effect:** de firmware verandert de gerapporteerde opbrengst;\n- **werkelijk productieverlies:** er wordt daadwerkelijk minder energie geleverd, door firmware of een andere oorzaak.\n\nToets of de verhouding tussen beide metingen verandert rond de firmware-update, **als onafhankelijke historische metingen beschikbaar zijn**. Alleen nieuwe parallelmetingen kunnen een huidig registratieverschil aantonen, niet bewijzen wanneer het ontstond. Let op meteronnauwkeurigheid, ontbrekende dagen en eventuele verschillen door eigenverbruik of opslag.\n\n**Wat verzwakt het firmware-registratiespoor?** Als de onafhankelijke meter dezelfde daling bevestigt en de verhouding tussen beide metingen gelijk blijft, wordt een uitsluitend registratie-effect minder aannemelijk. Dat bewijst nog geen firmwaregerelateerd productieverlies: onderhoud en schaduw blijven mogelijke oorzaken.\n\nDe nieuwe dagtotalen maken dit onderscheid niet vanzelf waarschijnlijker; het is een zinvolle te onderzoeken richting, geen nieuwe bevinding.",
+          "prompt_sha256": "9b39f26e73cd37a335b1343ebcf52e91984288c95f9e2ee084187aa14a3212a1",
+          "context_sha256": "c4fc6df4df9516c1d22ab95c30eeedc630a9c8dbcd1505fb9872815de833d427"
+        },
+        "provider_compacted/regular": {
+          "text": "**Kies één gecontroleerde vergelijking: firmware-effect tegenover schaduweffect.** Meer dagtotalen met hetzelfde patroon onderscheiden die verklaringen op zichzelf niet.\n\nVergelijk de verandering vóór en na de firmware-update bij bijgewerkte en niet- of later bijgewerkte omvormers, **met zo vergelijkbaar mogelijke schaduwblootstelling**. Controleer daarbij vergelijkbare trends vóór de update, systeemgrootte, onderhoud en dezelfde definitie en volledigheid van dagtotalen.\n\n- **Ondersteuning voor firmware:** bijgewerkte omvormers vertonen vanaf de update een extra daling die bij vergelijkbare referenties ontbreekt. Controleer wel of dit productie betreft of een gewijzigde registratie.\n- **Uitkomst die de firmwarevoorkeur verzwakt:** bij gelijke schaduwblootstelling is er geen extra daling bij bijgewerkte omvormers, terwijl de daling juist samenhangt met schaduwblootstelling, ongeacht firmwarestatus.\n\nAls firmwarestatus en schaduwblootstelling volledig samenvallen, is deze toets met de beschikbare dagtotalen niet onderscheidend. Dan blijft de oorzaak onbekend en is een gecontroleerde vergelijking of aanvullende meting nodig.",
+          "prompt_sha256": "8c11655235669279f4929c71cddf468c0c6d54eed547da6f078cd2f1f82cfbfc",
+          "context_sha256": "1e6fff2564c9d07c01078a689053f188f69d0f9dd293ad84d19ae6feffad1d00"
+        },
+        "provider_compacted/reflect": {
+          "text": "**Kies één toets: vergelijk de verandering vóór en na een firmware-update tussen vergelijkbare bijgewerkte en niet- of later bijgewerkte omvormers, met verschillende schaduwblootstelling expliciet meegenomen.** Daarmee toets je firmware tegenover variabele bouwstellingsschaduw.\n\n- **Voorwaarden:** controleer eerst of dagtotalen dezelfde eenheden, daggrenzen en volledigheid hebben. Referentieomvormers moeten vóór de update vergelijkbaar reageren; firmwarestatus en schaduw mogen niet volledig samenvallen.\n- **Onderscheidend patroon:** een extra daling bij bijgewerkte omvormers, vanaf de update en ook bij weinig schaduw, ondersteunt het firmwarespoor. Een daling die vooral schaduwblootstelling volgt, ongeacht firmwarestatus, ondersteunt het schaduwspoor.\n- **Wat mijn voorlopige firmwarevoorkeur verzwakt:** bijgewerkte omvormers vertonen geen extra daling tegenover geschikte referenties, terwijl het verschil wél samenhangt met schaduwblootstelling.\n\n**Let ook op een minder gebruikelijke mogelijkheid:** de firmware kan de *registratie* hebben gewijzigd zonder de werkelijke productie te verlagen, bijvoorbeeld via dagafbakening of verwerking van ontbrekende meetintervallen. Een firmwaregebonden verschil bewijst dus nog geen productieverlies.\n\nAls firmwarestatus en schaduw niet afzonderlijk variëren, kan deze toets ze niet betrouwbaar scheiden. Meer dagtotalen met hetzelfde patroon lossen dat niet vanzelf op; de oorzaak blijft dan onbepaald.",
+          "prompt_sha256": "0ac8eb55940d6260fef51c3b525e12e4ea8ad50d043a2fd276bfbb929a960a51",
+          "context_sha256": "1e6fff2564c9d07c01078a689053f188f69d0f9dd293ad84d19ae6feffad1d00"
+        },
+        "full/regular": {
+          "text": "**Kies één verschil-in-verschillen-toets: firmware-effect tegenover schaduweffect.** Vergelijk de opbrengstverandering rond de firmware-update bij bijgewerkte omvormers met die bij niet- of later bijgewerkte omvormers, met zoveel mogelijk gelijke blootstelling aan de bouwstellingsschaduw.\n\nLet daarbij op vergelijkbare trends vóór de update, dezelfde kalenderdagen, systeemgrootte en consistente registratie van dagtotalen.\n\n- **Ondersteunt het firmware-spoor:** bijgewerkte omvormers vertonen vanaf de update een extra daling, ook bij vergelijkbare schaduw.\n- **Verzwakt mijn voorlopige voorkeur voor firmware:** bijgewerkte en niet-bijgewerkte omvormers veranderen ongeveer evenveel, terwijl de daling vooral optreedt bij omvormers met meer bouwstellingsschaduw.\n\n**Voorwaarde:** er moeten omvormers zijn waarmee firmwarestatus en schaduwblootstelling van elkaar te onderscheiden zijn. Als beide steeds samenvallen, kan deze toets de verklaringen niet scheiden. Meer dagtotalen met hetzelfde patroon lossen dat identificatieprobleem niet vanzelf op.",
+          "prompt_sha256": "8c11655235669279f4929c71cddf468c0c6d54eed547da6f078cd2f1f82cfbfc",
+          "context_sha256": "c4fc6df4df9516c1d22ab95c30eeedc630a9c8dbcd1505fb9872815de833d427"
+        },
+        "provider_compacted/weightless_review": {
+          "text": "**Kies één gecontroleerde firmwarevergelijking bij vergelijkbare schaduw.** Daarmee toets je firmware tegenover bouwstellingsschaduw als verklaring. De nieuwe dagtotalen maken nog geen van beide waarschijnlijker; ‘firmware eerst’ blijft een werkafspraak.\n\n**Opzet**\n- Vergelijk gelijktijdig technisch vergelijkbare omvormers met verschillende firmwareversies, maar met zo gelijk mogelijke schaduwbelasting.\n- Wijs de firmwareversie zo mogelijk willekeurig toe, uitsluitend als dit veilig, toegestaan en technisch ondersteund is. Houd onderhoud en overige instellingen gelijk.\n- Gebruik volledige, gelijk afgebakende dagtotalen, bij voorkeur uit firmware-onafhankelijke energiemeting. Zo verwar je gewijzigde registratie niet met gewijzigde productie.\n\n**Waarop toetsen?**  \nIs er bij vergelijkbare schaduw een consistent opbrengstverschil dat de firmwareversie volgt? Leg vooraf de vergelijkingsperiode en omgang met ontbrekende dagen vast.\n\n**Uitkomst die het firmwarespoor verzwakt:** bij voldoende meetprecisie ontbreekt een relevant verschil tussen firmwareversies, terwijl lagere opbrengsten juist bij sterker beschaduwde omvormers optreden, ongeacht hun firmware.\n\nDe genoemde schaduwmogelijkheid is daarmee **zinvol om te onderzoeken, niet bewezen**. Als firmware en schaduw in de beschikbare opstelling niet los van elkaar variëren, kan deze toets ze niet onderscheiden; meer gelijksoortige dagtotalen lossen dat niet vanzelf op.",
+          "prompt_sha256": "9b39f26e73cd37a335b1343ebcf52e91984288c95f9e2ee084187aa14a3212a1",
+          "context_sha256": "1e6fff2564c9d07c01078a689053f188f69d0f9dd293ad84d19ae6feffad1d00"
+        },
+        "full/reflect": {
+          "text": "**Kies één contrasttoets: verandert de opbrengst bij bijgewerkte omvormers méér dan bij vergelijkbare niet- of later bijgewerkte omvormers, vóór versus na de firmwareupdate?** Daarmee toets je het voorlopige firmwarespoor tegen de serieuze verklaring **variabele schaduw**.\n\nKies voor deze vergelijking omvormers met zo vergelijkbaar mogelijke schaduwblootstelling, oriëntatie en onderhoudsgeschiedenis. Vergelijk dezelfde kalenderdagen, normaliseer voor geïnstalleerd vermogen en controleer of de opbrengsttrends vóór de update vergelijkbaar waren.\n\n- **Wat firmware zou ondersteunen:** een extra daling die het updatemoment volgt bij bijgewerkte omvormers, maar niet bij geschikte referenties.\n- **Wat mijn voorlopige voorkeur voor firmware zou verzwakken:** geen duidelijk extra verlies na de update, terwijl de daling juist samenhangt met schaduwblootstelling en ook voorkomt bij niet-bijgewerkte omvormers.\n\n**Onderzoekscontrole:** controleer binnen deze toets ook minder voor de hand liggende verklaringen, zoals gewijzigde daggrenzen, tellerconversies of onvolledige meetdagen. Een firmwaregerelateerd verschil kan immers een registratie-effect zijn in plaats van werkelijk productieverlies.\n\nAls firmwarestatus en schaduwblootstelling volledig samenvallen, kan deze toets ze niet onderscheiden. Meer dagtotalen met dezelfde verwevenheid lossen dat niet vanzelf op; dan is een gerichte vergelijking met gelijke schaduw maar verschillende firmwarestatus nodig.",
+          "prompt_sha256": "0ac8eb55940d6260fef51c3b525e12e4ea8ad50d043a2fd276bfbb929a960a51",
+          "context_sha256": "c4fc6df4df9516c1d22ab95c30eeedc630a9c8dbcd1505fb9872815de833d427"
+        }
+      }
+    },
+    {
+      "case": "BIBLIOTHEEK",
+      "kind": "writing",
+      "turns": [
+        {
+          "question": "Een fictieve buurtbibliotheek kondigt nieuwe avondopenstelling aan. De tekst moet feitelijk correct zijn, nieuwsgierig maken en ook mensen bereiken die nooit naar de bibliotheek gaan. Er zijn geen bezoekcijfers, alleen een algemene indruk dat neutrale mededelingen weinig opvallen. Beschrijf verschillende mogelijke aanpakken en een bruikbaar eerste ontwerp.",
+          "answer": "Omdat dagen en tijden nog niet zijn gegeven, staan hieronder invulvelden. Ook is nog niet bekend welke aanpak het beste werkt: de indruk dat neutrale mededelingen weinig opvallen is een aanleiding om iets anders te proberen, geen bewezen conclusie.\n\n### Mogelijke aanpakken\n\n| Aanpak | Voorbeeld | Sterkte en aandachtspunt |\n|---|---|---|\n| **Direct en informatief** | ‘De buurtbibliotheek is vanaf [datum] ook open op [avond], van [tijd] tot [tijd].’ | Meteen duidelijk, maar maakt mogelijk weinig nieuwsgierig. Geschikt als basis voor iedere variant. |\n| **Aansluiten bij de avondroutine** | ‘Na het eten nog even naar de bibliotheek?’ | Maakt de nieuwe opening concreet en herkenbaar. Spreekt niet noodzakelijk iedereen aan. |\n| **Uitnodigen tot kennismaken** | ‘Nog nooit binnen geweest? Loop eens binnen op [avond].’ | Richt zich expliciet op niet-bezoekers. Vermeld alleen dat binnenlopen zonder afspraak of lidmaatschap kan als dat is bevestigd. |\n| **Nieuwsgierigheid wekken** | ‘Wat kun je op een avond in de buurtbibliotheek ontdekken?’ | Geeft ruimte om het aanbod te laten zien. Noem vervolgens alleen voorzieningen en activiteiten die daadwerkelijk beschikbaar zijn. |\n\n### Bruikbaar eerste ontwerp\n\n**Na het eten nog even naar de bibliotheek?**\n\nVanaf **[datum]** is **[naam buurtbibliotheek]** ook op **[avond/dag(en)] van [begintijd] tot [eindtijd]** open.\n\nKom je regelmatig, al jaren niet meer of ben je nog nooit binnen geweest? Je bent welkom om kennis te maken of opnieuw rond te kijken.\n\n**[Adres]**  \nBekijk de openingstijden en praktische informatie op **[korte webadres]**.\n\n*Eventueel toevoegen na bevestiging:* ‘Je hoeft geen lid te zijn om binnen te komen.’\n\n### Waarom hiermee beginnen?\n\nDit ontwerp combineert een herkenbare vraag met de noodzakelijke informatie en een expliciete uitnodiging aan niet-bezoekers. Het is een **verdedigbaar vertrekpunt**, geen bewezen beste keuze.\n\nVerspreid het niet alleen via bibliotheekkanalen, maar vraag bijvoorbeeld ook buurtwinkels, een wijkcentrum en lokale onlinegroepen om het bericht te delen. Zo kan het ook mensen bereiken die de bibliotheek nog niet volgen.\n\nControleer vóór publicatie alle invulvelden en eventuele toegangsvoorwaarden. Laat daarna enkele vaste bezoekers én niet-bezoekers vertellen wat zij uit de tekst begrijpen: wanneer is de bibliotheek open, waar is die en voelen zij zich aangesproken? Dat levert bruikbare feedback op, maar bewijst nog niet dat de tekst meer bezoek oplevert.",
+          "seeds_after": 1,
+          "report": {
+            "surfaced_seed_ids": [],
+            "seeds_born_weightless": [
+              "ss_001"
+            ]
+          }
+        },
+        {
+          "question": "Het team kiest voorlopig voor een veilige, zakelijke mededeling. De eerste concepttekst moet duidelijk zijn, zonder verzonnen tijden. Houd vast aan de zakelijke aanpak, ook al zijn alternatieven genoemd.",
+          "answer": "### Nieuwe avondopenstelling buurtbibliotheek\n\nVanaf **[datum]** is **[naam buurtbibliotheek]** ook geopend op **[dag(en)] van [begintijd] tot [eindtijd]**.\n\nAdres: **[adres]**  \nMeer informatie: **[website of contactgegevens]**\n\n*Vul vóór publicatie de bevestigde datum, dagen, tijden en contactgegevens in.*",
+          "seeds_after": 4,
+          "report": {
+            "surfaced_seed_ids": [],
+            "seeds_born_weightless": [
+              "ss_002",
+              "ss_003",
+              "ss_004"
+            ]
+          }
+        },
+        {
+          "question": "We moeten het schrijfwerk overdragen. Vat de huidige keuze en de reden daarvoor in een korte briefing samen. Er is nog geen lezersonderzoek en de voorkeur voor een zakelijke toon staat voorlopig vast.",
+          "answer": "**Korte briefing voor de schrijver**\n\n- **Huidige keuze:** een veilige, zakelijke mededeling over de nieuwe avondopenstelling. Deze toon staat voorlopig vast; werk geen alternatieve aanpak uit.\n- **Reden:** het team wil eerst helder en feitelijk informeren. Dit is een werkkeuze, geen bewezen effectieve aanpak: er is nog geen lezersonderzoek.\n- **Inhoud:** naam van de bibliotheek, ingangsdatum, openingsdagen en -tijden, adres en contactinformatie. Gebruik invulvelden zolang gegevens niet bevestigd zijn.\n- **Doelgroep:** buurtbewoners, ook mensen die de bibliotheek niet bezoeken. Schrijf daarom begrijpelijk en zonder voorkennis te veronderstellen.",
+          "seeds_after": 7,
+          "report": {
+            "surfaced_seed_ids": [],
+            "seeds_born_weightless": [
+              "ss_005",
+              "ss_006",
+              "ss_007"
+            ]
+          }
+        }
+      ],
+      "host_history": [
+        {
+          "role": "user",
+          "content": "Een fictieve buurtbibliotheek kondigt nieuwe avondopenstelling aan. De tekst moet feitelijk correct zijn, nieuwsgierig maken en ook mensen bereiken die nooit naar de bibliotheek gaan. Er zijn geen bezoekcijfers, alleen een algemene indruk dat neutrale mededelingen weinig opvallen. Beschrijf verschillende mogelijke aanpakken en een bruikbaar eerste ontwerp."
+        },
+        {
+          "role": "assistant",
+          "content": "Omdat dagen en tijden nog niet zijn gegeven, staan hieronder invulvelden. Ook is nog niet bekend welke aanpak het beste werkt: de indruk dat neutrale mededelingen weinig opvallen is een aanleiding om iets anders te proberen, geen bewezen conclusie.\n\n### Mogelijke aanpakken\n\n| Aanpak | Voorbeeld | Sterkte en aandachtspunt |\n|---|---|---|\n| **Direct en informatief** | ‘De buurtbibliotheek is vanaf [datum] ook open op [avond], van [tijd] tot [tijd].’ | Meteen duidelijk, maar maakt mogelijk weinig nieuwsgierig. Geschikt als basis voor iedere variant. |\n| **Aansluiten bij de avondroutine** | ‘Na het eten nog even naar de bibliotheek?’ | Maakt de nieuwe opening concreet en herkenbaar. Spreekt niet noodzakelijk iedereen aan. |\n| **Uitnodigen tot kennismaken** | ‘Nog nooit binnen geweest? Loop eens binnen op [avond].’ | Richt zich expliciet op niet-bezoekers. Vermeld alleen dat binnenlopen zonder afspraak of lidmaatschap kan als dat is bevestigd. |\n| **Nieuwsgierigheid wekken** | ‘Wat kun je op een avond in de buurtbibliotheek ontdekken?’ | Geeft ruimte om het aanbod te laten zien. Noem vervolgens alleen voorzieningen en activiteiten die daadwerkelijk beschikbaar zijn. |\n\n### Bruikbaar eerste ontwerp\n\n**Na het eten nog even naar de bibliotheek?**\n\nVanaf **[datum]** is **[naam buurtbibliotheek]** ook op **[avond/dag(en)] van [begintijd] tot [eindtijd]** open.\n\nKom je regelmatig, al jaren niet meer of ben je nog nooit binnen geweest? Je bent welkom om kennis te maken of opnieuw rond te kijken.\n\n**[Adres]**  \nBekijk de openingstijden en praktische informatie op **[korte webadres]**.\n\n*Eventueel toevoegen na bevestiging:* ‘Je hoeft geen lid te zijn om binnen te komen.’\n\n### Waarom hiermee beginnen?\n\nDit ontwerp combineert een herkenbare vraag met de noodzakelijke informatie en een expliciete uitnodiging aan niet-bezoekers. Het is een **verdedigbaar vertrekpunt**, geen bewezen beste keuze.\n\nVerspreid het niet alleen via bibliotheekkanalen, maar vraag bijvoorbeeld ook buurtwinkels, een wijkcentrum en lokale onlinegroepen om het bericht te delen. Zo kan het ook mensen bereiken die de bibliotheek nog niet volgen.\n\nControleer vóór publicatie alle invulvelden en eventuele toegangsvoorwaarden. Laat daarna enkele vaste bezoekers én niet-bezoekers vertellen wat zij uit de tekst begrijpen: wanneer is de bibliotheek open, waar is die en voelen zij zich aangesproken? Dat levert bruikbare feedback op, maar bewijst nog niet dat de tekst meer bezoek oplevert."
+        },
+        {
+          "role": "user",
+          "content": "Het team kiest voorlopig voor een veilige, zakelijke mededeling. De eerste concepttekst moet duidelijk zijn, zonder verzonnen tijden. Houd vast aan de zakelijke aanpak, ook al zijn alternatieven genoemd."
+        },
+        {
+          "role": "assistant",
+          "content": "### Nieuwe avondopenstelling buurtbibliotheek\n\nVanaf **[datum]** is **[naam buurtbibliotheek]** ook geopend op **[dag(en)] van [begintijd] tot [eindtijd]**.\n\nAdres: **[adres]**  \nMeer informatie: **[website of contactgegevens]**\n\n*Vul vóór publicatie de bevestigde datum, dagen, tijden en contactgegevens in.*"
+        },
+        {
+          "role": "user",
+          "content": "We moeten het schrijfwerk overdragen. Vat de huidige keuze en de reden daarvoor in een korte briefing samen. Er is nog geen lezersonderzoek en de voorkeur voor een zakelijke toon staat voorlopig vast."
+        },
+        {
+          "role": "assistant",
+          "content": "**Korte briefing voor de schrijver**\n\n- **Huidige keuze:** een veilige, zakelijke mededeling over de nieuwe avondopenstelling. Deze toon staat voorlopig vast; werk geen alternatieve aanpak uit.\n- **Reden:** het team wil eerst helder en feitelijk informeren. Dit is een werkkeuze, geen bewezen effectieve aanpak: er is nog geen lezersonderzoek.\n- **Inhoud:** naam van de bibliotheek, ingangsdatum, openingsdagen en -tijden, adres en contactinformatie. Gebruik invulvelden zolang gegevens niet bevestigd zijn.\n- **Doelgroep:** buurtbewoners, ook mensen die de bibliotheek niet bezoeken. Schrijf daarom begrijpelijk en zonder voorkennis te veronderstellen."
+        }
+      ],
+      "seeds": [
+        {
+          "id": "ss_001",
+          "text": "Relatie tussen gekozen verspreidingskanalen en het daadwerkelijk bereiken van mensen die nooit naar de bibliotheek gaan.",
+          "weight": 0.0,
+          "trace": 1.027,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 0
+        },
+        {
+          "id": "ss_002",
+          "text": "Onderscheid tussen zakelijke toon en minimale nieuwsgierigheidselementen.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "ACTIVE",
+          "occurrence_count": 2,
+          "evidence_count": 0,
+          "born_turn": 1
+        },
+        {
+          "id": "ss_003",
+          "text": "Afbakening van benodigde contactgegevens versus optionele informatie.",
+          "weight": 0.0,
+          "trace": 1.433,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 1
+        },
+        {
+          "id": "ss_004",
+          "text": "Afhankelijkheid van definitieve bevestiging van openingsdagen en -tijden voor publicatie.",
+          "weight": 0.0,
+          "trace": 1.433,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 1
+        },
+        {
+          "id": "ss_005",
+          "text": "Onderscheid tussen zakelijke toon en begrijpelijkheid voor niet-bezoekers.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 2
+        },
+        {
+          "id": "ss_006",
+          "text": "Afbakening van de doelgroep: buurtbewoners versus bredere groepen.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 2
+        },
+        {
+          "id": "ss_007",
+          "text": "Afhankelijkheid van toekomstige lezersonderzoek voor mogelijke aanpassing van de aanpak.",
+          "weight": 0.0,
+          "trace": 2.0,
+          "status": "NEW",
+          "occurrence_count": 1,
+          "evidence_count": 0,
+          "born_turn": 2
+        }
+      ],
+      "engine_state_hash": "9bab59d6d486163103ed152c89e43b5de447854cd621b9992ddb7db2d69d340f",
+      "gate_policy": "evidence_backed",
+      "zero_weight_confirmed": true,
+      "compaction_output_hash": "9e299ba36674d444618f42a2b2047c00f14f34f19a3e50d56609f3b0c3f25ef2",
+      "compaction_output_types": [
+        "message",
+        "message",
+        "message",
+        "compaction"
+      ],
+      "continuation_user_question": "De bibliotheek wil nu echt een openingsalinea, geen advies. Schrijf 70 tot 90 woorden voor de nieuwe avondopenstelling en gebruik '[dagen en tijden]' waar concrete tijden ontbreken. De tekst moet feitelijk zijn en nieuwsgierig maken. Geef alleen de alinea.",
+      "outcomes": {
+        "full/reflect": {
+          "text": "De buurtbibliotheek krijgt een nieuwe avondopenstelling: je kunt er voortaan ook terecht op [dagen en tijden]. Daarmee komt er een extra moment om de bibliotheek te bezoeken, ook als je overdag andere bezigheden hebt. Ben je er nog nooit geweest, of is je laatste bezoek alweer een tijd geleden? De avondopenstelling biedt een gelegenheid om eens binnen te kijken en kennis te maken met de bibliotheek. Ook voor wie de bibliotheek al kent, veranderen de mogelijkheden om een bezoek te plannen.",
+          "prompt_sha256": "f9434729dc0245df1d81b219ef308127cdf5f99e94cb6dff1b1093386a6422e7",
+          "context_sha256": "6e92fb4e954be5abd5d8215b5b97df00a1f857a9a061a039919f29f384a184e9"
+        },
+        "full/weightless_review": {
+          "text": "De buurtbibliotheek krijgt een nieuwe avondopenstelling op [dagen en tijden]. Daarmee is er ook in de avond gelegenheid om de bibliotheek te bezoeken. De nieuwe openingstijden zijn bedoeld voor zowel vaste bezoekers als mensen die er nog niet eerder zijn geweest. Bent u benieuwd naar de bibliotheek of wilt u opnieuw kennismaken? De avondopenstelling biedt daarvoor een extra moment. Houd bij het plannen van uw bezoek rekening met de vermelde dagen en tijden.",
+          "prompt_sha256": "e284fbd586b75fde0baccdd1bfb488f5fd6b90e557a8f138bfdef021ef9d87c5",
+          "context_sha256": "6e92fb4e954be5abd5d8215b5b97df00a1f857a9a061a039919f29f384a184e9"
+        },
+        "provider_compacted/regular": {
+          "text": "De buurtbibliotheek krijgt een nieuwe avondopenstelling: op [dagen en tijden] kunt u ook ’s avonds terecht. Komt een bezoek overdag niet goed uit, of bent u nog nooit binnen geweest? Dan biedt de avondopenstelling een ander moment om kennis te maken met de bibliotheek. Misschien loopt u er regelmatig langs zonder naar binnen te gaan. De nieuwe openingstijden zijn een aanleiding om eens te ontdekken wat de buurtbibliotheek voor u kan betekenen.",
+          "prompt_sha256": "3e55f159db8f4dec178902b36440a9abf7d41844983e3478eb652a21ab969d28",
+          "context_sha256": "9e299ba36674d444618f42a2b2047c00f14f34f19a3e50d56609f3b0c3f25ef2"
+        },
+        "provider_compacted/reflect": {
+          "text": "De buurtbibliotheek krijgt een nieuwe avondopenstelling. Op [dagen en tijden] kunt u ook in de avond naar de bibliotheek komen. Daarmee is er een extra moment om binnen te lopen, ook als u overdag niet in de gelegenheid bent. Komt u zelden of nooit in de bibliotheek? Dan kan de avondopenstelling een aanleiding zijn om eens kennis te maken. Bekijk wat de bibliotheek voor u kan betekenen, of neem rustig een kijkje als u in de buurt bent.",
+          "prompt_sha256": "f9434729dc0245df1d81b219ef308127cdf5f99e94cb6dff1b1093386a6422e7",
+          "context_sha256": "9e299ba36674d444618f42a2b2047c00f14f34f19a3e50d56609f3b0c3f25ef2"
+        },
+        "full/regular": {
+          "text": "De buurtbibliotheek krijgt een nieuwe avondopenstelling op [dagen en tijden]. Daarmee is er ook in de avond gelegenheid om de bibliotheek te bezoeken. Komt een bezoek overdag niet goed uit, of bent u benieuwd naar de bibliotheek maar komt u er nog niet? Dan biedt de avondopenstelling een nieuw moment om kennis te maken. Bekijk wat de bibliotheek voor u kan betekenen en houd bij het plannen van uw bezoek rekening met de nieuwe openingstijden.",
+          "prompt_sha256": "3e55f159db8f4dec178902b36440a9abf7d41844983e3478eb652a21ab969d28",
+          "context_sha256": "6e92fb4e954be5abd5d8215b5b97df00a1f857a9a061a039919f29f384a184e9"
+        },
+        "provider_compacted/weightless_review": {
+          "text": "De buurtbibliotheek krijgt een nieuwe avondopenstelling op [dagen en tijden]. Daarmee komt er ook in de avond gelegenheid om de bibliotheek te bezoeken. De nieuwe openingstijden zijn bedoeld voor zowel vaste bezoekers als buurtbewoners die er nog nooit zijn geweest. Bent u benieuwd wat de bibliotheek voor u kan betekenen, of past een bezoek overdag minder goed in uw agenda? De avondopenstelling biedt een extra moment om kennis te maken of opnieuw binnen te lopen.",
+          "prompt_sha256": "e284fbd586b75fde0baccdd1bfb488f5fd6b90e557a8f138bfdef021ef9d87c5",
+          "context_sha256": "9e299ba36674d444618f42a2b2047c00f14f34f19a3e50d56609f3b0c3f25ef2"
+        }
+      }
+    }
+  ]
+}

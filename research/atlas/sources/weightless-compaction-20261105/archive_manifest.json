@@ -1,0 +1,11 @@
+{
+  "source_run": "https://github.com/E-AI-MODEL/shadowseed-pro/actions/runs/41981167823",
+  "artifact_id": 13394475903,
+  "model_calls_including_embeddings": 54,
+  "final_probe_answers": 12,
+  "zero_weight_seeds": 15,
+  "source_sha256": {
+    "events.jsonl": "00b7870e5ae3cdfdef64c4a1e5080f0330e8e3f6d82a84ecd98478bdd94a2105",
+    "result.json": "c6dd6f2d41a904389dfd9d4701f6755a81fee4d17a66da918044f7ffa2b11b00"
+  }
+}
