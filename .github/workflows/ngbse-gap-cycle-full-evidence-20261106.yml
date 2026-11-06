@@ -1,0 +1,65 @@
+name: Research - NGBSE vs chat with full matching evidence
+
+# One-shot research workflow. 2 real model calls maximum, no retries.
+# Research branch only. No changes to Shadowseed production logic.
+on:
+  push:
+    branches:
+      - research/ngbse-gap-cycle-baseline-20261106
+    paths:
+      - .github/workflows/ngbse-gap-cycle-full-evidence-20261106.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: research-ngbse-gap-cycle-full-evidence-20261106
+  cancel-in-progress: false
+
+jobs:
+  equal-evidence-comparison:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: OpenAI key
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: E-AI-MODEL/NGBSE20.1
+          ref: d585046d40b7894dd3336283c34bc4615a98b9c3
+          path: ngbse
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+      - name: Install research dependencies
+        run: python -m pip install -e ./ngbse "setuptools>=70" "openai>=2,<4" pytest
+      - name: Verify cycle regression tests
+        run: python -m pytest -q ngbse/tests/test_gap_execution_cycle.py ngbse/tests/test_gap_chat_baseline.py ngbse/tests/test_ballms50.py
+      - name: Run three actual evidence actions before asking a model
+        run: |
+          python -m ngbse20.research.gap_execution \
+            --output research-artifacts/evidence-cycle
+      - name: Require bounded model access without exposing key
+        shell: bash
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::No research key; zero model requests made."
+            exit 1
+          fi
+      - name: Ordinary AI chat with same question and original evidence
+        run: |
+          python ngbse/research/gap_cycle/chat_baseline.py \
+            --cycle research-artifacts/evidence-cycle/cycle.json \
+            --output research-artifacts/chat-baseline
+      - name: Preserve complete before/after evidence and actual model answer
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ngbse-vs-chat-full-evidence-20261106
+          path: research-artifacts/
+          if-no-files-found: warn
+          retention-days: 14
