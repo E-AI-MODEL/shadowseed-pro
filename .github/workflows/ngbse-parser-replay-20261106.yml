@@ -3,11 +3,7 @@ name: Research - replay six real NGBSE model replies through repaired parser
 # Uses original paid-model receipts from run 42289482435.
 # Zero new model calls, no secrets, no production code changes.
 on:
-  push:
-    branches:
-      - research/ngbse-live-comparison-20261106
-    paths:
-      - .github/workflows/ngbse-parser-replay-20261106.yml
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -19,17 +15,17 @@ jobs:
     timeout-minutes: 12
     steps:
       - name: Checkout proposed NGBSE parser repair
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: E-AI-MODEL/NGBSE20.1
           ref: 70c75c0552d4791bd003230d86ac80d0f28681d5
           path: ngbse
           persist-credentials: false
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.11"
       - name: Retrieve original, exact model outputs
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: ngbse-real-model-blind-review-and-receipts
           repository: E-AI-MODEL/shadowseed-pro
@@ -44,7 +40,7 @@ jobs:
             --answers research-artifacts/original/answers.json \
             --output research-artifacts/replay/parser-replay.json
       - name: Archive inspectable before/after counts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ngbse-numbered-question-parser-replay
           path: research-artifacts/replay/parser-replay.json
