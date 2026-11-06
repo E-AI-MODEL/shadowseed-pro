@@ -3,11 +3,7 @@ name: Research - live NGBSE three-arm comparison (bounded)
 # This workflow uses the existing research-only OpenAI key environment.
 # Shadowseed Pro itself is never imported or modified by this experiment.
 on:
-  push:
-    branches:
-      - research/ngbse-live-comparison-20261106
-    paths:
-      - .github/workflows/ngbse-live-comparison-20261106.yml
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -22,13 +18,13 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout exact NGBSE research revision
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: E-AI-MODEL/NGBSE20.1
           ref: c28e974f14309b76df66bbfc6c93008e49fc4597
           path: ngbse
           persist-credentials: false
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.11"
       - run: python -m pip install -e ./ngbse
@@ -50,16 +46,16 @@ jobs:
       NGBSE_QUALITY_ANSWERS_FILE: ${{ github.workspace }}/research-artifacts/ngbse-quality-v1/answers.json
     steps:
       - name: Checkout exact NGBSE research revision
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: E-AI-MODEL/NGBSE20.1
           ref: c28e974f14309b76df66bbfc6c93008e49fc4597
           path: ngbse
           persist-credentials: false
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.11"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: "24"
       - name: Require protected API key, never print it
@@ -85,7 +81,7 @@ jobs:
             --no-cache
       - name: Upload receipts and blind review; no private arm mapping
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ngbse-real-model-blind-review-and-receipts
           path: |
@@ -98,7 +94,7 @@ jobs:
           retention-days: 14
       - name: Upload arm mapping separately
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ngbse-private-arm-map
           path: research-artifacts/ngbse-quality-v1/PRIVATE_MAPPING.json
