@@ -1,0 +1,53 @@
+name: Research - replay NGBSE question selection (offline)
+
+# One-shot replay of the previously paid 18 provider outputs; no API key,
+# provider traffic, or changes to Shadowseed product code.
+on:
+  push:
+    branches:
+      - research/ngbse-live-comparison-20261106
+    paths:
+      - .github/workflows/ngbse-selection-replay-20261106.yml
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  selection-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout NGBSE selection fix at inspected commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: E-AI-MODEL/NGBSE20.1
+          ref: c4e5d63e134d37f68670881471c937b41cb5fec0
+          path: ngbse
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.11"
+      - name: Download exact original model responses
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ngbse-real-model-blind-review-and-receipts
+          repository: E-AI-MODEL/shadowseed-pro
+          run-id: 42289482435
+          github-token: ${{ github.token }}
+          path: research-artifacts/original
+      - run: python -m pip install -e ./ngbse
+      - name: Replay original six legacy model replies with selection repair
+        run: |
+          python ngbse/research/ngbse_quality/replay_parser.py \
+            --events research-artifacts/original/provider_events.jsonl \
+            --answers research-artifacts/original/answers.json \
+            --output research-artifacts/replay/balanced-selection-replay.json
+      - name: Archive reproducible selection counts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ngbse-balanced-selection-replay
+          path: research-artifacts/replay/balanced-selection-replay.json
+          if-no-files-found: error
+          retention-days: 14

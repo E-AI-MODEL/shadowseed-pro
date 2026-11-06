@@ -1,0 +1,68 @@
+name: Research - recheck stored NGBSE model answers (no API calls)
+
+# Reads the frozen artifacts from run 42289482435.
+# No OPENAI_API_KEY, no API requests, no new model spend.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  regrade-stored-outputs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PROMPTFOO_DISABLE_TELEMETRY: "1"
+      PROMPTFOO_DISABLE_UPDATE: "1"
+      PROMPTFOO_DISABLE_SHARE_EMAIL: "1"
+      PROMPTFOO_CACHE_ENABLED: "false"
+      NGBSE_QUALITY_ANSWERS_FILE: ${{ github.workspace }}/research-artifacts/ngbse-quality-v1/answers.json
+    steps:
+      - name: Checkout fixed Promptfoo assertions from NGBSE
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: E-AI-MODEL/NGBSE20.1
+          ref: 70c9805ef24c2aa5d6cfdb941d4dac30b99a38fe
+          path: ngbse
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "24"
+      - name: Download original, paid model receipts from run 42289482435
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: ngbse-real-model-blind-review-and-receipts
+          repository: E-AI-MODEL/shadowseed-pro
+          run-id: 42289482435
+          github-token: ${{ github.token }}
+          path: research-artifacts/ngbse-quality-v1
+      - name: Verify original summary before checking
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("research-artifacts/ngbse-quality-v1")
+          summary=json.loads((p/"summary.json").read_text())
+          answers=json.loads((p/"answers.json").read_text())
+          assert summary["status"]=="PROVIDER_COMPLETED"
+          assert summary["attempted_calls"]==18
+          assert summary["received_outputs"]==18
+          assert len(answers)==18
+          print("RECEIPTS_VERIFIED original_calls=18 real_outputs=18 no_new_calls=1")
+          PY
+      - name: Promptfoo over stored model answers (zero network model calls)
+        run: |
+          npx --yes promptfoo@0.125.1 eval \
+            --config ngbse/research/ngbse_quality/promptfooconfig.yaml \
+            --output research-artifacts/ngbse-quality-v1/promptfoo-regraded.json \
+            --no-cache
+      - name: Archive regraded Promptfoo results only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ngbse-promptfoo-regraded-no-new-api-calls
+          path: research-artifacts/ngbse-quality-v1/promptfoo-regraded.json
+          if-no-files-found: warn
+          retention-days: 14
