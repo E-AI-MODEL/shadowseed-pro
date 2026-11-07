@@ -1,4 +1,4 @@
-name: NGBSE Proef 02 - two published articles, matched A/B
+name: NGBSE Proef 02 - two publications, matched excerpt-card A/B
 on:
   push:
     branches:
@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: E-AI-MODEL/NGBSE20.1
-          ref: 9f7dd425674dd985eca68a047ba4e1113460edb4
+          ref: 4ca3d3c8ebaef84ee69e808fddc562b969f3759f
           path: ngbse
           persist-credentials: false
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
@@ -35,10 +35,19 @@ jobs:
         run: |
           python -m py_compile ngbse/research/second_output_ab/capture_sources.py
           python -m py_compile ngbse/research/second_output_ab/run_paired.py
-      - name: Snapshot identical full-text study passages for both arms
+      - name: Freeze the same published evidence cards for both arms
         run: |
-          python ngbse/research/second_output_ab/capture_sources.py \
-            --out research-artifacts/proef02
+          mkdir -p research-artifacts/proef02
+          cp ngbse/research/second_output_ab/sources_frozen.json research-artifacts/proef02/sources.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path("research-artifacts/proef02/sources.json").read_text())
+          assert len(d["cases"])==3 and set(d["papers"])=={"B","K"}
+          assert all(len(p["paragraphs"])>=18 for p in d["papers"].values())
+          assert all("not full text" in p["extraction_method"] for p in d["papers"].values())
+          print("SOURCE_FROZEN",sum(len(p["paragraphs"]) for p in d["papers"].values()))
+          PY
       - name: Verify protected provider key without printing it
         shell: bash
         run: |
